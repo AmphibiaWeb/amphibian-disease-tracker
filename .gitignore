@@ -1,6 +1,7 @@
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
+~$*
 
 # Folder config file
 Desktop.ini
@@ -14,9 +15,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-# Windows shortcuts
-*.lnk
-
 # =========================
 # Operating System Files
 # =========================
@@ -28,6 +26,9 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
+# Icon must ends with two \r.
+Icon
+
 # Thumbnails
 ._*
 
@@ -35,9 +36,21 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+# Temp Files from emacs
+\#*
+\#*\#
+.\#*
+*.*~
+
+CONFIG.php
+errors/
+
+#Extra latex stuff
+*.C
+*.K
+*.M
+*.out
+*.aux
+
+bower_components/bootstrap/node_modules/
+node_modules/
