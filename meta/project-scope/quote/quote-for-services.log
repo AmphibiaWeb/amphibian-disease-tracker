@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=latex 2015.6.29)  20 JUL 2015 12:19
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9 64-bit) (preloaded format=latex 2015.6.29)  20 JUL 2015 13:36
 entering extended mode
 **c:/Users/Philip/Dropbox/GitHub/bd-tracker-amphibiaweb/meta/project-scope/quot
 e/quote-for-services.tex
@@ -212,39 +212,75 @@ LaTeX Info: Redefining \nameref on input line 14.
 \quote-for-services.out)
 \@outlinefile=\write3
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 20.
+(Font)              <12> on input line 29.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 20.
+(Font)              <8> on input line 29.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 20.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 25.
- ("C:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+(Font)              <6> on input line 29.
+
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.29 
+     
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+! Extra alignment tab has been changed to \cr.
+<recently read> \endtemplate 
+                             
+l.29 
+     
+You have given more \span or & marks than there were
+in the preamble to the \halign or \valign now in progress.
+So I'll assume that you meant to type \cr instead.
+
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 34.
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 25.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 40.
- [1
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 34.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 47.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 47.
+
+Underfull \hbox (badness 10000) in paragraph at lines 51--52
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 53--56
+
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 62.
+[1
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 40.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 62.
 
 (c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\meta\project-scope\quote
 \quote-for-services.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 40.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 40.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 62.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 62.
 Package rerunfilecheck Info: File `quote-for-services.out' has not changed.
-(rerunfilecheck)             Checksum: 5F3205DF54F1B701D49E4ED00F74CD8D;130.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 40.
+(rerunfilecheck)             Checksum: 4E278005E4D3766980A0C222A8719120;181.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 62.
  ) 
 Here is how much of TeX's memory you used:
- 4452 strings out of 493922
- 67401 string characters out of 3147302
- 143646 words of memory out of 3000000
- 7751 multiletter control sequences out of 15000+200000
- 8747 words of font info for 31 fonts, out of 3000000 for 9000
+ 4457 strings out of 493922
+ 67458 string characters out of 3147302
+ 144646 words of memory out of 3000000
+ 7755 multiletter control sequences out of 15000+200000
+ 8737 words of font info for 32 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 30i,10n,43p,271b,325s stack positions out of 5000i,500n,10000p,9999999b,50000s
+ 30i,10n,43p,271b,323s stack positions out of 5000i,500n,10000p,9999999b,50000s
 
 Output written on c:/Users/Philip/Dropbox/GitHub/bd-tracker-amphibiaweb/meta/pr
-oject-scope/quote/quote-for-services.dvi (1 page, 3988 bytes).
+oject-scope/quote/quote-for-services.dvi (1 page, 5128 bytes).
