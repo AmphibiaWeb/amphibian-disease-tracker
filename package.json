@@ -1,21 +1,21 @@
 {
-  "name": "SSAR-species-database",
-  "version": "1.2.0",
-  "description": "SSAR Common Names Database",
-  "main": "commonnamnes_api.php",
+  "name": "amphibian-disease-tracker",
+  "version": "0.0.1",
+  "description": "Amphibian Disease Tracker Portal",
+  "main": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tigerhawkvok/SSAR-species-database.git"
+    "url": "https://github.com/tigerhawkvok/amphibian-disease-tracker.git"
   },
   "author": "Philip Kahn <tigerhawkvok@gmail.com>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/tigerhawkvok/SSAR-species-database/issues"
+    "url": "https://github.com/tigerhawkvok/amphibian-disease-tracker/issues"
   },
-  "homepage": "https://github.com/tigerhawkvok/SSAR-species-database",
+  "homepage": "https://github.com/tigerhawkvok/amphibian-disease-tracker",
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
     "bootlint": "^0.12.0",
