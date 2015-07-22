@@ -1,0 +1,14 @@
+{
+  "name": "xmlToJSON",
+  "homepage": "https://github.com/metatribal/xmlToJSON",
+  "version": "1.1.0",
+  "_release": "1.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.0",
+    "commit": "1435348fe6429b2d4fe5f23e6bdb2fae05d5e683"
+  },
+  "_source": "git://github.com/metatribal/xmlToJSON.git",
+  "_target": "~1.1.0",
+  "_originalSource": "metatribal/xmlToJSON"
+}
