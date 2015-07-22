@@ -25,9 +25,9 @@ module.exports = (grunt) ->
       bower:
         command: ["bower update"].join("&&")
       npm:
-        command: ["npm update"].join("&&")
+        command: ["npm install", "npm update"].join("&&")
       movesrc:
-        command: ["mv js/c.src.coffee js/maps/c.src.coffee"].join("&&")
+        command: ["ls"] # ["mv js/c.src.coffee js/maps/c.src.coffee"].join("&&")
       vulcanize:
         # Should also use a command to replace js as per uglify:vulcanize
         command: ["vulcanize --csp -o app-prerelease.html --strip app.html"].join("&&")
@@ -89,8 +89,6 @@ module.exports = (grunt) ->
             cascade: true
         files:
           "js/c.min.js":["js/c.js"]
-          "js/admin.min.js":["js/admin.js"]
-          "js/serviceWorker.min.js":["js/serviceWorker.js"]
       minpurl:
         options:
           sourceMap:true
@@ -134,13 +132,11 @@ module.exports = (grunt) ->
           sourceMapDir: "js/maps"
           sourceMap: true
         files:
-          "js/c.js":["coffee/core.coffee","coffee/search.coffee"]
-          "js/admin.js":"coffee/admin.coffee"
-          "js/serviceWorker.js":"coffee/serviceWorker.coffee"
+          "js/c.js":["coffee/core.coffee"]
     watch:
       scripts:
         files: ["coffee/*.coffee"]
-        tasks: ["coffee:compile","uglify:dist","shell:movesrc"]
+        tasks: ["coffee:compile","uglify:dist"] #,"shell:movesrc"]
       styles:
         files: ["less/main.less"]
         tasks: ["less","postcss","cssmin"]
@@ -163,7 +159,7 @@ module.exports = (grunt) ->
   ## Now the tasks
   grunt.registerTask("default",["watch"])
   grunt.registerTask("vulcanize","Vulcanize web components",["shell:vulcanize","uglify:vulcanize","string-replace:vulcanize"])
-  grunt.registerTask("compile","Compile coffeescript",["coffee:compile","uglify:dist","shell:movesrc"])
+  grunt.registerTask("compile","Compile coffeescript",["coffee:compile","uglify:dist"]) #,"shell:movesrc"])
   ## The minification tasks
   # Part 1
   grunt.registerTask("minifyIndependent","Minify Bower components that aren't distributed min'd",["uglify:minpurl","uglify:minxmljson","uglify:minjcookie"])
