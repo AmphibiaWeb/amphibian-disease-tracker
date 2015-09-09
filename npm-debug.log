@@ -1,0 +1,1908 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'update' ]
+2 info using npm@2.10.1
+3 info using node@v0.12.4
+4 silly mapToRegistry name autoprefixer
+5 silly mapToRegistry using default registry
+6 silly mapToRegistry registry https://registry.npmjs.org/
+7 silly mapToRegistry uri https://registry.npmjs.org/autoprefixer
+8 silly mapToRegistry name autoprefixer-core
+9 silly mapToRegistry using default registry
+10 silly mapToRegistry registry https://registry.npmjs.org/
+11 silly mapToRegistry uri https://registry.npmjs.org/autoprefixer-core
+12 silly mapToRegistry name bootlint
+13 silly mapToRegistry using default registry
+14 silly mapToRegistry registry https://registry.npmjs.org/
+15 silly mapToRegistry uri https://registry.npmjs.org/bootlint
+16 silly mapToRegistry name bower
+17 silly mapToRegistry using default registry
+18 silly mapToRegistry registry https://registry.npmjs.org/
+19 silly mapToRegistry uri https://registry.npmjs.org/bower
+20 silly mapToRegistry name coffee-script
+21 silly mapToRegistry using default registry
+22 silly mapToRegistry registry https://registry.npmjs.org/
+23 silly mapToRegistry uri https://registry.npmjs.org/coffee-script
+24 silly mapToRegistry name grunt
+25 silly mapToRegistry using default registry
+26 silly mapToRegistry registry https://registry.npmjs.org/
+27 silly mapToRegistry uri https://registry.npmjs.org/grunt
+28 silly mapToRegistry name grunt-bootlint
+29 silly mapToRegistry using default registry
+30 silly mapToRegistry registry https://registry.npmjs.org/
+31 silly mapToRegistry uri https://registry.npmjs.org/grunt-bootlint
+32 silly mapToRegistry name grunt-contrib-coffee
+33 silly mapToRegistry using default registry
+34 silly mapToRegistry registry https://registry.npmjs.org/
+35 silly mapToRegistry uri https://registry.npmjs.org/grunt-contrib-coffee
+36 silly mapToRegistry name grunt-contrib-cssmin
+37 silly mapToRegistry using default registry
+38 silly mapToRegistry registry https://registry.npmjs.org/
+39 silly mapToRegistry uri https://registry.npmjs.org/grunt-contrib-cssmin
+40 silly mapToRegistry name grunt-contrib-less
+41 silly mapToRegistry using default registry
+42 silly mapToRegistry registry https://registry.npmjs.org/
+43 silly mapToRegistry uri https://registry.npmjs.org/grunt-contrib-less
+44 silly mapToRegistry name grunt-contrib-uglify
+45 silly mapToRegistry using default registry
+46 silly mapToRegistry registry https://registry.npmjs.org/
+47 silly mapToRegistry uri https://registry.npmjs.org/grunt-contrib-uglify
+48 silly mapToRegistry name grunt-contrib-watch
+49 silly mapToRegistry using default registry
+50 silly mapToRegistry registry https://registry.npmjs.org/
+51 silly mapToRegistry uri https://registry.npmjs.org/grunt-contrib-watch
+52 silly mapToRegistry name grunt-html
+53 silly mapToRegistry using default registry
+54 silly mapToRegistry registry https://registry.npmjs.org/
+55 silly mapToRegistry uri https://registry.npmjs.org/grunt-html
+56 silly mapToRegistry name grunt-postcss
+57 silly mapToRegistry using default registry
+58 silly mapToRegistry registry https://registry.npmjs.org/
+59 silly mapToRegistry uri https://registry.npmjs.org/grunt-postcss
+60 silly mapToRegistry name grunt-shell
+61 silly mapToRegistry using default registry
+62 silly mapToRegistry registry https://registry.npmjs.org/
+63 silly mapToRegistry uri https://registry.npmjs.org/grunt-shell
+64 silly mapToRegistry name grunt-string-replace
+65 silly mapToRegistry using default registry
+66 silly mapToRegistry registry https://registry.npmjs.org/
+67 silly mapToRegistry uri https://registry.npmjs.org/grunt-string-replace
+68 silly mapToRegistry name grunt-yui-compressor
+69 silly mapToRegistry using default registry
+70 silly mapToRegistry registry https://registry.npmjs.org/
+71 silly mapToRegistry uri https://registry.npmjs.org/grunt-yui-compressor
+72 silly mapToRegistry name less
+73 silly mapToRegistry using default registry
+74 silly mapToRegistry registry https://registry.npmjs.org/
+75 silly mapToRegistry uri https://registry.npmjs.org/less
+76 silly mapToRegistry name npm-check-updates
+77 silly mapToRegistry using default registry
+78 silly mapToRegistry registry https://registry.npmjs.org/
+79 silly mapToRegistry uri https://registry.npmjs.org/npm-check-updates
+80 silly mapToRegistry name vulcanize
+81 silly mapToRegistry using default registry
+82 silly mapToRegistry registry https://registry.npmjs.org/
+83 silly mapToRegistry uri https://registry.npmjs.org/vulcanize
+84 verbose request uri https://registry.npmjs.org/autoprefixer-core
+85 verbose request no auth needed
+86 info attempt registry request try #1 at 11:34:43 AM
+87 verbose request id c0351aa38ab3952a
+88 verbose etag "9O9HKZ5FRNJFVWOCOKP7MC0YB"
+89 http request GET https://registry.npmjs.org/autoprefixer-core
+90 verbose request uri https://registry.npmjs.org/bootlint
+91 verbose request no auth needed
+92 info attempt registry request try #1 at 11:34:43 AM
+93 verbose etag "8AH989SF0IA6ODR2IZR70YPKZ"
+94 http request GET https://registry.npmjs.org/bootlint
+95 verbose request uri https://registry.npmjs.org/autoprefixer
+96 verbose request no auth needed
+97 info attempt registry request try #1 at 11:34:43 AM
+98 verbose etag "6ZDMB9DVGFGA727W4FZIMLX9K"
+99 http request GET https://registry.npmjs.org/autoprefixer
+100 verbose request uri https://registry.npmjs.org/coffee-script
+101 verbose request no auth needed
+102 info attempt registry request try #1 at 11:34:43 AM
+103 verbose etag "51QE2SRG1308OKWQZKY2BCZT6"
+104 http request GET https://registry.npmjs.org/coffee-script
+105 verbose request uri https://registry.npmjs.org/bower
+106 verbose request no auth needed
+107 info attempt registry request try #1 at 11:34:43 AM
+108 verbose etag "ARTS5RMQGEXP3PNB1T4EAHBE4"
+109 http request GET https://registry.npmjs.org/bower
+110 verbose request uri https://registry.npmjs.org/grunt-bootlint
+111 verbose request no auth needed
+112 info attempt registry request try #1 at 11:34:43 AM
+113 verbose etag "2F8A46SGPNZYUXGRMVK0IDHSN"
+114 http request GET https://registry.npmjs.org/grunt-bootlint
+115 verbose request uri https://registry.npmjs.org/grunt
+116 verbose request no auth needed
+117 info attempt registry request try #1 at 11:34:43 AM
+118 verbose etag "5WUTQ2M3OI0N2ZPK1TPZ2GBFR"
+119 http request GET https://registry.npmjs.org/grunt
+120 verbose request uri https://registry.npmjs.org/grunt-contrib-coffee
+121 verbose request no auth needed
+122 info attempt registry request try #1 at 11:34:43 AM
+123 verbose etag "AQSFOBZ4NQ5J4L7WBELIJ3OCN"
+124 http request GET https://registry.npmjs.org/grunt-contrib-coffee
+125 verbose request uri https://registry.npmjs.org/grunt-contrib-less
+126 verbose request no auth needed
+127 info attempt registry request try #1 at 11:34:43 AM
+128 verbose etag "51DLPWFH8KKHER18JG6H6CBPS"
+129 http request GET https://registry.npmjs.org/grunt-contrib-less
+130 verbose request uri https://registry.npmjs.org/grunt-contrib-cssmin
+131 verbose request no auth needed
+132 info attempt registry request try #1 at 11:34:43 AM
+133 verbose etag "62DJO6K4M23Y6A5EKSBC00Q5T"
+134 http request GET https://registry.npmjs.org/grunt-contrib-cssmin
+135 verbose request uri https://registry.npmjs.org/grunt-contrib-uglify
+136 verbose request no auth needed
+137 info attempt registry request try #1 at 11:34:43 AM
+138 verbose etag "2LV4EDDE2PK7BTAYQVOQ4YLGZ"
+139 http request GET https://registry.npmjs.org/grunt-contrib-uglify
+140 verbose request uri https://registry.npmjs.org/grunt-contrib-watch
+141 verbose request no auth needed
+142 info attempt registry request try #1 at 11:34:43 AM
+143 verbose etag "8JIUAOITMGY020WXIKKRY14DG"
+144 http request GET https://registry.npmjs.org/grunt-contrib-watch
+145 verbose request uri https://registry.npmjs.org/grunt-html
+146 verbose request no auth needed
+147 info attempt registry request try #1 at 11:34:43 AM
+148 verbose etag "4BFZVK7KC9AQ8I9L4H0LKCHVT"
+149 http request GET https://registry.npmjs.org/grunt-html
+150 verbose request uri https://registry.npmjs.org/grunt-postcss
+151 verbose request no auth needed
+152 info attempt registry request try #1 at 11:34:43 AM
+153 verbose etag "5KYMXJ40NIFWCEUNZXIPKE1SK"
+154 http request GET https://registry.npmjs.org/grunt-postcss
+155 verbose request uri https://registry.npmjs.org/grunt-shell
+156 verbose request no auth needed
+157 info attempt registry request try #1 at 11:34:43 AM
+158 verbose etag "7BMN46AX9QIADJFD99FUW8V4E"
+159 http request GET https://registry.npmjs.org/grunt-shell
+160 verbose request uri https://registry.npmjs.org/grunt-string-replace
+161 verbose request no auth needed
+162 info attempt registry request try #1 at 11:34:43 AM
+163 verbose etag "KBUYSDSHIVS16VIIYZP703O"
+164 http request GET https://registry.npmjs.org/grunt-string-replace
+165 verbose request uri https://registry.npmjs.org/grunt-yui-compressor
+166 verbose request no auth needed
+167 info attempt registry request try #1 at 11:34:43 AM
+168 verbose etag "4YNJWM8IXAXW0MAHUCL7VJRDN"
+169 http request GET https://registry.npmjs.org/grunt-yui-compressor
+170 verbose request uri https://registry.npmjs.org/less
+171 verbose request no auth needed
+172 info attempt registry request try #1 at 11:34:43 AM
+173 verbose etag "479U5M03GOHF16UBL5YFA4E2H"
+174 http request GET https://registry.npmjs.org/less
+175 verbose request uri https://registry.npmjs.org/npm-check-updates
+176 verbose request no auth needed
+177 info attempt registry request try #1 at 11:34:43 AM
+178 verbose etag "EWB6JMJ6LSM9Z9D7BJIYGNWXQ"
+179 http request GET https://registry.npmjs.org/npm-check-updates
+180 verbose request uri https://registry.npmjs.org/vulcanize
+181 verbose request no auth needed
+182 info attempt registry request try #1 at 11:34:43 AM
+183 verbose etag "8I3K6YKJHQVLIKICC9AO7DQQR"
+184 http request GET https://registry.npmjs.org/vulcanize
+185 http 304 https://registry.npmjs.org/autoprefixer
+186 silly get cb [ 304,
+186 silly get   { date: 'Wed, 09 Sep 2015 18:34:42 GMT',
+186 silly get     via: '1.1 varnish',
+186 silly get     'cache-control': 'max-age=60',
+186 silly get     etag: '"6ZDMB9DVGFGA727W4FZIMLX9K"',
+186 silly get     age: '0',
+186 silly get     connection: 'keep-alive',
+186 silly get     'x-served-by': 'cache-sjc3129-SJC',
+186 silly get     'x-cache': 'HIT',
+186 silly get     'x-cache-hits': '1',
+186 silly get     'x-timer': 'S1441823682.682590,VS0,VE38',
+186 silly get     vary: 'Accept' } ]
+187 verbose etag https://registry.npmjs.org/autoprefixer from cache
+188 verbose get saving autoprefixer to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\autoprefixer\.cache.json
+189 http 304 https://registry.npmjs.org/autoprefixer-core
+190 silly get cb [ 304,
+190 silly get   { date: 'Wed, 09 Sep 2015 18:34:42 GMT',
+190 silly get     via: '1.1 varnish',
+190 silly get     'cache-control': 'max-age=60',
+190 silly get     etag: '"9O9HKZ5FRNJFVWOCOKP7MC0YB"',
+190 silly get     age: '60',
+190 silly get     connection: 'keep-alive',
+190 silly get     'x-served-by': 'cache-sjc3128-SJC',
+190 silly get     'x-cache': 'HIT',
+190 silly get     'x-cache-hits': '1',
+190 silly get     'x-timer': 'S1441823682.772699,VS0,VE0',
+190 silly get     vary: 'Accept' } ]
+191 verbose etag https://registry.npmjs.org/autoprefixer-core from cache
+192 verbose get saving autoprefixer-core to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\autoprefixer-core\.cache.json
+193 http 304 https://registry.npmjs.org/grunt-contrib-coffee
+194 silly get cb [ 304,
+194 silly get   { date: 'Wed, 09 Sep 2015 18:34:42 GMT',
+194 silly get     via: '1.1 varnish',
+194 silly get     'cache-control': 'max-age=60',
+194 silly get     etag: '"AQSFOBZ4NQ5J4L7WBELIJ3OCN"',
+194 silly get     age: '3',
+194 silly get     connection: 'keep-alive',
+194 silly get     'x-served-by': 'cache-sjc3131-SJC',
+194 silly get     'x-cache': 'HIT',
+194 silly get     'x-cache-hits': '1',
+194 silly get     'x-timer': 'S1441823682.920561,VS0,VE0',
+194 silly get     vary: 'Accept' } ]
+195 verbose etag https://registry.npmjs.org/grunt-contrib-coffee from cache
+196 verbose get saving grunt-contrib-coffee to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-contrib-coffee\.cache.json
+197 http 304 https://registry.npmjs.org/coffee-script
+198 silly get cb [ 304,
+198 silly get   { date: 'Wed, 09 Sep 2015 18:34:42 GMT',
+198 silly get     via: '1.1 varnish',
+198 silly get     'cache-control': 'max-age=60',
+198 silly get     etag: '"51QE2SRG1308OKWQZKY2BCZT6"',
+198 silly get     age: '32',
+198 silly get     connection: 'keep-alive',
+198 silly get     'x-served-by': 'cache-sjc3125-SJC',
+198 silly get     'x-cache': 'HIT',
+198 silly get     'x-cache-hits': '4',
+198 silly get     'x-timer': 'S1441823682.923889,VS0,VE0',
+198 silly get     vary: 'Accept' } ]
+199 verbose etag https://registry.npmjs.org/coffee-script from cache
+200 verbose get saving coffee-script to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\coffee-script\.cache.json
+201 http 304 https://registry.npmjs.org/grunt-bootlint
+202 silly get cb [ 304,
+202 silly get   { date: 'Wed, 09 Sep 2015 18:34:42 GMT',
+202 silly get     via: '1.1 varnish',
+202 silly get     'cache-control': 'max-age=60',
+202 silly get     etag: '"2F8A46SGPNZYUXGRMVK0IDHSN"',
+202 silly get     age: '0',
+202 silly get     connection: 'keep-alive',
+202 silly get     'x-served-by': 'cache-sjc3128-SJC',
+202 silly get     'x-cache': 'MISS',
+202 silly get     'x-cache-hits': '0',
+202 silly get     'x-timer': 'S1441823682.924128,VS0,VE37',
+202 silly get     vary: 'Accept' } ]
+203 verbose etag https://registry.npmjs.org/grunt-bootlint from cache
+204 verbose get saving grunt-bootlint to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-bootlint\.cache.json
+205 http 304 https://registry.npmjs.org/bootlint
+206 silly get cb [ 304,
+206 silly get   { date: 'Wed, 09 Sep 2015 18:34:42 GMT',
+206 silly get     via: '1.1 varnish',
+206 silly get     'cache-control': 'max-age=60',
+206 silly get     etag: '"8AH989SF0IA6ODR2IZR70YPKZ"',
+206 silly get     age: '0',
+206 silly get     connection: 'keep-alive',
+206 silly get     'x-served-by': 'cache-sjc3124-SJC',
+206 silly get     'x-cache': 'HIT',
+206 silly get     'x-cache-hits': '1',
+206 silly get     'x-timer': 'S1441823682.921969,VS0,VE85',
+206 silly get     vary: 'Accept' } ]
+207 verbose etag https://registry.npmjs.org/bootlint from cache
+208 verbose get saving bootlint to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\bootlint\.cache.json
+209 http 304 https://registry.npmjs.org/grunt-contrib-watch
+210 silly get cb [ 304,
+210 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+210 silly get     via: '1.1 varnish',
+210 silly get     'cache-control': 'max-age=60',
+210 silly get     etag: '"8JIUAOITMGY020WXIKKRY14DG"',
+210 silly get     age: '49',
+210 silly get     connection: 'keep-alive',
+210 silly get     'x-served-by': 'cache-sjc3130-SJC',
+210 silly get     'x-cache': 'HIT',
+210 silly get     'x-cache-hits': '2',
+210 silly get     'x-timer': 'S1441823683.103016,VS0,VE0',
+210 silly get     vary: 'Accept' } ]
+211 verbose etag https://registry.npmjs.org/grunt-contrib-watch from cache
+212 verbose get saving grunt-contrib-watch to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-contrib-watch\.cache.json
+213 http 304 https://registry.npmjs.org/grunt
+214 silly get cb [ 304,
+214 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+214 silly get     via: '1.1 varnish',
+214 silly get     'cache-control': 'max-age=60',
+214 silly get     etag: '"5WUTQ2M3OI0N2ZPK1TPZ2GBFR"',
+214 silly get     age: '27',
+214 silly get     connection: 'keep-alive',
+214 silly get     'x-served-by': 'cache-sjc3134-SJC',
+214 silly get     'x-cache': 'HIT',
+214 silly get     'x-cache-hits': '2',
+214 silly get     'x-timer': 'S1441823683.104154,VS0,VE0',
+214 silly get     vary: 'Accept' } ]
+215 verbose etag https://registry.npmjs.org/grunt from cache
+216 verbose get saving grunt to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt\.cache.json
+217 http 304 https://registry.npmjs.org/grunt-contrib-less
+218 silly get cb [ 304,
+218 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+218 silly get     via: '1.1 varnish',
+218 silly get     'cache-control': 'max-age=60',
+218 silly get     etag: '"51DLPWFH8KKHER18JG6H6CBPS"',
+218 silly get     age: '3',
+218 silly get     connection: 'keep-alive',
+218 silly get     'x-served-by': 'cache-sjc3130-SJC',
+218 silly get     'x-cache': 'HIT',
+218 silly get     'x-cache-hits': '1',
+218 silly get     'x-timer': 'S1441823683.103040,VS0,VE0',
+218 silly get     vary: 'Accept' } ]
+219 verbose etag https://registry.npmjs.org/grunt-contrib-less from cache
+220 verbose get saving grunt-contrib-less to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-contrib-less\.cache.json
+221 http 304 https://registry.npmjs.org/grunt-contrib-cssmin
+222 silly get cb [ 304,
+222 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+222 silly get     via: '1.1 varnish',
+222 silly get     'cache-control': 'max-age=60',
+222 silly get     etag: '"62DJO6K4M23Y6A5EKSBC00Q5T"',
+222 silly get     age: '12',
+222 silly get     connection: 'keep-alive',
+222 silly get     'x-served-by': 'cache-sjc3135-SJC',
+222 silly get     'x-cache': 'HIT',
+222 silly get     'x-cache-hits': '1',
+222 silly get     'x-timer': 'S1441823683.104660,VS0,VE0',
+222 silly get     vary: 'Accept' } ]
+223 verbose etag https://registry.npmjs.org/grunt-contrib-cssmin from cache
+224 verbose get saving grunt-contrib-cssmin to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-contrib-cssmin\.cache.json
+225 http 304 https://registry.npmjs.org/bower
+226 silly get cb [ 304,
+226 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+226 silly get     via: '1.1 varnish',
+226 silly get     'cache-control': 'max-age=60',
+226 silly get     etag: '"ARTS5RMQGEXP3PNB1T4EAHBE4"',
+226 silly get     age: '5',
+226 silly get     connection: 'keep-alive',
+226 silly get     'x-served-by': 'cache-sjc3130-SJC',
+226 silly get     'x-cache': 'HIT',
+226 silly get     'x-cache-hits': '1',
+226 silly get     'x-timer': 'S1441823683.111887,VS0,VE0',
+226 silly get     vary: 'Accept' } ]
+227 verbose etag https://registry.npmjs.org/bower from cache
+228 verbose get saving bower to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\bower\.cache.json
+229 http 304 https://registry.npmjs.org/grunt-contrib-uglify
+230 silly get cb [ 304,
+230 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+230 silly get     via: '1.1 varnish',
+230 silly get     'cache-control': 'max-age=60',
+230 silly get     etag: '"2LV4EDDE2PK7BTAYQVOQ4YLGZ"',
+230 silly get     age: '18',
+230 silly get     connection: 'keep-alive',
+230 silly get     'x-served-by': 'cache-sjc3124-SJC',
+230 silly get     'x-cache': 'HIT',
+230 silly get     'x-cache-hits': '1',
+230 silly get     'x-timer': 'S1441823683.112492,VS0,VE0',
+230 silly get     vary: 'Accept' } ]
+231 verbose etag https://registry.npmjs.org/grunt-contrib-uglify from cache
+232 verbose get saving grunt-contrib-uglify to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-contrib-uglify\.cache.json
+233 http 304 https://registry.npmjs.org/grunt-shell
+234 silly get cb [ 304,
+234 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+234 silly get     via: '1.1 varnish',
+234 silly get     'cache-control': 'max-age=60',
+234 silly get     etag: '"7BMN46AX9QIADJFD99FUW8V4E"',
+234 silly get     age: '25',
+234 silly get     connection: 'keep-alive',
+234 silly get     'x-served-by': 'cache-sjc3134-SJC',
+234 silly get     'x-cache': 'HIT',
+234 silly get     'x-cache-hits': '1',
+234 silly get     'x-timer': 'S1441823683.113585,VS0,VE0',
+234 silly get     vary: 'Accept' } ]
+235 verbose etag https://registry.npmjs.org/grunt-shell from cache
+236 verbose get saving grunt-shell to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-shell\.cache.json
+237 http 304 https://registry.npmjs.org/less
+238 silly get cb [ 304,
+238 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+238 silly get     via: '1.1 varnish',
+238 silly get     'cache-control': 'max-age=60',
+238 silly get     etag: '"479U5M03GOHF16UBL5YFA4E2H"',
+238 silly get     age: '3',
+238 silly get     connection: 'keep-alive',
+238 silly get     'x-served-by': 'cache-sjc3121-SJC',
+238 silly get     'x-cache': 'HIT',
+238 silly get     'x-cache-hits': '1',
+238 silly get     'x-timer': 'S1441823683.113002,VS0,VE1',
+238 silly get     vary: 'Accept' } ]
+239 verbose etag https://registry.npmjs.org/less from cache
+240 verbose get saving less to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\less\.cache.json
+241 http 304 https://registry.npmjs.org/grunt-postcss
+242 silly get cb [ 304,
+242 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+242 silly get     via: '1.1 varnish',
+242 silly get     'cache-control': 'max-age=60',
+242 silly get     etag: '"5KYMXJ40NIFWCEUNZXIPKE1SK"',
+242 silly get     age: '0',
+242 silly get     connection: 'keep-alive',
+242 silly get     'x-served-by': 'cache-sjc3133-SJC',
+242 silly get     'x-cache': 'HIT',
+242 silly get     'x-cache-hits': '1',
+242 silly get     'x-timer': 'S1441823683.114088,VS0,VE37',
+242 silly get     vary: 'Accept' } ]
+243 verbose etag https://registry.npmjs.org/grunt-postcss from cache
+244 verbose get saving grunt-postcss to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-postcss\.cache.json
+245 http 304 https://registry.npmjs.org/npm-check-updates
+246 silly get cb [ 304,
+246 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+246 silly get     via: '1.1 varnish',
+246 silly get     'cache-control': 'max-age=60',
+246 silly get     etag: '"EWB6JMJ6LSM9Z9D7BJIYGNWXQ"',
+246 silly get     age: '0',
+246 silly get     connection: 'keep-alive',
+246 silly get     'x-served-by': 'cache-sjc3128-SJC',
+246 silly get     'x-cache': 'HIT',
+246 silly get     'x-cache-hits': '1',
+246 silly get     'x-timer': 'S1441823683.112851,VS0,VE40',
+246 silly get     vary: 'Accept' } ]
+247 verbose etag https://registry.npmjs.org/npm-check-updates from cache
+248 verbose get saving npm-check-updates to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\npm-check-updates\.cache.json
+249 http 304 https://registry.npmjs.org/grunt-string-replace
+250 silly get cb [ 304,
+250 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+250 silly get     via: '1.1 varnish',
+250 silly get     'cache-control': 'max-age=60',
+250 silly get     etag: '"KBUYSDSHIVS16VIIYZP703O"',
+250 silly get     age: '0',
+250 silly get     connection: 'keep-alive',
+250 silly get     'x-served-by': 'cache-sjc3128-SJC',
+250 silly get     'x-cache': 'HIT',
+250 silly get     'x-cache-hits': '1',
+250 silly get     'x-timer': 'S1441823683.113725,VS0,VE40',
+250 silly get     vary: 'Accept' } ]
+251 verbose etag https://registry.npmjs.org/grunt-string-replace from cache
+252 verbose get saving grunt-string-replace to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-string-replace\.cache.json
+253 http 304 https://registry.npmjs.org/grunt-html
+254 silly get cb [ 304,
+254 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+254 silly get     via: '1.1 varnish',
+254 silly get     'cache-control': 'max-age=60',
+254 silly get     etag: '"4BFZVK7KC9AQ8I9L4H0LKCHVT"',
+254 silly get     age: '0',
+254 silly get     connection: 'keep-alive',
+254 silly get     'x-served-by': 'cache-sjc3123-SJC',
+254 silly get     'x-cache': 'HIT',
+254 silly get     'x-cache-hits': '1',
+254 silly get     'x-timer': 'S1441823683.103429,VS0,VE84',
+254 silly get     vary: 'Accept' } ]
+255 verbose etag https://registry.npmjs.org/grunt-html from cache
+256 verbose get saving grunt-html to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-html\.cache.json
+257 http 304 https://registry.npmjs.org/vulcanize
+258 silly get cb [ 304,
+258 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+258 silly get     via: '1.1 varnish',
+258 silly get     'cache-control': 'max-age=60',
+258 silly get     etag: '"8I3K6YKJHQVLIKICC9AO7DQQR"',
+258 silly get     age: '0',
+258 silly get     connection: 'keep-alive',
+258 silly get     'x-served-by': 'cache-sjc3125-SJC',
+258 silly get     'x-cache': 'HIT',
+258 silly get     'x-cache-hits': '1',
+258 silly get     'x-timer': 'S1441823683.112720,VS0,VE159',
+258 silly get     vary: 'Accept' } ]
+259 verbose etag https://registry.npmjs.org/vulcanize from cache
+260 verbose get saving vulcanize to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\vulcanize\.cache.json
+261 http 304 https://registry.npmjs.org/grunt-yui-compressor
+262 silly get cb [ 304,
+262 silly get   { date: 'Wed, 09 Sep 2015 18:34:43 GMT',
+262 silly get     via: '1.1 varnish',
+262 silly get     'cache-control': 'max-age=60',
+262 silly get     etag: '"4YNJWM8IXAXW0MAHUCL7VJRDN"',
+262 silly get     age: '0',
+262 silly get     connection: 'keep-alive',
+262 silly get     'x-served-by': 'cache-sjc3131-SJC',
+262 silly get     'x-cache': 'MISS',
+262 silly get     'x-cache-hits': '0',
+262 silly get     'x-timer': 'S1441823683.125705,VS0,VE165',
+262 silly get     vary: 'Accept' } ]
+263 verbose etag https://registry.npmjs.org/grunt-yui-compressor from cache
+264 verbose get saving grunt-yui-compressor to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\grunt-yui-compressor\.cache.json
+265 info outdated updating [ [ 'c:\\Users\\Philip\\Dropbox\\GitHub\\bd-tracker-amphibiaweb',
+265 info outdated     'npm-check-updates',
+265 info outdated     undefined,
+265 info outdated     '2.2.1',
+265 info outdated     '2.2.1',
+265 info outdated     '^2.2.1' ] ]
+266 verbose install where, what [ 'c:\\Users\\Philip\\Dropbox\\GitHub\\bd-tracker-amphibiaweb',
+266 verbose install   [ 'npm-check-updates@2.2.1' ] ]
+267 verbose install initial load of c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\package.json
+268 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\autoprefixer\package.json
+269 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\autoprefixer-core\package.json
+270 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\bootlint\package.json
+271 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\bower\package.json
+272 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\coffee-script\package.json
+273 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt\package.json
+274 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-bootlint\package.json
+275 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-contrib-coffee\package.json
+276 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-contrib-cssmin\package.json
+277 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-contrib-less\package.json
+278 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-contrib-uglify\package.json
+279 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-contrib-watch\package.json
+280 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-html\package.json
+281 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-postcss\package.json
+282 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-shell\package.json
+283 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-string-replace\package.json
+284 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\grunt-yui-compressor\package.json
+285 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\less\package.json
+286 verbose installManyTop reading scoped package data from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\vulcanize\package.json
+287 verbose readDependencies loading dependencies from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\package.json
+288 silly cache add args [ 'npm-check-updates@2.2.1', null ]
+289 verbose cache add spec npm-check-updates@2.2.1
+290 silly cache add parsed spec { raw: 'npm-check-updates@2.2.1',
+290 silly cache add   scope: null,
+290 silly cache add   name: 'npm-check-updates',
+290 silly cache add   rawSpec: '2.2.1',
+290 silly cache add   spec: '2.2.1',
+290 silly cache add   type: 'version' }
+291 silly addNamed npm-check-updates@2.2.1
+292 verbose addNamed "2.2.1" is a plain semver version for npm-check-updates
+293 silly mapToRegistry name npm-check-updates
+294 silly mapToRegistry using default registry
+295 silly mapToRegistry registry https://registry.npmjs.org/
+296 silly mapToRegistry uri https://registry.npmjs.org/npm-check-updates
+297 verbose addNameVersion registry:https://registry.npmjs.org/npm-check-updates not in flight; fetching
+298 verbose get https://registry.npmjs.org/npm-check-updates not expired, no request
+299 silly cache afterAdd npm-check-updates@2.2.1
+300 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\npm-check-updates\2.2.1\package\package.json not in flight; writing
+301 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\npm-check-updates\2.2.1\package\package.json written
+302 silly install resolved [ { name: 'npm-check-updates',
+302 silly install resolved     version: '2.2.1',
+302 silly install resolved     author: { name: 'Tomas Junnonen', email: 'tomas1@gmail.com' },
+302 silly install resolved     license: 'MIT',
+302 silly install resolved     contributors: [ [Object] ],
+302 silly install resolved     description: 'Find newer versions of dependencies than what your package.json allows',
+302 silly install resolved     keywords:
+302 silly install resolved      [ 'npm',
+302 silly install resolved        'check',
+302 silly install resolved        'find',
+302 silly install resolved        'discover',
+302 silly install resolved        'updates',
+302 silly install resolved        'upgrades',
+302 silly install resolved        'dependencies',
+302 silly install resolved        'package.json',
+302 silly install resolved        'updater',
+302 silly install resolved        'version',
+302 silly install resolved        'management' ],
+302 silly install resolved     preferGlobal: true,
+302 silly install resolved     main: './lib/npm-check-updates',
+302 silly install resolved     scripts: { lint: 'eslint bin lib', test: 'npm run lint && mocha' },
+302 silly install resolved     bin:
+302 silly install resolved      { 'npm-check-updates': './bin/old-alias',
+302 silly install resolved        ncu: './bin/npm-check-updates' },
+302 silly install resolved     repository:
+302 silly install resolved      { type: 'git',
+302 silly install resolved        url: 'git+https://github.com/tjunnone/npm-check-updates.git' },
+302 silly install resolved     homepage: 'https://github.com/tjunnone/npm-check-updates',
+302 silly install resolved     dependencies:
+302 silly install resolved      { async: '^1.4.1',
+302 silly install resolved        bluebird: '^2.9.34',
+302 silly install resolved        chalk: '^1.1.0',
+302 silly install resolved        cint: '^8.2.1',
+302 silly install resolved        'cli-table': '^0.3.1',
+302 silly install resolved        'closest-package': '^1.0.0',
+302 silly install resolved        commander: '^2.8.1',
+302 silly install resolved        'fast-diff': '^1.0.1',
+302 silly install resolved        'get-stdin-promise': '^0.1.1',
+302 silly install resolved        lodash: '^3.10.1',
+302 silly install resolved        npm: '^2.13.4',
+302 silly install resolved        semver: '^5.0.1',
+302 silly install resolved        'semver-utils': 'github:metaraine/semver-utils#86ea225' },
+302 silly install resolved     devDependencies:
+302 silly install resolved      { chai: '^3.2.0',
+302 silly install resolved        'chai-as-promised': '^5.1.0',
+302 silly install resolved        'chai-string': '^1.1.2',
+302 silly install resolved        eslint: '^1.1.0',
+302 silly install resolved        mocha: '^2.2.5',
+302 silly install resolved        should: '^7.0.2',
+302 silly install resolved        'spawn-please': '^0.1.0' },
+302 silly install resolved     gitHead: '765c3799d82731042a9a15d0a2fe5b87b61a8438',
+302 silly install resolved     bugs: { url: 'https://github.com/tjunnone/npm-check-updates/issues' },
+302 silly install resolved     _id: 'npm-check-updates@2.2.1',
+302 silly install resolved     _shasum: '032c4fa72cda8b92fdce23d0ddae6160fd5cdedd',
+302 silly install resolved     _from: 'npm-check-updates@2.2.1',
+302 silly install resolved     _npmVersion: '2.11.3',
+302 silly install resolved     _nodeVersion: '2.0.2',
+302 silly install resolved     _npmUser: { name: 'raine', email: 'raineorshine@gmail.com' },
+302 silly install resolved     maintainers: [ [Object], [Object] ],
+302 silly install resolved     dist:
+302 silly install resolved      { shasum: '032c4fa72cda8b92fdce23d0ddae6160fd5cdedd',
+302 silly install resolved        tarball: 'http://registry.npmjs.org/npm-check-updates/-/npm-check-updates-2.2.1.tgz' },
+302 silly install resolved     directories: {},
+302 silly install resolved     _resolved: 'https://registry.npmjs.org/npm-check-updates/-/npm-check-updates-2.2.1.tgz',
+302 silly install resolved     readme: 'ERROR: No README data found!' } ]
+303 info install npm-check-updates@2.2.1 into c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+304 info installOne npm-check-updates@2.2.1
+305 verbose installOne of npm-check-updates to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb not in flight; installing
+306 verbose lock using C:\Users\Philip\AppData\Roaming\npm-cache\_locks\npm-check-updates-5baa56069359756b.lock for c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+307 silly install write writing npm-check-updates 2.2.1 to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+308 verbose unbuild node_modules\npm-check-updates
+309 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates is being purged from base c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+310 verbose gentlyRm don't care about contents; nuking c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+311 verbose tar unpack C:\Users\Philip\AppData\Roaming\npm-cache\npm-check-updates\2.2.1\package.tgz
+312 verbose tar unpacking to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+313 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates is being purged
+314 verbose gentlyRm don't care about contents; nuking c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+315 silly gunzTarPerm modes [ '777', '666' ]
+316 silly gunzTarPerm extractEntry package.json
+317 silly gunzTarPerm modified mode [ 'package.json', 420, 438 ]
+318 silly gunzTarPerm extractEntry .npmignore
+319 silly gunzTarPerm modified mode [ '.npmignore', 420, 438 ]
+320 silly gunzTarPerm extractEntry README.md
+321 silly gunzTarPerm modified mode [ 'README.md', 420, 438 ]
+322 silly gunzTarPerm extractEntry LICENSE
+323 silly gunzTarPerm modified mode [ 'LICENSE', 420, 438 ]
+324 silly gunzTarPerm extractEntry .travis.yml
+325 silly gunzTarPerm modified mode [ '.travis.yml', 420, 438 ]
+326 silly gunzTarPerm extractEntry .eslintrc
+327 silly gunzTarPerm modified mode [ '.eslintrc', 420, 438 ]
+328 silly gunzTarPerm extractEntry bin/npm-check-updates
+329 silly gunzTarPerm modified mode [ 'bin/npm-check-updates', 493, 511 ]
+330 silly gunzTarPerm extractEntry bin/old-alias
+331 silly gunzTarPerm modified mode [ 'bin/old-alias', 420, 438 ]
+332 silly gunzTarPerm extractEntry deploy.md
+333 silly gunzTarPerm modified mode [ 'deploy.md', 420, 438 ]
+334 silly gunzTarPerm extractEntry lib/npm-check-updates.js
+335 silly gunzTarPerm modified mode [ 'lib/npm-check-updates.js', 420, 438 ]
+336 silly gunzTarPerm extractEntry lib/version-util.js
+337 silly gunzTarPerm modified mode [ 'lib/version-util.js', 420, 438 ]
+338 silly gunzTarPerm extractEntry lib/versionmanager.js
+339 silly gunzTarPerm modified mode [ 'lib/versionmanager.js', 420, 438 ]
+340 silly gunzTarPerm extractEntry .editorconfig
+341 silly gunzTarPerm modified mode [ '.editorconfig', 420, 438 ]
+342 silly gunzTarPerm extractEntry test/test-ncu.js
+343 silly gunzTarPerm modified mode [ 'test/test-ncu.js', 420, 438 ]
+344 silly gunzTarPerm extractEntry test/test-version-util.js
+345 silly gunzTarPerm modified mode [ 'test/test-version-util.js', 420, 438 ]
+346 silly gunzTarPerm extractEntry test/test-versionmanager.js
+347 silly gunzTarPerm modified mode [ 'test/test-versionmanager.js', 420, 438 ]
+348 silly gunzTarPerm extractEntry test/ncu/package.json
+349 silly gunzTarPerm modified mode [ 'test/ncu/package.json', 420, 438 ]
+350 verbose write writing to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates\package.json
+351 info preinstall npm-check-updates@2.2.1
+352 verbose readDependencies loading dependencies from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates\package.json
+353 silly prepareForInstallMany adding async@^1.4.1 from npm-check-updates dependencies
+354 silly prepareForInstallMany adding bluebird@^2.9.34 from npm-check-updates dependencies
+355 silly prepareForInstallMany adding chalk@^1.1.0 from npm-check-updates dependencies
+356 silly prepareForInstallMany adding cint@^8.2.1 from npm-check-updates dependencies
+357 silly prepareForInstallMany adding cli-table@^0.3.1 from npm-check-updates dependencies
+358 silly prepareForInstallMany adding closest-package@^1.0.0 from npm-check-updates dependencies
+359 silly prepareForInstallMany adding commander@^2.8.1 from npm-check-updates dependencies
+360 silly prepareForInstallMany adding fast-diff@^1.0.1 from npm-check-updates dependencies
+361 silly prepareForInstallMany adding get-stdin-promise@^0.1.1 from npm-check-updates dependencies
+362 silly prepareForInstallMany adding lodash@^3.10.1 from npm-check-updates dependencies
+363 silly prepareForInstallMany adding npm@^2.13.4 from npm-check-updates dependencies
+364 silly prepareForInstallMany adding semver@^5.0.1 from npm-check-updates dependencies
+365 silly prepareForInstallMany adding semver-utils@github:metaraine/semver-utils#86ea225 from npm-check-updates dependencies
+366 verbose readDependencies loading dependencies from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates\package.json
+367 silly cache add args [ 'async@^1.4.1', null ]
+368 verbose cache add spec async@^1.4.1
+369 silly cache add args [ 'bluebird@^2.9.34', null ]
+370 verbose cache add spec bluebird@^2.9.34
+371 silly cache add parsed spec { raw: 'async@^1.4.1',
+371 silly cache add   scope: null,
+371 silly cache add   name: 'async',
+371 silly cache add   rawSpec: '^1.4.1',
+371 silly cache add   spec: '>=1.4.1 <2.0.0',
+371 silly cache add   type: 'range' }
+372 silly addNamed async@>=1.4.1 <2.0.0
+373 verbose addNamed ">=1.4.1 <2.0.0" is a valid semver range for async
+374 silly addNameRange { name: 'async', range: '>=1.4.1 <2.0.0', hasData: false }
+375 silly mapToRegistry name async
+376 silly mapToRegistry using default registry
+377 silly mapToRegistry registry https://registry.npmjs.org/
+378 silly mapToRegistry uri https://registry.npmjs.org/async
+379 verbose addNameRange registry:https://registry.npmjs.org/async not in flight; fetching
+380 silly cache add parsed spec { raw: 'bluebird@^2.9.34',
+380 silly cache add   scope: null,
+380 silly cache add   name: 'bluebird',
+380 silly cache add   rawSpec: '^2.9.34',
+380 silly cache add   spec: '>=2.9.34 <3.0.0',
+380 silly cache add   type: 'range' }
+381 silly addNamed bluebird@>=2.9.34 <3.0.0
+382 verbose addNamed ">=2.9.34 <3.0.0" is a valid semver range for bluebird
+383 silly addNameRange { name: 'bluebird', range: '>=2.9.34 <3.0.0', hasData: false }
+384 silly mapToRegistry name bluebird
+385 silly mapToRegistry using default registry
+386 silly mapToRegistry registry https://registry.npmjs.org/
+387 silly mapToRegistry uri https://registry.npmjs.org/bluebird
+388 verbose addNameRange registry:https://registry.npmjs.org/bluebird not in flight; fetching
+389 silly cache add args [ 'chalk@^1.1.0', null ]
+390 verbose cache add spec chalk@^1.1.0
+391 silly cache add parsed spec { raw: 'chalk@^1.1.0',
+391 silly cache add   scope: null,
+391 silly cache add   name: 'chalk',
+391 silly cache add   rawSpec: '^1.1.0',
+391 silly cache add   spec: '>=1.1.0 <2.0.0',
+391 silly cache add   type: 'range' }
+392 silly addNamed chalk@>=1.1.0 <2.0.0
+393 verbose addNamed ">=1.1.0 <2.0.0" is a valid semver range for chalk
+394 silly addNameRange { name: 'chalk', range: '>=1.1.0 <2.0.0', hasData: false }
+395 silly mapToRegistry name chalk
+396 silly mapToRegistry using default registry
+397 silly mapToRegistry registry https://registry.npmjs.org/
+398 silly mapToRegistry uri https://registry.npmjs.org/chalk
+399 verbose addNameRange registry:https://registry.npmjs.org/chalk not in flight; fetching
+400 silly cache add args [ 'cint@^8.2.1', null ]
+401 verbose cache add spec cint@^8.2.1
+402 silly cache add parsed spec { raw: 'cint@^8.2.1',
+402 silly cache add   scope: null,
+402 silly cache add   name: 'cint',
+402 silly cache add   rawSpec: '^8.2.1',
+402 silly cache add   spec: '>=8.2.1 <9.0.0',
+402 silly cache add   type: 'range' }
+403 silly addNamed cint@>=8.2.1 <9.0.0
+404 verbose addNamed ">=8.2.1 <9.0.0" is a valid semver range for cint
+405 silly addNameRange { name: 'cint', range: '>=8.2.1 <9.0.0', hasData: false }
+406 silly mapToRegistry name cint
+407 silly mapToRegistry using default registry
+408 silly mapToRegistry registry https://registry.npmjs.org/
+409 silly mapToRegistry uri https://registry.npmjs.org/cint
+410 verbose addNameRange registry:https://registry.npmjs.org/cint not in flight; fetching
+411 silly cache add args [ 'cli-table@^0.3.1', null ]
+412 verbose cache add spec cli-table@^0.3.1
+413 silly cache add parsed spec { raw: 'cli-table@^0.3.1',
+413 silly cache add   scope: null,
+413 silly cache add   name: 'cli-table',
+413 silly cache add   rawSpec: '^0.3.1',
+413 silly cache add   spec: '>=0.3.1 <0.4.0',
+413 silly cache add   type: 'range' }
+414 silly addNamed cli-table@>=0.3.1 <0.4.0
+415 verbose addNamed ">=0.3.1 <0.4.0" is a valid semver range for cli-table
+416 silly addNameRange { name: 'cli-table', range: '>=0.3.1 <0.4.0', hasData: false }
+417 silly mapToRegistry name cli-table
+418 silly mapToRegistry using default registry
+419 silly mapToRegistry registry https://registry.npmjs.org/
+420 silly mapToRegistry uri https://registry.npmjs.org/cli-table
+421 verbose addNameRange registry:https://registry.npmjs.org/cli-table not in flight; fetching
+422 silly cache add args [ 'closest-package@^1.0.0', null ]
+423 verbose cache add spec closest-package@^1.0.0
+424 silly cache add parsed spec { raw: 'closest-package@^1.0.0',
+424 silly cache add   scope: null,
+424 silly cache add   name: 'closest-package',
+424 silly cache add   rawSpec: '^1.0.0',
+424 silly cache add   spec: '>=1.0.0 <2.0.0',
+424 silly cache add   type: 'range' }
+425 silly addNamed closest-package@>=1.0.0 <2.0.0
+426 verbose addNamed ">=1.0.0 <2.0.0" is a valid semver range for closest-package
+427 silly addNameRange { name: 'closest-package',
+427 silly addNameRange   range: '>=1.0.0 <2.0.0',
+427 silly addNameRange   hasData: false }
+428 silly mapToRegistry name closest-package
+429 silly mapToRegistry using default registry
+430 silly mapToRegistry registry https://registry.npmjs.org/
+431 silly mapToRegistry uri https://registry.npmjs.org/closest-package
+432 verbose addNameRange registry:https://registry.npmjs.org/closest-package not in flight; fetching
+433 silly cache add args [ 'commander@^2.8.1', null ]
+434 verbose cache add spec commander@^2.8.1
+435 silly cache add parsed spec { raw: 'commander@^2.8.1',
+435 silly cache add   scope: null,
+435 silly cache add   name: 'commander',
+435 silly cache add   rawSpec: '^2.8.1',
+435 silly cache add   spec: '>=2.8.1 <3.0.0',
+435 silly cache add   type: 'range' }
+436 silly addNamed commander@>=2.8.1 <3.0.0
+437 verbose addNamed ">=2.8.1 <3.0.0" is a valid semver range for commander
+438 silly addNameRange { name: 'commander', range: '>=2.8.1 <3.0.0', hasData: false }
+439 silly mapToRegistry name commander
+440 silly mapToRegistry using default registry
+441 silly mapToRegistry registry https://registry.npmjs.org/
+442 silly mapToRegistry uri https://registry.npmjs.org/commander
+443 verbose addNameRange registry:https://registry.npmjs.org/commander not in flight; fetching
+444 silly cache add args [ 'fast-diff@^1.0.1', null ]
+445 verbose cache add spec fast-diff@^1.0.1
+446 silly cache add parsed spec { raw: 'fast-diff@^1.0.1',
+446 silly cache add   scope: null,
+446 silly cache add   name: 'fast-diff',
+446 silly cache add   rawSpec: '^1.0.1',
+446 silly cache add   spec: '>=1.0.1 <2.0.0',
+446 silly cache add   type: 'range' }
+447 silly addNamed fast-diff@>=1.0.1 <2.0.0
+448 verbose addNamed ">=1.0.1 <2.0.0" is a valid semver range for fast-diff
+449 silly addNameRange { name: 'fast-diff', range: '>=1.0.1 <2.0.0', hasData: false }
+450 silly mapToRegistry name fast-diff
+451 silly mapToRegistry using default registry
+452 silly mapToRegistry registry https://registry.npmjs.org/
+453 silly mapToRegistry uri https://registry.npmjs.org/fast-diff
+454 verbose addNameRange registry:https://registry.npmjs.org/fast-diff not in flight; fetching
+455 silly cache add args [ 'get-stdin-promise@^0.1.1', null ]
+456 verbose cache add spec get-stdin-promise@^0.1.1
+457 silly cache add parsed spec { raw: 'get-stdin-promise@^0.1.1',
+457 silly cache add   scope: null,
+457 silly cache add   name: 'get-stdin-promise',
+457 silly cache add   rawSpec: '^0.1.1',
+457 silly cache add   spec: '>=0.1.1 <0.2.0',
+457 silly cache add   type: 'range' }
+458 silly addNamed get-stdin-promise@>=0.1.1 <0.2.0
+459 verbose addNamed ">=0.1.1 <0.2.0" is a valid semver range for get-stdin-promise
+460 silly addNameRange { name: 'get-stdin-promise',
+460 silly addNameRange   range: '>=0.1.1 <0.2.0',
+460 silly addNameRange   hasData: false }
+461 silly mapToRegistry name get-stdin-promise
+462 silly mapToRegistry using default registry
+463 silly mapToRegistry registry https://registry.npmjs.org/
+464 silly mapToRegistry uri https://registry.npmjs.org/get-stdin-promise
+465 verbose addNameRange registry:https://registry.npmjs.org/get-stdin-promise not in flight; fetching
+466 silly cache add args [ 'lodash@^3.10.1', null ]
+467 verbose cache add spec lodash@^3.10.1
+468 silly cache add parsed spec { raw: 'lodash@^3.10.1',
+468 silly cache add   scope: null,
+468 silly cache add   name: 'lodash',
+468 silly cache add   rawSpec: '^3.10.1',
+468 silly cache add   spec: '>=3.10.1 <4.0.0',
+468 silly cache add   type: 'range' }
+469 silly addNamed lodash@>=3.10.1 <4.0.0
+470 verbose addNamed ">=3.10.1 <4.0.0" is a valid semver range for lodash
+471 silly addNameRange { name: 'lodash', range: '>=3.10.1 <4.0.0', hasData: false }
+472 silly mapToRegistry name lodash
+473 silly mapToRegistry using default registry
+474 silly mapToRegistry registry https://registry.npmjs.org/
+475 silly mapToRegistry uri https://registry.npmjs.org/lodash
+476 verbose addNameRange registry:https://registry.npmjs.org/lodash not in flight; fetching
+477 silly cache add args [ 'npm@^2.13.4', null ]
+478 verbose cache add spec npm@^2.13.4
+479 silly cache add parsed spec { raw: 'npm@^2.13.4',
+479 silly cache add   scope: null,
+479 silly cache add   name: 'npm',
+479 silly cache add   rawSpec: '^2.13.4',
+479 silly cache add   spec: '>=2.13.4 <3.0.0',
+479 silly cache add   type: 'range' }
+480 silly addNamed npm@>=2.13.4 <3.0.0
+481 verbose addNamed ">=2.13.4 <3.0.0" is a valid semver range for npm
+482 silly addNameRange { name: 'npm', range: '>=2.13.4 <3.0.0', hasData: false }
+483 silly mapToRegistry name npm
+484 silly mapToRegistry using default registry
+485 silly mapToRegistry registry https://registry.npmjs.org/
+486 silly mapToRegistry uri https://registry.npmjs.org/npm
+487 verbose addNameRange registry:https://registry.npmjs.org/npm not in flight; fetching
+488 silly cache add args [ 'semver@^5.0.1', null ]
+489 verbose cache add spec semver@^5.0.1
+490 silly cache add parsed spec { raw: 'semver@^5.0.1',
+490 silly cache add   scope: null,
+490 silly cache add   name: 'semver',
+490 silly cache add   rawSpec: '^5.0.1',
+490 silly cache add   spec: '>=5.0.1 <6.0.0',
+490 silly cache add   type: 'range' }
+491 silly addNamed semver@>=5.0.1 <6.0.0
+492 verbose addNamed ">=5.0.1 <6.0.0" is a valid semver range for semver
+493 silly addNameRange { name: 'semver', range: '>=5.0.1 <6.0.0', hasData: false }
+494 silly mapToRegistry name semver
+495 silly mapToRegistry using default registry
+496 silly mapToRegistry registry https://registry.npmjs.org/
+497 silly mapToRegistry uri https://registry.npmjs.org/semver
+498 verbose addNameRange registry:https://registry.npmjs.org/semver not in flight; fetching
+499 silly cache add args [ 'semver-utils@github:metaraine/semver-utils#86ea225', null ]
+500 verbose cache add spec semver-utils@github:metaraine/semver-utils#86ea225
+501 silly cache add parsed spec { raw: 'semver-utils@github:metaraine/semver-utils#86ea225',
+501 silly cache add   scope: null,
+501 silly cache add   name: 'semver-utils',
+501 silly cache add   rawSpec: 'github:metaraine/semver-utils#86ea225',
+501 silly cache add   spec: 'github:metaraine/semver-utils#86ea225',
+501 silly cache add   type: 'hosted',
+501 silly cache add   hosted:
+501 silly cache add    { type: 'github',
+501 silly cache add      ssh: 'git@github.com:metaraine/semver-utils.git#86ea225',
+501 silly cache add      sshUrl: 'git+ssh://git@github.com/metaraine/semver-utils.git#86ea225',
+501 silly cache add      httpsUrl: 'git+https://github.com/metaraine/semver-utils.git#86ea225',
+501 silly cache add      gitUrl: 'git://github.com/metaraine/semver-utils.git#86ea225',
+501 silly cache add      shortcut: 'github:metaraine/semver-utils#86ea225',
+501 silly cache add      directUrl: 'https://raw.githubusercontent.com/metaraine/semver-utils/86ea225/package.json' } }
+502 verbose addRemoteGit caching github:metaraine/semver-utils#86ea225
+503 verbose addRemoteGit metaraine/semver-utils#86ea225 is a repository hosted by github
+504 silly tryGitProto attempting to clone git://github.com/metaraine/semver-utils.git#86ea225
+505 silly tryClone cloning metaraine/semver-utils#86ea225 via git://github.com/metaraine/semver-utils.git#86ea225
+506 verbose tryClone git-github-com-metaraine-semver-utils-git-3be734be not in flight; caching
+507 verbose request uri https://registry.npmjs.org/chalk
+508 verbose request no auth needed
+509 info attempt registry request try #1 at 11:34:45 AM
+510 verbose etag "43V9COF8TUJ3KM4J3E1EUUHF1"
+511 http request GET https://registry.npmjs.org/chalk
+512 verbose request uri https://registry.npmjs.org/async
+513 verbose request no auth needed
+514 info attempt registry request try #1 at 11:34:45 AM
+515 verbose etag "CFT7PKAG0PTX0TV40URRZTPW8"
+516 http request GET https://registry.npmjs.org/async
+517 verbose request uri https://registry.npmjs.org/cint
+518 verbose request no auth needed
+519 info attempt registry request try #1 at 11:34:45 AM
+520 verbose etag "DAHCM31ZT013A634QIN5XTJ3D"
+521 http request GET https://registry.npmjs.org/cint
+522 verbose request uri https://registry.npmjs.org/cli-table
+523 verbose request no auth needed
+524 info attempt registry request try #1 at 11:34:45 AM
+525 verbose etag "6FYLU8WR6VWSJJDE32JQK9F8"
+526 http request GET https://registry.npmjs.org/cli-table
+527 verbose request uri https://registry.npmjs.org/bluebird
+528 verbose request no auth needed
+529 info attempt registry request try #1 at 11:34:45 AM
+530 verbose etag "4EIL3193CR9V93V4EZD5AZNZS"
+531 http request GET https://registry.npmjs.org/bluebird
+532 verbose request uri https://registry.npmjs.org/closest-package
+533 verbose request no auth needed
+534 info attempt registry request try #1 at 11:34:45 AM
+535 verbose etag "2XEV3RWZRP7ZQZ9VGJBLKMBFC"
+536 http request GET https://registry.npmjs.org/closest-package
+537 verbose request uri https://registry.npmjs.org/fast-diff
+538 verbose request no auth needed
+539 info attempt registry request try #1 at 11:34:45 AM
+540 verbose etag "3VRMF2YA1NFH8J6ZLWGIHTAEU"
+541 http request GET https://registry.npmjs.org/fast-diff
+542 verbose request uri https://registry.npmjs.org/commander
+543 verbose request no auth needed
+544 info attempt registry request try #1 at 11:34:45 AM
+545 verbose etag "7MV66SM3QGUJIGOQGTTWUDLT1"
+546 http request GET https://registry.npmjs.org/commander
+547 verbose request uri https://registry.npmjs.org/get-stdin-promise
+548 verbose request no auth needed
+549 info attempt registry request try #1 at 11:34:45 AM
+550 verbose etag "B8P5TQDALX8TJCX6R43ZY2Q67"
+551 http request GET https://registry.npmjs.org/get-stdin-promise
+552 verbose request uri https://registry.npmjs.org/lodash
+553 verbose request no auth needed
+554 info attempt registry request try #1 at 11:34:45 AM
+555 verbose etag "3L3C933HYVWYTL7WZDMB2LAH3"
+556 http request GET https://registry.npmjs.org/lodash
+557 verbose request uri https://registry.npmjs.org/semver
+558 verbose request no auth needed
+559 info attempt registry request try #1 at 11:34:45 AM
+560 verbose etag "E47UNHNX9XAYTEIY79YAUD0F"
+561 http request GET https://registry.npmjs.org/semver
+562 verbose request uri https://registry.npmjs.org/npm
+563 verbose request no auth needed
+564 info attempt registry request try #1 at 11:34:45 AM
+565 verbose etag "8ZAPBSA18W0O11L1E3VGKL50D"
+566 http request GET https://registry.npmjs.org/npm
+567 info git [ 'config', '--get', 'remote.origin.url' ]
+568 silly validateExistingRemote metaraine/semver-utils#86ea225 remote.origin.url: git://github.com/metaraine/semver-utils.git
+569 verbose validateExistingRemote metaraine/semver-utils#86ea225 is updating existing cached remote C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be
+570 info git [ 'fetch', '-a', 'origin' ]
+571 http 304 https://registry.npmjs.org/chalk
+572 silly get cb [ 304,
+572 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+572 silly get     via: '1.1 varnish',
+572 silly get     'cache-control': 'max-age=60',
+572 silly get     etag: '"43V9COF8TUJ3KM4J3E1EUUHF1"',
+572 silly get     age: '5',
+572 silly get     connection: 'keep-alive',
+572 silly get     'x-served-by': 'cache-sjc3133-SJC',
+572 silly get     'x-cache': 'HIT',
+572 silly get     'x-cache-hits': '2',
+572 silly get     'x-timer': 'S1441823684.575832,VS0,VE0',
+572 silly get     vary: 'Accept' } ]
+573 verbose etag https://registry.npmjs.org/chalk from cache
+574 verbose get saving chalk to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\chalk\.cache.json
+575 silly addNameRange number 2 { name: 'chalk', range: '>=1.1.0 <2.0.0', hasData: true }
+576 silly addNameRange versions [ 'chalk',
+576 silly addNameRange   [ '0.1.0',
+576 silly addNameRange     '0.1.1',
+576 silly addNameRange     '0.2.0',
+576 silly addNameRange     '0.2.1',
+576 silly addNameRange     '0.3.0',
+576 silly addNameRange     '0.4.0',
+576 silly addNameRange     '0.5.0',
+576 silly addNameRange     '0.5.1',
+576 silly addNameRange     '1.0.0',
+576 silly addNameRange     '1.1.0',
+576 silly addNameRange     '1.1.1' ] ]
+577 silly addNamed chalk@1.1.1
+578 verbose addNamed "1.1.1" is a plain semver version for chalk
+579 silly cache afterAdd chalk@1.1.1
+580 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\chalk\1.1.1\package\package.json not in flight; writing
+581 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\chalk\1.1.1\package\package.json written
+582 http 304 https://registry.npmjs.org/async
+583 silly get cb [ 304,
+583 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+583 silly get     via: '1.1 varnish',
+583 silly get     'cache-control': 'max-age=60',
+583 silly get     etag: '"CFT7PKAG0PTX0TV40URRZTPW8"',
+583 silly get     age: '58',
+583 silly get     connection: 'keep-alive',
+583 silly get     'x-served-by': 'cache-sjc3134-SJC',
+583 silly get     'x-cache': 'HIT',
+583 silly get     'x-cache-hits': '15',
+583 silly get     'x-timer': 'S1441823684.583442,VS0,VE0',
+583 silly get     vary: 'Accept' } ]
+584 verbose etag https://registry.npmjs.org/async from cache
+585 verbose get saving async to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\async\.cache.json
+586 http 304 https://registry.npmjs.org/bluebird
+587 silly get cb [ 304,
+587 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+587 silly get     via: '1.1 varnish',
+587 silly get     'cache-control': 'max-age=60',
+587 silly get     etag: '"4EIL3193CR9V93V4EZD5AZNZS"',
+587 silly get     age: '22',
+587 silly get     connection: 'keep-alive',
+587 silly get     'x-served-by': 'cache-sjc3125-SJC',
+587 silly get     'x-cache': 'HIT',
+587 silly get     'x-cache-hits': '3',
+587 silly get     'x-timer': 'S1441823684.585065,VS0,VE0',
+587 silly get     vary: 'Accept' } ]
+588 verbose etag https://registry.npmjs.org/bluebird from cache
+589 verbose get saving bluebird to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\bluebird\.cache.json
+590 http 304 https://registry.npmjs.org/commander
+591 silly get cb [ 304,
+591 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+591 silly get     via: '1.1 varnish',
+591 silly get     'cache-control': 'max-age=60',
+591 silly get     etag: '"7MV66SM3QGUJIGOQGTTWUDLT1"',
+591 silly get     age: '1',
+591 silly get     connection: 'keep-alive',
+591 silly get     'x-served-by': 'cache-sjc3130-SJC',
+591 silly get     'x-cache': 'HIT',
+591 silly get     'x-cache-hits': '1',
+591 silly get     'x-timer': 'S1441823684.584483,VS0,VE0',
+591 silly get     vary: 'Accept' } ]
+592 verbose etag https://registry.npmjs.org/commander from cache
+593 verbose get saving commander to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\commander\.cache.json
+594 http 304 https://registry.npmjs.org/cli-table
+595 silly get cb [ 304,
+595 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+595 silly get     via: '1.1 varnish',
+595 silly get     'cache-control': 'max-age=60',
+595 silly get     etag: '"6FYLU8WR6VWSJJDE32JQK9F8"',
+595 silly get     age: '18',
+595 silly get     connection: 'keep-alive',
+595 silly get     'x-served-by': 'cache-sjc3124-SJC',
+595 silly get     'x-cache': 'HIT',
+595 silly get     'x-cache-hits': '1',
+595 silly get     'x-timer': 'S1441823684.585231,VS0,VE0',
+595 silly get     vary: 'Accept' } ]
+596 verbose etag https://registry.npmjs.org/cli-table from cache
+597 verbose get saving cli-table to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\cli-table\.cache.json
+598 http 304 https://registry.npmjs.org/lodash
+599 silly get cb [ 304,
+599 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+599 silly get     via: '1.1 varnish',
+599 silly get     'cache-control': 'max-age=60',
+599 silly get     etag: '"3L3C933HYVWYTL7WZDMB2LAH3"',
+599 silly get     age: '30',
+599 silly get     connection: 'keep-alive',
+599 silly get     'x-served-by': 'cache-sjc3127-SJC',
+599 silly get     'x-cache': 'HIT',
+599 silly get     'x-cache-hits': '3',
+599 silly get     'x-timer': 'S1441823684.623994,VS0,VE0',
+599 silly get     vary: 'Accept' } ]
+600 verbose etag https://registry.npmjs.org/lodash from cache
+601 verbose get saving lodash to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\lodash\.cache.json
+602 http 304 https://registry.npmjs.org/closest-package
+603 silly get cb [ 304,
+603 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+603 silly get     via: '1.1 varnish',
+603 silly get     'cache-control': 'max-age=60',
+603 silly get     etag: '"2XEV3RWZRP7ZQZ9VGJBLKMBFC"',
+603 silly get     age: '0',
+603 silly get     connection: 'keep-alive',
+603 silly get     'x-served-by': 'cache-sjc3121-SJC',
+603 silly get     'x-cache': 'MISS',
+603 silly get     'x-cache-hits': '0',
+603 silly get     'x-timer': 'S1441823684.584410,VS0,VE39',
+603 silly get     vary: 'Accept' } ]
+604 verbose etag https://registry.npmjs.org/closest-package from cache
+605 verbose get saving closest-package to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\closest-package\.cache.json
+606 http 304 https://registry.npmjs.org/fast-diff
+607 silly get cb [ 304,
+607 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+607 silly get     via: '1.1 varnish',
+607 silly get     'cache-control': 'max-age=60',
+607 silly get     etag: '"3VRMF2YA1NFH8J6ZLWGIHTAEU"',
+607 silly get     age: '0',
+607 silly get     connection: 'keep-alive',
+607 silly get     'x-served-by': 'cache-sjc3127-SJC',
+607 silly get     'x-cache': 'MISS',
+607 silly get     'x-cache-hits': '0',
+607 silly get     'x-timer': 'S1441823684.584461,VS0,VE164',
+607 silly get     vary: 'Accept' } ]
+608 verbose etag https://registry.npmjs.org/fast-diff from cache
+609 verbose get saving fast-diff to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\fast-diff\.cache.json
+610 silly addNameRange number 2 { name: 'cli-table', range: '>=0.3.1 <0.4.0', hasData: true }
+611 silly addNameRange versions [ 'cli-table', [ '0.0.1', '0.0.2', '0.2.0', '0.3.0', '0.3.1' ] ]
+612 silly addNamed cli-table@0.3.1
+613 verbose addNamed "0.3.1" is a plain semver version for cli-table
+614 silly addNameRange number 2 { name: 'bluebird', range: '>=2.9.34 <3.0.0', hasData: true }
+615 silly addNameRange versions [ 'bluebird',
+615 silly addNameRange   [ '0.7.1-1',
+615 silly addNameRange     '0.7.1-2',
+615 silly addNameRange     '0.7.1-3',
+615 silly addNameRange     '0.7.1-4',
+615 silly addNameRange     '0.7.1-5',
+615 silly addNameRange     '0.7.2-0',
+615 silly addNameRange     '0.7.3-0',
+615 silly addNameRange     '0.7.4-0',
+615 silly addNameRange     '0.7.4-1',
+615 silly addNameRange     '0.7.5-0',
+615 silly addNameRange     '0.7.6-0',
+615 silly addNameRange     '0.7.7-0',
+615 silly addNameRange     '0.7.7-1',
+615 silly addNameRange     '0.7.8-0',
+615 silly addNameRange     '0.7.8-1',
+615 silly addNameRange     '0.7.9-0',
+615 silly addNameRange     '0.7.9-1',
+615 silly addNameRange     '0.7.10-0',
+615 silly addNameRange     '0.7.10-1',
+615 silly addNameRange     '0.7.11-0',
+615 silly addNameRange     '0.7.12-0',
+615 silly addNameRange     '0.7.12-1',
+615 silly addNameRange     '0.7.12-2',
+615 silly addNameRange     '0.8.0-0',
+615 silly addNameRange     '0.8.0-1',
+615 silly addNameRange     '0.8.0-2',
+615 silly addNameRange     '0.8.0-3',
+615 silly addNameRange     '0.8.1-0',
+615 silly addNameRange     '0.8.2-0',
+615 silly addNameRange     '0.8.2-1',
+615 silly addNameRange     '0.8.2-2',
+615 silly addNameRange     '0.8.3-0',
+615 silly addNameRange     '0.8.3-1',
+615 silly addNameRange     '0.8.3-2',
+615 silly addNameRange     '0.8.3-3',
+615 silly addNameRange     '0.8.4-0',
+615 silly addNameRange     '0.8.4-1',
+615 silly addNameRange     '0.8.5-0',
+615 silly addNameRange     '0.8.5-1',
+615 silly addNameRange     '0.9.0-0',
+615 silly addNameRange     '0.9.1-0',
+615 silly addNameRange     '0.9.1-1',
+615 silly addNameRange     '0.9.2-0',
+615 silly addNameRange     '0.9.2-1',
+615 silly addNameRange     '0.9.3-0',
+615 silly addNameRange     '0.9.4-0',
+615 silly addNameRange     '0.9.4-1',
+615 silly addNameRange     '0.9.5-0',
+615 silly addNameRange     '0.9.6-0',
+615 silly addNameRange     '0.9.7-0',
+615 silly addNameRange     '0.9.8-0',
+615 silly addNameRange     '0.9.9-0',
+615 silly addNameRange     '0.9.10-0',
+615 silly addNameRange     '0.9.10-1',
+615 silly addNameRange     '0.9.11-0',
+615 silly addNameRange     '0.9.11-1',
+615 silly addNameRange     '0.10.0-0',
+615 silly addNameRange     '0.10.0-1',
+615 silly addNameRange     '0.10.1-0',
+615 silly addNameRange     '0.10.2-0',
+615 silly addNameRange     '0.10.2-1',
+615 silly addNameRange     '0.10.3-0',
+615 silly addNameRange     '0.10.4-0',
+615 silly addNameRange     '0.10.4-1',
+615 silly addNameRange     '0.10.5-0',
+615 silly addNameRange     '0.10.6-0',
+615 silly addNameRange     '0.10.7-0',
+615 silly addNameRange     '0.10.8-0',
+615 silly addNameRange     '0.10.9-0',
+615 silly addNameRange     '0.10.9-1',
+615 silly addNameRange     '0.10.10-0',
+615 silly addNameRange     '0.10.11-0',
+615 silly addNameRange     '0.10.11-1',
+615 silly addNameRange     '0.10.11-2',
+615 silly addNameRange     '0.10.11-4',
+615 silly addNameRange     '0.10.12-0',
+615 silly addNameRange     '0.10.13-0',
+615 silly addNameRange     '0.10.13-1',
+615 silly addNameRange     '0.10.14-0',
+615 silly addNameRange     '0.11.0-0',
+615 silly addNameRange     '0.11.1-0',
+615 silly addNameRange     '0.11.2-0',
+615 silly addNameRange     '0.11.3-0',
+615 silly addNameRange     '0.11.4-0',
+615 silly addNameRange     '0.11.4-1',
+615 silly addNameRange     '0.11.5-0',
+615 silly addNameRange     '0.11.5-1',
+615 silly addNameRange     '0.11.6-0',
+615 silly addNameRange     '1.0.0',
+615 silly addNameRange     '1.0.1',
+615 silly addNameRange     '1.0.2',
+615 silly addNameRange     '1.0.3',
+615 silly addNameRange     '1.0.4',
+615 silly addNameRange     '1.0.5',
+615 silly addNameRange     '1.0.7',
+615 silly addNameRange     '1.0.8',
+615 silly addNameRange     '1.1.0',
+615 silly addNameRange     '1.1.1',
+615 silly addNameRange     '1.2.0',
+615 silly addNameRange     '1.2.1',
+615 silly addNameRange     '1.2.2',
+615 silly addNameRange     '1.2.3',
+615 silly addNameRange     '1.2.4',
+615 silly addNameRange     '2.0.2',
+615 silly addNameRange     '2.0.3',
+615 silly addNameRange     '2.0.4',
+615 silly addNameRange     '2.0.5',
+615 silly addNameRange     '2.0.6',
+615 silly addNameRange     '2.0.7',
+615 silly addNameRange     '2.1.1',
+615 silly addNameRange     '2.1.2',
+615 silly addNameRange     '2.1.3',
+615 silly addNameRange     '2.2.0',
+615 silly addNameRange     '2.2.1',
+615 silly addNameRange     '2.2.2',
+615 silly addNameRange     '2.3.0',
+615 silly addNameRange     '2.3.1',
+615 silly addNameRange     '2.3.2',
+615 silly addNameRange     '2.3.3',
+615 silly addNameRange     '2.3.4',
+615 silly addNameRange     '2.3.5',
+615 silly addNameRange     '0.11.6',
+615 silly addNameRange     '2.3.6',
+615 silly addNameRange     '2.3.9',
+615 silly addNameRange     '2.3.10',
+615 silly addNameRange     '2.3.11',
+615 silly addNameRange     '2.4.0',
+615 silly addNameRange     '2.4.1',
+615 silly addNameRange     '2.4.2',
+615 silly addNameRange     '2.4.3',
+615 silly addNameRange     '2.5.0',
+615 silly addNameRange     '2.5.1',
+615 silly addNameRange     '2.5.2',
+615 silly addNameRange     '2.5.3',
+615 silly addNameRange     '2.6.0',
+615 silly addNameRange     '2.6.1',
+615 silly addNameRange     '2.6.2',
+615 silly addNameRange     '2.6.3',
+615 silly addNameRange     '2.6.4',
+615 silly addNameRange     '2.7.0',
+615 silly addNameRange     '2.7.1',
+615 silly addNameRange     '2.8.0',
+615 silly addNameRange     '2.8.1',
+615 silly addNameRange     '2.8.2',
+615 silly addNameRange     '2.9.0',
+615 silly addNameRange     '2.9.1',
+615 silly addNameRange     '2.9.2',
+615 silly addNameRange     '2.9.3',
+615 silly addNameRange     '2.9.4',
+615 silly addNameRange     '2.9.5',
+615 silly addNameRange     '2.9.6',
+615 silly addNameRange     '2.9.7',
+615 silly addNameRange     '2.9.8',
+615 silly addNameRange     '2.9.9',
+615 silly addNameRange     '2.9.10',
+615 silly addNameRange     '2.9.11',
+615 silly addNameRange     '2.9.12',
+615 silly addNameRange     '2.9.13',
+615 silly addNameRange     '2.9.14',
+615 silly addNameRange     '2.9.15',
+615 silly addNameRange     '2.9.16',
+615 silly addNameRange     '2.9.17',
+615 silly addNameRange     '2.9.18',
+615 silly addNameRange     '2.9.19',
+615 silly addNameRange     '2.9.20',
+615 silly addNameRange     '2.9.21',
+615 silly addNameRange     '2.9.22',
+615 silly addNameRange     '2.9.23',
+615 silly addNameRange     '2.9.24',
+615 silly addNameRange     '2.9.25',
+615 silly addNameRange     '2.9.26',
+615 silly addNameRange     '2.9.27',
+615 silly addNameRange     '2.9.28',
+615 silly addNameRange     '2.9.29',
+615 silly addNameRange     '2.9.30',
+615 silly addNameRange     '2.9.31',
+615 silly addNameRange     '2.9.32',
+615 silly addNameRange     '2.9.33',
+615 silly addNameRange     '2.9.34',
+615 silly addNameRange     '2.10.0' ] ]
+616 silly addNamed bluebird@2.10.0
+617 verbose addNamed "2.10.0" is a plain semver version for bluebird
+618 silly addNameRange number 2 { name: 'fast-diff', range: '>=1.0.1 <2.0.0', hasData: true }
+619 silly addNameRange versions [ 'fast-diff', [ '1.0.0', '1.0.1' ] ]
+620 silly addNamed fast-diff@1.0.1
+621 verbose addNamed "1.0.1" is a plain semver version for fast-diff
+622 silly addNameRange number 2 { name: 'commander', range: '>=2.8.1 <3.0.0', hasData: true }
+623 silly addNameRange versions [ 'commander',
+623 silly addNameRange   [ '0.0.1',
+623 silly addNameRange     '0.0.3',
+623 silly addNameRange     '0.0.4',
+623 silly addNameRange     '0.0.5',
+623 silly addNameRange     '0.1.0',
+623 silly addNameRange     '0.2.0',
+623 silly addNameRange     '0.2.1',
+623 silly addNameRange     '0.3.0',
+623 silly addNameRange     '0.3.1',
+623 silly addNameRange     '0.3.2',
+623 silly addNameRange     '0.3.3',
+623 silly addNameRange     '0.4.0',
+623 silly addNameRange     '0.4.1',
+623 silly addNameRange     '0.4.2',
+623 silly addNameRange     '0.4.3',
+623 silly addNameRange     '0.5.0',
+623 silly addNameRange     '0.5.1',
+623 silly addNameRange     '0.6.0',
+623 silly addNameRange     '0.6.1',
+623 silly addNameRange     '0.5.2',
+623 silly addNameRange     '1.0.0',
+623 silly addNameRange     '1.0.1',
+623 silly addNameRange     '1.0.2',
+623 silly addNameRange     '1.0.3',
+623 silly addNameRange     '1.0.4',
+623 silly addNameRange     '1.0.5',
+623 silly addNameRange     '1.1.0',
+623 silly addNameRange     '1.1.1',
+623 silly addNameRange     '1.2.0',
+623 silly addNameRange     '1.3.0',
+623 silly addNameRange     '1.3.1',
+623 silly addNameRange     '1.3.2',
+623 silly addNameRange     '2.0.0',
+623 silly addNameRange     '2.1.0',
+623 silly addNameRange     '2.2.0',
+623 silly addNameRange     '2.3.0',
+623 silly addNameRange     '2.4.0',
+623 silly addNameRange     '2.5.0',
+623 silly addNameRange     '2.5.1',
+623 silly addNameRange     '2.6.0',
+623 silly addNameRange     '2.7.0',
+623 silly addNameRange     '2.7.1',
+623 silly addNameRange     '2.8.0',
+623 silly addNameRange     '2.8.1' ] ]
+624 silly addNamed commander@2.8.1
+625 verbose addNamed "2.8.1" is a plain semver version for commander
+626 silly addNameRange number 2 { name: 'async', range: '>=1.4.1 <2.0.0', hasData: true }
+627 silly addNameRange versions [ 'async',
+627 silly addNameRange   [ '0.1.0',
+627 silly addNameRange     '0.1.1',
+627 silly addNameRange     '0.1.2',
+627 silly addNameRange     '0.1.3',
+627 silly addNameRange     '0.1.4',
+627 silly addNameRange     '0.1.5',
+627 silly addNameRange     '0.1.6',
+627 silly addNameRange     '0.1.7',
+627 silly addNameRange     '0.1.8',
+627 silly addNameRange     '0.1.9',
+627 silly addNameRange     '0.1.10',
+627 silly addNameRange     '0.1.11',
+627 silly addNameRange     '0.1.12',
+627 silly addNameRange     '0.1.13',
+627 silly addNameRange     '0.1.14',
+627 silly addNameRange     '0.1.15',
+627 silly addNameRange     '0.1.16',
+627 silly addNameRange     '0.1.17',
+627 silly addNameRange     '0.1.18',
+627 silly addNameRange     '0.1.19',
+627 silly addNameRange     '0.1.20',
+627 silly addNameRange     '0.1.21',
+627 silly addNameRange     '0.1.22',
+627 silly addNameRange     '0.2.0',
+627 silly addNameRange     '0.2.1',
+627 silly addNameRange     '0.2.2',
+627 silly addNameRange     '0.2.3',
+627 silly addNameRange     '0.2.4',
+627 silly addNameRange     '0.2.5',
+627 silly addNameRange     '0.2.6',
+627 silly addNameRange     '0.2.7',
+627 silly addNameRange     '0.2.8',
+627 silly addNameRange     '0.2.9',
+627 silly addNameRange     '0.2.10',
+627 silly addNameRange     '0.3.0',
+627 silly addNameRange     '0.4.0',
+627 silly addNameRange     '0.4.1',
+627 silly addNameRange     '0.5.0',
+627 silly addNameRange     '0.6.0',
+627 silly addNameRange     '0.6.1',
+627 silly addNameRange     '0.6.2',
+627 silly addNameRange     '0.7.0',
+627 silly addNameRange     '0.8.0',
+627 silly addNameRange     '0.9.0',
+627 silly addNameRange     '0.9.2',
+627 silly addNameRange     '1.0.0',
+627 silly addNameRange     '1.1.0',
+627 silly addNameRange     '1.2.0',
+627 silly addNameRange     '1.1.1',
+627 silly addNameRange     '1.2.1',
+627 silly addNameRange     '1.3.0',
+627 silly addNameRange     '1.4.0',
+627 silly addNameRange     '1.4.1',
+627 silly addNameRange     '1.4.2' ] ]
+628 silly addNamed async@1.4.2
+629 verbose addNamed "1.4.2" is a plain semver version for async
+630 silly addNameRange number 2 { name: 'closest-package',
+630 silly addNameRange   range: '>=1.0.0 <2.0.0',
+630 silly addNameRange   hasData: true }
+631 silly addNameRange versions [ 'closest-package', [ '1.0.0' ] ]
+632 silly addNamed closest-package@1.0.0
+633 verbose addNamed "1.0.0" is a plain semver version for closest-package
+634 silly addNameRange number 2 { name: 'lodash', range: '>=3.10.1 <4.0.0', hasData: true }
+635 silly addNameRange versions [ 'lodash',
+635 silly addNameRange   [ '0.1.0',
+635 silly addNameRange     '0.2.0',
+635 silly addNameRange     '0.2.1',
+635 silly addNameRange     '0.2.2',
+635 silly addNameRange     '0.3.0',
+635 silly addNameRange     '0.3.1',
+635 silly addNameRange     '0.3.2',
+635 silly addNameRange     '0.4.0',
+635 silly addNameRange     '0.4.1',
+635 silly addNameRange     '0.4.2',
+635 silly addNameRange     '0.5.0-rc.1',
+635 silly addNameRange     '0.5.0',
+635 silly addNameRange     '0.5.1',
+635 silly addNameRange     '0.5.2',
+635 silly addNameRange     '0.6.0',
+635 silly addNameRange     '0.6.1',
+635 silly addNameRange     '0.7.0',
+635 silly addNameRange     '0.8.0',
+635 silly addNameRange     '0.8.1',
+635 silly addNameRange     '0.8.2',
+635 silly addNameRange     '0.9.0',
+635 silly addNameRange     '0.9.1',
+635 silly addNameRange     '0.9.2',
+635 silly addNameRange     '0.10.0',
+635 silly addNameRange     '1.0.0-rc.1',
+635 silly addNameRange     '1.0.0-rc.2',
+635 silly addNameRange     '1.0.0-rc.3',
+635 silly addNameRange     '1.0.0',
+635 silly addNameRange     '1.0.1',
+635 silly addNameRange     '1.1.0',
+635 silly addNameRange     '1.1.1',
+635 silly addNameRange     '1.2.0',
+635 silly addNameRange     '1.2.1',
+635 silly addNameRange     '1.3.0',
+635 silly addNameRange     '1.3.1',
+635 silly addNameRange     '2.0.0',
+635 silly addNameRange     '2.1.0',
+635 silly addNameRange     '2.2.0',
+635 silly addNameRange     '2.2.1',
+635 silly addNameRange     '2.3.0',
+635 silly addNameRange     '2.4.0',
+635 silly addNameRange     '2.4.1',
+635 silly addNameRange     '3.0.0',
+635 silly addNameRange     '3.0.1',
+635 silly addNameRange     '3.1.0',
+635 silly addNameRange     '3.2.0',
+635 silly addNameRange     '3.3.0',
+635 silly addNameRange     '3.3.1',
+635 silly addNameRange     '3.4.0',
+635 silly addNameRange     '3.5.0',
+635 silly addNameRange     '3.6.0',
+635 silly addNameRange     '1.0.2',
+635 silly addNameRange     '3.7.0',
+635 silly addNameRange     '2.4.2',
+635 silly addNameRange     '3.8.0',
+635 silly addNameRange     '3.9.0',
+635 silly addNameRange     '3.9.1',
+635 silly addNameRange     '3.9.2',
+635 silly addNameRange     '3.9.3',
+635 silly addNameRange     '3.10.0',
+635 silly addNameRange     '3.10.1' ] ]
+636 silly addNamed lodash@3.10.1
+637 verbose addNamed "3.10.1" is a plain semver version for lodash
+638 silly cache afterAdd cli-table@0.3.1
+639 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\cli-table\0.3.1\package\package.json not in flight; writing
+640 silly cache afterAdd bluebird@2.10.0
+641 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\bluebird\2.10.0\package\package.json not in flight; writing
+642 silly cache afterAdd fast-diff@1.0.1
+643 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\fast-diff\1.0.1\package\package.json not in flight; writing
+644 silly cache afterAdd commander@2.8.1
+645 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\commander\2.8.1\package\package.json not in flight; writing
+646 silly cache afterAdd async@1.4.2
+647 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\async\1.4.2\package\package.json not in flight; writing
+648 silly cache afterAdd closest-package@1.0.0
+649 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\closest-package\1.0.0\package\package.json not in flight; writing
+650 silly cache afterAdd lodash@3.10.1
+651 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\lodash\3.10.1\package\package.json not in flight; writing
+652 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\cli-table\0.3.1\package\package.json written
+653 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\bluebird\2.10.0\package\package.json written
+654 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\fast-diff\1.0.1\package\package.json written
+655 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\commander\2.8.1\package\package.json written
+656 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\async\1.4.2\package\package.json written
+657 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\closest-package\1.0.0\package\package.json written
+658 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\lodash\3.10.1\package\package.json written
+659 http 304 https://registry.npmjs.org/semver
+660 silly get cb [ 304,
+660 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+660 silly get     via: '1.1 varnish',
+660 silly get     'cache-control': 'max-age=60',
+660 silly get     etag: '"E47UNHNX9XAYTEIY79YAUD0F"',
+660 silly get     age: '3',
+660 silly get     connection: 'keep-alive',
+660 silly get     'x-served-by': 'cache-sjc3129-SJC',
+660 silly get     'x-cache': 'HIT',
+660 silly get     'x-cache-hits': '1',
+660 silly get     'x-timer': 'S1441823684.904495,VS0,VE0',
+660 silly get     vary: 'Accept' } ]
+661 verbose etag https://registry.npmjs.org/semver from cache
+662 verbose get saving semver to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\semver\.cache.json
+663 silly addNameRange number 2 { name: 'semver', range: '>=5.0.1 <6.0.0', hasData: true }
+664 silly addNameRange versions [ 'semver',
+664 silly addNameRange   [ '1.0.0',
+664 silly addNameRange     '1.0.1',
+664 silly addNameRange     '1.0.2',
+664 silly addNameRange     '1.0.3',
+664 silly addNameRange     '1.0.4',
+664 silly addNameRange     '1.0.5',
+664 silly addNameRange     '1.0.6',
+664 silly addNameRange     '1.0.7',
+664 silly addNameRange     '1.0.8',
+664 silly addNameRange     '1.0.9',
+664 silly addNameRange     '1.0.10',
+664 silly addNameRange     '1.0.11',
+664 silly addNameRange     '1.0.12',
+664 silly addNameRange     '1.0.13',
+664 silly addNameRange     '1.0.14',
+664 silly addNameRange     '1.1.0',
+664 silly addNameRange     '1.1.1',
+664 silly addNameRange     '1.1.2',
+664 silly addNameRange     '1.1.3',
+664 silly addNameRange     '1.1.4',
+664 silly addNameRange     '2.0.0-alpha',
+664 silly addNameRange     '2.0.0-beta',
+664 silly addNameRange     '2.0.1',
+664 silly addNameRange     '2.0.2',
+664 silly addNameRange     '2.0.3',
+664 silly addNameRange     '2.0.4',
+664 silly addNameRange     '2.0.5',
+664 silly addNameRange     '2.0.6',
+664 silly addNameRange     '2.0.7',
+664 silly addNameRange     '2.0.8',
+664 silly addNameRange     '2.0.9',
+664 silly addNameRange     '2.0.10',
+664 silly addNameRange     '2.0.11',
+664 silly addNameRange     '2.1.0',
+664 silly addNameRange     '2.2.0',
+664 silly addNameRange     '2.2.1',
+664 silly addNameRange     '2.3.0',
+664 silly addNameRange     '2.3.1',
+664 silly addNameRange     '2.3.2',
+664 silly addNameRange     '3.0.0',
+664 silly addNameRange     '3.0.1',
+664 silly addNameRange     '4.0.0',
+664 silly addNameRange     '4.0.2',
+664 silly addNameRange     '4.0.3',
+664 silly addNameRange     '4.1.0',
+664 silly addNameRange     '4.1.1',
+664 silly addNameRange     '4.2.0',
+664 silly addNameRange     '4.2.1',
+664 silly addNameRange     '4.2.2',
+664 silly addNameRange     '4.3.0',
+664 silly addNameRange     '4.3.1',
+664 silly addNameRange     '4.3.2',
+664 silly addNameRange     '4.3.3',
+664 silly addNameRange     '4.3.4',
+664 silly addNameRange     '4.3.5',
+664 silly addNameRange     '4.3.6',
+664 silly addNameRange     '5.0.0',
+664 silly addNameRange     '5.0.1' ] ]
+665 silly addNamed semver@5.0.1
+666 verbose addNamed "5.0.1" is a plain semver version for semver
+667 silly cache afterAdd semver@5.0.1
+668 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\semver\5.0.1\package\package.json not in flight; writing
+669 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\semver\5.0.1\package\package.json written
+670 http 304 https://registry.npmjs.org/npm
+671 silly get cb [ 304,
+671 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+671 silly get     via: '1.1 varnish',
+671 silly get     'cache-control': 'max-age=60',
+671 silly get     etag: '"8ZAPBSA18W0O11L1E3VGKL50D"',
+671 silly get     age: '22',
+671 silly get     connection: 'keep-alive',
+671 silly get     'x-served-by': 'cache-sjc3129-SJC',
+671 silly get     'x-cache': 'HIT',
+671 silly get     'x-cache-hits': '1',
+671 silly get     'x-timer': 'S1441823684.904455,VS0,VE12',
+671 silly get     vary: 'Accept' } ]
+672 verbose etag https://registry.npmjs.org/npm from cache
+673 verbose get saving npm to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\npm\.cache.json
+674 http 304 https://registry.npmjs.org/cint
+675 silly get cb [ 304,
+675 silly get   { date: 'Wed, 09 Sep 2015 18:34:44 GMT',
+675 silly get     via: '1.1 varnish',
+675 silly get     'cache-control': 'max-age=60',
+675 silly get     etag: '"DAHCM31ZT013A634QIN5XTJ3D"',
+675 silly get     age: '0',
+675 silly get     connection: 'keep-alive',
+675 silly get     'x-served-by': 'cache-sjc3134-SJC',
+675 silly get     'x-cache': 'HIT',
+675 silly get     'x-cache-hits': '1',
+675 silly get     'x-timer': 'S1441823684.584720,VS0,VE345',
+675 silly get     vary: 'Accept' } ]
+676 verbose etag https://registry.npmjs.org/cint from cache
+677 verbose get saving cint to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\cint\.cache.json
+678 silly addNameRange number 2 { name: 'cint', range: '>=8.2.1 <9.0.0', hasData: true }
+679 silly addNameRange versions [ 'cint',
+679 silly addNameRange   [ '5.0.2',
+679 silly addNameRange     '6.0.0',
+679 silly addNameRange     '6.1.0',
+679 silly addNameRange     '6.2.0',
+679 silly addNameRange     '7.0.0',
+679 silly addNameRange     '7.1.0',
+679 silly addNameRange     '7.1.1',
+679 silly addNameRange     '7.1.2',
+679 silly addNameRange     '7.2.0',
+679 silly addNameRange     '8.0.0',
+679 silly addNameRange     '8.0.1',
+679 silly addNameRange     '8.1.0',
+679 silly addNameRange     '8.2.0',
+679 silly addNameRange     '8.2.1',
+679 silly addNameRange     '9.0.0-alpha.1',
+679 silly addNameRange     '9.0.0-alpha.2' ] ]
+680 silly addNamed cint@8.2.1
+681 verbose addNamed "8.2.1" is a plain semver version for cint
+682 silly addNameRange number 2 { name: 'npm', range: '>=2.13.4 <3.0.0', hasData: true }
+683 silly addNameRange versions [ 'npm',
+683 silly addNameRange   [ '1.1.25',
+683 silly addNameRange     '1.2.32',
+683 silly addNameRange     '1.3.2',
+683 silly addNameRange     '1.3.4',
+683 silly addNameRange     '1.2.20',
+683 silly addNameRange     '1.2.21',
+683 silly addNameRange     '1.2.22',
+683 silly addNameRange     '1.2.23',
+683 silly addNameRange     '1.2.24',
+683 silly addNameRange     '1.2.25',
+683 silly addNameRange     '1.2.27',
+683 silly addNameRange     '1.2.28',
+683 silly addNameRange     '1.2.30',
+683 silly addNameRange     '1.2.31',
+683 silly addNameRange     '1.3.0',
+683 silly addNameRange     '1.3.1',
+683 silly addNameRange     '1.2.19',
+683 silly addNameRange     '1.1.70',
+683 silly addNameRange     '1.1.71',
+683 silly addNameRange     '1.3.5',
+683 silly addNameRange     '1.3.6',
+683 silly addNameRange     '1.3.7',
+683 silly addNameRange     '1.3.8',
+683 silly addNameRange     '1.3.9',
+683 silly addNameRange     '1.3.10',
+683 silly addNameRange     '1.3.11',
+683 silly addNameRange     '1.3.12',
+683 silly addNameRange     '1.3.13',
+683 silly addNameRange     '1.3.14',
+683 silly addNameRange     '1.3.15',
+683 silly addNameRange     '1.3.16',
+683 silly addNameRange     '1.3.17',
+683 silly addNameRange     '1.3.18',
+683 silly addNameRange     '1.3.20',
+683 silly addNameRange     '1.3.21',
+683 silly addNameRange     '1.3.22',
+683 silly addNameRange     '1.3.23',
+683 silly addNameRange     '1.3.24',
+683 silly addNameRange     '1.3.25',
+683 silly addNameRange     '1.3.26',
+683 silly addNameRange     '1.4.0',
+683 silly addNameRange     '1.4.1',
+683 silly addNameRange     '1.4.2',
+683 silly addNameRange     '1.4.3',
+683 silly addNameRange     '1.4.4',
+683 silly addNameRange     '1.4.5',
+683 silly addNameRange     '1.4.6',
+683 silly addNameRange     '1.4.7',
+683 silly addNameRange     '1.4.8',
+683 silly addNameRange     '1.4.9',
+683 silly addNameRange     '1.4.10',
+683 silly addNameRange     '1.4.11',
+683 silly addNameRange     '1.4.12',
+683 silly addNameRange     '1.4.13',
+683 silly addNameRange     '1.4.14',
+683 silly addNameRange     '1.4.15',
+683 silly addNameRange     '1.4.16',
+683 silly addNameRange     '1.2.8000',
+683 silly addNameRange     '1.4.17',
+683 silly addNameRange     '1.4.18',
+683 silly addNameRange     '1.4.19',
+683 silly addNameRange     '1.5.0-alpha-0',
+683 silly addNameRange     '1.5.0-alpha-1',
+683 silly addNameRange     '1.4.20',
+683 silly addNameRange     '1.5.0-alpha-2',
+683 silly addNameRange     '1.4.21',
+683 silly addNameRange     '1.5.0-alpha-3',
+683 silly addNameRange     '1.5.0-alpha-4',
+683 silly addNameRange     '2.0.0-alpha-5',
+683 silly addNameRange     '1.4.22',
+683 silly addNameRange     '1.4.23',
+683 silly addNameRange     '2.0.0-alpha.6.0',
+683 silly addNameRange     '1.4.24',
+683 silly addNameRange     '2.0.0-alpha.6',
+683 silly addNameRange     '2.0.0-alpha.7',
+683 silly addNameRange     '2.0.0-beta.0',
+683 silly addNameRange     '1.4.25',
+683 silly addNameRange     '2.0.0-beta.1',
+683 silly addNameRange     '1.4.26',
+683 silly addNameRange     '2.0.0-beta.2',
+683 silly addNameRange     '1.4.27',
+683 silly addNameRange     '2.0.0-beta.3',
+683 silly addNameRange     '1.4.28',
+683 silly addNameRange     '2.0.0',
+683 silly addNameRange     '2.0.1',
+683 silly addNameRange     '2.0.2',
+683 silly addNameRange     '2.1.0',
+683 silly addNameRange     '2.1.1',
+683 silly addNameRange     '2.1.2',
+683 silly addNameRange     '2.1.3',
+683 silly addNameRange     '2.1.4',
+683 silly addNameRange     '2.1.5',
+683 silly addNameRange     '2.1.6',
+683 silly addNameRange     '2.1.7',
+683 silly addNameRange     '2.1.8',
+683 silly addNameRange     '2.1.9',
+683 silly addNameRange     '2.1.10',
+683 silly addNameRange     '2.1.11',
+683 silly addNameRange     '2.1.12',
+683 silly addNameRange     '2.1.13',
+683 silly addNameRange     '2.1.14',
+683 silly addNameRange     '2.1.15',
+683 silly addNameRange     '2.1.16',
+683 silly addNameRange     '2.1.17',
+683 silly addNameRange     '2.1.18',
+683 silly addNameRange     '2.2.0',
+683 silly addNameRange     '2.3.0',
+683 silly addNameRange     '2.4.0',
+683 silly addNameRange     '2.4.1',
+683 silly addNameRange     '2.5.0',
+683 silly addNameRange     '2.5.1',
+683 silly addNameRange     '2.6.0',
+683 silly addNameRange     '2.6.1',
+683 silly addNameRange     '2.7.0',
+683 silly addNameRange     '2.7.1',
+683 silly addNameRange     '2.7.2',
+683 silly addNameRange     '2.7.3',
+683 silly addNameRange     '2.7.4',
+683 silly addNameRange     '2.7.5',
+683 silly addNameRange     '2.7.6',
+683 silly addNameRange     '2.8.0',
+683 silly addNameRange     '2.8.1',
+683 silly addNameRange     '2.8.2',
+683 silly addNameRange     '2.8.3',
+683 silly addNameRange     '2.8.4',
+683 silly addNameRange     '2.9.0',
+683 silly addNameRange     '2.9.1',
+683 silly addNameRange     '2.10.0',
+683 silly addNameRange     '2.10.1',
+683 silly addNameRange     '2.11.0',
+683 silly addNameRange     '2.11.1',
+683 silly addNameRange     '2.11.2',
+683 silly addNameRange     '2.11.3',
+683 silly addNameRange     '2.12.0',
+683 silly addNameRange     '3.0.0',
+683 silly addNameRange     '2.12.1',
+683 silly addNameRange     '2.13.0',
+683 silly addNameRange     '3.1.0',
+683 silly addNameRange     '2.13.1',
+683 silly addNameRange     '3.1.1',
+683 silly addNameRange     '3.1.2',
+683 silly addNameRange     '2.13.2',
+683 silly addNameRange     '3.1.3',
+683 silly addNameRange     '2.13.3',
+683 silly addNameRange     '3.2.0',
+683 silly addNameRange     '2.13.4',
+683 silly addNameRange     '3.2.1',
+683 silly addNameRange     '2.13.5',
+683 silly addNameRange     '3.2.2',
+683 silly addNameRange     '2.14.0',
+683 silly addNameRange     '3.3.0',
+683 silly addNameRange     '2.14.1',
+683 silly addNameRange     '2.14.2',
+683 silly addNameRange     '3.3.1',
+683 silly addNameRange     '2.14.3',
+683 silly addNameRange     '3.3.2' ] ]
+684 silly addNamed npm@2.14.2
+685 verbose addNamed "2.14.2" is a plain semver version for npm
+686 silly cache afterAdd cint@8.2.1
+687 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\cint\8.2.1\package\package.json not in flight; writing
+688 silly cache afterAdd npm@2.14.2
+689 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\npm\2.14.2\package\package.json not in flight; writing
+690 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\cint\8.2.1\package\package.json written
+691 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\npm\2.14.2\package\package.json written
+692 verbose updateRemote git fetch -a origin (git://github.com/metaraine/semver-utils.git)
+693 verbose setPermissions metaraine/semver-utils#86ea225 skipping chownr on Windows
+694 verbose resolveHead metaraine/semver-utils#86ea225 original treeish: 86ea225
+695 info git [ 'rev-list', '-n1', '86ea225' ]
+696 silly resolveHead metaraine/semver-utils#86ea225 resolved treeish: 86ea225075e5e528d1be4be2601a8ebd6f208f12
+697 verbose resolveHead metaraine/semver-utils#86ea225 resolved Git URL: git://github.com/metaraine/semver-utils.git#86ea225075e5e528d1be4be2601a8ebd6f208f12
+698 silly resolveHead Git working directory: c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12
+699 info git [ 'clone',
+699 info git   'C:\\Users\\Philip\\AppData\\Roaming\\npm-cache\\_git-remotes\\git-github-com-metaraine-semver-utils-git-3be734be',
+699 info git   'c:\\windows\\temp\\npm-8732-09a01a8d\\git-cache-e911f1c9f6b6\\86ea225075e5e528d1be4be2601a8ebd6f208f12' ]
+700 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12: Cloning into 'c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12'...
+700 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12: fatal: '/cygdrive/c/Users/Philip/AppData/Roaming/npm-cache/_git-remotes/git-github-com-metaraine-semver-utils-git-3be734be/C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be' does not appear to be a git repository
+700 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12: fatal: Could not read from remote repository.
+700 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12:
+700 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12: Please make sure you have the correct access rights
+700 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-3be734be c:\windows\temp\npm-8732-09a01a8d\git-cache-e911f1c9f6b6\86ea225075e5e528d1be4be2601a8ebd6f208f12: and the repository exists.
+701 silly tryHTTPS attempting to clone git+https://github.com/metaraine/semver-utils.git#86ea225
+702 silly tryClone cloning metaraine/semver-utils#86ea225 via git+https://github.com/metaraine/semver-utils.git#86ea225
+703 verbose tryClone https-github-com-metaraine-semver-utils-git-d1301c5c not in flight; caching
+704 info git [ 'config', '--get', 'remote.origin.url' ]
+705 silly validateExistingRemote metaraine/semver-utils#86ea225 remote.origin.url: https://github.com/metaraine/semver-utils.git
+706 verbose validateExistingRemote metaraine/semver-utils#86ea225 is updating existing cached remote C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c
+707 info git [ 'fetch', '-a', 'origin' ]
+708 http 304 https://registry.npmjs.org/get-stdin-promise
+709 silly get cb [ 304,
+709 silly get   { date: 'Wed, 09 Sep 2015 18:34:46 GMT',
+709 silly get     via: '1.1 varnish',
+709 silly get     'cache-control': 'max-age=60',
+709 silly get     etag: '"B8P5TQDALX8TJCX6R43ZY2Q67"',
+709 silly get     age: '0',
+709 silly get     connection: 'keep-alive',
+709 silly get     'x-served-by': 'cache-sjc3125-SJC',
+709 silly get     'x-cache': 'MISS',
+709 silly get     'x-cache-hits': '0',
+709 silly get     'x-timer': 'S1441823686.033581,VS0,VE340',
+709 silly get     vary: 'Accept' } ]
+710 verbose etag https://registry.npmjs.org/get-stdin-promise from cache
+711 verbose get saving get-stdin-promise to C:\Users\Philip\AppData\Roaming\npm-cache\registry.npmjs.org\get-stdin-promise\.cache.json
+712 silly addNameRange number 2 { name: 'get-stdin-promise',
+712 silly addNameRange   range: '>=0.1.1 <0.2.0',
+712 silly addNameRange   hasData: true }
+713 silly addNameRange versions [ 'get-stdin-promise', [ '0.1.0', '0.1.1' ] ]
+714 silly addNamed get-stdin-promise@0.1.1
+715 verbose addNamed "0.1.1" is a plain semver version for get-stdin-promise
+716 silly cache afterAdd get-stdin-promise@0.1.1
+717 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\get-stdin-promise\0.1.1\package\package.json not in flight; writing
+718 verbose afterAdd C:\Users\Philip\AppData\Roaming\npm-cache\get-stdin-promise\0.1.1\package\package.json written
+719 verbose updateRemote git fetch -a origin (https://github.com/metaraine/semver-utils.git)
+720 verbose setPermissions metaraine/semver-utils#86ea225 skipping chownr on Windows
+721 verbose resolveHead metaraine/semver-utils#86ea225 original treeish: 86ea225
+722 info git [ 'rev-list', '-n1', '86ea225' ]
+723 silly resolveHead metaraine/semver-utils#86ea225 resolved treeish: 86ea225075e5e528d1be4be2601a8ebd6f208f12
+724 verbose resolveHead metaraine/semver-utils#86ea225 resolved Git URL: git+https://github.com/metaraine/semver-utils.git#86ea225075e5e528d1be4be2601a8ebd6f208f12
+725 silly resolveHead Git working directory: c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12
+726 info git [ 'clone',
+726 info git   'C:\\Users\\Philip\\AppData\\Roaming\\npm-cache\\_git-remotes\\https-github-com-metaraine-semver-utils-git-d1301c5c',
+726 info git   'c:\\windows\\temp\\npm-8732-09a01a8d\\git-cache-c4d472aa3d80\\86ea225075e5e528d1be4be2601a8ebd6f208f12' ]
+727 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12: Cloning into 'c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12'...
+727 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12: fatal: '/cygdrive/c/Users/Philip/AppData/Roaming/npm-cache/_git-remotes/https-github-com-metaraine-semver-utils-git-d1301c5c/C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c' does not appear to be a git repository
+727 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12: fatal: Could not read from remote repository.
+727 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12:
+727 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12: Please make sure you have the correct access rights
+727 error git clone C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\https-github-com-metaraine-semver-utils-git-d1301c5c c:\windows\temp\npm-8732-09a01a8d\git-cache-c4d472aa3d80\86ea225075e5e528d1be4be2601a8ebd6f208f12: and the repository exists.
+728 silly trySSH attempting to clone git@github.com:metaraine/semver-utils.git#86ea225
+729 silly tryClone cloning metaraine/semver-utils#86ea225 via git@github.com:metaraine/semver-utils.git#86ea225
+730 verbose tryClone git-github-com-metaraine-semver-utils-git-8d74af92 not in flight; caching
+731 info git [ 'clone',
+731 info git   '--template=C:\\Users\\Philip\\AppData\\Roaming\\npm-cache\\_git-remotes\\_templates',
+731 info git   '--mirror',
+731 info git   'git@github.com:metaraine/semver-utils.git',
+731 info git   'C:\\Users\\Philip\\AppData\\Roaming\\npm-cache\\_git-remotes\\git-github-com-metaraine-semver-utils-git-8d74af92' ]
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92: Cloning into bare repository 'C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92'...
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92: ssh_askpass: exec(/usr/sbin/ssh-askpass): No such file or directory
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92: Host key verification failed.
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92: fatal: Could not read from remote repository.
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92:
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92: Please make sure you have the correct access rights
+732 error git clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92: and the repository exists.
+733 verbose about to build c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+734 verbose unlock done using C:\Users\Philip\AppData\Roaming\npm-cache\_locks\npm-check-updates-5baa56069359756b.lock for c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+735 verbose stack Error: Command failed: git -c core.longpaths=true clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92
+735 verbose stack Cloning into bare repository 'C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92'...
+735 verbose stack ssh_askpass: exec(/usr/sbin/ssh-askpass): No such file or directory
+735 verbose stack Host key verification failed.
+735 verbose stack fatal: Could not read from remote repository.
+735 verbose stack
+735 verbose stack Please make sure you have the correct access rights
+735 verbose stack and the repository exists.
+735 verbose stack
+735 verbose stack     at ChildProcess.exithandler (child_process.js:751:12)
+735 verbose stack     at ChildProcess.emit (events.js:110:17)
+735 verbose stack     at maybeClose (child_process.js:1015:16)
+735 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1087:5)
+736 verbose cwd c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+737 error Windows_NT 6.3.9600
+738 error argv "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "update"
+739 error node v0.12.4
+740 error npm  v2.10.1
+741 error code 128
+742 error Command failed: git -c core.longpaths=true clone --template=C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\_templates --mirror git@github.com:metaraine/semver-utils.git C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92
+742 error Cloning into bare repository 'C:\Users\Philip\AppData\Roaming\npm-cache\_git-remotes\git-github-com-metaraine-semver-utils-git-8d74af92'...
+742 error ssh_askpass: exec(/usr/sbin/ssh-askpass): No such file or directory
+742 error Host key verification failed.
+742 error fatal: Could not read from remote repository.
+742 error
+742 error Please make sure you have the correct access rights
+742 error and the repository exists.
+743 error If you need help, you may report this error at:
+743 error     <https://github.com/npm/npm/issues>
+744 verbose exit [ 1, true ]
+745 verbose unbuild node_modules\npm-check-updates
+746 info preuninstall npm-check-updates@2.2.1
+747 info uninstall npm-check-updates@2.2.1
+748 verbose unbuild rmStuff npm-check-updates@2.2.1 from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules
+749 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\npm-check-updates.cmd is being gently removed
+750 silly gentlyRm verifying c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is an npm working directory
+751 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\ncu.cmd is being gently removed
+752 silly gentlyRm verifying c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is an npm working directory
+753 silly gentlyRm containing path c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is under npm's control, in c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+754 silly gentlyRm deletion target c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\npm-check-updates.cmd is under c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+755 verbose gentlyRm vacuuming from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\npm-check-updates.cmd up to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+756 silly gentlyRm containing path c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is under npm's control, in c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+757 silly gentlyRm deletion target c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\ncu.cmd is under c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+758 verbose gentlyRm vacuuming from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\ncu.cmd up to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+759 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\npm-check-updates is being gently removed
+760 silly gentlyRm verifying c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is an npm working directory
+761 silly gentlyRm containing path c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is under npm's control, in c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+762 silly gentlyRm deletion target c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\npm-check-updates is under c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+763 verbose gentlyRm vacuuming from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\npm-check-updates up to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+764 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\ncu is being gently removed
+765 silly gentlyRm verifying c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is an npm working directory
+766 silly gentlyRm containing path c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb is under npm's control, in c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+767 silly gentlyRm deletion target c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\ncu is under c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+768 verbose gentlyRm vacuuming from c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\.bin\ncu up to c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+769 info postuninstall npm-check-updates@2.2.1
+770 silly gentlyRm c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates is being purged from base c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb
+771 verbose gentlyRm don't care about contents; nuking c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+772 silly vacuum-fs purging c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules\npm-check-updates
+773 silly vacuum-fs quitting because other entries in c:\Users\Philip\Dropbox\GitHub\bd-tracker-amphibiaweb\node_modules
