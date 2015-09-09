@@ -1,0 +1,121 @@
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+    -moz-appearance:textfield;
+    -o-appearance:textfield;
+    -webkit-appearance:textfield;
+}
+#password-strength {
+    font-family:"sans-serif";
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+}
+#login {
+    margin-left: 2em;
+    width: 75%;
+}
+#login .form-group {
+    margin-left: 2em;
+}
+#login.form-horizontal label.control-label {
+    text-align:left;
+}
+#login .has-feedback .control-label {
+  
+}
+.form-horizontal .has-feedback div {
+    padding-left:0;
+}
+.bs-callout {
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+  width:80%;
+}
+.bs-callout-info {
+  border-left-color: #5bc0de;
+}
+.bs-callout-info h4 {
+  color: #5bc0de;
+}
+/* Progress bar */
+progress,progress::progress-value {
+    color: #0063a6;
+}
+/* Progress backgrounds ... */
+progress::-webkit-progress-bar {
+    background-color:#eee;
+}
+#strength-meter .label {
+    text-align:center;
+    color:#000;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+}
+#strength-bar {
+    clear:both;
+}
+.strength-eval {
+    border:1px solid black;
+    width:.75em;
+    height:.75em;
+    margin: 0 auto;
+}
+#strength-requirements > div {
+    display:inline-block;
+    margin:.25em;
+    width: 2em;
+}
+
+#totp_message {
+    font-weight:bold;
+}
+.error,.danger {
+    background:#ff0000;
+    color:white;
+}
+.good {
+    color:#00a050;
+}
+#secret_id_panel {
+    text-align:center;
+    text-transform:uppercase;
+    font-family:"droid sans mono",consolas,monospace;
+}
+.clear {
+    clear:both;
+}
+#backup_code {
+    font-size:2em;
+    text-align:center;
+    padding:.5em;
+    border:3px solid #f00;
+}
+h1 {
+    font-size:2em;
+}
+#alt_auth_pane a {
+    padding:.5em;
+}
+input {
+    width:16em;
+}
+input[readonly] {
+    border:0;
+    display:block;
+    font-weight:bold;
+}
+.hide {
+    display:none!important;
+}
+#password_security {
+    float:right;
+    max-width:20%;
+}
