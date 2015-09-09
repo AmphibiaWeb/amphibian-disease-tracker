@@ -51,17 +51,59 @@
         var options = $.extend(
             {
                 selector:		'id="imagelightbox"',
-                allowedTypes:	'png|jpg|jpeg|gif',
+                allowedTypes:	'png|jpg|jpeg||gif', // add support for generated images without an extension
                 animationSpeed:	250,
                 preloadNext:	true,
                 enableKeyboard:	true,
                 quitOnEnd:		false,
                 quitOnImgClick: false,
                 quitOnDocClick: true,
+                quitOnEscKey:   true,               // quit when Esc key is pressed
                 onStart:		false,
                 onEnd:			false,
                 onLoadStart:	false,
-                onLoadEnd:		false
+                onLoadEnd:		false,
+
+                previousTarget : function () {
+                    return this.previousTargetDefault();
+                },
+
+                previousTargetDefault : function () {
+                    var targetIndex = targets.index( target ) - 1;
+                    if( targetIndex < 0 ) {
+                        if(options.quitOnEnd === true)
+                        {
+                            quitLightbox();
+                            return false;
+                        }
+                        else
+                        {
+                            targetIndex = targets.length - 1;
+                        }
+                    }
+                    target = targets.eq( targetIndex );
+                },
+
+                nextTarget : function () {
+                    return this.nextTargetDefault();
+                },
+                
+                nextTargetDefault : function () {
+                    var targetIndex = targets.index(target) + 1;
+                    if (targetIndex >= targets.length)
+                    {
+                        if(options.quitOnEnd === true)
+                        {
+                            quitLightbox();
+                            return false;
+                        }
+                        else
+                        {
+                            targetIndex = 0;
+                        }
+                    }
+                    target = targets.eq(targetIndex);
+                }
             },
             opts ),
 
@@ -82,7 +124,7 @@
 
             setImage = function()
             {
-                if( !image.length ) { return false; }
+                if( !image.length ) { return true; }
 
                 var screenWidth	 = $( window ).width() * 0.8,
                     screenHeight = $( window ).height() * 0.9,
@@ -119,11 +161,6 @@
 
                 if( image.length )
                 {
-                    if( direction !== false && ( targets.length < 2 || ( options.quitOnEnd === true && ( ( direction === -1 && targets.index( target ) === 0 ) || ( direction === 1 && targets.index( target ) === targets.length - 1 ) ) ) ) )
-                    {
-                        quitLightbox();
-                        return false;
-                    }
                     var params = { 'opacity': 0 };
                     if( isCssTransitionSupport ) { cssTransitionTranslateX( image, ( 100 * direction ) - swipeDiff + 'px', options.animationSpeed / 1000 ); }
                     else { params.left = parseInt( image.css( 'left' ) ) + 100 * direction + 'px'; }
@@ -137,7 +174,9 @@
                 setTimeout( function()
                 {
                     var imgPath = target.attr( 'href' );
-                    if ( imgPath === undefined ) imgPath = target.attr( 'data-lightbox' );
+                    if ( imgPath === undefined ) {
+                        imgPath = target.attr( 'data-lightbox' );
+                    }
                     image = $( '<img ' + options.selector + ' />' )
                         .attr( 'src', imgPath )
                         .load( function()
@@ -191,9 +230,14 @@
                         }
                         if( wasTouched( e.originalEvent ) ) { return true; }
                         var posX = ( e.pageX || e.originalEvent.pageX ) - e.target.offsetLeft;
-                        target = targets.eq( targets.index( target ) - ( imageWidth / 2 > posX ? 1 : -1 ) );
-                        if( !target.length ) { target = targets.eq( imageWidth / 2 > posX ? targets.length : 0 ); }
-                        loadImage( imageWidth / 2 > posX ? 'left' : 'right' );
+                        if (imageWidth / 2 > posX)
+                        {
+                            loadPreviousImage();
+                        }
+                        else
+                        {
+                            loadNextImage();
+                        }
                     })
                         .on( 'touchstart pointerdown MSPointerDown', function( e )
                         {
@@ -215,9 +259,14 @@
                             if( !wasTouched( e.originalEvent ) || options.quitOnImgClick ) { return true; }
                             if( Math.abs( swipeDiff ) > 50 )
                             {
-                                target = targets.eq( targets.index( target ) - ( swipeDiff < 0 ? 1 : -1 ) );
-                                if( !target.length ) { target = targets.eq( swipeDiff < 0 ? targets.length : 0 ); }
-                                loadImage( swipeDiff > 0 ? 'right' : 'left' );
+                                if (swipeDiff < 0)
+                                {
+                                    loadPreviousImage();
+                                }
+                                else
+                                {
+                                    loadNextImage();
+                                }
                             }
                             else
                             {
@@ -227,6 +276,18 @@
                         });
 
                 }, options.animationSpeed + 100 );
+            },
+
+            loadPreviousImage = function () {
+                if (options.previousTarget() !== false) {
+                    loadImage('left');
+                }
+            },
+
+            loadNextImage = function () {
+                if (options.nextTarget() !== false) {
+                    loadImage('right');
+                }
             },
 
             removeImage = function()
@@ -253,7 +314,11 @@
         {
             $( document ).on( hasTouch ? 'touchend' : 'click', function( e )
             {
-                if( image.length && !$( e.target ).is( image ) ) { quitLightbox(); }
+                if( image.length && !$( e.target ).is( image ) )
+                {
+                    e.preventDefault();
+                    quitLightbox();
+                }
             });
         }
 
@@ -263,12 +328,12 @@
             {
                 if( !image.length ) { return true; }
                 e.preventDefault();
-                if( e.keyCode === 27 ) { quitLightbox(); }
-                if( e.keyCode === 37 || e.keyCode === 39 )
+                if( e.keyCode === 27 && options.quitOnEscKey === true ) { quitLightbox(); }
+                if( e.keyCode === 37)
                 {
-                    target = targets.eq( targets.index( target ) - ( e.keyCode === 37 ? 1 : -1 ) );
-                    if( !target.length ) { target = targets.eq( e.keyCode === 37 ? targets.length : 0 ); }
-                    loadImage( e.keyCode === 37 ? 'left' : 'right' );
+                    loadPreviousImage();
+                } else if (e.keyCode === 39) {
+                    loadNextImage();
                 }
             });
         }
@@ -305,12 +370,29 @@
             return this;
         };
 
+        this.loadPreviousImage = function () {
+            loadPreviousImage();
+        };
+
+        this.loadNextImage = function () {
+            loadNextImage();
+        };
+
         this.quitImageLightbox = function()
         {
             quitLightbox();
             return this;
         };
-
+        // You can add the other targets to the image queue.
+        this.addImageLightbox = function(elements)
+        {
+            elements.each(function(){
+                if( !isTargetValid( this )) { return true; }
+                targets = targets.add( $( this ) );
+            });
+            elements.click(this.startImageLightbox);
+            return this;
+        };
         return this;
     };
 })( jQuery, window, document );
