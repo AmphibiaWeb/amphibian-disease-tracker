@@ -1,5 +1,11 @@
-*~
 *.js
-!zxcvbn.js
-test/index_dev.html
+!zxcvbn*.js
+!demo/jquery.js
+!demo/require.js
+!demo/mustache.js
 node_modules
+lib
+*~
+*.swp
+*.swo
+tmux-*.log
