@@ -62,3 +62,4 @@ node_modules/
 #DB_CONFIG.PHP
 #CONFIG.PHP
 /DB_CONFIG.php
+/admin/CONFIG.php
