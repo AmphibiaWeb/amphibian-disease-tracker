@@ -6792,105 +6792,7 @@ button.close {
 body {
   padding: 1rem;
 }
-.materialblue {
-  background: #5677fc;
-  color: #fff;
-}
-paper-fab.materialblue.paper-fab-0 {
-  background: #5677fc;
-  color: #fff;
-}
-/*
- * LESS is failing at these for now:
- * https://github.com/less/less.js/issues/2623
- *
- * So until it's fixed, these need escaping.
- * http://lesscss.org/features/#features-overview-feature-escaping
- */
-html >>> .materialblue {
-  background: #5677fc;
-  color: #fff;
-}
-.materialgreen,
-.materialblue:hover,
-paper-fab.materialblue.paper-fab-0:hover {
-  background: #4caf50;
-  color: #fff;
-}
-.materialindigo {
-  background: #3f51b5;
-  color: #fff;
-}
-.extreme-danger {
-  box-shadow: 0 0 2em 0.25em #f00;
-  background: #f00;
-  color: #fff;
-}
-.fadebg {
-  transition: all 0.2s ease-out;
-  -webkit-transition: all 0.2s ease-out;
-  -moz-transition: all 0.2s ease-out;
-  -o-transition: all 0.2s ease-out;
-}
-.materialcyan {
-  background: #00bcd4;
-  color: #fff;
-}
-.materialteal {
-  background: #5677fc;
-  color: #fff;
-}
-.materialbluegrey {
-  background: #607d8b;
-  color: #fff;
-}
-.materialbluetext,
-paper-button[affirmative] {
-  color: #5677fc !important;
-}
-html >>> [affirmative] {
-  color: #5677fc !important;
-}
-.materialindigotext {
-  color: #3f51b5;
-}
-.materialcyantext {
-  color: #00bcd4;
-}
-.materialtealtext {
-  color: #009688;
-}
-.materialbluegreytext {
-  color: #607d8b;
-}
-paper-dialog-scrollable {
-  padding: 1rem !important;
-  min-height: 15rem;
-}
-html >>> paper-dialog-scrollable {
-  padding: 1rem !important;
-}
-.tooltip-container {
-  float: left;
-  display: inline-block;
-}
-html >>> .tooltip-container {
-  float: left;
-  display: inline-block;
-}
-.italic {
-  font-style: italic;
-}
-.click {
-  cursor: pointer;
-}
-.med-octicon {
-  font-size: 24px !important;
-}
-.capitalize,
-html >>> .capitalize {
-  text-transform: capitalize;
-}
+/* Combinators */
 html >>> .text-right {
   text-align: right;
 }
@@ -6913,130 +6815,6 @@ html >>> .text-center {
   html >>> .hidden-xs {
     display: none !important;
   }
-}
-/* Loader */
-#loader {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-}
-#loader.good >>> .circle {
-  border-color: #4caf50;
-}
-#loader.bad >>> .circle {
-  border-color: #f44336;
-}
-paper-dropdown.dropdown {
-  /* Override Bootstrap */
-  position: absolute;
-}
-paper-toggle-button {
-  margin-left: 1rem;
-}
-paper-icon-button {
-  vertical-align: middle;
-}
-.fullwidth {
-  width: 100%;
-}
-#collapse-advanced {
-  margin-top: 1rem;
-}
-.bs-callout {
-  padding: 20px;
-  margin: 20px 0;
-  border: 1px solid #eee;
-  border-left-width: 5px;
-  border-radius: 3px;
-  width: 80%;
-}
-.bs-callout-info {
-  border-left-color: #5bc0de;
-}
-.bs-callout-info h4 {
-  color: #5bc0de;
-}
-.bs-callout-danger {
-  border-left-color: #d9534f;
-}
-.bs-callout-danger h4 {
-  color: #d9534f;
-}
-.bs-callout-warning {
-  border-left-color: #f0ad4e;
-}
-.bs-callout-warning h4 {
-  color: #f0ad4e;
-}
-.bs-callout p:last-child {
-  margin-bottom: 0;
-}
-copyright-statement {
-  position: relative;
-  top: 1rem;
-}
-.code {
-  padding: 2px 4px;
-  font-size: 90%;
-  color: #c7254e;
-  background-color: #f9f2f4;
-  border-radius: 4px;
-  font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-html >>> .code {
-  padding: 2px 4px;
-  font-size: 90%;
-  color: #c7254e;
-  background-color: #f9f2f4;
-  border-radius: 4px;
-  font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-.help-block {
-  display: block;
-  margin-top: 1.25rem;
-  margin-bottom: 10px;
-  color: #777777;
-}
-html >>> .help-block {
-  margin-top: 5px;
-  color: #737373;
-  display: block;
-  margin-top: 1.25rem;
-  margin-bottom: 10px;
-  color: #777777;
-}
-html >>> paper-autogrow-textarea textarea {
-  width: 90%;
-}
-paper-toast,
-paper-spinner {
-  z-index: 1000;
-}
-#password_security + #login {
-  float: left;
-  min-width: 60%;
-}
-#login .form-inline .form-group {
-  margin-bottom: 15px;
-}
-.form-inline .has-feedback div {
-  margin-left: 0;
-}
-#outdated-warning {
-  position: fixed;
-  top: 0;
-  width: 50%;
-  margin: 0;
-  left: 25%;
-}
-iron-label {
-  margin-top: .5rem;
-  display: block;
-}
-paper-radio-button #radioContainer,
-paper-radio-button #radioContainer div {
-  /* Overrides Bootstrap */
-  box-sizing: content-box !important;
 }
 html >>> .hidden {
   display: none !important;
@@ -7187,4 +6965,230 @@ html >>> a:focus {
   outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
+}
+/*
+ * LESS is failing at these for now:
+ * https://github.com/less/less.js/issues/2623
+ *
+ * So until it's fixed, these need escaping.
+ * http://lesscss.org/features/#features-overview-feature-escaping
+ */
+html >>> .materialblue {
+  background: #5677fc;
+  color: #fff;
+}
+#loader.good >>> .circle {
+  border-color: #4caf50;
+}
+#loader.bad >>> .circle {
+  border-color: #f44336;
+}
+html >>> .code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+  font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+html >>> .help-block {
+  margin-top: 5px;
+  color: #737373;
+  display: block;
+  margin-top: 1.25rem;
+  margin-bottom: 10px;
+  color: #777777;
+}
+html >>> paper-autogrow-textarea textarea {
+  width: 90%;
+}
+html >>> [affirmative] {
+  color: #5677fc !important;
+}
+html >>> paper-dialog-scrollable {
+  padding: 1rem !important;
+}
+html >>> .tooltip-container {
+  float: left;
+  display: inline-block;
+}
+/***
+ * Primary Styles
+ ***/
+.materialblue {
+  background: #5677fc;
+  color: #fff;
+}
+paper-fab.materialblue.paper-fab-0 {
+  background: #5677fc;
+  color: #fff;
+}
+.materialgreen,
+.materialblue:hover,
+paper-fab.materialblue.paper-fab-0:hover {
+  background: #4caf50;
+  color: #fff;
+}
+.materialindigo {
+  background: #3f51b5;
+  color: #fff;
+}
+.extreme-danger {
+  box-shadow: 0 0 2em 0.25em #f00;
+  background: #f00;
+  color: #fff;
+}
+.fadebg {
+  transition: all 0.2s ease-out;
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+}
+.materialcyan {
+  background: #00bcd4;
+  color: #fff;
+}
+.materialteal {
+  background: #5677fc;
+  color: #fff;
+}
+.materialbluegrey {
+  background: #607d8b;
+  color: #fff;
+}
+.materialbluetext,
+paper-button[affirmative] {
+  color: #5677fc !important;
+}
+.materialindigotext {
+  color: #3f51b5;
+}
+.materialcyantext {
+  color: #00bcd4;
+}
+.materialtealtext {
+  color: #009688;
+}
+.materialbluegreytext {
+  color: #607d8b;
+}
+paper-dialog-scrollable {
+  padding: 1rem !important;
+  min-height: 15rem;
+}
+.tooltip-container {
+  float: left;
+  display: inline-block;
+}
+.italic {
+  font-style: italic;
+}
+.click {
+  cursor: pointer;
+}
+.med-octicon {
+  font-size: 24px !important;
+}
+.capitalize,
+html >>> .capitalize {
+  text-transform: capitalize;
+}
+/* Loader */
+#loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+}
+paper-dropdown.dropdown {
+  /* Override Bootstrap */
+  position: absolute;
+}
+paper-toggle-button {
+  margin-left: 1rem;
+}
+paper-icon-button {
+  vertical-align: middle;
+}
+.fullwidth {
+  width: 100%;
+}
+#collapse-advanced {
+  margin-top: 1rem;
+}
+.bs-callout {
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+  width: 80%;
+}
+.bs-callout-info {
+  border-left-color: #5bc0de;
+}
+.bs-callout-info h4 {
+  color: #5bc0de;
+}
+.bs-callout-danger {
+  border-left-color: #d9534f;
+}
+.bs-callout-danger h4 {
+  color: #d9534f;
+}
+.bs-callout-warning {
+  border-left-color: #f0ad4e;
+}
+.bs-callout-warning h4 {
+  color: #f0ad4e;
+}
+.bs-callout p:last-child {
+  margin-bottom: 0;
+}
+copyright-statement {
+  position: relative;
+  top: 1rem;
+}
+.code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+  font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+.help-block {
+  display: block;
+  margin-top: 1.25rem;
+  margin-bottom: 10px;
+  color: #777777;
+}
+paper-toast,
+paper-spinner {
+  z-index: 1000;
+}
+#password_security + #login {
+  float: left;
+  min-width: 60%;
+}
+#login .form-inline .form-group {
+  margin-bottom: 15px;
+}
+.form-inline .has-feedback div {
+  margin-left: 0;
+}
+#outdated-warning {
+  position: fixed;
+  top: 0;
+  width: 50%;
+  margin: 0;
+  left: 25%;
+}
+iron-label {
+  margin-top: .5rem;
+  display: block;
+}
+paper-radio-button #radioContainer,
+paper-radio-button #radioContainer div {
+  /* Overrides Bootstrap */
+  box-sizing: content-box !important;
 }

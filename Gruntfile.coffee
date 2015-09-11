@@ -43,7 +43,7 @@ module.exports = (grunt) ->
     postcss:
       options:
         processors: [
-          require('autoprefixer-core')({browsers: 'last 1 version'})
+          require('autoprefixer')({browsers: 'last 1 version'})
           ]
       dist:
         src: "css/main.css"
@@ -164,10 +164,11 @@ module.exports = (grunt) ->
   # Part 1
   grunt.registerTask("minifyIndependent","Minify Bower components that aren't distributed min'd",["uglify:minpurl","uglify:minxmljson","uglify:minjcookie"])
   # Part 2
-  grunt.registerTask("minifyBulk","Minify all the things",["uglify:combine","uglify:dist","less","postcss","cssmin"])
+  grunt.registerTask("minifyBulk","Minify the major things",["uglify:combine","uglify:dist"])
+  grunt.registerTask "css", "Process LESS -> CSS", ["less","postcss","cssmin"]
   # Main call
   grunt.registerTask "minify","Minify all the things",->
-    grunt.task.run("minifyIndependent","minifyBulk")
+    grunt.task.run("minifyIndependent","minifyBulk","css")
   ## Global update
   # Bower
   grunt.registerTask("updateBower","Update bower dependencies",["shell:bower"])
