@@ -14,6 +14,12 @@ disease_negative:
   type: "int"
 disease_no_confidence:
   type: "int"
+disease_morbidity:
+  type: "int"
+  logical: "Number of sick individuals"
+disase_mortality:
+  type: "int"
+  logical: "Number of individuals who died"
 sample_method:
   type: "varchar(255)"
   logical: "string"
@@ -51,6 +57,9 @@ sampled_species_detail:
       positive: 25
       negative: 4
       no_confidence: 1
+      mortality: 20
+      morbidity: 24
+      sampled_life_stages: "adult, juvenile"
     1:
       genus: "lithobates"
       species: "catesbeianus"
@@ -69,6 +78,18 @@ sampled_species_detail:
       positive: 15
       negative: 30
       no_confidence: 0
+      mortality: 6
+      morbidity: 10
+      sampled_life_stages: "adult, tadpole"
+sample_collection_start:
+  type: "int"
+  logical: "Linux epoch date"
+sample_collection_end:
+  type: "int"
+  logical: "Linux epoch date"
+sample_methods_used:
+  type: "text"
+  logical: "csv"
 samples_raw_data:
   # File path to 7z archive of data
   # Why 7z? Because it's a free, open-source standard
@@ -76,6 +97,9 @@ samples_raw_data:
   # http://www.7-zip.org/sdk.html
   type: "varchar(255)"
   logical: "file path"
+sample_notes:
+  type: "text"
+  logical: "Markdown text of high-level notes"
 lat:
   type: "double"
   logical: "number"
@@ -118,6 +142,7 @@ author_data:
     0:
       name: "Bob smith"
       affiliation: "UC Berkeley"
+      lab: "Wake lab"
       entry_date: "1442007442" # Linux Epoch time
 access_data:
   # The author is always permitted
@@ -125,6 +150,9 @@ access_data:
   type: "text"
   logical: "csv"
   sample: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33,62cdb7020ff920e5aa642c3d4066950dd1f01f4d"
+publication:
+  type: "varchar(255)"
+  logical: "doi"
 public:
   type: "boolean"
   logical: "boolean"
