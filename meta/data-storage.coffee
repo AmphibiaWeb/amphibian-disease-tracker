@@ -1,12 +1,3 @@
-AW Disease Tracker Portal
-==========================
-
-## Data Storage
-
-This is a [CSON](https://github.com/bevry/cson) representation of the data storage of the system.
-
-
-```coffee
 sample_id:
   type: "varchar(255)"
   logical: "string"
@@ -137,14 +128,3 @@ access_data:
 public:
   type: "boolean"
   logical: "boolean"
-
-```
-
-## Secret Server Data
-
-This data is encrypted using
-[BlackBox](https://github.com/StackExchange/blackbox). If you want
-access to the configuration, please ask to have your credentials
-added, or add it yourself in a clone and push the changes. Once you
-let an administrator know, you can be added to the keyring and gain
-decryption privledges.
