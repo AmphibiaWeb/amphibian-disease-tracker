@@ -59,5 +59,6 @@ node_modules/
 
 # Configs
 #admin/CONFIG.php
-#API_CONFIG.PHP
+#DB_CONFIG.PHP
 #CONFIG.PHP
+/DB_CONFIG.php
