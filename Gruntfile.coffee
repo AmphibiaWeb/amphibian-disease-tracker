@@ -43,6 +43,15 @@ module.exports = (grunt) ->
           sourceMapIn:"js/maps/c.js.map"
         files:
           "js/c.min.js":["js/c.js"]
+      minzxcvbn:
+        options:
+          sourceMap:true
+          sourceMapName:"js/maps/zxcvbn.map"
+          sourceMapIncludeSources:true
+          sourceMapIn:"js/zxcvbn/dist/zxcvbn.js.map"
+        files:
+          "js/zxcvbn/zxcvbn.min.js": ["js/zxcvbn/dist/zxcvbn.js"]
+          "js/zxcvbn.min.js": ["js/zxcvbn/dist/zxcvbn.js"]
       minpurl:
         options:
           sourceMap:true

@@ -1,8 +1,8 @@
+.git
 .gitignore
-*.sh
-README*
+bower.json
 data
+data-scripts
+demo
 test
-tools
-scripts
-*.coffee
+
