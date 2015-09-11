@@ -42,7 +42,6 @@ Icon
 .\#*
 *.*~
 
-CONFIG.php
 errors/
 
 #Extra latex stuff
@@ -57,3 +56,8 @@ node_modules/
 /keyrings/live/pubring.gpg~
 /keyrings/live/pubring.kbx~
 /keyrings/live/secring.gpg
+
+# Configs
+#admin/CONFIG.php
+#API_CONFIG.PHP
+#CONFIG.PHP
