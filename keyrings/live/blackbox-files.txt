@@ -1,1 +1,2 @@
+admin/CONFIG.php
 DB_CONFIG.php
