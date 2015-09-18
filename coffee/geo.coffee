@@ -6,7 +6,7 @@
 ###
 
 # CartoDB account name
-cartoAccount = "documentation"
+cartoAccount = "tigerhawkvok"
 
 cartoMap, cartoVis
 
@@ -29,7 +29,7 @@ init = ->
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
-createMap = (targetId = "map", dataVisIdentifier = "2b13c956-e7c1-11e2-806b-5404a6a683d5") ->
+createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28") ->
   ###
   # Creates a map and does some simple bindings.
   #
