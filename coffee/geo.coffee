@@ -21,6 +21,7 @@ init = ->
   """
   $("head").append cartoDBCSS
   doCallback = ->
+    createMap "map", adData.cartoRef
     false
   loadJS "http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
 
@@ -38,6 +39,8 @@ createMap = (targetId = "map", dataVisIdentifier = "2b13c956-e7c1-11e2-806b-5404
   # See:
   # http://docs.cartodb.com/cartodb-platform/cartodb-js.html#api-methods
   ###
+  unless dataVisIdentifier?
+    console.info "Can't create map without a data visualization identifier"
   dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
   options =
     cartodb_logo: false
