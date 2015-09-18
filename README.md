@@ -110,9 +110,11 @@ sample_notes:
   type: "text"
   logical: "Markdown text of high-level notes"
 lat:
+  # Representative location of the transect
   type: "double"
   logical: "number"
 lng:
+  # Representative location of the transect
   type: "double"
   logical: "number"
 radius:
@@ -120,20 +122,20 @@ radius:
   # meters
   type: "long"
   logical: "natural number"
-bounding_box_nw:
-  # Northwest coordinate of bounding box (for area searches)
+bounding_box_n:
+  # North coordinate of bounding box (for area searches)
   type: "double"
   logical: "number"
-bounding_box_ne:
-  # Northeast coordinate of bounding box (for area searches)
+bounding_box_e:
+  # East coordinate of bounding box (for area searches)
   type: "double"
   logical: "number"
-bounding_box_se:
-  # Southeast coordinate of bounding box (for area searches)
+bounding_box_s:
+  # South coordinate of bounding box (for area searches)
   type: "double"
   logical: "number"
-bounding_box_sw:
-  # Southwest coordinate of bounding box (for area searches)
+bounding_box_w:
+  # West coordinate of bounding box (for area searches)
   type: "double"
   logical: "number"
 transect_file:
@@ -154,7 +156,9 @@ author_data:
       lab: "Wake lab"
       entry_date: "1442007442" # Linux Epoch time
 access_data:
+  # Who can access this data?
   # The author is always permitted
+  # All other entries are user links in CSV
   # This field is ignored if "public" is truthy
   type: "text"
   logical: "csv"
@@ -165,6 +169,11 @@ publication:
 public:
   type: "boolean"
   logical: "boolean"
+carto_id:
+  # CartoDB identifier for this dataset.
+  type: "varchar(255)"
+  logical: "string"
+  sample: "2b13c956-e7c1-11e2-806b-5404a6a683d5"
 
 ```
 
