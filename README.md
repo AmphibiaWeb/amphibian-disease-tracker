@@ -11,7 +11,15 @@ sample_id:
   type: "varchar(255)"
   logical: "string"
   unique: true
+reference_id:
+  # For offsite references. No internal use.
+  # Could be initial, GUID, etc.
+  type: "varchar(255)"
+  logical: "string"
 disease:
+  type: "varchar(255)"
+  logical: "string"
+disease_strain:
   type: "varchar(255)"
   logical: "string"
 disease_samples:
@@ -42,6 +50,11 @@ sampled_species:
   type: "text"
   logical: "csv"
   sample: "Batrachoseps attenuatus, Lithobates catesbeianus"
+sampled_clades:
+  # Clades sampled. Appx. Linnean "family".
+  type: "text"
+  logical: "csv"
+  sample: "plethodontidae, ranoidea"
 sampled_species_detail:
   # Detailed data for the sampled species.
   # For use on record pages and for search fallbacks
@@ -69,6 +82,8 @@ sampled_species_detail:
       mortality: 20
       morbidity: 24
       sampled_life_stages: "adult, juvenile"
+      sample_method: "swab_live"
+      sample_disposition: "released"
     1:
       genus: "lithobates"
       species: "catesbeianus"
@@ -90,13 +105,37 @@ sampled_species_detail:
       mortality: 6
       morbidity: 10
       sampled_life_stages: "adult, tadpole"
+      sample_method: "swab_preserved"
+      sample_disposition: "destroyed"
 sample_collection_start:
   type: "int"
   logical: "Linux epoch date"
 sample_collection_end:
+  # If blank on user input, default to the same as collection_start
   type: "int"
   logical: "Linux epoch date"
+sampling_months:
+  # Calculated
+  type: "varchar(24)"
+  logical: "MM CSV"
+sampling_years:
+  # Calculated
+  type: "varchar(255)"
+  logical: "YYYY CSV"
 sample_methods_used:
+  # Calculated from detailed data
+  type: "text"
+  logical: "csv"
+sample_dispositions_used:
+  # Calculated from detailed data
+  type: "text"
+  logical: "csv"
+sample_catalog_numbers:
+  # Calculated from detailed data
+  type: "text"
+  logical: "csv"
+sample_field_numbers:
+  # Calculated from detailed data
   type: "text"
   logical: "csv"
 samples_raw_data:
@@ -109,6 +148,10 @@ samples_raw_data:
 sample_notes:
   type: "text"
   logical: "Markdown text of high-level notes"
+locality:
+  # Human-friendly location marker
+  type: "text"
+  logical: "location"
 lat:
   # Representative location of the transect
   type: "double"
@@ -160,6 +203,8 @@ access_data:
   # The author is always permitted
   # All other entries are user links in CSV
   # This field is ignored if "public" is truthy
+  # If the value of this field is "link", then it's unlisted but
+  # available without login
   type: "text"
   logical: "csv"
   sample: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33,62cdb7020ff920e5aa642c3d4066950dd1f01f4d"
@@ -174,7 +219,6 @@ carto_id:
   type: "varchar(255)"
   logical: "string"
   sample: "2b13c956-e7c1-11e2-806b-5404a6a683d5"
-
 ```
 
 There is no equivalent to [BD-Maps'](http://www.bd-maps.net/isolates/) following fields:
@@ -187,6 +231,7 @@ There is no equivalent to [BD-Maps'](http://www.bd-maps.net/isolates/) following
 - Developmental stage: Per-sample, should be included in raw data. At a high level, redundant to `sampled_species_detail[N].sampled_life_stages`
 - Method of detection: Since this may vary on a per-sample basis, this is relegated to the raw data.
 - Abnormalities: Problems in data are encapsulated in `disease_no_confidence`, problems with animals belong with the raw data.
+- All individual sample data (eg, spore count, genbank ID, etc): Belongs in raw data
 
 
 ## Secret Server Data
