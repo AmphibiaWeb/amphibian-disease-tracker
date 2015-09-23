@@ -94,6 +94,29 @@
       return false;
       };
 
+      isEmpty = function(str) {
+      return !str || str.length === 0;
+      };
+
+      isBlank = function(str) {
+      return !str || /^\s*$/.test(str);
+      };
+
+      isNull = function(str) {
+      try {
+      if (isEmpty(str) || isBlank(str) || (str == null)) {
+      if (!(str === false || str === 0)) {
+      return true;
+      }
+      }
+      } catch (_error) {
+      e = _error;
+      return false;
+      }
+      return false;
+      };
+
+
       bindClicks();
     </script>
   </head>
