@@ -212,6 +212,7 @@ publication:
   type: "varchar(255)"
   logical: "doi"
 public:
+  # Overrides access_data
   type: "boolean"
   logical: "boolean"
 carto_id:
@@ -219,6 +220,17 @@ carto_id:
   type: "varchar(255)"
   logical: "string"
   sample: "2b13c956-e7c1-11e2-806b-5404a6a683d5"
+more_analysis_funding_request:
+  # Does the group doing this research have other goals that want more funding?
+  # After
+  # https://github.com/tigerhawkvok/amphibian-disease-tracker/issues/3
+  type: "boolean"
+  logical: "boolean"
+extended_funding_reach_goals:
+  # After
+  # https://github.com/tigerhawkvok/amphibian-disease-tracker/issues/3
+  type: "text"
+  logical: "csv"
 ```
 
 There is no equivalent to [BD-Maps'](http://www.bd-maps.net/isolates/) following fields:
