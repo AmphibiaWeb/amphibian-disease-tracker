@@ -15,7 +15,87 @@
 
     <link rel="import" href="bower_components/polymer/polymer.html"/>
     <link rel="import" href="bower_components/font-roboto/roboto.html"/>
+    <link rel="import" href="bower_components/polymer/polymer.html"/>
+    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
     <link rel="import" href="polymer-elements/glyphicon-social-icons.html"/>
+    <script type="text/javascript">
+      bindClicks = function(selector) {
+      if (selector == null) {
+      selector = ".click";
+      }
+
+      /*
+      * Helper function. Bind everything with a selector
+      * to execute a function data-function or to go to a
+      * URL data-href.
+      */
+      $(selector).each(function() {
+      var callable, url;
+      try {
+      url = $(this).attr("data-href");
+      if (!isNull(url)) {
+      $(this).unbind();
+      try {
+      if (url === uri.o.attr("path") && $(this).prop("tagName").toLowerCase() === "paper-tab") {
+      $(this).parent().prop("selected", $(this).index());
+      }
+      } catch (_error) {
+      e = _error;
+      console.warn("tagname lower case error");
+      }
+      $(this).click(function() {
+      if ($(this).attr("newTab").toBool() || $(this).attr("newtab").toBool()) {
+      return openTab(url);
+      } else {
+      return goTo(url);
+      }
+      });
+      return url;
+      } else {
+      callable = $(this).attr("data-function");
+      if (callable != null) {
+      $(this).unbind();
+      return $(this).click(function() {
+      try {
+      console.log("Executing bound function " + callable + "()");
+      return window[callable]();
+      } catch (_error) {
+      e = _error;
+      return console.error("'" + callable + "()' is a bad function - " + e.message);
+      }
+      });
+      }
+      }
+      } catch (_error) {
+      e = _error;
+      return console.error("There was a problem binding to #" + ($(this).attr("id")) + " - " + e.message);
+      }
+      });
+      return false;
+      };
+
+      openLink = function(url) {
+      if (url == null) {
+      return false;
+      }
+      window.open(url);
+      return false;
+      };
+
+      openTab = function(url) {
+      return openLink(url);
+      };
+
+      goTo = function(url) {
+      if (url == null) {
+      return false;
+      }
+      window.location.href = url;
+      return false;
+      };
+
+      bindClicks();
+    </script>
   </head>
   <body class="container-fluid">
     <article>
@@ -32,7 +112,9 @@
           <img src="assets/UCBseal.gif" style="height:120px;width:141px "/>
         </div>
         <p>
-          Want to follow our progress?
+          Want to follow our progress? Visit us on
+          <paper-icon-button icon="glyphicon-social:github" class="click" data-url="https://github.com/SSARHERPS/SSAR-species-database" data-toggle="tooltip" title="Visit us on GitHub"></paper-icon-button>
+          to request features!
         </p>
       </div>
     </article>
