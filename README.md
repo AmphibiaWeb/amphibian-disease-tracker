@@ -246,6 +246,16 @@ There is no equivalent to [BD-Maps'](http://www.bd-maps.net/isolates/) following
 - All individual sample data (eg, spore count, genbank ID, etc): Belongs in raw data
 
 
+### Input UI from Data
+
+#### Locality
+
+Tabbed input -- either text locals that are reverse geocoded (use Google API, use those error bounds) **or** lat/lng.
+
+#### Species
+
+Validate live against AmphibiaWeb, forbid bad input
+
 ## Secret Server Data
 
 This data is encrypted using
