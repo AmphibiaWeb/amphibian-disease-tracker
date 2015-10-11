@@ -1,3 +1,10 @@
+# Setting up a local copy
+
+Github pages, locally: https://help.github.com/articles/using-jekyll-with-pages/
+
+To start the Jekyll server, run `bundle exec jekyll serve`.
+
+
 # Centrarium [![Circle CI](https://circleci.com/gh/bencentra/centrarium/tree/master.svg?style=svg)](https://circleci.com/gh/bencentra/centrarium/tree/master)
 
 A simple yet classy theme for your Jekyll website or blog. Customizable to fit your style or brand.
