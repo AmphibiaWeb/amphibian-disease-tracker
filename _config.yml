@@ -18,9 +18,9 @@ cover: "assets/header_image.jpg"
 logo: "assets/logo.png"
 
 # Build settings
-markdown: kramdown
-paginate: 5
-paginate_path: "/page:num/"
+#markdown: kramdown
+#paginate: 5
+#paginate_path: "/page:num/"
 
 # # Disqus comments
 # disqus_shortname: bencentra
