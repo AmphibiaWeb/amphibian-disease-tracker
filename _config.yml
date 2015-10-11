@@ -8,6 +8,12 @@
 highlighter: pygments
 safe: true
 lsi: false
+defaults:
+  - 
+    scope: 
+      path: ''
+    values:
+      layout: 'default'
 #source: /
 # github:
 # Site settings
