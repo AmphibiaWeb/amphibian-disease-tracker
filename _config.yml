@@ -1,21 +1,25 @@
 # External gems
-gems:
-  - jekyll-sitemap
-
-exclude:
-  - "/vendor/"
+# gems:
+#   - jekyll-sitemap
+#   - github-pages
+# exclude:
+#   - "/vendor/"
+#markdown: rdiscount
 highlighter: pygments
+safe: true
+lsi: false
+#source: /
 # github:
 # Site settings
-title: Amphibian Disease Tracker
-subtitle: "A simple yet classy theme for your Jekyll website or blog"
-email: blcentra@gmail.com
-name: Ben Centra
-description: > 
-  A simple yet classy theme for your Jekyll website or blog.
-url: "https://amphibiaweb.github.io/amphibian-disease-tracker" # the base hostname & protocol for your site
-cover: "assets/header_image.jpg"
-logo: "assets/logo.png"
+# title: Amphibian Disease Tracker
+# subtitle: "A simple yet classy theme for your Jekyll website or blog"
+# email: blcentra@gmail.com
+# name: Ben Centra
+# description: > 
+#   A simple yet classy theme for your Jekyll website or blog.
+#url: "https://amphibiaweb.github.io/amphibian-disease-tracker" # the base hostname & protocol for your site
+#cover: "assets/header_image.jpg"
+#logo: "assets/logo.png"
 
 # Build settings
 #markdown: kramdown
@@ -29,12 +33,12 @@ logo: "assets/logo.png"
 # ga_tracking_id: "UA-XXXX-1"
 
 # Category descriptions (for archive pages)
-descriptions:
-  - cat: jekyll
-    desc: "Posts describing Jekyll setup techniques."
+# descriptions:
+#   - cat: jekyll
+#     desc: "Posts describing Jekyll setup techniques."
 
-  - cat: dummy
-    desc: "Just some placeholder posts, lorem ipsum and the rest."
+#   - cat: dummy
+#     desc: "Just some placeholder posts, lorem ipsum and the rest."
 
 # Social icons and sharing options
 #
