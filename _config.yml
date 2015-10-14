@@ -7,12 +7,12 @@ exclude:
   - "/vendor/"
 
 # Site settings
-title: Amphibian Disease Tracker Portal
-subtitle: "A simple yet classy theme for your Jekyll website or blog"
-email: foo@bar.com
-name: Foobar
+title: Amphibian Disease Portal
+subtitle: "A repository for aggregating information on Bd and Bsal"
+email: amphibiaweb@berkeley.edu
+name: AmphibiaWeb
 description: > 
-  A simple yet classy theme for your Jekyll website or blog.
+  A repository for aggregating information on Bd and Bsal
 baseurl: "/amphibian-disease-tracker/" # the subpath of your site, e.g. /blog/
 url: "http://amphibiaweb.github.io/amphibian-disease-tracker" # the base hostname & protocol for your site
 cover: "assets/header_image.jpg"
