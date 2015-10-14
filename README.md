@@ -1,6 +1,6 @@
 # Centrarium [![Circle CI](https://circleci.com/gh/bencentra/centrarium/tree/master.svg?style=svg)](https://circleci.com/gh/bencentra/centrarium/tree/master)
 
-A simple yet classy theme for your Jekyll website or blog. Customizable to fit your style or brand.
+Customized here: http://amphibiaweb.github.io/amphibian-disease-tracker.
 
 Built with these awesome libraries: 
 * [Bourbon][bourbon] 
