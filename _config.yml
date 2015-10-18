@@ -15,7 +15,7 @@ description: >
   A repository for aggregating information on Bd and Bsal
 baseurl: "/amphibian-disease-tracker/" # the subpath of your site, e.g. /blog/
 url: "http://amphibiaweb.github.io/amphibian-disease-tracker" # the base hostname & protocol for your site
-cover: "assets/header_image.jpg"
+cover: "assets/Ensatina_closeup_Yap_1024.jpg"
 logo: "assets/logo.png"
 
 # Build settings
@@ -37,15 +37,15 @@ paginate_path: "/page:num/"
 # disqus_shortname: bencentra
 
 # Google analytics
-# ga_tracking_id: "UA-XXXX-1"
+ ga_tracking_id: "UA-69012106-1"
 
 # Category descriptions (for archive pages)
 descriptions:
-  - cat: jekyll
-    desc: "Posts describing Jekyll setup techniques."
+  - cat: archives
+    desc: "Amphibian Disease portal archives"
 
-  - cat: dummy
-    desc: "Just some placeholder posts, lorem ipsum and the rest."
+  - cat: Bsal news
+    desc: "Latest publications, media and news on Bsal"
 
 # Social icons and sharing options
 #
@@ -63,19 +63,19 @@ descriptions:
 #     desc: Follow me on Twitter            # Description to display as link title, etc
 #     share: true                           # Include in the "Share" section of posts
 social:
-  # - name: Twitter
-  #   icon: twitter
-  #   username: TheBenCentra
-  #   url: https://twitter.com/TheBenCentra
-  #   desc: Follow me on Twitter
-  #   share: true
+   - name: Twitter
+     icon: twitter
+     username: AmphibiaWeb
+     url: https://twitter.com/AmphibiaWeb
+     desc: Follow me on Twitter
+     share: true
 
-  # - name: Facebook
-  #   icon: facebook
-  #   username: thebencentra
-  #   url: 
-  #   desc: Friend me on Facebook
-  #   share: true
+   - name: Facebook
+     icon: facebook
+     username: AmphibiaWeb
+     url: https://www.facebook.com/AmphibiaWeb
+     desc: Friend me on Facebook
+     share: true
 
   - name: GitHub
     icon: github
