@@ -1,5 +1,5 @@
 # Amphibian Disease Portal  - 
-Customized here: http://amphibiaweb.github.io/amphibian-disease-tracker.
+Customized here: http://amphibiaweb.github.io/amphibian-disease-tracker.     
 Categories:
  - Bsal News
  - Portal
