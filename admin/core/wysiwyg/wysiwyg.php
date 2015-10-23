@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__).'/markdown/Michelf/MarkdownExtra.inc.php');
+require_once dirname(__FILE__).'/markdown/Michelf/MarkdownExtra.inc.php';
 
 class Wysiwyg
 {
@@ -8,32 +8,35 @@ class Wysiwyg
     {
         $markdown = \Michelf\MarkdownExtra::defaultTransform($text);
         # Clean out the new lines
-        $stripped_markdown = str_replace("\n","",$markdown);
+        $stripped_markdown = str_replace("\n", '', $markdown);
         $parsed = self::parseBlock($stripped_markdown, true, false);
-        if ($parsed["status"] === false) {
-            $parsed["html"] = $markdown;
-            $parsed["status"] = true;
-            $parsed["used_pure_markdown"] = true;
-        }
-        else {
-            $parsed["used_pure_markdown"] = false;
-            $temp = preg_replace('/\\\\\'gr/', '\'gr', $parsed["html"]);
+        if ($parsed['status'] === false) {
+            $parsed['html'] = $markdown;
+            $parsed['status'] = true;
+            $parsed['used_pure_markdown'] = true;
+        } else {
+            $parsed['used_pure_markdown'] = false;
+            $temp = preg_replace('/\\\\\'gr/', '\'gr', $parsed['html']);
             $temp = preg_replace('/\\\\\'/', '\'', $temp);
-            $parsed["html"] = $temp;
+            $parsed['html'] = $temp;
         }
-        if ($detail) return $parsed;
-        return $parsed["html"];
+        if ($detail) {
+            return $parsed;
+        }
+
+        return $parsed['html'];
     }
 
     public static function fromHtml($html, $detail = false)
     {
         # Undo markdown
-        require_once(dirname(__FILE__)."/html-to-markdown/HTML_To_Markdown.php");
+        require_once dirname(__FILE__).'/html-to-markdown/HTML_To_Markdown.php';
         $markdown = new HTML_To_Markdown($html);
-        if(!$detail) {
+        if (!$detail) {
             return self::deparseBlock($markdown->output());
         }
-        $detail = array("markdown"=>$markdown->output(),"human"=>self::deparseBlock($markdown->output()));
+        $detail = array('markdown' => $markdown->output(),'human' => self::deparseBlock($markdown->output()));
+
         return $detail;
     }
 
@@ -50,21 +53,21 @@ class Wysiwyg
             $block = base64_decode($block);
         }
         if (!is_string($block)) {
-            return array("status"=>false,'error' => 'A string wasn\'t provided.');
+            return array('status' => false,'error' => 'A string wasn\'t provided.');
         }
         if ($sanitize && class_exists('DBHelper')) {
             $parsed = DBHelper::staticSanitize($block, $strip_html);
-            if(!$strip_html) {
+            if (!$strip_html) {
                 # Fix the HTML less than greater than escapes
-                $find_array = array (
-                    "&lt;",
-                    "&gt;",
+                $find_array = array(
+                    '&lt;',
+                    '&gt;',
                 );
                 $replace_array = array(
-                    "<",
-                    ">",
+                    '<',
+                    '>',
                 );
-                $parsed = str_replace($find_array,$replace_array,$parsed);
+                $parsed = str_replace($find_array, $replace_array, $parsed);
             }
         } else {
             # Do a simple port ...
@@ -130,7 +133,7 @@ class Wysiwyg
                 //echo "<pre>$img tag from $pos to $end</pre>";
                 $img_e = explode(',', $img);
                 if (sizeof($img_e < 2)) {
-                    return array("status"=>false,'error' => 'Fatal Error: Bad Image Syntax');
+                    return array('status' => false,'error' => 'Fatal Error: Bad Image Syntax');
                 }
                 $img_o .= "<div class='img".strtolower($img_e[1]); // alignment
                 $img_o .= "'>\n<img src='".substr($img_e[0], 5)."'"; // src
@@ -289,6 +292,7 @@ class Wysiwyg
         if (!$strip) {
             $parsed = addslashes($parsed);
         }
+
         return array('status' => true,'html' => $parsed,'error_log' => $error_log,'new_edit' => self::deparseBlock($parsed));
     }
 
@@ -425,8 +429,8 @@ class Wysiwyg
                 $pos = strpos($parsed, "<span class='greek' lang='gr'>");
             }
         }
-        if (strpos($parsed, "<span class=\"greek\" lang=\"gr\" style=\"font-family:symbol;\">") !== false) {
-            $pos = strpos($parsed, "<span class=\"greek\" lang=\"gr\" style=\"font-family:symbol;\">");
+        if (strpos($parsed, '<span class="greek" lang="gr" style="font-family:symbol;">') !== false) {
+            $pos = strpos($parsed, '<span class="greek" lang="gr" style="font-family:symbol;">');
             while ($pos !== false) {
                 $end = strpos($parsed, '</span>', $pos);
                 $length = $end + 7 - $pos;
@@ -436,7 +440,7 @@ class Wysiwyg
                 $length = $end - $begin;
                 $tag .= substr($parsed, $begin, $length).'[/grk]';
                 $parsed = str_replace($search, $tag, $parsed);
-                $pos = strpos($parsed, "<span class=\"greek\" lang=\"gr\">");
+                $pos = strpos($parsed, '<span class="greek" lang="gr">');
             }
         }
 
