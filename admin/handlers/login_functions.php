@@ -69,7 +69,7 @@ class UserFunctions extends DBHelper
             $this->setTable($default_user_table);
         } catch (Exception $e) {
             # More complete message
-            $message = '<pre>Could not initialize database setup ['.$e->getMessage().'] in <'.$e->getTraceAsString().'> (using '.$config_path.' with columns '.print_r($db_cols).') </pre>';
+            $message = '<pre>Could not initialize database setup ['.$e->getMessage().'] in <'.$e->getTraceAsString().'> (using '.$config_path.' with columns '.print_r($db_cols, true).') </pre>';
             throw(new Exception($message));
         }
 
