@@ -5,7 +5,7 @@
 // See here for the variable names and declarations:
 // http://getbootstrap.com/customize/#less-variables
 
-@font-size-base: "16px";
+@font-size-base: 16px; // Up the font size from the Bootstrap default
 
 @import "lightbox.less";
 
@@ -90,6 +90,11 @@ body {
 /***
  * Primary Styles
  ***/
+
+.relative-left {
+    position: relative;
+    left: 40px;
+}
 
 .materialblue {
     background: @material-blue;
