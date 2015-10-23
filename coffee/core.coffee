@@ -526,7 +526,7 @@ bindClicks = (selector = ".click") ->
         catch e
           console.warn("tagname lower case error")
         $(this).click ->
-          if $(this).attr("newTab").toBool() or $(this).attr("newtab").toBool()
+          if $(this).attr("newTab").toBool() or $(this).attr("newtab").toBool() or $(this).attr("data-newtab").toBool()
             openTab(url)
           else
             goTo(url)

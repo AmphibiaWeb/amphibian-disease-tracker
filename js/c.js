@@ -725,7 +725,7 @@ bindClicks = function(selector) {
           console.warn("tagname lower case error");
         }
         $(this).click(function() {
-          if ($(this).attr("newTab").toBool() || $(this).attr("newtab").toBool()) {
+          if ($(this).attr("newTab").toBool() || $(this).attr("newtab").toBool() || $(this).attr("data-newtab").toBool()) {
             return openTab(url);
           } else {
             return goTo(url);
