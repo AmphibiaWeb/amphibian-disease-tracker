@@ -177,6 +177,10 @@ module.exports = (grunt) ->
   grunt.registerTask "update","Update dependencies", ->
     grunt.task.run("updateNPM","updateBower","minify")
   ## Deploy
+  grunt.registerTask "qbuild","CoffeeScript and CSS", ->
+    # ,"vulcanize"
+    grunt.task.run("compile","css")
+
   grunt.registerTask "build","Compile and update, then watch", ->
     # ,"vulcanize"
-    grunt.task.run("updateNPM","updateBower","compile","minify")
+    grunt.task.run("updateNPM","updateBower","compile","minify","watch")
