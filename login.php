@@ -7,6 +7,8 @@
  * If you want a display!
  ***/
 
+# $debug = true;
+
 if($debug) {
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
@@ -15,7 +17,6 @@ if($debug) {
 
 require_once(dirname(__FILE__).'/CONFIG.php');
 
-# $debug = true;
 
 if($require_two_factor)
   {
@@ -323,7 +324,7 @@ $loginform = "<script src='bower_components/bootstrap/dist/js/bootstrap.min.js' 
 $loginform_close="	      <br/>
 	      <button id='login_button' class='btn btn-primary'>Login</button>
 	    </form>$alt_forms<br/><p id='form_create_new_account'><small>Don't have an account yet? <a href='?q=create'>Create one</a>!</small></p>";
-$big_login=$login_preabmle.$loginform.$loginform_close;
+$big_login=$login_preamble.$loginform.$loginform_close;
 $small_login=$loginform.$loginform_close;
 if($_REQUEST['q']=='submitlogin')
   {
@@ -648,19 +649,28 @@ else if($_REQUEST['q']=='create')
               "remoteip" => $_SERVER["REMOTE_ADDR"]
             );
 try {
-            $resp = json_decode(do_post_request($recaptcha_uri,$recaptcha_params),true);
+    if ($debug)  $login_output .= "<pre>Querying reCAPTCHA: ".displayDebug($recaptcha_params)."\n to $recaptcha_uri</pre>";
+    $bareResponse = do_post_request($recaptcha_uri,$recaptcha_params);
+    if ($debug) $login_output .= "<pre>Bare output: ".displayDebug($bareResponse)."</pre>";
+            $resp = json_decode($bareResponse,true);
+            if(empty($bareResponse) || $bareResponse === false) throw new Exception("Bad Response");
+            if ($debug) $login_output .= "<pre>Parsed output: ".displayDebug($resp)."</pre>";
 } catch(Exception $e)
 {
 $resp["success"] = false;
 $resp["post-error"] = $e->getMessage();
+$resp["full_error"] = $e;
+$resp["login_caught_error"] = true;
 }
 
-            if (!$resp["success"] && !$debug)
+if (!$resp["success"]) #  && !$debug
               {
                 // What happens when the CAPTCHA was entered
                 // incorrectly
 $error = empty($resp["error-codes"]) ? $resp["post-error"]:$resp["error-codes"];
+if(empty($error)) $error = "Unknown Error";
 $login_output.= "<div class='alert alert-danger'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>The reCAPTCHA wasn't entered correctly. Go back and try it again." . " (reCAPTCHA said: " . $error . ")</div>";
+if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
               }
             else
               {
@@ -897,7 +907,7 @@ else
     }
     $totpOverride .= $need_tfa && $require_two_factor ? "window.totpParams.tfaLock = true;\n":"window.totpParams.tfaLock = false;\n";
 
-    $deferredScriptBlock = "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+    $deferredScriptBlock = "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
 <script type='text/javascript' src='".$relative_path."js/loadJQuery.min.js'></script>
 <script type='text/javascript'>
         if(typeof passwords != 'object') passwords = new Object();
@@ -909,11 +919,21 @@ else
 
 var loadLast = function () {
     try {
-        $deferredJS
+        loadJS('".$relative_path."js/c.min.js',function() {
+            try {
+              $deferredJS
+            } catch(e) {
+              console.error(\"Couldn't load deferred calls\");
+            }
+          }, function(){
+            $('#totp_message').addClass('alert alert-danger').text('There was a problem loading this page. Please refresh and try again.');
+            console.error(\"The page couldn't load the primary scripts! This page may not function.\");
+        });
+
     }
     catch (e)
     {
-        console.error(\"Couldn't load deferred calls\");
+        console.error(\"Couldn't load login scripts!\");
     }
 }
 </script>";

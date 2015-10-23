@@ -101,6 +101,7 @@ Function::debounce = (threshold = 300, execAsap = false, timeout = window.deboun
   window.debounce_timer = setTimeout(delayed, threshold)
 
 
+
 loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
   ###
   # Load a new javascript file
@@ -110,8 +111,9 @@ loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
   # @param string src The source URL of the file
   # @param function callback Function to execute after the script has
   #                          been loaded
-  # @param bool doCallbackOnError Should the callback be executed if
-  #                               loading the script produces an error?
+  # @param bool|func doCallbackOnError Should the callback be executed if
+  #                                    loading the script produces an error?
+  #                                    If function, do it.
   ###
   if $("script[src='#{src}']").exists()
     if typeof callback is "function"
@@ -148,11 +150,17 @@ loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
     try
       unless callback.done
         callback.done = true
-        if typeof callback is "function" and doCallbackOnError
+        if typeof callback is "function" and doCallbackOnError is true
           try
             callback()
           catch e
             console.error "Post error callback error - #{e.message}"
+            console.warn e.stack
+      if typeof doCallbackOnError is "function"
+        try
+          doCallbackOnError()
+        catch e
+          console.error "Couldn't run post-error function - #{e.message}"
     catch e
       console.error "There was an error in the error handler! #{e.message}"
   # Set the attributes
@@ -186,7 +194,7 @@ unless _metaStatus?.isLoading?
   unless _metaStatus?
     window._metaStatus = new Object()
   _metaStatus.isLoading = false
-  
+
 animateLoad = (elId = "loader", iteration = 0) ->
   ###
   # Suggested CSS to go with this:

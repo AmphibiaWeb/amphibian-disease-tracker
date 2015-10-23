@@ -571,7 +571,7 @@ class UserFunctions extends DBHelper
             return array('status' => false,'error' => '2FA has already been enabled for this user.','human_error' => "You've already enabled 2-factor authentication.",'username' => $this->username);
         }
         try {
-            require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+            if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
             $salt = Stronghash::createSalt();
             require_once dirname(__FILE__).'/../base32/src/Base32/Base32.php';
             $secret = Base32::encode($salt);
@@ -647,7 +647,7 @@ class UserFunctions extends DBHelper
         $userdata = $this->getUser();
         $secret = $userdata[$this->tmpColumn];
         $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->totpColumn."`='$secret', `".$this->tmpColumn."`=''  WHERE `".$this->userColumn."`='".$this->username."'";
-        require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+        if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
         $backup = Stronghash::createSalt();
         $backup_store = hash('sha512', $backup);
         $query2 = 'UPDATE `'.$this->getTable().'` SET `'.$this->totpBackup."`='$backup_store' WHERE `".$this->userColumn."`='".$this->username."'";
@@ -773,7 +773,7 @@ class UserFunctions extends DBHelper
      ***/
     try {
         require_once dirname(__FILE__).'/../qr/qrlib.php';
-        require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+        if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
         $salt = Stronghash::createSalt();
         $persistent = !empty($data_path);
         if (!$persistent) {
@@ -811,7 +811,6 @@ class UserFunctions extends DBHelper
         # As a final option, get a URL fallback
         # https://developers.google.com/chart/infographics/docs/qr_codes?csw=1
         $url = 'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chld=H&chl='.$uri;
-
         return array('status' => true,'uri' => $uri,'svg' => $svg,'raw' => $raw,'url' => $url);
     } catch (Exception $e) {
         return array('status' => false,'human_error' => 'Unable to generate QR code','error' => $e->getMessage(),'uri' => $uri,'identifier' => $identifier,'persistent' => $persistent);
@@ -866,7 +865,7 @@ class UserFunctions extends DBHelper
           return array('status' => false,'error' => 'Your password is too short. Please try again.');
       }
     // Complexity checks here, if not relegated to JS ...
-    require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+      if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
       $hash = new Stronghash();
       $creation = self::microtime_float();
       $pw1 = $hash->hasher($pw_in);
@@ -883,52 +882,53 @@ class UserFunctions extends DBHelper
       $hardlink = sha1($salt.$creation);
       $store = array();
       foreach ($this->getCols() as $key => $type) {
-          $fields[] = $key;
           switch ($key) {
           case $this->userColumn:
-            $store[] = $user;
+            $store[$key] = $user;
             break;
           case $this->pwColumn:
-            $store[] = $pw_store;
+            $store[$key] = $pw_store;
             break;
+          case "salt":
+            $store[$key] = $salt;
           case 'creation':
-            $store[] = $creation;
+            $store[$key] = $creation;
             break;
           case 'name':
-            $store[] = $names;
+            $store[$key] = $names;
             break;
           case 'flag':
             // Is the user active, or does it need authentication first?
             // Default "true" means immediately active.
-            $store[] = !$this->needsManualAuth();
+            $store[$key] = !$this->needsManualAuth();
             break;
           case 'dtime':
-            $store[] = 0;
+            $store[$key] = 0;
             break;
           case 'data':
-            $store[] = $data_init;
+            $store[$key] = $data_init;
             break;
           case 'secdata':
-            $store[] = $sdata_init;
+            $store[$key] = $sdata_init;
             break;
           case $this->linkColumn:
-            $store[] = $hardlink;
+            $store[$key] = $hardlink;
             break;
           case 'phone':
-            $store[] = self::isValidPhone($phone) ? self::cleanPhone($phone) : null;
+            $store[$key] = self::isValidPhone($phone) ? self::cleanPhone($phone) : null;
             break;
           case 'phone_verified':
           case 'admin_flag':
           case 'su_flag':
           case 'disabled':
-            $store[] = false;
+            $store[$key] = false;
           break;
           default:
-            $store[] = '';
+            $store[$key] = '';
           }
       }
 
-      $test_res = $this->addItem($store, $fields);
+      $test_res = $this->addItem($store);
       if ($test_res) {
           # Get ID value
         # The TOTP column has never been set up, so no worries
@@ -957,9 +957,10 @@ class UserFunctions extends DBHelper
               return array('status' => false,'error' => 'Failure: Unable to verify user creation','add' => $test_res,'userdata' => $userdata);
           }
       } else {
-          return array('status' => false,'error' => 'Failure: unknown database error. Your user was unable to be saved.');
+          return array('status' => false,'error' => 'Failure: unknown database error. Your user was unable to be saved.', "storage_data" => $store, "field_data" => $fields, "add_result" => $test_res);
       }
   }
+
 
     public function lookupUser($username, $pw, $return = true, $totp_code = false, $override = false)
     {
@@ -987,13 +988,32 @@ class UserFunctions extends DBHelper
                 $userdata = mysqli_fetch_assoc($result);
                 if (is_numeric($userdata['id'])) {
                     # check password
-                require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+                    if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
                     $hash = new Stronghash();
                     $data = json_decode($userdata[$this->pwColumn], true);
                 # Decrypt the password if totp_code is_numeric()
                 if (is_numeric($totp_code)) {
                     $pw = $this->decryptWithStoredKey($pw);
                 }
+                    if(empty($data) || empty($data['salt']))
+                    {
+                        try
+                        {
+                            # Try legacy
+                            $data['algo'] = $xml->getTagContents($userdata['data'],"<algo>");
+                            $data['rounds'] = $xml->getTagContents($userdata['data'],"<rounds>");
+                            /* Default rounds for sha512 */
+                            if(empty($data['rounds'])) $data['rounds'] = 10000; 
+                            $data['salt'] = null;
+                            $data['hash']= $userdata['pass'];
+                            $data["legacy"] = true;
+                            $pw = $userdata['salt'] . $pw . $userdata['creation'];
+                        }
+                        catch (Exception $e)
+                        {
+                            return array(false,"message"=> "No valid password data");
+                        }
+                    }
                     if ($hash->verifyHash($pw, $data)) {
                         $this->getUser($userdata[$this->userColumn]);
 
@@ -1040,7 +1060,6 @@ class UserFunctions extends DBHelper
                             return array(true,$decname,'status' => true);
                         } else {
                             $returning = array(true,$userdata,'status' => true,'data' => $userdata);
-
                             return $returning;
                         }
                     }
@@ -1315,14 +1334,14 @@ class UserFunctions extends DBHelper
         $expire_days = 7;
             $expire = time() + 3600 * 24 * $expire_days;
         # Create a one-time key, store serverside
-        require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+            if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
             $otsalt = Stronghash::createSalt();
             $cookie_secret = Stronghash::createSalt();
             $pw_characters = json_decode($userdata[$this->pwColumn], true);
             $salt = $pw_characters['salt'];
             $current_ip = empty($current_ip) ? $_SERVER['REMOTE_ADDR'] : $remote;
 
-        //store it
+        # store it
         $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->cookieColumn."`='$otsalt', `".$this->ipColumn."`='$current_ip', `last_login`='".microtime_float()."' WHERE id='$id'";
             $l = $this->openDB();
             mysqli_query($l, 'BEGIN');
@@ -1434,7 +1453,7 @@ class UserFunctions extends DBHelper
             $encryptedSecretsArray = json_decode($encryptedSecretsJson, true);
       # Even if this device is already registered, we want to
       # overwrite the association
-      require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+            if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
       # Create a secret
       $server_secret = Stronghash::createSalt();
       # Encrypt it with $encryption_key ...
@@ -1649,7 +1668,7 @@ class UserFunctions extends DBHelper
          *
          ***/
         $sourcePasswordLength = 2 * $newPasswordLength;
-        require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+        if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
         $passwordBase = Stronghash::createSalt($sourcePasswordLength);
         $ambiguousCharacters = array(
             'l',
@@ -1757,7 +1776,7 @@ class UserFunctions extends DBHelper
              * "guessing", the fact that we're truncating it to eight
              * characters for the user makes it moot.
              */
-            require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+            if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
             $rand_string = Stronghash::createSalt();
             $key = self::createRandomUserPassword(8);
             $pw_data = json_decode($userdata[$this->pwColumn], true);
@@ -1913,7 +1932,7 @@ class UserFunctions extends DBHelper
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
-                require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+                if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
                 $newPassword = self::createRandomUserPassword();
                 $hash = new Stronghash();
                 $pw1 = $hash->hasher($newPassword);
@@ -1995,7 +2014,7 @@ class UserFunctions extends DBHelper
                 $currentUser = $userLookup["data"];
                 if(strlen($newPassword) < $this->getMinPasswordLength()) throw(new Exception("New password is too short. It should be at least " . $this->getMinPasswordLength() . " characters"));
                 if(strlen($newPassword) > 8192) throw(new Exception("New password is too long. It should be less than 8192 characters"));
-                require_once(dirname(__FILE__).'/../core/stronghash/php-stronghash.php');
+                if (!class_exists('Stronghash')) require_once(dirname(__FILE__).'/../core/stronghash/php-stronghash.php');
                 $hash=new Stronghash;
 
                 $hashedPw = $hash->hasher($newPassword);
@@ -2101,7 +2120,7 @@ class UserFunctions extends DBHelper
         }
         $l = $this->openDB();
         if (is_numeric($totp)) {
-            require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+            if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
             $key = Stronghash::createSalt();
             $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='$key' WHERE `".$this->userColumn."`='".$this->getUsername()."'";
             $r = mysqli_query($l, $query);
@@ -2148,7 +2167,7 @@ class UserFunctions extends DBHelper
         $userString = $target_userdata['creation'].$this->getUsername();
     # We'll use a secret key that is never kept on the server
     if (empty($secret_key)) {
-        require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+        if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
         $secret_key = base64_encode(Stronghash::createSalt(strlen($userString)));
     }
         $return['secret'] = $secret_key;
@@ -2421,7 +2440,7 @@ class UserFunctions extends DBHelper
      *
      * @return array with the twilio object in key "twilio"
      ***/
-    require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+        if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
         $auth = Stronghash::createSalt(8);
     # Write auth to tmpcol
     $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='$auth' WHERE `".$this->userColumn."`='".$this->getUsername()."'";

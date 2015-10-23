@@ -101,6 +101,7 @@ Function::debounce = (threshold = 300, execAsap = false, timeout = window.deboun
   window.debounce_timer = setTimeout(delayed, threshold)
 
 
+
 loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
   ###
   # Load a new javascript file
@@ -110,8 +111,9 @@ loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
   # @param string src The source URL of the file
   # @param function callback Function to execute after the script has
   #                          been loaded
-  # @param bool doCallbackOnError Should the callback be executed if
-  #                               loading the script produces an error?
+  # @param bool|func doCallbackOnError Should the callback be executed if
+  #                                    loading the script produces an error?
+  #                                    If function, do it.
   ###
   if $("script[src='#{src}']").exists()
     if typeof callback is "function"
@@ -148,11 +150,17 @@ loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
     try
       unless callback.done
         callback.done = true
-        if typeof callback is "function" and doCallbackOnError
+        if typeof callback is "function" and doCallbackOnError is true
           try
             callback()
           catch e
             console.error "Post error callback error - #{e.message}"
+            console.warn e.stack
+      if typeof doCallbackOnError is "function"
+        try
+          doCallbackOnError()
+        catch e
+          console.error "Couldn't run post-error function - #{e.message}"
     catch e
       console.error "There was an error in the error handler! #{e.message}"
   # Set the attributes
@@ -186,7 +194,7 @@ unless _metaStatus?.isLoading?
   unless _metaStatus?
     window._metaStatus = new Object()
   _metaStatus.isLoading = false
-  
+
 animateLoad = (elId = "loader", iteration = 0) ->
   ###
   # Suggested CSS to go with this:
@@ -532,6 +540,7 @@ doTOTPSubmit = (home = window.totpParams.home) ->
   # to async_login_handler.php , get the results and behave appropriately
   noSubmit()
   animateLoad()
+  $("#verify_totp_button").prop("disabled",true)
   code = $("#totp_code").val()
   user = $("#username").val()
   pass = $("#password").val()
@@ -548,8 +557,8 @@ doTOTPSubmit = (home = window.totpParams.home) ->
       try
         $("#totp_message")
         .text("Correct!")
-        .removeClass("error")
-        .addClass("good")
+        .removeClass("alert-danger")
+        .addClass("alert alert-success")
         i = 0
         $.each result["cookies"].raw_cookie, (key,val) ->
           try
@@ -568,7 +577,7 @@ doTOTPSubmit = (home = window.totpParams.home) ->
     else
       $("#totp_message")
       .text(result.human_error)
-      .addClass("error")
+      .addClass("alert alert-danger")
       $("#totp_code").val("") # Clear it
       $("#totp_code").focus()
       stopLoadError()
@@ -577,9 +586,13 @@ doTOTPSubmit = (home = window.totpParams.home) ->
     # Be smart about the failure
     $("#totp_message")
     .text("Failed to contact server. Please try again.")
-    .addClass("error")
+    .addClass("alert alert-danger")
     console.error("AJAX failure",apiUrlString  + "?" + args,result,status)
     stopLoadError()
+  totp.always ->
+    $("#verify_totp_button").prop("disabled",false)
+  false
+
 
 doTOTPRemove = ->
   # Remove 2FA
@@ -663,7 +676,7 @@ makeTOTP = ->
     <input type='hidden' id='username' name='username' value='#{user}'/>
     <input type='hidden' id='hash' name='hash' value='#{hash}'/>
     <input type='hidden' id='secret' name='secret' value='#{key}'/>
-    <button id='verify_totp_button' class='totpbutton'>Verify</button>
+    <button id='verify_totp_button' class='totpbutton btn btn-primary'>Verify</button>
   </fieldset>
 </form>"
       $("#totp_start").remove()
@@ -1005,14 +1018,18 @@ doAsyncLogin = (uri = "async_login_handler.php", respectRelativePath = true) ->
 
 doAsyncCreate = ->
   recaptchaResponse = grecaptcha.getResponse()
-  if recaptchaResponse.success isnt true
+  recaptchaTest = if typeof recaptchaResponse is "object" then recaptchaResponse.success isnt true else isNull(recaptchaResponse)
+  if recaptchaTest
     # Bad CAPTCHA
-    $("#createUser_submit").before("<p id='createUser_fail' class='bg-danger'>Sorry, your CAPTCHA was incorrect. Please try again.</p>")
+    $("#createUser_submit").before("<p id='createUser_fail' class='alert bg-danger'>Sorry, your CAPTCHA was incorrect. Please try again.</p>")
     grecaptcha.reset()
     return false
   $("#createUser_fail").remove()
   # Submit the user creation
-  false
+  console.info "Successfully called back the recaptcha response", recaptchaResponse
+  if typeof recaptchaResponse is "string"
+    $("#g-recaptcha-response").val recaptchaResponse
+  true
 
 
 ###########
@@ -1367,7 +1384,7 @@ beginChangePassword = ->
   </form>
   """
   $("#account_settings").after changePasswordForm
-  loadJS(window.totpParams.relative+"js/zxcvbn/zxcvbn.js")
+  loadJS(window.totpParams.relative+"js/zxcvbn/zxcvbn.min.js")
   checkFirstPassword = ->
     try
       checkPasswordLive("#do-change-password", "#new-password", "#new-password-confirm")
@@ -1452,7 +1469,7 @@ $ ->
   else
     selector = window.passwords.submitSelector
   if $("#password.create").exists()
-    loadJS(window.totpParams.relative+"js/zxcvbn/zxcvbn.js")
+    loadJS(window.totpParams.relative+"js/zxcvbn/zxcvbn.min.js")
     $("#password.create")
     .keyup ->
       checkPasswordLive()
