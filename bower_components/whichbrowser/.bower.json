@@ -18,12 +18,12 @@
     "type": "git",
     "url": "git://github.com/WhichBrowser/WhichBrowser.git"
   },
-  "version": "1.0.1025",
-  "_release": "1.0.1025",
+  "version": "1.0.1026",
+  "_release": "1.0.1026",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.1025",
-    "commit": "34d47e59add91a2da23d4bb22783f2884427611e"
+    "tag": "v1.0.1026",
+    "commit": "9fc2e74fe28c912731dc78d8b2e16fd4d7abcd51"
   },
   "_source": "git://github.com/WhichBrowser/WhichBrowser.git",
   "_target": "~1.0.1020",

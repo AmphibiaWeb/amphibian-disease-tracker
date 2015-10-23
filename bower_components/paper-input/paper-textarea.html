@@ -45,6 +45,7 @@ style this element.
 
       <iron-autogrow-textarea id="input" class="paper-input-input"
         bind-value="{{value}}"
+        disabled$="[[disabled]]"
         autocomplete$="[[autocomplete]]"
         autofocus$="[[autofocus]]"
         inputmode$="[[inputmode]]"
@@ -55,7 +56,8 @@ style this element.
         maxlength$="[[maxlength]]"
         autocapitalize$="[[autocapitalize]]"
         rows$="[[rows]]"
-        max-rows$="[[maxRows]]"></iron-autogrow-textarea>
+        max-rows$="[[maxRows]]"
+        on-change="_onChange"></iron-autogrow-textarea>
 
       <template is="dom-if" if="[[errorMessage]]">
         <paper-input-error>[[errorMessage]]</paper-input-error>
