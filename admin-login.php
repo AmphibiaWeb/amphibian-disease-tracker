@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
-    <title>SSAR CNDB Admin</title>
+    <title>Amphibian Disease Portal Admin</title>
     <meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="theme-color" content="#445e14"/>
@@ -30,6 +30,9 @@
   </head>
   <body>
     <?php
+       ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
+ini_set("display_errors",1);
+ini_set("log_errors",1);
        require_once("CONFIG.php");
        require_once("admin/login.php");
        echo $login_output;
