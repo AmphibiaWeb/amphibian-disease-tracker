@@ -395,7 +395,7 @@ class DBHelper
         }
     }
 
-    public function addItem($value_arr, $field_arr = null, $test = false)
+    public function addItem($value_arr, $field_arr = null, $test = false, $precleaned = false)
     {
         /***
      *
@@ -406,10 +406,16 @@ class DBHelper
         if (empty($field_arr)) {
             $temp = array();
             foreach ($value_arr as $k => $v) {
+                if(!$precleaned) $k = $this->sanitize($k, true); # Keys can be picky
+                if(!$precleaned) $v = $this->sanitize($v);
                 $field_arr[] = $k;
                 $temp[] = $v;
             }
             $value_arr = $temp;
+        } else if (!$precleaned) {
+            # Sanitize it all
+            $field_arr = $this->sanitize($field_arr, true);
+            $value_arr = $this->sanitize($value_arr);
         }
         if (sizeof($field_arr) == sizeof($value_arr)) {
             $i = 0;

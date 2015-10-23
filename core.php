@@ -236,10 +236,7 @@ if (!function_exists('displayDebug')) {
         $string = str_replace('&', '&amp;', $string);
         $string = str_replace('<', '&lt;', $string);
         $string = str_replace('>', '&gt;', $string);
-        if (!$background) {
-            return $string;
-        }
-
+        if(!$background) return $string;
         return "<pre style='background:white;color:black;'>".$string.'</pre>';
     }
 }
@@ -248,38 +245,77 @@ if (!function_exists('do_post_request')) {
     function do_post_request($url, $data, $optional_headers = null)
     {
         /***
-       * Do a POST request
-       *
-       * @param string $url the destination URL
-       * @param array $data The paramter as key/value pairs
-       * @return response object
-       ***/
-
-      $params = array('http' => array(
-        'method' => 'POST',
-        'content' => http_build_query($data),
-      ));
+         * Do a POST request
+         *
+         * @param string $url the destination URL
+         * @param array $data The paramter as key/value pairs
+         * @return response object
+         ***/
+        $bareUrl = $url;
+        $url = urlencode($url);
+        $params = array('http' => array(
+            'method' => 'POST',
+            'content' => http_build_query($data),
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+        ));
         if ($optional_headers !== null) {
             $params['http']['header'] = $optional_headers;
         }
         $ctx = stream_context_create($params);
-      # If url handlers are set,t his whole next part can be file_get_contents($url,false,$ctx)
-      $fp = @fopen($url, 'rb', false, $ctx);
-        if (!$fp) {
-            throw new Exception("Problem with $url, $php_errormsg");
-        }
-        $response = @stream_get_contents($fp);
-        if ($response === false) {
-            throw new Exception("Problem reading data from $url, $php_errormsg");
-        }
+        # If url handlers are set,t his whole next part can be file_get_contents($url,false,$ctx)
+        try {
+            ini_set("default_socket_timeout",3);
+            $response = file_get_contents($bareUrl,false,$ctx);
+            if(empty($response) || $response === false) throw new Exception("No Response from file_get_contents");
+        } catch (Exception $e) {
+            ini_set("allow_url_fopen", true);
+            $fp = @fopen($bareUrl, 'rb', false, $ctx);
+            if (!$fp) {
+                if(function_exists("http_post_fields")) {
+                    $response = http_post_fields($bareUrl, $data);
+                    if($response === false || empty($response)) throw new Exception("Could not POST to $bareUrl");
+                    return $response;
+                }
+                else if (function_exists("curl_init")) {
+                    # Last-ditch: CURL
+                    $ch = curl_init( $bareUrl );
+                    curl_setopt( $ch, CURLOPT_POST, 1);
+                    curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt( $ch, CURLOPT_HEADER, 0);
+                    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
 
+                    $response = curl_exec( $ch );
+                    if($response === false || empty($response)) throw new Exception("CURL failure: ".curl_error($ch));
+                    return $response;
+                }
+                else throw new Exception("Problem POSTing to  $bareUrl");
+            }
+            $response = @stream_get_contents($fp);
+            if ($response === false) {
+                throw new Exception("Problem reading data from $bareUrl");
+            }
+        }
         return $response;
-    }
+    }    
 }
 
 if (!function_exists('deEscape')) {
     function deEscape($input)
     {
+        $find = array(
+            "&#39;",
+            "&#34;",
+            "&#95;",
+            "&#37;"
+        );
+        $replace = array(
+            "'",
+            "\"",
+            "_",
+            "%"
+        );
+        $input = str_replace($find, $replace, $input);
         return htmlspecialchars_decode(html_entity_decode(urldecode($input)));
     }
 }
