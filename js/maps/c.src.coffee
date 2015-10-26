@@ -238,7 +238,7 @@ loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
           try
             callback()
           catch e
-            console.error "Postload callback error - #{e.message}"
+            console.error "Postload callback error for #{src} - #{e.message}"
             console.warn e.stack
     catch e
       console.error "Onload error - #{e.message}"
@@ -760,6 +760,7 @@ $ ->
     checkAdmin()
     if adminParams?.loadAdminUi is true
       loadJS "js/admin.min.js", ->
+        console.info "Loaded admin file"
         loadAdminUi()
 
 ###

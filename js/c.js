@@ -356,7 +356,7 @@ loadJS = function(src, callback, doCallbackOnError) {
             return callback();
           } catch (_error) {
             e = _error;
-            console.error("Postload callback error - " + e.message);
+            console.error("Postload callback error for " + src + " - " + e.message);
             return console.warn(e.stack);
           }
         }
@@ -1046,6 +1046,7 @@ $(function() {
     checkAdmin();
     if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.loadAdminUi : void 0) === true) {
       return loadJS("js/admin.min.js", function() {
+        console.info("Loaded admin file");
         return loadAdminUi();
       });
     }
