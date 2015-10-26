@@ -876,6 +876,8 @@ class UserFunctions extends DBHelper
           $rounds = '<rounds>'.$pw1['rounds'].'</rounds>';
       }
       $data_init = "<xml><algo>$algo</algo>$rounds</xml>";
+      $name = $this->sanitize($name);
+      $dname = $this->sanitize($dname);
       $ne = self::encryptThis($salt.$pw, implode(' ', $name)); // only encrypt if requested, then put in secdata
     $sdata_init = '<xml><name>'.$ne.'</name></xml>';
       $names = '<xml><name>'.$this->sanitize(implode(' ', $name)).'</name><fname>'.$this->sanitize($name[0]).'</fname><lname>'.$name[1].'</lname><dname>'.$this->sanitize($dname).'</dname></xml>';
@@ -884,18 +886,18 @@ class UserFunctions extends DBHelper
       foreach ($this->getCols() as $key => $type) {
           switch ($key) {
           case $this->userColumn:
-            $store[$key] = $user;
+              $store[$key] = $user;
             break;
           case $this->pwColumn:
-            $store[$key] = $pw_store;
+            $store[$key] = $pw_store; # Generated
             break;
           case "salt":
-            $store[$key] = $salt;
+            $store[$key] = $salt; # Generated
           case 'creation':
-            $store[$key] = $creation;
+            $store[$key] = $creation; # Generated
             break;
           case 'name':
-            $store[$key] = $names;
+            $store[$key] = $names; # Generated
             break;
           case 'flag':
             // Is the user active, or does it need authentication first?
@@ -928,7 +930,7 @@ class UserFunctions extends DBHelper
           }
       }
 
-      $test_res = $this->addItem($store);
+      $test_res = $this->addItem($store, null, false, true); # Precleaned
       if ($test_res) {
           # Get ID value
           # The TOTP column has never been set up, so no worries
@@ -1375,7 +1377,7 @@ class UserFunctions extends DBHelper
 
         // authenticated since last login. Nontransposable outside network.
 
-        $value = sha1(implode('', $value_create));
+            $value = sha1(implode('', $value_create));
 
             $cookieuser = $this->domain.'_user';
             $cookieperson = $this->domain.'_name';
@@ -1389,7 +1391,7 @@ class UserFunctions extends DBHelper
             $user_greet = $xml->getTagContents($userdata['name'], '<fname>');
             $user_full_name = $xml->getTagContents($userdata['name'], '<name>'); // for now
 
-        setcookie($cookieauth, $value, $expire);
+            setcookie($cookieauth, $value, $expire);
             setcookie($cookiekey, $cookie_secret, $expire);
             setcookie($cookieuser, $username, $expire);
             setcookie($cookieperson, $user_greet, $expire);
