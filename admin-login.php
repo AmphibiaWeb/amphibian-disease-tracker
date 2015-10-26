@@ -42,6 +42,7 @@
            $encrypted = openssl_encrypt($string, "AES-256-ECB", $pass);
            $decrypted = openssl_decrypt($encrypted, "AES-256-ECB", $pass);
            $encrypt_test = "<pre>OpenSSL Encrypt Test: \n\n $methods \n\n $encrypted \n\n $decrypted</pre>";
+           echo $encrypt_test;
        }
        require_once("DB_CONFIG.php");
        require_once("admin/login.php");
