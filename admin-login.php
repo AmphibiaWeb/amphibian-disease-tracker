@@ -36,6 +36,12 @@
            ini_set("display_errors",1);
            ini_set("log_errors",1);
            error_reporting(E_ALL);
+           $string = "Foobar";
+           $pass = "123";
+           $methods = print_r(openssl_get_cipher_methods(), true);
+           $encrypted = openssl_encrypt($string, "AES-256-ECB", $pass);
+           $decrypted = openssl_decrypt($encrypted, "AES-256-ECB", $pass);
+           $encrypt_test = "<pre>OpenSSL Encrypt Test: \n\n $methods \n\n $encrypted \n\n $decrypted</pre>";
        }
        require_once("DB_CONFIG.php");
        require_once("admin/login.php");

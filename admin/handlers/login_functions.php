@@ -2459,24 +2459,31 @@ class UserFunctions extends DBHelper
     public static function encryptThis($key, $string)
     {
         /***
-     * @param string $key
-     * @param string $string
-     * @return string An encrypted, base64-encoded result
-     ***/
-
-    $encrypted = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $string, MCRYPT_MODE_CBC, md5(md5($key))));
+         * @param string $key
+         * @param string $string
+         * @return string An encrypted, base64-encoded result
+         ***/
+        if(function_exists(mcrypt_encrypt)) {
+            $encrypted = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $string, MCRYPT_MODE_CBC, md5(md5($key))));
+        } else {
+            $encrypted = $string;
+        }
 
         return $encrypted;
     }
     public static function decryptThis($key, $encrypted)
     {
         /***
-     * @param string $key
-     * @param string $encrypted A base 64 encoded string
-     * @return string The decrypted string
-     ***/
+         * @param string $key
+         * @param string $encrypted A base 64 encoded string
+         * @return string The decrypted string
+         ***/
 
-    $decrypted = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($key), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($key))), "\0");
+        if(function_exists(mcrypt_decrypt)) {
+            $decrypted = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($key), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($key))), "\0");
+        } else {
+            $decrypted = $encrypted;
+        }
 
         return $decrypted;
     }
