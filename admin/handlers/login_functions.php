@@ -1124,7 +1124,7 @@ class UserFunctions extends DBHelper
                         }
                         }
                     } else {
-                        return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad Password', "detail" => $hash->verifyHash($pw, $data, null, null, null, true), "given" => $pw);
+                        return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad Password', "detail" => $hash->verifyHash($pw, $data, null, null, null, true), "given" => $pw, "stored_data_reference" => $data);
                     }
                 # end good username loop
                 } else {
