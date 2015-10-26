@@ -1003,7 +1003,7 @@ class UserFunctions extends DBHelper
                             $data['algo'] = $xml->getTagContents($userdata['data'],"<algo>");
                             $data['rounds'] = $xml->getTagContents($userdata['data'],"<rounds>");
                             /* Default rounds for sha512 */
-                            if(empty($data['rounds'])) $data['rounds'] = 10000; 
+                            if(empty($data['rounds'])) $data['rounds'] = 10000;
                             $data['salt'] = null;
                             $data['hash']= $userdata['pass'];
                             $data["legacy"] = true;
@@ -1022,6 +1022,16 @@ class UserFunctions extends DBHelper
                         $l = $this->openDB();
                         if (empty($totp_code)) {
                             # The user has 2FA turned on, prompt it
+                            /*
+                             * Here we create a temporary, dummy
+                             * password for the client to save and
+                             * pass again. Since we're storing an
+                             * encrypted hash, even the data being
+                             * taken is no more "public" than it
+                             * already is in the password
+                             * column. However, it keeps us validating
+                             * a session in progress of TOTP-ing.
+                             */
                             $key = Stronghash::createSalt();
                             $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='$key' WHERE `".$this->userColumn."`='".$this->username."'";
                             $r = mysqli_query($l, $query);
@@ -2456,36 +2466,59 @@ class UserFunctions extends DBHelper
         return array('status' => true,'message' => 'Check your phone for your authorization code.','twilio' => $obj);
     }
 
-    public static function encryptThis($key, $string)
+
+    private static function getPreferredCipherMethod() {
+        # TODO method to determine best cipher method
+        $methods = openssl_get_cipher_methods();
+        return "AES-256-CBC-HMAC-SHA1";
+    }
+
+    public static function encryptThis($key, $string, $iv = "")
     {
         /***
          * @param string $key
          * @param string $string
          * @return string An encrypted, base64-encoded result
          ***/
-        if(function_exists(mcrypt_encrypt)) {
-            $encrypted = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $string, MCRYPT_MODE_CBC, md5(md5($key))));
+        $cipherkey = md5($key);
+        # For native functions here, no "same-string" data should
+        # be stored, so we just want SOMETHING
+        if(empty($iv)) $iv = sha1($cipherkey);
+        if (function_exists(openssl_encrypt)) {
+            $method = self::getPreferredCipherMethod();
+            $encrypted = openssl_encrypt($string, $method, $cipherkey, $iv);
+        } else if(function_exists(mcrypt_encrypt)) {
+            $encrypted = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $cipherkey, $string, MCRYPT_MODE_CBC, $iv);
         } else {
+            # Well .... let's not fail, at least.
             $encrypted = $string;
         }
-
+        $encrypted = base64_encode($encrypted);
         return $encrypted;
     }
-    public static function decryptThis($key, $encrypted)
+    public static function decryptThis($key, $encrypted, $iv = "")
     {
         /***
          * @param string $key
          * @param string $encrypted A base 64 encoded string
          * @return string The decrypted string
          ***/
-
-        if(function_exists(mcrypt_decrypt)) {
-            $decrypted = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($key), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($key))), "\0");
+        $decoded = base64_decode($encrypted);
+        $cipherkey = md5($key);
+        # For native functions here, no "same-string" data should
+        # be stored, so we just want SOMETHING
+        if(empty($iv)) $iv = sha1($cipherkey);
+        if (function_exists(openssl_decrypt)) {
+            $method = self::getPreferredCipherMethod();
+            $decrypted = openssl_decrypt($string, $method, $cipherkey, $iv);
+        } else if(function_exists(mcrypt_decrypt)) {
+            $decrypted = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $cipherkey, $decoded, MCRYPT_MODE_CBC, $iv);
         } else {
+            # Well, damn. Let's not fail at any rate.
             $decrypted = $encrypted;
         }
-
-        return $decrypted;
+        # Remove any padding before returning
+        return rtrim($decrypted, "\0");
     }
     public function decryptWithStoredKey($encrypted)
     {
