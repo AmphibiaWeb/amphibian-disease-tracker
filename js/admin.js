@@ -9,7 +9,7 @@ adminParams = new Object();
 
 adminParams.apiTarget = "admin_api.php";
 
-adminParams.adminPageUrl = "https://ssarherps.org/cndb/admin-page.html";
+adminParams.adminPageUrl = "http://amphibiandisease.org/admin-page.html";
 
 adminParams.loginDir = "admin/";
 
@@ -25,8 +25,8 @@ loadAdminUi = function() {
   var e;
   try {
     verifyLoginCredentials(function(data) {
-      var articleHtml, searchForm;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie("ssarherps_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='settings-applications' class='click' data-url='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span id=\"pib-wrapper-exit-to-app\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Go to CNDB app\" data-placement=\"bottom\">\n    <paper-icon-button icon='exit-to-app' class='click' data-url='" + uri.urlString + "' id=\"app-linkout\"></paper-icon-button>\n  </span>\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</div>";
+      var articleHtml;
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie("ssarherps_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='settings-applications' class='click' data-url='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span id=\"pib-wrapper-exit-to-app\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Go to CNDB app\" data-placement=\"bottom\">\n  </span>\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
       $("article #main-body").html(articleHtml);
       bindClicks();
 
@@ -35,23 +35,7 @@ loadAdminUi = function() {
        * We want a search box that we pipe through the API
        * and display the table out for editing
        */
-      searchForm = "<form id=\"admin-search-form\" onsubmit=\"event.preventDefault()\" class=\"row\">\n  <div>\n    <paper-input label=\"Search for species\" id=\"admin-search\" name=\"admin-search\" required autofocus floatingLabel class=\"col-xs-7 col-sm-8\"></paper-input>\n    <paper-fab id=\"do-admin-search\" icon=\"search\" raisedButton class=\"materialblue\"></paper-fab>\n    <paper-fab id=\"do-admin-add\" icon=\"add\" raisedButton class=\"materialblue\"></paper-fab>\n  </div>\n</form>\n<div id='search-results' class=\"row\"></div>";
-      $("#admin-actions-block").html(searchForm);
-      $("#admin-search-form").submit(function(e) {
-        return e.preventDefault();
-      });
-      $("#admin-search").keypress(function(e) {
-        if (e.which === 13) {
-          return renderAdminSearchResults();
-        }
-      });
-      $("#do-admin-search").click(function() {
-        return renderAdminSearchResults();
-      });
-      $("#do-admin-add").click(function() {
-        return createNewTaxon();
-      });
-      bindClickTargets();
+      bindClicks();
       return false;
     });
   } catch (_error) {

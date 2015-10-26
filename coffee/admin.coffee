@@ -4,7 +4,7 @@
 ###
 adminParams = new Object()
 adminParams.apiTarget = "admin_api.php"
-adminParams.adminPageUrl = "https://ssarherps.org/cndb/admin-page.html"
+adminParams.adminPageUrl = "http://amphibiandisease.org/admin-page.html"
 adminParams.loginDir = "admin/"
 adminParams.loginApiTarget = "#{adminParams.loginDir}async_login_handler.php"
 
@@ -24,12 +24,11 @@ loadAdminUi = ->
           <paper-icon-button icon='settings-applications' class='click' data-url='#{data.login_url}'></paper-icon-button>
         </span>
         <span id="pib-wrapper-exit-to-app" class="pib-wrapper" data-toggle="tooltip" title="Go to CNDB app" data-placement="bottom">
-          <paper-icon-button icon='exit-to-app' class='click' data-url='#{uri.urlString}' id="app-linkout"></paper-icon-button>
         </span>
       </h3>
       <div id='admin-actions-block'>
         <div class='bs-callout bs-callout-info'>
-          <p>Please be patient while the administrative interface loads.</p>
+          <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>
         </div>
       </div>
       """
@@ -41,26 +40,8 @@ loadAdminUi = ->
       # We want a search box that we pipe through the API
       # and display the table out for editing
       ###
-      searchForm = """
-      <form id="admin-search-form" onsubmit="event.preventDefault()" class="row">
-        <div>
-          <paper-input label="Search for species" id="admin-search" name="admin-search" required autofocus floatingLabel class="col-xs-7 col-sm-8"></paper-input>
-          <paper-fab id="do-admin-search" icon="search" raisedButton class="materialblue"></paper-fab>
-          <paper-fab id="do-admin-add" icon="add" raisedButton class="materialblue"></paper-fab>
-        </div>
-      </form>
-      <div id='search-results' class="row"></div>
-      """
-      $("#admin-actions-block").html(searchForm)
-      $("#admin-search-form").submit (e) ->
-        e.preventDefault()
-      $("#admin-search").keypress (e) ->
-        if e.which is 13 then renderAdminSearchResults()
-      $("#do-admin-search").click ->
-        renderAdminSearchResults()
-      $("#do-admin-add").click ->
-        createNewTaxon()
-      bindClickTargets()
+
+      bindClicks()
       false
   catch e
     $("article #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>")
