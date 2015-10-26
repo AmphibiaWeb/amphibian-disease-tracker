@@ -1405,6 +1405,7 @@ class UserFunctions extends DBHelper
             $jquerycookie .= "$.cookie('$cookiekey','$cookie_secret'".$js_expires;
             $jquerycookie .= "$.cookie('$cookieuser','$username'".$js_expires;
             $jquerycookie .= "$.cookie('$cookieperson','$user_greet'".$js_expires;
+            $jquerycookie .= "$.cookie('$cookiewholeperson','$user_full_name'".$js_expires;
             $jquerycookie .= "$.cookie('$cookiepic','$path'".$js_expires;
             $jquerycookie .= "$.cookie('$cookielink','$dblink'".$js_expires;
 
