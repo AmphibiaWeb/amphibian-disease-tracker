@@ -3,9 +3,9 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var adminParams, loadAdminUi, verifyLoginCredentials;
+var verifyLoginCredentials;
 
-adminParams = new Object();
+window.adminParams = new Object();
 
 adminParams.domain = "amphibiandisease";
 
@@ -17,7 +17,7 @@ adminParams.loginDir = "admin/";
 
 adminParams.loginApiTarget = adminParams.loginDir + "async_login_handler.php";
 
-loadAdminUi = function() {
+window.loadAdminUi = function() {
 
   /*
    * Main wrapper function. Checks for a valid login state, then

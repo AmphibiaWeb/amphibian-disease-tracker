@@ -2,14 +2,14 @@
 # The main coffeescript file for administrative stuff
 # Triggered from admin-page.html
 ###
-adminParams = new Object()
+window.adminParams = new Object()
 adminParams.domain = "amphibiandisease"
 adminParams.apiTarget = "admin_api.php"
 adminParams.adminPageUrl = "http://#{domain}.org/admin-page.html"
 adminParams.loginDir = "admin/"
 adminParams.loginApiTarget = "#{adminParams.loginDir}async_login_handler.php"
 
-loadAdminUi = ->
+window.loadAdminUi = ->
   ###
   # Main wrapper function. Checks for a valid login state, then
   # fetches/draws the page contents if it's OK. Otherwise, boots the
