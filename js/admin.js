@@ -7,9 +7,11 @@ var adminParams, loadAdminUi, verifyLoginCredentials;
 
 adminParams = new Object();
 
+adminParams.domain = "amphibiandisease";
+
 adminParams.apiTarget = "admin_api.php";
 
-adminParams.adminPageUrl = "http://amphibiandisease.org/admin-page.html";
+adminParams.adminPageUrl = "http://" + domain + ".org/admin-page.html";
 
 adminParams.loginDir = "admin/";
 
@@ -26,7 +28,7 @@ loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie("ssarherps_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='settings-applications' class='click' data-url='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span id=\"pib-wrapper-exit-to-app\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Go to CNDB app\" data-placement=\"bottom\">\n  </span>\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie(domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='settings-applications' class='click' data-url='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span id=\"pib-wrapper-exit-to-app\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Go to CNDB app\" data-placement=\"bottom\">\n  </span>\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
       $("article #main-body").html(articleHtml);
       bindClicks();
 
@@ -55,9 +57,9 @@ verifyLoginCredentials = function(callback) {
    * SECURE AUTHENTICATION MUST BE WHOLLY SERVER SIDE.
    */
   var args, hash, link, secret;
-  hash = $.cookie("ssarherps_auth");
-  secret = $.cookie("ssarherps_secret");
-  link = $.cookie("ssarherps_link");
+  hash = $.cookie(domain + "_auth");
+  secret = $.cookie(domain + "_secret");
+  link = $.cookie(domain + "_link");
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post(adminParams.loginApiTarget, args, "json").done(function(result) {
     if (result.status === true) {
@@ -79,7 +81,7 @@ $(function() {
       return openTab(adminParams.adminPageUrl);
     });
   }
-  return loadJS("https://ssarherps.org/cndb/bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
+  return loadJS("https://" + domain + ".org/bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
     return $("[data-toggle='tooltip']").tooltip();
   });
 });
