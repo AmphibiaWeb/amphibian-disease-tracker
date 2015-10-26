@@ -1449,7 +1449,6 @@ class UserFunctions extends DBHelper
                 'raw_cookie' => $raw_data,
                 'basis' => $value_create,
                 'expires' => "{expires:$expire_days,path:'/'}",
-                "data" => $xml->getXml()
             );
         } catch (Exception $e) {
             return array('status' => false,'error' => 'Unexpected exception in cookies: '.$e->getMessage(),'provided_data' => array('user_data' => $username,'data_flag' => $password_or_is_data,'remote' => $remote));
@@ -1659,7 +1658,8 @@ class UserFunctions extends DBHelper
                     $tag = array_pop($xml_data);
                     $tag = $this->sanitize(substr($tag, 0, -1));
                     $tag = '<'.$tag.'>';
-                    $xml = new Xml($data);
+                    $xml = new Xml();
+                    $xml->setXml($data);
                     $tag_data = $xml->getTagContents($tag);
                     $clean_tag_data = $this->sanitize($tag_data);
                     $new_data = $xml->updateTag($tag, $clean_tag_data);
@@ -1978,7 +1978,8 @@ class UserFunctions extends DBHelper
                 # We need to update the "data" column with the $algo and
                 # $rounds data
                 $data = $userdata['data'];
-                $xml = new Xml($data);
+                $xml = new Xml();
+                $xml->setXml($data);
                 $data = $xml->updateTag('<rounds>', $this->sanitize($rounds));
                 $data = $xml->updateTag('<algo>', $this->sanitize($algo));
 
@@ -2061,7 +2062,8 @@ class UserFunctions extends DBHelper
                 # We need to update the "data" column with the $algo and
                 # $rounds data
                 $data = $currentUser['data'];
-                $xml = new Xml($data);
+                $xml = new Xml();
+                $xml->setXml($data);
                 $backupData = $data;
                 $backupPassword = $currentUser[$this->pwColumn];
                 $data = $xml->updateTag("<rounds>",$this->sanitize($rounds));
