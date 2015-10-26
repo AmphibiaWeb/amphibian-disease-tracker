@@ -89,6 +89,7 @@ module.exports = (grunt) ->
             cascade: true
         files:
           "js/c.min.js":["js/c.js"]
+          "js/admin.min.js":["js/admin.js"]
       minpurl:
         options:
           sourceMap:true
@@ -123,7 +124,6 @@ module.exports = (grunt) ->
       target:
         files:
           "css/main.min.css":["css/main.css"]
-          "css/dropzone.min.css":["css/shadow-dropzone.css"]
     coffee:
       compile:
         options:
@@ -132,7 +132,8 @@ module.exports = (grunt) ->
           sourceMapDir: "js/maps"
           sourceMap: true
         files:
-          "js/c.js":["coffee/core.coffee"]
+          "js/c.js":["coffee/core.coffee", "coffee/geo.coffee"]
+          "js/admin.js":["coffee/admin.coffee"]
     watch:
       scripts:
         files: ["coffee/*.coffee"]

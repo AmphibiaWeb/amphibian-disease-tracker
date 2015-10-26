@@ -101,8 +101,8 @@ roundNumberSigfig = (number, digits = 0) ->
   needDigits = digits - trailingDigits.length
   trailingDigits += Array(needDigits + 1).join("0")
   "#{significand}#{trailingDigits}"
-  
-  
+
+
 jsonTo64 = (obj) ->
   if typeof obj is "array"
     obj = toObject(arr)
@@ -644,33 +644,38 @@ lightboxImages = (selector = ".lightboximage", lookDeeply = false) ->
       quitOnDocClick: true
       quitOnImgClick: true
   jqo = if lookDeeply then d$(selector) else $(selector)
-  jqo
-  .click (e) ->
-    try
-      $(this).imageLightbox(options).startImageLightbox()
-      # We want to stop the events propogating up for these
-      e.preventDefault()
-      e.stopPropagation()
-      console.warn("Event propagation was stopped when clicking on this.")
-    catch e
-      console.error("Unable to lightbox this image!")
-  # Set up the items
-  .each ->
-    console.log("Using selectors '#{selector}' / '#{this}' for lightboximages")
-    try
-      if $(this).prop("tagName").toLowerCase() is "img" and $(this).parent().prop("tagName").toLowerCase() isnt "a"
-        tagHtml = $(this).removeClass("lightboximage").prop("outerHTML")
-        imgUrl = switch
-          when not isNull($(this).attr("data-layzr-retina"))
-            $(this).attr("data-layzr-retina")
-          when not isNull($(this).attr("data-layzr"))
-            $(this).attr("data-layzr")
-          else
-            $(this).attr("src")
-        $(this).replaceWith("<a href='#{imgUrl}' class='lightboximage'>#{tagHtml}</a>")
-    catch e
-      console.log("Couldn't parse through the elements")
-
+  loadJS "bower_components/imagelightbox/dist/imagelightbox.min.js", ->
+    jqo
+    .click (e) ->
+      try
+        # We want to stop the events propogating up for these
+        e.preventDefault()
+        e.stopPropagation()
+        $(this).imageLightbox(options).startImageLightbox()
+        console.warn("Event propagation was stopped when clicking on this.")
+      catch e
+        console.error("Unable to lightbox this image!")
+    # Set up the items
+    .each ->
+      console.log("Using selectors '#{selector}' / '#{this}' for lightboximages")
+      try
+        if $(this).prop("tagName").toLowerCase() is "img" and $(this).parent().prop("tagName").toLowerCase() isnt "a"
+          tagHtml = $(this).removeClass("lightboximage").prop("outerHTML")
+          imgUrl = switch
+            when not isNull($(this).attr("data-layzr-retina"))
+              $(this).attr("data-layzr-retina")
+            when not isNull($(this).attr("data-layzr"))
+              $(this).attr("data-layzr")
+            when not isNull($(this).attr("data-lightbox-image"))
+              $(this).attr("data-lightbox-image")
+            else
+              $(this).attr("src")
+          $(this).replaceWith("<a href='#{imgUrl}' class='lightboximage'>#{tagHtml}</a>")
+          $("a[href='#{imgUrl}']").imageLightbox(options)
+        # Otherwise, we shouldn't need to do anything
+      catch e
+        console.log("Couldn't parse through the elements")
+    console.info "Lightboxed the following:", jqo
 
 
 
@@ -749,3 +754,8 @@ $ ->
     $('[data-toggle="tooltip"]').tooltip()
   catch e
     console.warn("Tooltips were attempted to be set up, but do not exist")
+  try
+    checkAdmin()
+    if adminParams?.loadAdminUi is true
+      loadJS "js/admin.min.js", ->
+        loadAdminUi()
