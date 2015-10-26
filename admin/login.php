@@ -557,7 +557,8 @@ else if($_REQUEST['q']=='create')
         $prefill_fname = $_POST['fname'];
         $createform = "<style type='text/css'>.hide { display:none !important; }</style>
 <link rel='stylesheet' type='text/css' href='".$relative_path."bower_components/bootstrap/dist/css/bootstrap.min.css'/>
-              <div id='password_security' class='bs-callout bs-callout-info invisible col-sm-4 hidden-xs'>
+<section class='clearfix'>
+              <div id='password_security' class='bs-callout bs-callout-info invisible col-sm-4 hidden-xs pull-right'>
 
               </div>
 	    <form id='login' method='post' action='?q=create&amp;s=next' class='form-horizontal pull-left col-sm-8 creation-form'>
@@ -624,7 +625,9 @@ else if($_REQUEST['q']=='create')
               <br class='clearfix'/>
 	      <button id='createUser_submit' class='btn btn-success btn-lg col-xs-12 col-lg-3' disabled='disabled'>Create</button>
 </fieldset>
-	    </form><br class='clear'/>";
+	    </form>
+</section>
+<br class='clear'/>";
         $secnotice="<br/><p><small>Remember your security best practices! Do not use the same password you use for other sites. While your information is <a href='http://en.wikipedia.org/wiki/Cryptographic_hash_function' $newwindow>hashed</a> with a multiple-round hash function, <a href='http://arstechnica.com/security/2013/05/how-crackers-make-minced-meat-out-of-your-passwords/' $newwindow>passwords are easy to crack!</a></small></p>
 ";
         $createform.=$secnotice; # Password security notice
