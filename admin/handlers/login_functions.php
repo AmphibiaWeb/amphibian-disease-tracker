@@ -970,23 +970,23 @@ class UserFunctions extends DBHelper
     public function lookupUser($username, $pw, $return = true, $totp_code = false, $override = false)
     {
         /***
-     * Primary function to check login validation.
-     *
-     * @param string|int $username a username looking at a column set by the
-     * usercol of this object
-     * @param string $pw the plaintext password of the user
-     * @param bool $return whether to return user data, or just the
-     *                      boolean lookup state
-     * @param bool|int $totp_code - false if none is needed/given,
-     *                              otherwise the code
-     * @param bool $override
-     ***/
+         * Primary function to check login validation.
+         *
+         * @param string|int $username a username looking at a column set by the
+         * usercol of this object
+         * @param string $pw the plaintext password of the user
+         * @param bool $return whether to return user data, or just the
+         *                      boolean lookup state
+         * @param bool|int $totp_code - false if none is needed/given,
+         *                              otherwise the code
+         * @param bool $override
+         ***/
 
-    if (strlen($pw) > 8192) {
-        throw(new Exception('Passwords must be less than 8192 characters in length.'));
-    }
-    # check it's a valid email! validation skipped.
-    $xml = new Xml();
+        if (strlen($pw) > 8192) {
+            throw(new Exception('Passwords must be less than 8192 characters in length.'));
+        }
+        # check it's a valid email! validation skipped.
+        $xml = new Xml();
         $result = $this->lookupItem($username, $this->userColumn);
         if ($result !== false) {
             try {
@@ -997,17 +997,18 @@ class UserFunctions extends DBHelper
                     $hash = new Stronghash();
                     $data = json_decode($userdata[$this->pwColumn], true);
                     $original_data = $data;
-                # Decrypt the password if totp_code is_numeric()
-                if (is_numeric($totp_code)) {
-                    $pw = $this->decryptWithStoredKey($pw);
-                }
+                    # Decrypt the password if totp_code is_numeric()
+                    if (is_numeric($totp_code)) {
+                        $pw = $this->decryptWithStoredKey($pw);
+                    }
                     if(empty($data) || empty($data['salt']))
                     {
                         try
                         {
                             # Try legacy
-                            $data['algo'] = $xml->getTagContents($userdata['data'],"<algo>");
-                            $data['rounds'] = $xml->getTagContents($userdata['data'],"<rounds>");
+                            $xml->setXml($userdata["data"]);
+                            $data['algo'] = $xml->getTagContents("<algo>");
+                            $data['rounds'] = $xml->getTagContents("<rounds>");
                             /* Default rounds for sha512 */
                             if(empty($data['rounds'])) $data['rounds'] = 10000;
                             $data['salt'] = null;
@@ -1023,68 +1024,68 @@ class UserFunctions extends DBHelper
                     if ($hash->verifyHash($pw, $data)) {
                         $this->getUser($userdata[$this->userColumn]);
 
-                    ## Does the user have 2-factor authentication?
-                    if ($this->has2FA()) {
-                        $l = $this->openDB();
-                        if (empty($totp_code)) {
-                            # The user has 2FA turned on, prompt it
-                            /*
-                             * Here we create a temporary, dummy
-                             * password for the client to save and
-                             * pass again. Since we're storing an
-                             * encrypted hash, even the data being
-                             * taken is no more "public" than it
-                             * already is in the password
-                             * column. However, it keeps us validating
-                             * a session in progress of TOTP-ing.
-                             */
-                            $key = Stronghash::createSalt();
-                            $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='$key' WHERE `".$this->userColumn."`='".$this->username."'";
-                            $r = mysqli_query($l, $query);
-                            if ($r === false) {
-                                throw(new Exception('Unable to encrypt password'));
+                        ## Does the user have 2-factor authentication?
+                        if ($this->has2FA()) {
+                            $l = $this->openDB();
+                            if (empty($totp_code)) {
+                                # The user has 2FA turned on, prompt it
+                                /*
+                                 * Here we create a temporary, dummy
+                                 * password for the client to save and
+                                 * pass again. Since we're storing an
+                                 * encrypted hash, even the data being
+                                 * taken is no more "public" than it
+                                 * already is in the password
+                                 * column. However, it keeps us validating
+                                 * a session in progress of TOTP-ing.
+                                 */
+                                $key = Stronghash::createSalt();
+                                $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='$key' WHERE `".$this->userColumn."`='".$this->username."'";
+                                $r = mysqli_query($l, $query);
+                                if ($r === false) {
+                                    throw(new Exception('Unable to encrypt password'));
+                                }
+                                $encrypted_pw = urlencode(self::encryptThis($key, $pw));
+
+                                # Encrypt the keys to validate the user asynchronously
+                                # Of course, this this was called asynchronously, the keys will be empty ...
+
+                                $cookiekey = $this->domain.'_secret';
+                                #$cookiekey=str_replace(".","_",$this->domain)."_secret";
+                                $cookieauth = $this->domain.'_auth';
+                                #$cookieauth=str_replace(".","_",$this->domain)."_auth";
+
+                                $encrypted_secret = self::encryptThis($key, $_COOKIE[$cookiekey]);
+                                $encrypted_hash = self::encryptThis($key, $_COOKIE[$cookieauth]);
+
+                                return array(false,'status' => false,'totp' => true,'error' => false,'human_error' => 'Please enter the code generated by the authenticator application on your device.','encrypted_password' => $encrypted_pw,'encrypted_secret' => $encrypted_secret,'encrypted_hash' => $encrypted_hash);
                             }
-                            $encrypted_pw = urlencode(self::encryptThis($key, $pw));
-
-                            # Encrypt the keys to validate the user asynchronously
-                            # Of course, this this was called asynchronously, the keys will be empty ...
-
-                            $cookiekey = $this->domain.'_secret';
-                            #$cookiekey=str_replace(".","_",$this->domain)."_secret";
-                            $cookieauth = $this->domain.'_auth';
-                            #$cookieauth=str_replace(".","_",$this->domain)."_auth";
-
-                            $encrypted_secret = self::encryptThis($key, $_COOKIE[$cookiekey]);
-                            $encrypted_hash = self::encryptThis($key, $_COOKIE[$cookieauth]);
-
-                            return array(false,'status' => false,'totp' => true,'error' => false,'human_error' => 'Please enter the code generated by the authenticator application on your device.','encrypted_password' => $encrypted_pw,'encrypted_secret' => $encrypted_secret,'encrypted_hash' => $encrypted_hash);
+                            if ($this->verifyTOTP($totp_code) !== true) {
+                                # Bad TOTP code
+                                return array(false,'status' => false,'totp' => true,'error' => 'Invalid TOTP code','human_error' => 'Bad verification code. Please try again.');
+                            }
+                            # Remove the encryption key
+                            $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='' WHERE `".$this->userColumn."`='".$this->username."'";
+                            mysqli_query($l, $query);
+                            # Return decrypted userdata, if applicable
+                            # The salt is the password key "salt"
+                            $decname = self::decryptThis($data['salt'].$pw, $userdata['name']);
+                            if (empty($decname)) {
+                                $decname = $userdata['name'];
+                            }
+                            if (!$return) {
+                                return array(true,$decname,'status' => true);
+                            } else {
+                                $returning = array(true,$userdata,'status' => true,'data' => $userdata);
+                                return $returning;
+                            }
                         }
-                        if ($this->verifyTOTP($totp_code) !== true) {
-                            # Bad TOTP code
-                            return array(false,'status' => false,'totp' => true,'error' => 'Invalid TOTP code','human_error' => 'Bad verification code. Please try again.');
-                        }
-                        # Remove the encryption key
-                        $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->tmpColumn."`='' WHERE `".$this->userColumn."`='".$this->username."'";
-                        mysqli_query($l, $query);
-                        # Return decrypted userdata, if applicable
-                        # The salt is the password key "salt"
-                        $decname = self::decryptThis($data['salt'].$pw, $userdata['name']);
-                        if (empty($decname)) {
-                            $decname = $userdata['name'];
-                        }
-                        if (!$return) {
-                            return array(true,$decname,'status' => true);
-                        } else {
-                            $returning = array(true,$userdata,'status' => true,'data' => $userdata);
-                            return $returning;
-                        }
-                    }
 
                         if (($userdata['flag'] || $override) && !$userdata['disabled']) {
                             # This user is OK and not disabled, nor pending validation
-                        # Return decrypted userdata, if applicable
-                        # The salt is the password key "salt"
-                        $decname = self::decryptThis($data['salt'].$pw, $userdata['name']);
+                            # Return decrypted userdata, if applicable
+                            # The salt is the password key "salt"
+                            $decname = self::decryptThis($data['salt'].$pw, $userdata['name']);
                             if (empty($decname)) {
                                 $decname = $userdata['name'];
                             }
@@ -1101,41 +1102,41 @@ class UserFunctions extends DBHelper
                             }
                             if ($userdata['disabled']) {
                                 # do a time check
-                            if ($userdata['dtime'] + 3600 > self::microtime_float()) {
-                                $rem = intval($userdata['dtime']) - intval(self::microtime_float()) + 3600;
-                                $min = $rem % 60;
-                                $sec = $rem - 60 * $min;
+                                if ($userdata['dtime'] + 3600 > self::microtime_float()) {
+                                    $rem = intval($userdata['dtime']) - intval(self::microtime_float()) + 3600;
+                                    $min = $rem % 60;
+                                    $sec = $rem - 60 * $min;
 
-                                return array(false,'status' => false,'message' => 'Your account has been disabled for too many failed login attempts. Please try again in '.$min.' minutes and '.$sec.' seconds.');
+                                    return array(false,'status' => false,'message' => 'Your account has been disabled for too many failed login attempts. Please try again in '.$min.' minutes and '.$sec.' seconds.');
+                                } else {
+                                    # Clear login disabled flag
+                                    $query1 = 'UPDATE `'.$this->getTable().'` SET `disabled`=false WHERE `id`='.$userdata['id'];
+                                    $l = $this->openDB();
+                                    $result = mysqli_query($l, $query1);
+                                }
+                            }
+                            # All checks passed.
+                            if (!$return) {
+                                $decname = self::decryptThis($salt.$pw, $userdata['name']);
+                                if (empty($decname)) {
+                                    $decname = $userdata['name'];
+                                }
+
+                                return array(true,$decname,'status' => true);
                             } else {
-                                # Clear login disabled flag
-                                $query1 = 'UPDATE `'.$this->getTable().'` SET `disabled`=false WHERE `id`='.$userdata['id'];
-                                $l = $this->openDB();
-                                $result = mysqli_query($l, $query1);
-                            }
-                            }
-                        # All checks passed.
-                        if (!$return) {
-                            $decname = self::decryptThis($salt.$pw, $userdata['name']);
-                            if (empty($decname)) {
-                                $decname = $userdata['name'];
-                            }
+                                $userdata['img'] = $this->getUserPicture();
+                                $returning = array(true,$userdata,'status' => true,'data' => $userdata);
 
-                            return array(true,$decname,'status' => true);
-                        } else {
-                            $userdata['img'] = $this->getUserPicture();
-                            $returning = array(true,$userdata,'status' => true,'data' => $userdata);
-
-                            return $returning;
-                        }
+                                return $returning;
+                            }
                         }
                     } else {
                         /*
                           , "detail" => $hash->verifyHash($pw, $data, null, null, null, true), "given" => $pw, "stored_data_reference" => $data, "original_data" => $original_data, "userdata" => $userdata
-                         */
+                        */
                         return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad Password');
                     }
-                # end good username loop
+                    # end good username loop
                 } else {
                     return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad username','desc' => 'No numeric id');
                 }
@@ -1387,9 +1388,9 @@ class UserFunctions extends DBHelper
             $cookiepic = $this->domain.'_pic';
             $cookielink = $this->domain.'_link';
 
-            $xml = new Xml();
-            $user_greet = $xml->getTagContents($userdata['name'], '<fname>');
-            $user_full_name = $xml->getTagContents($userdata['name'], '<name>'); // for now
+            $xml = new Xml($userdata["name"]);
+            $user_greet = $xml->getTagContents('<fname>');
+            $user_full_name = $xml->getTagContents('<name>'); // for now
 
             setcookie($cookieauth, $value, $expire);
             setcookie($cookiekey, $cookie_secret, $expire);
@@ -1646,10 +1647,10 @@ class UserFunctions extends DBHelper
                     $tag = array_pop($xml_data);
                     $tag = $this->sanitize(substr($tag, 0, -1));
                     $tag = '<'.$tag.'>';
-                    $xml = new Xml();
-                    $tag_data = $xml->getTagContents($data, $tag);
+                    $xml = new Xml($data);
+                    $tag_data = $xml->getTagContents($tag);
                     $clean_tag_data = $this->sanitize($tag_data);
-                    $new_data = $xml->updateTag($d, $tag, $tag_data);
+                    $new_data = $xml->updateTag($tag, $clean_tag_data);
                 } else {
                     $jn = json_decode($data, true);
                     foreach ($jn as $k => $v) {
@@ -1964,10 +1965,10 @@ class UserFunctions extends DBHelper
                 $rounds = $pw1['rounds'];
                 # We need to update the "data" column with the $algo and
                 # $rounds data
-                $xml = new Xml();
                 $data = $userdata['data'];
-                $data = $xml->updateTag($data, '<rounds>', $this->sanitize($rounds));
-                $data = $xml->updateTag($data, '<algo>', $this->sanitize($algo));
+                $xml = new Xml($data);
+                $data = $xml->updateTag('<rounds>', $this->sanitize($rounds));
+                $data = $xml->updateTag('<algo>', $this->sanitize($algo));
 
                 /*
                  * We can't use writeToUser() since it requires user
@@ -2047,12 +2048,12 @@ class UserFunctions extends DBHelper
 
                 # We need to update the "data" column with the $algo and
                 # $rounds data
-                $xml = new Xml();
                 $data = $currentUser['data'];
+                $xml = new Xml($data);
                 $backupData = $data;
                 $backupPassword = $currentUser[$this->pwColumn];
-                $data = $xml->updateTag($data,"<rounds>",$this->sanitize($rounds));
-                $data = $xml->updateTag($data,"<algo>",$this->sanitize($algo));
+                $data = $xml->updateTag("<rounds>",$this->sanitize($rounds));
+                $data = $xml->updateTag("<algo>",$this->sanitize($algo));
 
 
                 /*
