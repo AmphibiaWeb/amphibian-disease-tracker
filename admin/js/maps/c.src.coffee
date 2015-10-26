@@ -437,6 +437,7 @@ lightboxImages = (selector = ".lightboximage", lookDeeply = false) ->
         # Otherwise, we shouldn't need to do anything
       catch e
         console.log("Couldn't parse through the elements")
+    console.info "Lightboxed the following:", jqo
 
 
 
@@ -577,10 +578,11 @@ toggleNewUserSubmit = (selector = "#createUser_submit") ->
 evalRequirements = (selector = "#password_security", passwordSelector = "#password") ->
   unless $("#strength-meter").exists()
     html = "<h4>Password Requirements</h4><div id='strength-meter'><div id='strength-requirements'><p style='float:left;margin-top:2em;font-weight:700;'>Character Classes:</p><div id='strength-alpha'><p class='label'>a</p><div class='strength-eval'></div></div><div id='strength-alphacap'><p class='label'>A</p><div class='strength-eval'></div></div><div id='strength-numspecial'><p class='label'>1/!</p><div class='strength-eval'></div></div></div><div id='strength-bar'><label for='password-strength'>Strength: </label><progress id='password-strength' max='5'></progress><p>Time to crack: <span id='crack-time'></span></p></div></div>"
-    notice = "<br/><br/><p>We require a password of at least #{window.passwords.minLength} characters with at least one upper case letter, at least one lower case letter, and at least one digit or special character.</p><p>You can also use <a href='http://imgs.xkcd.com/comics/password_strength.png'>any long password</a> of at least #{window.passwords.overrideLength} characters, with no security requirements.</p>"
+    notice = "<br/><br/><p>We require a password of at least #{window.passwords.minLength} characters with at least one upper case letter, at least one lower case letter, and at least one digit or special character.</p><p>You can also use <a href='http://imgs.xkcd.com/comics/password_strength.png' class='lightboximage'>any long password</a> of at least #{window.passwords.overrideLength} characters, with no security requirements.</p>"
     $(selector)
     .html(html + notice)
     .removeClass('invisible')
+    lightboxImages()
     $("#helpText").removeClass("invisible")
   pass = $(passwordSelector).val()
   pstrength = zxcvbn(pass)
