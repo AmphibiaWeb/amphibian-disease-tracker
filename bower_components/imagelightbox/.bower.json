@@ -24,6 +24,6 @@
     "commit": "000477ffc4842dd325ee6dd540b8df43312a06c0"
   },
   "_source": "git://github.com/rejas/imagelightbox.git",
-  "_target": "~0.3.2",
+  "_target": "^0.3.2",
   "_originalSource": "git://github.com/rejas/imagelightbox.git"
 }

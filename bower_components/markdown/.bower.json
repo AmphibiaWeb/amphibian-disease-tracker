@@ -9,6 +9,6 @@
     "commit": "165fedf98553112415e0d5a8351fde6322b4890c"
   },
   "_source": "git://github.com/evilstreak/markdown-js.git",
-  "_target": "~0.5.0",
+  "_target": "^0.5.0",
   "_originalSource": "markdown"
 }

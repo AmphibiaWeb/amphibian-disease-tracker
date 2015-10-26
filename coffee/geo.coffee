@@ -8,7 +8,8 @@
 # CartoDB account name
 cartoAccount = "tigerhawkvok"
 
-cartoMap, cartoVis
+cartoMap = null
+cartoVis = null
 
 init = ->
   ###

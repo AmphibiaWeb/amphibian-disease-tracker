@@ -26,6 +26,6 @@
     "commit": "9fc2e74fe28c912731dc78d8b2e16fd4d7abcd51"
   },
   "_source": "git://github.com/WhichBrowser/WhichBrowser.git",
-  "_target": "~1.0.1020",
+  "_target": "^1.0.1020",
   "_originalSource": "whichbrowser"
 }
