@@ -560,41 +560,43 @@
       quitOnImgClick: true
     };
     jqo = lookDeeply ? d$(selector) : $(selector);
-    return jqo.click(function(e) {
-      try {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).imageLightbox(options).startImageLightbox();
-        return console.warn("Event propagation was stopped when clicking on this.");
-      } catch (_error) {
-        e = _error;
-        return console.error("Unable to lightbox this image!");
-      }
-    }).each(function() {
-      var e, imgUrl, tagHtml;
-      console.log("Using selectors '" + selector + "' / '" + this + "' for lightboximages");
-      try {
-        if ($(this).prop("tagName").toLowerCase() === "img" && $(this).parent().prop("tagName").toLowerCase() !== "a") {
-          tagHtml = $(this).removeClass("lightboximage").prop("outerHTML");
-          imgUrl = (function() {
-            switch (false) {
-              case !!isNull($(this).attr("data-layzr-retina")):
-                return $(this).attr("data-layzr-retina");
-              case !!isNull($(this).attr("data-layzr")):
-                return $(this).attr("data-layzr");
-              case !!isNull($(this).attr("data-lightbox-image")):
-                return $(this).attr("data-lightbox-image");
-              default:
-                return $(this).attr("src");
-            }
-          }).call(this);
-          $(this).replaceWith("<a href='" + imgUrl + "' class='lightboximage'>" + tagHtml + "</a>");
-          return $("a[href='" + imgUrl + "']").imageLightbox(options);
+    return loadJS(window.totpParams.relative + "bower_components/imagelightbox/dist/imagelightbox.min.js", function() {
+      return jqo.click(function(e) {
+        try {
+          e.preventDefault();
+          e.stopPropagation();
+          $(this).imageLightbox(options).startImageLightbox();
+          return console.warn("Event propagation was stopped when clicking on this.");
+        } catch (_error) {
+          e = _error;
+          return console.error("Unable to lightbox this image!");
         }
-      } catch (_error) {
-        e = _error;
-        return console.log("Couldn't parse through the elements");
-      }
+      }).each(function() {
+        var e, imgUrl, tagHtml;
+        console.log("Using selectors '" + selector + "' / '" + this + "' for lightboximages");
+        try {
+          if ($(this).prop("tagName").toLowerCase() === "img" && $(this).parent().prop("tagName").toLowerCase() !== "a") {
+            tagHtml = $(this).removeClass("lightboximage").prop("outerHTML");
+            imgUrl = (function() {
+              switch (false) {
+                case !!isNull($(this).attr("data-layzr-retina")):
+                  return $(this).attr("data-layzr-retina");
+                case !!isNull($(this).attr("data-layzr")):
+                  return $(this).attr("data-layzr");
+                case !!isNull($(this).attr("data-lightbox-image")):
+                  return $(this).attr("data-lightbox-image");
+                default:
+                  return $(this).attr("src");
+              }
+            }).call(this);
+            $(this).replaceWith("<a href='" + imgUrl + "' class='lightboximage'>" + tagHtml + "</a>");
+            return $("a[href='" + imgUrl + "']").imageLightbox(options);
+          }
+        } catch (_error) {
+          e = _error;
+          return console.log("Couldn't parse through the elements");
+        }
+      });
     });
   };
 

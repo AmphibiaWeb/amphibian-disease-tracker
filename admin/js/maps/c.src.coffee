@@ -406,36 +406,37 @@ lightboxImages = (selector = ".lightboximage", lookDeeply = false) ->
       quitOnDocClick: true
       quitOnImgClick: true
   jqo = if lookDeeply then d$(selector) else $(selector)
-  jqo
-  .click (e) ->
-    try
-      # We want to stop the events propogating up for these
-      e.preventDefault()
-      e.stopPropagation()
-      $(this).imageLightbox(options).startImageLightbox()
-      console.warn("Event propagation was stopped when clicking on this.")
-    catch e
-      console.error("Unable to lightbox this image!")
-  # Set up the items
-  .each ->
-    console.log("Using selectors '#{selector}' / '#{this}' for lightboximages")
-    try
-      if $(this).prop("tagName").toLowerCase() is "img" and $(this).parent().prop("tagName").toLowerCase() isnt "a"
-        tagHtml = $(this).removeClass("lightboximage").prop("outerHTML")
-        imgUrl = switch
-          when not isNull($(this).attr("data-layzr-retina"))
-            $(this).attr("data-layzr-retina")
-          when not isNull($(this).attr("data-layzr"))
-            $(this).attr("data-layzr")
-          when not isNull($(this).attr("data-lightbox-image"))
-            $(this).attr("data-lightbox-image")
-          else
-            $(this).attr("src")
-        $(this).replaceWith("<a href='#{imgUrl}' class='lightboximage'>#{tagHtml}</a>")
-        $("a[href='#{imgUrl}']").imageLightbox(options)
-      # Otherwise, we shouldn't need to do anything
-    catch e
-      console.log("Couldn't parse through the elements")
+  loadJS "#{window.totpParams.relative}bower_components/imagelightbox/dist/imagelightbox.min.js", ->
+    jqo
+    .click (e) ->
+      try
+        # We want to stop the events propogating up for these
+        e.preventDefault()
+        e.stopPropagation()
+        $(this).imageLightbox(options).startImageLightbox()
+        console.warn("Event propagation was stopped when clicking on this.")
+      catch e
+        console.error("Unable to lightbox this image!")
+    # Set up the items
+    .each ->
+      console.log("Using selectors '#{selector}' / '#{this}' for lightboximages")
+      try
+        if $(this).prop("tagName").toLowerCase() is "img" and $(this).parent().prop("tagName").toLowerCase() isnt "a"
+          tagHtml = $(this).removeClass("lightboximage").prop("outerHTML")
+          imgUrl = switch
+            when not isNull($(this).attr("data-layzr-retina"))
+              $(this).attr("data-layzr-retina")
+            when not isNull($(this).attr("data-layzr"))
+              $(this).attr("data-layzr")
+            when not isNull($(this).attr("data-lightbox-image"))
+              $(this).attr("data-lightbox-image")
+            else
+              $(this).attr("src")
+          $(this).replaceWith("<a href='#{imgUrl}' class='lightboximage'>#{tagHtml}</a>")
+          $("a[href='#{imgUrl}']").imageLightbox(options)
+        # Otherwise, we shouldn't need to do anything
+      catch e
+        console.log("Couldn't parse through the elements")
 
 
 

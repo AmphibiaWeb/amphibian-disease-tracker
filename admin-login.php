@@ -25,7 +25,6 @@
     <script type="text/javascript" src="js/xmlToJSON.min.js"></script>
     <script type="text/javascript" src="bower_components/js-base64/base64.min.js"></script>
     <script type="text/javascript" src="bower_components/picturefill/dist/picturefill.min.js"></script>
-    <script src="bower_components/touch-imagelightbox/dist/touch-imagelightbox.min.js"></script>
     <script type="text/javascript" src="js/c.min.js"></script>
   </head>
   <body>
