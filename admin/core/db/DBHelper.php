@@ -470,9 +470,9 @@ class DBHelper
             } else {
                 $res2 = mysqli_query($l, $querystring);
                 if ($res2 !== false) {
-                    mysqli_query($l, 'COMMIT');
-
-                    return true;
+                    $r = mysqli_query($l, 'COMMIT');
+                    
+                    return $r;
                 } else {
                     $r = mysqli_query($l, 'ROLLBACK');
 

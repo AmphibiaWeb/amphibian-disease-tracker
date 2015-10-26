@@ -931,10 +931,10 @@ class UserFunctions extends DBHelper
       $test_res = $this->addItem($store);
       if ($test_res) {
           # Get ID value
-        # The TOTP column has never been set up, so no worries
-        # We do want to set the override, though, in case the manual
-        # authentication flag has been set.
-        $res = $this->lookupUser($user, $pw_in, true, false, true);
+          # The TOTP column has never been set up, so no worries
+          # We do want to set the override, though, in case the manual
+          # authentication flag has been set.
+          $res = $this->lookupUser($user, $pw_in, true, false, true);
           $userdata = $res[1];
           $id = $userdata['id'];
           $message = 'Success!';
@@ -954,7 +954,7 @@ class UserFunctions extends DBHelper
 
               return array_merge(array('status' => true, 'message' => $message), $userdata, $cookies, $auth_result);
           } else {
-              return array('status' => false,'error' => 'Failure: Unable to verify user creation','add' => $test_res, "lookup_result" => $res, 'userdata' => $userdata);
+              return array('status' => false,'error' => 'Failure: Unable to verify user creation','add' => $test_res, "lookup_result" => $res, "storage_passed" => $store, 'userdata' => $userdata);
           }
       } else {
           return array('status' => false,'error' => 'Failure: unknown database error. Your user was unable to be saved.', "storage_data" => $store, "field_data" => $fields, "add_result" => $test_res);
