@@ -618,7 +618,7 @@ else if($_REQUEST['q']=='create')
               </label>
 	      <input type='text' name='honey' id='honey' class='hide'/>
 </div>
-        <p>Please enter both words shown in the prompt below</p>
+        <p>Please solve the <a href='https://en.wikipedia.org/wiki/CAPTCHA'>CAPTCHA test</a> below</p>
         <script src='https://www.google.com/recaptcha/api.js'></script>
         <div class=\"g-recaptcha\" data-sitekey=\"".$recaptcha_public_key."\"></div>
 
