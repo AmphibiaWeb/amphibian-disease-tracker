@@ -5,7 +5,7 @@
 window.adminParams = new Object()
 adminParams.domain = "amphibiandisease"
 adminParams.apiTarget = "admin_api.php"
-adminParams.adminPageUrl = "http://#{domain}.org/admin-page.html"
+adminParams.adminPageUrl = "http://#{adminParams.domain}.org/admin-page.html"
 adminParams.loginDir = "admin/"
 adminParams.loginApiTarget = "#{adminParams.loginDir}async_login_handler.php"
 
@@ -20,7 +20,7 @@ window.loadAdminUi = ->
       # Post verification
       articleHtml = """
       <h3>
-        Welcome, #{$.cookie("#{domain}_name")}
+        Welcome, #{$.cookie("#{adminParams.domain}_name")}
         <span id="pib-wrapper-settings" class="pib-wrapper" data-toggle="tooltip" title="User Settings" data-placement="bottom">
           <paper-icon-button icon='settings-applications' class='click' data-url='#{data.login_url}'></paper-icon-button>
         </span>
@@ -57,9 +57,9 @@ verifyLoginCredentials = (callback) ->
   # could force the local JS check to succeed.
   # SECURE AUTHENTICATION MUST BE WHOLLY SERVER SIDE.
   ###
-  hash = $.cookie("#{domain}_auth")
-  secret = $.cookie("#{domain}_secret")
-  link = $.cookie("#{domain}_link")
+  hash = $.cookie("#{adminParams.domain}_auth")
+  secret = $.cookie("#{adminParams.domain}_secret")
+  link = $.cookie("#{adminParams.domain}_link")
   args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
   $.post(adminParams.loginApiTarget,args,"json")
   .done (result) ->
@@ -82,6 +82,6 @@ $ ->
     .unbind()
     .click ->
       openTab(adminParams.adminPageUrl)
-  loadJS "https://#{domain}.org/bower_components/bootstrap/dist/js/bootstrap.min.js", ->
+  loadJS "https://#{adminParams.domain}.org/bower_components/bootstrap/dist/js/bootstrap.min.js", ->
     $("[data-toggle='tooltip']").tooltip()
   # The rest of the onload for the admin has been moved to the core.coffee file.
