@@ -1436,6 +1436,7 @@ class UserFunctions extends DBHelper
           'raw_cookie' => $raw_data,
           'basis' => $value_create,
           'expires' => "{expires:$expire_days,path:'/'}",
+          "data" => $userdata
         );
         } catch (Exception $e) {
             return array('status' => false,'error' => 'Unexpected exception in cookies: '.$e->getMessage(),'provided_data' => array('user_data' => $username,'data_flag' => $password_or_is_data,'remote' => $remote));
