@@ -1,7 +1,7 @@
 (function() {
-  var animateLoad, apiUri, beginChangePassword, byteCount, checkMatchPassword, checkPasswordLive, delay, doAsyncCreate, doAsyncLogin, doEmailCheck, doRemoveAccountAction, doTOTPRemove, doTOTPSubmit, evalRequirements, finishChangePassword, finishPasswordResetHandler, giveAltVerificationOptions, isBlank, isBool, isEmpty, isJson, isNull, isNumber, loadJS, makeTOTP, mapNewWindows, noSubmit, popupSecret, removeAccount, resetPassword, root, roundNumber, saveTOTP, showAdvancedOptions, showInstructions, stopLoad, stopLoadError, toFloat, toInt, toggleNewUserSubmit, verifyPhone, _base, _base1,
-    __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  var activityIndicatorOff, activityIndicatorOn, animateLoad, apiUri, base, base1, beginChangePassword, byteCount, checkMatchPassword, checkPasswordLive, delay, doAsyncCreate, doAsyncLogin, doEmailCheck, doRemoveAccountAction, doTOTPRemove, doTOTPSubmit, evalRequirements, finishChangePassword, finishPasswordResetHandler, giveAltVerificationOptions, isBlank, isBool, isEmpty, isJson, isNull, isNumber, lightboxImages, loadJS, makeTOTP, mapNewWindows, noSubmit, overlayOff, overlayOn, popupSecret, removeAccount, resetPassword, root, roundNumber, saveTOTP, showAdvancedOptions, showInstructions, stopLoad, stopLoadError, toFloat, toInt, toggleNewUserSubmit, verifyPhone,
+    slice = [].slice,
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   root = typeof exports !== "undefined" && exports !== null ? exports : this;
 
@@ -135,7 +135,7 @@
       }
       return function() {
         var args, delayed, obj;
-        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
         obj = this;
         delayed = function() {
           if (!execAsap) {
@@ -154,7 +154,7 @@
 
   Function.prototype.debounce = function() {
     var args, delayed, e, execAsap, func, threshold, timeout;
-    threshold = arguments[0], execAsap = arguments[1], timeout = arguments[2], args = 4 <= arguments.length ? __slice.call(arguments, 3) : [];
+    threshold = arguments[0], execAsap = arguments[1], timeout = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
     if (threshold == null) {
       threshold = 300;
     }
@@ -307,7 +307,7 @@
   }
 
   animateLoad = function(elId, iteration) {
-    var e, selector, _ref;
+    var e, ref, selector;
     if (elId == null) {
       elId = "loader";
     }
@@ -347,7 +347,7 @@
      * to actually re-showing it once hidden.
      */
     $(selector).removeAttr("hidden");
-    if (((_ref = window._metaStatus) != null ? _ref.isLoading : void 0) == null) {
+    if (((ref = window._metaStatus) != null ? ref.isLoading : void 0) == null) {
       if (window._metaStatus == null) {
         window._metaStatus = new Object();
       }
@@ -414,7 +414,7 @@
           return delay(fadeOut, function() {
             $(selector).removeClass("good").attr("active", false).removeAttr("active");
             return delay(1, function() {
-              var aliases, _ref;
+              var aliases, ref;
               $(selector).prop("hidden", true);
 
               /*
@@ -425,7 +425,7 @@
                */
               if ((typeof Browsers !== "undefined" && Browsers !== null ? Browsers.browser : void 0) != null) {
                 aliases = ["Spartan", "Project Spartan", "Edge", "Microsoft Edge", "MS Edge"];
-                if ((_ref = Browsers.browser.browser.name, __indexOf.call(aliases, _ref) >= 0) || Browsers.browser.engine.name === "EdgeHTML") {
+                if ((ref = Browsers.browser.browser.name, indexOf.call(aliases, ref) >= 0) || Browsers.browser.engine.name === "EdgeHTML") {
                   $(selector).remove();
                   return _metaStatus.isLoading = false;
                 } else {
@@ -486,7 +486,7 @@
           return delay(fadeOut, function() {
             $(selector).removeClass("bad").prop("active", false).removeAttr("active");
             return delay(1, function() {
-              var aliases, _ref;
+              var aliases, ref;
               $(selector).prop("hidden", true);
 
               /*
@@ -497,7 +497,7 @@
                */
               if ((typeof Browsers !== "undefined" && Browsers !== null ? Browsers.browser : void 0) != null) {
                 aliases = ["Spartan", "Project Spartan", "Edge", "Microsoft Edge", "MS Edge"];
-                if ((_ref = Browsers.browser.browser.name, __indexOf.call(aliases, _ref) >= 0) || Browsers.browser.engine.name === "EdgeHTML") {
+                if ((ref = Browsers.browser.browser.name, indexOf.call(aliases, ref) >= 0) || Browsers.browser.engine.name === "EdgeHTML") {
                   $(selector).remove();
                   return _metaStatus.isLoading = false;
                 } else {
@@ -523,8 +523,109 @@
     }
   };
 
+  lightboxImages = function(selector, lookDeeply) {
+    var jqo, options;
+    if (selector == null) {
+      selector = ".lightboximage";
+    }
+    if (lookDeeply == null) {
+      lookDeeply = false;
+    }
+
+    /*
+     * Lightbox images with this selector
+     *
+     * If the image has it, wrap it in an anchor and bind;
+     * otherwise just apply to the selector.
+     *
+     * Requires ImageLightbox
+     * https://github.com/rejas/imagelightbox
+     */
+    options = {
+      onStart: function() {
+        return overlayOn();
+      },
+      onEnd: function() {
+        overlayOff();
+        return activityIndicatorOff();
+      },
+      onLoadStart: function() {
+        return activityIndicatorOn();
+      },
+      onLoadEnd: function() {
+        return activityIndicatorOff();
+      },
+      allowedTypes: 'png|jpg|jpeg|gif|bmp|webp',
+      quitOnDocClick: true,
+      quitOnImgClick: true
+    };
+    jqo = lookDeeply ? d$(selector) : $(selector);
+    return jqo.click(function(e) {
+      try {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).imageLightbox(options).startImageLightbox();
+        return console.warn("Event propagation was stopped when clicking on this.");
+      } catch (_error) {
+        e = _error;
+        return console.error("Unable to lightbox this image!");
+      }
+    }).each(function() {
+      var e, imgUrl, tagHtml;
+      console.log("Using selectors '" + selector + "' / '" + this + "' for lightboximages");
+      try {
+        if ($(this).prop("tagName").toLowerCase() === "img" && $(this).parent().prop("tagName").toLowerCase() !== "a") {
+          tagHtml = $(this).removeClass("lightboximage").prop("outerHTML");
+          imgUrl = (function() {
+            switch (false) {
+              case !!isNull($(this).attr("data-layzr-retina")):
+                return $(this).attr("data-layzr-retina");
+              case !!isNull($(this).attr("data-layzr")):
+                return $(this).attr("data-layzr");
+              case !!isNull($(this).attr("data-lightbox-image")):
+                return $(this).attr("data-lightbox-image");
+              default:
+                return $(this).attr("src");
+            }
+          }).call(this);
+          $(this).replaceWith("<a href='" + imgUrl + "' class='lightboximage'>" + tagHtml + "</a>");
+          return $("a[href='" + imgUrl + "']").imageLightbox(options);
+        }
+      } catch (_error) {
+        e = _error;
+        return console.log("Couldn't parse through the elements");
+      }
+    });
+  };
+
+  activityIndicatorOn = function() {
+    return $('<div id="imagelightbox-loading"><div></div></div>').appendTo('body');
+  };
+
+  activityIndicatorOff = function() {
+    $('#imagelightbox-loading').remove();
+    return $("#imagelightbox-overlay").click(function() {
+      return $("#imagelightbox").click();
+    });
+  };
+
+  overlayOn = function() {
+    return $('<div id="imagelightbox-overlay"></div>').appendTo('body');
+  };
+
+  overlayOff = function() {
+    return $('#imagelightbox-overlay').remove();
+  };
+
   $(function() {
-    var e, _base, _base1;
+    var base, base1, e;
+    try {
+      lightboxImages();
+    } catch (_error) {
+      e = _error;
+      console.warn("Couldn't lightbox images! " + e.message);
+      console.warn(e.stack);
+    }
     try {
       if (typeof picturefill === "function") {
         window.picturefill();
@@ -535,14 +636,14 @@
     }
     mapNewWindows();
     try {
-      if ((_base = window.totpParams).tfaLock == null) {
-        _base.tfaLock = false;
+      if ((base = window.totpParams).tfaLock == null) {
+        base.tfaLock = false;
       }
       if (window.latejs == null) {
         window.latejs = new Object();
       }
-      if ((_base1 = window.latejs).done == null) {
-        _base1.done = false;
+      if ((base1 = window.latejs).done == null) {
+        base1.done = false;
       }
       if (window.latejs.done !== true && window.totpParams.tfaLock !== true) {
         if (typeof lateJS === "function") {
@@ -585,12 +686,12 @@
 
   window.passwords.badbg = "#e5786d";
 
-  if ((_base = window.passwords).minLength == null) {
-    _base.minLength = 8;
+  if ((base = window.passwords).minLength == null) {
+    base.minLength = 8;
   }
 
-  if ((_base1 = window.passwords).overrideLength == null) {
-    _base1.overrideLength = 20;
+  if ((base1 = window.passwords).overrideLength == null) {
+    base1.overrideLength = 20;
   }
 
   if (typeof window.totpParams !== 'object') {
@@ -823,7 +924,7 @@
       if (result.status !== true) {
         $("#totp_message").text(result.human_error).addClass("error");
         console.error(result.error);
-        console.warn("" + apiUrlString + "?" + args);
+        console.warn(apiUrlString + "?" + args);
         console.warn(result);
         stopLoadError();
         return false;
@@ -1105,7 +1206,7 @@
       var assetPath;
       $("article").after(html);
       $("article").addClass("blur");
-      assetPath = "" + window.totpParams.relative + "assets/";
+      assetPath = window.totpParams.relative + "assets/";
       $(".android").html("<img src='" + assetPath + "playstore.png' alt='Google Play Store'/>");
       $(".ios").html("<img src='" + assetPath + "appstore.png' alt='iOS App Store'/>");
       $(".wp8").html("<img src='" + assetPath + "wpstore.png' alt='Windows Phone Store'/>");
@@ -1140,7 +1241,7 @@
     html += "</ul>";
     $("#settings_list").after(html);
     $("#removeAccount").click(function() {
-      return removeAccount(this, "" + domain + "_user", has2fa);
+      return removeAccount(this, domain + "_user", has2fa);
     });
     return $("#changePassword").click(function() {
       return beginChangePassword();
@@ -1296,13 +1397,13 @@
       }
       animateLoad();
       return $.get(apiUrlString, args, "json").done(function(result) {
-        var altEntryButton, doManualEntry, html, sms_id, text, text_html, usedSms, _ref;
+        var altEntryButton, doManualEntry, html, ref, sms_id, text, text_html, usedSms;
         if (result.status === false) {
           if (isNull(result.human_error)) {
             result.human_error = void 0;
           }
           console.log("Got requested action " + result.action, result);
-          console.log("Requested", "" + apiUrlString + "?" + args);
+          console.log("Requested", apiUrlString + "?" + args);
           $("#username").prop("disabled", true);
           switch (result.action) {
             case "GET_TOTP":
@@ -1362,7 +1463,7 @@
               $("#username").prop("disabled", false).val("");
               return false;
             default:
-              text = (_ref = result.human_error) != null ? _ref : "There was a problem resetting your password. Please try again";
+              text = (ref = result.human_error) != null ? ref : "There was a problem resetting your password. Please try again";
               $("#" + pane_messages).addClass("alert-danger").removeClass("alert-info alert-warning").text(text);
               console.error("Illegal state!");
               console.warn(result);
@@ -1475,7 +1576,7 @@
       html = "<div class=\"alert alert-danger\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Yikes!</strong> We had a problem checking the server. Try again later.\n</div>";
       $("#login").before(html);
       $(".alert").alert();
-      console.error("Couldn't communicate with server! Tried to contact", "" + apiUri.apiTarget + "?" + args);
+      console.error("Couldn't communicate with server! Tried to contact", apiUri.apiTarget + "?" + args);
       return false;
     }).always(function() {
       return $(".do-refresh-page").click(function() {
@@ -1487,7 +1588,7 @@
 
   beginChangePassword = function() {
     var changePasswordForm, checkFirstPassword, cookie, username;
-    cookie = "" + window.totpParams.domain + "_user";
+    cookie = window.totpParams.domain + "_user";
     username = $.cookie(cookie);
     changePasswordForm = "<form class='change-password-form form-horizontal'>\n  <fieldset>\n    <legend>Change Password</legend>\n    <div class=\"form-group\">\n      <label for=\"old-password\" class=\"col-sm-2 control-label\">Old Password</label>\n      <div class=\"col-sm-4\">\n        <input type=\"password\" class=\"form-control old-password\" id=\"old-password\" placeholder=\"Old Password\" required=\"required\"/>\n      </div>\n    </div>\n    <div class=\"new-password-group\">\n      <div class=\"form-group\">\n        <label for=\"new-password\" class=\"col-sm-2 control-label\">New Password</label>\n        <div class=\"col-sm-4 has-feedback\">\n          <input type=\"password\" class=\"form-control new-password\" id=\"new-password\" placeholder=\"New Password\" required=\"required\"/>\n          <span id=\"feedback-status-1\"></span>\n        </div>\n      </div>\n      <div class=\"form-group\">\n        <label for=\"new-password-confirm\" class=\"col-sm-2 control-label\">Confirm New Password</label>\n        <div class=\"col-sm-4 has-feedback\">\n          <input type=\"password\" class=\"form-control new-password\" id=\"new-password-confirm\" placeholder=\"Confirm New Password\" required=\"required\"/>\n          <span id=\"feedback-status-2\"></span>\n        </div>\n      </div>\n    </div>\n    <div id=\"password_security\" class=\"pull-right col-sm-5 password-reqs hidden-xs\"></div>\n    <button id=\"do-change-password\" class=\"btn btn-primary col-sm-offset-2\" disabled>Change Password for<br/> " + username + "</button>\n  </fieldset>\n</form>";
     $("#account_settings").after(changePasswordForm);

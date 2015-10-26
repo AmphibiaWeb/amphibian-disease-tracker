@@ -381,8 +381,85 @@ stopLoadError = (message, elId = "loader", fadeOut = 7500, iteration) ->
     console.warn('Could not stop load error animation', e.message)
 
 
+lightboxImages = (selector = ".lightboximage", lookDeeply = false) ->
+  ###
+  # Lightbox images with this selector
+  #
+  # If the image has it, wrap it in an anchor and bind;
+  # otherwise just apply to the selector.
+  #
+  # Requires ImageLightbox
+  # https://github.com/rejas/imagelightbox
+  ###
+  # The options!
+  options =
+      onStart: ->
+        overlayOn()
+      onEnd: ->
+        overlayOff()
+        activityIndicatorOff()
+      onLoadStart: ->
+        activityIndicatorOn()
+      onLoadEnd: ->
+        activityIndicatorOff()
+      allowedTypes: 'png|jpg|jpeg|gif|bmp|webp'
+      quitOnDocClick: true
+      quitOnImgClick: true
+  jqo = if lookDeeply then d$(selector) else $(selector)
+  jqo
+  .click (e) ->
+    try
+      # We want to stop the events propogating up for these
+      e.preventDefault()
+      e.stopPropagation()
+      $(this).imageLightbox(options).startImageLightbox()
+      console.warn("Event propagation was stopped when clicking on this.")
+    catch e
+      console.error("Unable to lightbox this image!")
+  # Set up the items
+  .each ->
+    console.log("Using selectors '#{selector}' / '#{this}' for lightboximages")
+    try
+      if $(this).prop("tagName").toLowerCase() is "img" and $(this).parent().prop("tagName").toLowerCase() isnt "a"
+        tagHtml = $(this).removeClass("lightboximage").prop("outerHTML")
+        imgUrl = switch
+          when not isNull($(this).attr("data-layzr-retina"))
+            $(this).attr("data-layzr-retina")
+          when not isNull($(this).attr("data-layzr"))
+            $(this).attr("data-layzr")
+          when not isNull($(this).attr("data-lightbox-image"))
+            $(this).attr("data-lightbox-image")
+          else
+            $(this).attr("src")
+        $(this).replaceWith("<a href='#{imgUrl}' class='lightboximage'>#{tagHtml}</a>")
+        $("a[href='#{imgUrl}']").imageLightbox(options)
+      # Otherwise, we shouldn't need to do anything
+    catch e
+      console.log("Couldn't parse through the elements")
+
+
+
+
+activityIndicatorOn = ->
+  $('<div id="imagelightbox-loading"><div></div></div>' ).appendTo('body')
+activityIndicatorOff = ->
+  $('#imagelightbox-loading').remove()
+  $("#imagelightbox-overlay").click ->
+    # Clicking anywhere on the overlay clicks on the image
+    # It loads too late to let the quitOnDocClick work
+    $("#imagelightbox").click()
+overlayOn = ->
+  $('<div id="imagelightbox-overlay"></div>').appendTo('body')
+overlayOff = ->
+  $('#imagelightbox-overlay').remove()
+
 
 $ ->
+  try
+    lightboxImages()
+  catch e
+    console.warn "Couldn't lightbox images! #{e.message}"
+    console.warn e.stack
   try
     if typeof picturefill is "function"
       window.picturefill()

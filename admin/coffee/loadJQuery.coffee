@@ -9,7 +9,7 @@ jq_paths = [
         "ajax.aspnetcdn.com/ajax/jQuery/jquery-#{jqueryVersion}.min.js"
         "https://code.jquery.com/jquery-#{jqueryVersion}.min.js"
         "cdnjs.cloudflare.com/ajax/libs/jquery/#{jqueryVersion}/jquery.min.js"
-        "../bower_components/jquery/dist/jquery.min.js"
+        "/bower_components/jquery/dist/jquery.min.js"
     ]
 
 

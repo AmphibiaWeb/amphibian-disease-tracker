@@ -773,7 +773,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                           }
                         else
                           {
-                              $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>Your password was not long enough ($minimum_password_length characters) or did not match minimum complexity levels (one upper case letter, one lower case letter, one digit or special character). You can also use <a href='http://imgs.xkcd.com/comics/password_strength.png' id='any_long_pass'>any long password</a> of at least $password_threshold_length characters. Please go back and try again.</p></div>";
+                              $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>Your password was not long enough ($minimum_password_length characters) or did not match minimum complexity levels (one upper case letter, one lower case letter, one digit or special character). You can also use <a href='http://imgs.xkcd.com/comics/password_strength.png' id='any_long_pass' class='lightboximage'>any long password</a> of at least $password_threshold_length characters. Please go back and try again.</p></div>";
                           }
                       }
                     else $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>Your passwords did not match. Please go back and try again.</p></div>";

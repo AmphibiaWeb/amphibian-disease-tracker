@@ -9,7 +9,7 @@
 
   jqueryVersion = "2.1.4";
 
-  jq_paths = ["ajax.googleapis.com/ajax/libs/jquery/" + jqueryVersion + "/jquery.min.js", "ajax.aspnetcdn.com/ajax/jQuery/jquery-" + jqueryVersion + ".min.js", "https://code.jquery.com/jquery-" + jqueryVersion + ".min.js", "cdnjs.cloudflare.com/ajax/libs/jquery/" + jqueryVersion + "/jquery.min.js", "../bower_components/jquery/dist/jquery.min.js"];
+  jq_paths = ["ajax.googleapis.com/ajax/libs/jquery/" + jqueryVersion + "/jquery.min.js", "ajax.aspnetcdn.com/ajax/jQuery/jquery-" + jqueryVersion + ".min.js", "https://code.jquery.com/jquery-" + jqueryVersion + ".min.js", "cdnjs.cloudflare.com/ajax/libs/jquery/" + jqueryVersion + "/jquery.min.js", "/bower_components/jquery/dist/jquery.min.js"];
 
   
 function cascadeJQLoad(i) { // Use alternate CDNs where appropriate to load jQuery

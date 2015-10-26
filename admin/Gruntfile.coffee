@@ -125,7 +125,9 @@ module.exports = (grunt) ->
   grunt.registerTask "update","Update dependencies", ->
     grunt.task.run("updateBower","minify")
   ## Deploy
-  grunt.registerTask "build","Compile and update, then watch", ->
+  grunt.registerTask "qbuild","Compile uglify/minify", ->
+    grunt.task.run("compile","minify")
+  grunt.registerTask "build","Compile and update", ->
     grunt.task.run("updateBower","compile","minify")
   ## Deploy
   grunt.registerTask "startWork","Compile and update, then watch", ->
