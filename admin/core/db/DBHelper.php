@@ -213,7 +213,8 @@ class DBHelper
             if (get_magic_quotes_gpc()) {
                 $input = stripslashes($input);
             }
-            if (!$dirty_entities) {
+            # We want JSON to pass through unscathed, just be escaped
+            if (!$dirty_entities || json_encode(json_decode($input,true)) != $input) {
                 $input = htmlentities(self::cleanInput($input));
                 $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
             $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
