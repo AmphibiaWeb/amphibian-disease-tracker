@@ -356,7 +356,8 @@ loadJS = function(src, callback, doCallbackOnError) {
             return callback();
           } catch (_error) {
             e = _error;
-            return console.error("Postload callback error - " + e.message);
+            console.error("Postload callback error - " + e.message);
+            return console.warn(e.stack);
           }
         }
       }
@@ -1034,6 +1035,7 @@ foo = function() {
 $(function() {
   bindClicks();
   formatScientificNames();
+  lightboxImages();
   try {
     $('[data-toggle="tooltip"]').tooltip();
   } catch (_error) {

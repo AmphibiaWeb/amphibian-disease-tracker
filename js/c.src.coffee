@@ -239,6 +239,7 @@ loadJS = (src, callback = new Object(), doCallbackOnError = true) ->
             callback()
           catch e
             console.error "Postload callback error - #{e.message}"
+            console.warn e.stack
     catch e
       console.error "Onload error - #{e.message}"
   # Error function
@@ -750,6 +751,7 @@ foo = ->
 $ ->
   bindClicks()
   formatScientificNames()
+  lightboxImages()
   try
     $('[data-toggle="tooltip"]').tooltip()
   catch e
