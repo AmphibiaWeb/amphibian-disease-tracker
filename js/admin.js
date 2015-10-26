@@ -81,7 +81,7 @@ $(function() {
       return openTab(adminParams.adminPageUrl);
     });
   }
-  return loadJS("https://" + adminParams.domain + ".org/bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
+  return loadJS("bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
     return $("[data-toggle='tooltip']").tooltip();
   });
 });
