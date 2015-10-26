@@ -724,6 +724,12 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                     $deferredJS.="\nwindow.location.href=\"$durl\";";
                                     header("Refresh: 3; url=".$durl);
                                   }
+                                else 
+                                {
+                                  # Let's show a nice message
+                                  $html = "<p >You may <a href='$baseurl/$redirect_url'>want to visit your administration page</a>, but otherwise we suggest <a href='$baseurl'>going home</a> and navigating from there.</p>";
+
+                                }
                                 if($ask_verify_phone_at_signup)
                                   {
                                     # Verify the phone number
