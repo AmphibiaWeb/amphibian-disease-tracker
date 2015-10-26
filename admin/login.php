@@ -618,7 +618,7 @@ else if($_REQUEST['q']=='create')
               </label>
 	      <input type='text' name='honey' id='honey' class='hide'/>
 </div>
-        <p>Please solve the <a href='https://en.wikipedia.org/wiki/CAPTCHA'>CAPTCHA test</a> below</p>
+        <p>Please solve the <a href='https://en.wikipedia.org/wiki/CAPTCHA' class='newwindow'>CAPTCHA test</a> below</p>
         <script src='https://www.google.com/recaptcha/api.js'></script>
         <div class=\"g-recaptcha\" data-sitekey=\"".$recaptcha_public_key."\"></div>
 
@@ -633,7 +633,7 @@ else if($_REQUEST['q']=='create')
         $createform.=$secnotice; # Password security notice
         if($_SERVER["HTTPS"] != "on" && $displaywarnings === true)
           {
-            $createform.="<p class='bg-danger text-center'>Warning: This form is insecure.</p>";
+            $createform.="<div class='alert alert-warning text-center'>Warning: This form is insecure.</div>";
           }
 
         if($_REQUEST['s']=='next')

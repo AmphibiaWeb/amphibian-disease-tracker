@@ -437,6 +437,7 @@ lightboxImages = (selector = ".lightboximage", lookDeeply = false) ->
         # Otherwise, we shouldn't need to do anything
       catch e
         console.log("Couldn't parse through the elements")
+    console.info "Lightboxed the following:", jqo
 
 
 
