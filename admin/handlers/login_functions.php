@@ -954,7 +954,7 @@ class UserFunctions extends DBHelper
 
               return array_merge(array('status' => true, 'message' => $message), $userdata, $cookies, $auth_result);
           } else {
-              return array('status' => false,'error' => 'Failure: Unable to verify user creation','add' => $test_res,'userdata' => $userdata);
+              return array('status' => false,'error' => 'Failure: Unable to verify user creation','add' => $test_res, "lookup_result" => $res, 'userdata' => $userdata);
           }
       } else {
           return array('status' => false,'error' => 'Failure: unknown database error. Your user was unable to be saved.', "storage_data" => $store, "field_data" => $fields, "add_result" => $test_res);

@@ -7,7 +7,7 @@
  * If you want a display!
  ***/
 
-# $debug = true;
+$debug = true;
 
 if($debug) {
     error_reporting(E_ALL);
