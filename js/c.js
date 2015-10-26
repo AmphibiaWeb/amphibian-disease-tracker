@@ -1,4 +1,4 @@
-var activityIndicatorOff, activityIndicatorOn, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, getLocation, getMaxZ, getPosterFromSrc, goTo, init, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, getLocation, getMaxZ, getPosterFromSrc, goTo, init, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice;
 
 try {
@@ -1067,6 +1067,8 @@ cartoMap = null;
 
 cartoVis = null;
 
+adData = new Object();
+
 init = function() {
 
   /*
@@ -1220,8 +1222,6 @@ requestCartoUpload = function(data) {
   return false;
 };
 
-$(function() {
-  return init();
-});
+$(function() {});
 
 //# sourceMappingURL=maps/c.js.map

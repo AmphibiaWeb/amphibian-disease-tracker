@@ -776,6 +776,8 @@ cartoAccount = "tigerhawkvok"
 cartoMap = null
 cartoVis = null
 
+adData = new Object()
+
 init = ->
   ###
   # Initialization script for the mapping protocols.
@@ -911,4 +913,4 @@ requestCartoUpload = (data) ->
 
 
 $ ->
-  init()
+  # init()
