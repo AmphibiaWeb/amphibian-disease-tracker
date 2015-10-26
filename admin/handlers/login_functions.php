@@ -1333,6 +1333,16 @@ class UserFunctions extends DBHelper
 
     public function createCookieTokens($username = null, $password_or_is_data = true, $remote = null)
     {
+        /***
+         * Create the cookies to be used everywhere else in the
+         * application
+         *
+         * @param
+         * @param
+         * @param
+         * @return
+         ***/
+        
         try {
             if (empty($username)) {
                 $userdata = $this->getUser();
@@ -1350,10 +1360,10 @@ class UserFunctions extends DBHelper
             $id = $userdata['id'];
             $dblink = $userdata[$this->linkColumn];
 
-        # Nom, cookies!
-        $expire_days = 7;
+            # Nom, cookies!
+            $expire_days = 7;
             $expire = time() + 3600 * 24 * $expire_days;
-        # Create a one-time key, store serverside
+            # Create a one-time key, store serverside
             if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
             $otsalt = Stronghash::createSalt();
             $cookie_secret = Stronghash::createSalt();
@@ -1361,8 +1371,8 @@ class UserFunctions extends DBHelper
             $salt = $pw_characters['salt'];
             $current_ip = empty($current_ip) ? $_SERVER['REMOTE_ADDR'] : $remote;
 
-        # store it
-        $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->cookieColumn."`='$otsalt', `".$this->ipColumn."`='$current_ip', `last_login`='".microtime_float()."' WHERE id='$id'";
+            # store it
+            $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->cookieColumn."`='$otsalt', `".$this->ipColumn."`='$current_ip', `last_login`='".microtime_float()."' WHERE id='$id'";
             $l = $this->openDB();
             mysqli_query($l, 'BEGIN');
             $result = mysqli_query($l, $query);
@@ -1376,7 +1386,7 @@ class UserFunctions extends DBHelper
 
             $value_create = array($cookie_secret,$salt,$otsalt,$current_ip,$this->getSiteKey());
 
-        // authenticated since last login. Nontransposable outside network.
+            // authenticated since last login. Nontransposable outside network.
 
             $value = sha1(implode('', $value_create));
 
@@ -1388,6 +1398,7 @@ class UserFunctions extends DBHelper
             $cookiepic = $this->domain.'_pic';
             $cookielink = $this->domain.'_link';
 
+            # Read the XML information ...
             $xml = new Xml($userdata["name"]);
             $user_greet = $xml->getTagContents('<fname>');
             $user_full_name = $xml->getTagContents('<name>'); // for now
@@ -1411,34 +1422,34 @@ class UserFunctions extends DBHelper
             $jquerycookie .= "$.cookie('$cookielink','$dblink'".$js_expires;
 
             $raw_data = array(
-          $cookieuser => $username,
-          $cookieauth => $value,
-          $cookiekey => $cookie_secret,
-          $cookiepic => $path,
-          $cookieperson => $user_greet,
-          $cookiewholeperson => $user_full_name,
-          $cookielink => $dblink,
-        );
+                $cookieuser => $username,
+                $cookieauth => $value,
+                $cookiekey => $cookie_secret,
+                $cookiepic => $path,
+                $cookieperson => $user_greet,
+                $cookiewholeperson => $user_full_name,
+                $cookielink => $dblink,
+            );
 
             return array(
-          'status' => true,
-          'user' => "{ '$cookieuser':'$username'}",
-          'auth' => "{'$cookieauth':'$value'}",
-          'secret' => "{'$cookiekey':'$cookie_secret'}",
-          'pic' => "{'$cookiepic':'$path'}",
-          'name' => "{'$cookieperson':'$user_greet'}",
-          'full_name' => "{'$cookiewholeperson':'$user_full_name'}",
-          'link' => "{'$cookielink':'$dblink'}",
-          'js' => $jquerycookie,
-          'source' => $value_create,
-          'ip_given' => $remote,
-          'raw_auth' => $value,
-          'raw_secret' => $cookie_secret,
-          'raw_cookie' => $raw_data,
-          'basis' => $value_create,
-          'expires' => "{expires:$expire_days,path:'/'}",
-          "data" => $userdata
-        );
+                'status' => true,
+                'user' => "{ '$cookieuser':'$username'}",
+                'auth' => "{'$cookieauth':'$value'}",
+                'secret' => "{'$cookiekey':'$cookie_secret'}",
+                'pic' => "{'$cookiepic':'$path'}",
+                'name' => "{'$cookieperson':'$user_greet'}",
+                'full_name' => "{'$cookiewholeperson':'$user_full_name'}",
+                'link' => "{'$cookielink':'$dblink'}",
+                'js' => $jquerycookie,
+                'source' => $value_create,
+                'ip_given' => $remote,
+                'raw_auth' => $value,
+                'raw_secret' => $cookie_secret,
+                'raw_cookie' => $raw_data,
+                'basis' => $value_create,
+                'expires' => "{expires:$expire_days,path:'/'}",
+                "data" => $xml->getXml()
+            );
         } catch (Exception $e) {
             return array('status' => false,'error' => 'Unexpected exception in cookies: '.$e->getMessage(),'provided_data' => array('user_data' => $username,'data_flag' => $password_or_is_data,'remote' => $remote));
         }
