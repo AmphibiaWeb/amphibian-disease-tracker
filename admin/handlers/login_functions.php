@@ -991,6 +991,7 @@ class UserFunctions extends DBHelper
                     if (!class_exists('Stronghash')) require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
                     $hash = new Stronghash();
                     $data = json_decode($userdata[$this->pwColumn], true);
+                    $original_data = $data;
                 # Decrypt the password if totp_code is_numeric()
                 if (is_numeric($totp_code)) {
                     $pw = $this->decryptWithStoredKey($pw);
@@ -1124,7 +1125,7 @@ class UserFunctions extends DBHelper
                         }
                         }
                     } else {
-                        return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad Password', "detail" => $hash->verifyHash($pw, $data, null, null, null, true), "given" => $pw, "stored_data_reference" => $data);
+                        return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad Password', "detail" => $hash->verifyHash($pw, $data, null, null, null, true), "given" => $pw, "stored_data_reference" => $data, "original_data" => $original_data, "userdata" => $userdata);
                     }
                 # end good username loop
                 } else {
@@ -1965,7 +1966,7 @@ class UserFunctions extends DBHelper
                  */
                 $query="UPDATE `".
                       $this->getTable()."` SET `".
-                      $this->pwcol."`=\"".
+                      $this->pwColumn."`=\"".
                       $this->sanitize($pwStore)."\", `data`=\"".
                       $data."\" WHERE `".
                       $this->userColumn."`='".
@@ -2039,7 +2040,7 @@ class UserFunctions extends DBHelper
                 $xml = new Xml();
                 $data = $currentUser['data'];
                 $backupData = $data;
-                $backupPassword = $currentUser[$this->pwcol];
+                $backupPassword = $currentUser[$this->pwColumn];
                 $data = $xml->updateTag($data,"<rounds>",$this->sanitize($rounds));
                 $data = $xml->updateTag($data,"<algo>",$this->sanitize($algo));
 
@@ -2053,7 +2054,7 @@ class UserFunctions extends DBHelper
 
                 $query="UPDATE `".
                       $this->getTable()."` SET `".
-                      $this->pwcol."`=\"".
+                      $this->pwColumn."`=\"".
                       mysqli_real_escape_string($l, $pwStore)."\", `data`=\"".
                       mysqli_real_escape_string($l,$data)."\" WHERE `".
                       $this->userColumn."`='".
@@ -2079,7 +2080,7 @@ class UserFunctions extends DBHelper
                         $revert = array();
                         $query2="UPDATE `".
                                $this->getTable()."` SET `".
-                               $this->pwcol."`=\"".
+                               $this->pwColumn."`=\"".
                                $backupPassword."\", `data`=\"".
                                $backupData."\" WHERE `".
                                $this->userColumn."`='".
