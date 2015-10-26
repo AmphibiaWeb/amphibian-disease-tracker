@@ -1399,7 +1399,8 @@ class UserFunctions extends DBHelper
             $cookielink = $this->domain.'_link';
 
             # Read the XML information ...
-            $xml = new Xml($userdata["name"]);
+            $xml = new Xml();
+            $xml->setXml($userdata["name"]);
             $user_greet = $xml->getTagContents('<fname>');
             $user_full_name = $xml->getTagContents('<name>'); // for now
 
