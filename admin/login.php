@@ -766,7 +766,8 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                             else
                               {
                                 if($debug) $login_output.=displayDebug($res);
-                                $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>".$res["error"]."</p><p>Use your browser's back button to try again.</p></div>";
+                                $feedback = empty($res["human_error"]) ? $res["error"] : $res["human_error"];
+                                $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>".$feedback."</p><p>Use your browser's back button to try again.</p></div>";
                                 $deferredJS = "console.warn('Got response',".json_encode($res).")";
                               }
                             ob_end_flush();
