@@ -762,6 +762,7 @@ $ ->
       loadJS "js/admin.min.js", ->
         console.info "Loaded admin file"
         loadAdminUi()
+  
 
 ###
 # Do Georeferencing from data
