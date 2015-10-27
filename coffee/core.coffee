@@ -16,6 +16,8 @@ locationData.last = undefined
 
 window.debounce_timer = null
 
+window.adminParams ?= new Object()
+
 isBool = (str,strict = false) ->
   if strict
     return typeof str is "boolean"
@@ -759,7 +761,10 @@ $ ->
   try
     checkAdmin()
     if adminParams?.loadAdminUi is true
+      console.info "Doing admin setup"
       loadJS "js/admin.min.js", ->
         console.info "Loaded admin file"
         loadAdminUi()
+    else
+      console.info "No admin setup requested"
   

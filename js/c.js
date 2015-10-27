@@ -21,6 +21,10 @@ locationData.last = void 0;
 
 window.debounce_timer = null;
 
+if (window.adminParams == null) {
+  window.adminParams = new Object();
+}
+
 isBool = function(str, strict) {
   if (strict == null) {
     strict = false;
@@ -1045,10 +1049,13 @@ $(function() {
   try {
     checkAdmin();
     if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.loadAdminUi : void 0) === true) {
+      console.info("Doing admin setup");
       return loadJS("js/admin.min.js", function() {
         console.info("Loaded admin file");
         return loadAdminUi();
       });
+    } else {
+      return console.info("No admin setup requested");
     }
   } catch (_error) {}
 });
