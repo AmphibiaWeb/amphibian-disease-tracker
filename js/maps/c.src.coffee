@@ -755,7 +755,8 @@ $ ->
   formatScientificNames()
   lightboxImages()
   try
-    $('[data-toggle="tooltip"]').tooltip()
+    $("body").tooltip
+      selector: "[data-toggle='tooltip']"
   catch e
     console.warn("Tooltips were attempted to be set up, but do not exist")
   try
@@ -767,7 +768,6 @@ $ ->
         loadAdminUi()
     else
       console.info "No admin setup requested"
-  
 
 ###
 # Do Georeferencing from data
@@ -783,8 +783,9 @@ cartoMap = null
 cartoVis = null
 
 adData = new Object()
+window.geo = new Object()
 
-init = ->
+geo.init = ->
   ###
   # Initialization script for the mapping protocols.
   # Urls are taken from

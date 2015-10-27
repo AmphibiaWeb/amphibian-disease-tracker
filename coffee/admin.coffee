@@ -22,10 +22,9 @@ window.loadAdminUi = ->
       <h3>
         Welcome, #{$.cookie("#{adminParams.domain}_name")}
         <span id="pib-wrapper-settings" class="pib-wrapper" data-toggle="tooltip" title="User Settings" data-placement="bottom">
-          <paper-icon-button icon='settings-applications' class='click' data-url='#{data.login_url}'></paper-icon-button>
+          <paper-icon-button icon='icons:settings-applications' class='click' data-href='#{data.login_url}'></paper-icon-button>
         </span>
-        <span id="pib-wrapper-exit-to-app" class="pib-wrapper" data-toggle="tooltip" title="Go to CNDB app" data-placement="bottom">
-        </span>
+
       </h3>
       <div id='admin-actions-block'>
         <div class='bs-callout bs-callout-info'>
@@ -35,13 +34,12 @@ window.loadAdminUi = ->
       """
       $("article #main-body").html(articleHtml)
       # $(".pib-wrapper").tooltip()
-      bindClicks()
       ###
       # Render out the admin UI
       # We want a search box that we pipe through the API
       # and display the table out for editing
       ###
-
+      geo?.init()
       bindClicks()
       false
   catch e
@@ -83,5 +81,6 @@ $ ->
     .click ->
       openTab(adminParams.adminPageUrl)
   loadJS "bower_components/bootstrap/dist/js/bootstrap.min.js", ->
-    $("[data-toggle='tooltip']").tooltip()
+    $("body").tooltip
+      selector: "[data-toggle='tooltip']"
   # The rest of the onload for the admin has been moved to the core.coffee file.

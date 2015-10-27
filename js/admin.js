@@ -28,15 +28,17 @@ window.loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='settings-applications' class='click' data-url='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span id=\"pib-wrapper-exit-to-app\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Go to CNDB app\" data-placement=\"bottom\">\n  </span>\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
       $("article #main-body").html(articleHtml);
-      bindClicks();
 
       /*
        * Render out the admin UI
        * We want a search box that we pipe through the API
        * and display the table out for editing
        */
+      if (typeof geo !== "undefined" && geo !== null) {
+        geo.init();
+      }
       bindClicks();
       return false;
     });
@@ -82,7 +84,9 @@ $(function() {
     });
   }
   return loadJS("bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
-    return $("[data-toggle='tooltip']").tooltip();
+    return $("body").tooltip({
+      selector: "[data-toggle='tooltip']"
+    });
   });
 });
 

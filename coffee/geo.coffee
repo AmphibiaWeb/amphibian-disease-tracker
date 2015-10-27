@@ -12,8 +12,9 @@ cartoMap = null
 cartoVis = null
 
 adData = new Object()
+window.geo = new Object()
 
-init = ->
+geo.init = ->
   ###
   # Initialization script for the mapping protocols.
   # Urls are taken from

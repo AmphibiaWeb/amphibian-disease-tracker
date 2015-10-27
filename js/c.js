@@ -1,4 +1,4 @@
-var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, getLocation, getMaxZ, getPosterFromSrc, goTo, init, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice;
 
 try {
@@ -1041,7 +1041,9 @@ $(function() {
   formatScientificNames();
   lightboxImages();
   try {
-    $('[data-toggle="tooltip"]').tooltip();
+    $("body").tooltip({
+      selector: "[data-toggle='tooltip']"
+    });
   } catch (_error) {
     e = _error;
     console.warn("Tooltips were attempted to be set up, but do not exist");
@@ -1076,7 +1078,9 @@ cartoVis = null;
 
 adData = new Object();
 
-init = function() {
+window.geo = new Object();
+
+geo.init = function() {
 
   /*
    * Initialization script for the mapping protocols.

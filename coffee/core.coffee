@@ -755,7 +755,8 @@ $ ->
   formatScientificNames()
   lightboxImages()
   try
-    $('[data-toggle="tooltip"]').tooltip()
+    $("body").tooltip
+      selector: "[data-toggle='tooltip']"
   catch e
     console.warn("Tooltips were attempted to be set up, but do not exist")
   try
@@ -767,4 +768,3 @@ $ ->
         loadAdminUi()
     else
       console.info "No admin setup requested"
-  
