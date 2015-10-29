@@ -354,6 +354,17 @@ class UserFunctions extends DBHelper
     {
         return $this->username;
     }
+    
+    public function getHardlink()
+    {
+        $link = $this->userlink;
+        # Has this been defined yet?
+        if (empty($link)) {
+            $this->getUser();
+            $link = $this->userlink;
+        }
+        return $link;
+    }
 
     public function getPhone()
     {
@@ -1151,7 +1162,7 @@ class UserFunctions extends DBHelper
     public function getUserPicture($id = null, $path = null, $extra_types_array = null)
     {
         if (empty($id)) {
-            $id = $this->userlink;
+            $id = $this->getHardlink();
         }
         if (empty($path)) {
             $path = $this->picture_path;
@@ -1198,9 +1209,9 @@ class UserFunctions extends DBHelper
             } else {
                 return array('status' => false, 'error' => 'Could not parse POST','human_error' => 'There was an error uploading your image','app_error_code' => 118);
             }
-            $imgUri = $path.$this->userlink.'.'.$extension;
-            $imgSmallUri = $path.$this->userlink.'-sm.'.$extension;
-            $imgTinyUri = $path.$this->userlink.'-xs.'.$extension;
+            $imgUri = $path.$this->getHardlink().'.'.$extension;
+            $imgSmallUri = $path.$this->getHardlink().'-sm.'.$extension;
+            $imgTinyUri = $path.$this->getHardlink().'-xs.'.$extension;
             try {
                 file_put_contents($imgUri, base64_decode($image));
             } catch (Exception $e) {
@@ -1475,7 +1486,7 @@ class UserFunctions extends DBHelper
         if ($phoneStatus['is_good'] === true) {
             # The phone is good and the user is good, do the device mapping
       $l = $this->openDB();
-            $query = 'SELECT `'.$this->appKeyColumn.'` FROM `'.$this->getTable().'` WHERE `'.$this->linkColumn."`='".$this->userlink."'";
+            $query = 'SELECT `'.$this->appKeyColumn.'` FROM `'.$this->getTable().'` WHERE `'.$this->linkColumn."`='".$this->getHardlink()."'";
             $r = mysqli_query($l, $query);
             if ($r === false) {
                 return array('status' => false,'error' => mysqli_error($l),'human_error' => "The database couldn't read the device list",'query' => $query,'app_error_code' => 113);
@@ -1512,7 +1523,7 @@ class UserFunctions extends DBHelper
             }
             $status['secret'] = $server_secret;
       //$status["key"] = "";
-      $status[$this->linkColumn] = $this->userlink;
+      $status[$this->linkColumn] = $this->getHardlink();
             $status['id_name'] = $this->linkColumn;
 
             return $status;
@@ -1540,7 +1551,7 @@ class UserFunctions extends DBHelper
             return array('status' => false,'human_error' => "We couldn't verify the application. Please try again, or contact support",'error' => $e->getMessage(),'app_error_code' => 100);
         }
         $l = $this->openDB();
-        $query = 'SELECT `'.$this->appKeyColumn.'` FROM `'.$this->getTable().'` WHERE `'.$this->linkColumn."`='".$this->userlink."'";
+        $query = 'SELECT `'.$this->appKeyColumn.'` FROM `'.$this->getTable().'` WHERE `'.$this->linkColumn."`='".$this->getHardlink()."'";
         $r = mysqli_query($l, $query);
         if ($r === false) {
             # The query failed
@@ -1570,7 +1581,7 @@ class UserFunctions extends DBHelper
       $computedToken = sha1($verify_data['auth_prepend'].$secret.$verify_data['auth_postpend']);
         $providedToken = $verify_data['authorization_token'];
         if ($computedToken === $providedToken) {
-            return array('status' => true,'data' => $userdata,'userid' => $this->userlink,'validation_tokens' => $this->createCookieTokens());
+            return array('status' => true,'data' => $userdata,'userid' => $this->getHardlink(),'validation_tokens' => $this->createCookieTokens());
         } else {
             return array('status' => false,'human_error' => 'Invalid credentials. Please log out and log back in.','error' => 'Invalid credentials','app_error_code' => 106);
         }
