@@ -1102,7 +1102,7 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
 };
 
 createMap = function(targetId, dataVisIdentifier) {
-  var dataVisUrl, options;
+  var dataVisUrl, fakeDiv, options;
   if (targetId == null) {
     targetId = "map";
   }
@@ -1129,6 +1129,10 @@ createMap = function(targetId, dataVisIdentifier) {
     mobile_layout: true,
     gmaps_base_type: "hybrid"
   };
+  if (!$("#" + targetId).exists()) {
+    fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
+    $("body").append();
+  }
   return cartodb.createVis(targetId, dataVisUrl).done(function(vis, layers) {
     cartoVis = vis;
     cartoMap = vis.getNativeMap();

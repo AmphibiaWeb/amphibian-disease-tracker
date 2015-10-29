@@ -51,6 +51,13 @@ createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4f
     https: true
     mobile_layout: true
     gmaps_base_type: "hybrid"
+  unless $("##{targetId}").exists()
+    fakeDiv = """
+    <div id="#{targetId}" class="carto-map map">
+      <!-- Dynamically inserted from unavailable target -->
+    </div>
+    """
+    $("body").append()
   cartodb.createVis targetId, dataVisUrl
   .done (vis, layers) ->
     cartoVis = vis
