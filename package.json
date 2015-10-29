@@ -33,7 +33,6 @@
     "grunt-postcss": "^0.6.0",
     "grunt-shell": "^1.1.2",
     "grunt-string-replace": "^1.2.0",
-    "grunt-yui-compressor": "^0.4.0",
     "less": "^2.5.1",
     "npm-check-updates": "^2.2.1",
     "vulcanize": "^1.10.4"
