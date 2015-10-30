@@ -358,15 +358,15 @@ class UserFunctions extends DBHelper
     public function getHardlink()
     {
         $link = $this->userlink;
-        # Has this been defined yet?
-        if (empty($link)) {
-            try {
-                $this->getUser();
-                $link = $this->userlink;
-            } catch(Exception $e) {
-                $link = null;
-            }
-        }
+        // # Has this been defined yet?
+        // if (empty($link)) {
+        //     try {
+        //         $this->getUser();
+        //         $link = $this->userlink;
+        //     } catch(Exception $e) {
+        //         $link = null;
+        //     }
+        // }
         return $link;
     }
 
