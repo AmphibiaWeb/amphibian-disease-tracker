@@ -324,7 +324,14 @@ paper-radio-button #radioContainer, paper-radio-button #radioContainer div {
 ////////////
 
 .map {
-    min-width: 50vw;
-    min-height: 25vh;
+    width: 75vw;
+    height: 33vh;
     .center-block();
+}
+
+@media(max-width:767px) {
+    .map {
+        width: 100%;
+        height: 60vh;
+    }
 }

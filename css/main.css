@@ -7161,9 +7161,15 @@ paper-radio-button #radioContainer div {
   box-sizing: content-box !important;
 }
 .map {
-  min-width: 50vw;
-  min-height: 25vh;
+  width: 75vw;
+  height: 33vh;
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+@media (max-width: 767px) {
+  .map {
+    width: 100%;
+    height: 60vh;
+  }
 }

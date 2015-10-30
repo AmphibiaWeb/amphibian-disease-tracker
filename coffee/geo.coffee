@@ -32,10 +32,11 @@ geo.init = ->
   doCallback = ->
     createMap "map", adData.cartoRef
     false
-  # First, we have to load the Google Maps library
-  loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}", ->
+  gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
     loadJS "http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+  # First, we have to load the Google Maps library
+  loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
 
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
