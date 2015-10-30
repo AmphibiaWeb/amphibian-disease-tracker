@@ -1131,7 +1131,7 @@ createMap = function(targetId, dataVisIdentifier) {
   };
   if (!$("#" + targetId).exists()) {
     fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
-    $("body").append();
+    $("body").append(fakeDiv);
   }
   return cartodb.createVis(targetId, dataVisUrl).done(function(vis, layers) {
     cartoVis = vis;

@@ -828,7 +828,7 @@ createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4f
       <!-- Dynamically inserted from unavailable target -->
     </div>
     """
-    $("body").append()
+    $("body").append fakeDiv
   cartodb.createVis targetId, dataVisUrl
   .done (vis, layers) ->
     cartoVis = vis
