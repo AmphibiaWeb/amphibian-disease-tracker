@@ -78,7 +78,7 @@ handleDragDropImage = (uploadTargetSelector = "#upload-image", callback) ->
     document.getElementsByTagName('head')[0].appendChild(c)
     Dropzone.autoDiscover = false
     # See http://www.dropzonejs.com/#configuration
-    defaultText = dropperParams.uploadText ? "Drop your image here to upload"
+    defaultText = dropperParams.uploadText ? "Drop your file here to upload"
     dragCancel = ->
       d$(uploadTargetSelector)
       .css("box-shadow","")

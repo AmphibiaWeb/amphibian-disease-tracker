@@ -83,7 +83,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
   unless $(selector).exists()
     # Create it
     html = """
-    <form id="#{uploadFormId}-form">
+    <form id="#{uploadFormId}-form" class="">
       <fieldset>
         <legend>Upload Files</legend>
         <div id="#{uploadFormId}" class="media-uploader outline">

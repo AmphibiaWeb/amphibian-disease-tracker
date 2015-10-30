@@ -75,7 +75,7 @@
     var base, uploadButton;
     console.info("Configuring dropper parameters");
     window.dropperParams.metaPath = "/helpers/js-dragdrop/";
-    window.dropperParams.uploadPath = window.dropperParams.metaPath + "uploaded/";
+    window.dropperParams.uploadPath = (window.dropperParams.metaPath.slice(1)) + "uploaded/";
     window.dropperParams.dependencyPath = window.dropperParams.metaPath + "bower_components/";
     window.dropperParams.showProgress = true;
     if ((base = window.dropperParams).dropTargetSelector == null) {

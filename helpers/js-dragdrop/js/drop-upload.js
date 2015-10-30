@@ -858,7 +858,7 @@
       c.setAttribute("href", dropperParams.metaPath + "css/main.min.css");
       document.getElementsByTagName('head')[0].appendChild(c);
       Dropzone.autoDiscover = false;
-      defaultText = (ref = dropperParams.uploadText) != null ? ref : "Drop your image here to upload";
+      defaultText = (ref = dropperParams.uploadText) != null ? ref : "Drop your file here to upload";
       dragCancel = function() {
         d$(uploadTargetSelector).css("box-shadow", "").css("border", "");
         return d$(uploadTargetSelector + " .dz-message span").text(defaultText);

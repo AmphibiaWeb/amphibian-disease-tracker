@@ -303,6 +303,10 @@ function doUploadImage($passed_mime = null)
     # We want to suppress the warning on move_uploaded_file, or else
     # it'll return an invalid JSON response
     #error_reporting(0); # Disable this for debugging
+    ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
+    ini_set("display_errors",1);
+    ini_set("log_errors",1);
+    error_reporting(E_ALL);
     $status = move_uploaded_file($temp, $fileWritePath);
     $uploadStatus = array('status' => $status,'original_file' => $file,'wrote_file' => $newFilePath,'full_path' => getRelativePath($fileWritePath));
     if (!$status) {
@@ -332,7 +336,7 @@ function doUploadImage($passed_mime = null)
     }
     $fileThumb = $savePath.$fileName.'-thumb.'.$extension;
     $resizeStatus = ImageFunctions::staticResizeImage($fileWritePath, $fileThumb, $thumb_max_width, $thumb_max_height);
-    $resizeStatus["s3"] = copyToS3($resizeStatus['output'], $fileName.'-thumb.'.$extension);
+    # $resizeStatus["s3"] = copyToS3($resizeStatus['output'], $fileName.'-thumb.'.$extension);
     $resizeStatus['output'] = getRelativePath($resizeStatus['output']);
     $uploadStatus['resize_status'] = $resizeStatus;
     $uploadStatus['thumb_path'] = $resizeStatus['output'];
