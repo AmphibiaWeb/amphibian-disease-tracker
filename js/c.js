@@ -1141,9 +1141,10 @@ createMap = function(dataVisIdentifier, targetId) {
     console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
     cartoVis = vis;
     cartoMap = vis.getNativeMap();
-    cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap);
-    layers[1].setInteraction(true);
-    return layers[1].on("featureOver", defaultMapMouseOverBehaviour);
+    return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+      layer.setInteraction(true);
+      return layer.on("featureOver", defaultMapMouseOverBehaviour);
+    });
   }).error(function(errorString) {
     toastStatusMessage("Couldn't load maps!");
     return console.error("Couldn't get map - " + errorString);
@@ -1236,7 +1237,10 @@ requestCartoUpload = function(data) {
       dataBlobUrl = "";
       dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
       if (cartoMap != null) {
-        return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap);
+        return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+          layer.setInteraction(true);
+          return layer.on("featureOver", defaultMapMouseOverBehaviour);
+        });
       } else {
         return createMap(dataVisUrl);
       }

@@ -845,8 +845,9 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     cartoMap = vis.getNativeMap()
     # For whatever reason, we still need to manually add the data
     cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
-    layers[1].setInteraction(true)
-    layers[1].on "featureOver", defaultMapMouseOverBehaviour
+    .done (layer) ->
+      layer.setInteraction true
+      layer.on "featureOver", defaultMapMouseOverBehaviour
   .error (errorString) ->
     toastStatusMessage("Couldn't load maps!")
     console.error "Couldn't get map - #{errorString}"
@@ -935,6 +936,9 @@ requestCartoUpload = (data) ->
       dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
       if cartoMap?
         cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
+        .done (layer) ->
+          layer.setInteraction true
+          layer.on "featureOver", defaultMapMouseOverBehaviour
       else
         createMap dataVisUrl
     else
