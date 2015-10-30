@@ -148,7 +148,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
       </fieldset>
     </form>
     """
-    $("main").append html
+    $("main #main-body").append html
     $(selector).submit (e) ->
       e.preventDefault()
       e.stopPropagation()

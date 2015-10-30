@@ -1139,11 +1139,12 @@ createMap = function(dataVisIdentifier, targetId) {
     mobile_layout: true,
     gmaps_base_type: "hybrid",
     center_lat: window.locationData.lat,
-    center_lon: window.locationData.lng
+    center_lon: window.locationData.lng,
+    zoom: 7
   };
   if (!$("#" + targetId).exists()) {
     fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
-    $("main").append(fakeDiv);
+    $("main #main-body").append(fakeDiv);
   }
   return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
     console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);

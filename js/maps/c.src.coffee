@@ -839,13 +839,14 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     gmaps_base_type: "hybrid"
     center_lat: window.locationData.lat
     center_lon: window.locationData.lng
+    zoom: 7
   unless $("##{targetId}").exists()
     fakeDiv = """
     <div id="#{targetId}" class="carto-map map">
       <!-- Dynamically inserted from unavailable target -->
     </div>
     """
-    $("main").append fakeDiv
+    $("main #main-body").append fakeDiv
   cartodb.createVis targetId, dataVisUrl, options
   .done (vis, layers) ->
     console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
