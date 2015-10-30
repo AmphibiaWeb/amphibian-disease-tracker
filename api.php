@@ -60,6 +60,23 @@ function returnAjax($data)
     exit();
 }
 
+
+parse_str($_SERVER['QUERY_STRING'],$_GET);
+$do=isset($_REQUEST['action']) ? strtolower($_REQUEST['action']):null;
+switch($do)
+{
+case "upload":
+    doCartoSqlApiPush($_REQUEST);
+    break;
+default:
+    returnAjax(array(
+        "status" => false,
+        "error" => "Invalid action",
+        "human_error" => "The server recieved an instruction it didn't understand. Please try again."
+    ));
+}
+
+
 function checkColumnExists($column_list)
 {
     /***
@@ -81,6 +98,28 @@ function checkColumnExists($column_list)
     return true;
 }
 
-    
+function doCartoSqlApiPush($get) {
+    global $cartodb_username, $cartodb_api_key;    
+    $sqlQuery = decode64($get["sql_query"]);
+    if(empty($sqlQuery)) returnAjax(array(
+        "status" => false,
+        "error" => "Invalid Query",
+        "args_provided" => $get
+    ));
+    $cartoPostUrl = "https://".$cartodb_username.".cartodb.com/api/v2/sql";
+    $cartoArgSuffix = "&api_key=".$cartodb_api_key;
+    try {
+        returnAjax(array(
+            "status" => true,
+            "post_response" => do_post_request($cartoPostUrl, $sqlQuery.$cartoArgSuffix)
+        ));
+    } catch (Exception $e) {
+        returnAjax(array(
+            "status" => false
+            "error" => $e->getMessage()
+            "human_error" => "There was a problem uploading to the CartoDB server."
+        ));
+    }
+}
     
     ?>
