@@ -17,6 +17,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-string-replace')
   grunt.loadNpmTasks('grunt-postcss')
   grunt.loadNpmTasks('grunt-contrib-less')
+  # https://www.npmjs.com/package/grunt-phplint
+  grunt.loadNpmTasks("grunt-phplint");
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     shell:
@@ -147,6 +149,11 @@ module.exports = (grunt) ->
       app:
         files: ["app.html"]
         tasks: ["bootlint","shell:vulcanize","uglify:vulcanize","string-replace:vulcanize"]
+      php:
+        files: ["*.php", "helpers/*.php"]
+        tasks: ["phplint"]
+    phplint:
+      root: ["*.php", "helpers/*.php"]
     bootlint:
       options:
         stoponerror: false
