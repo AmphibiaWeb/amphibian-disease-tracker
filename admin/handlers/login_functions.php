@@ -360,8 +360,12 @@ class UserFunctions extends DBHelper
         $link = $this->userlink;
         # Has this been defined yet?
         if (empty($link)) {
-            $this->getUser();
-            $link = $this->userlink;
+            try {
+                $this->getUser();
+                $link = $this->userlink;
+            } catch(Exception $e) {
+                $link = null;
+            }
         }
         return $link;
     }
