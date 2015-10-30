@@ -119,12 +119,12 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
 
       if typeof result isnt "object"
         console.error "Dropzone returned an error - #{result}"
-        window.toastStatusMessage "There was a problem with the server handling your image. Please try again."
+        toastStatusMessage "There was a problem with the server handling your image. Please try again."
         return false
       unless result.status is true
         # Yikes! Didn't work
         result.human_error ?= "There was a problem uploading your image."
-        window.toastStatusMessage "#{result.human_error}"
+        toastStatusMessage "#{result.human_error}"
         console.error("Error uploading!",result)
         return false
       try
@@ -135,7 +135,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
         result.full_path = result.wrote_file
         result.thumb_path = result.wrote_thumb
         mediaType = result.mime_provided.split("/")[0]
-        longType = result.mime_provided.split("/")[0]
+        longType = result.mime_provided.split("/")[1]
         linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.full_path}" else "#{pathPrefix}#{result.thumb_path}"
         previewHtml = switch mediaType
           when "image"
@@ -195,6 +195,8 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
                 _7zHandler(linkPath)
           when "text" then csvHandler()
           when "image" then imageHandler()
+      catch e
+        toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
     false
 
 

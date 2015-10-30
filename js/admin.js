@@ -114,18 +114,18 @@ bootstrapUploader = function(uploadFormId) {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var linkPath, longType, mediaType, pathPrefix, previewHtml;
+      var e, linkPath, longType, mediaType, pathPrefix, previewHtml;
       window.dropperParams.dropzone.removeAllFiles();
       if (typeof result !== "object") {
         console.error("Dropzone returned an error - " + result);
-        window.toastStatusMessage("There was a problem with the server handling your image. Please try again.");
+        toastStatusMessage("There was a problem with the server handling your image. Please try again.");
         return false;
       }
       if (result.status !== true) {
         if (result.human_error == null) {
           result.human_error = "There was a problem uploading your image.";
         }
-        window.toastStatusMessage("" + result.human_error);
+        toastStatusMessage("" + result.human_error);
         console.error("Error uploading!", result);
         return false;
       }
@@ -136,7 +136,7 @@ bootstrapUploader = function(uploadFormId) {
         result.full_path = result.wrote_file;
         result.thumb_path = result.wrote_thumb;
         mediaType = result.mime_provided.split("/")[0];
-        longType = result.mime_provided.split("/")[0];
+        longType = result.mime_provided.split("/")[1];
         linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.full_path : "" + pathPrefix + result.thumb_path;
         previewHtml = (function() {
           switch (mediaType) {
@@ -169,7 +169,10 @@ bootstrapUploader = function(uploadFormId) {
           case "image":
             return imageHandler();
         }
-      } catch (_error) {}
+      } catch (_error) {
+        e = _error;
+        return toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
+      }
     };
     return false;
   });

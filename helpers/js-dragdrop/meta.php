@@ -146,7 +146,7 @@ function handleUpload()
         # it'll return an invalid JSON response
         #error_reporting(0); # Disable this for debugging
         $status = move_uploaded_file($temp, $fileWritePath);
-        $uploadStatus = array('status' => $status,'original_file' => $file,'wrote_file' => $newFilePath,'full_path' => getRelativePath($fileWritePath), "dumb_type"=>mime_type($file));
+        $uploadStatus = array('status' => $status,'original_file' => $file,'wrote_file' => $newFilePath,'full_path' => getRelativePath($fileWritePath), "mime_provided"=>$mime);
         return $uploadStatus;
     }
 }
