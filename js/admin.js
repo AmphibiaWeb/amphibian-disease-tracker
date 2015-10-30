@@ -70,7 +70,7 @@ verifyLoginCredentials = function(callback) {
       return goTo(result.login_url);
     }
   }).fail(function(result, status) {
-    $("article #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p>'</div>");
+    $("article #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p></div>");
     console.log(result, status);
     return false;
   });

@@ -67,7 +67,7 @@ verifyLoginCredentials = (callback) ->
       goTo(result.login_url)
   .fail (result,status) ->
     # Throw up some warning here
-    $("article #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p>'</div>")
+    $("article #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p></div>")
     console.log(result,status)
     false
   false
