@@ -269,8 +269,8 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
               when "zip", "x-zip-compressed"
                 # Some servers won't read it as the crazy MS mime type
                 # But as a zip, instead. So, check the extension.
-                # linkPath.split(".").pop() is "xlsx"
-                if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                # 
+                if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
                   excelHandler(linkPath)
                 else
                   zipHandler(linkPath)
@@ -289,11 +289,23 @@ excelHandler = (path, hasHeaders = true) ->
   correctedPath = path
   if path.search helperDir isnt -1
     correctedPath = path.slice helperDir.length
+  console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}"
   $.get helperApi, args, "json"
   .done (result) ->
     toastStatusMessage("Would load the excel helper and get parseable data out here")
     console.info "Got result", result
+    rows = Object.size(result.data)
+    randomData = ""
+    if rows > 0
+      randomRow = randomInt(1,rows)
+      randomData = "\n\nHere's a random row: " + JSON.stringify(randomRow)
+    html = """
+    <pre>
+      From upload, fetched #{rows} rows.#{randomData}
+    </pre>
+    """
+    $("#main-body").append html
   .fail (result, error) ->
     console.error "Couldn't POST"
     console.warn result, error

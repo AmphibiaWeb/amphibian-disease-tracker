@@ -205,7 +205,7 @@ bootstrapUploader = function(uploadFormId) {
                 return excelHandler(linkPath);
               case "zip":
               case "x-zip-compressed":
-                if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || linkPath.split(".").pop() === "xlsx") {
                   return excelHandler(linkPath);
                 } else {
                   return zipHandler(linkPath);
@@ -240,10 +240,20 @@ excelHandler = function(path, hasHeaders) {
   if (path.search(helperDir !== -1)) {
     correctedPath = path.slice(helperDir.length);
   }
+  console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath;
   $.get(helperApi, args, "json").done(function(result) {
+    var html, randomData, randomRow, rows;
     toastStatusMessage("Would load the excel helper and get parseable data out here");
-    return console.info("Got result", result);
+    console.info("Got result", result);
+    rows = Object.size(result.data);
+    randomData = "";
+    if (rows > 0) {
+      randomRow = randomInt(1, rows);
+      randomData = "\n\nHere's a random row: " + JSON.stringify(randomRow);
+    }
+    html = "<pre>\n  From upload, fetched " + rows + " rows." + randomData + "\n</pre>";
+    return $("#main-body").append(html);
   }).fail(function(result, error) {
     console.error("Couldn't POST");
     return console.warn(result, error);
