@@ -75,6 +75,8 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     # For whatever reason, we still need to manually add the data
     cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
     .done (layer) ->
+      # The actual interaction infowindow popup is decided on the data
+      # page in Carto
       layer.setInteraction true
       layer.on "featureOver", defaultMapMouseOverBehaviour
   .error (errorString) ->
@@ -166,6 +168,8 @@ requestCartoUpload = (data) ->
       if cartoMap?
         cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
         .done (layer) ->
+          # The actual interaction infowindow popup is decided on the data
+          # page in Carto
           layer.setInteraction true
           layer.on "featureOver", defaultMapMouseOverBehaviour
       else
