@@ -1563,6 +1563,11 @@
     }
     acceptedFiles = acceptedFiles.split(",");
     mimeType = file.type;
+      if (mimeType === "") {
+              // No mime? Let's run with it.
+              mimeType = "application/" + file.name.split(".").pop();
+          
+          }
     baseMimeType = mimeType.replace(/\/.*$/, "");
     for (_i = 0, _len = acceptedFiles.length; _i < _len; _i++) {
       validType = acceptedFiles[_i];
@@ -1578,12 +1583,7 @@
       } else {
         if (mimeType === validType) {
           return true;
-        }
-          if (mimeType === "") {
-              // No mime? Let's run with it.
-              file.type = "application/" + file.name.split(".").pop();
-              return true;
-          }
+        }          
       }
     }
     return false;
