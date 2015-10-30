@@ -1092,7 +1092,7 @@ geo.init = function() {
   cartoDBCSS = "<link rel=\"stylesheet\" href=\"http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   doCallback = function() {
-    createMap("map", adData.cartoRef);
+    createMap(adData.cartoRef);
     return false;
   };
   window.gMapsCallback = function() {
@@ -1105,13 +1105,13 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
 };
 
-createMap = function(targetId, dataVisIdentifier) {
+createMap = function(dataVisIdentifier, targetId) {
   var dataVisUrl, fakeDiv, options;
-  if (targetId == null) {
-    targetId = "map";
-  }
   if (dataVisIdentifier == null) {
     dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28";
+  }
+  if (targetId == null) {
+    targetId = "map";
   }
 
   /*
@@ -1141,6 +1141,7 @@ createMap = function(targetId, dataVisIdentifier) {
     console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
     cartoVis = vis;
     cartoMap = vis.getNativeMap();
+    cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap);
     layers[1].setInteraction(true);
     return layers[1].on("featureOver", defaultMapMouseOverBehaviour);
   }).error(function(errorString) {
@@ -1174,7 +1175,7 @@ requestCartoUpload = function(data) {
   }
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + dblink;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var coordinate, coordinatePair, dataGeometry, defaultPolygon, geoJson, i, j, len, len1, sampleLatLngArray, transectPolygon, userTransectRing;
+    var coordinate, coordinatePair, dataBlobUrl, dataGeometry, dataVisUrl, defaultPolygon, geoJson, i, j, len, len1, sampleLatLngArray, transectPolygon, userTransectRing;
     if (result.status) {
 
       /*
@@ -1231,7 +1232,14 @@ requestCartoUpload = function(data) {
           }
         ]
       };
-      return dataGeometry = "ST_AsGeoJSON(" + stringifiedObj + ")";
+      dataGeometry = "ST_AsGeoJSON(" + stringifiedObj + ")";
+      dataBlobUrl = "";
+      dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
+      if (cartoMap != null) {
+        return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap);
+      } else {
+        return createMap(dataVisUrl);
+      }
     } else {
       console.error("Unable to authenticate session. Please log in.");
       return toastStatusMessage("Sorry, your session has expired. Please log in and try again.");

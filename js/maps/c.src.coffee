@@ -801,7 +801,7 @@ geo.init = ->
   """
   $("head").append cartoDBCSS
   doCallback = ->
-    createMap "map", adData.cartoRef
+    createMap adData.cartoRef
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
@@ -813,7 +813,7 @@ geo.init = ->
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
-createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28") ->
+createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "map") ->
   ###
   # Creates a map and does some simple bindings.
   #
@@ -828,7 +828,7 @@ createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4f
   dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
   options =
     cartodb_logo: false
-    https: true
+    https: true # Secure forcing is leading to resource errors
     mobile_layout: true
     gmaps_base_type: "hybrid"
   unless $("##{targetId}").exists()
@@ -843,6 +843,8 @@ createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4f
     console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
     cartoVis = vis
     cartoMap = vis.getNativeMap()
+    # For whatever reason, we still need to manually add the data
+    cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
     layers[1].setInteraction(true)
     layers[1].on "featureOver", defaultMapMouseOverBehaviour
   .error (errorString) ->
@@ -928,6 +930,13 @@ requestCartoUpload = (data) ->
       dataGeometry = "ST_AsGeoJSON(#{stringifiedObj})"
       # Update the overlay for sending to Carto
       # Post this data over to the back end
+      # Update the UI
+      dataBlobUrl = "" # The returned viz.json url
+      dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
+      if cartoMap?
+        cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
+      else
+        createMap dataVisUrl
     else
       console.error "Unable to authenticate session. Please log in."
       toastStatusMessage "Sorry, your session has expired. Please log in and try again."
