@@ -1,5 +1,6 @@
 var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
-  slice = [].slice;
+  slice = [].slice,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 try {
   uri = new Object();
@@ -1151,7 +1152,7 @@ createMap = function(dataVisIdentifier, targetId) {
   });
 };
 
-requestCartoUpload = function(data) {
+requestCartoUpload = function(data, dataTable, operation) {
 
   /*
    * Acts as a shim between the server-side uploader and the client.
@@ -1161,9 +1162,22 @@ requestCartoUpload = function(data) {
    *
    * Among other things, this approach secures the cartoDB API on the server.
    */
-  var args, hash, link, secret;
+  var allowedOperations, args, hash, link, secret;
   if (typeof data !== "object") {
     console.info("This function requires the base data to be a JSON object.");
+    toastStatusMessage("Your data is malformed. Please double check your data and try again.");
+    return false;
+  }
+  allowedOperations = ["edit", "insert", "delete", "create"];
+  if (indexOf.call(allowedOperations, operation) < 0) {
+    console.error(operation + " is not an allowed operation on a data set!");
+    console.info("Allowed operations are ", allowedOperations);
+    toastStatusMessage("Sorry, '" + operation + "' isn't an allowed operation.");
+    return false;
+  }
+  if (isNull(dataTable)) {
+    console.error("Must use a defined table name!");
+    toastStatusMessage("You must name your data table");
     return false;
   }
   link = $.cookie(uri.domain + "_link");
@@ -1174,9 +1188,10 @@ requestCartoUpload = function(data) {
     toastStatusMessage("Sorry, you're not logged in. Please log in and try again.");
     return false;
   }
+  dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + dblink;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var coordinate, coordinatePair, dataBlobUrl, dataGeometry, dataVisUrl, defaultPolygon, geoJson, i, j, len, len1, sampleLatLngArray, transectPolygon, userTransectRing;
+    var apiPostSqlQuery, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, len, len1, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, valuesList;
     if (result.status) {
 
       /*
@@ -1233,17 +1248,49 @@ requestCartoUpload = function(data) {
           }
         ]
       };
-      dataGeometry = "ST_AsGeoJSON(" + stringifiedObj + ")";
-      dataBlobUrl = "";
-      dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
-      if (cartoMap != null) {
-        return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
-          layer.setInteraction(true);
-          return layer.on("featureOver", defaultMapMouseOverBehaviour);
-        });
-      } else {
-        return createMap(dataVisUrl);
+      dataGeometry = "ST_AsGeoJSON(" + (JSON.stringify(geoJson)) + ")";
+      switch (operation) {
+        case "edit":
+          sqlQuery = "UPDATE " + dataTable + " ";
+          break;
+        case "insert":
+          sqlQuery = "INSERT INTO " + dataTable + " ";
+          valuesList = "";
+          dataObject = {
+            the_geom: dataGeometry
+          };
+          valuesList = valuesList + ", (" + tempJoinedValuesString + ")";
+          sqlQuery = sqlQuery + " " + columnNamesList + " VALUES " + valuesList;
+          break;
+        case "delete":
+          sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
+          break;
+        case "create":
+          sqlQuery = "CREATE TABLE " + dataTable + " ";
       }
+      apiPostSqlQuery = encodeURIComponents(encode64(sqlQuery));
+      args = "action=upload&sql_query=" + apiPostSqlQuery;
+      return $.post("api.php", args).done(function(result) {
+        var cartoResult, dataBlobUrl, dataVisUrl, resultRows;
+        if (result.status !== true) {
+          console.error("Got an error from the server!");
+          console.warn(result);
+          toastStatusMessage("There was a problem uploading your data. Please try again.");
+          return false;
+        }
+        cartoResult = result.post_response;
+        resultRows = cartoResult.rows;
+        dataBlobUrl = "";
+        dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
+        if (cartoMap != null) {
+          return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+            layer.setInteraction(true);
+            return layer.on("featureOver", defaultMapMouseOverBehaviour);
+          });
+        } else {
+          return createMap(dataVisUrl);
+        }
+      });
     } else {
       console.error("Unable to authenticate session. Please log in.");
       return toastStatusMessage("Sorry, your session has expired. Please log in and try again.");

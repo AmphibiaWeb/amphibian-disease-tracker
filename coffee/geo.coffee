@@ -83,7 +83,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     toastStatusMessage("Couldn't load maps!")
     console.error "Couldn't get map - #{errorString}"
 
-requestCartoUpload = (data) ->
+requestCartoUpload = (data, dataTable, operation) ->
   ###
   # Acts as a shim between the server-side uploader and the client.
   # Send a request to the server to authenticate the current user
@@ -92,9 +92,32 @@ requestCartoUpload = (data) ->
   #
   # Among other things, this approach secures the cartoDB API on the server.
   ###
+
+  # How's the data?
   if typeof data isnt "object"
     console.info "This function requires the base data to be a JSON object."
+    toastStatusMessage "Your data is malformed. Please double check your data and try again."
     return false
+
+  # Is this a legitimate operation?
+  allowedOperations = [
+    "edit"
+    "insert"
+    "delete"
+    "create"
+    ]
+  unless operation in allowedOperations
+    console.error "#{operation} is not an allowed operation on a data set!"
+    console.info "Allowed operations are ", allowedOperations
+    toastStatusMessage "Sorry, '#{operation}' isn't an allowed operation."
+    return false
+
+  if isNull dataTable
+    console.error "Must use a defined table name!"
+    toastStatusMessage "You must name your data table"
+    return false
+
+  # Is the user allowed and logged in?
   link = $.cookie "#{uri.domain}_link"
   hash = $.cookie "#{uri.domain}_auth"
   secret = $.cookie "#{uri.domain}_secret"
@@ -102,6 +125,11 @@ requestCartoUpload = (data) ->
     console.error "You're not logged in. Got one or more invalid tokens for secrets.", link, hash, secret
     toastStatusMessage "Sorry, you're not logged in. Please log in and try again."
     return false
+
+  # We want the data tables to be unique, so we'll suffix them with
+  # the user link.
+  dataTable = "#{dataTable}_#{link}"  
+  # Start doing real things
   args = "hash=#{hash}&secret=#{secret}&dblink=#{dblink}"
   $.post "admin_api.php", args, "json"
   .done (result) ->
@@ -149,6 +177,7 @@ requestCartoUpload = (data) ->
       catch e
         console.warn "Error parsing the user transect ring - #{e.message}"
         userTransectRing = undefined
+      # Massive object row
       transectPolygon = userTransectRing ? defaultPolygon
       geoJson =
         type: "GeometryCollection"
@@ -159,21 +188,59 @@ requestCartoUpload = (data) ->
               type: "Polygon"
               coordinates: transectPolygon
           ]
-      dataGeometry = "ST_AsGeoJSON(#{stringifiedObj})"
-      # Update the overlay for sending to Carto
-      # Post this data over to the back end
-      # Update the UI
-      dataBlobUrl = "" # The returned viz.json url
-      dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
-      if cartoMap?
-        cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
-        .done (layer) ->
-          # The actual interaction infowindow popup is decided on the data
-          # page in Carto
-          layer.setInteraction true
-          layer.on "featureOver", defaultMapMouseOverBehaviour
-      else
-        createMap dataVisUrl
+      dataGeometry = "ST_AsGeoJSON(#{JSON.stringify(geoJson)})"
+      # Rows per-sample ...
+      
+      # Construct the SQL query
+      switch operation
+        when "edit"
+          sqlQuery = "UPDATE #{dataTable} "
+          # Slice and dice!
+        when "insert"
+          sqlQuery = "INSERT INTO #{dataTable} "
+          # Create a set of nice data blocks, then push that into the
+          # query
+          valuesList = ""
+          # First row, the big collection
+          dataObject =
+            the_geom: dataGeometry
+          # All the others ...
+          # Loop through them ...
+          valuesList = "#{valuesList}, (#{tempJoinedValuesString})"
+          # Create the final query
+          sqlQuery = "#{sqlQuery} #{columnNamesList} VALUES #{valuesList}"
+        when "delete"
+          sqlQuery = "DELETE FROM #{dataTable} WHERE "
+          # Deletion criteria ...
+        when "create"
+          sqlQuery = "CREATE TABLE #{dataTable} "
+          # Insert all the initial rows here
+      # Ping the server
+      apiPostSqlQuery = encodeURIComponents encode64 sqlQuery
+      args = "action=upload&sql_query=#{apiPostSqlQuery}"
+      $.post "api.php", args
+      .done (result) ->
+        if result.status isnt true
+          console.error "Got an error from the server!"
+          console.warn result
+          toastStatusMessage "There was a problem uploading your data. Please try again."
+          return false
+        cartoResult = result.post_response
+        resultRows = cartoResult.rows
+        # Update the overlay for sending to Carto
+        # Post this data over to the back end
+        # Update the UI
+        dataBlobUrl = "" # The returned viz.json url
+        dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
+        if cartoMap?
+          cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
+          .done (layer) ->
+            # The actual interaction infowindow popup is decided on the data
+            # page in Carto
+            layer.setInteraction true
+            layer.on "featureOver", defaultMapMouseOverBehaviour
+        else
+          createMap dataVisUrl
     else
       console.error "Unable to authenticate session. Please log in."
       toastStatusMessage "Sorry, your session has expired. Please log in and try again."
