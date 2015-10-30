@@ -73,6 +73,26 @@ verifyLoginCredentials = (callback) ->
   false
 
 
+bootstrapUploader = (uploadFormId = "file-uploader") ->
+  ###
+  # Bootstrap the file uploader into existence
+  ###
+  # Check for the existence of the uploader form; if it's not there,
+  # create it
+  selector = "##{uploadFormId}"
+  unless $(selector).exists()
+    # Create it
+    html = """
+    <form id="#{uploadFormId}-form">
+      <div id="#{uploadFormId}" class="media-uploader outline">
+      </div>
+    </form>
+    """
+    $("main").append html
+  loadJS "helpers/js-dragdrop/client-upload.min.js", ->
+    # Successfully uploaded the file
+    console.info "Loaded drag drop helper"
+    false
 
 $ ->
   if $("#next").exists()

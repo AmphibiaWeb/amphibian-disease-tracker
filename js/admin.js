@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var verifyLoginCredentials;
+var bootstrapUploader, verifyLoginCredentials;
 
 window.adminParams = new Object();
 
@@ -75,6 +75,26 @@ verifyLoginCredentials = function(callback) {
     return false;
   });
   return false;
+};
+
+bootstrapUploader = function(uploadFormId) {
+  var html, selector;
+  if (uploadFormId == null) {
+    uploadFormId = "file-uploader";
+  }
+
+  /*
+   * Bootstrap the file uploader into existence
+   */
+  selector = "#" + uploadFormId;
+  if (!$(selector).exists()) {
+    html = "<form id=\"" + uploadFormId + "-form\">\n  <div id=\"" + uploadFormId + "\" class=\"media-uploader outline\">\n  </div>\n</form>";
+    $("main").append(html);
+  }
+  return loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
+    console.info("Loaded drag drop helper");
+    return false;
+  });
 };
 
 $(function() {
