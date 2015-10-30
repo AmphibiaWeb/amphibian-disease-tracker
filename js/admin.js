@@ -229,20 +229,24 @@ bootstrapUploader = function(uploadFormId) {
   });
 };
 
-excelHandler = function(path) {
+excelHandler = function(path, hasHeaders) {
   var args, correctedPath, helperApi, helperDir;
+  if (hasHeaders == null) {
+    hasHeaders = true;
+  }
   helperDir = "helpers/";
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
   if (path.search(helperDir !== -1)) {
     correctedPath = path.slice(helperDir.length);
   }
-  args = "path=" + correctedPath;
-  $.post(helperApi, args, "json").done(function(result) {
+  args = "action=parse&path=" + correctedPath;
+  $.get(helperApi, args, "json").done(function(result) {
     toastStatusMessage("Would load the excel helper and get parseable data out here");
     return console.info("Got result", result);
   }).fail(function(result, error) {
-    return console.error("Couldn't POST");
+    console.error("Couldn't POST");
+    return console.warn(result, error);
   });
   return false;
 };

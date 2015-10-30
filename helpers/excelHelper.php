@@ -1,9 +1,9 @@
 <?php
 
-ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
-ini_set("display_errors",1);
-ini_set("log_errors",1);
-error_reporting(E_ALL);
+// ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
+// ini_set("display_errors",1);
+// ini_set("log_errors",1);
+// error_reporting(E_ALL);
 
 require_once(dirname(__FILE__)."/../phpexcel/Classes/PHPExcel.php");
 
