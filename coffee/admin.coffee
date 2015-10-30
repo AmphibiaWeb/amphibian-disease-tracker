@@ -261,12 +261,19 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
         switch mediaType
           when "application"
             # Another switch!
+            console.info "Checking #{longType} in application"
             switch longType
               # Fuck you MS, and your terrible MIME types
               when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
                 excelHandler(linkPath)
               when "zip", "x-zip-compressed"
-                zipHandler(linkPath)
+                # Some servers won't read it as the crazy MS mime type
+                # But as a zip, instead. So, check the extension.
+                # linkPath.split(".").pop() is "xlsx"
+                if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  excelHandler(linkPath)
+                else
+                  zipHandler(linkPath)
               when "x-7z-compressed"
                 _7zHandler(linkPath)
           when "text" then csvHandler()

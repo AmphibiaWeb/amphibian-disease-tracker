@@ -198,13 +198,19 @@ bootstrapUploader = function(uploadFormId) {
         $(window.dropperParams.dropTargetSelector).before(previewHtml);
         switch (mediaType) {
           case "application":
+            console.info("Checking " + longType + " in application");
             switch (longType) {
               case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               case "vnd.ms-excel":
                 return excelHandler(linkPath);
               case "zip":
               case "x-zip-compressed":
-                return zipHandler(linkPath);
+                if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                  return excelHandler(linkPath);
+                } else {
+                  return zipHandler(linkPath);
+                }
+                break;
               case "x-7z-compressed":
                 return _7zHandler(linkPath);
             }
