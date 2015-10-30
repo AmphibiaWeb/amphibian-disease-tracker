@@ -884,7 +884,7 @@
         init: function() {
           this.on("error", (function(_this) {
             return function(file, errorMessage) {
-              dropperParams.toastStatusMessage("An error occured sending your image to the server - " + errorMessage, "danger", "main");
+              dropperParams.toastStatusMessage("An error occured sending your file to the server - " + errorMessage, "danger", "main");
               console.error("Got the following file details back:", file);
               return cleanup(_this);
             };
