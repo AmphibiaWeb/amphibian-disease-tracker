@@ -57,14 +57,16 @@ createMap = (targetId = "map", dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4f
       <!-- Dynamically inserted from unavailable target -->
     </div>
     """
-    $("body").append fakeDiv
-  cartodb.createVis targetId, dataVisUrl
+    $("main").append fakeDiv
+  cartodb.createVis targetId, dataVisUrl, options
   .done (vis, layers) ->
+    console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
     cartoVis = vis
     cartoMap = vis.getNativeMap()
     layers[1].setInteraction(true)
     layers[1].on "featureOver", defaultMapMouseOverBehaviour
   .error (errorString) ->
+    toastStatusMessage("Couldn't load maps!")
     console.error "Couldn't get map - #{errorString}"
 
 requestCartoUpload = (data) ->

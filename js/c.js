@@ -1051,7 +1051,6 @@ $(function() {
   try {
     checkAdmin();
     if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.loadAdminUi : void 0) === true) {
-      console.info("Doing admin setup");
       return loadJS("js/admin.min.js", function() {
         console.info("Loaded admin file");
         return loadAdminUi();
@@ -1131,14 +1130,16 @@ createMap = function(targetId, dataVisIdentifier) {
   };
   if (!$("#" + targetId).exists()) {
     fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
-    $("body").append(fakeDiv);
+    $("main").append(fakeDiv);
   }
-  return cartodb.createVis(targetId, dataVisUrl).done(function(vis, layers) {
+  return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
+    console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
     cartoVis = vis;
     cartoMap = vis.getNativeMap();
     layers[1].setInteraction(true);
     return layers[1].on("featureOver", defaultMapMouseOverBehaviour);
   }).error(function(errorString) {
+    toastStatusMessage("Couldn't load maps!");
     return console.error("Couldn't get map - " + errorString);
   });
 };

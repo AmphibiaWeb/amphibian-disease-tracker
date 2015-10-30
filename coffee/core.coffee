@@ -762,7 +762,7 @@ $ ->
   try
     checkAdmin()
     if adminParams?.loadAdminUi is true
-      console.info "Doing admin setup"
+      #console.info "Doing admin setup"
       loadJS "js/admin.min.js", ->
         console.info "Loaded admin file"
         loadAdminUi()

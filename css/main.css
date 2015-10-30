@@ -7160,3 +7160,10 @@ paper-radio-button #radioContainer div {
   /* Overrides Bootstrap */
   box-sizing: content-box !important;
 }
+.map {
+  min-width: 50vw;
+  min-height: 25vh;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
