@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var bootstrapUploader, verifyLoginCredentials;
+var _7zHandler, bootstrapUploader, csvHandler, excelHandler, imageHandler, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -109,7 +109,7 @@ bootstrapUploader = function(uploadFormId) {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var linkPath, mediaType, pathPrefix, previewHtml;
+      var linkPath, longType, mediaType, pathPrefix, previewHtml;
       window.dropperParams.dropzone.removeAllFiles();
       if (typeof result !== "object") {
         console.error("Dropzone returned an error - " + result);
@@ -131,6 +131,7 @@ bootstrapUploader = function(uploadFormId) {
         result.full_path = result.wrote_file;
         result.thumb_path = result.wrote_thumb;
         mediaType = result.mime_provided.split("/")[0];
+        longType = result.mime_provided.split("/")[0];
         linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.full_path : "" + pathPrefix + result.thumb_path;
         previewHtml = (function() {
           switch (mediaType) {
@@ -144,11 +145,53 @@ bootstrapUploader = function(uploadFormId) {
               return "<div class=\"uploaded-media center-block\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + "</p>\n</div>";
           }
         })();
-        return $(window.dropperParams.dropTargetSelector).before(previewHtml);
+        $(window.dropperParams.dropTargetSelector).before(previewHtml);
+        switch (mediaType) {
+          case "application":
+            switch (longType) {
+              case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+              case "vnd.ms-excel":
+                return excelHandler(linkPath);
+              case "zip":
+                return zipHandler(linkPath);
+              case "x-7z-compressed":
+                return _7zHandler(linkPath);
+            }
+            break;
+          case "text":
+            return csvHandler();
+          case "image":
+            return imageHandler();
+        }
       } catch (_error) {}
     };
     return false;
   });
+};
+
+excelHandler = function() {
+  foo();
+  return false;
+};
+
+csvHandler = function() {
+  foo();
+  return false;
+};
+
+imageHandler = function() {
+  foo();
+  return false;
+};
+
+zipHandler = function() {
+  foo();
+  return false;
+};
+
+_7zHandler = function() {
+  foo();
+  return false;
 };
 
 $(function() {

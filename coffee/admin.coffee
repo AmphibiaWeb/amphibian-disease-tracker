@@ -128,7 +128,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
         result.full_path = result.wrote_file
         result.thumb_path = result.wrote_thumb
         mediaType = result.mime_provided.split("/")[0]
-        
+        longType = result.mime_provided.split("/")[0]
         linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.full_path}" else "#{pathPrefix}#{result.thumb_path}"
         previewHtml = switch mediaType
           when "image"
@@ -174,7 +174,43 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
             """
         # Append the preview HTML
         $(window.dropperParams.dropTargetSelector).before previewHtml
+        # Finally, execute handlers for different file types
+        switch mediaType
+          when "application"
+            # Another switch!
+            switch longType
+              # Fuck you MS, and your terrible MIME types
+              when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
+                excelHandler(linkPath)
+              when "zip"
+                zipHandler(linkPath)
+              when "x-7z-compressed"
+                _7zHandler(linkPath)
+          when "text" then csvHandler()
+          when "image" then imageHandler()
     false
+
+
+excelHandler = ->
+  foo()
+  false
+
+csvHandler = ->
+  foo()
+  false
+
+imageHandler = ->
+  foo()
+  false
+
+zipHandler = ->
+  foo()
+  false
+
+_7zHandler = ->
+  foo()
+  false
+
 
 $ ->
   if $("#next").exists()

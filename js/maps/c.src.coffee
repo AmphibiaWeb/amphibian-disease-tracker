@@ -989,6 +989,11 @@ requestCartoUpload = (data, dataTable, operation) ->
       # Ping the server
       apiPostSqlQuery = encodeURIComponents encode64 sqlQuery
       args = "action=upload&sql_query=#{apiPostSqlQuery}"
+      console.info "STOPPING INCOMPLETE EXECUTION"
+      console.info "Would query with args", args
+      console.info "Have query:"
+      console.info sqlQuery      
+      return false
       $.post "api.php", args
       .done (result) ->
         if result.status isnt true

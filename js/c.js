@@ -1270,6 +1270,11 @@ requestCartoUpload = function(data, dataTable, operation) {
       }
       apiPostSqlQuery = encodeURIComponents(encode64(sqlQuery));
       args = "action=upload&sql_query=" + apiPostSqlQuery;
+      console.info("STOPPING INCOMPLETE EXECUTION");
+      console.info("Would query with args", args);
+      console.info("Have query:");
+      console.info(sqlQuery);
+      return false;
       return $.post("api.php", args).done(function(result) {
         var cartoResult, dataBlobUrl, dataVisUrl, resultRows;
         if (result.status !== true) {
