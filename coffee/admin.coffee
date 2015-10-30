@@ -130,7 +130,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
       try
         console.info "Server returned the following result:", result
         console.info "The script returned the following file information:", file
-        pathPrefix = ""
+        pathPrefix = "helpers/js-dragdrop/uploaded/"
         # Replace full_path and thumb_path with "wrote"
         result.full_path = result.wrote_file
         result.thumb_path = result.wrote_thumb
@@ -139,7 +139,17 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
         linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.full_path}" else "#{pathPrefix}#{result.thumb_path}"
         previewHtml = switch mediaType
           when "image"
-            "<img src='#{linkPath}' alt='Uploaded Image'/>"
+            """
+            <div class="uploaded-media center-block">
+              <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
+                <p class="text-muted">
+                  #{file.name} -> #{result.full_path}
+              (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                Original Image
+              </a>)
+                </p>
+            </div>
+            """
           when "audio" then """
           <div class="uploaded-media center-block">
             <audio src="#{linkPath}" controls preload="auto">
@@ -150,6 +160,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
               </p>
             </audio>
             <p class="text-muted">
+              #{file.name} -> #{result.full_path}
               (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
                 Original Media
               </a>)
@@ -166,6 +177,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
               </p>
             </video>
             <p class="text-muted">
+              #{file.name} -> #{result.full_path}
               (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
                 Original Media
               </a>)
@@ -176,7 +188,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
             """
             <div class="uploaded-media center-block">
               <span class="glyphicon glyphicon-file"></span>
-              <p class="text-muted">#{file.name}</p>
+              <p class="text-muted">#{file.name} -> #{result.full_path}</p>
             </div>
             """
         # Append the preview HTML

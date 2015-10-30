@@ -7160,6 +7160,10 @@ paper-radio-button #radioContainer div {
   /* Overrides Bootstrap */
   box-sizing: content-box !important;
 }
+.thumb-img {
+  max-width: 150px;
+  max-height: 150px;
+}
 .map {
   width: 75vw;
   height: 50vh;
