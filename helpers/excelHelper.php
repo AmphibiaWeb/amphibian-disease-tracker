@@ -133,12 +133,19 @@ function excelToArray($filePath, $header=true){
 if (isset($_SERVER['QUERY_STRING'])) {
     parse_str($_SERVER['QUERY_STRING'], $_REQUEST);
 }
-$do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
+$do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : "NO_PROVIDED_ACTION";
 
 # Check the cases ....
 
 switch ($do) {
 case "parse":
+    if(!file_exists($_REQUEST["path"])) {
+        returnAjax(array(
+            "status" => false,
+            "error" => "Non-existant file '".$_REQUEST["path"]."'",
+            "human_error" => "There was a problem validating your file. Please try again."
+        ));
+    }
     try {
         returnAjax(array(
             "status" => true,
@@ -156,7 +163,7 @@ default:
         "status" => false,
         "error" => "Invalid action (got '$do')",
         "args" => $_REQUEST,
-
+        "human_error" => "The server recieved an instruction it didn't understand. Please try again."
     ));
 }
 
