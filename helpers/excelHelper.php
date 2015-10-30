@@ -133,7 +133,7 @@ function excelToArray($filePath, $header=true){
 if (isset($_SERVER['QUERY_STRING'])) {
     parse_str($_SERVER['QUERY_STRING'], $_REQUEST);
 }
-$do = isset($_REQUEST['do']) ? strtolower($_REQUEST['do']) : null;
+$do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
 
 # Check the cases ....
 
@@ -142,7 +142,7 @@ case "parse":
     try {
         returnAjax(array(
             "status" => true,
-            "data" => excelToArray($_REQUEST["path"])        
+            "data" => excelToArray($_REQUEST["path"])
         ));
     } catch (Exception $e) {
         returnAjax(array(
@@ -154,7 +154,9 @@ case "parse":
 default:
     returnAjax(array(
         "status" => false,
-        "error" => "Invalid action"
+        "error" => "Invalid action (got '$do')",
+        "args" => $_REQUEST,
+
     ));
 }
 
