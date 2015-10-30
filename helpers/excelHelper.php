@@ -146,10 +146,11 @@ case "parse":
             "human_error" => "There was a problem validating your file. Please try again."
         ));
     }
+    $header = isset($_REQUEST["has_header"]) ? boolstr($_REQUEST["has_header"]) : true;
     try {
         returnAjax(array(
             "status" => true,
-            "data" => excelToArray($_REQUEST["path"])
+            "data" => excelToArray($_REQUEST["path"], $header)
         ));
     } catch (Exception $e) {
         returnAjax(array(
