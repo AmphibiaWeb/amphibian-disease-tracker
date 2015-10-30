@@ -1088,14 +1088,14 @@ geo.init = function() {
    * Urls are taken from
    * http://docs.cartodb.com/cartodb-platform/cartodb-js.html
    */
-  var cartoDBCSS, doCallback, gMapsCallback;
+  var cartoDBCSS, doCallback;
   cartoDBCSS = "<link rel=\"stylesheet\" href=\"http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   doCallback = function() {
     createMap("map", adData.cartoRef);
     return false;
   };
-  gMapsCallback = function() {
+  window.gMapsCallback = function() {
     return loadJS("http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
