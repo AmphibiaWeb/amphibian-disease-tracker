@@ -279,7 +279,7 @@ randomInt = (lower = 0, upper = 1) ->
 
 
 
-toastStatusMessage = (message, type = "warning", fallbackContainer = "body", selector = "#status-message") ->
+toastStatusMessage = (message, type = "warning", fallbackContainer = "body", selector = "#js-uploader-status-message") ->
   ###
   # Pop up a status message
   # Uses the Bootstrap alert dialog

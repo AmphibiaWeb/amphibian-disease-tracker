@@ -188,7 +188,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
               # Fuck you MS, and your terrible MIME types
               when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
                 excelHandler(linkPath)
-              when "zip"
+              when "zip", "x-zip-compressed"
                 zipHandler(linkPath)
               when "x-7z-compressed"
                 _7zHandler(linkPath)

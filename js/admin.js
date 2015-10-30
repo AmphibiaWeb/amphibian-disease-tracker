@@ -157,6 +157,7 @@ bootstrapUploader = function(uploadFormId) {
               case "vnd.ms-excel":
                 return excelHandler(linkPath);
               case "zip":
+              case "x-zip-compressed":
                 return zipHandler(linkPath);
               case "x-7z-compressed":
                 return _7zHandler(linkPath);

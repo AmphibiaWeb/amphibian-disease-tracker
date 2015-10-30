@@ -400,7 +400,7 @@
       fallbackContainer = "body";
     }
     if (selector == null) {
-      selector = "#status-message";
+      selector = "#js-uploader-status-message";
     }
 
     /*
