@@ -81,7 +81,7 @@ $ ->
   window.dropperParams.dropTargetSelector ?= "#file-uploader"
   # Add a click target
   uploadButton = """
-  <button class="upload-image media-uploader btn btn primary" id="do-upload-file"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+  <button class="upload-image media-uploader btn btn-primary" id="do-upload-file"><span class="glyphicon glyphicon-cloud-upload"></span></button>
   """
   window.dropperParams.clickTargets = ["#do-upload-file"]
   window.dropperParams.mimeTypes = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/zip,application/x-7z-compressed,image/*"
