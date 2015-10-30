@@ -29,7 +29,7 @@ window.loadAdminUi = function() {
     verifyLoginCredentials(function(data) {
       var articleHtml;
       articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
-      $("article #main-body").html(articleHtml);
+      $("main #main-body").html(articleHtml);
 
       /*
        * Render out the admin UI
@@ -44,7 +44,7 @@ window.loadAdminUi = function() {
     });
   } catch (_error) {
     e = _error;
-    $("article #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>");
+    $("main #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>");
   }
   return false;
 };
@@ -70,7 +70,7 @@ verifyLoginCredentials = function(callback) {
       return goTo(result.login_url);
     }
   }).fail(function(result, status) {
-    $("article #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p></div>");
+    $("main #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p></div>");
     console.log(result, status);
     return false;
   });
