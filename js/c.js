@@ -1090,6 +1090,11 @@ geo.init = function() {
    * http://docs.cartodb.com/cartodb-platform/cartodb-js.html
    */
   var cartoDBCSS, doCallback;
+  try {
+    window.locationData.lat = 37.871527;
+    window.locationData.lng = -122.262113;
+    getLocation();
+  } catch (_error) {}
   cartoDBCSS = "<link rel=\"stylesheet\" href=\"http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   doCallback = function() {
@@ -1132,7 +1137,9 @@ createMap = function(dataVisIdentifier, targetId) {
     cartodb_logo: false,
     https: true,
     mobile_layout: true,
-    gmaps_base_type: "hybrid"
+    gmaps_base_type: "hybrid",
+    center_lat: window.locationData.lat,
+    center_lon: window.locationData.lng
   };
   if (!$("#" + targetId).exists()) {
     fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";

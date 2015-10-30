@@ -26,25 +26,43 @@ window.loadAdminUi = ->
         </span>
 
       </h3>
-      <div id='admin-actions-block'>
         <div class='bs-callout bs-callout-info'>
           <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>
         </div>
-      </div>
+      <section id='admin-actions-block'>
+      </section>
       """
-      $("main #main-body").html(articleHtml)
-      # $(".pib-wrapper").tooltip()
-      ###
-      # Render out the admin UI
-      # We want a search box that we pipe through the API
-      # and display the table out for editing
-      ###
-      geo?.init()
+      $("main #main-body").before(articleHtml)
+      populateAdminActions()
       bindClicks()
       false
   catch e
     $("main #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>")
   false
+
+populateAdminActions = ->
+  adminActions = """
+        <paper-button id="new-project" class="admin-action" raised>
+          <iron-icon icon="icons:add"></iron-icon>
+            Create New Project
+        </paper-button>
+        <paper-button id="edit-project" class="admin-action" raised>
+          <iron-icon icon="icons:create"></iron-icon>
+            Edit Existing Project
+        </paper-button>
+        <paper-button id="view-project" class="admin-action" raised>
+          <iron-icon icon="icons:visibility"></iron-icon>
+            View All Projects
+        </paper-button>
+  """
+  $("#admin-actions-block").html adminActions
+  $("#show-actions").remove()
+  # Remove the previous project progress or any placeholders
+  $("main #main-body").empty() 
+  $("#new-project").click -> loadCreateNewProject()
+  $("#edit-project").click -> loadEditor()
+  $("#view-project").click -> loadProjectBrowser()
+
 
 
 verifyLoginCredentials = (callback) ->
@@ -71,6 +89,43 @@ verifyLoginCredentials = (callback) ->
     console.log(result,status)
     false
   false
+
+
+startAdminActionHelper = ->
+  # Empty out admin actions block
+  $("#admin-actions-block").empty()
+  showActionsHtml = """
+  <span id="pib-wrapper-dashboard" class="pib-wrapper" data-toggle="tooltip" title="Administration Home" data-placement="bottom">
+    <paper-icon-button icon="icons:dashboard" class="admin-action" id="show-actions">
+    </paper-icon-button>
+  </span>
+  """
+  $("#show-actions").click -> populateAdminActions()
+
+
+
+loadEditor = ->
+  startAdminActionHelper()
+  # Get the data ref
+  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
+  geo.init()
+  foo()
+  false
+
+loadCreateNewProject = ->
+  startAdminActionHelper()
+  bootstrapUploader()
+  foo()
+  false
+
+loadProjectBrowser = ->
+  startAdminActionHelper()
+  # Get a data ref
+  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
+  geo.init()
+  foo()
+  false
+
 
 
 bootstrapUploader = (uploadFormId = "file-uploader") ->

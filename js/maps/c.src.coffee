@@ -796,6 +796,12 @@ geo.init = ->
   # Urls are taken from
   # http://docs.cartodb.com/cartodb-platform/cartodb-js.html
   ###
+  try
+    # Center on Berkeley
+    window.locationData.lat = 37.871527
+    window.locationData.lng = -122.262113
+    # Now get the real location
+    getLocation()
   cartoDBCSS = """
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   """
@@ -831,6 +837,8 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     https: true # Secure forcing is leading to resource errors
     mobile_layout: true
     gmaps_base_type: "hybrid"
+    center_lat: window.locationData.lat
+    center_lon: window.locationData.lng
   unless $("##{targetId}").exists()
     fakeDiv = """
     <div id="#{targetId}" class="carto-map map">
@@ -899,7 +907,7 @@ requestCartoUpload = (data, dataTable, operation) ->
 
   # We want the data tables to be unique, so we'll suffix them with
   # the user link.
-  dataTable = "#{dataTable}_#{link}"  
+  dataTable = "#{dataTable}_#{link}"
   # Start doing real things
   args = "hash=#{hash}&secret=#{secret}&dblink=#{dblink}"
   $.post "admin_api.php", args, "json"
@@ -961,7 +969,7 @@ requestCartoUpload = (data, dataTable, operation) ->
           ]
       dataGeometry = "ST_AsGeoJSON(#{JSON.stringify(geoJson)})"
       # Rows per-sample ...
-      
+
       # Construct the SQL query
       switch operation
         when "edit"
@@ -992,7 +1000,7 @@ requestCartoUpload = (data, dataTable, operation) ->
       console.info "STOPPING INCOMPLETE EXECUTION"
       console.info "Would query with args", args
       console.info "Have query:"
-      console.info sqlQuery      
+      console.info sqlQuery
       return false
       $.post "api.php", args
       .done (result) ->

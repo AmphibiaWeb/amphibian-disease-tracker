@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapUploader, csvHandler, excelHandler, imageHandler, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapUploader, csvHandler, excelHandler, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, populateAdminActions, startAdminActionHelper, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -28,17 +28,9 @@ window.loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n\n</h3>\n<div id='admin-actions-block'>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n</div>";
-      $("main #main-body").html(articleHtml);
-
-      /*
-       * Render out the admin UI
-       * We want a search box that we pipe through the API
-       * and display the table out for editing
-       */
-      if (typeof geo !== "undefined" && geo !== null) {
-        geo.init();
-      }
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n\n</h3>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n<section id='admin-actions-block'>\n</section>";
+      $("main #main-body").before(articleHtml);
+      populateAdminActions();
       bindClicks();
       return false;
     });
@@ -47,6 +39,23 @@ window.loadAdminUi = function() {
     $("main #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>");
   }
   return false;
+};
+
+populateAdminActions = function() {
+  var adminActions;
+  adminActions = "<paper-button id=\"new-project\" class=\"admin-action\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All Projects\n</paper-button>";
+  $("#admin-actions-block").html(adminActions);
+  $("#show-actions").remove();
+  $("main #main-body").empty();
+  $("#new-project").click(function() {
+    return loadCreateNewProject();
+  });
+  $("#edit-project").click(function() {
+    return loadEditor();
+  });
+  return $("#view-project").click(function() {
+    return loadProjectBrowser();
+  });
 };
 
 verifyLoginCredentials = function(callback) {
@@ -74,6 +83,38 @@ verifyLoginCredentials = function(callback) {
     console.log(result, status);
     return false;
   });
+  return false;
+};
+
+startAdminActionHelper = function() {
+  var showActionsHtml;
+  $("#admin-actions-block").empty();
+  showActionsHtml = "<span id=\"pib-wrapper-dashboard\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Administration Home\" data-placement=\"bottom\">\n  <paper-icon-button icon=\"icons:dashboard\" class=\"admin-action\" id=\"show-actions\">\n  </paper-icon-button>\n</span>";
+  return $("#show-actions").click(function() {
+    return populateAdminActions();
+  });
+};
+
+loadEditor = function() {
+  startAdminActionHelper();
+  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
+  geo.init();
+  foo();
+  return false;
+};
+
+loadCreateNewProject = function() {
+  startAdminActionHelper();
+  bootstrapUploader();
+  foo();
+  return false;
+};
+
+loadProjectBrowser = function() {
+  startAdminActionHelper();
+  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
+  geo.init();
+  foo();
   return false;
 };
 
