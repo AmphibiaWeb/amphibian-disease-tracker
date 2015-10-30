@@ -1,4 +1,4 @@
-var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, requestCartoUpload, roundNumber, roundNumberSigfig, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice;
 
 try {
@@ -1071,6 +1071,8 @@ $(function() {
 
 cartoAccount = "tigerhawkvok";
 
+gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4";
+
 cartoMap = null;
 
 cartoVis = null;
@@ -1093,7 +1095,9 @@ geo.init = function() {
     createMap("map", adData.cartoRef);
     return false;
   };
-  return loadJS("http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
+  return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey, function() {
+    return loadJS("http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
+  });
 };
 
 defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {

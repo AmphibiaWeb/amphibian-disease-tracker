@@ -8,6 +8,11 @@
 # CartoDB account name
 cartoAccount = "tigerhawkvok"
 
+# Google Maps API key
+# This can be public, since we've restricted the referrer
+gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"
+
+
 cartoMap = null
 cartoVis = null
 
@@ -27,7 +32,10 @@ geo.init = ->
   doCallback = ->
     createMap "map", adData.cartoRef
     false
-  loadJS "http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+  # First, we have to load the Google Maps library
+  loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}", ->
+    # Now that that's loaded, we can load CartoDB ...
+    loadJS "http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
 
 
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
