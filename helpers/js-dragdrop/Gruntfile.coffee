@@ -63,6 +63,7 @@ module.exports = (grunt) ->
             cascade: true
         files:
           "js/drop-upload.min.js":["js/drop-upload.js"]
+          "js/dropzone-custom.min.js":["bower_components/dropzone/dist/dropzone.js"]
       client:
         options:
           sourceMap:true

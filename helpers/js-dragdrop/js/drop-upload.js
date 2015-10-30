@@ -419,7 +419,11 @@
     return $(selector + " .alert-message").html(message);
   };
 
-  window.toastStatusMessage = toastStatusMessage;
+  if (window.dropperParams == null) {
+    window.dropperParams = new Object();
+  }
+
+  dropperParams.toastStatusMessage = toastStatusMessage;
 
   openLink = function(url) {
     if (url == null) {
@@ -471,7 +475,7 @@
     });
   };
 
-  window.mapNewWindows = mapNewWindows;
+  dropperParams.mapNewWindows = mapNewWindows;
 
   deepJQuery = function(selector) {
 
@@ -817,21 +821,21 @@
      *
      * This function is Shadow-DOM aware, and will work on Webcomponents.
      */
-    dropperParams.dropzonePath = dropperParams.dependencyPath + "dropzone/dist/min/dropzone.min.js";
+    dropperParams.dropzonePath = dropperParams.metaPath + "js/dropzone-custom.min.js";
     dropperParams.bootstrapPath = dropperParams.dependencyPath + "bootstrap/dist/js/bootstrap.min.js";
     if (typeof callback !== "function") {
       callback = function(file, result) {
         var e;
         if (typeof result !== "object") {
           console.error("Dropzone returned an error - " + result);
-          toastStatusMessage("<strong>Error</strong> There was a problem with the server handling your image. Please try again.", "danger", "#profile_conversation_wrapper");
+          dropperParams.toastStatusMessage("<strong>Error</strong> There was a problem with the server handling your image. Please try again.", "danger", "main");
           return false;
         }
         if (result.status !== true) {
           if (result.human_error == null) {
             result.human_error = "There was a problem uploading your image.";
           }
-          toastStatusMessage("<strong>Error</strong> " + result.human_error, "danger", "#profile_conversation_wrapper");
+          dropperParams.toastStatusMessage("<strong>Error</strong> " + result.human_error, "danger", "main");
           console.error("Error uploading!", result);
           return false;
         }
@@ -839,12 +843,12 @@
           console.info("Server returned the following result:", result);
           console.info("The script returned the following file information:", file);
           dropperParams.dropzone.removeAllFiles();
-          toastStatusMessage("Upload complete", "success", "#profile_conversation_wrapper");
+          dropperParams.toastStatusMessage("Upload complete", "success", "main");
         } catch (_error) {
           e = _error;
           console.error("There was a problem with upload post-processing - " + e.message);
           console.warn("Using", fileName, result);
-          toastStatusMessage("<strong>Error</strong> Your upload completed, but we couldn't post-process it.", "danger", "#profile_conversation_wrapper");
+          dropperParams.toastStatusMessage("<strong>Error</strong> Your upload completed, but we couldn't post-process it.", "danger", "main");
         }
         return false;
       };
@@ -880,13 +884,13 @@
         init: function() {
           this.on("error", (function(_this) {
             return function(file, errorMessage) {
-              toastStatusMessage("An error occured sending your image to the server - " + errorMessage + ".", "danger", "#profile_conversation_wrapper");
+              dropperParams.toastStatusMessage("An error occured sending your image to the server - " + errorMessage + ".", "danger", "main");
               return cleanup(_this);
             };
           })(this));
           this.on("canceled", (function(_this) {
             return function() {
-              toastStatusMessage("Upload canceled.", "info", "#profile_conversation_wrapper");
+              dropperParams.toastStatusMessage("Upload canceled.", "info", "main");
               return cleanup(_this);
             };
           })(this));
@@ -953,8 +957,6 @@
   };
 
   dropperParams.handleDragDropImage = handleDragDropImage;
-
-  window.toastStatusMessage = toastStatusMessage;
 
 }).call(this);
 

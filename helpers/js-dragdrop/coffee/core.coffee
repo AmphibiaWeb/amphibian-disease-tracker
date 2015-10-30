@@ -299,7 +299,8 @@ toastStatusMessage = (message, type = "warning", fallbackContainer = "body", sel
     $(topContainer).prepend(html)
   $("#{selector} .alert-message").html(message)
 
-window.toastStatusMessage = toastStatusMessage
+window.dropperParams ?= new Object()
+dropperParams.toastStatusMessage = toastStatusMessage
 
 openLink = (url) ->
   if not url? then return false
@@ -336,7 +337,7 @@ mapNewWindows = (stopPropagation = true) ->
     $(this).keypress ->
       openInNewWindow(curHref)
 
-window.mapNewWindows = mapNewWindows
+dropperParams.mapNewWindows = mapNewWindows
 
 deepJQuery = (selector) ->
   ###

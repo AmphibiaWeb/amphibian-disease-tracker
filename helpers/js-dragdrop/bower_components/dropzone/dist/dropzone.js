@@ -1274,7 +1274,7 @@
               response = JSON.parse(response);
             } catch (_error) {
               e = _error;
-              response = "Invalid JSON response from server.";
+              response = "Invalid JSON response from server: "+response;
             }
           }
           updateProgress();

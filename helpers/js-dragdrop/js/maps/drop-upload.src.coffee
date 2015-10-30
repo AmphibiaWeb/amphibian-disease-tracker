@@ -299,7 +299,8 @@ toastStatusMessage = (message, type = "warning", fallbackContainer = "body", sel
     $(topContainer).prepend(html)
   $("#{selector} .alert-message").html(message)
 
-window.toastStatusMessage = toastStatusMessage
+window.dropperParams ?= new Object()
+dropperParams.toastStatusMessage = toastStatusMessage
 
 openLink = (url) ->
   if not url? then return false
@@ -336,7 +337,7 @@ mapNewWindows = (stopPropagation = true) ->
     $(this).keypress ->
       openInNewWindow(curHref)
 
-window.mapNewWindows = mapNewWindows
+dropperParams.mapNewWindows = mapNewWindows
 
 deepJQuery = (selector) ->
   ###
@@ -589,30 +590,31 @@ handleDragDropImage = (uploadTargetSelector = "#upload-image", callback) ->
   # This function is Shadow-DOM aware, and will work on Webcomponents.
   ###
   # Calculate the paths based on declared parameters.
-  dropperParams.dropzonePath = "#{dropperParams.dependencyPath}dropzone/dist/min/dropzone.min.js"
+  # dropperParams.dropzonePath = "#{dropperParams.dependencyPath}dropzone/dist/min/dropzone.min.js"
+  dropperParams.dropzonePath = "#{dropperParams.metaPath}js/dropzone-custom.min.js"
   dropperParams.bootstrapPath = "#{dropperParams.dependencyPath}bootstrap/dist/js/bootstrap.min.js"
   # If no callback is provided, we use this default one
   unless typeof callback is "function"
     callback = (file, result) ->
       if typeof result isnt "object"
         console.error "Dropzone returned an error - #{result}"
-        toastStatusMessage("<strong>Error</strong> There was a problem with the server handling your image. Please try again.", "danger", "#profile_conversation_wrapper")
+        dropperParams.toastStatusMessage("<strong>Error</strong> There was a problem with the server handling your image. Please try again.", "danger", "main")
         return false
       unless result.status is true
         # Yikes! Didn't work
         result.human_error ?= "There was a problem uploading your image."
-        toastStatusMessage("<strong>Error</strong> #{result.human_error}", "danger", "#profile_conversation_wrapper")
+        dropperParams.toastStatusMessage("<strong>Error</strong> #{result.human_error}", "danger", "main")
         console.error("Error uploading!",result)
         return false
       try
         console.info "Server returned the following result:", result
         console.info "The script returned the following file information:", file
         dropperParams.dropzone.removeAllFiles()
-        toastStatusMessage("Upload complete", "success", "#profile_conversation_wrapper")
+        dropperParams.toastStatusMessage("Upload complete", "success", "main")
       catch e
         console.error("There was a problem with upload post-processing - #{e.message}")
         console.warn("Using",fileName,result)
-        toastStatusMessage("<strong>Error</strong> Your upload completed, but we couldn't post-process it.", "danger", "#profile_conversation_wrapper")
+        dropperParams.toastStatusMessage("<strong>Error</strong> Your upload completed, but we couldn't post-process it.", "danger", "main")
       false
   ## The main script
   # Load dependencies
@@ -652,10 +654,10 @@ handleDragDropImage = (uploadTargetSelector = "#upload-image", callback) ->
       init: ->
         # See http://www.dropzonejs.com/#events
         @on "error", (file, errorMessage) =>
-          toastStatusMessage("An error occured sending your image to the server - #{errorMessage}.", "danger", "#profile_conversation_wrapper")
+          dropperParams.toastStatusMessage("An error occured sending your image to the server - #{errorMessage}.", "danger", "main")
           cleanup(this)
         @on "canceled", =>
-          toastStatusMessage("Upload canceled.", "info", "#profile_conversation_wrapper")
+          dropperParams.toastStatusMessage("Upload canceled.", "info", "main")
           cleanup(this)
         @on "dragover", ->
           d$("#{uploadTargetSelector} .dz-message span").text defaultText
@@ -722,4 +724,3 @@ handleDragDropImage = (uploadTargetSelector = "#upload-image", callback) ->
 
 # Export
 dropperParams.handleDragDropImage = handleDragDropImage
-window.toastStatusMessage = toastStatusMessage
