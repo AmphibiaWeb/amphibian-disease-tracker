@@ -101,7 +101,9 @@ startAdminActionHelper = ->
   </span>
   """
   $("#pib-wrapper-settings").after showActionsHtml
-  $("#show-actions").click -> populateAdminActions()
+  $("#show-actions").click ->
+    $(this).tooltip("hide")
+    populateAdminActions()
 
 
 
