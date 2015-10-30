@@ -1579,6 +1579,11 @@
         if (mimeType === validType) {
           return true;
         }
+          if (mimeType === "") {
+              // No mime? Let's run with it.
+              file.type = "application/" + file.name.split(".").pop();
+              return true;
+          }
       }
     }
     return false;
