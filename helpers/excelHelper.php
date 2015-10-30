@@ -82,7 +82,7 @@ function excelToPhp($filePath) {
 */
 function excelToArray($filePath, $header=true){
     //Create excel reader after determining the file type
-    $inputFileName = dirname(__FILE__). "/" . $filePath;
+    $inputFileName = dirname(__FILE__) . $filePath;
     /**  Identify the type of $inputFileName  **/
     $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
     /**  Create a new Reader of the type that has been identified  **/
@@ -139,7 +139,7 @@ $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : "NO_PROVIDE
 
 switch ($do) {
 case "parse":
-    if(!file_exists($_REQUEST["path"])) {
+    if(!file_exists(dirname(__FILE__) . $_REQUEST["path"])) {
         returnAjax(array(
             "status" => false,
             "error" => "Non-existant file '".$_REQUEST["path"]."'",
