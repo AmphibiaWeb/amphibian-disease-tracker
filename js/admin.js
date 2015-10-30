@@ -88,7 +88,7 @@ bootstrapUploader = function(uploadFormId) {
    */
   selector = "#" + uploadFormId;
   if (!$(selector).exists()) {
-    html = "<form id=\"" + uploadFormId + "-form\">\n  <div id=\"" + uploadFormId + "\" class=\"media-uploader outline\">\n  </div>\n</form>";
+    html = "<form id=\"" + uploadFormId + "-form\">\n  <fieldset>\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline\">\n    </div>\n  </fieldset>\n</form>";
     $("main").append(html);
   }
   return loadJS("helpers/js-dragdrop/client-upload.min.js", function() {

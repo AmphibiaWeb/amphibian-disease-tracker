@@ -84,8 +84,11 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
     # Create it
     html = """
     <form id="#{uploadFormId}-form">
-      <div id="#{uploadFormId}" class="media-uploader outline">
-      </div>
+      <fieldset>
+        <legend>Upload Files</legend>
+        <div id="#{uploadFormId}" class="media-uploader outline">
+        </div>
+      </fieldset>
     </form>
     """
     $("main").append html
