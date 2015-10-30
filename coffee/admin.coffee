@@ -26,10 +26,10 @@ window.loadAdminUi = ->
         </span>
 
       </h3>
+      <section id='admin-actions-block' class="row center-block text-center">
         <div class='bs-callout bs-callout-info'>
-          <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>
+          <p>Please be patient while the administrative interface loads.</p>
         </div>
-      <section id='admin-actions-block' class="row">
       </section>
       """
       $("main #main-body").before(articleHtml)
@@ -58,7 +58,7 @@ populateAdminActions = ->
   $("#admin-actions-block").html adminActions
   $("#show-actions").remove()
   # Remove the previous project progress or any placeholders
-  $("main #main-body").empty() 
+  $("main #main-body").empty()
   $("#new-project").click -> loadCreateNewProject()
   $("#edit-project").click -> loadEditor()
   $("#view-project").click -> loadProjectBrowser()
@@ -123,6 +123,11 @@ loadCreateNewProject = ->
 
 loadProjectBrowser = ->
   startAdminActionHelper()
+  html = """
+  <div class='bs-callout bs-callout-warn'>
+    <p>I worked, I just have nothing to show yet.</p>
+  </div>
+  """
   # Get a data ref
   adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
   geo.init()
