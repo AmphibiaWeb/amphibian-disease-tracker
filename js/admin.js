@@ -28,7 +28,7 @@ window.loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n\n</h3>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n<section id='admin-actions-block'>\n</section>";
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n\n</h3>\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>\n  </div>\n<section id='admin-actions-block' class=\"row\">\n</section>";
       $("main #main-body").before(articleHtml);
       populateAdminActions();
       bindClicks();
@@ -43,7 +43,7 @@ window.loadAdminUi = function() {
 
 populateAdminActions = function() {
   var adminActions;
-  adminActions = "<paper-button id=\"new-project\" class=\"admin-action\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All Projects\n</paper-button>";
+  adminActions = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All Projects\n</paper-button>";
   $("#admin-actions-block").html(adminActions);
   $("#show-actions").remove();
   $("main #main-body").empty();
@@ -90,6 +90,7 @@ startAdminActionHelper = function() {
   var showActionsHtml;
   $("#admin-actions-block").empty();
   showActionsHtml = "<span id=\"pib-wrapper-dashboard\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Administration Home\" data-placement=\"bottom\">\n  <paper-icon-button icon=\"icons:dashboard\" class=\"admin-action\" id=\"show-actions\">\n  </paper-icon-button>\n</span>";
+  $("#pib-wrapper-settings").after(showActionsHtml);
   return $("#show-actions").click(function() {
     return populateAdminActions();
   });
@@ -129,7 +130,7 @@ bootstrapUploader = function(uploadFormId) {
    */
   selector = "#" + uploadFormId;
   if (!$(selector).exists()) {
-    html = "<form id=\"" + uploadFormId + "-form\" class=\"\">\n  <fieldset>\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline\">\n    </div>\n  </fieldset>\n</form>";
+    html = "<form id=\"" + uploadFormId + "-form\" class=\"col-md-4 clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
     $("main").append(html);
     $(selector).submit(function(e) {
       e.preventDefault();

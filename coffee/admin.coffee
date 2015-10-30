@@ -29,7 +29,7 @@ window.loadAdminUi = ->
         <div class='bs-callout bs-callout-info'>
           <p>Please be patient while the administrative interface loads. TODO MAKE ADMIN UI</p>
         </div>
-      <section id='admin-actions-block'>
+      <section id='admin-actions-block' class="row">
       </section>
       """
       $("main #main-body").before(articleHtml)
@@ -42,15 +42,15 @@ window.loadAdminUi = ->
 
 populateAdminActions = ->
   adminActions = """
-        <paper-button id="new-project" class="admin-action" raised>
+        <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:add"></iron-icon>
             Create New Project
         </paper-button>
-        <paper-button id="edit-project" class="admin-action" raised>
+        <paper-button id="edit-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:create"></iron-icon>
             Edit Existing Project
         </paper-button>
-        <paper-button id="view-project" class="admin-action" raised>
+        <paper-button id="view-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:visibility"></iron-icon>
             View All Projects
         </paper-button>
@@ -100,6 +100,7 @@ startAdminActionHelper = ->
     </paper-icon-button>
   </span>
   """
+  $("#pib-wrapper-settings").after showActionsHtml
   $("#show-actions").click -> populateAdminActions()
 
 
@@ -138,10 +139,11 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
   unless $(selector).exists()
     # Create it
     html = """
-    <form id="#{uploadFormId}-form" class="">
-      <fieldset>
+    <form id="#{uploadFormId}-form" class="col-md-4 clearfix">
+      <p class="visible-xs-block">Tap the button to upload a file</p>
+      <fieldset class="hidden-xs">
         <legend>Upload Files</legend>
-        <div id="#{uploadFormId}" class="media-uploader outline">
+        <div id="#{uploadFormId}" class="media-uploader outline media-upload-target">
         </div>
       </fieldset>
     </form>

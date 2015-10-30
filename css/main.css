@@ -7177,3 +7177,6 @@ paper-radio-button #radioContainer div {
     height: 75vh;
   }
 }
+.media-upload-target {
+  width: 80%;
+}
