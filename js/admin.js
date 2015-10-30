@@ -250,7 +250,7 @@ excelHandler = function(path, hasHeaders) {
     randomData = "";
     if (rows > 0) {
       randomRow = randomInt(1, rows);
-      randomData = "\n\nHere's a random row: " + JSON.stringify(randomRow);
+      randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
     }
     html = "<pre>\n  From upload, fetched " + rows + " rows." + randomData + "\n</pre>";
     return $("#main-body").append(html);
