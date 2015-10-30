@@ -327,7 +327,8 @@ class UserFunctions extends DBHelper
         $col = $this->userColumn;
         } elseif (!empty($_COOKIE[$ucookielink])) {
             # See if we can get this from the cookies
-        $user_id = $_COOKIE[$ucookielink];
+            $user_id = $_COOKIE[$ucookielink];
+            $this->userlink = $user_id;
             $col = $this->linkColumn;
         }
 
