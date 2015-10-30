@@ -276,23 +276,34 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
     false
 
 
-excelHandler = ->
+excelHandler = (path) ->
+  helperDir = "helpers/"
+  helperApi = "#{helperDir}excelHelper.php"
+  correctedPath = path
+  if path.search helperDir isnt -1
+    correctedPath = path.slice helperDir.length
+  args = "path=#{correctedPath}"
+  $.post helperApi, args, "json"
+  .done (result) ->
+    toastStatusMessage("Would load the excel helper and get parseable data out here")
+    console.info "Got result", result
+  .fail (result, error) ->
+    console.error "Couldn't POST"
+  false
+
+csvHandler = (path) ->
   foo()
   false
 
-csvHandler = ->
+imageHandler = (path) ->
   foo()
   false
 
-imageHandler = ->
+zipHandler = (path) ->
   foo()
   false
 
-zipHandler = ->
-  foo()
-  false
-
-_7zHandler = ->
+_7zHandler = (path) ->
   foo()
   false
 

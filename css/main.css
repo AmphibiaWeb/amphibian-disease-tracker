@@ -7160,6 +7160,10 @@ paper-radio-button #radioContainer div {
   /* Overrides Bootstrap */
   box-sizing: content-box !important;
 }
+paper-button.admin-action {
+  background: #4caf50;
+  color: #fff;
+}
 .thumb-img {
   max-width: 150px;
   max-height: 150px;

@@ -223,27 +223,40 @@ bootstrapUploader = function(uploadFormId) {
   });
 };
 
-excelHandler = function() {
+excelHandler = function(path) {
+  var args, correctedPath, helperApi, helperDir;
+  helperDir = "helpers/";
+  helperApi = helperDir + "excelHelper.php";
+  correctedPath = path;
+  if (path.search(helperDir !== -1)) {
+    correctedPath = path.slice(helperDir.length);
+  }
+  args = "path=" + correctedPath;
+  $.post(helperApi, args, "json").done(function(result) {
+    toastStatusMessage("Would load the excel helper and get parseable data out here");
+    return console.info("Got result", result);
+  }).fail(function(result, error) {
+    return console.error("Couldn't POST");
+  });
+  return false;
+};
+
+csvHandler = function(path) {
   foo();
   return false;
 };
 
-csvHandler = function() {
+imageHandler = function(path) {
   foo();
   return false;
 };
 
-imageHandler = function() {
+zipHandler = function(path) {
   foo();
   return false;
 };
 
-zipHandler = function() {
-  foo();
-  return false;
-};
-
-_7zHandler = function() {
+_7zHandler = function(path) {
   foo();
   return false;
 };
