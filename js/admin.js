@@ -116,7 +116,7 @@ loadCreateNewProject = function() {
 loadProjectBrowser = function() {
   var html;
   startAdminActionHelper();
-  html = "<div class='bs-callout bs-callout-warn'>\n  <p>I worked, I just have nothing to show yet.</p>\n</div>";
+  html = "<div class='bs-callout bs-callout-warn center-block col-md-5'>\n  <p>Function worked, there's just nothing to show yet.</p>\n  <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>\n</div>";
   $("#main-body").html(html);
   adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
   geo.init();
@@ -236,6 +236,8 @@ excelHandler = function(path, hasHeaders) {
   if (hasHeaders == null) {
     hasHeaders = true;
   }
+  startLoad();
+  toastStatusMessage("Processing ...");
   helperDir = "helpers/";
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
@@ -246,7 +248,6 @@ excelHandler = function(path, hasHeaders) {
   args = "action=parse&path=" + correctedPath;
   $.get(helperApi, args, "json").done(function(result) {
     var html, randomData, randomRow, rows;
-    toastStatusMessage("Would load the excel helper and get parseable data out here");
     console.info("Got result", result);
     rows = Object.size(result.data);
     randomData = "";
@@ -255,10 +256,12 @@ excelHandler = function(path, hasHeaders) {
       randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
     }
     html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
-    return $("#main-body").append(html);
+    $("#main-body").append(html);
+    return stopLoad();
   }).fail(function(result, error) {
     console.error("Couldn't POST");
-    return console.warn(result, error);
+    console.warn(result, error);
+    return stopLoadError();
   });
   return false;
 };

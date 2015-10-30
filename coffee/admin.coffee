@@ -125,8 +125,9 @@ loadCreateNewProject = ->
 loadProjectBrowser = ->
   startAdminActionHelper()
   html = """
-  <div class='bs-callout bs-callout-warn'>
-    <p>I worked, I just have nothing to show yet.</p>
+  <div class='bs-callout bs-callout-warn center-block col-md-5'>
+    <p>Function worked, there's just nothing to show yet.</p>
+    <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>
   </div>
   """
   $("#main-body").html html
@@ -286,6 +287,8 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
 
 
 excelHandler = (path, hasHeaders = true) ->
+  startLoad()
+  toastStatusMessage "Processing ..."  
   helperDir = "helpers/"
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
@@ -295,7 +298,6 @@ excelHandler = (path, hasHeaders = true) ->
   args = "action=parse&path=#{correctedPath}"
   $.get helperApi, args, "json"
   .done (result) ->
-    toastStatusMessage("Would load the excel helper and get parseable data out here")
     console.info "Got result", result
     rows = Object.size(result.data)
     randomData = ""
@@ -308,9 +310,11 @@ excelHandler = (path, hasHeaders = true) ->
     </pre>
     """
     $("#main-body").append html
+    stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
     console.warn result, error
+    stopLoadError()
   false
 
 csvHandler = (path) ->
