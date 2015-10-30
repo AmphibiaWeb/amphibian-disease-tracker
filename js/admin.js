@@ -92,7 +92,8 @@ bootstrapUploader = function(uploadFormId) {
     $("main").append(html);
     $(selector).submit(function(e) {
       e.preventDefault();
-      return e.stopPropagation();
+      e.stopPropagation();
+      return false;
     });
   }
   return loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
