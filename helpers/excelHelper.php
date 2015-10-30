@@ -147,7 +147,7 @@ case "parse":
     } catch (Exception $e) {
         returnAjax(array(
             "status" => false,
-            "error" => $e->getMessage();
+            "error" => $e->getMessage()
         ));
     }
     break;

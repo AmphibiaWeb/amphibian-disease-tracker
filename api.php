@@ -115,8 +115,8 @@ function doCartoSqlApiPush($get) {
         ));
     } catch (Exception $e) {
         returnAjax(array(
-            "status" => false
-            "error" => $e->getMessage()
+            "status" => false,
+            "error" => $e->getMessage(),
             "human_error" => "There was a problem uploading to the CartoDB server."
         ));
     }
