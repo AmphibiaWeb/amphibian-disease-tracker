@@ -92,6 +92,88 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
   loadJS "helpers/js-dragdrop/client-upload.min.js", ->
     # Successfully uploaded the file
     console.info "Loaded drag drop helper"
+    window.dropperParams.postUploadHandler = (file, result) ->
+      ###
+      # The callback function for handleDragDropImage
+      #
+      # The "file" object contains information about the uploaded file,
+      # such as name, height, width, size, type, and more. Check the
+      # console logs in the demo for a full output.
+      #
+      # The result object contains the results of the upload. The "status"
+      # key is true or false depending on the status of the upload, and
+      # the other most useful keys will be "full_path" and "thumb_path".
+      #
+      # When invoked, it calls the "self" helper methods to actually do
+      # the file sending.
+      ###
+      # Clear out the file uploader
+      window.dropperParams.dropzone.removeAllFiles()
+
+      if typeof result isnt "object"
+        console.error "Dropzone returned an error - #{result}"
+        window.toastStatusMessage "There was a problem with the server handling your image. Please try again."
+        return false
+      unless result.status is true
+        # Yikes! Didn't work
+        result.human_error ?= "There was a problem uploading your image."
+        window.toastStatusMessage "#{result.human_error}"
+        console.error("Error uploading!",result)
+        return false
+      try
+        console.info "Server returned the following result:", result
+        console.info "The script returned the following file information:", file
+        pathPrefix = ""
+        # Replace full_path and thumb_path with "wrote"
+        result.full_path = result.wrote_file
+        result.thumb_path = result.wrote_thumb
+        mediaType = result.mime_provided.split("/")[0]
+        
+        linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.full_path}" else "#{pathPrefix}#{result.thumb_path}"
+        previewHtml = switch mediaType
+          when "image"
+            "<img src='#{linkPath}' alt='Uploaded Image'/>"
+          when "audio" then """
+          <div class="uploaded-media center-block">
+            <audio src="#{linkPath}" controls preload="auto">
+              <span class="glyphicon glyphicon-music"></span>
+              <p>
+                Your browser doesn't support the HTML5 <code>audio</code> element.
+                Please download the file below.
+              </p>
+            </audio>
+            <p class="text-muted">
+              (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                Original Media
+              </a>)
+            </p>
+          </div>
+          """
+          when "video" then """
+          <div class="uploaded-media center-block">
+            <video src="#{linkPath}" controls preload="auto">
+              <img src="#{pathPrefix}#{result.thumb_path}" alt="Video Thumbnail" class="img-responsive" />
+              <p>
+                Your browser doesn't support the HTML5 <code>video</code> element.
+                Please download the file below.
+              </p>
+            </video>
+            <p class="text-muted">
+              (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                Original Media
+              </a>)
+            </p>
+          </div>
+          """
+          else
+            """
+            <div class="uploaded-media center-block">
+              <span class="glyphicon glyphicon-file"></span>
+              <p class="text-muted">#{file.name}</p>
+            </div>
+            """
+        # Append the preview HTML
+        $(window.dropperParams.dropTargetSelector).before previewHtml
     false
 
 $ ->
