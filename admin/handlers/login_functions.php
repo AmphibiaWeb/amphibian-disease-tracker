@@ -115,6 +115,7 @@ class UserFunctions extends DBHelper
         $this->twilio_number = $twilio_number;
         $this->site = $site_name;
         $this->appKeyColumn = $app_column;
+        $this->userlink = null;
 
         $proto = 'http';
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
