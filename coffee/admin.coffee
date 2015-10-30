@@ -92,6 +92,9 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
     </form>
     """
     $("main").append html
+    $(selector).submit (e) ->
+      e.preventDefault()
+      e.stopPropagation()      
   loadJS "helpers/js-dragdrop/client-upload.min.js", ->
     # Successfully uploaded the file
     console.info "Loaded drag drop helper"

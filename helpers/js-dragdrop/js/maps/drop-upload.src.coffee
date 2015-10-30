@@ -654,7 +654,8 @@ handleDragDropImage = (uploadTargetSelector = "#upload-image", callback) ->
       init: ->
         # See http://www.dropzonejs.com/#events
         @on "error", (file, errorMessage) =>
-          dropperParams.toastStatusMessage("An error occured sending your image to the server - #{errorMessage}.", "danger", "main")
+          dropperParams.toastStatusMessage("An error occured sending your image to the server - #{errorMessage}", "danger", "main")
+          console.error "Got the following file details back:", file
           cleanup(this)
         @on "canceled", =>
           dropperParams.toastStatusMessage("Upload canceled.", "info", "main")
