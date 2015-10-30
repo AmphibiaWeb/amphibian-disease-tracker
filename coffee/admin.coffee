@@ -103,6 +103,7 @@ startAdminActionHelper = ->
   $("#pib-wrapper-settings").after showActionsHtml
   $("#show-actions").click ->
     $(this).tooltip("hide")
+    $(".tooltip").tooltip("hide")
     populateAdminActions()
 
 
@@ -128,6 +129,7 @@ loadProjectBrowser = ->
     <p>I worked, I just have nothing to show yet.</p>
   </div>
   """
+  $("#main-body").html html
   # Get a data ref
   adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
   geo.init()
@@ -302,7 +304,7 @@ excelHandler = (path, hasHeaders = true) ->
       randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow])
     html = """
     <pre>
-      From upload, fetched #{rows} rows.#{randomData}
+    From upload, fetched #{rows} rows.#{randomData}
     </pre>
     """
     $("#main-body").append html

@@ -93,6 +93,7 @@ startAdminActionHelper = function() {
   $("#pib-wrapper-settings").after(showActionsHtml);
   return $("#show-actions").click(function() {
     $(this).tooltip("hide");
+    $(".tooltip").tooltip("hide");
     return populateAdminActions();
   });
 };
@@ -116,6 +117,7 @@ loadProjectBrowser = function() {
   var html;
   startAdminActionHelper();
   html = "<div class='bs-callout bs-callout-warn'>\n  <p>I worked, I just have nothing to show yet.</p>\n</div>";
+  $("#main-body").html(html);
   adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
   geo.init();
   foo();
@@ -252,7 +254,7 @@ excelHandler = function(path, hasHeaders) {
       randomRow = randomInt(1, rows);
       randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
     }
-    html = "<pre>\n  From upload, fetched " + rows + " rows." + randomData + "\n</pre>";
+    html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
     return $("#main-body").append(html);
   }).fail(function(result, error) {
     console.error("Couldn't POST");
