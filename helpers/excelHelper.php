@@ -151,7 +151,7 @@ case "parse":
     try {
         returnAjax(array(
             "status" => true,
-            "data" => excelToArray($_REQUEST["path"], $header)
+            "data" => excelToArray($validatedPath, $header)
         ));
     } catch (Exception $e) {
         returnAjax(array(
