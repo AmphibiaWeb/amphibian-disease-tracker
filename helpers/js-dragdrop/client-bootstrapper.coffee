@@ -76,7 +76,7 @@ $ ->
   console.info "Configuring dropper parameters"
   window.dropperParams.metaPath = "/helpers/js-dragdrop/"
   window.dropperParams.uploadPath = "#{window.dropperParams.metaPath}uploaded/"
-  window.dropperParams.dependencyPath = "#{window.dropperParams.metapath}bower_components/"
+  window.dropperParams.dependencyPath = "#{window.dropperParams.metaPath}bower_components/"
   window.dropperParams.showProgress = true
   window.dropperParams.dropTargetSelector ?= "#file-uploader"
   # Add a click target
