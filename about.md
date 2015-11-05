@@ -4,7 +4,7 @@ title: Amphibian Disease Portal
 permalink: /about/
 ---
 
-<img src="{{ site.baseurl }}assets/awlogomed.jpg" title="AmphibiaWeb" class="profile">
+<img src="{{ site.baseurl }}assets/awlogomed.jpg" title="AmphibiaWeb" class="profile" height="75%">
 
 Motivated by the decline of amphibians globally and the growing understanding of diseases as major factors, **AmphibiaWeb** and the **US Forest Service** are collaborating to develop a community-based, online repository and reporting site for data on major infectious diseases, especially chytridiomycosis. Our mission is to aggregate, visualize and share data from the community of active researchers archiving their completed and in progress datasets from laboratory experiments and field sites around the world.   
 
