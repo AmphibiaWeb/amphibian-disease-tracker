@@ -119,14 +119,14 @@ loadEditor = ->
 loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
-  <h2>Project Title</h2>
+  <h2 class="new-title">Project Title</h2>
   <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
-  <h2>Project Parameters</h2>
+  <h2 class="new-title">Project Parameters</h2>
   <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
   <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
-  <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12"></paper-input>
+  <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
   <p>Etc</p>
-  <h2>Uploading your project data</h2>
+  <h2 class="new-title">Uploading your project data</h2>
   <p>Drag and drop as many files as you need below. </p>
   <p>
     To save your project, we need at least one file with structured data containing coordinates.
@@ -327,7 +327,7 @@ excelHandler = (path, hasHeaders = true) ->
     </pre>
     """
     $("#main-body").append html
-    geoDataHandler(result.data)
+    newGeoDataHandler(result.data)
     stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
@@ -365,11 +365,17 @@ newGeoDataHandler = (dataObject = new Object()) ->
     toastStatusMessage("Data is missing required geo columns. Please reformat and try again.")
     # Remove the uploaded file
     return false
-  # Clean up the data for CartoDB
-  parsedData = dataObject # Temp
-  # Create a project identifier from the user hash and project title
-  projectIdentifier = null # Temp
-  geo.requestCartoUpload(parsedData, projectIdentifier, "create")
+  try
+    rows = Object.size(dataObject)
+    $$("#samplecount")[0].value = rows
+    # Clean up the data for CartoDB
+    parsedData = dataObject # Temp
+    # Create a project identifier from the user hash and project title
+    projectIdentifier = null # Temp
+    geo.requestCartoUpload(parsedData, projectIdentifier, "create")
+  catch e
+    console.error e.message
+    toastStatusMessage "There was a problem parsing your data"
   false
 
 

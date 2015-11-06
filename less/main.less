@@ -317,6 +317,12 @@ paper-radio-button #radioContainer, paper-radio-button #radioContainer div {
     box-sizing: content-box !important;
 }
 
+.force-block {
+    display: block;
+}
+.clear {
+    clear: both;
+}
 
 
 //////////////////
@@ -333,8 +339,9 @@ paper-button.admin-action {
     max-height: 150px;
 }
 
-paper-input.project-field {
-    display: block;
+paper-input.project-field, .new-title  {
+    .force-block;
+    .clear;
 }
 
 ////////////

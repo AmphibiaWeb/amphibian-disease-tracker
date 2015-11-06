@@ -7160,6 +7160,12 @@ paper-radio-button #radioContainer div {
   /* Overrides Bootstrap */
   box-sizing: content-box !important;
 }
+.force-block {
+  display: block;
+}
+.clear {
+  clear: both;
+}
 paper-button.admin-action {
   background: #4caf50;
   color: #fff;
@@ -7168,8 +7174,10 @@ paper-button.admin-action {
   max-width: 150px;
   max-height: 150px;
 }
-paper-input.project-field {
+paper-input.project-field,
+.new-title {
   display: block;
+  clear: both;
 }
 .map {
   width: 75vw;

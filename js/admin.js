@@ -109,7 +109,7 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  html = "<h2>Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<h2>Project Parameters</h2>\n<paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n<paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n<p>Etc</p>\n<h2>Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.\n</p>";
+  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n<paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.\n</p>";
   $("main #main-body").append(html);
   bootstrapUploader();
   foo();
@@ -260,7 +260,7 @@ excelHandler = function(path, hasHeaders) {
     }
     html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
     $("#main-body").append(html);
-    geoDataHandler(result.data);
+    newGeoDataHandler(result.data);
     return stopLoad();
   }).fail(function(result, error) {
     console.error("Couldn't POST");
@@ -291,7 +291,7 @@ _7zHandler = function(path) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var parsedData, projectIdentifier, sampleRow;
+  var e, parsedData, projectIdentifier, rows, sampleRow;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -308,9 +308,17 @@ newGeoDataHandler = function(dataObject) {
     toastStatusMessage("Data is missing required geo columns. Please reformat and try again.");
     return false;
   }
-  parsedData = dataObject;
-  projectIdentifier = null;
-  geo.requestCartoUpload(parsedData, projectIdentifier, "create");
+  try {
+    rows = Object.size(dataObject);
+    $$("#samplecount")[0].value = rows;
+    parsedData = dataObject;
+    projectIdentifier = null;
+    geo.requestCartoUpload(parsedData, projectIdentifier, "create");
+  } catch (_error) {
+    e = _error;
+    console.error(e.message);
+    toastStatusMessage("There was a problem parsing your data");
+  }
   return false;
 };
 
