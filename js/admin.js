@@ -302,7 +302,7 @@ excelHandler = function(path, hasHeaders) {
       rows = Object.size(result.data);
       randomData = "";
       if (rows > 0) {
-        randomRow = randomInt(1, rows);
+        randomRow = randomInt(1, rows) - 1;
         randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
       }
       html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
@@ -355,7 +355,7 @@ removeDataFile = function(removeFile, unsetHDF) {
   }
   $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
   serverPath = helperDir + "/js-dragdrop/uploaded/" + user + "/" + removeFile;
-  args = "action=removefile&path=" + (encode64(serverPath));
+  args = "action=removefile&path=" + (encode64(removeFile)) + "&user=" + user;
   return false;
 };
 
@@ -391,7 +391,7 @@ newGeoDataHandler = function(dataObject) {
       return false;
     }
     rows = Object.size(dataObject);
-    p$("#samplecount")[0].value = rows;
+    p$("#samplecount").value = rows;
     parsedData = dataObject;
     projectIdentifier = null;
     geo.requestCartoUpload(parsedData, projectIdentifier, "create");

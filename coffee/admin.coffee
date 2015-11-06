@@ -371,7 +371,7 @@ excelHandler = (path, hasHeaders = true) ->
       rows = Object.size(result.data)
       randomData = ""
       if rows > 0
-        randomRow = randomInt(1,rows)
+        randomRow = randomInt(1,rows) - 1
         randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow])
       html = """
       <pre>
@@ -414,7 +414,9 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   $(".uploaded-media[data-system-file='#{removeFile}']").remove()
   # Now, actually delete the file remotely
   serverPath = "#{helperDir}/js-dragdrop/uploaded/#{user}/#{removeFile}"
-  args = "action=removefile&path=#{encode64 serverPath}"
+  # Server will validate the user, and only a user can remove their
+  # own files
+  args = "action=removefile&path=#{encode64 removeFile}&user=#{user}"
   false
 
 newGeoDataHandler = (dataObject = new Object()) ->
@@ -442,7 +444,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       removeDataFile()
       return false
     rows = Object.size(dataObject)
-    p$("#samplecount")[0].value = rows
+    p$("#samplecount").value = rows
     # Clean up the data for CartoDB
     parsedData = dataObject # Temp
     # Create a project identifier from the user hash and project title
