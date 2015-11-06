@@ -119,6 +119,22 @@ loadEditor = ->
 loadCreateNewProject = ->
   startAdminActionHelper()
   bootstrapUploader()
+  html = """
+  <h2>Project Title</h2>
+  <paper-input label="Project Title" id="project-title" class="project-field" required autovalidate></paper-input>
+  <h2>Project Parameters</h2>
+  <paper-input label="Primary Disease Studied" id="project-disease" class="project-field" required autovalidate></paper-input>
+  <paper-input label="Project Reference" id="reference-id" class="project-field"></paper-input>
+  <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field"></paper-input>
+  <p>Etc</p>
+  <h2>Uploading your project data</h2>
+  <p>Drag and drop as many files as you need below. </p>
+  <p>
+    To save your project, we need at least one file with structured data containing coordinates.
+    Please note that the data <strong>must</strong> have a header row,
+    and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.
+  </p>
+  """
   foo()
   false
 
@@ -272,7 +288,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
               when "zip", "x-zip-compressed"
                 # Some servers won't read it as the crazy MS mime type
                 # But as a zip, instead. So, check the extension.
-                # 
+                #
                 if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
                   excelHandler(linkPath)
                 else
@@ -288,7 +304,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
 
 excelHandler = (path, hasHeaders = true) ->
   startLoad()
-  toastStatusMessage "Processing ..."  
+  toastStatusMessage "Processing ..."
   helperDir = "helpers/"
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
@@ -310,6 +326,7 @@ excelHandler = (path, hasHeaders = true) ->
     </pre>
     """
     $("#main-body").append html
+    geoDataHandler(result.data)
     stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
@@ -318,7 +335,7 @@ excelHandler = (path, hasHeaders = true) ->
   false
 
 csvHandler = (path) ->
-  foo()
+  geoDataHandler()
   false
 
 imageHandler = (path) ->
@@ -331,6 +348,26 @@ zipHandler = (path) ->
 
 _7zHandler = (path) ->
   foo()
+  false
+
+
+newGeoDataHandler = (dataObject = new Object()) ->
+  ###
+  # Data expected in form
+  #
+  # Obj {ROW_INDEX: {"col1":"data", "col2":"data"}}
+  #
+  # Requires columns "lat", "lng", "error", "alt"
+  ###
+  sampleRow = dataObject[0]
+  unless sampleRow.lat? and sampleRow.lng? and sampleRow.error? and sampleRow.alt?
+    toastStatusMessage("Data is missing required geo columns. Please reformat and try again.")
+    return false
+  # Clean up the data for CartoDB
+  parsedData = dataObject # Temp
+  # Create a project identifier from the user hash and project title
+  projectIdentifier = null # Temp
+  geo.requestCartoUpload(parsedData, projectIdentifier, "create")
   false
 
 

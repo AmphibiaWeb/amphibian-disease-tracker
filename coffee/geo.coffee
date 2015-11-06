@@ -92,7 +92,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     toastStatusMessage("Couldn't load maps!")
     console.error "Couldn't get map - #{errorString}"
 
-requestCartoUpload = (data, dataTable, operation) ->
+geo.requestCartoUpload = (data, dataTable, operation) ->
   ###
   # Acts as a shim between the server-side uploader and the client.
   # Send a request to the server to authenticate the current user
