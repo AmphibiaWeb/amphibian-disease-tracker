@@ -198,7 +198,7 @@ bootstrapUploader = function(uploadFormId) {
       try {
         console.info("Server returned the following result:", result);
         console.info("The script returned the following file information:", file);
-        pathPrefix = "helpers/js-dragdrop/uploaded/";
+        pathPrefix = "helpers/js-dragdrop/uploaded/" + user + "/";
         result.full_path = result.wrote_file;
         result.thumb_path = result.wrote_thumb;
         mediaType = result.mime_provided.split("/")[0];
@@ -354,7 +354,7 @@ removeDataFile = function(removeFile, unsetHDF) {
     dataFileParams.hasDataFile = false;
   }
   $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
-  serverPath = helperDir + "/js-dragdrop/uploaded/" + removeFile;
+  serverPath = helperDir + "/js-dragdrop/uploaded/" + user + "/" + removeFile;
   args = "action=removefile&path=" + (encode64(serverPath));
   return false;
 };

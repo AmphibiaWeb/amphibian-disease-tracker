@@ -226,7 +226,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
       try
         console.info "Server returned the following result:", result
         console.info "The script returned the following file information:", file
-        pathPrefix = "helpers/js-dragdrop/uploaded/"
+        pathPrefix = "helpers/js-dragdrop/uploaded/#{user}/"
         # Replace full_path and thumb_path with "wrote"
         result.full_path = result.wrote_file
         result.thumb_path = result.wrote_thumb
@@ -413,7 +413,7 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
     dataFileParams.hasDataFile = false
   $(".uploaded-media[data-system-file='#{removeFile}']").remove()
   # Now, actually delete the file remotely
-  serverPath = "#{helperDir}/js-dragdrop/uploaded/#{removeFile}"
+  serverPath = "#{helperDir}/js-dragdrop/uploaded/#{user}/#{removeFile}"
   args = "action=removefile&path=#{encode64 serverPath}"
   false
 
