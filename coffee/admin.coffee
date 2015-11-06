@@ -15,7 +15,7 @@ dataFileParams.fileName = null
 dataFileParams.filePath = null
 
 helperDir = "helpers/"
-user =  $.cookie "#{uri.domain}_link"
+user =  $.cookie "#{adminParams.domain}_link"
 
 window.loadAdminUi = ->
   ###
