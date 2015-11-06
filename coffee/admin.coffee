@@ -15,7 +15,7 @@ dataFileParams.fileName = null
 dataFileParams.filePath = null
 
 helperDir = "helpers/"
-
+user =  $.cookie "#{uri.domain}_link"
 
 window.loadAdminUi = ->
   ###
@@ -190,6 +190,8 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
       e.preventDefault()
       e.stopPropagation()
       return false
+  window.dropperParams ?= new Object()
+  window.dropperParams.uploadPath = "uploaded/#{user}/"
   loadJS "helpers/js-dragdrop/client-upload.min.js", ->
     # Successfully uploaded the file
     console.info "Loaded drag drop helper"
@@ -410,7 +412,9 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   if unsetHDF
     dataFileParams.hasDataFile = false
   $(".uploaded-media[data-system-file='#{removeFile}']").remove()
-  foo()
+  # Now, actually delete the file remotely
+  serverPath = "#{helperDir}/js-dragdrop/uploaded/#{removeFile}"
+  args = "action=removefile&path=#{encode64 serverPath}"
   false
 
 newGeoDataHandler = (dataObject = new Object()) ->
@@ -429,8 +433,13 @@ newGeoDataHandler = (dataObject = new Object()) ->
       removeDataFile()
       return false
     unless sampleRow.lat? and sampleRow.lng? and sampleRow.error? and sampleRow.alt?
-      toastStatusMessage("Data is missing required geo columns. Please reformat and try again.")
+      toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
       # Remove the uploaded file
+      removeDataFile()
+      return false
+    unless isNumber(sampleRow.lat) and isNumber(sampleRow.lng) and isNumber(sampleRow.error) and isNumber(sampleRow.alt)
+      toastStatusMessage "Data has invalid entries for geo columns. Please be sure they're all numeric and try again."
+      removeDataFile()
       return false
     rows = Object.size(dataObject)
     p$("#samplecount")[0].value = rows

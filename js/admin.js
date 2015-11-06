@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, singleDataFileHelper, startAdminActionHelper, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -26,6 +26,8 @@ dataFileParams.fileName = null;
 dataFileParams.filePath = null;
 
 helperDir = "helpers/";
+
+user = $.cookie(uri.domain + "_link");
 
 window.loadAdminUi = function() {
 
@@ -156,6 +158,10 @@ bootstrapUploader = function(uploadFormId) {
       return false;
     });
   }
+  if (window.dropperParams == null) {
+    window.dropperParams = new Object();
+  }
+  window.dropperParams.uploadPath = "uploaded/" + user + "/";
   return loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
     console.info("Loaded drag drop helper");
     window.dropperParams.postUploadHandler = function(file, result) {
@@ -336,6 +342,7 @@ _7zHandler = function(path) {
 };
 
 removeDataFile = function(removeFile, unsetHDF) {
+  var args, serverPath;
   if (removeFile == null) {
     removeFile = dataFileParams.fileName;
   }
@@ -347,7 +354,8 @@ removeDataFile = function(removeFile, unsetHDF) {
     dataFileParams.hasDataFile = false;
   }
   $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
-  foo();
+  serverPath = helperDir + "/js-dragdrop/uploaded/" + removeFile;
+  args = "action=removefile&path=" + (encode64(serverPath));
   return false;
 };
 
@@ -373,7 +381,13 @@ newGeoDataHandler = function(dataObject) {
       return false;
     }
     if (!((sampleRow.lat != null) && (sampleRow.lng != null) && (sampleRow.error != null) && (sampleRow.alt != null))) {
-      toastStatusMessage("Data is missing required geo columns. Please reformat and try again.");
+      toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
+      removeDataFile();
+      return false;
+    }
+    if (!(isNumber(sampleRow.lat) && isNumber(sampleRow.lng) && isNumber(sampleRow.error) && isNumber(sampleRow.alt))) {
+      toastStatusMessage("Data has invalid entries for geo columns. Please be sure they're all numeric and try again.");
+      removeDataFile();
       return false;
     }
     rows = Object.size(dataObject);
