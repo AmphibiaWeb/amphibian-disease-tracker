@@ -317,8 +317,10 @@ singleDataFileHelper = (newFile, callback) ->
   if typeof callback isnt "function"
     console.error "Second argument must be a function"
     return false
-  if dataFileParams is true
+  if dataFileParams.hasDataFile is true
     # Show a popup that conditionally calls callback
+    if $("#single-data-file-modal").exists()
+      $("#single-data-file-modal").remove()
     html = """
     <paper-dialog modal id="single-data-file-modal">
       <h2>You can only have one primary data file</h2>
@@ -341,6 +343,7 @@ singleDataFileHelper = (newFile, callback) ->
       removeDataFile()
       # Now, continue with the callback
       callback()
+    safariDialogHelper("#single-data-file-modal")
   else
     callback()
 

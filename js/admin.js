@@ -250,17 +250,21 @@ singleDataFileHelper = function(newFile, callback) {
     console.error("Second argument must be a function");
     return false;
   }
-  if (dataFileParams === true) {
+  if (dataFileParams.hasDataFile === true) {
+    if ($("#single-data-file-modal").exists()) {
+      $("#single-data-file-modal").remove();
+    }
     html = "<paper-dialog modal id=\"single-data-file-modal\">\n  <h2>You can only have one primary data file</h2>\n  <div>\n    Continuing will remove your previous one\n  </div>\n  <div class=\"buttons\">\n    <paper-button id=\"cancel-parse\">Cancel Upload</paper-button>\n    <paper-button id=\"overwrite\">Replace Previous</paper-button>\n  </div>\n</paper-dialog>";
     $("body").append(html);
     $("#cancel-parse").click(function() {
       removeDataFile(newFile, false);
       return false;
     });
-    return $("#overwrite").click(function() {
+    $("#overwrite").click(function() {
       removeDataFile();
       return callback();
     });
+    return safariDialogHelper("#single-data-file-modal");
   } else {
     return callback();
   }
