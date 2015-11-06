@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapUploader, csvHandler, excelHandler, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, startAdminActionHelper, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, startAdminActionHelper, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -16,6 +16,16 @@ adminParams.adminPageUrl = "http://" + adminParams.domain + ".org/admin-page.htm
 adminParams.loginDir = "admin/";
 
 adminParams.loginApiTarget = adminParams.loginDir + "async_login_handler.php";
+
+dataFileParams = new Object();
+
+dataFileParams.hasDataFile = false;
+
+dataFileParams.fileName = null;
+
+dataFileParams.filePath = null;
+
+helperDir = "helpers/";
 
 window.loadAdminUi = function() {
 
@@ -109,7 +119,7 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n<paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.\n</p>";
+  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.\n</p>";
   $("main #main-body").append(html);
   bootstrapUploader();
   foo();
@@ -191,13 +201,13 @@ bootstrapUploader = function(uploadFormId) {
         previewHtml = (function() {
           switch (mediaType) {
             case "image":
-              return "<div class=\"uploaded-media center-block\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + result.full_path + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
+              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + result.full_path + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
             case "audio":
-              return "<div class=\"uploaded-media center-block\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
             case "video":
-              return "<div class=\"uploaded-media center-block\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
             default:
-              return "<div class=\"uploaded-media center-block\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + result.full_path + "</p>\n</div>";
+              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + result.full_path + "</p>\n</div>";
           }
         })();
         $(window.dropperParams.dropTargetSelector).before(previewHtml);
@@ -235,13 +245,12 @@ bootstrapUploader = function(uploadFormId) {
 };
 
 excelHandler = function(path, hasHeaders) {
-  var args, correctedPath, helperApi, helperDir;
+  var args, correctedPath, helperApi;
   if (hasHeaders == null) {
     hasHeaders = true;
   }
   startLoad();
   toastStatusMessage("Processing ...");
-  helperDir = "helpers/";
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
   if (path.search(helperDir !== -1)) {
@@ -260,6 +269,9 @@ excelHandler = function(path, hasHeaders) {
     }
     html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
     $("#main-body").append(html);
+    dataFileParams.hasDataFile = true;
+    dataFileParams.fileName = path;
+    dataFileParams.filePath = correctedPath;
     newGeoDataHandler(result.data);
     return stopLoad();
   }).fail(function(result, error) {
@@ -271,6 +283,9 @@ excelHandler = function(path, hasHeaders) {
 };
 
 csvHandler = function(path) {
+  dataFileParams.hasDataFile = true;
+  dataFileParams.fileName = path;
+  dataFileParams.filePath = correctedPath;
   geoDataHandler();
   return false;
 };
@@ -290,6 +305,13 @@ _7zHandler = function(path) {
   return false;
 };
 
+removeDataFile = function() {
+  foo();
+  dataFileParams.hasDataFile = false;
+  $(".uploaded-media[data-system-file='" + dataFileParams.fileName + "']").remove();
+  return false;
+};
+
 newGeoDataHandler = function(dataObject) {
   var e, parsedData, projectIdentifier, rows, sampleRow;
   if (dataObject == null) {
@@ -303,12 +325,18 @@ newGeoDataHandler = function(dataObject) {
    *
    * Requires columns "lat", "lng", "error", "alt"
    */
-  sampleRow = dataObject[0];
-  if (!((sampleRow.lat != null) && (sampleRow.lng != null) && (sampleRow.error != null) && (sampleRow.alt != null))) {
-    toastStatusMessage("Data is missing required geo columns. Please reformat and try again.");
-    return false;
-  }
   try {
+    try {
+      sampleRow = dataObject[0];
+    } catch (_error) {
+      toastStatusMessage("Your data file was malformed, and could not be parsed. Please try again.");
+      removeDataFile();
+      return false;
+    }
+    if (!((sampleRow.lat != null) && (sampleRow.lng != null) && (sampleRow.error != null) && (sampleRow.alt != null))) {
+      toastStatusMessage("Data is missing required geo columns. Please reformat and try again.");
+      return false;
+    }
     rows = Object.size(dataObject);
     $$("#samplecount")[0].value = rows;
     parsedData = dataObject;

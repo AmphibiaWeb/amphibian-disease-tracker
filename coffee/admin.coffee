@@ -9,6 +9,14 @@ adminParams.adminPageUrl = "http://#{adminParams.domain}.org/admin-page.html"
 adminParams.loginDir = "admin/"
 adminParams.loginApiTarget = "#{adminParams.loginDir}async_login_handler.php"
 
+dataFileParams = new Object()
+dataFileParams.hasDataFile = false
+dataFileParams.fileName = null
+dataFileParams.filePath = null
+
+helperDir = "helpers/"
+
+
 window.loadAdminUi = ->
   ###
   # Main wrapper function. Checks for a valid login state, then
@@ -122,9 +130,11 @@ loadCreateNewProject = ->
   <h2 class="new-title">Project Title</h2>
   <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
   <h2 class="new-title">Project Parameters</h2>
-  <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
-  <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
-  <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
+  <section class="project-inputs clearfix">
+    <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
+    <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
+    <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
+  </section>
   <p>Etc</p>
   <h2 class="new-title">Uploading your project data</h2>
   <p>Drag and drop as many files as you need below. </p>
@@ -224,7 +234,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
         previewHtml = switch mediaType
           when "image"
             """
-            <div class="uploaded-media center-block">
+            <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
               <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
                 <p class="text-muted">
                   #{file.name} -> #{result.full_path}
@@ -235,7 +245,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
             </div>
             """
           when "audio" then """
-          <div class="uploaded-media center-block">
+          <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
             <audio src="#{linkPath}" controls preload="auto">
               <span class="glyphicon glyphicon-music"></span>
               <p>
@@ -252,7 +262,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
           </div>
           """
           when "video" then """
-          <div class="uploaded-media center-block">
+          <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
             <video src="#{linkPath}" controls preload="auto">
               <img src="#{pathPrefix}#{result.thumb_path}" alt="Video Thumbnail" class="img-responsive" />
               <p>
@@ -270,7 +280,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
           """
           else
             """
-            <div class="uploaded-media center-block">
+            <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
               <span class="glyphicon glyphicon-file"></span>
               <p class="text-muted">#{file.name} -> #{result.full_path}</p>
             </div>
@@ -306,7 +316,6 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
 excelHandler = (path, hasHeaders = true) ->
   startLoad()
   toastStatusMessage "Processing ..."
-  helperDir = "helpers/"
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
   if path.search helperDir isnt -1
@@ -327,6 +336,9 @@ excelHandler = (path, hasHeaders = true) ->
     </pre>
     """
     $("#main-body").append html
+    dataFileParams.hasDataFile = true
+    dataFileParams.fileName = path
+    dataFileParams.filePath = correctedPath
     newGeoDataHandler(result.data)
     stopLoad()
   .fail (result, error) ->
@@ -336,6 +348,9 @@ excelHandler = (path, hasHeaders = true) ->
   false
 
 csvHandler = (path) ->
+  dataFileParams.hasDataFile = true
+  dataFileParams.fileName = path
+  dataFileParams.filePath = correctedPath
   geoDataHandler()
   false
 
@@ -352,6 +367,12 @@ _7zHandler = (path) ->
   false
 
 
+removeDataFile = ->
+  foo()
+  dataFileParams.hasDataFile = false
+  $(".uploaded-media[data-system-file='#{dataFileParams.fileName}']").remove()
+  false
+
 newGeoDataHandler = (dataObject = new Object()) ->
   ###
   # Data expected in form
@@ -360,12 +381,17 @@ newGeoDataHandler = (dataObject = new Object()) ->
   #
   # Requires columns "lat", "lng", "error", "alt"
   ###
-  sampleRow = dataObject[0]
-  unless sampleRow.lat? and sampleRow.lng? and sampleRow.error? and sampleRow.alt?
-    toastStatusMessage("Data is missing required geo columns. Please reformat and try again.")
-    # Remove the uploaded file
-    return false
   try
+    try
+      sampleRow = dataObject[0]
+    catch
+      toastStatusMessage "Your data file was malformed, and could not be parsed. Please try again."
+      removeDataFile()
+      return false
+    unless sampleRow.lat? and sampleRow.lng? and sampleRow.error? and sampleRow.alt?
+      toastStatusMessage("Data is missing required geo columns. Please reformat and try again.")
+      # Remove the uploaded file
+      return false
     rows = Object.size(dataObject)
     $$("#samplecount")[0].value = rows
     # Clean up the data for CartoDB
