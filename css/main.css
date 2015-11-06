@@ -7168,6 +7168,9 @@ paper-button.admin-action {
   max-width: 150px;
   max-height: 150px;
 }
+paper-input.project-field {
+  display: block;
+}
 .map {
   width: 75vw;
   height: 50vh;

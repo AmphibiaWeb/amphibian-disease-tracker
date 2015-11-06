@@ -120,11 +120,11 @@ loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
   <h2>Project Title</h2>
-  <paper-input label="Project Title" id="project-title" class="project-field" required autovalidate></paper-input>
+  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
   <h2>Project Parameters</h2>
-  <paper-input label="Primary Disease Studied" id="project-disease" class="project-field" required autovalidate></paper-input>
-  <paper-input label="Project Reference" id="reference-id" class="project-field"></paper-input>
-  <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field"></paper-input>
+  <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
+  <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
+  <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12"></paper-input>
   <p>Etc</p>
   <h2>Uploading your project data</h2>
   <p>Drag and drop as many files as you need below. </p>
@@ -363,6 +363,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
   sampleRow = dataObject[0]
   unless sampleRow.lat? and sampleRow.lng? and sampleRow.error? and sampleRow.alt?
     toastStatusMessage("Data is missing required geo columns. Please reformat and try again.")
+    # Remove the uploaded file
     return false
   # Clean up the data for CartoDB
   parsedData = dataObject # Temp
