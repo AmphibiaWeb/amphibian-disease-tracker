@@ -177,6 +177,7 @@ transect_file:
   type: "varchar(255)"
   logical: "File path"
 author:
+  # May be edited to another access_data member
   type: "varchar(255)"
   logical: "User hardlink reference" # See the userhandler code in admin/
   sample: "bbe960a25ea311d21d40669e93df2003ba9b90a2"
@@ -189,6 +190,9 @@ author_data:
       affiliation: "UC Berkeley"
       lab: "Wake lab"
       entry_date: "1442007442" # Linux Epoch time
+pi_lab:
+  type:"varchar(255)"
+  logical: "Lab PI"
 access_data:
   # Who can access this data?
   # The author is always permitted
@@ -203,7 +207,7 @@ publication:
   type: "varchar(255)"
   logical: "doi"
 public:
-  # Overrides access_data
+  # Overrides access_data for reads; access data always controls writes.
   type: "boolean"
   logical: "boolean"
 carto_id:
