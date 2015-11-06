@@ -337,12 +337,12 @@ singleDataFileHelper = (newFile, callback) ->
     $("#cancel-parse").click ->
       # We're done here. Remove the new file.
       removeDataFile newFile, false
-      $$("#single-data-file-modal")[0].close()
+      p$("#single-data-file-modal").close()
       false
     $("#overwrite").click ->
       # Remove the old file
       removeDataFile()
-      $$("#single-data-file-modal")[0].close()
+      p$("#single-data-file-modal").close()
       # Now, continue with the callback
       callback()
     safariDialogHelper("#single-data-file-modal")
@@ -433,7 +433,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       # Remove the uploaded file
       return false
     rows = Object.size(dataObject)
-    $$("#samplecount")[0].value = rows
+    p$("#samplecount")[0].value = rows
     # Clean up the data for CartoDB
     parsedData = dataObject # Temp
     # Create a project identifier from the user hash and project title

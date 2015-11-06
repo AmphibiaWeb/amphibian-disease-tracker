@@ -1,4 +1,4 @@
-var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1079,6 +1079,14 @@ bindDismissalRemoval = function() {
   return $("[dialog-dismiss]").unbind().click(function() {
     return $(this).parents("paper-dialog").remove();
   });
+};
+
+p$ = function(selector) {
+  try {
+    return $$(selector)[0];
+  } catch (_error) {
+    return $(selector).get(0);
+  }
 };
 
 $(function() {

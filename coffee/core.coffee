@@ -783,6 +783,13 @@ bindDismissalRemoval = ->
   .click ->
     $(this).parents("paper-dialog").remove()
 
+p$ = (selector) ->
+  # Try to get an object the Polymer way, then if it fails,
+  # do jQuery
+  try
+    $$(selector)[0]
+  catch
+    $(selector).get(0)
 
 $ ->
   bindClicks()

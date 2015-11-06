@@ -258,12 +258,12 @@ singleDataFileHelper = function(newFile, callback) {
     $("body").append(html);
     $("#cancel-parse").click(function() {
       removeDataFile(newFile, false);
-      $$("#single-data-file-modal")[0].close();
+      p$("#single-data-file-modal").close();
       return false;
     });
     $("#overwrite").click(function() {
       removeDataFile();
-      $$("#single-data-file-modal")[0].close();
+      p$("#single-data-file-modal").close();
       return callback();
     });
     return safariDialogHelper("#single-data-file-modal");
@@ -377,7 +377,7 @@ newGeoDataHandler = function(dataObject) {
       return false;
     }
     rows = Object.size(dataObject);
-    $$("#samplecount")[0].value = rows;
+    p$("#samplecount")[0].value = rows;
     parsedData = dataObject;
     projectIdentifier = null;
     geo.requestCartoUpload(parsedData, projectIdentifier, "create");
