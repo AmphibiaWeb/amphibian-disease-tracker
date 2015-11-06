@@ -109,8 +109,9 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  bootstrapUploader();
   html = "<h2>Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field\" required autovalidate></paper-input>\n<h2>Project Parameters</h2>\n<paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field\" required autovalidate></paper-input>\n<paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field\"></paper-input>\n<paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field\"></paper-input>\n<p>Etc</p>\n<h2>Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.\n</p>";
+  $("main #main-body").append(html);
+  bootstrapUploader();
   foo();
   return false;
 };

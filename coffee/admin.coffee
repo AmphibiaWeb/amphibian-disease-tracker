@@ -118,7 +118,6 @@ loadEditor = ->
 
 loadCreateNewProject = ->
   startAdminActionHelper()
-  bootstrapUploader()
   html = """
   <h2>Project Title</h2>
   <paper-input label="Project Title" id="project-title" class="project-field" required autovalidate></paper-input>
@@ -135,6 +134,8 @@ loadCreateNewProject = ->
     and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.
   </p>
   """
+  $("main #main-body").append html
+  bootstrapUploader()
   foo()
   false
 
