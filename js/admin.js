@@ -258,10 +258,12 @@ singleDataFileHelper = function(newFile, callback) {
     $("body").append(html);
     $("#cancel-parse").click(function() {
       removeDataFile(newFile, false);
+      $$("#single-data-file-modal")[0].close();
       return false;
     });
     $("#overwrite").click(function() {
       removeDataFile();
+      $$("#single-data-file-modal")[0].close();
       return callback();
     });
     return safariDialogHelper("#single-data-file-modal");
@@ -340,11 +342,12 @@ removeDataFile = function(removeFile, unsetHDF) {
   if (unsetHDF == null) {
     unsetHDF = true;
   }
-  foo();
+  removeFile = removeFile.split("/").pop();
   if (unsetHDF) {
     dataFileParams.hasDataFile = false;
   }
   $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
+  foo();
   return false;
 };
 

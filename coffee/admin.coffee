@@ -337,10 +337,12 @@ singleDataFileHelper = (newFile, callback) ->
     $("#cancel-parse").click ->
       # We're done here. Remove the new file.
       removeDataFile newFile, false
+      $$("#single-data-file-modal")[0].close()
       false
     $("#overwrite").click ->
       # Remove the old file
       removeDataFile()
+      $$("#single-data-file-modal")[0].close()
       # Now, continue with the callback
       callback()
     safariDialogHelper("#single-data-file-modal")
@@ -403,11 +405,12 @@ _7zHandler = (path) ->
   false
 
 
-removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true)->
-  foo()
+removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
+  removeFile = removeFile.split("/").pop()
   if unsetHDF
     dataFileParams.hasDataFile = false
   $(".uploaded-media[data-system-file='#{removeFile}']").remove()
+  foo()
   false
 
 newGeoDataHandler = (dataObject = new Object()) ->

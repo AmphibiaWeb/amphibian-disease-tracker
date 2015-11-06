@@ -750,6 +750,40 @@ foo = ->
   false
 
 
+safariDialogHelper = (selector = "#download-chooser", counter = 0, callback) ->
+  ###
+  # Help Safari display paper-dialogs
+  ###
+  unless typeof callback is "function"
+    callback = ->
+      bindDismissalRemoval()
+  if counter < 10
+    try
+      # Safari is stupid and like to throw an error. Presumably
+      # it's VERY slow about creating the element.
+      d$(selector).get(0).open()
+      if typeof callback is "function"
+        callback()
+      stopLoad()
+    catch e
+      # Ah, Safari threw an error. Let's delay and try up to
+      # 10x.
+      newCount = counter + 1
+      delayTimer = 250
+      delay delayTimer, ->
+        console.warn "Trying again to display dialog after #{newCount * delayTimer}ms"
+        safariDialogHelper(selector, newCount, callback)
+  else
+    stopLoadError("Unable to show dialog. Please try again.")
+
+
+bindDismissalRemoval = ->
+  $("[dialog-dismiss]")
+  .unbind()
+  .click ->
+    $(this).parents("paper-dialog").remove()
+
+
 $ ->
   bindClicks()
   formatScientificNames()
