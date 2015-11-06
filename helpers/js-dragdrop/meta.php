@@ -130,11 +130,13 @@ function handleUpload()
         $uploadPath = $_REQUEST['uploadpath'];
         $savePath = dirname(__FILE__).'/'.$uploadPath;
         if (!file_exists($savePath)) {
+            if(!mkdir($savePath)) {
             return array(
                 'status' => false,
                 'error' => "Bad path '$savePath'",
                 'human_error' => 'There is a server misconfiguration preventing your file from being uploaded',
             );
+            }
         }
         $file = $_FILES['file']['name'];
         $exploded = explode('.', $file);
@@ -170,11 +172,13 @@ function doUploadVideo($passed_mime = null)
     $uploadPath = $_REQUEST['uploadpath'];
     $savePath = dirname(__FILE__).'/'.$uploadPath;
     if (!file_exists($savePath)) {
+        if(!mkdir($savePath)) {
         return array(
             'status' => false,
             'error' => "Bad path '$savePath'",
             'human_error' => 'There is a server misconfiguration preventing your file from being uploaded',
         );
+        }
     }
     $file = $_FILES['file']['name'];
     $exploded = explode('.', $file);
@@ -231,11 +235,13 @@ function doUploadAudio($passed_mime = null)
     $uploadPath = $_REQUEST['uploadpath'];
     $savePath = dirname(__FILE__).'/'.$uploadPath;
     if (!file_exists($savePath)) {
+        if(!mkdir($savePath)) {
         return array(
             'status' => false,
             'error' => "Bad path '$savePath'",
             'human_error' => 'There is a server misconfiguration preventing your file from being uploaded',
         );
+        }
     }
     $file = $_FILES['file']['name'];
     $exploded = explode('.', $file);
@@ -288,11 +294,13 @@ function doUploadImage($passed_mime = null)
     $uploadPath = $_REQUEST['uploadpath'];
     $savePath = dirname(__FILE__).'/'.$uploadPath;
     if (!file_exists($savePath)) {
+        if(!mkdir($savePath)) {
         return array(
             'status' => false,
             'error' => "Bad path '$savePath'",
             'human_error' => 'There is a server misconfiguration preventing your file from being uploaded',
         );
+        }
     }
     $file = $_FILES['file']['name'];
     $exploded = explode('.', $file);

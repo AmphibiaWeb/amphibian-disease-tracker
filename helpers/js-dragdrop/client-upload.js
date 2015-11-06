@@ -72,14 +72,16 @@
 ;
 
   $(function() {
-    var base, uploadButton;
+    var base, base1, uploadButton;
     console.info("Configuring dropper parameters");
     window.dropperParams.metaPath = "/helpers/js-dragdrop/";
-    window.dropperParams.uploadPath = "uploaded/";
+    if ((base = window.dropperParams).uploadPath == null) {
+      base.uploadPath = "uploaded/";
+    }
     window.dropperParams.dependencyPath = window.dropperParams.metaPath + "bower_components/";
     window.dropperParams.showProgress = true;
-    if ((base = window.dropperParams).dropTargetSelector == null) {
-      base.dropTargetSelector = "#file-uploader";
+    if ((base1 = window.dropperParams).dropTargetSelector == null) {
+      base1.dropTargetSelector = "#file-uploader";
     }
     uploadButton = "<button class=\"upload-image media-uploader btn btn-primary pull-right\" id=\"do-upload-file\" type=\"button\"><span class=\"glyphicon glyphicon-cloud-upload\"></span></button>";
     window.dropperParams.clickTargets = ["#do-upload-file"];
