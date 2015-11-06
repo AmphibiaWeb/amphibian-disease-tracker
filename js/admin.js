@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, startAdminActionHelper, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, singleDataFileHelper, startAdminActionHelper, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -244,6 +244,28 @@ bootstrapUploader = function(uploadFormId) {
   });
 };
 
+singleDataFileHelper = function(newFile, callback) {
+  var html;
+  if (typeof callback !== "function") {
+    console.error("Second argument must be a function");
+    return false;
+  }
+  if (dataFileParams === true) {
+    html = "<paper-dialog modal id=\"single-data-file-modal\">\n  <h2>You can only have one primary data file</h2>\n  <div>\n    Continuing will remove your previous one\n  </div>\n  <div class=\"buttons\">\n    <paper-button id=\"cancel-parse\">Cancel Upload</paper-button>\n    <paper-button id=\"overwrite\">Replace Previous</paper-button>\n  </div>\n</paper-dialog>";
+    $("body").append(html);
+    $("#cancel-parse").click(function() {
+      removeDataFile(newFile, false);
+      return false;
+    });
+    return $("#overwrite").click(function() {
+      removeDataFile();
+      return callback();
+    });
+  } else {
+    return callback();
+  }
+};
+
 excelHandler = function(path, hasHeaders) {
   var args, correctedPath, helperApi;
   if (hasHeaders == null) {
@@ -259,21 +281,23 @@ excelHandler = function(path, hasHeaders) {
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath;
   $.get(helperApi, args, "json").done(function(result) {
-    var html, randomData, randomRow, rows;
     console.info("Got result", result);
-    rows = Object.size(result.data);
-    randomData = "";
-    if (rows > 0) {
-      randomRow = randomInt(1, rows);
-      randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
-    }
-    html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
-    $("#main-body").append(html);
-    dataFileParams.hasDataFile = true;
-    dataFileParams.fileName = path;
-    dataFileParams.filePath = correctedPath;
-    newGeoDataHandler(result.data);
-    return stopLoad();
+    return singleDataFileHelper(path, function() {
+      var html, randomData, randomRow, rows;
+      dataFileParams.hasDataFile = true;
+      dataFileParams.fileName = path;
+      dataFileParams.filePath = correctedPath;
+      rows = Object.size(result.data);
+      randomData = "";
+      if (rows > 0) {
+        randomRow = randomInt(1, rows);
+        randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
+      }
+      html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
+      $("#main-body").append(html);
+      newGeoDataHandler(result.data);
+      return stopLoad();
+    });
   }).fail(function(result, error) {
     console.error("Couldn't POST");
     console.warn(result, error);
@@ -305,10 +329,18 @@ _7zHandler = function(path) {
   return false;
 };
 
-removeDataFile = function() {
+removeDataFile = function(removeFile, unsetHDF) {
+  if (removeFile == null) {
+    removeFile = dataFileParams.fileName;
+  }
+  if (unsetHDF == null) {
+    unsetHDF = true;
+  }
   foo();
-  dataFileParams.hasDataFile = false;
-  $(".uploaded-media[data-system-file='" + dataFileParams.fileName + "']").remove();
+  if (unsetHDF) {
+    dataFileParams.hasDataFile = false;
+  }
+  $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
   return false;
 };
 

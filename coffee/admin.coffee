@@ -313,6 +313,38 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
     false
 
 
+singleDataFileHelper = (newFile, callback) ->
+  if typeof callback isnt "function"
+    console.error "Second argument must be a function"
+    return false
+  if dataFileParams is true
+    # Show a popup that conditionally calls callback
+    html = """
+    <paper-dialog modal id="single-data-file-modal">
+      <h2>You can only have one primary data file</h2>
+      <div>
+        Continuing will remove your previous one
+      </div>
+      <div class="buttons">
+        <paper-button id="cancel-parse">Cancel Upload</paper-button>
+        <paper-button id="overwrite">Replace Previous</paper-button>
+      </div>
+    </paper-dialog>
+    """
+    $("body").append html
+    $("#cancel-parse").click ->
+      # We're done here. Remove the new file.
+      removeDataFile newFile, false
+      false
+    $("#overwrite").click ->
+      # Remove the old file
+      removeDataFile()
+      # Now, continue with the callback
+      callback()
+  else
+    callback()
+
+
 excelHandler = (path, hasHeaders = true) ->
   startLoad()
   toastStatusMessage "Processing ..."
@@ -325,22 +357,23 @@ excelHandler = (path, hasHeaders = true) ->
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result
-    rows = Object.size(result.data)
-    randomData = ""
-    if rows > 0
-      randomRow = randomInt(1,rows)
-      randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow])
-    html = """
-    <pre>
-    From upload, fetched #{rows} rows.#{randomData}
-    </pre>
-    """
-    $("#main-body").append html
-    dataFileParams.hasDataFile = true
-    dataFileParams.fileName = path
-    dataFileParams.filePath = correctedPath
-    newGeoDataHandler(result.data)
-    stopLoad()
+    singleDataFileHelper path, ->
+      dataFileParams.hasDataFile = true
+      dataFileParams.fileName = path
+      dataFileParams.filePath = correctedPath
+      rows = Object.size(result.data)
+      randomData = ""
+      if rows > 0
+        randomRow = randomInt(1,rows)
+        randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow])
+      html = """
+      <pre>
+      From upload, fetched #{rows} rows.#{randomData}
+      </pre>
+      """
+      $("#main-body").append html
+      newGeoDataHandler(result.data)
+      stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
     console.warn result, error
@@ -367,10 +400,11 @@ _7zHandler = (path) ->
   false
 
 
-removeDataFile = ->
+removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true)->
   foo()
-  dataFileParams.hasDataFile = false
-  $(".uploaded-media[data-system-file='#{dataFileParams.fileName}']").remove()
+  if unsetHDF
+    dataFileParams.hasDataFile = false
+  $(".uploaded-media[data-system-file='#{removeFile}']").remove()
   false
 
 newGeoDataHandler = (dataObject = new Object()) ->
