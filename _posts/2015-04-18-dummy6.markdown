@@ -6,7 +6,7 @@ author: Michelle Koo
 categories: Bsal news
 ---
 
-We've compiled a [Bibliography for publications on Bd and Bsal research as a Zotero Group Library](https://www.zotero.org/groups/bdbsalresearch/items).     
+We've compiled a [Bibliography for publications on Bd and Bsal research as a Zotero Group Library](https://www.zotero.org/groups/bdbsalresearch/items/order/year/sort/desc).     
 
 
 
