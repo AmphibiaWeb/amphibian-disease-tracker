@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Bsal papers"
+title:  "Bd and Bsal papers"
 date:   2015-11-01
 author: Michelle Koo
 categories: Bsal News
