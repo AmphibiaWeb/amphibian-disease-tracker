@@ -3,7 +3,7 @@ layout: post
 title:  "Bsal papers"
 date:   2015-11-01
 author: Michelle Koo
-categories: Bsal news
+categories: Bsal News
 ---
 
 We've compiled a [Bibliography for publications on Bd and Bsal research as a Zotero Group Library](https://www.zotero.org/groups/bdbsalresearch/items/order/year/sort/desc).     
