@@ -1,16 +1,13 @@
 ---
 layout: post
 title:  "Bsal papers"
-date:   2015-04-18 08:43:59
+date:   2015-11-01
 author: Michelle Koo
 categories: Bsal news
 ---
 
-TEst post where we can list recent papers.
+We've compiled a [Bibliography for publications on Bd and Bsal research as a Zotero Group Library](https://www.zotero.org/groups/bdbsalresearch/items).     
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+
+Why Zotero? It's free, open source, convenient and widely used by academics,  librarians, and writers. Read a perspective on [using Zotero] (http://at.blogs.wm.edu/doing-academic-research-with-zotero/).
