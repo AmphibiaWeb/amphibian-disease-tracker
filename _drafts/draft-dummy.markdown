@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "Dummy Post"
-date:   2015-04-18 08:43:59
-author: Ben Centra
+date:   2015-11-11
+author: MSK
 categories: Dummy
 ---
 
