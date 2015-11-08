@@ -41,7 +41,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 ### Our partners     
-- PARC Disease Task Team: [Read more on the _Bsal_ Call to Action] (http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
+- PARC Disease Task Team: [Read more on the _Bsal_ Call to Action](http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
 - USDA Forest Service
 
 ####Researchers (alphabetical)
