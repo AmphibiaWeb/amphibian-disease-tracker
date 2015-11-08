@@ -1,0 +1,87 @@
+---
+layout: post
+title:  "Welcome to the Amphibian Disease portal"
+date:   2015-11-01
+author: Michelle Koo
+categories: Resources
+tags:	amphibiaweb welcome 
+cover:  "assets/Ensatina_closeup_Yap_1024.jpg"
+---
+
+We aim to be a repository for _Bd_ and _Bsal_ data from field and biocollection samples. Only by the community coming together to aggregate data will we be able to understand the disease dynamics of this devastating cause of amphibian declines worldwide.
+
+## New Posts
+
+We will add relevant news and resources to our posts. Please let us know if you have news or information you would like to share.     
+
+Currently you can read Posts from two categories: Bsal News and Resources
+
+### Users of the portal    
+
+<ol>
+          <li>
+            Researchers - those studying epizootic diseases, amphibian
+            biology, conservation, conservation prioritization
+          </li>
+          <li>
+            Field and Lab Contributors - especially those seeking a
+            repository for their data and seeking collaborators for
+            their efforts.
+          </li>
+          <li>
+            Land & Wildlife Managers - those needing to know what kind
+            of chytrid sampling or results have been done for the
+            lands they manage and for surrounding areas
+          </li>
+          <li>
+            Anyone concerned with the global decline of amphibians due to chytridiomycosis
+          </li>
+        </ol>
+
+
+
+### Our partners
+
+<div class="relative-left">
+          <li>          
+            <b><a href="http://parcplace.org/parcplace/resources/disease-task-team.html">PARC
+                Disease Task Team</a></b> - Read more on
+            the <a href="http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf"
+                   class="newwindow"><span class="sciname">Bsal</span> Call to
+              Action</a>
+            
+          </li>
+          <li><b>Researchers</b> - (alphabetical)
+            <br/>San Francisco State University (SFSU) 
+            <br/>Southern Illinois University, Carbondale (SIU) 
+            <br/>University of California, Berkeley (UCB)
+            <br/>University of Maryland (UM)
+          </li>
+          <li>          
+            <b>Diagnostic Labs</b> - (alphabetical) <a href="http://catenazzi.weebly.com/">Catenazzi Lab</a> (SIU); <a href="http://lipslab.weebly.com/">Lips Lab </a>(UM); <a href="http://www.vredenburglab.com/">Vredenburg Lab</a> (SFSU)
+          </li>
+        </div>       
+      </div>
+      
+      <hr/>        
+      <div class="center-block text-center">
+        <img src="assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
+        <a href="http://amphibiaweb.org"><img src="assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
+        <img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
+        <img src="assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
+      </div>
+      <div class="center-block text-center">
+
+
+### Maps
+
+### Upload and Manage your datasets
+
+
+    
+For more information, see the resources below:
+
+[AmphibiaWeb]:      http://amphibiaweb.org
+[PARC Bsal Task Team]:   http://parcplace.org/parcplace/resources/disease-task-team.html
+[Amphibian Survival Alliance]: http://www.amphibians.org/
+
