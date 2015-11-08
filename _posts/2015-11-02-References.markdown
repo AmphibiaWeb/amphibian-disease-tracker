@@ -15,7 +15,7 @@ If you want to contribute to the Group Library, join this public repository with
 
 Why [Zotero](https://www.zotero.org/)? It's free, open source, convenient and widely used by academics,  librarians, and writers. Read a perspective on [using Zotero](http://at.blogs.wm.edu/doing-academic-research-with-zotero/).
 
->#####Disease Task Team#####
+>####For the Disease Task Team####
 >PDFs are available for many references in our shared directory.
 >Password required. 
 >Contact [AmphibiaWeb@berkeley.edu](mailto:amphibiaweb@berkeley.edu) for details.
