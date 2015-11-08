@@ -61,7 +61,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 _coming soon_
 
 ### Upload and Manage your datasets
-
+_coming soon_
 
     
 For more information, see the resources below:
@@ -69,4 +69,13 @@ For more information, see the resources below:
 [AmphibiaWeb](http://amphibiaweb.org)     
 [PARC Bsal Task Team](http://parcplace.org/parcplace/resources/disease-task-team.html)      
 [Amphibian Survival Alliance](http://www.amphibians.org/)
+
+<hr>
+<div class="center-block text-center">
+        <img src="assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
+        <a href="http://amphibiaweb.org"><img src="assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
+        <img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
+        <img src="assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
+      </div>
+
 
