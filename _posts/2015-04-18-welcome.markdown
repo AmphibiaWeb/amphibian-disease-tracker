@@ -40,27 +40,21 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 
-### Our partners
+### Our partners     
+          - PARC Disease Task Team: [Read more on the _Bsal_ Call to Action] (http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
 
+          - ##Researchers (alphabetical)
+              - San Francisco State University (SFSU) 
+              - Southern Illinois University, Carbondale (SIU) 
+              - University of California, Berkeley (UCB)
+              - University of Maryland (UM)
+   
+           - ##Diagnostic Labs (alphabetical) 
+              - [Catenazzi Lab (SIU)] (http://catenazzi.weebly.com/)
+              - [Lips Lab (UM)] (http://lipslab.weebly.com/)
+              - [Vredenburg Lab (SFSU)] (http://www.vredenburglab.com/)
+              - [UGent wildlife population health labs of Martel and Pasmans] (http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
 
-          <li>          
-            <b><a href="http://parcplace.org/parcplace/resources/disease-task-team.html">PARC
-                Disease Task Team</a></b> - Read more on
-            the <a href="http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf"
-                   class="newwindow"><span class="sciname">Bsal</span> Call to
-              Action</a>
-          </li>
-          <li><b>Researchers</b> - (alphabetical)
-            <br/>San Francisco State University (SFSU) 
-            <br/>Southern Illinois University, Carbondale (SIU) 
-            <br/>University of California, Berkeley (UCB)
-            <br/>University of Maryland (UM)
-          </li>
-          <li>          
-            <b>Diagnostic Labs</b> - (alphabetical) <a href="http://catenazzi.weebly.com/">Catenazzi Lab</a> (SIU); <a href="http://lipslab.weebly.com/">Lips Lab </a>(UM); <a href="http://www.vredenburglab.com/">Vredenburg Lab</a> (SFSU)
-          </li>
-
-      
 
 ### Maps
 
