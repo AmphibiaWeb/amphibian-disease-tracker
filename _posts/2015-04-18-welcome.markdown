@@ -10,7 +10,7 @@ cover:  "assets/Ensatina_closeup_Yap_1024.jpg"
 
 We aim to be a repository for _Bd_ and _Bsal_ data from field and biocollection samples. Only by the community coming together to aggregate data will we be able to understand the disease dynamics of this devastating cause of amphibian declines worldwide.
 
-## New Posts
+### New Posts
 
 We will add relevant news and resources to our posts. Please let us know if you have news or information you would like to share.     
 
@@ -42,6 +42,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 ### Our partners     
 - PARC Disease Task Team: [Read more on the _Bsal_ Call to Action] (http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
+- USDA Forest Service
 
 ####Researchers (alphabetical)
 - San Francisco State University (SFSU) 
@@ -50,10 +51,10 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - University of Maryland (UM)
    
 ####Diagnostic Labs (alphabetical) 
-- [Catenazzi Lab (SIU)] (http://catenazzi.weebly.com/)
-- [Lips Lab (UM)] (http://lipslab.weebly.com/)
-- [Vredenburg Lab (SFSU)] (http://www.vredenburglab.com/)
-- [UGent wildlife population health labs of Martel and Pasmans] (http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
+- [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
+- [Lips Lab (UM)](http://lipslab.weebly.com/)
+- [Vredenburg Lab (SFSU)](http://www.vredenburglab.com/)
+- [UGent wildlife population health labs of Martel and Pasmans](http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
 
 
 ### Maps
@@ -64,7 +65,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
     
 For more information, see the resources below:
 
-[AmphibiaWeb]:      http://amphibiaweb.org
-[PARC Bsal Task Team]:   http://parcplace.org/parcplace/resources/disease-task-team.html
-[Amphibian Survival Alliance]: http://www.amphibians.org/
+[AmphibiaWeb](http://amphibiaweb.org)     
+[PARC Bsal Task Team](http://parcplace.org/parcplace/resources/disease-task-team.html)      
+[Amphibian Survival Alliance](http://www.amphibians.org/)
 
