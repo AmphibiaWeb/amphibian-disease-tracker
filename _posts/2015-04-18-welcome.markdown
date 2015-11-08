@@ -42,14 +42,13 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 ### Our partners
 
-<div class="relative-left">
+
           <li>          
             <b><a href="http://parcplace.org/parcplace/resources/disease-task-team.html">PARC
                 Disease Task Team</a></b> - Read more on
             the <a href="http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf"
                    class="newwindow"><span class="sciname">Bsal</span> Call to
               Action</a>
-            
           </li>
           <li><b>Researchers</b> - (alphabetical)
             <br/>San Francisco State University (SFSU) 
@@ -60,18 +59,8 @@ Currently you can read Posts from two categories: Bsal News and Resources
           <li>          
             <b>Diagnostic Labs</b> - (alphabetical) <a href="http://catenazzi.weebly.com/">Catenazzi Lab</a> (SIU); <a href="http://lipslab.weebly.com/">Lips Lab </a>(UM); <a href="http://www.vredenburglab.com/">Vredenburg Lab</a> (SFSU)
           </li>
-        </div>       
-      </div>
-      
-      <hr/>        
-      <div class="center-block text-center">
-        <img src="assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
-        <a href="http://amphibiaweb.org"><img src="assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
-        <img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
-        <img src="assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
-      </div>
-      <div class="center-block text-center">
 
+      
 
 ### Maps
 
