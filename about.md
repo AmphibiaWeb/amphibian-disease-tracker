@@ -13,7 +13,7 @@ The amphibian fungal disease [chytridiomycosis](http://amphibiaweb.org/chytrid/c
        
 In this rapidly developing area of science, making information more quickly and readily available will enable the scientific community to test and build predictive models more efficiently.  Making data readily available should facilitate both research and management/ conservation decisions.
 
-Follow our progress! Visit us on
+Follow our progress! Visit us on GitHub
           <paper-icon-button icon="glyphicon-social:github" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" data-toggle="tooltip" title="Visit us on GitHub"></paper-icon-button>
           to request features!    
           
