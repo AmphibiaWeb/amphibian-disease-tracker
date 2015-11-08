@@ -82,7 +82,7 @@ social:
      username: AmphibiaWeb
      url: https://github.com/AmphibaWeb/amphibian-disease-tracker
      desc: Contribute on GitHub
-     share: false
+     share: true
  
   # - name: LinkedIn
   #   icon: linkedin
@@ -131,20 +131,6 @@ social:
   #   username: 
   #   url: 
   #   desc: Follow me on Tumblr
-  #   share: false
-
-  # - name: Steam
-  #   icon: steam
-  #   username: 
-  #   url: 
-  #   desc: Friend me on Steam
-  #   share: false
-
-  # - name: Dribbble
-  #   icon: dribbble
-  #   username: 
-  #   url: 
-  #   desc: Follow me on Dribble
   #   share: false
 
   # - name: Vimeo
