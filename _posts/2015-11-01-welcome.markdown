@@ -74,7 +74,7 @@ For more information, see the resources below:
 
 <img src="assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
 <a href="http://amphibiaweb.org"><img src="assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
-<img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
+<img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="Berkeley Natural History Museums"/>
 <img src="assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
 
 
