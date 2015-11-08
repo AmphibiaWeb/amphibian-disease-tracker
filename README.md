@@ -1,8 +1,8 @@
 # Amphibian Disease Portal  - 
-Customized here: http://amphibiaweb.github.io/amphibian-disease-tracker.     
+Customized here: http://amphibiaweb.github.io/amphibian-disease-tracker    
 Categories:
- - Bsal News
- - Portal
+ - News
+ - Resources
 
 # Centrarium [![Circle CI](https://circleci.com/gh/bencentra/centrarium/tree/master.svg?style=svg)](https://circleci.com/gh/bencentra/centrarium/tree/master)
 
