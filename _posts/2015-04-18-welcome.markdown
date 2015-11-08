@@ -8,7 +8,7 @@ tags:	amphibiaweb welcome
 cover:  "assets/Ensatina_closeup_Yap_1024.jpg"
 ---
 
-We aim to be a repository for _Bd_ and _Bsal_ data from field and biocollection samples. Only by the community coming together to aggregate data will we be able to understand the disease dynamics of this devastating cause of amphibian declines worldwide.
+We aim to be a repository for _Bd_ and _Bsal_ data from field and biocollection samples. Only by the community coming together to aggregate data will we be able to understand the disease dynamics of this major cause of amphibian declines worldwide.
 
 ### New Posts
 
@@ -58,6 +58,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 ### Maps
+_coming soon_
 
 ### Upload and Manage your datasets
 
