@@ -72,7 +72,7 @@ For more information, see the resources below:
 
 <hr>
 
-<img src="/amphibian-disease-tracker/assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
+<img src="/assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
 <a href="http://amphibiaweb.org"><img src="/amphibian-disease-tracker/assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
 <img src="/amphibian-disease-tracker/assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
 <img src="/amphibian-disease-tracker/assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
