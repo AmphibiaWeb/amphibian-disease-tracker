@@ -24,8 +24,8 @@ Follow our progress. Visit us on GitHub <paper-icon-button icon="glyphicon-socia
 <table cellspacing="0" cellpadding="0">
    <tr class="even">
     <td><img src="assets/USDA_FS.jpg" style="height:120px;width:120px" alt="US Forest Service"/></td>
-    <td>![AW logo](https://raw.githubusercontent.com/AmphibiaWeb/amphibian-disease-tracker/gh-pages/assets/awlogo120.jpg)</td>
-    <td><img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/></td>
+    <td><img src="assets/awlogo120.jpg" style="height:120px;" alt="AmphibiaWeb"></td>
+    <td><img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="Berkeley Natural History Museums"/></td>
     <td> <img src="assets/UCBseal.gif" style="height:120px;width:141px" alt="UC Berkeley"/></td>
   </tr>
 </table>
