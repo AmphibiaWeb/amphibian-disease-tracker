@@ -20,10 +20,10 @@ Follow our progress. Visit us on GitHub <paper-icon-button icon="glyphicon-socia
 <button type="button" class="btn btn-default btn-lg click" onclick='location.href="https://calmail.berkeley.edu/manage/list/listinfo/bsal@lists.berkeley.edu"'><span class="glyphicon glyphicon-envelope"></span> Subscribe </button> to the <strong>Bsal</strong> listserve and keep up to date.
 
 <hr/>        
-<div class="center-block text-center">
-        <img src="assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
-        <a href="http://amphibiaweb.org"><img src="assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
-        <img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
-        <img src="assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
+<div class="text-center">
+        <img src="/assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
+        <a href="http://amphibiaweb.org"><img src="/assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
+        <img src="/assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
+        <img src="/assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
       </div>
       
