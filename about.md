@@ -13,7 +13,17 @@ The amphibian fungal disease [chytridiomycosis](http://amphibiaweb.org/chytrid/c
        
 In this rapidly developing area of science, making information more quickly and readily available will enable the scientific community to test and build predictive models more efficiently.  Making data readily available should facilitate both research and management/ conservation decisions.
 
+
+
 Follow our progress. Visit us on GitHub <paper-icon-button icon="glyphicon-social:github" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" data-toggle="tooltip" title="Visit us on GitHub"></paper-icon-button> to request features!    <br>
 
 <button type="button" class="btn btn-default btn-lg click" onclick='location.href="https://calmail.berkeley.edu/manage/list/listinfo/bsal@lists.berkeley.edu"'><span class="glyphicon glyphicon-envelope"></span> Subscribe </button> to the <strong>Bsal</strong> listserve and keep up to date.
 
+<hr/>        
+      <div class="center-block text-center">
+        <img src="assets/USDA_FS.jpg" style="height:120px;width:120px " alt="US Forest Service"/>
+        <a href="http://amphibiaweb.org"><img src="assets/awlogomed.jpg" style="height:120px;width:120px " alt="AmphibiaWeb"/></a>
+        <img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/>
+        <img src="assets/UCBseal.gif" style="height:120px;width:141px " alt="UC Berkeley"/>
+      </div>
+      <div class="center-block text-center">
