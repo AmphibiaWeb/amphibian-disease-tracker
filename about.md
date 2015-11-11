@@ -24,7 +24,7 @@ Follow our progress. Visit us on GitHub <paper-icon-button icon="glyphicon-socia
 <table cellspacing="0" cellpadding="0">
    <tr class="even">
     <td><img src="assets/USDA_FS.jpg" style="height:120px;width:120px" alt="US Forest Service"/></td>
-    <td><a href="http://amphibiaweb.org"><img src="assets/awlogo120.jpg" style="height:120px" alt="AmphibiaWeb"/></a></td>
+    <td>![AW logo](assets/awlogo120.jpg)</td>
     <td><img src="assets/bnhm_logo_large.jpg" style="height:120px;width:120px " alt="BNHM"/></td>
     <td> <img src="assets/UCBseal.gif" style="height:120px;width:141px" alt="UC Berkeley"/></td>
   </tr>
