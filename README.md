@@ -4,6 +4,13 @@ Categories:
  - News
  - Resources
 
+## Additions
+  - Drafts
+
+## Reference links to writing:
+ - [Jekyll][Jekyll]
+ - [Markdown basics][Markdown]
+
 # Centrarium [![Circle CI](https://circleci.com/gh/bencentra/centrarium/tree/master.svg?style=svg)](https://circleci.com/gh/bencentra/centrarium/tree/master)
 
 Built with these awesome libraries: 
@@ -15,11 +22,7 @@ Built with these awesome libraries:
 * [HighlightJS][highlightjs]
 * [Lightbox][lightbox]
 
-Here's a [demo](http://bencentra.com/centrarium). It also works on [GitHub Pages](http://bencentra.github.io/centrarium/). I also use it for [my own website][bencentra].
-
-Inspired by dirkfabisch's [Mediator](https://github.com/dirkfabisch/mediator) theme, which I previously used for my own blog, as well as [Type Theme](http://rohanchandra.github.io/type-theme/).
-
-Cover image by Chris M. Morris ([flickr][cover]).
+Here's a [demo](http://bencentra.com/centrarium). It also works on [GitHub Pages](http://bencentra.github.io/centrarium/). I also use it for [my own website][bencentra].    
 
 ## Features
 
@@ -32,26 +35,6 @@ This theme comes with a number of features, including:
 * Lightbox for viewing full-screen photos and albums
 * Google Analytics with custom page name tracking
 * Social media integration (Twitter, Facebook, LinkedIn, GitHub, and more)
-
-## Installation
-
-If you're just getting started with Jekyll, you can use this repository as a starting point for your own site. Just [download this project](https://github.com/bencentra/centrarium/archive/master.zip) and add all the files to your project. Add your blog posts to the `posts/` directory, and create your pages with the proper Jekyll front matter (see `posts.html` for an example).
-
-If your site already uses Jekyll, follow these steps:
-
-1. Replace the files in the `_includes`, `_layouts`, and `_sass` directories with those from this project.  
-2. Replace your `index.html` with the one from this project, and copy over the `posts.html` file as well.  
-3. Copy the contents of the `_config.yml` from this project in to yours, and update the necessary information.  
-
-Don't forget to install Jekyll and other dependencies:
-```bash
-# cd into project directory
-cd centrarium
-# install Bundler if you don't have it already
-gem install bundler
-# install jekyll, jekyll-archives, and jekyll-sitemap
-bundle install
-```
 
 ## Updating Styles
 
@@ -162,17 +145,6 @@ descriptions:
     desc: "Posts describing Jekyll setup techniques."
 ```
 
-## Contributing
-
-Want to help make this theme even better? Contributions from the community are welcome!
-
-Please follow these steps:
-
-1. Fork/clone this repository.
-2. Develop (and test!) your changes. 
-3. Open a pull request on GitHub. A description and/or screenshot of changes would be appreciated!
-4. I ([Ben Centra](https://github.com/bencentra)) will review and merge the pull request.
-
 ## License
 
 MIT. See [LICENSE.MD](https://github.com/bencentra/centrarium/blob/master/LICENSE.md).
@@ -190,3 +162,5 @@ MIT. See [LICENSE.MD](https://github.com/bencentra/centrarium/blob/master/LICENS
 [ga]: http://www.google.com/analytics/
 [archives]: https://github.com/jekyll/jekyll-archives
 [sitemap]: https://github.com/jekyll/jekyll-sitemap
+[Jekyll]: https://jekyllrb.com/
+[Markdown]: https://help.github.com/articles/markdown-basics/
