@@ -17,6 +17,6 @@ Why [Zotero](https://www.zotero.org/)? It's free, open source, convenient and wi
 
 >####For the Disease Task Team####
 >PDFs are available for many references in our shared directory.    
-https://berkeley.box.com/BdBsalResearchDocs _Password required._
+[https://berkeley.box.com/BdBsalResearchDocs] _Password required._
 >
 >Contact [AmphibiaWeb@berkeley.edu](mailto:amphibiaweb@berkeley.edu) for details.
