@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "Dummy Post 3"
-date:   2015-04-18 08:43:59
-author: Ben Centra
-categories: Dummy
+title:  "Bsal Workshop Presentations Available"
+date:   2015-11-13 08:43:59
+author: Tiffany Yap
+categories: News
 ---
 
-This is just a dummy post. Lorem ipsum and all the rest.
+#_Bsal_ Workshop in Asheville, North Carolina, August 2015
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Amphibian experts from the [Amphibian Survival Alliance](http://www.amphibians.org), the [Association of Fish and Wildlife Services](http://www.fishwildlife.org/index.php), the [PARC National Disease Task Team](http://www.parcplace.org/parcplace/resources/disease-task-team.html) and their partners held a workshop in Asheville, NC to bring experts and stakeholders together to address the threat of _Bsal_ to North American salamander biodiversity.
+
+Presentations covered the current state of scientific knowledge  as well as national and international policy regarding biosecurity and wildlife trade.
+
+Click [here](http://www.slideshare.net/search/slideshow?searchfrom=header&q=Bsal) to view the slideshows.
+
