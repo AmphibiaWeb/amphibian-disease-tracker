@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "The US is working towards a ruling on salamander imports to address _Bsal_"
+title:  "The US is working towards a ruling on salamander imports to address Bsal"
 date:   2015-11-13 08:43:59
 author: Tiffany Yap
 categories: News
