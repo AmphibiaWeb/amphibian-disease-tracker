@@ -42,6 +42,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 ### Our partners     
 - PARC Disease Task Team: [Read more on the _Bsal_ Call to Action](http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
+- USGS Powell Center
 - USDA Forest Service
 
 ####Researchers (alphabetical)
@@ -49,6 +50,8 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - Southern Illinois University, Carbondale (SIU) 
 - University of California, Berkeley (UCB)
 - University of Maryland (UM)
+- US Forest Service, Pacific Northwest Research Station (PNW)
+- US Geological Survey, Amphibian Research and Monitoring Initiative (ARMI)
    
 ####Diagnostic Labs (alphabetical) 
 - [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
