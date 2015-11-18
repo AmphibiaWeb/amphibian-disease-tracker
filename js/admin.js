@@ -446,6 +446,7 @@ newGeoDataHandler = function(dataObject) {
       e = _error;
       console.warn("Couldn't pretty set!");
       console.warn(e.stack);
+      console.info(parsedData);
     }
     projectIdentifier = md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
     geo.requestCartoUpload(parsedData, projectIdentifier, "create");
