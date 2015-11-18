@@ -1493,11 +1493,11 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         for (j in cartoResults) {
           response = cartoResults[j];
           if (!isNull(response.error)) {
-            cartoHasError = response.error.join(",");
+            cartoHasError = response.error[0];
           }
         }
         if (cartoHasError !== false) {
-          stopLoadError("CartoDB returned an error: " + (cartoResult.error.join(",")));
+          stopLoadError("CartoDB returned an error: " + cartoHasError);
           return false;
         }
         console.info("Carto was succesfful! Got results", cartoResults);

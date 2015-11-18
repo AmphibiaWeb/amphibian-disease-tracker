@@ -336,9 +336,9 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         cartoHasError = false
         for j, response of cartoResults
           unless isNull response.error
-            cartoHasError = response.error.join(",")
+            cartoHasError = response.error[0]
         unless cartoHasError is false
-          stopLoadError "CartoDB returned an error: #{cartoResult.error.join(",")}"
+          stopLoadError "CartoDB returned an error: #{cartoHasError}"
           return false
         console.info "Carto was succesfful! Got results", cartoResults
         foo()
