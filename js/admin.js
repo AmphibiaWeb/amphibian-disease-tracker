@@ -396,6 +396,9 @@ newGeoDataHandler = function(dataObject) {
     }
     rows = Object.size(dataObject);
     p$("#samplecount").value = rows;
+    if (isNull(p$("#project-disease"))) {
+      p$("#project-disease").value = sampleRow.diseaseTested;
+    }
     parsedData = new Object();
     for (n in dataObject) {
       row = dataObject[n];

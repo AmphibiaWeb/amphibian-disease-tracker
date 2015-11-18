@@ -450,6 +450,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
       return false
     rows = Object.size(dataObject)
     p$("#samplecount").value = rows
+    if isNull p$("#project-disease")
+      p$("#project-disease").value = sampleRow.diseaseTested
     # Clean up the data for CartoDB
     # FIMS it up
     parsedData = new Object()
