@@ -115,6 +115,8 @@ function doCartoSqlApiPush($get) {
     $statements = explode(";", $sqlQuery);
     $responses = array();
     foreach($statements as $statement) {
+        $statement = trim($statement);
+        if (empty($statement)) continue;
         $cartoArgs = "q=" . $statement . $cartoArgSuffix;
         $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
     }
