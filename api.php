@@ -108,10 +108,12 @@ function doCartoSqlApiPush($get) {
     ));
     $cartoPostUrl = "https://".$cartodb_username.".cartodb.com/api/v2/sql";
     $cartoArgSuffix = "&api_key=".$cartodb_api_key;
+    $cartoArgs = "q=" . $sqlQuery . $cartoArgSuffix;
+    $cartoFullUrl = $cartoPostUrl . "?" . $cartoArgs;
     try {
         returnAjax(array(
             "status" => true,
-            "post_response" => do_post_request($cartoPostUrl, $sqlQuery.$cartoArgSuffix)
+            "post_response" => do_post_request($cartoPostUrl, $cartoArgs),
         ));
     } catch (Exception $e) {
         returnAjax(array(
