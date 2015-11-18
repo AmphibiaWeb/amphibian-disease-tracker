@@ -75,6 +75,8 @@ default:
         "human_error" => "The server recieved an instruction it didn't understand. Please try again.",
         "action" => $do,
         "request" => $_REQUEST,
+        "post" => $_POST,
+        "get" => $_GET,
     ));
 }
 
@@ -121,7 +123,6 @@ function doCartoSqlApiPush($get) {
     try {
         returnAjax(array(
             "status" => true,
-            "args_sent" => $sqlQuery,
             "sql_statements" => $statements,
             "post_response" => $responses,
         ));
