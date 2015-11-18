@@ -1450,7 +1450,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
       }
-      apiPostSqlQuery = encodeURIComponents(encode64(sqlQuery));
+      apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
       args = "action=upload&sql_query=" + apiPostSqlQuery;
       console.info("STOPPING INCOMPLETE EXECUTION");
       console.info("Would query with args", args);

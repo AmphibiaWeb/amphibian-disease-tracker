@@ -1139,7 +1139,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
       # Ping the server
-      apiPostSqlQuery = encodeURIComponents encode64 sqlQuery
+      apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
       args = "action=upload&sql_query=#{apiPostSqlQuery}"
       console.info "STOPPING INCOMPLETE EXECUTION"
       console.info "Would query with args", args
