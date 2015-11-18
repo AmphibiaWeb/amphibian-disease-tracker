@@ -21,7 +21,7 @@ cartoVis = null
 adData = new Object()
 window.geo = new Object()
 
-geo.init = ->
+geo.init = (doCallback) ->
   ###
   # Initialization script for the mapping protocols.
   # Urls are taken from
@@ -37,7 +37,7 @@ geo.init = ->
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   """
   $("head").append cartoDBCSS
-  doCallback = ->
+  doCallback ?= ->
     createMap adData.cartoRef
     false
   window.gMapsCallback = ->
@@ -163,8 +163,6 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
       # Assume Spatial Reference System 4326, http://spatialreference.org/ref/epsg/4326/
       # http://www.postgis.org/documentation/manual-svn/using_postgis_dbmanagement.html#spatial_ref_sys
       ###
-
-      foo()
       sampleLatLngArray = new Array()
       # Before we begin parsing, throw up an overlay for the duration
       # Loop over the data and clean it up
@@ -250,6 +248,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
       switch operation
         when "edit"
           sqlQuery = "UPDATE #{dataTable} "
+          foo()
+          return false
           # Slice and dice!
         when "insert", "create"
           sqlQuery = ""
@@ -311,6 +311,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
+          foo()
+          return false
       # Ping the server
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
       args = "action=upload&sql_query=#{apiPostSqlQuery}"
@@ -332,19 +334,21 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           return false
         cartoResults = result.post_response
         cartoHasError = false
-        for response in cartoResults
+        for j, response of cartoResults
           unless isNull response.error
             cartoHasError = response.error.join(",")
         unless cartoHasError is false
           stopLoadError "CartoDB returned an error: #{cartoResult.error.join(",")}"
           return false
+        console.info "Carto was succesfful! Got results", cartoResults
+        foo()
         # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto
         # Post this data over to the back end
         # Update the UI
         dataBlobUrl = "" # The returned viz.json url
         dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
-        if cartoMap?
+        unless isNull cartoMap
           cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
           .done (layer) ->
             # The actual interaction infowindow popup is decided on the data
@@ -352,7 +356,10 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
             layer.setInteraction true
             layer.on "featureOver", defaultMapMouseOverBehaviour
         else
-          createMap dataVisUrl
+          geo.init ->
+            # Callback
+            createMap dataVisUrl
+            false
     else
       console.error "Unable to authenticate session. Please log in."
       toastStatusMessage "Sorry, your session has expired. Please log in and try again."

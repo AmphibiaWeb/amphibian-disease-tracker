@@ -408,21 +408,21 @@ loadJS = function(src, callback, doCallbackOnError) {
 };
 
 String.prototype.toTitleCase = function() {
-  var j, k, len, len1, lower, lowerRegEx, lowers, str, upper, upperRegEx, uppers;
+  var k, l, len, len1, lower, lowerRegEx, lowers, str, upper, upperRegEx, uppers;
   str = this.replace(/([^\W_]+[^\s-]*) */g, function(txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
   lowers = ["A", "An", "The", "And", "But", "Or", "For", "Nor", "As", "At", "By", "For", "From", "In", "Into", "Near", "Of", "On", "Onto", "To", "With"];
-  for (j = 0, len = lowers.length; j < len; j++) {
-    lower = lowers[j];
+  for (k = 0, len = lowers.length; k < len; k++) {
+    lower = lowers[k];
     lowerRegEx = new RegExp("\\s" + lower + "\\s", "g");
     str = str.replace(lowerRegEx, function(txt) {
       return txt.toLowerCase();
     });
   }
   uppers = ["Id", "Tv"];
-  for (k = 0, len1 = uppers.length; k < len1; k++) {
-    upper = uppers[k];
+  for (l = 0, len1 = uppers.length; l < len1; l++) {
+    upper = uppers[l];
     upperRegEx = new RegExp("\\b" + upper + "\\b", "g");
     str = str.replace(upperRegEx, upper.toUpperCase());
   }
@@ -1172,14 +1172,14 @@ adData = new Object();
 
 window.geo = new Object();
 
-geo.init = function() {
+geo.init = function(doCallback) {
 
   /*
    * Initialization script for the mapping protocols.
    * Urls are taken from
    * http://docs.cartodb.com/cartodb-platform/cartodb-js.html
    */
-  var cartoDBCSS, doCallback;
+  var cartoDBCSS;
   try {
     window.locationData.lat = 37.871527;
     window.locationData.lng = -122.262113;
@@ -1187,10 +1187,12 @@ geo.init = function() {
   } catch (_error) {}
   cartoDBCSS = "<link rel=\"stylesheet\" href=\"http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
-  doCallback = function() {
-    createMap(adData.cartoRef);
-    return false;
-  };
+  if (doCallback == null) {
+    doCallback = function() {
+      createMap(adData.cartoRef);
+      return false;
+    };
+  }
   window.gMapsCallback = function() {
     return loadJS("http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
   };
@@ -1292,7 +1294,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, j, k, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, k, l, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1310,7 +1312,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
        * Assume Spatial Reference System 4326, http://spatialreference.org/ref/epsg/4326/
        * http://www.postgis.org/documentation/manual-svn/using_postgis_dbmanagement.html#spatial_ref_sys
        */
-      foo();
       sampleLatLngArray = new Array();
       lats = new Array();
       lngs = new Array();
@@ -1338,15 +1339,15 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
       try {
         userTransectRing = JSON.parse(totalData.transectRing);
-        for (j = 0, len = userTransectRing.length; j < len; j++) {
-          coordinatePair = userTransectRing[j];
+        for (k = 0, len = userTransectRing.length; k < len; k++) {
+          coordinatePair = userTransectRing[k];
           if (coordinatePair.length !== 2) {
             throw {
               message: "Bad coordinate length for '" + coordinatePair + "'"
             };
           }
-          for (k = 0, len1 = coordinatePair.length; k < len1; k++) {
-            coordinate = coordinatePair[k];
+          for (l = 0, len1 = coordinatePair.length; l < len1; l++) {
+            coordinate = coordinatePair[l];
             if (!isNumber(coordinate)) {
               throw {
                 message: "Bad coordinate number '" + coordinate + "'"
@@ -1399,7 +1400,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       switch (operation) {
         case "edit":
           sqlQuery = "UPDATE " + dataTable + " ";
-          break;
+          foo();
+          return false;
         case "insert":
         case "create":
           sqlQuery = "";
@@ -1464,6 +1466,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           break;
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
+          foo();
+          return false;
       }
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
       args = "action=upload&sql_query=" + apiPostSqlQuery;
@@ -1476,7 +1480,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       console.info("GeoJSON String:", dataGeometry);
       console.warn("Want to post:", uri.urlString + "api.php?" + args);
       return $.post("api.php", args).done(function(result) {
-        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, l, len2, response;
+        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, response;
         console.log("Got back", result);
         if (result.status !== true) {
           console.error("Got an error from the server!");
@@ -1486,8 +1490,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         }
         cartoResults = result.post_response;
         cartoHasError = false;
-        for (l = 0, len2 = cartoResults.length; l < len2; l++) {
-          response = cartoResults[l];
+        for (j in cartoResults) {
+          response = cartoResults[j];
           if (!isNull(response.error)) {
             cartoHasError = response.error.join(",");
           }
@@ -1496,15 +1500,20 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           stopLoadError("CartoDB returned an error: " + (cartoResult.error.join(",")));
           return false;
         }
+        console.info("Carto was succesfful! Got results", cartoResults);
+        foo();
         dataBlobUrl = "";
         dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
-        if (cartoMap != null) {
+        if (!isNull(cartoMap)) {
           return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
             layer.setInteraction(true);
             return layer.on("featureOver", defaultMapMouseOverBehaviour);
           });
         } else {
-          return createMap(dataVisUrl);
+          return geo.init(function() {
+            createMap(dataVisUrl);
+            return false;
+          });
         }
       });
     } else {
