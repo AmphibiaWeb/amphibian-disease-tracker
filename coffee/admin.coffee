@@ -486,6 +486,9 @@ newGeoDataHandler = (dataObject = new Object()) ->
     try
       prettyHtml = JsonHuman.format parsedData
       $("#main-body").append prettyHtml
+    catch e
+      console.warn "Couldn't pretty set!"
+      console.warn e.stack
     # Create a project identifier from the user hash and project title
     projectIdentifier = md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
     geo.requestCartoUpload(parsedData, projectIdentifier, "create")

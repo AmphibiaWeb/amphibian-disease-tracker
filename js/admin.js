@@ -442,7 +442,11 @@ newGeoDataHandler = function(dataObject) {
     try {
       prettyHtml = JsonHuman.format(parsedData);
       $("#main-body").append(prettyHtml);
-    } catch (_error) {}
+    } catch (_error) {
+      e = _error;
+      console.warn("Couldn't pretty set!");
+      console.warn(e.stack);
+    }
     projectIdentifier = md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
     geo.requestCartoUpload(parsedData, projectIdentifier, "create");
   } catch (_error) {

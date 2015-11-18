@@ -5,6 +5,8 @@
 # http://docs.cartodb.com/cartodb-platform/cartodb-js.html
 ###
 
+uri.domain = uri.o.attr("host").split(".").reverse().pop()
+
 # CartoDB account name
 cartoAccount = "tigerhawkvok"
 

@@ -1150,6 +1150,8 @@ $(function() {
  * http://docs.cartodb.com/cartodb-platform/cartodb-js.html
  */
 
+uri.domain = uri.o.attr("host").split(".").reverse().pop();
+
 cartoAccount = "tigerhawkvok";
 
 gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4";
