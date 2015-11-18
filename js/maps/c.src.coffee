@@ -1160,17 +1160,23 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
       console.info "GeoJSON:", geoJson
       console.info "GeoJSON String:", dataGeometry
       console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
-      return false
       $.post "api.php", args
       .done (result) ->
-        console.log "Carto returned", result
+        console.log "Got back", result
         if result.status isnt true
           console.error "Got an error from the server!"
           console.warn result
           toastStatusMessage "There was a problem uploading your data. Please try again."
           return false
-        cartoResult = result.post_response
-        resultRows = cartoResult.rows
+        cartoResults = result.post_response
+        cartoHasError = false
+        for response in cartoResults
+          unless isNull response.error
+            cartoHasError = response.error.join(",")
+        unless cartoHasError is false
+          stopLoadError "CartoDB returned an error: #{cartoResult.error.join(",")}"
+          return false
+        # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto
         # Post this data over to the back end
         # Update the UI

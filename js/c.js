@@ -1475,18 +1475,27 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       console.info("GeoJSON:", geoJson);
       console.info("GeoJSON String:", dataGeometry);
       console.warn("Want to post:", uri.urlString + "api.php?" + args);
-      return false;
       return $.post("api.php", args).done(function(result) {
-        var cartoResult, dataBlobUrl, dataVisUrl, resultRows;
-        console.log("Carto returned", result);
+        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, l, len2, response;
+        console.log("Got back", result);
         if (result.status !== true) {
           console.error("Got an error from the server!");
           console.warn(result);
           toastStatusMessage("There was a problem uploading your data. Please try again.");
           return false;
         }
-        cartoResult = result.post_response;
-        resultRows = cartoResult.rows;
+        cartoResults = result.post_response;
+        cartoHasError = false;
+        for (l = 0, len2 = cartoResults.length; l < len2; l++) {
+          response = cartoResults[l];
+          if (!isNull(response.error)) {
+            cartoHasError = response.error.join(",");
+          }
+        }
+        if (cartoHasError !== false) {
+          stopLoadError("CartoDB returned an error: " + (cartoResult.error.join(",")));
+          return false;
+        }
         dataBlobUrl = "";
         dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
         if (cartoMap != null) {
