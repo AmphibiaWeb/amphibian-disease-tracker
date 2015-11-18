@@ -1009,14 +1009,14 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
       lats = new Array()
       lngs = new Array()
       for n, row of data
-        ll = new Object()
+        ll = new Array()
         for column, value of row
           switch column
             when "decimalLongitude"
-              ll.lng = value
+              ll[1] = value
               lngs.push value
             when "decimalLatitude"
-              ll.lat = value
+              ll[0] = value
               lats.push value
         sampleLatLngArray.push ll
       bb_north = lats.max() ? 0
@@ -1100,23 +1100,41 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
           dataObject =
             the_geom: dataGeometry
           # All the others ...
-          valuesList = ""
+          valuesList = new Array()
           columnNamesList = new Array()
           columnNamesList.push "`id`  int(10) NOT NULL AUTO_INCREMENT"
           for n, row of data
             # Each row ...
             valuesArr = new Array()
+            lat = 0
+            lng = 0
+            alt = 0
+            err = 0
+            geoJsonGeom =
+              type: "Point"
+              coordinates: new Array()
             for column, value of row
               # Loop data ....
               if n is 0
                 columnNamesList.push "`#{column}` #{columnDatatype[column]}"
-              value = value.replace("'", "&#95;")
+              try
+                # Strings only!
+                value = value.replace("'", "&#95;")
+              switch column
+                # Assign geoJSON values
+                when "decimalLongitude"
+                  geoJsonGeom.coordinates[1] = value
+                when "decimalLatitude"
+                  geoJsonGeom.coordinates[0] = value
               valuesArr.push "'#{value}'"
             # Add a GeoJSON column and GeoJSON values
-            valuesList = "#{valuesList}, (#{valuesArr.join(",")})"
+            if n is 0
+              columnNamesList.push "`the_geom`"
+            geoJsonVal = "ST_AsGeoJSON(#{JSON.stringify(geoJsonGeom)})"            
+            valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          sqlQuery = "#{sqlQuery} #{columnNamesList.join(",")} VALUES #{valuesList.slice(1)}"
+          sqlQuery = "#{sqlQuery} #{columnNamesList.join(",")} VALUES #{valuesList.join(", ")};"
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...

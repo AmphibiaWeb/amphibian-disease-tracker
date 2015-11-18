@@ -1289,7 +1289,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, lats, len, len1, ll, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, j, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1313,16 +1313,16 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
       lngs = new Array();
       for (n in data) {
         row = data[n];
-        ll = new Object();
+        ll = new Array();
         for (column in row) {
           value = row[column];
           switch (column) {
             case "decimalLongitude":
-              ll.lng = value;
+              ll[1] = value;
               lngs.push(value);
               break;
             case "decimalLatitude":
-              ll.lat = value;
+              ll[0] = value;
               lats.push(value);
           }
         }
@@ -1408,23 +1408,44 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
           dataObject = {
             the_geom: dataGeometry
           };
-          valuesList = "";
+          valuesList = new Array();
           columnNamesList = new Array();
           columnNamesList.push("`id`  int(10) NOT NULL AUTO_INCREMENT");
           for (n in data) {
             row = data[n];
             valuesArr = new Array();
+            lat = 0;
+            lng = 0;
+            alt = 0;
+            err = 0;
+            geoJsonGeom = {
+              type: "Point",
+              coordinates: new Array()
+            };
             for (column in row) {
               value = row[column];
               if (n === 0) {
                 columnNamesList.push("`" + column + "` " + columnDatatype[column]);
               }
-              value = value.replace("'", "&#95;");
+              try {
+                value = value.replace("'", "&#95;");
+              } catch (_error) {}
+              switch (column) {
+                case "decimalLongitude":
+                  geoJsonGeom.coordinates[1] = value;
+                  break;
+                case "decimalLatitude":
+                  geoJsonGeom.coordinates[0] = value;
+              }
               valuesArr.push("'" + value + "'");
             }
-            valuesList = valuesList + ", (" + (valuesArr.join(",")) + ")";
+            if (n === 0) {
+              columnNamesList.push("`the_geom`");
+            }
+            geoJsonVal = "ST_AsGeoJSON(" + (JSON.stringify(geoJsonGeom)) + ")";
+            valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          sqlQuery = sqlQuery + " " + (columnNamesList.join(",")) + " VALUES " + (valuesList.slice(1));
+          sqlQuery = sqlQuery + " " + (columnNamesList.join(",")) + " VALUES " + (valuesList.join(", ")) + ";";
           break;
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
