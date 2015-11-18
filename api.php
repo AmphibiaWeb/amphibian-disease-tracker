@@ -61,7 +61,7 @@ function returnAjax($data)
 }
 
 
-parse_str($_SERVER['QUERY_STRING'],$_GET);
+parse_str($_SERVER['QUERY_STRING'],$_REQUEST);
 $do=isset($_REQUEST['action']) ? strtolower($_REQUEST['action']):null;
 switch($do)
 {
@@ -72,7 +72,8 @@ default:
     returnAjax(array(
         "status" => false,
         "error" => "Invalid action",
-        "human_error" => "The server recieved an instruction it didn't understand. Please try again."
+        "human_error" => "The server recieved an instruction it didn't understand. Please try again.",
+        "action" => $do,
     ));
 }
 
