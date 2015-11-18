@@ -141,7 +141,7 @@ loadCreateNewProject = ->
   <p>
     To save your project, we need at least one file with structured data containing coordinates.
     Please note that the data <strong>must</strong> have a header row,
-    and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.
+    and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
   </p>
   """
   $("main #main-body").append html
@@ -425,7 +425,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
   #
   # Obj {ROW_INDEX: {"col1":"data", "col2":"data"}}
   #
-  # Requires columns "lat", "lng", "error", "alt"
+  # FIMS data format:
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
+  #
+  # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "alt"
   ###
   try
     try
@@ -434,21 +437,49 @@ newGeoDataHandler = (dataObject = new Object()) ->
       toastStatusMessage "Your data file was malformed, and could not be parsed. Please try again."
       removeDataFile()
       return false
-    unless sampleRow.lat? and sampleRow.lng? and sampleRow.error? and sampleRow.alt?
+    
+    unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters? and sampleRow.alt?
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
       # Remove the uploaded file
       removeDataFile()
       return false
-    unless isNumber(sampleRow.lat) and isNumber(sampleRow.lng) and isNumber(sampleRow.error) and isNumber(sampleRow.alt)
+    unless isNumber(sampleRow.decimalLatitude) and isNumber(sampleRow.decimalLongitude) and isNumber(sampleRow.coordinateUncertaintyInMeters) and isNumber(sampleRow.alt)
       toastStatusMessage "Data has invalid entries for geo columns. Please be sure they're all numeric and try again."
       removeDataFile()
       return false
     rows = Object.size(dataObject)
     p$("#samplecount").value = rows
     # Clean up the data for CartoDB
-    parsedData = dataObject # Temp
+    # FIMS it up
+    parsedData = new Object()
+    # Iterate over the data, coerce some data types
+    for n, row of dataObject
+      tRow = new Object()
+      for column, value of row
+        switch column
+          when "dateIdentified"
+            # Coerce to ISO8601
+            try
+              t = Date.parse(value)
+            catch
+              t = Date.now()
+            d = new Date(t)
+            cleanValue = "#{d.getUTCFullYear()}-#{d.getUTCMonth() + 1}-#{d.getUTCDate()}"
+          when "fatal"
+            cleanValue = value.toBool()
+          when "decimalLatitude", "decimalLongitude", "alt", "coordinateUncertaintyInMeters"
+            cleanValue = toFloat value
+          when "diseaseDetected"
+            if isBool value
+              cleanValue = value.toBool()
+            else
+              cleanValue = "NO_CONFIDENCE"
+          else
+            cleanValue = value.trim()
+        tRow[column] = cleanValue
+      parsedData[n] = tRow
     # Create a project identifier from the user hash and project title
-    projectIdentifier = null # Temp
+    projectIdentifier = md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
     geo.requestCartoUpload(parsedData, projectIdentifier, "create")
   catch e
     console.error e.message

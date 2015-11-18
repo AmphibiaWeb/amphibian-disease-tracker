@@ -121,7 +121,7 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>lat</code>, <code>lng</code>, <code>alt</code>, and <code>error</code>.\n</p>";
+  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
   $("main #main-body").append(html);
   bootstrapUploader();
   foo();
@@ -360,7 +360,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var e, parsedData, projectIdentifier, rows, sampleRow;
+  var cleanValue, column, d, e, n, parsedData, projectIdentifier, row, rows, sampleRow, t, tRow, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -370,7 +370,10 @@ newGeoDataHandler = function(dataObject) {
    *
    * Obj {ROW_INDEX: {"col1":"data", "col2":"data"}}
    *
-   * Requires columns "lat", "lng", "error", "alt"
+   * FIMS data format:
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
+   *
+   * Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "alt"
    */
   try {
     try {
@@ -380,20 +383,58 @@ newGeoDataHandler = function(dataObject) {
       removeDataFile();
       return false;
     }
-    if (!((sampleRow.lat != null) && (sampleRow.lng != null) && (sampleRow.error != null) && (sampleRow.alt != null))) {
+    if (!((sampleRow.decimalLatitude != null) && (sampleRow.decimalLongitude != null) && (sampleRow.coordinateUncertaintyInMeters != null) && (sampleRow.alt != null))) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
       removeDataFile();
       return false;
     }
-    if (!(isNumber(sampleRow.lat) && isNumber(sampleRow.lng) && isNumber(sampleRow.error) && isNumber(sampleRow.alt))) {
+    if (!(isNumber(sampleRow.decimalLatitude) && isNumber(sampleRow.decimalLongitude) && isNumber(sampleRow.coordinateUncertaintyInMeters) && isNumber(sampleRow.alt))) {
       toastStatusMessage("Data has invalid entries for geo columns. Please be sure they're all numeric and try again.");
       removeDataFile();
       return false;
     }
     rows = Object.size(dataObject);
     p$("#samplecount").value = rows;
-    parsedData = dataObject;
-    projectIdentifier = null;
+    parsedData = new Object();
+    for (n in dataObject) {
+      row = dataObject[n];
+      tRow = new Object();
+      for (column in row) {
+        value = row[column];
+        switch (column) {
+          case "dateIdentified":
+            try {
+              t = Date.parse(value);
+            } catch (_error) {
+              t = Date.now();
+            }
+            d = new Date(t);
+            cleanValue = (d.getUTCFullYear()) + "-" + (d.getUTCMonth() + 1) + "-" + (d.getUTCDate());
+            break;
+          case "fatal":
+            cleanValue = value.toBool();
+            break;
+          case "decimalLatitude":
+          case "decimalLongitude":
+          case "alt":
+          case "coordinateUncertaintyInMeters":
+            cleanValue = toFloat(value);
+            break;
+          case "diseaseDetected":
+            if (isBool(value)) {
+              cleanValue = value.toBool();
+            } else {
+              cleanValue = "NO_CONFIDENCE";
+            }
+            break;
+          default:
+            cleanValue = value.trim();
+        }
+        tRow[column] = cleanValue;
+      }
+      parsedData[n] = tRow;
+    }
+    projectIdentifier = md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
     geo.requestCartoUpload(parsedData, projectIdentifier, "create");
   } catch (_error) {
     e = _error;

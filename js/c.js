@@ -105,7 +105,7 @@ toInt = function(str) {
 };
 
 String.prototype.toBool = function() {
-  return this.toString() === 'true';
+  return this.toString().toLowerCase() === 'true';
 };
 
 Boolean.prototype.toBool = function() {
@@ -1251,7 +1251,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + dblink;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, len, len1, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, valuesList;
+    var apiPostSqlQuery, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, len, len1, n, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1309,24 +1309,64 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
         ]
       };
       dataGeometry = "ST_AsGeoJSON(" + (JSON.stringify(geoJson)) + ")";
+      columnDatatype = {
+        id: "int(10) NOT NULL AUTO_INCREMENT",
+        collectionID: "varchar(255)",
+        catalogNumber: "varchar(255)",
+        fieldNumber: "varchar(255)",
+        diseaseTested: "varchar(255)",
+        diseaseStrain: "varchar(255)",
+        sampleMethod: "varchar(255)",
+        sampleDisposition: "varchar(255)",
+        diseaseDetected: "varchar(14)",
+        fatal: "boolean",
+        cladeSampled: "varchar(255)",
+        genus: "varchar(255)",
+        specificEpithet: "varchar(255)",
+        infraspecificEpithet: "varchar(255)",
+        lifeStage: "varchar(255)",
+        dateIdentified: "datetime",
+        decimalLatitude: "decimal",
+        decimalLongitude: "decimal",
+        alt: "decimal",
+        coordinateUncertaintyInMeters: "decimal",
+        Collector: "varchar(255)"
+      };
       switch (operation) {
         case "edit":
           sqlQuery = "UPDATE " + dataTable + " ";
           break;
         case "insert":
-          sqlQuery = "INSERT INTO " + dataTable + " ";
+        case "create":
+          sqlQuery = "";
+          if (operation === "create") {
+            sqlQuery = "CREATE TABLE " + dataTable + "; ";
+          }
+          sqlQuery += "INSERT INTO " + dataTable + " ";
           valuesList = "";
           dataObject = {
             the_geom: dataGeometry
           };
-          valuesList = valuesList + ", (" + tempJoinedValuesString + ")";
-          sqlQuery = sqlQuery + " " + columnNamesList + " VALUES " + valuesList;
+          valuesList = "";
+          columnNamesList = new Array();
+          columnNamesList.push("`id`  int(10) NOT NULL AUTO_INCREMENT");
+          for (n in data) {
+            row = data[n];
+            valuesArr = new Array();
+            for (column in row) {
+              value = row[column];
+              if (n === 0) {
+                columnNamesList.push("`" + column + "` " + columnDatatype[column]);
+              }
+              value = value.replace("'", "&#95;");
+              valuesArr.push("'" + value + "'");
+            }
+            valuesList = valuesList + ", (" + (valuesArr.join(",")) + ")";
+          }
+          sqlQuery = sqlQuery + " " + (columnNamesList.join(",")) + " VALUES " + (valuesList.slice(1));
           break;
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
-          break;
-        case "create":
-          sqlQuery = "CREATE TABLE " + dataTable + " ";
       }
       apiPostSqlQuery = encodeURIComponents(encode64(sqlQuery));
       args = "action=upload&sql_query=" + apiPostSqlQuery;

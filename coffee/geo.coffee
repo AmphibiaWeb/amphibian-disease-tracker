@@ -201,14 +201,41 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
           ]
       dataGeometry = "ST_AsGeoJSON(#{JSON.stringify(geoJson)})"
       # Rows per-sample ...
-
+      # FIMS based
+      # Uses DarwinCore terms
+      # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
+      columnDatatype =
+        id: "int(10) NOT NULL AUTO_INCREMENT"
+        collectionID: "varchar(255)"
+        catalogNumber: "varchar(255)"
+        fieldNumber: "varchar(255)"
+        diseaseTested: "varchar(255)"
+        diseaseStrain: "varchar(255)"
+        sampleMethod: "varchar(255)"
+        sampleDisposition: "varchar(255)"
+        diseaseDetected: "varchar(14)"
+        fatal: "boolean"
+        cladeSampled: "varchar(255)"
+        genus: "varchar(255)"
+        specificEpithet: "varchar(255)"
+        infraspecificEpithet: "varchar(255)"
+        lifeStage: "varchar(255)"
+        dateIdentified: "datetime" # Should be ISO8601; coerce it!
+        decimalLatitude: "decimal"
+        decimalLongitude: "decimal"
+        alt: "decimal"
+        coordinateUncertaintyInMeters: "decimal"
+        Collector: "varchar(255)"
       # Construct the SQL query
       switch operation
         when "edit"
           sqlQuery = "UPDATE #{dataTable} "
           # Slice and dice!
-        when "insert"
-          sqlQuery = "INSERT INTO #{dataTable} "
+        when "insert", "create"
+          sqlQuery = ""
+          if operation is "create"
+            sqlQuery = "CREATE TABLE #{dataTable}; "
+          sqlQuery += "INSERT INTO #{dataTable} "
           # Create a set of nice data blocks, then push that into the
           # query
           valuesList = ""
@@ -216,16 +243,25 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
           dataObject =
             the_geom: dataGeometry
           # All the others ...
-          # Loop through them ...
-          valuesList = "#{valuesList}, (#{tempJoinedValuesString})"
+          valuesList = ""
+          columnNamesList = new Array()
+          columnNamesList.push "`id`  int(10) NOT NULL AUTO_INCREMENT"
+          for n, row of data
+            # Each row ...
+            valuesArr = new Array()
+            for column, value of row
+              # Loop data ....
+              if n is 0
+                columnNamesList.push "`#{column}` #{columnDatatype[column]}"
+              value = value.replace("'", "&#95;")
+              valuesArr.push "'#{value}'"
+            valuesList = "#{valuesList}, (#{valuesArr.join(",")})"
           # Create the final query
-          sqlQuery = "#{sqlQuery} #{columnNamesList} VALUES #{valuesList}"
+          # Remove the first comma of valuesList
+          sqlQuery = "#{sqlQuery} #{columnNamesList.join(",")} VALUES #{valuesList.slice(1)}"
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
-        when "create"
-          sqlQuery = "CREATE TABLE #{dataTable} "
-          # Insert all the initial rows here
       # Ping the server
       apiPostSqlQuery = encodeURIComponents encode64 sqlQuery
       args = "action=upload&sql_query=#{apiPostSqlQuery}"
