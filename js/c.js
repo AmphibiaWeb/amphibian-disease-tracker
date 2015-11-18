@@ -408,21 +408,21 @@ loadJS = function(src, callback, doCallbackOnError) {
 };
 
 String.prototype.toTitleCase = function() {
-  var i, j, len, len1, lower, lowerRegEx, lowers, str, upper, upperRegEx, uppers;
+  var j, k, len, len1, lower, lowerRegEx, lowers, str, upper, upperRegEx, uppers;
   str = this.replace(/([^\W_]+[^\s-]*) */g, function(txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
   lowers = ["A", "An", "The", "And", "But", "Or", "For", "Nor", "As", "At", "By", "For", "From", "In", "Into", "Near", "Of", "On", "Onto", "To", "With"];
-  for (i = 0, len = lowers.length; i < len; i++) {
-    lower = lowers[i];
+  for (j = 0, len = lowers.length; j < len; j++) {
+    lower = lowers[j];
     lowerRegEx = new RegExp("\\s" + lower + "\\s", "g");
     str = str.replace(lowerRegEx, function(txt) {
       return txt.toLowerCase();
     });
   }
   uppers = ["Id", "Tv"];
-  for (j = 0, len1 = uppers.length; j < len1; j++) {
-    upper = uppers[j];
+  for (k = 0, len1 = uppers.length; k < len1; k++) {
+    upper = uppers[k];
     upperRegEx = new RegExp("\\b" + upper + "\\b", "g");
     str = str.replace(upperRegEx, upper.toUpperCase());
   }
@@ -1289,7 +1289,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, j, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, j, k, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1335,15 +1335,15 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
       defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
       try {
         userTransectRing = JSON.parse(data.transectRing);
-        for (i = 0, len = userTransectRing.length; i < len; i++) {
-          coordinatePair = userTransectRing[i];
+        for (j = 0, len = userTransectRing.length; j < len; j++) {
+          coordinatePair = userTransectRing[j];
           if (coordinatePair.length !== 2) {
             throw {
               message: "Bad coordinate length for '" + coordinatePair + "'"
             };
           }
-          for (j = 0, len1 = coordinatePair.length; j < len1; j++) {
-            coordinate = coordinatePair[j];
+          for (k = 0, len1 = coordinatePair.length; k < len1; k++) {
+            coordinate = coordinatePair[k];
             if (!isNumber(coordinate)) {
               throw {
                 message: "Bad coordinate number '" + coordinate + "'"
@@ -1411,8 +1411,9 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
           valuesList = new Array();
           columnNamesList = new Array();
           columnNamesList.push("`id`  int(10) NOT NULL AUTO_INCREMENT");
-          for (n in data) {
-            row = data[n];
+          for (i in data) {
+            row = data[i];
+            console.log("Iter #" + n);
             valuesArr = new Array();
             lat = 0;
             lng = 0;
@@ -1424,7 +1425,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
             };
             for (column in row) {
               value = row[column];
-              if (n === 0) {
+              if (i === 0) {
                 columnNamesList.push("`" + column + "` " + columnDatatype[column]);
               }
               try {
@@ -1437,12 +1438,17 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
                 case "decimalLatitude":
                   geoJsonGeom.coordinates[0] = value;
               }
-              valuesArr.push("'" + value + "'");
+              if (typeof value === "string") {
+                valuesArr.push("'" + value + "'");
+              } else {
+                valuesArr.push(value);
+              }
             }
-            if (n === 0) {
+            if (i === 0) {
               columnNamesList.push("`the_geom`");
             }
             geoJsonVal = "ST_AsGeoJSON(" + (JSON.stringify(geoJsonGeom)) + ")";
+            valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
           sqlQuery = sqlQuery + " " + (columnNamesList.join(",")) + " VALUES " + (valuesList.join(", ")) + ";";
@@ -1456,9 +1462,12 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
       console.info("Would query with args", args);
       console.info("Have query:");
       console.info(sqlQuery);
+      console.info("GeoJSON:", geoJson);
+      console.info("GeoJSON String:", dataGeometry);
       return false;
       return $.post("api.php", args).done(function(result) {
         var cartoResult, dataBlobUrl, dataVisUrl, resultRows;
+        console.log("Carto returned", result);
         if (result.status !== true) {
           console.error("Got an error from the server!");
           console.warn(result);

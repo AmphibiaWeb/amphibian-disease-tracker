@@ -265,7 +265,8 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
           valuesList = new Array()
           columnNamesList = new Array()
           columnNamesList.push "`id`  int(10) NOT NULL AUTO_INCREMENT"
-          for n, row of data
+          for i, row of data
+            console.log "Iter ##{n}"
             # Each row ...
             valuesArr = new Array()
             lat = 0
@@ -277,7 +278,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
               coordinates: new Array()
             for column, value of row
               # Loop data ....
-              if n is 0
+              if i is 0
                 columnNamesList.push "`#{column}` #{columnDatatype[column]}"
               try
                 # Strings only!
@@ -288,11 +289,15 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
                   geoJsonGeom.coordinates[1] = value
                 when "decimalLatitude"
                   geoJsonGeom.coordinates[0] = value
-              valuesArr.push "'#{value}'"
+              if typeof value is "string"
+                valuesArr.push "'#{value}'"
+              else
+                valuesArr.push value
             # Add a GeoJSON column and GeoJSON values
-            if n is 0
+            if i is 0
               columnNamesList.push "`the_geom`"
-            geoJsonVal = "ST_AsGeoJSON(#{JSON.stringify(geoJsonGeom)})"            
+            geoJsonVal = "ST_AsGeoJSON(#{JSON.stringify(geoJsonGeom)})"
+            valuesArr.push geoJsonVal
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
@@ -307,9 +312,12 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
       console.info "Would query with args", args
       console.info "Have query:"
       console.info sqlQuery
+      console.info "GeoJSON:", geoJson
+      console.info "GeoJSON String:", dataGeometry
       return false
       $.post "api.php", args
       .done (result) ->
+        console.log "Carto returned", result
         if result.status isnt true
           console.error "Got an error from the server!"
           console.warn result
