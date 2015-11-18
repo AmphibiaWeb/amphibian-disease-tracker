@@ -1279,7 +1279,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
     return false;
   }
   dataTable = dataTable + "_" + link;
-  args = "hash=" + hash + "&secret=" + secret + "&dblink=" + dblink;
+  args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post("admin_api.php", args, "json").done(function(result) {
     var apiPostSqlQuery, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, len, len1, n, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {

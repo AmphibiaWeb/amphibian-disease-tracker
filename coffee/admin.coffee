@@ -488,8 +488,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
                 daysFrom1900to1970 = 25569 # Windows + Mac Excel 2011+
                 daysFrom1904to1970 = 24107 # Mac Excel 2007 and before
                 secondsPerDay = 86400
-                value = ((value - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
-              t = Date.parse(value)
+                t = ((value - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
+              else
+                # Standard date parsing
+                t = Date.parse(value)
             catch
               t = Date.now()
             d = new Date(t)

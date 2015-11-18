@@ -141,7 +141,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
   # the user link.
   dataTable = "#{dataTable}_#{link}"
   # Start doing real things
-  args = "hash=#{hash}&secret=#{secret}&dblink=#{dblink}"
+  args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
   ## NOTE THIS SHOULD ACTUALLY VERIFY THAT THE DATA COULD BE WRITTEN
   # TO THIS PROJECT BY THIS PERSON!!!
   $.post "admin_api.php", args, "json"

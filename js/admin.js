@@ -432,9 +432,10 @@ newGeoDataHandler = function(dataObject) {
                 daysFrom1900to1970 = 25569;
                 daysFrom1904to1970 = 24107;
                 secondsPerDay = 86400;
-                value = ((value - daysFrom1900to1970) * secondsPerDay) * 1000;
+                t = ((value - daysFrom1900to1970) * secondsPerDay) * 1000;
+              } else {
+                t = Date.parse(value);
               }
-              t = Date.parse(value);
             } catch (_error) {
               t = Date.now();
             }
