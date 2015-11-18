@@ -429,7 +429,11 @@ newGeoDataHandler = function(dataObject) {
             }
             break;
           default:
-            cleanValue = value.trim();
+            try {
+              cleanValue = value.trim();
+            } catch (_error) {
+              cleanValue = value;
+            }
         }
         tRow[column] = cleanValue;
       }

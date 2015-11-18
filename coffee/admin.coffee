@@ -476,7 +476,11 @@ newGeoDataHandler = (dataObject = new Object()) ->
             else
               cleanValue = "NO_CONFIDENCE"
           else
-            cleanValue = value.trim()
+            try
+              cleanValue = value.trim()
+            catch
+              # Non-string
+              cleanValue = value
         tRow[column] = cleanValue
       parsedData[n] = tRow
     try
