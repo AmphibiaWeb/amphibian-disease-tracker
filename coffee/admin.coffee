@@ -523,7 +523,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
       console.info parsedData
     # Create a project identifier from the user hash and project title
     projectIdentifier = md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
-    geo.requestCartoUpload(parsedData, projectIdentifier, "create")
+    totalData =
+      transectRing: undefined # Read in, manually entered
+      data: parsedData
+    geo.requestCartoUpload(totalData, projectIdentifier, "create")
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"

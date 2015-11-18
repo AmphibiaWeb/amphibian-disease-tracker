@@ -94,7 +94,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     toastStatusMessage("Couldn't load maps!")
     console.error "Couldn't get map - #{errorString}"
 
-geo.requestCartoUpload = (data, dataTable, operation) ->
+geo.requestCartoUpload = (totalData, dataTable, operation) ->
   ###
   # Acts as a shim between the server-side uploader and the client.
   # Send a request to the server to authenticate the current user
@@ -103,7 +103,8 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
   #
   # Among other things, this approach secures the cartoDB API on the server.
   ###
-
+  try
+    data = totalData.data
   # How's the data?
   if typeof data isnt "object"
     console.info "This function requires the base data to be a JSON object."
@@ -183,8 +184,8 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
         sampleLatLngArray.push ll
       bb_north = lats.max() ? 0
       bb_south = lats.min() ? 0
-      bb_east = lngs.max ? 0
-      bb_west = lngs.min ? 0
+      bb_east = lngs.max() ? 0
+      bb_west = lngs.min() ? 0
       defaultPolygon = [
           [bb_north, bb_west]
           [bb_north, bb_east]
@@ -194,7 +195,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
       # See if the user provided a good transect polygon
       try
         # See if the user provided a valid JSON string of coordinates
-        userTransectRing = JSON.parse data.transectRing
+        userTransectRing = JSON.parse totalData.transectRing
         for coordinatePair in userTransectRing
           # Is it just two long?
           if coordinatePair.length isnt 2
@@ -253,8 +254,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
         when "insert", "create"
           sqlQuery = ""
           if operation is "create"
-            sqlQuery = "CREATE TABLE #{dataTable}; "
-          sqlQuery += "INSERT INTO #{dataTable} "
+            sqlQuery = "CREATE TABLE #{dataTable} "
           # Create a set of nice data blocks, then push that into the
           # query
           valuesList = ""
@@ -266,7 +266,8 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
           columnNamesList = new Array()
           columnNamesList.push "`id`  int(10) NOT NULL AUTO_INCREMENT"
           for i, row of data
-            console.log "Iter ##{n}"
+            i = toInt(i)
+            console.log "Iter ##{i}", i is 0, `i == 0`
             # Each row ...
             valuesArr = new Array()
             lat = 0
@@ -295,13 +296,16 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
                 valuesArr.push value
             # Add a GeoJSON column and GeoJSON values
             if i is 0
+              console.log "We're appending to col names list"
               columnNamesList.push "`the_geom`"
+              if operation is "create"
+                sqlQuery = "#{sqlQuery} (#{columnNamesList.join(",")}); "
             geoJsonVal = "ST_AsGeoJSON(#{JSON.stringify(geoJsonGeom)})"
             valuesArr.push geoJsonVal
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          sqlQuery = "#{sqlQuery} #{columnNamesList.join(",")} VALUES #{valuesList.join(", ")};"
+          sqlQuery = "#{sqlQuery}INSERT INTO #{dataTable} VALUES #{valuesList.join(", ")};"
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
@@ -312,6 +316,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
       console.info "Would query with args", args
       console.info "Have query:"
       console.info sqlQuery
+      $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
       console.info "GeoJSON:", geoJson
       console.info "GeoJSON String:", dataGeometry
       return false

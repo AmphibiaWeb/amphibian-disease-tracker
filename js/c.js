@@ -1250,7 +1250,7 @@ createMap = function(dataVisIdentifier, targetId) {
   });
 };
 
-geo.requestCartoUpload = function(data, dataTable, operation) {
+geo.requestCartoUpload = function(totalData, dataTable, operation) {
 
   /*
    * Acts as a shim between the server-side uploader and the client.
@@ -1260,7 +1260,10 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
    *
    * Among other things, this approach secures the cartoDB API on the server.
    */
-  var allowedOperations, args, hash, link, secret;
+  var allowedOperations, args, data, hash, link, secret;
+  try {
+    data = totalData.data;
+  } catch (_error) {}
   if (typeof data !== "object") {
     console.info("This function requires the base data to be a JSON object.");
     toastStatusMessage("Your data is malformed. Please double check your data and try again.");
@@ -1330,11 +1333,11 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
       }
       bb_north = (ref = lats.max()) != null ? ref : 0;
       bb_south = (ref1 = lats.min()) != null ? ref1 : 0;
-      bb_east = (ref2 = lngs.max) != null ? ref2 : 0;
-      bb_west = (ref3 = lngs.min) != null ? ref3 : 0;
+      bb_east = (ref2 = lngs.max()) != null ? ref2 : 0;
+      bb_west = (ref3 = lngs.min()) != null ? ref3 : 0;
       defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
       try {
-        userTransectRing = JSON.parse(data.transectRing);
+        userTransectRing = JSON.parse(totalData.transectRing);
         for (j = 0, len = userTransectRing.length; j < len; j++) {
           coordinatePair = userTransectRing[j];
           if (coordinatePair.length !== 2) {
@@ -1401,9 +1404,8 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
         case "create":
           sqlQuery = "";
           if (operation === "create") {
-            sqlQuery = "CREATE TABLE " + dataTable + "; ";
+            sqlQuery = "CREATE TABLE " + dataTable + " ";
           }
-          sqlQuery += "INSERT INTO " + dataTable + " ";
           valuesList = "";
           dataObject = {
             the_geom: dataGeometry
@@ -1413,7 +1415,8 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
           columnNamesList.push("`id`  int(10) NOT NULL AUTO_INCREMENT");
           for (i in data) {
             row = data[i];
-            console.log("Iter #" + n);
+            i = toInt(i);
+            console.log("Iter #" + i, i === 0, i == 0);
             valuesArr = new Array();
             lat = 0;
             lng = 0;
@@ -1445,13 +1448,17 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
               }
             }
             if (i === 0) {
+              console.log("We're appending to col names list");
               columnNamesList.push("`the_geom`");
+              if (operation === "create") {
+                sqlQuery = sqlQuery + " (" + (columnNamesList.join(",")) + "); ";
+              }
             }
             geoJsonVal = "ST_AsGeoJSON(" + (JSON.stringify(geoJsonGeom)) + ")";
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          sqlQuery = sqlQuery + " " + (columnNamesList.join(",")) + " VALUES " + (valuesList.join(", ")) + ";";
+          sqlQuery = sqlQuery + "INSERT INTO " + dataTable + " VALUES " + (valuesList.join(", ")) + ";";
           break;
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
@@ -1462,6 +1469,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
       console.info("Would query with args", args);
       console.info("Have query:");
       console.info(sqlQuery);
+      $("#main-body").append("<pre>Would send Carto:\n\n " + sqlQuery + "</pre>");
       console.info("GeoJSON:", geoJson);
       console.info("GeoJSON String:", dataGeometry);
       return false;
