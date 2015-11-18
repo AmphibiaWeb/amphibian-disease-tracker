@@ -1134,6 +1134,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
       toastStatusMessage "Sorry, your session has expired. Please log in and try again."
   .error (result, status) ->
     console.error "Couldn't communicate with server!", result, status
+    console.warn "#{uri.urlString}admin_api.php?#{args}"
     toastStatusMessage "There was a problem communicating with the server. Please try again in a bit."
   false
 

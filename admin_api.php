@@ -3,6 +3,13 @@
 /***
  * Handle admin-specific requests
  ***/
+$debug = true;
+
+if($debug) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+    error_log("Login is running in debug mode!");
+}
 
 $print_login_state = false;
 require_once("CONFIG.php");

@@ -1432,6 +1432,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
     }
   }).error(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
+    console.warn(uri.urlString + "admin_api.php?" + args);
     return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit.");
   });
   return false;
