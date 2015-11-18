@@ -385,6 +385,7 @@ newGeoDataHandler = function(dataObject) {
     }
     if (!((sampleRow.decimalLatitude != null) && (sampleRow.decimalLongitude != null) && (sampleRow.coordinateUncertaintyInMeters != null) && (sampleRow.alt != null))) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
+      console.info("Missing: ", sampleRow.decimalLatitude != null, sampleRow.decimalLongitude != null, sampleRow.coordinateUncertaintyInMeters != null, sampleRow.alt != null);
       removeDataFile();
       return false;
     }

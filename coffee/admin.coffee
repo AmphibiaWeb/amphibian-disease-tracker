@@ -440,6 +440,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     
     unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters? and sampleRow.alt?
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
+      console.info "Missing: ", sampleRow.decimalLatitude?, sampleRow.decimalLongitude?, sampleRow.coordinateUncertaintyInMeters?, sampleRow.alt?
       # Remove the uploaded file
       removeDataFile()
       return false
