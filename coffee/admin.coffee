@@ -478,6 +478,9 @@ newGeoDataHandler = (dataObject = new Object()) ->
             cleanValue = value.trim()
         tRow[column] = cleanValue
       parsedData[n] = tRow
+    try
+      prettyHtml = JsonHuman.format parsedData
+      $("#main-body").append prettyHtml
     # Create a project identifier from the user hash and project title
     projectIdentifier = md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
     geo.requestCartoUpload(parsedData, projectIdentifier, "create")

@@ -360,7 +360,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, d, e, n, parsedData, projectIdentifier, row, rows, sampleRow, t, tRow, value;
+  var cleanValue, column, d, e, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, t, tRow, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -434,6 +434,10 @@ newGeoDataHandler = function(dataObject) {
       }
       parsedData[n] = tRow;
     }
+    try {
+      prettyHtml = JsonHuman.format(parsedData);
+      $("#main-body").append(prettyHtml);
+    } catch (_error) {}
     projectIdentifier = md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
     geo.requestCartoUpload(parsedData, projectIdentifier, "create");
   } catch (_error) {

@@ -791,6 +791,28 @@ p$ = (selector) ->
   catch
     $(selector).get(0)
 
+
+bsAlert = (message, type = "warning", fallbackContainer = "body", selector = "#bs-alert") ->
+  ###
+  # Pop up a status message
+  # Uses the Bootstrap alert dialog
+  #
+  # See
+  # http://getbootstrap.com/components/#alerts
+  # for available types
+  ###
+  if not $(selector).exists()
+    html = """
+    <div class="alert alert-#{type} alert-dismissable" role="alert" id="#{selector.slice(1)}">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="alert-message"></div>
+    </div>
+    """
+    topContainer = if $("main").exists() then "main" else if $("article").exists() then "article" else fallbackContainer
+    $(topContainer).prepend(html)
+  $("#{selector} .alert-message").html(message)
+
+
 $ ->
   bindClicks()
   formatScientificNames()
