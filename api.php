@@ -61,8 +61,8 @@ function returnAjax($data)
 }
 
 
-parse_str($_SERVER['QUERY_STRING'],$_REQUEST);
-$do=isset($_REQUEST['action']) ? strtolower($_REQUEST['action']):null;
+# parse_str($_SERVER['QUERY_STRING'],$_POST);
+$do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']):null;
 switch($do)
 {
 case "upload":
@@ -74,6 +74,7 @@ default:
         "error" => "Invalid action",
         "human_error" => "The server recieved an instruction it didn't understand. Please try again.",
         "action" => $do,
+        "request" => $_REQUEST,
     ));
 }
 
