@@ -108,11 +108,11 @@ function doCartoSqlApiPush($get) {
     ));
     $cartoPostUrl = "https://".$cartodb_username.".cartodb.com/api/v2/sql";
     $cartoArgSuffix = "&api_key=".$cartodb_api_key;
-    $statements = explode(";" $sqlQuery);
+    $statements = explode(";", $sqlQuery);
     $responses = array();
     foreach($statements as $statement) {
         $cartoArgs = "q=" . $statement . $cartoArgSuffix;
-        $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true)
+        $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
     }
     $cartoArgs = "q=" . $sqlQuery . $cartoArgSuffix;
     $cartoFullUrl = $cartoPostUrl . "?" . $cartoArgs;
