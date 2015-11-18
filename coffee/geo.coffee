@@ -321,6 +321,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
       $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
       console.info "GeoJSON:", geoJson
       console.info "GeoJSON String:", dataGeometry
+      console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
       return false
       $.post "api.php", args
       .done (result) ->
