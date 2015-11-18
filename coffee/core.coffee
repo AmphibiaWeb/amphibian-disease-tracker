@@ -72,6 +72,10 @@ Number::toBool = -> @toString() is "1"
 String::addSlashes = ->
   `this.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')`
 
+Array::max = -> Math.max.apply null, this
+
+Array::min = -> Math.min.apply null, this
+
 
 Object.size = (obj) ->
   if typeof obj isnt "object"

@@ -514,6 +514,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
         tRow[column] = cleanValue
       parsedData[n] = tRow
     try
+      # http://marianoguerra.github.io/json.human.js/
       prettyHtml = JsonHuman.format parsedData
       $("#main-body").append prettyHtml
     catch e

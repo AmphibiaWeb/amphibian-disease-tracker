@@ -168,6 +168,23 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
       # Before we begin parsing, throw up an overlay for the duration
       # Loop over the data and clean it up
       # Create a GeoJSON from the data
+      lats = new Array()
+      lngs = new Array()
+      for n, row of data
+        ll = new Object()
+        for column, value of row
+          switch column
+            when "decimalLongitude"
+              ll.lng = value
+              lngs.push value
+            when "decimalLatitude"
+              ll.lat = value
+              lats.push value
+        sampleLatLngArray.push ll
+      bb_north = lats.max() ? 0
+      bb_south = lats.min() ? 0
+      bb_east = lngs.max ? 0
+      bb_west = lngs.min ? 0
       defaultPolygon = [
           [bb_north, bb_west]
           [bb_north, bb_east]
@@ -257,6 +274,7 @@ geo.requestCartoUpload = (data, dataTable, operation) ->
                 columnNamesList.push "`#{column}` #{columnDatatype[column]}"
               value = value.replace("'", "&#95;")
               valuesArr.push "'#{value}'"
+            # Add a GeoJSON column and GeoJSON values
             valuesList = "#{valuesList}, (#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList

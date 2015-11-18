@@ -120,6 +120,14 @@ String.prototype.addSlashes = function() {
   return this.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
 };
 
+Array.prototype.max = function() {
+  return Math.max.apply(null, this);
+};
+
+Array.prototype.min = function() {
+  return Math.min.apply(null, this);
+};
+
 Object.size = function(obj) {
   var key, size;
   if (typeof obj !== "object") {
@@ -1281,7 +1289,7 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, len, len1, n, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, geoJson, i, j, lats, len, len1, ll, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1301,6 +1309,29 @@ geo.requestCartoUpload = function(data, dataTable, operation) {
        */
       foo();
       sampleLatLngArray = new Array();
+      lats = new Array();
+      lngs = new Array();
+      for (n in data) {
+        row = data[n];
+        ll = new Object();
+        for (column in row) {
+          value = row[column];
+          switch (column) {
+            case "decimalLongitude":
+              ll.lng = value;
+              lngs.push(value);
+              break;
+            case "decimalLatitude":
+              ll.lat = value;
+              lats.push(value);
+          }
+        }
+        sampleLatLngArray.push(ll);
+      }
+      bb_north = (ref = lats.max()) != null ? ref : 0;
+      bb_south = (ref1 = lats.min()) != null ? ref1 : 0;
+      bb_east = (ref2 = lngs.max) != null ? ref2 : 0;
+      bb_west = (ref3 = lngs.min) != null ? ref3 : 0;
       defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
       try {
         userTransectRing = JSON.parse(data.transectRing);
