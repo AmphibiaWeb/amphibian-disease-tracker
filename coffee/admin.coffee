@@ -495,7 +495,13 @@ newGeoDataHandler = (dataObject = new Object()) ->
             catch
               t = Date.now()
             d = new Date(t)
-            cleanValue = "#{d.getUTCFullYear()}-#{d.getUTCMonth() + 1}-#{d.getUTCDate()}"
+            date = d.getUTCDate()
+            if date < 10
+              date = "0#{date}"
+            month = d.getUTCMonth() + 1
+            if month < 10
+              month = "0#{month}"
+            cleanValue = "#{d.getUTCFullYear()}-#{month}-#{date}"
           when "fatal"
             cleanValue = value.toBool()
           when "decimalLatitude", "decimalLongitude", "alt", "coordinateUncertaintyInMeters"

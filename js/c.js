@@ -1443,6 +1443,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
               }
               if (typeof value === "string") {
                 valuesArr.push("'" + value + "'");
+              } else if (isNull(value)) {
+                valuesArr.push("");
               } else {
                 valuesArr.push(value);
               }

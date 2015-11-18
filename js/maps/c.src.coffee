@@ -1130,6 +1130,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
                   geoJsonGeom.coordinates[0] = value
               if typeof value is "string"
                 valuesArr.push "'#{value}'"
+              else if isNull value
+                valuesArr.push ""
               else
                 valuesArr.push value
             # Add a GeoJSON column and GeoJSON values

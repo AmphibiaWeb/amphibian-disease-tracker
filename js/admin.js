@@ -360,7 +360,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, d, daysFrom1900to1970, daysFrom1904to1970, e, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, totalData, value;
+  var cleanValue, column, d, date, daysFrom1900to1970, daysFrom1904to1970, e, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -440,7 +440,15 @@ newGeoDataHandler = function(dataObject) {
               t = Date.now();
             }
             d = new Date(t);
-            cleanValue = (d.getUTCFullYear()) + "-" + (d.getUTCMonth() + 1) + "-" + (d.getUTCDate());
+            date = d.getUTCDate();
+            if (date < 10) {
+              date = "0" + date;
+            }
+            month = d.getUTCMonth() + 1;
+            if (month < 10) {
+              month = "0" + month;
+            }
+            cleanValue = (d.getUTCFullYear()) + "-" + month + "-" + date;
             break;
           case "fatal":
             cleanValue = value.toBool();
