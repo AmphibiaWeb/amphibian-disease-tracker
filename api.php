@@ -113,7 +113,8 @@ function doCartoSqlApiPush($get) {
     try {
         returnAjax(array(
             "status" => true,
-            "post_response" => do_post_request($cartoPostUrl, $cartoArgs),
+            "args_sent" => $sqlQuery,
+            "post_response" => json_decode(do_post_request($cartoPostUrl, $cartoArgs), true),
         ));
     } catch (Exception $e) {
         returnAjax(array(
