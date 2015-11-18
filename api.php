@@ -99,7 +99,7 @@ function checkColumnExists($column_list)
 }
 
 function doCartoSqlApiPush($get) {
-    global $cartodb_username, $cartodb_api_key;    
+    global $cartodb_username, $cartodb_api_key;
     $sqlQuery = decode64($get["sql_query"]);
     if(empty($sqlQuery)) returnAjax(array(
         "status" => false,
@@ -108,13 +108,20 @@ function doCartoSqlApiPush($get) {
     ));
     $cartoPostUrl = "https://".$cartodb_username.".cartodb.com/api/v2/sql";
     $cartoArgSuffix = "&api_key=".$cartodb_api_key;
+    $statements = explode(";" $sqlQuery);
+    $responses = array();
+    foreach($statements as $statement) {
+        $cartoArgs = "q=" . $statement . $cartoArgSuffix;
+        $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true)
+    }
     $cartoArgs = "q=" . $sqlQuery . $cartoArgSuffix;
     $cartoFullUrl = $cartoPostUrl . "?" . $cartoArgs;
     try {
         returnAjax(array(
             "status" => true,
             "args_sent" => $sqlQuery,
-            "post_response" => json_decode(do_post_request($cartoPostUrl, $cartoArgs), true),
+            "sql_statements" => $statements,
+            "post_response" => $responses,
         ));
     } catch (Exception $e) {
         returnAjax(array(
@@ -124,5 +131,5 @@ function doCartoSqlApiPush($get) {
         ));
     }
 }
-    
+
     ?>
