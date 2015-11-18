@@ -108,6 +108,7 @@ function excelToArray($filePath, $header=true){
             if ((isset($dataRow[$row]['A'])) && ($dataRow[$row]['A'] > '')) {
                 ++$r;
                 foreach($headingsArray as $columnKey => $columnHeading) {
+                    $columnHeading = trim($columnHeading);
                     $namedDataArray[$r][$columnHeading] = $dataRow[$row][$columnKey];
                 }
             }
