@@ -14,9 +14,9 @@ header("Access-Control-Allow-Origin: *");
 
 $db = new DBHelper($default_database,$default_sql_user,$default_sql_password,$sql_url,$default_table,$db_cols);
 
-if(isset($_SERVER['QUERY_STRING'])) parse_str($_SERVER['QUERY_STRING'],$_REQUEST);
-
 $start_script_timer = microtime_float();
+
+$_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 
 if(!function_exists('elapsed'))
 {
