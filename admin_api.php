@@ -15,9 +15,11 @@ $print_login_state = false;
 require_once("DB_CONFIG.php");
 require_once(dirname(__FILE__)."/core/core.php");
 
-$db = new DBHelper($default_database,$default_sql_user,$default_sql_password,$default_sql_url,$default_table,$db_cols);
+$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
 
 require_once(dirname(__FILE__)."/admin/async_login_handler.php");
+
+$udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
 
 $start_script_timer = microtime_float();
 

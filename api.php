@@ -12,7 +12,7 @@ require_once(dirname(__FILE__)."/core/core.php");
 # This is a public API
 header("Access-Control-Allow-Origin: *");
 
-$db = new DBHelper($default_database,$default_sql_user,$default_sql_password,$default_sql_url,$default_table,$db_cols);
+$db = new DBHelper($default_database,$default_sql_user,$default_sql_password,$sql_url,$default_table,$db_cols);
 
 if(isset($_SERVER['QUERY_STRING'])) parse_str($_SERVER['QUERY_STRING'],$_REQUEST);
 
