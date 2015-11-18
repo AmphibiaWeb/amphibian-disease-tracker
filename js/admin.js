@@ -360,7 +360,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, d, e, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, t, tRow, value;
+  var cleanValue, column, d, daysFrom1900to1970, daysFrom1904to1970, e, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -405,6 +405,35 @@ newGeoDataHandler = function(dataObject) {
         switch (column) {
           case "dateIdentified":
             try {
+              if ((0 < value && value < 10e5)) {
+
+                /*
+                 * Excel is INSANE, and marks time as DAYS since 1900-01-01
+                 * on Windows, and 1904-01-01 on OSX. Because reasons.
+                 *
+                 * Therefore, 2015-11-07 is "42315"
+                 *
+                 * The bounds of this check represent true Unix dates
+                 * of
+                 * Wed Dec 31 1969 16:16:40 GMT-0800 (Pacific Standard Time)
+                 * to
+                 * Wed Dec 31 1969 16:00:00 GMT-0800 (Pacific Standard Time)
+                 *
+                 * I hope you weren't collecting between 4 & 4:17 PM
+                 * New Years Eve in 1969.
+                 *
+                 *
+                 * This check will correct Excel dates until
+                 * Sat Nov 25 4637 16:00:00 GMT-0800 (Pacific Standard Time)
+                 *
+                 * TODO: Fix before Thanksgiving 4637. Devs, you have
+                 * 2,622 years. Don't say I didn't warn you.
+                 */
+                daysFrom1900to1970 = 25569;
+                daysFrom1904to1970 = 24107;
+                secondsPerDay = 86400;
+                value = ((value - daysFrom1900to1970) * secondsPerDay) * 1000;
+              }
               t = Date.parse(value);
             } catch (_error) {
               t = Date.now();

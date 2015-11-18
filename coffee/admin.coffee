@@ -437,7 +437,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       toastStatusMessage "Your data file was malformed, and could not be parsed. Please try again."
       removeDataFile()
       return false
-    
+
     unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters? and sampleRow.alt?
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
       console.info "Missing: ", sampleRow.decimalLatitude?, sampleRow.decimalLongitude?, sampleRow.coordinateUncertaintyInMeters?, sampleRow.alt?
@@ -461,6 +461,34 @@ newGeoDataHandler = (dataObject = new Object()) ->
           when "dateIdentified"
             # Coerce to ISO8601
             try
+              if 0 < value < 10e5
+                ###
+                # Excel is INSANE, and marks time as DAYS since 1900-01-01
+                # on Windows, and 1904-01-01 on OSX. Because reasons.
+                #
+                # Therefore, 2015-11-07 is "42315"
+                #
+                # The bounds of this check represent true Unix dates
+                # of
+                # Wed Dec 31 1969 16:16:40 GMT-0800 (Pacific Standard Time)
+                # to
+                # Wed Dec 31 1969 16:00:00 GMT-0800 (Pacific Standard Time)
+                #
+                # I hope you weren't collecting between 4 & 4:17 PM
+                # New Years Eve in 1969.
+                #
+                #
+                # This check will correct Excel dates until
+                # Sat Nov 25 4637 16:00:00 GMT-0800 (Pacific Standard Time)
+                #
+                # TODO: Fix before Thanksgiving 4637. Devs, you have
+                # 2,622 years. Don't say I didn't warn you.
+                ###
+                # See http://stackoverflow.com/a/6154953/1877527
+                daysFrom1900to1970 = 25569 # Windows + Mac Excel 2011+
+                daysFrom1904to1970 = 24107 # Mac Excel 2007 and before
+                secondsPerDay = 86400
+                value = ((value - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
               t = Date.parse(value)
             catch
               t = Date.now()
