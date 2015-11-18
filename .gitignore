@@ -63,3 +63,4 @@ node_modules/
 #CONFIG.PHP
 /DB_CONFIG.php
 /admin/CONFIG.php
+/helpers/js-dragdrop/uploaded/
