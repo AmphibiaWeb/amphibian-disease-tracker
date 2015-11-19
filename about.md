@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Amphibian Disease Portal
+title: About
 permalink: /about/
 ---
 
@@ -15,7 +15,7 @@ In this rapidly developing area of science, making information more quickly and 
 
 
 
-Follow our progress. Visit us on GitHub <paper-icon-button icon="glyphicon-social:github" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" data-toggle="tooltip" title="Visit us on GitHub"></paper-icon-button> to request features!    <br>
+Follow our progress. Visit us on **GitHub** <paper-icon-button icon="glyphicon-social:github" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" data-toggle="tooltip" title="Visit us on GitHub"></paper-icon-button> to request features!    <br>
 
 <button type="button" class="btn btn-default btn-lg click" onclick='location.href="https://calmail.berkeley.edu/manage/list/listinfo/bsal@lists.berkeley.edu"'><span class="glyphicon glyphicon-envelope"></span> Subscribe </button> to the <strong>Bsal</strong> listserve and keep up to date.
 
