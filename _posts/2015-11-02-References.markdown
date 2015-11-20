@@ -6,7 +6,7 @@ author: Michelle Koo
 categories: News
 ---
 
-We've compiled a [Bibliography for publications on Bd and Bsal research as a Zotero Group Library](https://www.zotero.org/groups/bdbsalresearch/items/order/year/sort/desc).     
+We are continuously compiling a [Bibliography for publications on Bd and Bsal research as a Zotero Group Library](https://www.zotero.org/groups/bdbsalresearch/items/order/year/sort/desc).     
 
 There are two tags consistently used: **Bd** and **Bsal**
 If you want to filter the publications to only those relating to only one of the chytrid fungus, e.g., click on  **Bd** tag on the left to filter the items list.    
