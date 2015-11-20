@@ -56,8 +56,8 @@ Currently you can read Posts from two categories: Bsal News and Resources
 ####Diagnostic Labs (alphabetical) 
 - [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
 - [Lips Lab (UM)](http://lipslab.weebly.com/)
+- [Martel and Pasmans Wildlife Population Health Labs (UGent)](http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
 - [Vredenburg Lab (SFSU)](http://www.vredenburglab.com/)
-- [UGent wildlife population health labs of Martel and Pasmans](http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
 
 
 ### Maps
