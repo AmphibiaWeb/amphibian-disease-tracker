@@ -1,0 +1,145 @@
+@combinator: ~">>>";
+@hc: ~"html >>>";
+
+@{hc} .text-right {
+  .text-right();
+}
+@{hc} .text-muted {
+  .text-muted();
+}
+
+@{hc} small,
+@{hc} .small {
+  .small();
+}
+
+
+
+@{hc} .center-block {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+@{hc} .text-center {
+  text-align: center;
+}
+
+
+
+@media (max-width: 767px) {
+  @{hc} .hidden-xs {
+    display: none !important;
+  }
+
+}
+
+
+
+@{hc} .hidden {
+  display: none !important;
+}
+
+
+
+
+@{hc} .btn {
+    .btn();
+}
+@{hc} .btn:focus,
+@{hc} .btn:active:focus,
+@{hc} .btn.active:focus,
+@{hc} .btn.focus,
+@{hc} .btn:active.focus,
+@{hc} .btn.active.focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+@{hc} .btn:hover,
+@{hc} .btn:focus,
+@{hc} .btn.focus {
+  color: #333;
+  text-decoration: none;
+}
+@{hc} .btn:active,
+@{hc} .btn.active {
+  background-image: none;
+  outline: 0;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+@{hc} .btn.disabled,
+@{hc} .btn[disabled],
+fieldset[disabled] .btn {
+  pointer-events: none;
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  box-shadow: none;
+  opacity: .65;
+}
+@{hc} .btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+@{hc} .btn-default:hover,
+@{hc} .btn-default:focus,
+@{hc} .btn-default.focus,
+@{hc} .btn-default:active,
+@{hc} .btn-default.active,
+.open > .dropdown-toggle.btn-default {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+@{hc} .btn-default:active,
+@{hc} .btn-default.active,
+.open > .dropdown-toggle.btn-default {
+  background-image: none;
+}
+@{hc} .btn-default.disabled,
+@{hc} .btn-default[disabled],
+fieldset[disabled] .btn-default,
+@{hc} .btn-default.disabled:hover,
+@{hc} .btn-default[disabled]:hover,
+fieldset[disabled] .btn-default:hover,
+@{hc} .btn-default.disabled:focus,
+@{hc} .btn-default[disabled]:focus,
+fieldset[disabled] .btn-default:focus,
+@{hc} .btn-default.disabled.focus,
+@{hc} .btn-default[disabled].focus,
+fieldset[disabled] .btn-default.focus,
+@{hc} .btn-default.disabled:active,
+@{hc} .btn-default[disabled]:active,
+fieldset[disabled] .btn-default:active,
+@{hc} .btn-default.disabled.active,
+@{hc} .btn-default[disabled].active,
+fieldset[disabled] .btn-default.active {
+  background-color: #fff;
+  border-color: #ccc;
+}
+@{hc} .btn-default .badge {
+  color: #fff;
+  background-color: #333;
+}
+
+
+@{hc} a.btn {
+    text-decoration: none;
+}
+
+
+
+@{hc} a {
+  color: #337ab7;
+  text-decoration: none;
+}
+@{hc} a:hover,
+@{hc} a:focus {
+  color: #23527c;
+  text-decoration: underline;
+}
+@{hc} a:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}

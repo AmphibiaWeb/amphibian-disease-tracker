@@ -1,0 +1,396 @@
+@import "../bower_components/bootstrap/less/bootstrap.less";
+@icon-font-path: "../bower_components/bootstrap/fonts/";
+// Here we can re-define the variables that Bootstrap uses to customize stuff
+// See http://stackoverflow.com/a/19514889/1877527
+// See here for the variable names and declarations:
+// http://getbootstrap.com/customize/#less-variables
+
+@import "lightbox.less";
+
+
+
+// Main content
+@font-family-sans-serif: Roboto, "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif: "Roboto Slab", Droid, Cambria, Georgia, "Times New Roman", Times, serif;
+@font-family-monospace: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+
+body {
+    padding:1rem;
+}
+
+// Default Colors
+
+@material-blue: #5677fc;
+@material-green: #4CAF50;
+@material-indigo: #3f51b5;
+@material-cyan: #00bcd4;
+@material-teal: #009688;
+@material-blue-grey: #607d8b;
+@material-red: #F44336;
+
+@bs-info: #5bc0de;
+@bs-danger: #d9534f;
+@bs-warning: #f0ad4e;
+
+// Application Colors
+
+@import "theme-colors.less";
+
+
+/* Combinators */
+
+@import "bootstrap-combinator.less";
+
+/*
+ * LESS is failing at these for now:
+ * https://github.com/less/less.js/issues/2623
+ *
+ * So until it's fixed, these need escaping.
+ * http://lesscss.org/features/#features-overview-feature-escaping
+ */
+
+@{hc} .materialblue {
+    .materialblue;
+}
+
+#loader.good @{combinator} .circle {
+    border-color: @material-green;
+}
+#loader.bad @{combinator} .circle {
+    border-color: @material-red;
+}
+
+@{hc} .code {
+    .code;
+}
+
+@{hc} .help-block {
+  .help-block;
+}
+
+@{hc} paper-autogrow-textarea textarea {
+    width:90%;
+}
+
+@{hc} [affirmative] {
+    color:@material-blue!important;
+
+}
+
+@{hc} paper-dialog-scrollable {
+    padding: 1rem !important;
+}
+
+@{hc} .tooltip-container {
+    .tooltip-container;
+}
+
+/***
+ * Primary Styles
+ ***/
+
+.relative-left {
+    position: relative;
+    left: 40px;
+}
+
+.materialblue {
+    background: @material-blue;
+    color:#fff;
+}
+
+paper-fab.materialblue.paper-fab-0 {
+    .materialblue;
+}
+
+
+
+.materialgreen, .materialblue:hover, paper-fab.materialblue.paper-fab-0:hover {
+    background: @material-green;
+    color: #fff;
+}
+
+.materialindigo {
+    background: @material-indigo;
+    color:#fff;
+}
+
+.extreme-danger {
+    box-shadow: 0 0 2em 0.25em #f00;
+    background:#f00;
+    color: #fff;
+}
+
+.fadebg {
+    transition:all .2s ease-out;
+    -webkit-transition:all .2s ease-out;
+    -moz-transition:all .2s ease-out;
+    -o-transition:all .2s ease-out;
+}
+
+.materialcyan {
+    background: @material-cyan;
+    color:#fff;
+}
+
+.materialteal {
+    background: @material-blue;
+    color:#fff;
+}
+
+.materialbluegrey {
+    background: @material-blue-grey;
+    color:#fff;
+}
+
+.materialbluetext, paper-button[affirmative] {
+    color:@material-blue!important;
+
+}
+
+
+.materialindigotext {
+    color: @material-indigo;
+
+}
+
+.materialcyantext {
+    color: @material-cyan;
+
+}
+
+.materialtealtext {
+    color: @material-teal;
+
+}
+
+.materialbluegreytext {
+    color: @material-blue-grey;
+
+}
+
+paper-dialog-scrollable {
+    padding: 1rem !important;
+    min-height: 15rem;
+}
+
+
+.tooltip-container {
+    float:left;
+    display:inline-block;
+}
+
+.italic {
+    font-style:italic;
+}
+.click {
+    cursor:pointer;
+}
+.med-octicon {
+    font-size:24px !important;
+}
+
+.capitalize,
+@{hc} .capitalize {
+    text-transform:capitalize;
+}
+
+
+/* Loader */
+
+#loader {
+    position:fixed;
+    top:50%;
+    left:50%;
+}
+
+paper-dropdown.dropdown {
+/* Override Bootstrap */
+    position:absolute;
+}
+
+paper-toggle-button {
+    margin-left:1rem;
+}
+
+paper-icon-button {
+    vertical-align:middle;
+}
+
+.fullwidth {
+    width:100%;
+}
+
+#collapse-advanced {
+    margin-top:1rem;
+}
+
+.bs-callout {
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+  width:80%;
+}
+
+.bs-callout-info {
+  border-left-color: @bs-info;
+}
+
+.bs-callout-info h4 {
+  color: @bs-info;
+}
+.bs-callout-danger {
+  border-left-color: @bs-danger;
+}
+.bs-callout-danger h4 {
+  color: @bs-danger;
+}
+.bs-callout-warning {
+  border-left-color: @bs-warning;
+}
+.bs-callout-warning h4 {
+  color: @bs-warning;
+}
+.bs-callout p:last-child {
+  margin-bottom: 0;
+}
+
+copyright-statement {
+    position: relative;
+    top: 1rem;
+}
+
+.code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: @code-color;
+    background-color: @code-bg;
+    border-radius: @border-radius-base;
+    font-family: @font-family-monospace;
+}
+
+
+.help-block {
+  display: block;
+  margin-top: 1.25rem;
+  margin-bottom: 10px;
+  .text-muted;
+}
+
+
+paper-toast, paper-spinner {
+    z-index:1000;
+}
+
+#password_security + #login {
+    float:left;
+    min-width:60%;
+}
+
+#login .form-inline .form-group {
+    margin-bottom:15px;
+}
+
+.form-inline .has-feedback div {
+    margin-left:0;
+}
+
+#outdated-warning {
+    position:fixed;
+    top:0;
+    width:50%;
+    margin:0;
+    left:25%;
+}
+
+iron-label {
+    margin-top: .5rem;
+    display: block;
+}
+
+paper-radio-button #radioContainer, paper-radio-button #radioContainer div {
+    /* Overrides Bootstrap */
+    box-sizing: content-box !important;
+}
+
+.force-block {
+    display: block;
+}
+.clear {
+    clear: both;
+}
+
+
+
+#provider_list {
+    float:left;
+    min-width:150px;
+    width:20%;
+    border-right: 1px solid #ccc;
+    box-shadow: 2px 1px 5px rgba(125,125,125,.4);
+}
+#provider_list ul {
+    list-style-type:none;
+}
+.logo_list {
+    margin: .5em auto;
+    display:block;
+    opacity:.7;
+    transition:opacity .2s ease-out;
+    -webkit-transition:opacity .2s ease-out;
+    -moz-transition:opacity .2s ease-out;
+    -o-transition:opacity .2s ease-out;
+}
+.logo_list:hover{
+    opacity:1;
+}
+#auth_panel {
+    float:right;
+    width:75%;
+    margin-top:5em;
+}
+
+
+//////////////////
+// Admin
+////////////////
+
+paper-button.admin-action {
+    .materialgreen;
+}
+
+
+.thumb-img {
+    max-width: 150px;
+    max-height: 150px;
+}
+
+paper-input.project-field, .new-title  {
+    .force-block;
+    .clear;
+}
+
+////////////
+// Map Stuff
+////////////
+
+.map {
+    width: 75vw;
+    height: 50vh;
+    .center-block;
+}
+
+@media(max-width:767px) {
+    .map {
+        width: 100%;
+        height: 75vh;
+    }
+}
+
+// Uploader
+
+.media-upload-target {
+    width: 80%;
+}

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+#
+# blackbox_shred_all_files -- shred all decrypted versions of encrypted files
+#
+# Shred: To securely delete a file.
+#
+# Typical uses:
+#   After running blackbox_edit_start, deciding not to edit the file.
+#   A developer that wants to securely clean up a workspace before deleting it.
+#   An automated process that doesn't want to leave
+#       plaintext (unencrypted) files laying around.
+#
+# NOTE: The output lists files that were decrypted and are being
+# shredded.  For example, if you have many encrypted files but none
+# have been decrypted for editing, you will see an empty list.
+
+set -e
+source "${0%/*}/_blackbox_common.sh"
+
+change_to_vcs_root
+
+echo '========== FILES BEING SHREDDED:'
+while IFS= read <&99 -r unencrypted_file; do
+  unencrypted_file=$(get_unencrypted_filename "$unencrypted_file")
+  encrypted_file=$(get_encrypted_filename "$unencrypted_file")
+  if [[ -f "$unencrypted_file" ]]; then
+    echo "    $unencrypted_file"
+    shred_file "$unencrypted_file"
+  fi
+done 99<"$BB_FILES"
+
+echo '========== DONE.'
