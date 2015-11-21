@@ -85,7 +85,7 @@ oa.googleOAuthCallback = (googleClient) ->
       console.error "Couldn't validate with Google - #{result.error}"
       return false
     email = result.identifier
-    password = result.validator
+    password = result.verifier
     oneTimeHash = result.token_data.at_hash
     subscriber = result.token_data.sub
     # The calculated password for the user is the sha256 hash of their
