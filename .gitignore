@@ -64,3 +64,4 @@ node_modules/
 /DB_CONFIG.php
 /admin/CONFIG.php
 /helpers/js-dragdrop/uploaded/
+/admin/oauth/secrets.php
