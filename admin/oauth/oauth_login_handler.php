@@ -9,9 +9,12 @@
  * page specified in vars.php. If an authenticator function was
  * defined, instead the result of that is returned to the redirect page.
 */
+ini_set("display_errors",1);
+ini_set("log_errors",1);
+error_reporting(E_ALL);
 $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 require_once "core/core.php";
-require_once('secrets.php'); // just in case. Shouldn't be needed
+require_once(dirname(__FILE__) . '/secrets.php'); // just in case. Shouldn't be needed
 
 // Write the provided ID from the provider to a new user if not
 // created. Create a fake email based on their provider identity if a
@@ -186,8 +189,8 @@ function authGoogle($get) {
     );
     return $return;
 }
-    
-    
+
+
 function computeUserPassword($identity) {
     global $your_secret;
     # This complicated encoding is purely security through obscurity.
