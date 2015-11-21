@@ -1028,6 +1028,7 @@ oa.googleOAuthCallback = (googleClient) ->
     <p>Username: <code>#{email}</code></p>
     <p>Derived Password: <code>#{password}</code></p>
     """
+    $("main").append testHtml
     false
 
 oa.googleBadCallback = (result) ->

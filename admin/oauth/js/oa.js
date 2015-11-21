@@ -1326,6 +1326,7 @@ oa.googleOAuthCallback = function(googleClient) {
     oneTimeHash = result.token_data.at_hash;
     subscriber = result.token_data.sub;
     testHtml = "<p>Will use credentials:</p>\n<p>Username: <code>" + email + "</code></p>\n<p>Derived Password: <code>" + password + "</code></p>";
+    $("main").append(testHtml);
     return false;
   });
 };
