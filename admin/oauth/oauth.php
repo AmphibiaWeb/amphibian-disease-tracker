@@ -152,7 +152,7 @@ data-onfailure='onFailureCallback'>
           }
         catch(Exception $e)
           {
-            // oauth2
+            # Manually do a server-side OAuth 2
               require_once 'lib/google-php-client/vendor/autoload.php';
               # require_once 'lib/google-php-client/src/Google/Service/Oauth2.php';
             $client = new Google_Client();
@@ -269,7 +269,7 @@ function bindMouse() {
   case 'twitter':
     // https://dev.twitter.com/docs/auth/implementing-sign-twitter
     $buffer.="<script type='text/javascript'>$('#twitter_logo').css('opacity','1');</script>";
-    require_once('lib/twitteroauth/twitteroauth/twitteroauth.php');
+    require_once('lib/twitteroauth/autoload.php');
     define("OAUTH_CALLBACK",urlencode($baseurl."/oauth/oauth.php?provider=twitter"));
     // As readme; save token_credentials as json object in password field
     // Initial implementation as twitteroauth test.php
