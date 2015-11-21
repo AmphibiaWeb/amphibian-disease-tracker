@@ -65,3 +65,4 @@ node_modules/
 /admin/CONFIG.php
 /helpers/js-dragdrop/uploaded/
 /admin/oauth/secrets.php
+/admin/oauth/credentials.json
