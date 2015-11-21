@@ -1322,7 +1322,7 @@ oa.googleOAuthCallback = function(googleClient) {
       return false;
     }
     email = result.identifier;
-    password = result.validator;
+    password = result.verifier;
     oneTimeHash = result.token_data.at_hash;
     subscriber = result.token_data.sub;
     testHtml = "<p>Will use credentials:</p>\n<p>Username: <code>" + email + "</code></p>\n<p>Derived Password: <code>" + password + "</code></p>";
