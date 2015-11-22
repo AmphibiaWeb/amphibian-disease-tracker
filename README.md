@@ -1,5 +1,8 @@
 # Amphibian Disease Portal  - 
-Customized here: http://amphibiaweb.github.io/amphibian-disease-tracker    
+Find this gh-pages site here:
+
+http://updates.amphibiandisesase.org  
+
 Categories:
  - News
  - Resources
