@@ -1492,7 +1492,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         cartoHasError = false;
         for (j in cartoResults) {
           response = cartoResults[j];
-          if (!isNull(response.error)) {
+          if (!isNull(response != null ? response.error : void 0)) {
             cartoHasError = response.error[0];
           }
         }

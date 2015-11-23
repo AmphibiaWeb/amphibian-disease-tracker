@@ -335,7 +335,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         cartoResults = result.post_response
         cartoHasError = false
         for j, response of cartoResults
-          unless isNull response.error
+          unless isNull response?.error
             cartoHasError = response.error[0]
         unless cartoHasError is false
           stopLoadError "CartoDB returned an error: #{cartoHasError}"
