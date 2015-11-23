@@ -534,9 +534,14 @@
             console.warn("tagname lower case error");
           }
           $(this).click(function() {
-            if ($(this).attr("newTab").toBool() || $(this).attr("newtab").toBool()) {
-              return openTab(url);
-            } else {
+            var ref, ref1, ref2;
+            try {
+              if (((ref = $(this).attr("newTab")) != null ? ref.toBool() : void 0) || ((ref1 = $(this).attr("newtab")) != null ? ref1.toBool() : void 0) || ((ref2 = $(this).attr("data-newtab")) != null ? ref2.toBool() : void 0)) {
+                return openTab(url);
+              } else {
+                return goTo(url);
+              }
+            } catch (_error) {
               return goTo(url);
             }
           });
