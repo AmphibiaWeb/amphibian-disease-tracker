@@ -7174,7 +7174,7 @@ paper-button.admin-action {
   max-width: 150px;
   max-height: 150px;
 }
-paper-input.project-field,
+.project-field,
 .new-title {
   display: block;
   clear: both;
