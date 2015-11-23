@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
-    <title>SSAR CNDB Admin</title>
+    <title>Amphibian Disease Portal Admin</title>
     <meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="theme-color" content="#445e14"/>
@@ -25,12 +25,26 @@
     <script type="text/javascript" src="js/xmlToJSON.min.js"></script>
     <script type="text/javascript" src="bower_components/js-base64/base64.min.js"></script>
     <script type="text/javascript" src="bower_components/picturefill/dist/picturefill.min.js"></script>
-    <script src="bower_components/touch-imagelightbox/dist/touch-imagelightbox.min.js"></script>
     <script type="text/javascript" src="js/c.min.js"></script>
   </head>
   <body>
     <?php
-       require_once("CONFIG.php");
+       $debug = true;
+       if($debug) {
+           echo "<div class='alert alert-danger'><strong>Warning:</strong> Debugging is enabled on admin-login.php</div>";
+           ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
+           ini_set("display_errors",1);
+           ini_set("log_errors",1);
+           error_reporting(E_ALL);
+           // $string = "Foobar";
+           // $pass = "123";
+           // $methods = print_r(openssl_get_cipher_methods(), true);
+           // $encrypted = openssl_encrypt($string, "AES-256-CBC", $pass);
+           // $decrypted = openssl_decrypt($encrypted, "AES-256-CBC", $pass);
+           // $encrypt_test = "<pre>OpenSSL Encrypt Test: \n\n $methods \n\n $encrypted \n\n $decrypted</pre>";
+           // echo $encrypt_test;
+       }
+       require_once("DB_CONFIG.php");
        require_once("admin/login.php");
        echo $login_output;
        ?>

@@ -111,6 +111,8 @@ $db_cols=array(
   "emergency_code"=>"varchar(255)",
   "phone"=>"varchar(20)",
   "phone_verified"=>"bool",
+  "random_seed"=>"varchar(255)",
+  "server_encrypted"=>"varchar(255)",
 );
 
 /***

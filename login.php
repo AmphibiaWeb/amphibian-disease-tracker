@@ -7,7 +7,7 @@
  * If you want a display!
  ***/
 
-# $debug = true;
+$debug = true;
 
 if($debug) {
     error_reporting(E_ALL);
@@ -271,9 +271,10 @@ catch (Exception $e)
 
 if($logged_in)
   {
-    $full_name=$xml->getTagContents($_COOKIE[$cookieperson],"<name>");
-    $first_name=$xml->getTagContents($_COOKIE[$cookieperson],"<fname>");
-    $display_name=$xml->getTagContents($_COOKIE[$cookieperson],"<dname>");
+    $xml->setXml($_COOKIE[$cookieperson]);
+    $full_name=$xml->getTagContents("<name>");
+    $first_name=$xml->getTagContents("<fname>");
+    $display_name=$xml->getTagContents("<dname>");
     if(empty($first_name)) $first_name = $_COOKIE[$cookieperson];
   }
 else
@@ -366,10 +367,12 @@ if($_REQUEST['q']=='submitlogin')
             $userdata=$res[1];
             $id=$userdata['id'];
             $name_block = $userdata['name'];
+            $xml->setXml($name_block);
+            echo "<!-- Name block: ".$name_block." -->";
             # Be sure we get the name from the actual userdata
-            $full_name=$xml->getTagContents($name_block,"<name>");
-            $first_name=$xml->getTagContents($name_block,"<fname>");
-            $display_name=$xml->getTagContents($name_block,"<dname>");
+            $full_name=$xml->getTagContents("<name>");
+            $first_name=$xml->getTagContents("<fname>");
+            $display_name=$xml->getTagContents("<dname>");
             # Account for possible differnt modes of saving
             if(empty($first_name)) $first_name = $name_block;
             $login_output.="<h1 id='welcome_back'>Welcome back, ".$first_name."</h1>"; //Welcome message
@@ -557,7 +560,8 @@ else if($_REQUEST['q']=='create')
         $prefill_fname = $_POST['fname'];
         $createform = "<style type='text/css'>.hide { display:none !important; }</style>
 <link rel='stylesheet' type='text/css' href='".$relative_path."bower_components/bootstrap/dist/css/bootstrap.min.css'/>
-              <div id='password_security' class='bs-callout bs-callout-info invisible col-sm-4 hidden-xs'>
+<section class='clearfix'>
+              <div id='password_security' class='bs-callout bs-callout-info invisible col-sm-4 hidden-xs pull-right'>
 
               </div>
 	    <form id='login' method='post' action='?q=create&amp;s=next' class='form-horizontal pull-left col-sm-8 creation-form'>
@@ -617,20 +621,22 @@ else if($_REQUEST['q']=='create')
               </label>
 	      <input type='text' name='honey' id='honey' class='hide'/>
 </div>
-        <p>Please enter both words shown in the prompt below</p>
+        <p>Please solve the <a href='https://en.wikipedia.org/wiki/CAPTCHA' class='newwindow'>CAPTCHA test</a> below</p>
         <script src='https://www.google.com/recaptcha/api.js'></script>
         <div class=\"g-recaptcha\" data-sitekey=\"".$recaptcha_public_key."\"></div>
 
               <br class='clearfix'/>
 	      <button id='createUser_submit' class='btn btn-success btn-lg col-xs-12 col-lg-3' disabled='disabled'>Create</button>
 </fieldset>
-	    </form><br class='clear'/>";
+	    </form>
+</section>
+<br class='clear'/>";
         $secnotice="<br/><p><small>Remember your security best practices! Do not use the same password you use for other sites. While your information is <a href='http://en.wikipedia.org/wiki/Cryptographic_hash_function' $newwindow>hashed</a> with a multiple-round hash function, <a href='http://arstechnica.com/security/2013/05/how-crackers-make-minced-meat-out-of-your-passwords/' $newwindow>passwords are easy to crack!</a></small></p>
 ";
         $createform.=$secnotice; # Password security notice
         if($_SERVER["HTTPS"] != "on" && $displaywarnings === true)
           {
-            $createform.="<p class='bg-danger text-center'>Warning: This form is insecure.</p>";
+            $createform.="<div class='alert alert-warning text-center'>Warning: This form is insecure.</div>";
           }
 
         if($_REQUEST['s']=='next')
@@ -721,6 +727,12 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                     $deferredJS.="\nwindow.location.href=\"$durl\";";
                                     header("Refresh: 3; url=".$durl);
                                   }
+                                else 
+                                {
+                                  # Let's show a nice message
+                                  $html = "<p >You may <a href='$baseurl/$redirect_url'>want to visit your administration page</a>, but otherwise we suggest <a href='$baseurl'>going home</a> and navigating from there.</p>";
+
+                                }
                                 if($ask_verify_phone_at_signup)
                                   {
                                     # Verify the phone number
@@ -763,14 +775,15 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                             else
                               {
                                 if($debug) $login_output.=displayDebug($res);
-                                $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>".$res["error"]."</p><p>Use your browser's back button to try again.</p></div>";
-                                $deferredJS = "console.error('Got response',".json_encode($res).")";
+                                $feedback = empty($res["human_error"]) ? $res["error"] : $res["human_error"];
+                                $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>".$feedback."</p><p>Use your browser's back button to try again.</p></div>";
+                                $deferredJS = "console.warn('Got response',".json_encode($res).")";
                               }
                             ob_end_flush();
                           }
                         else
                           {
-                              $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>Your password was not long enough ($minimum_password_length characters) or did not match minimum complexity levels (one upper case letter, one lower case letter, one digit or special character). You can also use <a href='http://imgs.xkcd.com/comics/password_strength.png' id='any_long_pass'>any long password</a> of at least $password_threshold_length characters. Please go back and try again.</p></div>";
+                              $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>Your password was not long enough ($minimum_password_length characters) or did not match minimum complexity levels (one upper case letter, one lower case letter, one digit or special character). You can also use <a href='http://imgs.xkcd.com/comics/password_strength.png' id='any_long_pass' class='lightboximage'>any long password</a> of at least $password_threshold_length characters. Please go back and try again.</p></div>";
                           }
                       }
                     else $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p>Your passwords did not match. Please go back and try again.</p></div>";

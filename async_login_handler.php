@@ -80,6 +80,9 @@ if($print_login_state === true)
       case 'get_login_status':
         returnAjax(getLoginState($_REQUEST));
         break;
+      case 'force_cookies':
+          returnAjax(forceResetCookieTokens());
+          break;
       case 'write':
         returnAjax(saveToUser($_REQUEST));
         break;
@@ -154,6 +157,11 @@ function getLoginState($get,$default=false)
       $userDetail = $e->getMessage();
   }
   return array("status"=>$loginStatus,'defaulted'=>$default,"login_url"=>$login_url,"detail"=>$userDetail);
+}
+
+function forceResetCookieTokens() {
+    $u=new UserFunctions();
+    return $u->createCookieTokens();
 }
 
 function hasTOTP($get)
