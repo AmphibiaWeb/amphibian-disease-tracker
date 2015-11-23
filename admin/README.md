@@ -9,23 +9,26 @@ This is a repo meant to deal with the vast majority of handling cases for user w
 - One-Time Passwords
 - Etc
 
-## Instructions
+## Installation Instructions
 
 1. Move `api.php` to target API directory
 2. Edit `api.php` as needed to fix paths
 2. Edit `SAMPLE_CONFIG.php` to suit your configuration, and re-save as `CONFIG.php`.
+2. Upload this whole directory to your webserver.
+3. Where you need access to any login functions or scripts, include `path_to_dir/login.php`.
+   1. If you want to actually output the login screen, be sure to print the variable `$login_output`.
+4. Set `handlers/temp` as server-writeable.
 
-Then you're set!
+Then you're set! I **highly** reccommend setting up Blackbox to secure your config file.
 
 ## Libraries
 
 Libraries that may need minor tweaking to "play nice" have been included as subtrees, and those that should be used verbatim have been included as submodules.
 
-Considering replacing the "current" [reCAPTCHA](https://developers.google.com/recaptcha/docs/php) API v1.11 [provided by Google in 2010](https://code.google.com/p/recaptcha/downloads/list?q=label:phplib-Latest) with the [php5 version on GitHub](https://github.com/AlekseyKorzun/reCaptcha-PHP-5).
 
 ### Subtrees
 
-- [otphp](https://github.com/tigerhawkvok/otphp) is a subtree in the `totp/` directory. The relevant files are in `totp/lib/OTPHP`. The command to update this is `git subtree pull --prefix totp otphp master --squash`. It is a fork from [Spomky Labs](https://github.com/Spomky-Labs/otphp) frozen at the 2.0.x branch, before it was made abstract.
+- [otphp](https://github.com/tigerhawkvok/otphp) is a subtree in the `totp/` directory. The relevant files are in `totp/lib/OTPHP`. It is a fork from [Spomky Labs](https://github.com/Spomky-Labs/otphp) frozen at the 2.0.x branch, before it was made abstract. **Updating this WILL break things**.
 - [base32](https://github.com/ChristianRiesen/base32) is a subtree in the `base32/` directory. The relevant file is `base32/src/Base32/Base32.php`. The command to update this is `git subtree pull --prefix base32 base32 master --squash`
 - [phpqrcode](https://github.com/t0k4rt/phpqrcode) is a subtree in the `qr/` directory. The relevant file is `qr/qrlib.php`. The command to update this is `git subtree pull --prefix qr qr master --squash`
 - [twilio-php](https://github.com/twilio/twilio-php) is a subtree in the `twilio/` directory. The relevant file is `twilio/Services/Twilio.php`. The command to update this is `git subtree pull --prefix twilio twilio master --squash`
@@ -37,15 +40,6 @@ Considering replacing the "current" [reCAPTCHA](https://developers.google.com/re
 
 The server is expected to have the basic number of columns and types listed in `SAMPLE-CONFIG.php`. If you change any of the default mappings, be sure to update the variables.
 
-## Installation
-
-1. Edit `SAMPLE-CONFIG.php` to suit your configuration and re-save it as `CONFIG.php`.
-2. Upload this whole directory to your webserver.
-3. Where you need access to any login functions or scripts, include `path_to_dir/login.php`.
-   1. If you want to actually output the login screen, be sure to print the variable `$login_output`.
-4. Set `handlers/temp` as server-writeable.
-
-You're set!
 
 ### JavaScript
 

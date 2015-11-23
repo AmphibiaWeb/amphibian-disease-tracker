@@ -1,6 +1,23 @@
 twilio-php Changelog
 ====================
 
+Version 4.4.0
+-------------
+Released September 21, 2015
+
+- Add support for messaging in Twilio Pricing API
+- Add support for Elastic SIP Trunking API
+
+Version 4.3.0
+-------------
+
+Released August 11, 2015
+
+- Add support for new Taskrouter JWT Functionality, JWTs now grant access to
+  - Workspace
+  - Worker
+  - TaskQueue
+
 Version 4.2.1
 -------------
 

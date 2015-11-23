@@ -1324,7 +1324,7 @@ class UserFunctions extends DBHelper
                 $userdata = null;
             }
             if ($detail) {
-                return array('state' => self::strbool($state),'status' => $state,'uid' => $userid,'salt' => $salt,'calc_conf' => $conf,'basis_conf' => $hash,'from_cookie' => self::strbool($from_cookie),'got_user_pass_info' => is_array($pw_characters),'got_userdata' => is_array($userdata),'userdata' => $userdata,'source' => $value_create,'error' => $error,'cookie_checked' => $cookiekey);
+                return array('state' => self::strbool($state),'status' => $state,'uid' => $userid,'salt' => $salt,'calc_conf' => $conf,'basis_conf' => $hash,'from_cookie' => self::strbool($from_cookie),'got_user_pass_info' => is_array($pw_characters),'got_userdata' => is_array($userdata),'userdata' => $userdata,'source' => $value_create,'error' => $error,'cookie_checked' => $cookiekey, "iv" => $this->getUserSeed());
             }
 
             return $state;
@@ -2510,12 +2510,48 @@ class UserFunctions extends DBHelper
     }
 
 
+    
+    private function getUserSeed($seedColumn = "random_seed", $verbose = false) {
+        # For legacy setups, make sure the random_seed column is there
+        $r = $this->addColumn($seedColumn, "varchar(255)");
+        if ($r["status"] === true 
+            || 
+            ($r["status"] === false && $r["error"] == "COLUMN_EXISTS")) {
+            # Get the seed!
+            $u = $this->getUser();
+            if(!empty($u[$randomSeed])) return $u[$randomSeed];
+            $criteria = array($this->linkColumn => $this->getHardlink());
+            $seed = Stronghash::createSalt() . Stronghash::genUnique(96);
+            $entry = array(
+                $seedColumn => $seed
+            );
+            try {
+                $r = $this->updateEntry($entry, $criteria);
+                if($r !== true) {
+                    if($verbose) return $r;
+                    return false;
+                }
+                return $seed;
+            } catch(Exception $e) {
+                if($verbose) return $e->getMessage();
+                return false;
+            }
+        }
+        # No column, and couldn't create it
+        if($verbose) return "NOT_EXIST_CANT_CREATE";
+        return false;
+    }
+    
+    
+    
     private static function getPreferredCipherMethod() {
         # TODO method to determine best cipher method
         $methods = openssl_get_cipher_methods();
         return "AES-256-CBC-HMAC-SHA1";
     }
 
+    
+    
     public static function encryptThis($key, $string, $iv = "")
     {
         /***
