@@ -5,7 +5,7 @@
 window.adminParams = new Object()
 adminParams.domain = "amphibiandisease"
 adminParams.apiTarget = "admin_api.php"
-adminParams.adminPageUrl = "http://#{adminParams.domain}.org/admin-page.html"
+adminParams.adminPageUrl = "https://#{adminParams.domain}.org/admin-page.html"
 adminParams.loginDir = "admin/"
 adminParams.loginApiTarget = "#{adminParams.loginDir}async_login_handler.php"
 
