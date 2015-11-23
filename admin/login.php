@@ -366,6 +366,7 @@ if($_REQUEST['q']=='submitlogin')
             $userdata=$res[1];
             $id=$userdata['id'];
             $name_block = $userdata['name'];
+            echo "<!-- Name block: ".$name_block." -->";
             # Be sure we get the name from the actual userdata
             $full_name=$xml->getTagContents($name_block,"<name>");
             $first_name=$xml->getTagContents($name_block,"<fname>");
