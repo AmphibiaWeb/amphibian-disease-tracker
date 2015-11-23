@@ -121,7 +121,7 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <h2 class=\"new-title\">Lab Parameters</h2>\n  <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></gold-email-input>\n  <paper-input label=\"Project Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <h2 class=\"new-title\">Project Notes</h2>\n  <iron-autogrow-textarea id=\"project-notes\" class=\"project-field col-md-6 col-xs-12\" rows=\"3\"></iron-autogrow-textarea>\n  <h2 class=\"new-title\">Data Parameters</h2>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n  <h2 class=\"new-title\">Transects</h2>\n  <div class=\"col-xs-12\">\n    <span class=\"toggle-off-label iron-label\">Locality Name</span>\n    <paper-toggle-button id=\"transect-input-toggle\" checked>Coordinate List</paper-toggle-button>\n  </div>\n  <p id=\"transect-instructions\" class=\"col-xs-12\"></p>\n  <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n  </div>\n  <div id=\"carto-rendered-map\" class=\"col-md-6\">\n  </div>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
+  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <h2 class=\"new-title\">Lab Parameters</h2>\n  <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></gold-email-input>\n  <paper-input label=\"Project Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <h2 class=\"new-title\">Project Notes</h2>\n  <iron-autogrow-textarea id=\"project-notes\" class=\"project-field col-md-6 col-xs-12\" rows=\"3\"></iron-autogrow-textarea>\n  <h2 class=\"new-title\">Data Parameters</h2>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n  <h2 class=\"new-title\">Transects</h2>\n  <div class=\"col-xs-12\">\n    <span class=\"toggle-off-label iron-label\">Locality Name</span>\n    <paper-toggle-button id=\"transect-input-toggle\" checked>Coordinate List</paper-toggle-button>\n  </div>\n  <p id=\"transect-instructions\" class=\"col-xs-12\"></p>\n  <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n  </div>\n  <div id=\"carto-rendered-map\" class=\"col-md-6\">\n    <div id=\"carto-map-container\" class=\"carto-map map\">\n    </div>\n  </div>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
   $("main #main-body").append(html);
   bootstrapUploader();
   bootstrapTransect();
@@ -161,7 +161,7 @@ bootstrapTransect = function() {
         address: locality
       };
       return geocoder.geocode(request, function(result, status) {
-        var bbEW, bbNS, boundingBox, bounds, lat, lng, loc;
+        var bbEW, bbNS, boundingBox, bounds, doCallback, lat, lng, loc;
         if (status === google.maps.GeocoderStatus.OK) {
           console.info("Google said:", result);
           if (!$("#locality-lookup-result").exists()) {
@@ -181,7 +181,21 @@ bootstrapTransect = function() {
             se: [bbEW.j, bbNS.j]
           };
           console.info("Got bounds: ", [lat, lng], boundingBox);
-          foo();
+          doCallback = function() {
+            var options;
+            options = {
+              cartodb_logo: false,
+              https: true,
+              mobile_layout: true,
+              gmaps_base_type: "hybrid",
+              center_lat: lat,
+              center_lon: lng,
+              zoom: 7
+            };
+            createMap(null, "carto-map-container", options);
+            return foo();
+          };
+          loadJS("js/cartodb.js", doCallback, false);
           return stopLoad();
         } else {
           return stopLoadError("Couldn't find location: " + status);

@@ -45,7 +45,7 @@ geo.init = (doCallback) ->
     # Their url,
     # http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js
     # is insecure so we load our own copy
-    loadJS "https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+    loadJS "js/cartodb.js", doCallback, false
   # First, we have to load the Google Maps library
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
@@ -53,7 +53,7 @@ geo.init = (doCallback) ->
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
-createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "map") ->
+createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "map", options) ->
   ###
   # Creates a map and does some simple bindings.
   #
@@ -66,7 +66,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   unless dataVisIdentifier?
     console.info "Can't create map without a data visualization identifier"
   dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
-  options =
+  options ?=
     cartodb_logo: false
     https: true # Secure forcing is leading to resource errors
     mobile_layout: true
@@ -76,7 +76,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     zoom: 7
   unless $("##{targetId}").exists()
     fakeDiv = """
-    <div id="#{targetId}" class="carto-map map">
+    <div id="#{targetId}" class="carto-map wide-map">
       <!-- Dynamically inserted from unavailable target -->
     </div>
     """

@@ -7187,11 +7187,17 @@ iron-autogrow-textarea.project-field {
   margin-bottom: 1em;
 }
 .map {
-  width: 75vw;
   height: 50vh;
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+.wide-map {
+  height: 50vh;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 75vw;
 }
 @media (max-width: 767px) {
   .map {

@@ -1198,7 +1198,7 @@ geo.init = function(doCallback) {
     };
   }
   window.gMapsCallback = function() {
-    return loadJS("https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
+    return loadJS("js/cartodb.js", doCallback, false);
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };
@@ -1207,8 +1207,8 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
 };
 
-createMap = function(dataVisIdentifier, targetId) {
-  var dataVisUrl, fakeDiv, options;
+createMap = function(dataVisIdentifier, targetId, options) {
+  var dataVisUrl, fakeDiv;
   if (dataVisIdentifier == null) {
     dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28";
   }
@@ -1229,17 +1229,19 @@ createMap = function(dataVisIdentifier, targetId) {
     console.info("Can't create map without a data visualization identifier");
   }
   dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
-  options = {
-    cartodb_logo: false,
-    https: true,
-    mobile_layout: true,
-    gmaps_base_type: "hybrid",
-    center_lat: window.locationData.lat,
-    center_lon: window.locationData.lng,
-    zoom: 7
-  };
+  if (options == null) {
+    options = {
+      cartodb_logo: false,
+      https: true,
+      mobile_layout: true,
+      gmaps_base_type: "hybrid",
+      center_lat: window.locationData.lat,
+      center_lon: window.locationData.lng,
+      zoom: 7
+    };
+  }
   if (!$("#" + targetId).exists()) {
-    fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
+    fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
     $("main #main-body").append(fakeDiv);
   }
   return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {

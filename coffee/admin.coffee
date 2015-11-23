@@ -151,6 +151,8 @@ loadCreateNewProject = ->
     <div id="transect-input" class="col-md-6 col-xs-12">
     </div>
     <div id="carto-rendered-map" class="col-md-6">
+      <div id="carto-map-container" class="carto-map map">
+      </div>
     </div>
   </section>
   <p>Etc</p>
@@ -228,7 +230,18 @@ bootstrapTransect = ->
             sw: [bbEW.O, bbNS.j]
             se: [bbEW.j, bbNS.j]
           console.info "Got bounds: ", [lat, lng], boundingBox
-          foo()
+          doCallback = ->
+            options =
+              cartodb_logo: false
+              https: true # Secure forcing is leading to resource errors
+              mobile_layout: true
+              gmaps_base_type: "hybrid"
+              center_lat: lat
+              center_lon: lng
+              zoom: 7
+            createMap null, "carto-map-container", options
+            foo()
+          loadJS "js/cartodb.js", doCallback, false
           stopLoad()
         else
           stopLoadError "Couldn't find location: #{status}"
