@@ -228,8 +228,8 @@ public:
 carto_id:
   # CartoDB identifier for this dataset.
   type: "varchar(255)"
-  logical: "string"
-  sample: "2b13c956-e7c1-11e2-806b-5404a6a683d5"
+  logical: "json"
+  sample: "{'viz':'2b13c956-e7c1-11e2-806b-5404a6a683d5','table':'t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f5'}"
 more_analysis_funding_request:
   # Does the group doing this research have other goals that want more funding?
   # After
