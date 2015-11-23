@@ -53,7 +53,7 @@ geo.init = (doCallback) ->
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
-createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "map", options) ->
+createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "map", options, callback) ->
   ###
   # Creates a map and does some simple bindings.
   #
@@ -81,18 +81,21 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     </div>
     """
     $("main #main-body").append fakeDiv
+  unless typeof callback is "function"
+    callback = (cartoVis, cartoMap) ->
+      # For whatever reason, we still need to manually add the data
+      cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
+      .done (layer) ->
+        # The actual interaction infowindow popup is decided on the data
+        # page in Carto
+        layer.setInteraction true
+        layer.on "featureOver", defaultMapMouseOverBehaviour
   cartodb.createVis targetId, dataVisUrl, options
   .done (vis, layers) ->
     console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
     cartoVis = vis
     cartoMap = vis.getNativeMap()
-    # For whatever reason, we still need to manually add the data
-    cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
-    .done (layer) ->
-      # The actual interaction infowindow popup is decided on the data
-      # page in Carto
-      layer.setInteraction true
-      layer.on "featureOver", defaultMapMouseOverBehaviour
+    callback(cartoVis, cartoMap)
   .error (errorString) ->
     toastStatusMessage("Couldn't load maps!")
     console.error "Couldn't get map - #{errorString}"
@@ -286,7 +289,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
               type: "Point"
               coordinates: new Array()
             iIndex = i + 1
-            valuesArr.push iIndex 
+            valuesArr.push iIndex
             for column, value of row
               # Loop data ....
               if i is 0

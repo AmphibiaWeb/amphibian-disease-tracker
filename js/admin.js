@@ -192,8 +192,9 @@ bootstrapTransect = function() {
               center_lon: lng,
               zoom: 7
             };
-            createMap(null, "carto-map-container", options);
-            return foo();
+            return createMap(null, "carto-map-container", options, function(vis, map) {
+              return foo();
+            });
           };
           loadJS("js/cartodb.js", doCallback, false);
           return stopLoad();

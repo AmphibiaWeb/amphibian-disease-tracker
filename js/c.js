@@ -1207,7 +1207,7 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
 };
 
-createMap = function(dataVisIdentifier, targetId, options) {
+createMap = function(dataVisIdentifier, targetId, options, callback) {
   var dataVisUrl, fakeDiv;
   if (dataVisIdentifier == null) {
     dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28";
@@ -1244,14 +1244,19 @@ createMap = function(dataVisIdentifier, targetId, options) {
     fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
     $("main #main-body").append(fakeDiv);
   }
+  if (typeof callback !== "function") {
+    callback = function(cartoVis, cartoMap) {
+      return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+        layer.setInteraction(true);
+        return layer.on("featureOver", defaultMapMouseOverBehaviour);
+      });
+    };
+  }
   return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
     console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
     cartoVis = vis;
     cartoMap = vis.getNativeMap();
-    return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
-      layer.setInteraction(true);
-      return layer.on("featureOver", defaultMapMouseOverBehaviour);
-    });
+    return callback(cartoVis, cartoMap);
   }).error(function(errorString) {
     toastStatusMessage("Couldn't load maps!");
     return console.error("Couldn't get map - " + errorString);

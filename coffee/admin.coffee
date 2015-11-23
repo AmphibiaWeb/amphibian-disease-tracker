@@ -239,8 +239,9 @@ bootstrapTransect = ->
               center_lat: lat
               center_lon: lng
               zoom: 7
-            createMap null, "carto-map-container", options
-            foo()
+            createMap null, "carto-map-container", options, (vis, map) ->
+              # Map has been created, play with the data!
+              foo()
           loadJS "js/cartodb.js", doCallback, false
           stopLoad()
         else
