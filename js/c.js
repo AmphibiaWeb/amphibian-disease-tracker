@@ -1373,7 +1373,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           }
         ]
       };
-      dataGeometry = "ST_AsGeoJSON(" + (JSON.stringify(geoJson)) + ")";
+      dataGeometry = "ST_AsBinary(" + (JSON.stringify(geoJson)) + ")";
       columnDatatype = {
         id: "int",
         collectionID: "varchar",
@@ -1390,12 +1390,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         specificEpithet: "varchar",
         infraspecificEpithet: "varchar",
         lifeStage: "varchar",
-        dateIdentified: "datetime",
+        dateIdentified: "date",
         decimalLatitude: "decimal",
         decimalLongitude: "decimal",
         alt: "decimal",
         coordinateUncertaintyInMeters: "decimal",
-        Collector: "varchar"
+        Collector: "varchar",
+        the_geom: "varchar"
       };
       switch (operation) {
         case "edit":
@@ -1414,7 +1415,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           };
           valuesList = new Array();
           columnNamesList = new Array();
-          columnNamesList.push("id  int(10) NOT NULL AUTO_INCREMENT");
+          columnNamesList.push("id");
           for (i in data) {
             row = data[i];
             i = toInt(i);
@@ -1455,12 +1456,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
             }
             if (i === 0) {
               console.log("We're appending to col names list");
-              columnNamesList.push("`the_geom`");
+              columnNamesList.push("the_geom geometry");
               if (operation === "create") {
                 sqlQuery = sqlQuery + " (" + (columnNamesList.join(",")) + "); ";
               }
             }
-            geoJsonVal = "ST_AsGeoJSON(" + (JSON.stringify(geoJsonGeom)) + ")";
+            geoJsonVal = "ST_AsBinary(" + (JSON.stringify(geoJsonGeom)) + ")";
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }

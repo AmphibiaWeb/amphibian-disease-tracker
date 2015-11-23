@@ -217,7 +217,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
               type: "Polygon"
               coordinates: transectPolygon
           ]
-      dataGeometry = "ST_AsGeoJSON(#{JSON.stringify(geoJson)})"
+      dataGeometry = "ST_AsBinary(#{JSON.stringify(geoJson)})"
       # Rows per-sample ...
       # FIMS based
       # Uses DarwinCore terms
@@ -238,12 +238,13 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         specificEpithet: "varchar"
         infraspecificEpithet: "varchar"
         lifeStage: "varchar"
-        dateIdentified: "datetime" # Should be ISO8601; coerce it!
+        dateIdentified: "date" # Should be ISO8601; coerce it!
         decimalLatitude: "decimal"
         decimalLongitude: "decimal"
         alt: "decimal"
         coordinateUncertaintyInMeters: "decimal"
         Collector: "varchar"
+        the_geom: "varchar"
       # Construct the SQL query
       switch operation
         when "edit"
@@ -264,7 +265,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           # All the others ...
           valuesList = new Array()
           columnNamesList = new Array()
-          columnNamesList.push "id  int(10) NOT NULL AUTO_INCREMENT"
+          columnNamesList.push "id"
           for i, row of data
             i = toInt(i)
             console.log "Iter ##{i}", i is 0, `i == 0`
@@ -301,10 +302,10 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
             # Add a GeoJSON column and GeoJSON values
             if i is 0
               console.log "We're appending to col names list"
-              columnNamesList.push "`the_geom`"
+              columnNamesList.push "the_geom geometry"
               if operation is "create"
                 sqlQuery = "#{sqlQuery} (#{columnNamesList.join(",")}); "
-            geoJsonVal = "ST_AsGeoJSON(#{JSON.stringify(geoJsonGeom)})"
+            geoJsonVal = "ST_AsBinary(#{JSON.stringify(geoJsonGeom)})"
             valuesArr.push geoJsonVal
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
