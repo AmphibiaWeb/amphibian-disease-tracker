@@ -230,7 +230,7 @@ bootstrapTransect = ->
           stopLoad()
         else
           stopLoadError "Couldn't find location: #{status}"
-    unless google.maps?
+    unless google?.maps?
       # Load the JS
       loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=geocodeLookupCallback"
     else

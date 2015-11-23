@@ -187,7 +187,7 @@ bootstrapTransect = function() {
         }
       });
     };
-    if (google.maps == null) {
+    if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
       loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=geocodeLookupCallback");
     } else {
       geocodeLookupCallback();
