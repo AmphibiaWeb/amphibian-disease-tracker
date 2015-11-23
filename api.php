@@ -148,7 +148,7 @@ function doCartoSqlApiPush($get) {
             "sql_statements" => $statements,
             "post_response" => $responses,
             "parsed_responses" => $parsed_responses,
-            "urls_posted" => $urls,
+            # "urls_posted" => $urls,
         ));
     } catch (Exception $e) {
         returnAjax(array(
