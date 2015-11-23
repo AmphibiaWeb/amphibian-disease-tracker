@@ -133,6 +133,12 @@ loadCreateNewProject = ->
   <section class="project-inputs clearfix">
     <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate></paper-input>
     <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
+    <h2>Lab Parameters</h2>
+    <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"></paper-input>
+    <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"></paper-input>
+    <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"></gold-email-input>
+    <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"></paper-input>
+    <h2>Data Parameters</h2>
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
   </section>
   <p>Etc</p>
