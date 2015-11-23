@@ -8,41 +8,54 @@ reference_id:
   type: "varchar(255)"
   logical: "string"
 disease:
+  # Project-wide
   type: "varchar(255)"
   logical: "string"
 disease_strain:
+  # Project-wide
   type: "varchar(255)"
   logical: "string"
 disease_samples:
+  # Computed. Roughly number of rows in dataset.
   type: "int"
   logical: "Number of total samples"
 disease_positive:
+  # Computed sum
   type: "int"
 disease_negative:
+  # Computed sum
   type: "int"
 disease_no_confidence:
+  # Computed sum
   type: "int"
 disease_morbidity:
+  # Computed sum
   type: "int"
   logical: "Number of sick individuals"
 disase_mortality:
+  # Computed sum
   type: "int"
   logical: "Number of individuals who died"
 sample_method:
+  # List of unique sample methods
   type: "varchar(255)"
   logical: "string"
 includes_anura:
+  # Computed, from AW clade lookup
   type: "boolean"
 includes_caudata:
+  # Computed, from AW clade lookup
   type: "boolean"
 includes_gymnophiona:
+  # Computed, from AW clade lookup
   type: "boolean"
 sampled_species:
+  # Computed list from unique 
   type: "text"
   logical: "csv"
   sample: "Batrachoseps attenuatus, Lithobates catesbeianus"
 sampled_clades:
-  # Clades sampled. Appx. Linnean "family".
+  # Clades sampled. Appx. Linnean "family". Computed list of unique
   type: "text"
   logical: "csv"
   sample: "plethodontidae, ranoidea"
@@ -99,6 +112,7 @@ sampled_species_detail:
       sample_method: "swab_preserved"
       sample_disposition: "destroyed"
 sample_collection_start:
+  # Computed from sample dates
   type: "int"
   logical: "Linux epoch date"
 sample_collection_end:
@@ -137,18 +151,19 @@ samples_raw_data:
   type: "varchar(255)"
   logical: "file path"
 sample_notes:
+  # Input from UI
   type: "text"
   logical: "Markdown text of high-level notes"
 locality:
-  # Human-friendly location marker
+  # Human-friendly location marker. Reverse geocode lookup
   type: "text"
   logical: "location"
 lat:
-  # Representative location of the transect
+  # Representative location of the transect. Mean of points from data.
   type: "double"
   logical: "number"
 lng:
-  # Representative location of the transect
+  # Representative location of the transect. Mean of points from data.
   type: "double"
   logical: "number"
 radius:
