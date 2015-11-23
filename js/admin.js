@@ -121,7 +121,7 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <h2 class=\"new-title\">Lab Parameters</h2>\n  <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></gold-email-input>\n  <paper-input label=\"Project Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <h2 class=\"new-title\">Project Notes</h2>\n\n  <h2 class=\"new-title\">Data Parameters</h2>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n  <h2 class=\"new-title\">Transects</h2>\n  <div class=\"col-xs-12\">\n    <span class=\"toggle-off-label iron-label\">Locality Name</span>\n    <paper-toggle-button id=\"transect-input-toggle\" checked>Coordinate List</paper-toggle-button>\n  </div>\n  <p id=\"transect-instructions\"></p>\n  <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n  </div>\n  <div id=\"carto-rendered-map\" class=\"col-md-6\">\n  </div>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
+  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <h2 class=\"new-title\">Lab Parameters</h2>\n  <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></gold-email-input>\n  <paper-input label=\"Project Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <h2 class=\"new-title\">Project Notes</h2>\n\n  <h2 class=\"new-title\">Data Parameters</h2>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n  <h2 class=\"new-title\">Transects</h2>\n  <div class=\"col-xs-12\">\n    <span class=\"toggle-off-label iron-label\">Locality Name</span>\n    <paper-toggle-button id=\"transect-input-toggle\" checked>Coordinate List</paper-toggle-button>\n  </div>\n  <p id=\"transect-instructions\" class=\"col-xs-12\"></p>\n  <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n  </div>\n  <div id=\"carto-rendered-map\" class=\"col-md-6\">\n  </div>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
   $("main #main-body").append(html);
   bootstrapUploader();
   bootstrapTransect();
@@ -157,19 +157,20 @@ bootstrapTransect = function() {
     }
     $("#transect-instructions").html(instructions);
     $("#transect-input").html(transectInput);
-    if (p$("#transect-input").checked) {
+    if (p$("#transect-input-toggle").checked) {
       $(p$("#coord-input").textarea).keyup((function(_this) {
         return function(e) {
-          var coordPair, coordSplit, coords, coordsRaw, i, kc, len, lines, tmp;
+          var coordPair, coordSplit, coords, coordsRaw, i, kc, len, lines, tmp, val;
           kc = e.keyCode ? e.keyCode : e.which;
           if (kc === 13) {
-            lines = _this.split("\n").length;
+            val = $(p$("#coord-input").textarea).val();
+            lines = val.split("\n").length;
             if (lines > 3) {
               coords = new Array();
-              coordsRaw = _this.split("\n");
+              coordsRaw = val.split("\n");
               for (i = 0, len = coordsRaw.length; i < len; i++) {
                 coordPair = coordsRaw[i];
-                if (coordPair.search("," > 0)) {
+                if (coordPair.search("," > 0 && !isNull(coordPair))) {
                   coordSplit = coordPair.split(",");
                   tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
                   coords.push(tmp);

@@ -147,7 +147,7 @@ loadCreateNewProject = ->
       <span class="toggle-off-label iron-label">Locality Name</span>
       <paper-toggle-button id="transect-input-toggle" checked>Coordinate List</paper-toggle-button>
     </div>
-    <p id="transect-instructions"></p>
+    <p id="transect-instructions" class="col-xs-12"></p>
     <div id="transect-input" class="col-md-6 col-xs-12">
     </div>
     <div id="carto-rendered-map" class="col-md-6">
@@ -206,19 +206,20 @@ bootstrapTransect = ->
       """
     $("#transect-instructions").html instructions
     $("#transect-input").html transectInput
-    if p$("#transect-input").checked
+    if p$("#transect-input-toggle").checked
       $(p$("#coord-input").textarea).keyup (e) =>
         kc = if e.keyCode then e.keyCode else e.which
         if kc is 13
           # New line
-          lines = @split("\n").length
+          val = $(p$("#coord-input").textarea).val()
+          lines = val.split("\n").length
           if lines > 3
             # Count the new lines
             # if 3+, send the polygon to be drawn
             coords = new Array()
-            coordsRaw = @split("\n")
+            coordsRaw = val.split("\n")
             for coordPair in coordsRaw
-              if coordPair.search "," > 0
+              if coordPair.search "," > 0 and not isNull coordPair
                 coordSplit = coordPair.split(",")
                 tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])]
                 coords.push tmp
