@@ -7182,6 +7182,10 @@ paper-button.admin-action {
   display: block;
   clear: both;
 }
+iron-autogrow-textarea.project-field {
+  margin-left: 1em;
+  margin-bottom: 1em;
+}
 .map {
   width: 75vw;
   height: 50vh;

@@ -149,6 +149,9 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
   args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
   ## NOTE THIS SHOULD ACTUALLY VERIFY THAT THE DATA COULD BE WRITTEN
   # TO THIS PROJECT BY THIS PERSON!!!
+  #
+  # Some of this could, in theory, be done via
+  # http://docs.cartodb.com/cartodb-platform/cartodb-js/sql/
   $.post "admin_api.php", args, "json"
   .done (result) ->
     if result.status
