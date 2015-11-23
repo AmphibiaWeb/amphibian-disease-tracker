@@ -141,12 +141,12 @@ loadProjectBrowser = function() {
 };
 
 bootstrapTransect = function() {
-  var showCartoTransectMap;
+  var setupTransectUi, showCartoTransectMap;
   showCartoTransectMap = function(coordList) {
     foo();
     return false;
   };
-  setupTransectUi()(function() {
+  (setupTransectUi = function() {
     var instructions, transectInput;
     if (p$("#transect-input").checked) {
       instructions = "Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.";
@@ -187,7 +187,7 @@ bootstrapTransect = function() {
       })(this));
     }
     return false;
-  });
+  })();
   $("body #do-search-locality").click(function() {
     var coords;
     window.geocodeLookupCallback = function() {
@@ -237,7 +237,6 @@ bootstrapTransect = function() {
   $("#transect-input").on("iron-change", function() {
     return setupTransectUi();
   });
-  setupTransectUi();
   return false;
 };
 

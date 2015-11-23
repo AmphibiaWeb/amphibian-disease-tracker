@@ -188,7 +188,7 @@ bootstrapTransect = ->
   showCartoTransectMap = (coordList) ->
     foo()
     false
-  do setupTransectUi() = ->
+  do setupTransectUi = ->
     if p$("#transect-input").checked
       # Coordinates
       instructions = """
