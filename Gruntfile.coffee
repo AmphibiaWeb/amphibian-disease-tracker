@@ -153,7 +153,7 @@ module.exports = (grunt) ->
         files: ["*.php", "helpers/*.php"]
         tasks: ["phplint"]
     phplint:
-      root: ["*.php", "helpers/*.php"]
+      root: ["*.php", "helpers/*.php", "core/*/*.php", "core/*.php"]
     bootlint:
       options:
         stoponerror: false
