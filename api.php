@@ -121,9 +121,10 @@ function doCartoSqlApiPush($get) {
         #
         $cartoFullUrl = $cartoPostUrl . "?" . $cartoArgs;
         if(boolstr($get["alt"])) {
-            $responses[] = json_decode(file_get_contents($cartoFullUrl), true);
-        } else {
             $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
+        } else {
+            # Default
+            $responses[] = json_decode(file_get_contents($cartoFullUrl), true);
         }
     }
     $cartoArgs = "q=" . $sqlQuery . $cartoArgSuffix;
