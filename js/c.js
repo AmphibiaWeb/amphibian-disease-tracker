@@ -1185,7 +1185,7 @@ geo.init = function(doCallback) {
     window.locationData.lng = -122.262113;
     getLocation();
   } catch (_error) {}
-  cartoDBCSS = "<link rel=\"stylesheet\" href=\"http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
+  cartoDBCSS = "<link rel=\"stylesheet\" href=\"https://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   if (doCallback == null) {
     doCallback = function() {
@@ -1194,7 +1194,7 @@ geo.init = function(doCallback) {
     };
   }
   window.gMapsCallback = function() {
-    return loadJS("http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
+    return loadJS("https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };

@@ -34,7 +34,7 @@ geo.init = (doCallback) ->
     # Now get the real location
     getLocation()
   cartoDBCSS = """
-  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <link rel="stylesheet" href="https://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   """
   $("head").append cartoDBCSS
   doCallback ?= ->
@@ -42,7 +42,7 @@ geo.init = (doCallback) ->
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
-    loadJS "http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+    loadJS "https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
   # First, we have to load the Google Maps library
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 

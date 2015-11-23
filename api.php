@@ -114,17 +114,22 @@ function doCartoSqlApiPush($get) {
     $cartoArgSuffix = "&api_key=".$cartodb_api_key;
     $statements = explode(";", $sqlQuery);
     $responses = array();
+    $parsed_responses = array();
+    $urls = array();
     foreach($statements as $statement) {
         $statement = trim($statement);
         if (empty($statement)) continue;
         $cartoArgs = "q=" . urlencode($statement) . $cartoArgSuffix;
         #
         $cartoFullUrl = $cartoPostUrl . "?" . $cartoArgs;
+        $urls[] = $cartoFullUrl;
         if(boolstr($get["alt"])) {
             $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
         } else {
             # Default
-            $responses[] = json_decode(file_get_contents($cartoFullUrl), true);
+            $response = file_get_contents($cartoFullUrl);
+            $responses[] = $response;
+            $parsed_responses[] = json_decode($response, true);
         }
     }
     $cartoArgs = "q=" . $sqlQuery . $cartoArgSuffix;
@@ -134,6 +139,8 @@ function doCartoSqlApiPush($get) {
             "status" => true,
             "sql_statements" => $statements,
             "post_response" => $responses,
+            "parsed_responses" => $parsed_responses,
+            "urls_posted" => $cartoFullUrl,
         ));
     } catch (Exception $e) {
         returnAjax(array(
