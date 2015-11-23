@@ -187,7 +187,7 @@ bootstrapTransect = function() {
       })(this));
     }
     return false;
-  })();
+  });
   $("body #do-search-locality").click(function() {
     var coords;
     window.geocodeLookupCallback = function() {
@@ -237,6 +237,7 @@ bootstrapTransect = function() {
   $("#transect-input").on("iron-change", function() {
     return setupTransectUi();
   });
+  setupTransectUi();
   return false;
 };
 
