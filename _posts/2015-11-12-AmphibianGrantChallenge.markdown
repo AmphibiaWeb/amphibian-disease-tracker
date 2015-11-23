@@ -1,12 +1,10 @@
 ---
 layout: post
-title:  "Amphibian Grant Challenge"
+title:  "Amphibian Grant Challenge begins!"
 date:   2015-11-12 08:43:59
 author: Tiffany Yap
 categories: News
 ---
-
-#[Amphibian Grant Challenge](https://www.instrumentl.com/campaigns/category/amphibian/) begins!
 
 [Instrumentl](https://www.instrumentl.com), a platform for researchers to crowdfund their research projects, has started a grant challenge for researchers to conserve amphibian biodiversity. Proposed projects range from amphibian disease to habitat/ distribution studies to school outreach programs. Donate now and help fight against amphibian extinctions!
 
