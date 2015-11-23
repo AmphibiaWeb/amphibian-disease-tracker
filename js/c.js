@@ -1415,7 +1415,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           };
           valuesList = new Array();
           columnNamesList = new Array();
-          columnNamesList.push("id");
+          columnNamesList.push("id int");
           for (i in data) {
             row = data[i];
             i = toInt(i);

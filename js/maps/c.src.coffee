@@ -979,6 +979,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
   # We want the data tables to be unique, so we'll suffix them with
   # the user link.
   dataTable = "#{dataTable}_#{link}"
+  # dataTable = dataTable.slice(0,63)
   # Start doing real things
   args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
   ## NOTE THIS SHOULD ACTUALLY VERIFY THAT THE DATA COULD BE WRITTEN
@@ -1103,7 +1104,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           # All the others ...
           valuesList = new Array()
           columnNamesList = new Array()
-          columnNamesList.push "id"
+          columnNamesList.push "id int"
           for i, row of data
             i = toInt(i)
             console.log "Iter ##{i}", i is 0, `i == 0`
