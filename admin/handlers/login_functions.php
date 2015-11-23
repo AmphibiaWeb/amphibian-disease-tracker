@@ -2543,6 +2543,9 @@ class UserFunctions extends DBHelper
         return false;
     }
     
+    public function getIV() {
+        return $this->getUserSeed()
+    }
     
     
     private static function getPreferredCipherMethod() {
