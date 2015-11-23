@@ -139,7 +139,7 @@ loadCreateNewProject = ->
     <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></gold-email-input>
     <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
     <h2 class="new-title">Project Notes</h2>
-
+    <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
     <h2 class="new-title">Data Parameters</h2>
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
     <h2 class="new-title">Transects</h2>

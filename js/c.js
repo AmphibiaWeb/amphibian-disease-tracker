@@ -740,9 +740,13 @@ bindClicks = function(selector) {
         }
         $(this).click(function() {
           var ref, ref1, ref2;
-          if (((ref = $(this).attr("newTab")) != null ? ref.toBool() : void 0) || ((ref1 = $(this).attr("newtab")) != null ? ref1.toBool() : void 0) || ((ref2 = $(this).attr("data-newtab")) != null ? ref2.toBool() : void 0)) {
-            return openTab(url);
-          } else {
+          try {
+            if (((ref = $(this).attr("newTab")) != null ? ref.toBool() : void 0) || ((ref1 = $(this).attr("newtab")) != null ? ref1.toBool() : void 0) || ((ref2 = $(this).attr("data-newtab")) != null ? ref2.toBool() : void 0)) {
+              return openTab(url);
+            } else {
+              return goTo(url);
+            }
+          } catch (_error) {
             return goTo(url);
           }
         });
