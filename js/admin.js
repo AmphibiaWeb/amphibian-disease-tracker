@@ -158,94 +158,96 @@ bootstrapUploader = function(uploadFormId) {
       return false;
     });
   }
-  if (window.dropperParams == null) {
-    window.dropperParams = new Object();
-  }
-  window.dropperParams.uploadPath = "uploaded/" + user + "/";
-  return loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
-    console.info("Loaded drag drop helper");
-    window.dropperParams.postUploadHandler = function(file, result) {
+  return verifyLoginCredentials(function() {
+    if (window.dropperParams == null) {
+      window.dropperParams = new Object();
+    }
+    window.dropperParams.uploadPath = "uploaded/" + user + "/";
+    loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
+      console.info("Loaded drag drop helper");
+      return window.dropperParams.postUploadHandler = function(file, result) {
 
-      /*
-       * The callback function for handleDragDropImage
-       *
-       * The "file" object contains information about the uploaded file,
-       * such as name, height, width, size, type, and more. Check the
-       * console logs in the demo for a full output.
-       *
-       * The result object contains the results of the upload. The "status"
-       * key is true or false depending on the status of the upload, and
-       * the other most useful keys will be "full_path" and "thumb_path".
-       *
-       * When invoked, it calls the "self" helper methods to actually do
-       * the file sending.
-       */
-      var e, linkPath, longType, mediaType, pathPrefix, previewHtml;
-      window.dropperParams.dropzone.removeAllFiles();
-      if (typeof result !== "object") {
-        console.error("Dropzone returned an error - " + result);
-        toastStatusMessage("There was a problem with the server handling your image. Please try again.");
-        return false;
-      }
-      if (result.status !== true) {
-        if (result.human_error == null) {
-          result.human_error = "There was a problem uploading your image.";
+        /*
+         * The callback function for handleDragDropImage
+         *
+         * The "file" object contains information about the uploaded file,
+         * such as name, height, width, size, type, and more. Check the
+         * console logs in the demo for a full output.
+         *
+         * The result object contains the results of the upload. The "status"
+         * key is true or false depending on the status of the upload, and
+         * the other most useful keys will be "full_path" and "thumb_path".
+         *
+         * When invoked, it calls the "self" helper methods to actually do
+         * the file sending.
+         */
+        var e, linkPath, longType, mediaType, pathPrefix, previewHtml;
+        window.dropperParams.dropzone.removeAllFiles();
+        if (typeof result !== "object") {
+          console.error("Dropzone returned an error - " + result);
+          toastStatusMessage("There was a problem with the server handling your image. Please try again.");
+          return false;
         }
-        toastStatusMessage("" + result.human_error);
-        console.error("Error uploading!", result);
-        return false;
-      }
-      try {
-        console.info("Server returned the following result:", result);
-        console.info("The script returned the following file information:", file);
-        pathPrefix = "helpers/js-dragdrop/uploaded/" + user + "/";
-        result.full_path = result.wrote_file;
-        result.thumb_path = result.wrote_thumb;
-        mediaType = result.mime_provided.split("/")[0];
-        longType = result.mime_provided.split("/")[1];
-        linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.full_path : "" + pathPrefix + result.thumb_path;
-        previewHtml = (function() {
-          switch (mediaType) {
-            case "image":
-              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + result.full_path + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
-            case "audio":
-              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
-            case "video":
-              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
-            default:
-              return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + result.full_path + "</p>\n</div>";
+        if (result.status !== true) {
+          if (result.human_error == null) {
+            result.human_error = "There was a problem uploading your image.";
           }
-        })();
-        $(window.dropperParams.dropTargetSelector).before(previewHtml);
-        switch (mediaType) {
-          case "application":
-            console.info("Checking " + longType + " in application");
-            switch (longType) {
-              case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-              case "vnd.ms-excel":
-                return excelHandler(linkPath);
-              case "zip":
-              case "x-zip-compressed":
-                if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || linkPath.split(".").pop() === "xlsx") {
-                  return excelHandler(linkPath);
-                } else {
-                  return zipHandler(linkPath);
-                }
-                break;
-              case "x-7z-compressed":
-                return _7zHandler(linkPath);
-            }
-            break;
-          case "text":
-            return csvHandler();
-          case "image":
-            return imageHandler();
+          toastStatusMessage("" + result.human_error);
+          console.error("Error uploading!", result);
+          return false;
         }
-      } catch (_error) {
-        e = _error;
-        return toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
-      }
-    };
+        try {
+          console.info("Server returned the following result:", result);
+          console.info("The script returned the following file information:", file);
+          pathPrefix = "helpers/js-dragdrop/uploaded/" + user + "/";
+          result.full_path = result.wrote_file;
+          result.thumb_path = result.wrote_thumb;
+          mediaType = result.mime_provided.split("/")[0];
+          longType = result.mime_provided.split("/")[1];
+          linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.full_path : "" + pathPrefix + result.thumb_path;
+          previewHtml = (function() {
+            switch (mediaType) {
+              case "image":
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + result.full_path + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
+              case "audio":
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+              case "video":
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+              default:
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + result.full_path + "</p>\n</div>";
+            }
+          })();
+          $(window.dropperParams.dropTargetSelector).before(previewHtml);
+          switch (mediaType) {
+            case "application":
+              console.info("Checking " + longType + " in application");
+              switch (longType) {
+                case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                case "vnd.ms-excel":
+                  return excelHandler(linkPath);
+                case "zip":
+                case "x-zip-compressed":
+                  if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || linkPath.split(".").pop() === "xlsx") {
+                    return excelHandler(linkPath);
+                  } else {
+                    return zipHandler(linkPath);
+                  }
+                  break;
+                case "x-7z-compressed":
+                  return _7zHandler(linkPath);
+              }
+              break;
+            case "text":
+              return csvHandler();
+            case "image":
+              return imageHandler();
+          }
+        } catch (_error) {
+          e = _error;
+          return toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
+        }
+      };
+    });
     return false;
   });
 };
