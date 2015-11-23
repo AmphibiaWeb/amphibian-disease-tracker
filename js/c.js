@@ -1465,7 +1465,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
                 sqlQuery = sqlQuery + " (" + (columnNamesList.join(",")) + "); ";
               }
             }
-            geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[0] + "),4326)";
+            geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
@@ -1510,7 +1510,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         console.info("Carto was succesfful! Got results", cartoResults);
         try {
           prettyHtml = JsonHuman.format(cartoResults);
-          $("#main-body").append("<div class='alert alert-success'><h2>Success! Carto said</h2>" + prettyHtml + "</div>");
+          $("#main-body").append("<div class='alert alert-success'><strong>Success! Carto said</strong>" + ($(prettyHtml).html()) + "</div>");
         } catch (_error) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         foo();

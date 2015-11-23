@@ -1153,7 +1153,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
               columnNamesList.push "the_geom geometry"
               if operation is "create"
                 sqlQuery = "#{sqlQuery} (#{columnNamesList.join(",")}); "
-            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[0]}),4326)"
+            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
             # geoJsonVal = "ST_AsBinary(#{JSON.stringify(geoJsonGeom)}, 4326)"
             valuesArr.push geoJsonVal
             valuesList.push "(#{valuesArr.join(",")})"
@@ -1196,13 +1196,15 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         try
           # http://marianoguerra.github.io/json.human.js/
           prettyHtml = JsonHuman.format cartoResults
-          $("#main-body").append "<div class='alert alert-success'><h2>Success! Carto said</h2>#{prettyHtml}</div>"
+          $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
         bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
         foo()
         # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto
         # Post this data over to the back end
         # Update the UI
+        # Get the blob URL ..
+        # https://gis.stackexchange.com/questions/171283/get-a-viz-json-uri-from-a-table-name
         dataBlobUrl = "" # The returned viz.json url
         dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
         unless isNull cartoMap
