@@ -127,7 +127,14 @@ function doCartoSqlApiPush($get) {
             $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
         } else {
             # Default
-            $response = file_get_contents($cartoFullUrl);
+            $opts = array(
+                'http'=>array(
+                    'method'=>'GET',
+                    'timeout'=>3.5
+                )
+            );
+            $context = stream_context_create($opts);
+            $response = file_get_contents($cartoFullUrl, false, $opts);
             $responses[] = $response;
             $parsed_responses[] = json_decode($response, true);
         }
@@ -140,7 +147,7 @@ function doCartoSqlApiPush($get) {
             "sql_statements" => $statements,
             "post_response" => $responses,
             "parsed_responses" => $parsed_responses,
-            "urls_posted" => $cartoFullUrl,
+            "urls_posted" => $urls,
         ));
     } catch (Exception $e) {
         returnAjax(array(
