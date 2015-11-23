@@ -213,7 +213,8 @@ class DBHelper
             if (get_magic_quotes_gpc()) {
                 $input = stripslashes($input);
             }
-            if (!$dirty_entities) {
+            # We want JSON to pass through unscathed, just be escaped
+            if (!$dirty_entities && json_encode(json_decode($input,true)) != $input) {
                 $input = htmlentities(self::cleanInput($input));
                 $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
             $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
@@ -470,9 +471,9 @@ class DBHelper
             } else {
                 $res2 = mysqli_query($l, $querystring);
                 if ($res2 !== false) {
-                    mysqli_query($l, 'COMMIT');
-
-                    return true;
+                    $r = mysqli_query($l, 'COMMIT');
+                    
+                    return $r;
                 } else {
                     $r = mysqli_query($l, 'ROLLBACK');
 
@@ -658,5 +659,57 @@ class DBHelper
 
             return $error;
         }
+    }
+    
+    
+    public function columnExists($columnName) {
+        /***
+         * Check if the specified column exists
+         *
+         * @returns bool
+         ***/
+        
+        $l = $this->openDB();
+        $result = mysqli_query($l, "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
+        return (mysqli_num_rows($result)) ? TRUE : FALSE;
+    }
+    
+    protected function addColumn($columnName, $columnType = null) {
+        /***
+         * Add a new column. DATA MUST BE SANITIZED BEFORE CALLING!
+         *
+         * @param array|string $columnName - if an array, array of
+         * type "name" => "type"; otherwise, column name.
+         *
+         * @param string $columnType - The type of data in the
+         * column. May be blank if $columnName is an array.
+         *
+         * @returns array
+         ***/
+        if(is_array($columnName)) {
+            $columnType = current($columnName);
+            $columnName = key($columnName);
+        }
+        if($this->columnExists($columnName)) {
+            # Already exists
+            return array(
+                "status" => false,
+                "error" => "COLUMN_EXISTS",
+                "human_error" => "Column already exists",
+            );
+        }
+        # Create it!
+        $query = "ALTER TABLE `" . $this->getTable() . "` ADD " . $columnName . " " . $columnType;
+        $l = $this->openDB();
+        $r = mysqli_query($l, $query);
+        if($r === false) {
+            return array(
+                "status" => $r,
+                "error" => mysqli_error($l, $r),
+            );
+        }
+        return array(
+            "status" => true,
+        );
     }
 }

@@ -333,7 +333,7 @@ if (!function_exists('curPageURL')) {
         } else {
             $pageURL .= $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
         }
-        require_once dirname(__FILE__).'/DBHelper.php';
+        require_once dirname(__FILE__).'/db/DBHelper.php';
 
         return DBHelper::cleanInput($pageURL);
     }
