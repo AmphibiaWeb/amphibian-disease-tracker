@@ -130,11 +130,12 @@ function doCartoSqlApiPush($get) {
             $opts = array(
                 'http'=>array(
                     'method'=>'GET',
-                    'timeout'=>3.5
+                    'request_fulluri'=>true, 
+                    'timeout'=>3.5, # Seconds
                 )
             );
             $context = stream_context_create($opts);
-            $response = file_get_contents($cartoFullUrl, false, $opts);
+            $response = file_get_contents($cartoFullUrl, false, $context);
             $responses[] = $response;
             $parsed_responses[] = json_decode($response, true);
         }
