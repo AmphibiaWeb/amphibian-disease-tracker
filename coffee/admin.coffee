@@ -188,7 +188,7 @@ bootstrapTransect = ->
   showCartoTransectMap = (coordList) ->
     foo()
     false
-  setupTransectUi() ->
+  do setupTransectUi() = ->
     if p$("#transect-input").checked
       # Coordinates
       instructions = """
@@ -276,7 +276,6 @@ bootstrapTransect = ->
   # Toggle switch
   $("#transect-input").on "iron-change", ->
     setupTransectUi()
-  setupTransectUi()
   false
 
 
