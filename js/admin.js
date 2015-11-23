@@ -163,10 +163,11 @@ bootstrapTransect = function() {
       return geocoder.geocode(request, function(result, status) {
         var bbEW, bbNS, boundingBox, bounds, lat, lng, loc;
         if (status === google.maps.GeocoderStatus.OK) {
+          console.info("Google said:", result);
           if (!$("#locality-lookup-result").exists()) {
-            $("#carto-rendered-map").prepend("<div class=\"alert alert-info\" id=\"locality-lookup-result\">\n  <h2>Location Found</h2>: <span class=\"lookup-name\"></span>\n</div>");
+            $("#carto-rendered-map").prepend("<div class=\"alert alert-info alert-dismissable\" role=\"alert\" id=\"locality-lookup-result\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Location Found</strong>: <span class=\"lookup-name\"></span>\n</div>");
           }
-          $("#locality-lookup-reult .lookup-name").text(result[0].formatted_address);
+          $("#locality-lookup-result .lookup-name").text(result[0].formatted_address);
           loc = result[0].geometry.location;
           lat = loc.lat();
           lng = loc.lng();

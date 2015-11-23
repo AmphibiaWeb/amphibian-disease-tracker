@@ -206,13 +206,15 @@ bootstrapTransect = ->
         address: locality
       geocoder.geocode request, (result, status) ->
         if status is google.maps.GeocoderStatus.OK
+          console.info "Google said:", result
           unless $("#locality-lookup-result").exists()
             $("#carto-rendered-map").prepend """
-            <div class="alert alert-info" id="locality-lookup-result">
-              <h2>Location Found</h2>: <span class="lookup-name"></span>
+            <div class="alert alert-info alert-dismissable" role="alert" id="locality-lookup-result">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <strong>Location Found</strong>: <span class="lookup-name"></span>
             </div>
             """
-          $("#locality-lookup-reult .lookup-name").text result[0].formatted_address
+          $("#locality-lookup-result .lookup-name").text result[0].formatted_address
           # Render the carto map
           loc = result[0].geometry.location
           lat = loc.lat()
