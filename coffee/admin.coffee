@@ -145,7 +145,7 @@ loadCreateNewProject = ->
     <h2 class="new-title">Transects</h2>
     <div class="col-xs-12">
       <span class="toggle-off-label label">Locality Name</span>
-      <paper-toggle-button id="transect-input" checked>Coordinate List</paper-toggle-button>
+      <paper-toggle-button id="transect-input-toggle" checked>Coordinate List</paper-toggle-button>
     </div>
     <p id="transect-instructions"></p>
     <div id="transect-input" class="col-md-6 col-xs-12">
@@ -274,7 +274,7 @@ bootstrapTransect = ->
     showCartoTransectMap(coords)
     false
   # Toggle switch
-  $("#transect-input").on "iron-change", ->
+  $("#transect-input-toggle").on "iron-change", ->
     setupTransectUi()
   false
 
