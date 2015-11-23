@@ -880,9 +880,10 @@ geo.init = (doCallback) ->
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
-    # Their endpoint isn't secure, we we use a local copy instead of
+    # Their url,
     # http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js
-    loadJS "/js/cartodb.js", doCallback, false
+    # is insecure so we load our own copy
+    loadJS "https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
   # First, we have to load the Google Maps library
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
@@ -1189,7 +1190,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         try
           # http://marianoguerra.github.io/json.human.js/
           prettyHtml = JsonHuman.format cartoResults
-          $("#main-body").append prettyHtml
+          $("#main-body").append "<div class='alert alert-success'><h2>Success! Carto said</h2>#{prettyHtml}</div>"
         bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
         foo()
         # resultRows = cartoResults.rows

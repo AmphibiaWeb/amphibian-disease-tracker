@@ -1194,7 +1194,7 @@ geo.init = function(doCallback) {
     };
   }
   window.gMapsCallback = function() {
-    return loadJS("/js/cartodb.js", doCallback, false);
+    return loadJS("https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };
@@ -1506,7 +1506,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         console.info("Carto was succesfful! Got results", cartoResults);
         try {
           prettyHtml = JsonHuman.format(cartoResults);
-          $("#main-body").append(prettyHtml);
+          $("#main-body").append("<div class='alert alert-success'><h2>Success! Carto said</h2>" + prettyHtml + "</div>");
         } catch (_error) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         foo();
