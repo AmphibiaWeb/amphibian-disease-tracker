@@ -2544,7 +2544,7 @@ class UserFunctions extends DBHelper
     }
     
     public function getIV() {
-        return $this->getUserSeed()
+        return $this->getUserSeed();
     }
     
     
