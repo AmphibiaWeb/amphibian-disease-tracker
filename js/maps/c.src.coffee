@@ -1055,7 +1055,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
               type: "Polygon"
               coordinates: transectPolygon
           ]
-      dataGeometry = "ST_AsBinary(#{JSON.stringify(geoJson)})"
+      dataGeometry = "ST_AsBinary(#{JSON.stringify(geoJson)}, 4326)"
       # Rows per-sample ...
       # FIMS based
       # Uses DarwinCore terms
@@ -1134,7 +1134,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
               if typeof value is "string"
                 valuesArr.push "'#{value}'"
               else if isNull value
-                valuesArr.push ""
+                valuesArr.push "null"
               else
                 valuesArr.push value
             # Add a GeoJSON column and GeoJSON values
@@ -1143,7 +1143,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
               columnNamesList.push "the_geom geometry"
               if operation is "create"
                 sqlQuery = "#{sqlQuery} (#{columnNamesList.join(",")}); "
-            geoJsonVal = "ST_AsBinary(#{JSON.stringify(geoJsonGeom)})"
+            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[0]}),4326)"
+            # geoJsonVal = "ST_AsBinary(#{JSON.stringify(geoJsonGeom)}, 4326)"
             valuesArr.push geoJsonVal
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query

@@ -1373,7 +1373,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           }
         ]
       };
-      dataGeometry = "ST_AsBinary(" + (JSON.stringify(geoJson)) + ")";
+      dataGeometry = "ST_AsBinary(" + (JSON.stringify(geoJson)) + ", 4326)";
       columnDatatype = {
         id: "int",
         collectionID: "varchar",
@@ -1449,7 +1449,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
               if (typeof value === "string") {
                 valuesArr.push("'" + value + "'");
               } else if (isNull(value)) {
-                valuesArr.push("");
+                valuesArr.push("null");
               } else {
                 valuesArr.push(value);
               }
@@ -1461,7 +1461,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
                 sqlQuery = sqlQuery + " (" + (columnNamesList.join(",")) + "); ";
               }
             }
-            geoJsonVal = "ST_AsBinary(" + (JSON.stringify(geoJsonGeom)) + ")";
+            geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[0] + "),4326)";
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
