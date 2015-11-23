@@ -532,7 +532,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       console.warn e.stack
       console.info parsedData
     # Create a project identifier from the user hash and project title
-    projectIdentifier = md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
+    projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
     totalData =
       transectRing: undefined # Read in, manually entered
       data: parsedData

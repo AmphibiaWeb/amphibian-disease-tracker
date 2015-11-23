@@ -1294,7 +1294,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post("admin_api.php", args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, k, l, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1375,27 +1375,27 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       };
       dataGeometry = "ST_AsGeoJSON(" + (JSON.stringify(geoJson)) + ")";
       columnDatatype = {
-        id: "int(10) NOT NULL AUTO_INCREMENT",
-        collectionID: "varchar(255)",
-        catalogNumber: "varchar(255)",
-        fieldNumber: "varchar(255)",
-        diseaseTested: "varchar(255)",
-        diseaseStrain: "varchar(255)",
-        sampleMethod: "varchar(255)",
-        sampleDisposition: "varchar(255)",
-        diseaseDetected: "varchar(14)",
+        id: "int",
+        collectionID: "varchar",
+        catalogNumber: "varchar",
+        fieldNumber: "varchar",
+        diseaseTested: "varchar",
+        diseaseStrain: "varchar",
+        sampleMethod: "varchar",
+        sampleDisposition: "varchar",
+        diseaseDetected: "varchar",
         fatal: "boolean",
-        cladeSampled: "varchar(255)",
-        genus: "varchar(255)",
-        specificEpithet: "varchar(255)",
-        infraspecificEpithet: "varchar(255)",
-        lifeStage: "varchar(255)",
+        cladeSampled: "varchar",
+        genus: "varchar",
+        specificEpithet: "varchar",
+        infraspecificEpithet: "varchar",
+        lifeStage: "varchar",
         dateIdentified: "datetime",
         decimalLatitude: "decimal",
         decimalLongitude: "decimal",
         alt: "decimal",
         coordinateUncertaintyInMeters: "decimal",
-        Collector: "varchar(255)"
+        Collector: "varchar"
       };
       switch (operation) {
         case "edit":
@@ -1414,7 +1414,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           };
           valuesList = new Array();
           columnNamesList = new Array();
-          columnNamesList.push("`id`  int(10) NOT NULL AUTO_INCREMENT");
+          columnNamesList.push("id  int(10) NOT NULL AUTO_INCREMENT");
           for (i in data) {
             row = data[i];
             i = toInt(i);
@@ -1428,10 +1428,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
               type: "Point",
               coordinates: new Array()
             };
+            iIndex = i + 1;
+            valuesArr.push(iIndex);
             for (column in row) {
               value = row[column];
               if (i === 0) {
-                columnNamesList.push("`" + column + "` " + columnDatatype[column]);
+                columnNamesList.push(column + " " + columnDatatype[column]);
               }
               try {
                 value = value.replace("'", "&#95;");

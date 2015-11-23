@@ -491,7 +491,7 @@ newGeoDataHandler = function(dataObject) {
       console.warn(e.stack);
       console.info(parsedData);
     }
-    projectIdentifier = md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
+    projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
     totalData = {
       transectRing: void 0,
       data: parsedData

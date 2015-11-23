@@ -1061,27 +1061,27 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
       # Uses DarwinCore terms
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
       columnDatatype =
-        id: "int(10) NOT NULL AUTO_INCREMENT"
-        collectionID: "varchar(255)"
-        catalogNumber: "varchar(255)"
-        fieldNumber: "varchar(255)"
-        diseaseTested: "varchar(255)"
-        diseaseStrain: "varchar(255)"
-        sampleMethod: "varchar(255)"
-        sampleDisposition: "varchar(255)"
-        diseaseDetected: "varchar(14)"
+        id: "int"
+        collectionID: "varchar"
+        catalogNumber: "varchar"
+        fieldNumber: "varchar"
+        diseaseTested: "varchar"
+        diseaseStrain: "varchar"
+        sampleMethod: "varchar"
+        sampleDisposition: "varchar"
+        diseaseDetected: "varchar"
         fatal: "boolean"
-        cladeSampled: "varchar(255)"
-        genus: "varchar(255)"
-        specificEpithet: "varchar(255)"
-        infraspecificEpithet: "varchar(255)"
-        lifeStage: "varchar(255)"
+        cladeSampled: "varchar"
+        genus: "varchar"
+        specificEpithet: "varchar"
+        infraspecificEpithet: "varchar"
+        lifeStage: "varchar"
         dateIdentified: "datetime" # Should be ISO8601; coerce it!
         decimalLatitude: "decimal"
         decimalLongitude: "decimal"
         alt: "decimal"
         coordinateUncertaintyInMeters: "decimal"
-        Collector: "varchar(255)"
+        Collector: "varchar"
       # Construct the SQL query
       switch operation
         when "edit"
@@ -1102,7 +1102,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           # All the others ...
           valuesList = new Array()
           columnNamesList = new Array()
-          columnNamesList.push "`id`  int(10) NOT NULL AUTO_INCREMENT"
+          columnNamesList.push "id  int(10) NOT NULL AUTO_INCREMENT"
           for i, row of data
             i = toInt(i)
             console.log "Iter ##{i}", i is 0, `i == 0`
@@ -1115,10 +1115,12 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
             geoJsonGeom =
               type: "Point"
               coordinates: new Array()
+            iIndex = i + 1
+            valuesArr.push iIndex 
             for column, value of row
               # Loop data ....
               if i is 0
-                columnNamesList.push "`#{column}` #{columnDatatype[column]}"
+                columnNamesList.push "#{column} #{columnDatatype[column]}"
               try
                 # Strings only!
                 value = value.replace("'", "&#95;")
