@@ -2519,7 +2519,7 @@ class UserFunctions extends DBHelper
             ($r["status"] === false && $r["error"] == "COLUMN_EXISTS")) {
             # Get the seed!
             $u = $this->getUser();
-            if(!empty($u[$randomSeed])) return $u[$randomSeed];
+            if(!empty($u[$seedColumn])) return $u[$seedColumn];
             $criteria = array($this->linkColumn => $this->getHardlink());
             $seed = Stronghash::createSalt() . Stronghash::genUnique(96);
             $entry = array(
