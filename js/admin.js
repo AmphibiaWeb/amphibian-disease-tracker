@@ -141,54 +141,15 @@ loadProjectBrowser = function() {
 };
 
 bootstrapTransect = function() {
+
+  /*
+   *
+   */
   var geocodeEvent, setupTransectUi, showCartoTransectMap;
   showCartoTransectMap = function(coordList) {
     foo();
     return false;
   };
-  (setupTransectUi = function() {
-    var instructions, transectInput;
-    if (p$("#transect-input-toggle").checked) {
-      instructions = "Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.";
-      transectInput = "<iron-autogrow-textarea id=\"coord-input\" class=\"\" required rows=\"3\"></iron-autogrow-textarea>";
-    } else {
-      instructions = "Please enter a name of a locality";
-      transectInput = "<paper-input id=\"locality-input\" label=\"Locality\" class=\"pull-left\" required autovalidate></paper-input> <paper-icon-button class=\"pull-left\" id=\"do-search-locality\" icon=\"icons:search\"></paper-icon-button>";
-    }
-    $("#transect-instructions").html(instructions);
-    $("#transect-input").html(transectInput);
-    if (p$("#transect-input-toggle").checked) {
-      $(p$("#coord-input").textarea).keyup((function(_this) {
-        return function(e) {
-          var coordPair, coordSplit, coords, coordsRaw, i, kc, len, lines, tmp, val;
-          kc = e.keyCode ? e.keyCode : e.which;
-          if (kc === 13) {
-            val = $(p$("#coord-input").textarea).val();
-            lines = val.split("\n").length;
-            if (lines > 3) {
-              coords = new Array();
-              coordsRaw = val.split("\n");
-              for (i = 0, len = coordsRaw.length; i < len; i++) {
-                coordPair = coordsRaw[i];
-                if (coordPair.search("," > 0 && !isNull(coordPair))) {
-                  coordSplit = coordPair.split(",");
-                  tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
-                  coords.push(tmp);
-                }
-              }
-              if (coords.length >= 3) {
-                console.info("Coords:", coords);
-                return showCartoTransectMap(coords);
-              } else {
-                return console.warn("There is one or more invalid coordinates preventing the UI from being shown.");
-              }
-            }
-          }
-        };
-      })(this));
-    }
-    return false;
-  })();
   geocodeEvent = function() {
     var coords;
     window.geocodeLookupCallback = function() {
@@ -235,16 +196,60 @@ bootstrapTransect = function() {
     showCartoTransectMap(coords);
     return false;
   };
-  $("body #locality-input").keyup(function(e) {
-    var kc;
-    kc = e.keyCode ? e.keyCode : e.which;
-    if (kc === 13) {
-      return geocodeEvent();
+  (setupTransectUi = function() {
+    var instructions, transectInput;
+    if (p$("#transect-input-toggle").checked) {
+      instructions = "Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.";
+      transectInput = "<iron-autogrow-textarea id=\"coord-input\" class=\"\" required rows=\"3\"></iron-autogrow-textarea>";
+    } else {
+      instructions = "Please enter a name of a locality";
+      transectInput = "<paper-input id=\"locality-input\" label=\"Locality\" class=\"pull-left\" required autovalidate></paper-input> <paper-icon-button class=\"pull-left\" id=\"do-search-locality\" icon=\"icons:search\"></paper-icon-button>";
     }
-  });
-  $("body #do-search-locality").click(function() {
-    return geocodeEvent();
-  });
+    $("#transect-instructions").html(instructions);
+    $("#transect-input").html(transectInput);
+    if (p$("#transect-input-toggle").checked) {
+      $(p$("#coord-input").textarea).keyup((function(_this) {
+        return function(e) {
+          var coordPair, coordSplit, coords, coordsRaw, i, kc, len, lines, tmp, val;
+          kc = e.keyCode ? e.keyCode : e.which;
+          if (kc === 13) {
+            val = $(p$("#coord-input").textarea).val();
+            lines = val.split("\n").length;
+            if (lines > 3) {
+              coords = new Array();
+              coordsRaw = val.split("\n");
+              for (i = 0, len = coordsRaw.length; i < len; i++) {
+                coordPair = coordsRaw[i];
+                if (coordPair.search("," > 0 && !isNull(coordPair))) {
+                  coordSplit = coordPair.split(",");
+                  tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
+                  coords.push(tmp);
+                }
+              }
+              if (coords.length >= 3) {
+                console.info("Coords:", coords);
+                return showCartoTransectMap(coords);
+              } else {
+                return console.warn("There is one or more invalid coordinates preventing the UI from being shown.");
+              }
+            }
+          }
+        };
+      })(this));
+    } else {
+      $("#locality-input").keyup(function(e) {
+        var kc;
+        kc = e.keyCode ? e.keyCode : e.which;
+        if (kc === 13) {
+          return geocodeEvent();
+        }
+      });
+      $("#do-search-locality").click(function() {
+        return geocodeEvent();
+      });
+    }
+    return false;
+  })();
   $("#transect-input-toggle").on("iron-change", function() {
     return setupTransectUi();
   });

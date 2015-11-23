@@ -185,51 +185,15 @@ loadProjectBrowser = ->
 
 
 bootstrapTransect = ->
+  ###
+  #
+  ###
+  # Helper function : Show the map
   showCartoTransectMap = (coordList) ->
     foo()
     false
-  do setupTransectUi = ->
-    if p$("#transect-input-toggle").checked
-      # Coordinates
-      instructions = """
-      Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.
-      """
-      transectInput = """
-      <iron-autogrow-textarea id="coord-input" class="" required rows="3"></iron-autogrow-textarea>
-      """
-    else
-      instructions = """
-      Please enter a name of a locality
-      """
-      transectInput = """
-      <paper-input id="locality-input" label="Locality" class="pull-left" required autovalidate></paper-input> <paper-icon-button class="pull-left" id="do-search-locality" icon="icons:search"></paper-icon-button>
-      """
-    $("#transect-instructions").html instructions
-    $("#transect-input").html transectInput
-    if p$("#transect-input-toggle").checked
-      $(p$("#coord-input").textarea).keyup (e) =>
-        kc = if e.keyCode then e.keyCode else e.which
-        if kc is 13
-          # New line
-          val = $(p$("#coord-input").textarea).val()
-          lines = val.split("\n").length
-          if lines > 3
-            # Count the new lines
-            # if 3+, send the polygon to be drawn
-            coords = new Array()
-            coordsRaw = val.split("\n")
-            for coordPair in coordsRaw
-              if coordPair.search "," > 0 and not isNull coordPair
-                coordSplit = coordPair.split(",")
-                tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])]
-                coords.push tmp
-            if coords.length >= 3
-              console.info "Coords:", coords
-              showCartoTransectMap(coords)
-            else
-              console.warn "There is one or more invalid coordinates preventing the UI from being shown."
-    false
-  ## Events
+
+  # Helper function: Do the geocoding
   # Reverse geocode locality search
   geocodeEvent = ->
     # Do reverse geocode
@@ -275,12 +239,56 @@ bootstrapTransect = ->
     showCartoTransectMap(coords)
     false
 
-  $("body #locality-input").keyup (e) ->
-    kc = if e.keyCode then e.keyCode else e.which
-    if kc is 13
-      geocodeEvent()
-  $("body #do-search-locality").click ->
-    geocodeEvent()
+  # Actual boostrapping
+  do setupTransectUi = ->
+    if p$("#transect-input-toggle").checked
+      # Coordinates
+      instructions = """
+      Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.
+      """
+      transectInput = """
+      <iron-autogrow-textarea id="coord-input" class="" required rows="3"></iron-autogrow-textarea>
+      """
+    else
+      instructions = """
+      Please enter a name of a locality
+      """
+      transectInput = """
+      <paper-input id="locality-input" label="Locality" class="pull-left" required autovalidate></paper-input> <paper-icon-button class="pull-left" id="do-search-locality" icon="icons:search"></paper-icon-button>
+      """
+    $("#transect-instructions").html instructions
+    $("#transect-input").html transectInput
+    if p$("#transect-input-toggle").checked
+      $(p$("#coord-input").textarea).keyup (e) =>
+        kc = if e.keyCode then e.keyCode else e.which
+        if kc is 13
+          # New line
+          val = $(p$("#coord-input").textarea).val()
+          lines = val.split("\n").length
+          if lines > 3
+            # Count the new lines
+            # if 3+, send the polygon to be drawn
+            coords = new Array()
+            coordsRaw = val.split("\n")
+            for coordPair in coordsRaw
+              if coordPair.search "," > 0 and not isNull coordPair
+                coordSplit = coordPair.split(",")
+                tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])]
+                coords.push tmp
+            if coords.length >= 3
+              console.info "Coords:", coords
+              showCartoTransectMap(coords)
+            else
+              console.warn "There is one or more invalid coordinates preventing the UI from being shown."
+    else
+      $("#locality-input").keyup (e) ->
+        kc = if e.keyCode then e.keyCode else e.which
+        if kc is 13
+          geocodeEvent()
+      $("#do-search-locality").click ->
+        geocodeEvent()
+    false
+  ## Events
   # Toggle switch
   $("#transect-input-toggle").on "iron-change", ->
     setupTransectUi()
