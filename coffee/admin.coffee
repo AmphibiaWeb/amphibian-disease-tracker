@@ -202,7 +202,7 @@ bootstrapTransect = ->
       Please enter a name of a locality
       """
       transectInput = """
-      <paper-input id="locality-input" label="Locality" class="" required autovalidate></paper-input> <paper-icon-button class="" id="do-search-locality" icon="icons:search"></paper-icon-button>
+      <paper-input id="locality-input" label="Locality" class="pull-left" required autovalidate></paper-input> <paper-icon-button class="pull-left" id="do-search-locality" icon="icons:search"></paper-icon-button>
       """
     $("#transect-instructions").html instructions
     $("#transect-input").html transectInput
@@ -231,11 +231,11 @@ bootstrapTransect = ->
     false
   ## Events
   # Reverse geocode locality search
-  $("body #do-search-locality").click ->
+  geocodeEvent = ->
     # Do reverse geocode
     window.geocodeLookupCallback = ->
       startLoad()
-      locality = p$("#do-search-locality").value
+      locality = p$("#locality-input").value
       # https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple
       geocoder = new google.maps.Geocoder()
       request =
@@ -274,6 +274,13 @@ bootstrapTransect = ->
     coords = new Array()
     showCartoTransectMap(coords)
     false
+
+  $("body #locality-input").keyup (e) ->
+    kc = if e.keyCode then e.keyCode else e.which
+    if kc is 13
+      geocodeEvent()
+  $("body #do-search-locality").click ->
+    geocodeEvent()
   # Toggle switch
   $("#transect-input-toggle").on "iron-change", ->
     setupTransectUi()

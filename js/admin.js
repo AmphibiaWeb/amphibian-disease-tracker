@@ -141,7 +141,7 @@ loadProjectBrowser = function() {
 };
 
 bootstrapTransect = function() {
-  var setupTransectUi, showCartoTransectMap;
+  var geocodeEvent, setupTransectUi, showCartoTransectMap;
   showCartoTransectMap = function(coordList) {
     foo();
     return false;
@@ -153,7 +153,7 @@ bootstrapTransect = function() {
       transectInput = "<iron-autogrow-textarea id=\"coord-input\" class=\"\" required rows=\"3\"></iron-autogrow-textarea>";
     } else {
       instructions = "Please enter a name of a locality";
-      transectInput = "<paper-input id=\"locality-input\" label=\"Locality\" class=\"\" required autovalidate></paper-input> <paper-icon-button class=\"\" id=\"do-search-locality\" icon=\"icons:search\"></paper-icon-button>";
+      transectInput = "<paper-input id=\"locality-input\" label=\"Locality\" class=\"pull-left\" required autovalidate></paper-input> <paper-icon-button class=\"pull-left\" id=\"do-search-locality\" icon=\"icons:search\"></paper-icon-button>";
     }
     $("#transect-instructions").html(instructions);
     $("#transect-input").html(transectInput);
@@ -189,12 +189,12 @@ bootstrapTransect = function() {
     }
     return false;
   })();
-  $("body #do-search-locality").click(function() {
+  geocodeEvent = function() {
     var coords;
     window.geocodeLookupCallback = function() {
       var geocoder, locality, request;
       startLoad();
-      locality = p$("#do-search-locality").value;
+      locality = p$("#locality-input").value;
       geocoder = new google.maps.Geocoder();
       request = {
         address: locality
@@ -234,6 +234,16 @@ bootstrapTransect = function() {
     coords = new Array();
     showCartoTransectMap(coords);
     return false;
+  };
+  $("body #locality-input").keyup(function(e) {
+    var kc;
+    kc = e.keyCode ? e.keyCode : e.which;
+    if (kc === 13) {
+      return geocodeEvent();
+    }
+  });
+  $("body #do-search-locality").click(function() {
+    return geocodeEvent();
   });
   $("#transect-input-toggle").on("iron-change", function() {
     return setupTransectUi();
