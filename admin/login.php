@@ -271,9 +271,10 @@ catch (Exception $e)
 
 if($logged_in)
   {
-    $full_name=$xml->getTagContents($_COOKIE[$cookieperson],"<name>");
-    $first_name=$xml->getTagContents($_COOKIE[$cookieperson],"<fname>");
-    $display_name=$xml->getTagContents($_COOKIE[$cookieperson],"<dname>");
+    $xml->setXml($_COOKIE[$cookieperson]);
+    $full_name=$xml->getTagContents("<name>");
+    $first_name=$xml->getTagContents("<fname>");
+    $display_name=$xml->getTagContents("<dname>");
     if(empty($first_name)) $first_name = $_COOKIE[$cookieperson];
   }
 else
@@ -366,11 +367,12 @@ if($_REQUEST['q']=='submitlogin')
             $userdata=$res[1];
             $id=$userdata['id'];
             $name_block = $userdata['name'];
+            $xml->setXml($name_block);
             echo "<!-- Name block: ".$name_block." -->";
             # Be sure we get the name from the actual userdata
-            $full_name=$xml->getTagContents($name_block,"<name>");
-            $first_name=$xml->getTagContents($name_block,"<fname>");
-            $display_name=$xml->getTagContents($name_block,"<dname>");
+            $full_name=$xml->getTagContents("<name>");
+            $first_name=$xml->getTagContents("<fname>");
+            $display_name=$xml->getTagContents("<dname>");
             # Account for possible differnt modes of saving
             if(empty($first_name)) $first_name = $name_block;
             $login_output.="<h1 id='welcome_back'>Welcome back, ".$first_name."</h1>"; //Welcome message
