@@ -144,7 +144,7 @@ loadCreateNewProject = ->
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
     <h2 class="new-title">Transects</h2>
     <div class="col-xs-12">
-      <span class="toggle-off-label label">Locality Name</span>
+      <span class="toggle-off-label iron-label">Locality Name</span>
       <paper-toggle-button id="transect-input-toggle" checked>Coordinate List</paper-toggle-button>
     </div>
     <p id="transect-instructions"></p>
@@ -189,20 +189,20 @@ bootstrapTransect = ->
     foo()
     false
   do setupTransectUi = ->
-    if p$("#transect-input").checked
+    if p$("#transect-input-toggle").checked
       # Coordinates
       instructions = """
       Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.
       """
       transectInput = """
-      <iron-autogrow-textarea id="coord-input" class="col-xs-10 col-md-5" required rows="3"></iron-autogrow-textarea>
+      <iron-autogrow-textarea id="coord-input" class="" required rows="3"></iron-autogrow-textarea>
       """
     else
       instructions = """
       Please enter a name of a locality
       """
       transectInput = """
-      <paper-input id="locality-input" label="Locality" class="col-xs-10 col-md-5" required autovalidate></paper-input> <paper-icon-button class="col-xs-2 col-md-1" id="do-search-locality" icon="icons:search"></paper-icon-button>
+      <paper-input id="locality-input" label="Locality" class="" required autovalidate></paper-input> <paper-icon-button class="" id="do-search-locality" icon="icons:search"></paper-icon-button>
       """
     $("#transect-instructions").html instructions
     $("#transect-input").html transectInput
