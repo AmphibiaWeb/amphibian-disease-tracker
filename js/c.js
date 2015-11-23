@@ -1224,7 +1224,7 @@ createMap = function(dataVisIdentifier, targetId) {
   if (dataVisIdentifier == null) {
     console.info("Can't create map without a data visualization identifier");
   }
-  dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
+  dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
   options = {
     cartodb_logo: false,
     https: true,
@@ -1511,7 +1511,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         foo();
         dataBlobUrl = "";
-        dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
+        dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
         if (!isNull(cartoMap)) {
           return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
             layer.setInteraction(true);

@@ -65,7 +65,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   ###
   unless dataVisIdentifier?
     console.info "Can't create map without a data visualization identifier"
-  dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
+  dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
   options =
     cartodb_logo: false
     https: true # Secure forcing is leading to resource errors
@@ -360,7 +360,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         # Post this data over to the back end
         # Update the UI
         dataBlobUrl = "" # The returned viz.json url
-        dataVisUrl = "http://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
+        dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
         unless isNull cartoMap
           cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
           .done (layer) ->
