@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -121,9 +121,10 @@ loadEditor = function() {
 loadCreateNewProject = function() {
   var html;
   startAdminActionHelper();
-  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <h2 class=\"new-title\">Lab Parameters</h2>\n  <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></gold-email-input>\n  <paper-input label=\"Project Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <h2 class=\"new-title\">Project Notes</h2>\n  \n  <h2 class=\"new-title\">Data Parameters</h2>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
+  html = "<h2 class=\"new-title\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n<h2 class=\"new-title\">Project Parameters</h2>\n<section class=\"project-inputs clearfix\">\n  <paper-input label=\"Primary Disease Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-12\" required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-12\"></paper-input>\n  <h2 class=\"new-title\">Lab Parameters</h2>\n  <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></gold-email-input>\n  <paper-input label=\"Project Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required autovalidate=\"true\"></paper-input>\n  <h2 class=\"new-title\">Project Notes</h2>\n\n  <h2 class=\"new-title\">Data Parameters</h2>\n  <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\"></paper-input>\n  <h2 class=\"new-title\">Transects</h2>\n  <div class=\"col-xs-12\">\n    <span class=\"toggle-off-label label\">Locality Name</span>\n    <paper-toggle-button id=\"transect-input\" checked>Coordinate List</paper-toggle-button>\n  </div>\n  <p id=\"transect-instructions\"></p>\n  <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n  </div>\n  <div id=\"carto-rendered-map\" class=\"col-md-6\">\n  </div>\n</section>\n<p>Etc</p>\n<h2 class=\"new-title\">Uploading your project data</h2>\n<p>Drag and drop as many files as you need below. </p>\n<p>\n  To save your project, we need at least one file with structured data containing coordinates.\n  Please note that the data <strong>must</strong> have a header row,\n  and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.\n</p>";
   $("main #main-body").append(html);
   bootstrapUploader();
+  bootstrapTransect();
   foo();
   return false;
 };
@@ -136,6 +137,106 @@ loadProjectBrowser = function() {
   adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
   geo.init();
   foo();
+  return false;
+};
+
+bootstrapTransect = function() {
+  var showCartoTransectMap;
+  showCartoTransectMap = function(coordList) {
+    foo();
+    return false;
+  };
+  setupTransectUi()(function() {
+    var instructions, transectInput;
+    if (p$("#transect-input").checked) {
+      instructions = "Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.";
+      transectInput = "<iron-autogrow-textarea id=\"coord-input\" class=\"col-xs-10 col-md-5\" required rows=\"3\"></iron-autogrow-textarea>";
+    } else {
+      instructions = "Please enter a name of a locality";
+      transectInput = "<paper-input id=\"locality-input\" label=\"Locality\" class=\"col-xs-10 col-md-5\" required autovalidate></paper-input> <paper-icon-button class=\"col-xs-2 col-md-1\" id=\"do-search-locality\" icon=\"icons:search\"></paper-icon-button>";
+    }
+    $("#transect-instructions").html(instructions);
+    $("#transect-input").html(transectInput);
+    if (p$("#transect-input").checked) {
+      $(p$("#coord-input").textarea).keyup((function(_this) {
+        return function(e) {
+          var coordPair, coordSplit, coords, coordsRaw, i, kc, len, lines, tmp;
+          kc = e.keyCode ? e.keyCode : e.which;
+          if (kc === 13) {
+            lines = _this.split("\n").length;
+            if (lines > 3) {
+              coords = new Array();
+              coordsRaw = _this.split("\n");
+              for (i = 0, len = coordsRaw.length; i < len; i++) {
+                coordPair = coordsRaw[i];
+                if (coordPair.search("," > 0)) {
+                  coordSplit = coordPair.split(",");
+                  tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
+                  coords.push(tmp);
+                }
+              }
+              if (coords.length >= 3) {
+                console.info("Coords:", coords);
+                return showCartoTransectMap(coords);
+              } else {
+                return console.warn("There is one or more invalid coordinates preventing the UI from being shown.");
+              }
+            }
+          }
+        };
+      })(this));
+    }
+    return false;
+  })();
+  $("body #do-search-locality").click(function() {
+    var coords;
+    window.geocodeLookupCallback = function() {
+      var geocoder, locality, request;
+      startLoad();
+      locality = p$("#do-search-locality").value;
+      geocoder = new google.maps.Geocoder();
+      request = {
+        address: locality
+      };
+      return geocoder.geocode(request, function(result, status) {
+        var bbEW, bbNS, boundingBox, bounds, lat, lng, loc;
+        if (status === google.maps.GeocoderStatus.OK) {
+          if (!$("#locality-lookup-result").exists()) {
+            $("#carto-rendered-map").prepend("<div class=\"alert alert-info\" id=\"locality-lookup-result\">\n  <h2>Location Found</h2>: <span class=\"lookup-name\"></span>\n</div>");
+          }
+          $("#locality-lookup-reult .lookup-name").text(result[0].formatted_address);
+          loc = result[0].geometry.location;
+          lat = loc.lat();
+          lng = loc.lng();
+          bounds = result[0].geometry.viewport;
+          bbEW = bounds.O;
+          bbNS = bounds.j;
+          boundingBox = {
+            nw: [bbEW.O, bbNS.O],
+            ne: [bbEW.j, bbNS.O],
+            sw: [bbEW.O, bbNS.j],
+            se: [bbEW.j, bbNS.j]
+          };
+          console.info("Got bounds: ", [lat, lng], boundingBox);
+          foo();
+          return stopLoad();
+        } else {
+          return stopLoadError("Couldn't find location: " + status);
+        }
+      });
+    };
+    if (google.maps == null) {
+      loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=geocodeLookupCallback");
+    } else {
+      geocodeLookupCallback();
+    }
+    coords = new Array();
+    showCartoTransectMap(coords);
+    return false;
+  });
+  $("#transect-input").on("iron-change", function() {
+    return setupTransectUi();
+  });
   return false;
 };
 

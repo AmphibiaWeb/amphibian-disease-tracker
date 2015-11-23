@@ -139,9 +139,19 @@ loadCreateNewProject = ->
     <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></gold-email-input>
     <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
     <h2 class="new-title">Project Notes</h2>
-    
+
     <h2 class="new-title">Data Parameters</h2>
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
+    <h2 class="new-title">Transects</h2>
+    <div class="col-xs-12">
+      <span class="toggle-off-label label">Locality Name</span>
+      <paper-toggle-button id="transect-input" checked>Coordinate List</paper-toggle-button>
+    </div>
+    <p id="transect-instructions"></p>
+    <div id="transect-input" class="col-md-6 col-xs-12">
+    </div>
+    <div id="carto-rendered-map" class="col-md-6">
+    </div>
   </section>
   <p>Etc</p>
   <h2 class="new-title">Uploading your project data</h2>
@@ -154,6 +164,7 @@ loadCreateNewProject = ->
   """
   $("main #main-body").append html
   bootstrapUploader()
+  bootstrapTransect()
   foo()
   false
 
@@ -172,6 +183,100 @@ loadProjectBrowser = ->
   foo()
   false
 
+
+bootstrapTransect = ->
+  showCartoTransectMap = (coordList) ->
+    foo()
+    false
+  do setupTransectUi() ->
+    if p$("#transect-input").checked
+      # Coordinates
+      instructions = """
+      Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.
+      """
+      transectInput = """
+      <iron-autogrow-textarea id="coord-input" class="col-xs-10 col-md-5" required rows="3"></iron-autogrow-textarea>
+      """
+    else
+      instructions = """
+      Please enter a name of a locality
+      """
+      transectInput = """
+      <paper-input id="locality-input" label="Locality" class="col-xs-10 col-md-5" required autovalidate></paper-input> <paper-icon-button class="col-xs-2 col-md-1" id="do-search-locality" icon="icons:search"></paper-icon-button>
+      """
+    $("#transect-instructions").html instructions
+    $("#transect-input").html transectInput
+    if p$("#transect-input").checked
+      $(p$("#coord-input").textarea).keyup (e) =>
+        kc = if e.keyCode then e.keyCode else e.which
+        if kc is 13
+          # New line
+          lines = @split("\n").length
+          if lines > 3
+            # Count the new lines
+            # if 3+, send the polygon to be drawn
+            coords = new Array()
+            coordsRaw = @split("\n")
+            for coordPair in coordsRaw
+              if coordPair.search "," > 0
+                coordSplit = coordPair.split(",")
+                tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])]
+                coords.push tmp
+            if coords.length >= 3
+              console.info "Coords:", coords
+              showCartoTransectMap(coords)
+            else
+              console.warn "There is one or more invalid coordinates preventing the UI from being shown."
+    false
+  ## Events
+  # Reverse geocode locality search
+  $("body #do-search-locality").click ->
+    # Do reverse geocode
+    window.geocodeLookupCallback = ->
+      startLoad()
+      locality = p$("#do-search-locality").value
+      # https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple
+      geocoder = new google.maps.Geocoder()
+      request =
+        address: locality
+      geocoder.geocode request, (result, status) ->
+        if status is google.maps.GeocoderStatus.OK
+          unless $("#locality-lookup-result").exists()
+            $("#carto-rendered-map").prepend """
+            <div class="alert alert-info" id="locality-lookup-result">
+              <h2>Location Found</h2>: <span class="lookup-name"></span>
+            </div>
+            """
+          $("#locality-lookup-reult .lookup-name").text result[0].formatted_address
+          # Render the carto map
+          loc = result[0].geometry.location
+          lat = loc.lat()
+          lng = loc.lng()
+          bounds = result[0].geometry.viewport
+          bbEW = bounds.O
+          bbNS = bounds.j
+          boundingBox =
+            nw: [bbEW.O, bbNS.O]
+            ne: [bbEW.j, bbNS.O]
+            sw: [bbEW.O, bbNS.j]
+            se: [bbEW.j, bbNS.j]
+          console.info "Got bounds: ", [lat, lng], boundingBox
+          foo()
+          stopLoad()
+        else
+          stopLoadError "Couldn't find location: #{status}"
+    unless google.maps?
+      # Load the JS
+      loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=geocodeLookupCallback"
+    else
+      geocodeLookupCallback()
+    coords = new Array()
+    showCartoTransectMap(coords)
+    false
+  # Toggle switch
+  $("#transect-input").on "iron-change", ->
+    setupTransectUi()
+  false
 
 
 bootstrapUploader = (uploadFormId = "file-uploader") ->
