@@ -34,7 +34,7 @@ geo.init = (doCallback) ->
     # Now get the real location
     getLocation()
   cartoDBCSS = """
-  <link rel="stylesheet" href="https://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <link rel="stylesheet" href="/css/cartodb.css" />
   """
   $("head").append cartoDBCSS
   doCallback ?= ->
@@ -42,7 +42,9 @@ geo.init = (doCallback) ->
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
-    loadJS "https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+    # Their endpoint isn't secure, we we use a local copy instead of
+    # http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js
+    loadJS "/js/cartodb.js", doCallback, false
   # First, we have to load the Google Maps library
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
@@ -346,6 +348,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           stopLoadError "CartoDB returned an error: #{cartoHasError}"
           return false
         console.info "Carto was succesfful! Got results", cartoResults
+        try
+          # http://marianoguerra.github.io/json.human.js/
+          prettyHtml = JsonHuman.format cartoResults
+          $("#main-body").append prettyHtml
+        bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
         foo()
         # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto

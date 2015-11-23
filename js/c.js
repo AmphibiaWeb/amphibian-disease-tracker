@@ -1185,7 +1185,7 @@ geo.init = function(doCallback) {
     window.locationData.lng = -122.262113;
     getLocation();
   } catch (_error) {}
-  cartoDBCSS = "<link rel=\"stylesheet\" href=\"https://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
+  cartoDBCSS = "<link rel=\"stylesheet\" href=\"/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   if (doCallback == null) {
     doCallback = function() {
@@ -1194,7 +1194,7 @@ geo.init = function(doCallback) {
     };
   }
   window.gMapsCallback = function() {
-    return loadJS("https://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
+    return loadJS("/js/cartodb.js", doCallback, false);
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };
@@ -1483,7 +1483,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       console.info("GeoJSON String:", dataGeometry);
       console.warn("Want to post:", uri.urlString + "api.php?" + args);
       return $.post("api.php", args).done(function(result) {
-        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, response;
+        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, prettyHtml, response;
         console.log("Got back", result);
         if (result.status !== true) {
           console.error("Got an error from the server!");
@@ -1504,6 +1504,11 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           return false;
         }
         console.info("Carto was succesfful! Got results", cartoResults);
+        try {
+          prettyHtml = JsonHuman.format(cartoResults);
+          $("#main-body").append(prettyHtml);
+        } catch (_error) {}
+        bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         foo();
         dataBlobUrl = "";
         dataVisUrl = "http://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
