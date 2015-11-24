@@ -13,7 +13,74 @@ The amphibian fungal disease [chytridiomycosis](http://amphibiaweb.org/chytrid/c
        
 In this rapidly developing area of science, making information more quickly and readily available will enable the scientific community to test and build predictive models more efficiently.  Making data readily available should facilitate both research and management/ conservation decisions.
 
+We aim to be a repository for _Bd_ and _Bsal_ data from field and biocollection samples. Only by the community coming together to aggregate data will we be able to understand the disease dynamics of this major cause of amphibian declines worldwide.
+     
+### New Posts
 
+We will add relevant news and resources to our posts. Please let us know if you have news or information you would like to share.     
+
+Currently you can read Posts from two categories: Bsal News and Resources
+
+### Users of the portal    
+
+<ol>
+          <li>
+            Researchers - those studying epizootic diseases, amphibian
+            biology, conservation, conservation prioritization
+          </li>
+          <li>
+            Field and Lab Contributors - especially those seeking a
+            repository for their data and seeking collaborators for
+            their efforts.
+          </li>
+          <li>
+            Land & Wildlife Managers - those needing to know what kind
+            of chytrid sampling or results have been done for the
+            lands they manage and for surrounding areas
+          </li>
+          <li>
+            Anyone concerned with the global decline of amphibians due to chytridiomycosis
+          </li>
+        </ol>
+
+
+
+### Our partners     
+- PARC Disease Task Team: [Read more on the _Bsal_ Call to Action](http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
+- USGS Powell Center
+- USDA Forest Service
+
+####Researchers 
+- San Francisco State University (SFSU) 
+- Southern Illinois University, Carbondale (SIU) 
+- University of California, Berkeley (UCB)
+- University of Maryland (UM)
+- US Forest Service, Pacific Northwest Research Station (PNW)
+- US Geological Survey, Amphibian Research and Monitoring Initiative (ARMI)
+   
+####Diagnostic Labs (alphabetical) 
+- [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
+- [Lips Lab (UM)](http://lipslab.weebly.com/)
+- [Martel and Pasmans Wildlife Population Health Labs (UGent)](http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
+- [Vredenburg Lab (SFSU)](http://www.vredenburglab.com/)
+
+
+### Maps
+_coming soon_
+
+### Upload and Manage your datasets
+_coming soon_
+
+    
+For more information, see the resources below:
+
+[AmphibiaWeb](http://amphibiaweb.org)     
+[PARC Bsal Task Team](http://parcplace.org/parcplace/resources/disease-task-team.html)      
+[Amphibian Survival Alliance](http://www.amphibians.org/)
+
+
+
+<hr/>
 
 Follow our progress. Visit us on **GitHub** <paper-icon-button icon="glyphicon-social:github" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" data-toggle="tooltip" title="Visit us on GitHub"></paper-icon-button> to request features!    <br>
 
