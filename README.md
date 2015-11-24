@@ -1,7 +1,7 @@
 # Amphibian Disease Portal  - 
 Find this gh-pages site here:
 
-http://updates.amphibiandisesase.org  
+https://updates.amphibiandisease.org  
 
 Categories:
  - News
