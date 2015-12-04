@@ -239,6 +239,7 @@ bootstrapTransect = ->
               center_lat: lat
               center_lon: lng
               zoom: 7
+            $("#carto-map-container").empty()
             createMap null, "carto-map-container", options, (vis, map) ->
               # Map has been created, play with the data!
               foo()

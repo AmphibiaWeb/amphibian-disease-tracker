@@ -192,6 +192,7 @@ bootstrapTransect = function() {
               center_lon: lng,
               zoom: 7
             };
+            $("#carto-map-container").empty();
             return createMap(null, "carto-map-container", options, function(vis, map) {
               return foo();
             });
