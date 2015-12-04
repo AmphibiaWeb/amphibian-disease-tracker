@@ -5,16 +5,21 @@
 	header("Pragma: no-cache");
 	header("Expires: 0"); 
 
-	include_once('libraries/utilities.php');
-	include_once('libraries/whichbrowser.php');
+	include_once('src/polyfills.php');
+
+	if (basename(__DIR__) == 'server')
+		include_once('../parser/src/parser.php');
+	else
+		include_once('src/parser.php');
 		
+
 	$options = array('headers' => getallheaders());
 	if (isset($_REQUEST['ua'])) $options['useragent'] = $_REQUEST['ua'];
 	if (isset($_REQUEST['e'])) $options['engine'] = intval($_REQUEST['e']);
 	if (isset($_REQUEST['f'])) $options['features'] = intval($_REQUEST['f']);
 	if (isset($_REQUEST['w'])) $options['width'] = intval($_REQUEST['w']);
 	if (isset($_REQUEST['h'])) $options['height'] = intval($_REQUEST['h']);
-	$detected = new WhichBrowser($options);
+	$detected = new WhichBrowser\Parser($options);
 	
 ?>
 	
@@ -26,7 +31,7 @@ var WhichBrowser = (function(){
 			this.options = {
 			};
 			
-<?php $detected->toJavaScript(); ?>
+<?php echo $detected->toJavaScript(); ?>
 		},
 		
 		a: function(s) {
@@ -111,6 +116,7 @@ var WhichBrowser = (function(){
 		toJSON: function() {
 			return {
 				name:		this.name,
+				alias:		this.alias,
 				version:	(this.version) ? this.version.toJSON() : null,
 				stock:		this.stock,
 				channel:	this.channel,

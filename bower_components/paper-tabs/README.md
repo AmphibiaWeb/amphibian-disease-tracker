@@ -2,12 +2,14 @@
 <!---
 
 This README is automatically generated from the comments in these files:
-paper-tab.html  paper-tabs-icons.html  paper-tabs.html
+paper-tab.html  paper-tabs.html
 
 Edit those files, and our readme bot will duplicate them over here!
 Edit this file, and the bot will squash your changes :)
 
 -->
+
+[![Build Status](https://travis-ci.org/PolymerElements/paper-tabs.svg?branch=master)](https://travis-ci.org/PolymerElements/paper-tabs)
 
 _[Demo and API Docs](https://elements.polymer-project.org/elements/paper-tabs)_
 
@@ -54,28 +56,9 @@ element in `paper-tab`.
 
 Example:
 
-    <paper-tabs selected="0">
-      <paper-tab link>
-        <a href="#link1" class="horizontal center-center layout">TAB ONE</a>
-      </paper-tab>
-      <paper-tab link>
-        <a href="#link2" class="horizontal center-center layout">TAB TWO</a>
-      </paper-tab>
-      <paper-tab link>
-        <a href="#link3" class="horizontal center-center layout">TAB THREE</a>
-      </paper-tab>
-    </paper-tabs>
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-tabs-selection-bar-color` | Color for the selection bar | `--paper-yellow-a100`
-`--paper-tabs` | Mixin applied to the tabs | `{}`
-
-
+    <style is="custom-style">
+      .link {
+        
 
 ##&lt;paper-tab&gt;
 
@@ -100,5 +83,6 @@ Custom property | Description | Default
 `--paper-tab-ink` | Ink color | `--paper-yellow-a100`
 `--paper-tab` | Mixin applied to the tab | `{}`
 `--paper-tab-content` | Mixin applied to the tab content | `{}`
+`--paper-tab-content-unselected` | Mixin applied to the tab content when the tab is not selected | `{}`
 
 
