@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
-    <link rel="stylsheet" type="text/css" href="bower_components/json-human/css/json.human.css" />
+    <link rel="stylesheet" type="text/css" href="bower_components/json-human/css/json.human.css" />
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Roboto:400,100,300,500,700,100italic,300italic,400italic,500italic,700italic" rel='stylesheet' type='text/css'/>
 
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon16.png" />
@@ -60,7 +60,7 @@
       e|=(e&16&&({}.toString).toString().indexOf("\n")===-1)?32:0;p.push('e='+e);f|='sandbox' in d.createElement('iframe')?1:0;f|='WebSocket' in w?2:0;
       f|=w.Worker?4:0;f|=w.applicationCache?8:0;f|=w.history && history.pushState?16:0;f|=d.documentElement.webkitRequestFullScreen?32:0;f|='FileReader' in w?64:0;
       p.push('f='+f);p.push('r='+Math.random().toString(36).substring(7));p.push('w='+screen.width);p.push('h='+screen.height);var s=d.createElement('script');
-      s.src='//ssarherps.org/cndb/bower_components/whichbrowser/detect.php?' + p.join('&');d.getElementsByTagName('head')[0].appendChild(s);})();
+      s.src='bower_components/whichbrowser/detect.php?' + p.join('&');d.getElementsByTagName('head')[0].appendChild(s);})();
       /*window.onerror = function(e) {
       console.warn("Error thrown: "+e);
       return true;
@@ -89,7 +89,7 @@
     <main>
       <h1 id="title">Account and Project Administration</h1>
       <section id="main-body" class="row">
-        <h2>Please wait ...</h2>
+        <h2 class="col-xs-12">Please wait ...</h2>
       </section>
     </main>
     <footer class="row hidden-xs">
