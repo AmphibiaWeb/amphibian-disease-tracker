@@ -942,7 +942,12 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   # Now that we have the helper function, let's get the viz data
   ###
   unless typeof dataVisIdentifier is "object"
-    dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
+    # Is the dataVisIdentifier the whole url?
+    if /^https?:\/\/.*$/m.test(dataVisIdentifier)
+      # For a complete URL, we just reassign
+      dataVisUrl = dataVisIdentifier
+    else
+      dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
     postConfig()
   else
     # Construct our own data for viz.jon to use with our data
@@ -1232,7 +1237,13 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         # https://gis.stackexchange.com/questions/171283/get-a-viz-json-uri-from-a-table-name
         #
         dataBlobUrl = "" # The returned viz.json url
-        dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
+        unless isNull dataBlobUrl
+          dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
+        else if typeof dataBlobUrl is "object"
+          # Parse the object
+          dataVisUrl = dataBlobUrl
+        else
+          dataVisUrl = ""
         unless isNull cartoMap
           cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
           .done (layer) ->

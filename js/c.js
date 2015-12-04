@@ -1268,7 +1268,11 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
    * Now that we have the helper function, let's get the viz data
    */
   if (typeof dataVisIdentifier !== "object") {
-    dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
+    if (/^https?:\/\/.*$/m.test(dataVisIdentifier)) {
+      dataVisUrl = dataVisIdentifier;
+    } else {
+      dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
+    }
     return postConfig();
   } else {
     dataVisJson = new Object();
@@ -1550,7 +1554,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         foo();
         dataBlobUrl = "";
-        dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
+        if (!isNull(dataBlobUrl)) {
+          dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
+        } else if (typeof dataBlobUrl === "object") {
+          dataVisUrl = dataBlobUrl;
+        } else {
+          dataVisUrl = "";
+        }
         if (!isNull(cartoMap)) {
           return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
             layer.setInteraction(true);
