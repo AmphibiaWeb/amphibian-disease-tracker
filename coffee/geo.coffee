@@ -34,7 +34,7 @@ geo.init = (doCallback) ->
     # Now get the real location
     getLocation()
   cartoDBCSS = """
-  <link rel="stylesheet" href="/css/cartodb.css" />
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   """
   $("head").append cartoDBCSS
   doCallback ?= ->
@@ -42,10 +42,7 @@ geo.init = (doCallback) ->
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
-    # Their url,
-    # http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js
-    # is insecure so we load our own copy
-    loadJS "js/cartodb.js", doCallback, false
+    loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
   # First, we have to load the Google Maps library
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
@@ -65,40 +62,65 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   ###
   unless dataVisIdentifier?
     console.info "Can't create map without a data visualization identifier"
-  dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
-  options ?=
-    cartodb_logo: false
-    https: true # Secure forcing is leading to resource errors
-    mobile_layout: true
-    gmaps_base_type: "hybrid"
-    center_lat: window.locationData.lat
-    center_lon: window.locationData.lng
-    zoom: 7
-  unless $("##{targetId}").exists()
-    fakeDiv = """
-    <div id="#{targetId}" class="carto-map wide-map">
-      <!-- Dynamically inserted from unavailable target -->
-    </div>
-    """
-    $("main #main-body").append fakeDiv
-  unless typeof callback is "function"
-    callback = (cartoVis, cartoMap) ->
-      # For whatever reason, we still need to manually add the data
-      cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
-      .done (layer) ->
-        # The actual interaction infowindow popup is decided on the data
-        # page in Carto
-        layer.setInteraction true
-        layer.on "featureOver", defaultMapMouseOverBehaviour
-  cartodb.createVis targetId, dataVisUrl, options
-  .done (vis, layers) ->
-    console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
-    cartoVis = vis
-    cartoMap = vis.getNativeMap()
-    callback(cartoVis, cartoMap)
-  .error (errorString) ->
-    toastStatusMessage("Couldn't load maps!")
-    console.error "Couldn't get map - #{errorString}"
+  # Set up post-configuration helper
+  postConfig = ->
+    options ?=
+      cartodb_logo: false
+      https: true # Secure forcing is leading to resource errors
+      mobile_layout: true
+      gmaps_base_type: "hybrid"
+      center_lat: window.locationData.lat
+      center_lon: window.locationData.lng
+      zoom: 7
+    unless $("##{targetId}").exists()
+      fakeDiv = """
+      <div id="#{targetId}" class="carto-map wide-map">
+        <!-- Dynamically inserted from unavailable target -->
+      </div>
+      """
+      $("main #main-body").append fakeDiv
+    unless typeof callback is "function"
+      callback = (cartoVis, cartoMap) ->
+        # For whatever reason, we still need to manually add the data
+        cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
+        .done (layer) ->
+          # The actual interaction infowindow popup is decided on the data
+          # page in Carto
+          layer.setInteraction true
+          layer.on "featureOver", defaultMapMouseOverBehaviour
+    cartodb.createVis targetId, dataVisUrl, options
+    .done (vis, layers) ->
+      console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
+      cartoVis = vis
+      cartoMap = vis.getNativeMap()
+      callback(cartoVis, cartoMap)
+    .error (errorString) ->
+      toastStatusMessage("Couldn't load maps!")
+      console.error "Couldn't get map - #{errorString}"
+  ###
+  # Now that we have the helper function, let's get the viz data
+  ###
+  unless typeof dataVisIdentifier is "object"
+    dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
+    postConfig()
+  else
+    # Construct our own data for viz.jon to use with our data
+    # Sample
+    # http://tigerhawkvok.cartodb.com/api/v2/viz/38544c04-5e56-11e5-8515-0e4fddd5de28/viz.json
+    dataVisJson = new Object()
+    sampleUrl = "http://tigerhawkvok.cartodb.com/api/v2/viz/38544c04-5e56-11e5-8515-0e4fddd5de28/viz.json"
+    $.get sampleUrl, "", "json"
+    .done (result) ->
+      dataVisJson = result
+      for key, value of dataVisIdentifier
+        # Merge them
+        dataVisJson[key] = value
+    .fail (result, status) ->
+      # Get something!
+      dataVisJson = dataVisIdentifier
+    .always ->
+      dataVisUrl = dataVisJson
+      postConfig()
 
 geo.requestCartoUpload = (totalData, dataTable, operation) ->
   ###
@@ -367,6 +389,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
         # Update the UI
         # Get the blob URL ..
         # https://gis.stackexchange.com/questions/171283/get-a-viz-json-uri-from-a-table-name
+        #
         dataBlobUrl = "" # The returned viz.json url
         dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
         unless isNull cartoMap

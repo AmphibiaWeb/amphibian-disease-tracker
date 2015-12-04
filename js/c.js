@@ -1189,7 +1189,7 @@ geo.init = function(doCallback) {
     window.locationData.lng = -122.262113;
     getLocation();
   } catch (_error) {}
-  cartoDBCSS = "<link rel=\"stylesheet\" href=\"/css/cartodb.css\" />";
+  cartoDBCSS = "<link rel=\"stylesheet\" href=\"https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   if (doCallback == null) {
     doCallback = function() {
@@ -1198,7 +1198,7 @@ geo.init = function(doCallback) {
     };
   }
   window.gMapsCallback = function() {
-    return loadJS("js/cartodb.js", doCallback, false);
+    return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };
@@ -1208,7 +1208,7 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
 };
 
 createMap = function(dataVisIdentifier, targetId, options, callback) {
-  var dataVisUrl, fakeDiv;
+  var dataVisJson, dataVisUrl, postConfig, sampleUrl;
   if (dataVisIdentifier == null) {
     dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28";
   }
@@ -1228,39 +1228,67 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   if (dataVisIdentifier == null) {
     console.info("Can't create map without a data visualization identifier");
   }
-  dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
-  if (options == null) {
-    options = {
-      cartodb_logo: false,
-      https: true,
-      mobile_layout: true,
-      gmaps_base_type: "hybrid",
-      center_lat: window.locationData.lat,
-      center_lon: window.locationData.lng,
-      zoom: 7
-    };
+  postConfig = function() {
+    var fakeDiv;
+    if (options == null) {
+      options = {
+        cartodb_logo: false,
+        https: true,
+        mobile_layout: true,
+        gmaps_base_type: "hybrid",
+        center_lat: window.locationData.lat,
+        center_lon: window.locationData.lng,
+        zoom: 7
+      };
+    }
+    if (!$("#" + targetId).exists()) {
+      fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
+      $("main #main-body").append(fakeDiv);
+    }
+    if (typeof callback !== "function") {
+      callback = function(cartoVis, cartoMap) {
+        return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+          layer.setInteraction(true);
+          return layer.on("featureOver", defaultMapMouseOverBehaviour);
+        });
+      };
+    }
+    return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
+      console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
+      cartoVis = vis;
+      cartoMap = vis.getNativeMap();
+      return callback(cartoVis, cartoMap);
+    }).error(function(errorString) {
+      toastStatusMessage("Couldn't load maps!");
+      return console.error("Couldn't get map - " + errorString);
+    });
+  };
+
+  /*
+   * Now that we have the helper function, let's get the viz data
+   */
+  if (typeof dataVisIdentifier !== "object") {
+    dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
+    return postConfig();
+  } else {
+    dataVisJson = new Object();
+    sampleUrl = "http://tigerhawkvok.cartodb.com/api/v2/viz/38544c04-5e56-11e5-8515-0e4fddd5de28/viz.json";
+    return $.get(sampleUrl, "", "json").done(function(result) {
+      var key, results, value;
+      dataVisJson = result;
+      results = [];
+      for (key in dataVisIdentifier) {
+        value = dataVisIdentifier[key];
+        results.push(dataVisJson[key] = value);
+      }
+      return results;
+    }).fail(function(result, status) {
+      return dataVisJson = dataVisIdentifier;
+    }).always(function() {
+      dataVisUrl = dataVisJson;
+      return postConfig();
+    });
   }
-  if (!$("#" + targetId).exists()) {
-    fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
-    $("main #main-body").append(fakeDiv);
-  }
-  if (typeof callback !== "function") {
-    callback = function(cartoVis, cartoMap) {
-      return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
-        layer.setInteraction(true);
-        return layer.on("featureOver", defaultMapMouseOverBehaviour);
-      });
-    };
-  }
-  return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
-    console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
-    cartoVis = vis;
-    cartoMap = vis.getNativeMap();
-    return callback(cartoVis, cartoMap);
-  }).error(function(errorString) {
-    toastStatusMessage("Couldn't load maps!");
-    return console.error("Couldn't get map - " + errorString);
-  });
 };
 
 geo.requestCartoUpload = function(totalData, dataTable, operation) {
