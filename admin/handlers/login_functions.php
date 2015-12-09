@@ -2540,7 +2540,8 @@ class UserFunctions extends DBHelper
             }
         }
             catch (Exception $e) {
-                return "";
+                # Not created yet
+                return Stronghash::createSalt() . Stronghash::genUnique(96);
             }
     }
         # No column, and couldn't create it
