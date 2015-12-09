@@ -2519,6 +2519,7 @@ class UserFunctions extends DBHelper
             || 
             ($r["status"] === false && $r["error"] == "COLUMN_EXISTS")) {
             # Get the seed!
+            try {
             $u = $this->getUser();
             if(!empty($u[$seedColumn])) return $u[$seedColumn];
             $criteria = array($this->linkColumn => $this->getHardlink());
@@ -2538,6 +2539,10 @@ class UserFunctions extends DBHelper
                 return false;
             }
         }
+            catch (Exception $e) {
+                return "";
+            }
+    }
         # No column, and couldn't create it
         if($verbose) return "NOT_EXIST_CANT_CREATE";
         return false;
