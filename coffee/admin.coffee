@@ -160,9 +160,9 @@ loadCreateNewProject = ->
       </div>
     </div>
     <br/><br/>
-    <paper-checkbox checked>My project already has data</paper-checkbox>
+    <paper-checkbox checked id="has-data">My project already has data</paper-checkbox>
   </section>
-  <section id="uploader-container-section">
+  <section id="uploader-container-section" class="data-section">
   <h2 class="new-title">Uploading your project data</h2>
   <p>Drag and drop as many files as you need below. </p>
   <p>
@@ -171,8 +171,8 @@ loadCreateNewProject = ->
     and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
   </p>
   </section>
-  <h2 class="new-title">Project Data</h2>
-  <section class="project-inputs clearfix">
+  <section class="project-inputs clearfix data-section">
+    <h2 class="new-title">Project Data</h2>
     <h3 class="new-title">Data Parameters</h3>
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
     <p>Etc</p>
@@ -181,6 +181,11 @@ loadCreateNewProject = ->
   $("main #main-body").append html
   bootstrapUploader()
   bootstrapTransect()
+  $("#has-data").on "iron-change", ->
+    if $(this).get(0).checked
+      $(".data-section").attr("hidden","hidden")
+    else
+      $(".data-section").removeAttr("hidden")
   foo()
   false
 
