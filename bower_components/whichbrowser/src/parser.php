@@ -108,12 +108,12 @@
 		}
 
 		public function toArray() {
-			$result = [
+			$result = array(
 				'browser'	=> $this->browser->toArray(),
 				'engine' 	=> $this->engine->toArray(),
 				'os' 		=> $this->os->toArray(),
 				'device' 	=> $this->device->toArray()
-			];
+			);
 
 			if (!count($result['browser'])) unset($result['browser']);
 			if (!count($result['engine'])) unset($result['engine']);
