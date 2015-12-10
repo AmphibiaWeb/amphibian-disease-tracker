@@ -313,7 +313,7 @@ mapOverlayPolygon = function(polygonObjectParams) {
     return false;
   }
   console.info("Should overlay polygon from bounds here");
-  if ($("#carto-map-container").exists() && $("#carto-map-container .map").exists()) {
+  if ($("#carto-map-container").exists() && $("#carto-map-container .cartodb-map-wrapper").exists()) {
     foo();
   } else {
     console.warn("There's no map yet! Can't overlay polygon");

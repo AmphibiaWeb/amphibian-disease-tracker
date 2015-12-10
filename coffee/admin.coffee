@@ -374,7 +374,7 @@ mapOverlayPolygon = (polygonObjectParams) ->
     console.warn "mapOverlayPolygon() got an invalid data type to overlay!"
     return false
   console.info "Should overlay polygon from bounds here"
-  if $("#carto-map-container").exists() and $("#carto-map-container .map").exists()    
+  if $("#carto-map-container").exists() and $("#carto-map-container .cartodb-map-wrapper").exists()    
     foo()
   else
     # No map yet ...
