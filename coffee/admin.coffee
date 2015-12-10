@@ -124,6 +124,14 @@ loadEditor = ->
   foo()
   false
 
+getInfoTooltip = (message = "No Message Provided") ->
+  html = """
+      <div class="col-xs-1">
+        <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="#{message}"></span>
+      </div>
+  """
+  html
+
 loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
@@ -132,23 +140,22 @@ loadCreateNewProject = ->
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required autovalidate="true"></paper-input>
-      <span class="glyphicon glyphicon-info-sign col-xs-1" data-toggle="tooltip" title="Informational field tooltip"></span>
+      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required autovalidate="true"></paper-input>#{getInfoTooltip("Test")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
       <h2 class="new-title">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></gold-email-input>
       <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
-      <h2 class="new-title">Project Notes</h2>
+      <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
-      <h2 class="new-title">Data Permissions</h2>
+      <h2 class="new-title col-xs-12">Data Permissions</h2>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
         <paper-toggle-button id="data-encumbrance-toggle">Public Dataset</paper-toggle-button>
       </div>
         <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
-      <h2 class="new-title">Project Area of Interest</h2>
+      <h2 class="new-title col-xs-12">Project Area of Interest</h2>
       <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Locality Name</span>
@@ -161,9 +168,11 @@ loadCreateNewProject = ->
         <div id="carto-map-container" class="carto-map map">
         </div>
       </div>
-      <br/><br/>
-      <paper-checkbox checked id="has-data">My project already has data</paper-checkbox>
-      <br/><br/>
+      <div class="col-xs-12">
+        <br/>
+        <paper-checkbox checked id="has-data">My project already has data</paper-checkbox>
+        <br/>
+      </div>
     </div>
   </section>
   <section id="uploader-container-section col-xs-12" class="data-section">
@@ -181,7 +190,7 @@ loadCreateNewProject = ->
       <h3 class="new-title">Data Parameters</h3>
       <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
       <p>Etc</p>
-    </div>      
+    </div>
   </section>
   <section id="submission-section col-xs-12">
     <div class="pull-right">
