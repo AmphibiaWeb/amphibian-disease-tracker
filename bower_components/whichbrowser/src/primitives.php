@@ -13,7 +13,7 @@
 		}
 
 		public function toJavaScript() {
-			$lines = [];
+			$lines = array();
 
 			foreach ($this as $key => $value) {
 				if (!is_null($value)) {
@@ -86,7 +86,7 @@
 
 	class Engine extends NameVersionPrimitive {
 		public function toArray() {
-			$result = [];
+			$result = array();
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->version)) $result['version'] = $this->version->toArray();
@@ -102,7 +102,7 @@
 		public $family;
 
 		public function toArray() {
-			$result = [];
+			$result = array();
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->family)) $result['family'] = $this->family;
@@ -141,7 +141,7 @@
 		}
 
 		public function toArray() {
-			$result = [];
+			$result = array();
 
 			if (!empty($this->type)) $result['type'] = $this->type;
 			if (!empty($this->manufacturer)) $result['manufacturer'] = $this->manufacturer;
@@ -232,9 +232,9 @@
 			if (!empty($this->value)) {
 				if (preg_match("/([0-9]+)(?:\.([0-9]+))?(?:\.([0-9]+))?(?:\.([0-9]+))?(?:([ab])([0-9]+))?/", $this->value, $match)) {
 					$v = [ $match[1] ];
-					if (array_key_exists(2, $match) && strlen($match[2])) $v[] = $match[2];
-					if (array_key_exists(3, $match) && strlen($match[3])) $v[] = $match[3];
-					if (array_key_exists(4, $match) && strlen($match[4])) $v[] = $match[4];
+					if (array_key_exists(2, $match) && strlen($match[2])) $varray() = $match[2];
+					if (array_key_exists(3, $match) && strlen($match[3])) $varray() = $match[3];
+					if (array_key_exists(4, $match) && strlen($match[4])) $varray() = $match[4];
 
 					if (!empty($this->details)) {
 						if ($this->details < 0) array_splice($v, $this->details, 0 - $this->details);
@@ -259,7 +259,7 @@
 		}
 
 		public function toArray() {
-			$result = [];
+			$result = array();
 
 			if (!empty($this->value)) {
 				if (!empty($this->details)) {
