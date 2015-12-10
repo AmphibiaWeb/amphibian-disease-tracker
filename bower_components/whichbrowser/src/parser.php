@@ -44,19 +44,19 @@
 		public function isBrowser() {
 			$arguments = func_get_args();
 			array_unshift($arguments, 'browser');
-			return call_user_func_array([ $this, 'isX' ], $arguments);
+			return call_user_func_array(array( $this, 'isX' ), $arguments);
 		}
 
 		public function isEngine() {
 			$arguments = func_get_args();
 			array_unshift($arguments, 'engine');
-			return call_user_func_array([ $this, 'isX' ], $arguments);
+			return call_user_func_array(array( $this, 'isX' ), $arguments);
 		}
 
 		public function isOs() {
 			$arguments = func_get_args();
 			array_unshift($arguments, 'os');
-			return call_user_func_array([ $this, 'isX' ], $arguments);
+			return call_user_func_array(array( $this, 'isX' ), $arguments);
 		}
 
 		public function isDevice($d) {
