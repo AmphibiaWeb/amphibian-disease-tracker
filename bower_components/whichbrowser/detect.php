@@ -1,5 +1,7 @@
 <?php
-
+ini_set("display_errors",1);
+ini_set("log_errors",1);
+error_reporting(E_ALL);
 	header("Content-Type: text/javascript");
 	header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0"); 
 	header("Pragma: no-cache");
