@@ -176,7 +176,7 @@ loadCreateNewProject = ->
       </div>
     </div>
   </section>
-  <section id="uploader-container-section col-xs-12" class="data-section">
+  <section id="uploader-container-section" class="data-section col-xs-12">
     <h2 class="new-title">Uploading your project data</h2>
     <p>Drag and drop as many files as you need below. </p>
     <p>
