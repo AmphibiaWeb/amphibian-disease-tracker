@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, newGeoDataHandler, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -183,60 +183,61 @@ bootstrapTransect = function() {
     foo();
     return false;
   };
+  window.geocodeLookupCallback = function() {
+    var geocoder, locality, request;
+    startLoad();
+    locality = p$("#locality-input").value;
+    geocoder = new google.maps.Geocoder();
+    request = {
+      address: locality
+    };
+    return geocoder.geocode(request, function(result, status) {
+      var bbEW, bbNS, boundingBox, bounds, doCallback, lat, lng, loc;
+      if (status === google.maps.GeocoderStatus.OK) {
+        console.info("Google said:", result);
+        if (!$("#locality-lookup-result").exists()) {
+          $("#carto-rendered-map").prepend("<div class=\"alert alert-info alert-dismissable\" role=\"alert\" id=\"locality-lookup-result\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Location Found</strong>: <span class=\"lookup-name\"></span>\n</div>");
+        }
+        $("#locality-lookup-result .lookup-name").text(result[0].formatted_address);
+        loc = result[0].geometry.location;
+        lat = loc.lat();
+        lng = loc.lng();
+        bounds = result[0].geometry.viewport;
+        bbEW = bounds.O;
+        bbNS = bounds.j;
+        boundingBox = {
+          nw: [bbEW.O, bbNS.O],
+          ne: [bbEW.j, bbNS.O],
+          sw: [bbEW.O, bbNS.j],
+          se: [bbEW.j, bbNS.j]
+        };
+        console.info("Got bounds: ", [lat, lng], boundingBox);
+        doCallback = function() {
+          var options;
+          options = {
+            cartodb_logo: false,
+            https: true,
+            mobile_layout: true,
+            gmaps_base_type: "hybrid",
+            center_lat: lat,
+            center_lon: lng,
+            zoom: 7
+          };
+          $("#carto-map-container").empty();
+          return createMap(null, "carto-map-container", options, function(vis, map) {
+            mapOverlayPolygon(boundingBox);
+            return false;
+          });
+        };
+        loadJS("js/cartodb.js", doCallback, false);
+        return stopLoad();
+      } else {
+        return stopLoadError("Couldn't find location: " + status);
+      }
+    });
+  };
   geocodeEvent = function() {
     var coords;
-    window.geocodeLookupCallback = function() {
-      var geocoder, locality, request;
-      startLoad();
-      locality = p$("#locality-input").value;
-      geocoder = new google.maps.Geocoder();
-      request = {
-        address: locality
-      };
-      return geocoder.geocode(request, function(result, status) {
-        var bbEW, bbNS, boundingBox, bounds, doCallback, lat, lng, loc;
-        if (status === google.maps.GeocoderStatus.OK) {
-          console.info("Google said:", result);
-          if (!$("#locality-lookup-result").exists()) {
-            $("#carto-rendered-map").prepend("<div class=\"alert alert-info alert-dismissable\" role=\"alert\" id=\"locality-lookup-result\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Location Found</strong>: <span class=\"lookup-name\"></span>\n</div>");
-          }
-          $("#locality-lookup-result .lookup-name").text(result[0].formatted_address);
-          loc = result[0].geometry.location;
-          lat = loc.lat();
-          lng = loc.lng();
-          bounds = result[0].geometry.viewport;
-          bbEW = bounds.O;
-          bbNS = bounds.j;
-          boundingBox = {
-            nw: [bbEW.O, bbNS.O],
-            ne: [bbEW.j, bbNS.O],
-            sw: [bbEW.O, bbNS.j],
-            se: [bbEW.j, bbNS.j]
-          };
-          console.info("Got bounds: ", [lat, lng], boundingBox);
-          doCallback = function() {
-            var options;
-            options = {
-              cartodb_logo: false,
-              https: true,
-              mobile_layout: true,
-              gmaps_base_type: "hybrid",
-              center_lat: lat,
-              center_lon: lng,
-              zoom: 7
-            };
-            $("#carto-map-container").empty();
-            return createMap(null, "carto-map-container", options, function(vis, map) {
-              return foo();
-            });
-          };
-          loadJS("js/cartodb.js", doCallback, false);
-          return stopLoad();
-        } else {
-          return stopLoadError("Couldn't find location: " + status);
-        }
-      });
-    };
     if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
       loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=geocodeLookupCallback");
     } else {
@@ -303,6 +304,20 @@ bootstrapTransect = function() {
   $("#transect-input-toggle").on("iron-change", function() {
     return setupTransectUi();
   });
+  return false;
+};
+
+mapOverlayPolygon = function(polygonObjectParams) {
+  if (typeof polygonObjectParams !== "object") {
+    console.warn("mapOverlayPolygon() got an invalid data type to overlay!");
+    return false;
+  }
+  console.info("Should overlay polygon from bounds here");
+  if ($("#carto-map-container").exists() && $("#carto-map-container .map").exists()) {
+    foo();
+  } else {
+    console.warn("There's no map yet! Can't overlay polygon");
+  }
   return false;
 };
 
@@ -664,6 +679,7 @@ newGeoDataHandler = function(dataObject) {
       data: parsedData
     };
     geo.requestCartoUpload(totalData, projectIdentifier, "create");
+    mapOverlayPolygon(totalData.transectRing);
   } catch (_error) {
     e = _error;
     console.error(e.message);

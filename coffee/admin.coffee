@@ -251,56 +251,58 @@ bootstrapTransect = ->
 
   # Helper function: Do the geocoding
   # Reverse geocode locality search
+  window.geocodeLookupCallback = ->
+    startLoad()
+    locality = p$("#locality-input").value
+    # https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple
+    geocoder = new google.maps.Geocoder()
+    request =
+      address: locality
+    geocoder.geocode request, (result, status) ->
+      if status is google.maps.GeocoderStatus.OK
+        console.info "Google said:", result
+        unless $("#locality-lookup-result").exists()
+          $("#carto-rendered-map").prepend """
+          <div class="alert alert-info alert-dismissable" role="alert" id="locality-lookup-result">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Location Found</strong>: <span class="lookup-name"></span>
+          </div>
+          """
+        $("#locality-lookup-result .lookup-name").text result[0].formatted_address
+        # Render the carto map
+        loc = result[0].geometry.location
+        lat = loc.lat()
+        lng = loc.lng()
+        bounds = result[0].geometry.viewport
+        bbEW = bounds.O
+        bbNS = bounds.j
+        boundingBox =
+          nw: [bbEW.O, bbNS.O]
+          ne: [bbEW.j, bbNS.O]
+          sw: [bbEW.O, bbNS.j]
+          se: [bbEW.j, bbNS.j]
+        console.info "Got bounds: ", [lat, lng], boundingBox
+        doCallback = ->
+          options =
+            cartodb_logo: false
+            https: true # Secure forcing is leading to resource errors
+            mobile_layout: true
+            gmaps_base_type: "hybrid"
+            center_lat: lat
+            center_lon: lng
+            zoom: 7
+          $("#carto-map-container").empty()
+          createMap null, "carto-map-container", options, (vis, map) ->
+            # Map has been created, play with the data!
+            mapOverlayPolygon(boundingBox)
+            false
+        loadJS "js/cartodb.js", doCallback, false
+        stopLoad()
+      else
+        stopLoadError "Couldn't find location: #{status}"
+  # geo?.geocodeLookupCallback = geocodeLookupCallback
   geocodeEvent = ->
     # Do reverse geocode
-    window.geocodeLookupCallback = ->
-      startLoad()
-      locality = p$("#locality-input").value
-      # https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple
-      geocoder = new google.maps.Geocoder()
-      request =
-        address: locality
-      geocoder.geocode request, (result, status) ->
-        if status is google.maps.GeocoderStatus.OK
-          console.info "Google said:", result
-          unless $("#locality-lookup-result").exists()
-            $("#carto-rendered-map").prepend """
-            <div class="alert alert-info alert-dismissable" role="alert" id="locality-lookup-result">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <strong>Location Found</strong>: <span class="lookup-name"></span>
-            </div>
-            """
-          $("#locality-lookup-result .lookup-name").text result[0].formatted_address
-          # Render the carto map
-          loc = result[0].geometry.location
-          lat = loc.lat()
-          lng = loc.lng()
-          bounds = result[0].geometry.viewport
-          bbEW = bounds.O
-          bbNS = bounds.j
-          boundingBox =
-            nw: [bbEW.O, bbNS.O]
-            ne: [bbEW.j, bbNS.O]
-            sw: [bbEW.O, bbNS.j]
-            se: [bbEW.j, bbNS.j]
-          console.info "Got bounds: ", [lat, lng], boundingBox
-          doCallback = ->
-            options =
-              cartodb_logo: false
-              https: true # Secure forcing is leading to resource errors
-              mobile_layout: true
-              gmaps_base_type: "hybrid"
-              center_lat: lat
-              center_lon: lng
-              zoom: 7
-            $("#carto-map-container").empty()
-            createMap null, "carto-map-container", options, (vis, map) ->
-              # Map has been created, play with the data!
-              foo()
-          loadJS "js/cartodb.js", doCallback, false
-          stopLoad()
-        else
-          stopLoadError "Couldn't find location: #{status}"
     unless google?.maps?
       # Load the JS
       loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=geocodeLookupCallback"
@@ -364,6 +366,21 @@ bootstrapTransect = ->
   $("#transect-input-toggle").on "iron-change", ->
     setupTransectUi()
   false
+
+
+
+mapOverlayPolygon = (polygonObjectParams) ->
+  if typeof polygonObjectParams isnt "object"
+    console.warn "mapOverlayPolygon() got an invalid data type to overlay!"
+    return false
+  console.info "Should overlay polygon from bounds here"
+  if $("#carto-map-container").exists() and $("#carto-map-container .map").exists()    
+    foo()
+  else
+    # No map yet ...
+    console.warn "There's no map yet! Can't overlay polygon"
+  false
+
 
 
 bootstrapUploader = (uploadFormId = "file-uploader") ->
@@ -737,10 +754,13 @@ newGeoDataHandler = (dataObject = new Object()) ->
       transectRing: undefined # Read in, manually entered
       data: parsedData
     geo.requestCartoUpload(totalData, projectIdentifier, "create")
+    mapOverlayPolygon totalData.transectRing
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"
   false
+
+
 
 
 $ ->
