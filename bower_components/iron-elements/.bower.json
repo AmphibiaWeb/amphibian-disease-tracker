@@ -1,6 +1,6 @@
 {
   "name": "iron-elements",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A set of visual and non-visual utility elements. Includes elements for working with layout, user input, selection, and scaffolding apps",
   "keywords": [
     "web-components",
@@ -66,11 +66,12 @@
     "test",
     "tests"
   ],
-  "_release": "1.0.5",
+  "main": "iron-elements.html",
+  "_release": "1.0.6",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.5",
-    "commit": "c8272d8570109767258e0cc857c073836225dfba"
+    "tag": "v1.0.6",
+    "commit": "cc97d9d4d3f8820f942ae239425cae972741e27d"
   },
   "_source": "git://github.com/PolymerElements/iron-elements.git",
   "_target": "^1.0.0",
