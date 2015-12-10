@@ -691,7 +691,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                             if($res["status"])
                               {
                                 $login_output.="<div class='alert alert-success text-center center-block'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
-<h3> ".$res["message"]." </h3></div>"; //jumpto1
+<h3> ".$res["message"]." </h3><p>You can <a class='alert-link' href='".$self_url."'>return to your profile page here</a>.</p></div>"; //jumpto1
                                 if($user->needsManualAuth())
                                   {
                                     $login_output.="<div class='alert alert-warning text-center center-block'><p>Your ability to login will be restricted until you've been authorized.</p></div>";
