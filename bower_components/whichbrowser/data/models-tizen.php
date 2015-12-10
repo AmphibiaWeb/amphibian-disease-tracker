@@ -2,8 +2,6 @@
 
 		namespace WhichBrowser\Data;
 
-		use WhichBrowser\Constants\DeviceType;
-
 		DeviceModels::$TIZEN_MODELS = [
 			'Baltic'									=> [ 'Samsung', '"Baltic"' ],
 			'SM-HIGGS'									=> [ 'Samsung', '"Higgs"' ],
@@ -28,18 +26,18 @@
 			'SEC SC-03F'								=> [ 'Samsung', 'ZeQ' ],						// Unreleased version for DoCoMo
 			'SC-03F'									=> [ 'Samsung', 'ZeQ' ],						// Unreleased version for DoCoMo
 
-			'SM-R750!'									=> [ 'Samsung', 'Gear S', DeviceType::WATCH ],
+			'SM-R750!'									=> [ 'Samsung', 'Gear S', TYPE_WATCH ],
 
-			'NX300'										=> [ 'Samsung', 'NX300', DeviceType::CAMERA ],
+			'NX300'										=> [ 'Samsung', 'NX300', TYPE_CAMERA ],
 
-			'hawkp'										=> [ 'Samsung', '"Hawkp"', DeviceType::TELEVISION ],
+			'hawkp'										=> [ 'Samsung', '"Hawkp"', TYPE_TELEVISION ],
 
 			'xu3'										=> [ 'Hardkernel', 'ODROID-XU3 developer board' ],
 
 //			'FamilyHub'									=> [ 'Samsung', 'FamilyHub' ],
 
-			'sdk'										=> [ null, null, DeviceType::EMULATOR ],
-			'Emulator'									=> [ null, null, DeviceType::EMULATOR ],
-			'Mobile-Emulator'							=> [ null, null, DeviceType::EMULATOR ],
-			'TIZEN Emulator'							=> [ null, null, DeviceType::EMULATOR ],
+			'sdk'										=> [ null, null, TYPE_EMULATOR ],
+			'Emulator'									=> [ null, null, TYPE_EMULATOR ],
+			'Mobile-Emulator'							=> [ null, null, TYPE_EMULATOR ],
+			'TIZEN Emulator'							=> [ null, null, TYPE_EMULATOR ],
 		];

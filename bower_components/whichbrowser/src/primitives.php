@@ -2,7 +2,6 @@
 
 	namespace WhichBrowser;
 
-	use WhichBrowser\Constants;
 
 	class Primitive {
 		public function __construct($defaults = null) {
@@ -22,10 +21,6 @@
 
 					if ($key == 'version') {
 						$line .= 'new Version({ ' . $value->toJavaScript() . ' })';
-					} else if ($key == 'family') {
-						$line .= 'new Family({ ' . $value->toJavaScript() . ' })';
-					} else if ($key == 'using') {
-						$line .= 'new Using({ ' . $value->toJavaScript() . ' })';
 					} else {
 						switch(gettype($value)) {
 							case 'boolean':		$line .= $value ? 'true' : 'false'; break;
@@ -57,19 +52,14 @@
 			return !empty($this->version) && !$this->version->hidden ? $this->version->toString() : '';
 		}
 
-		public function isDetected() {
-			return !empty($this->name);
-		}
-
 		public function toString() {
 			return trim($this->getName() . ' ' . $this->getVersion());
 		}
 	}
 
+
 	class Browser extends NameVersionPrimitive {
 		public $channel;
-		public $using;
-		public $family;
 
 		public $stock = true;
 		public $hidden = false;
@@ -80,34 +70,13 @@
 			return $name ? $name . (!empty($this->channel) ? ' ' . $this->channel : '') : '';
 		}
 
-		public function isUsing($s) {
-			if (isset($this->using)) {
-				if ($this->using->getName() == $s) return true;
-			}
-
-			return false;
-		}
-
-		public function toString() {
-			$result = trim(($this->hidden == false ? $this->getName() . ' ' : '') . $this->getVersion());
-
-			if (empty($result) && isset($this->using)) {
-				return $this->using->toString();
-			}
-
-			return $result;
-		}
-
 		public function toArray() {
 			$result = [];
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->alias)) $result['alias'] = $this->alias;
-			if (!empty($this->using)) $result['using'] = $this->using->toArray();
-			if (!empty($this->family)) $result['family'] = $this->family->toArray();
 			if (!empty($this->version)) $result['version'] = $this->version->toArray();
 
-			if (isset($result['name']) && empty($result['name'])) unset($result['name']);
 			if (isset($result['version']) && !count($result['version'])) unset($result['version']);
 
 			return $result;
@@ -122,7 +91,6 @@
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->version)) $result['version'] = $this->version->toArray();
 
-			if (isset($result['name']) && empty($result['name'])) unset($result['name']);
 			if (isset($result['version']) && !count($result['version'])) unset($result['version']);
 
 			return $result;
@@ -137,40 +105,16 @@
 			$result = [];
 
 			if (!empty($this->name)) $result['name'] = $this->name;
-			if (!empty($this->family)) $result['family'] = $this->family->toArray();
+			if (!empty($this->family)) $result['family'] = $this->family;
 			if (!empty($this->alias)) $result['alias'] = $this->alias;
 			if (!empty($this->version)) $result['version'] = $this->version->toArray();
 
-			if (isset($result['name']) && empty($result['name'])) unset($result['name']);
 			if (isset($result['version']) && !count($result['version'])) unset($result['version']);
 
 			return $result;
 		}
 	}
 
-	class Family extends NameVersionPrimitive {
-		public function toArray() {
-			$result = [];
-
-			if (!empty($this->name) && empty($this->version)) return $this->name;
-			if (!empty($this->name)) $result['name'] = $this->name;
-			if (!empty($this->version)) $result['version'] = $this->version->toArray();
-
-			return $result;
-		}
-	}
-
-	class Using extends NameVersionPrimitive {
-		public function toArray() {
-			$result = [];
-
-			if (!empty($this->name) && empty($this->version)) return $this->name;
-			if (!empty($this->name)) $result['name'] = $this->name;
-			if (!empty($this->version)) $result['version'] = $this->version->toArray();
-
-			return $result;
-		}
-	}
 
 	class Device extends Primitive {
 		public $manufacturer;
@@ -179,8 +123,7 @@
 		public $identifier;
 
 		public $type = '';
-		public $subtype = '';
-		public $identified = Constants\Id::NONE;
+		public $identified = ID_NONE;
 		public $generic = true;
 
 		public function getManufacturer() {
@@ -193,29 +136,14 @@
 		}
 
 		public function toString() {
-			if ($this->identified) {
-				$model = $this->getModel();
-				$manufacturer = $this->getManufacturer();
-
-				if ($manufacturer != '' && strpos($model, $manufacturer) === 0) {
-					$manufacturer = '';
-				}
-
-				return trim($manufacturer . ' ' . $model);
-			}
-
+			if ($this->identified) return trim((!empty($this->manufacturer) ? $this->manufacturer . ' ' : '') . (!empty($this->model) ? $this->model . ' ' : '') . (!empty($this->series) ? $this->series : ''));
 			return !empty($this->model) ? 'unrecognized device (' . $this->model . ')' : '';
-		}
-
-		public function isDetected() {
-			return !empty($this->type) || !empty($this->model) || !empty($this->manufacturer);
 		}
 
 		public function toArray() {
 			$result = [];
 
 			if (!empty($this->type)) $result['type'] = $this->type;
-			if (!empty($this->subtype)) $result['subtype'] = $this->subtype;
 			if (!empty($this->manufacturer)) $result['manufacturer'] = $this->manufacturer;
 			if (!empty($this->model)) $result['model'] = $this->model;
 			if (!empty($this->series)) $result['series'] = $this->series;

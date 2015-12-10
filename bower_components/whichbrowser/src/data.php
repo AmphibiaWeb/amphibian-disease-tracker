@@ -2,48 +2,9 @@
 
 	namespace WhichBrowser\Data;
 	
-	use WhichBrowser\Browser;
 	use WhichBrowser\Version;
 	use WhichBrowser\Device;
-	use WhichBrowser\Constants;
 	
-
-	class Bots {
-		static $BOTS = [];
-
-		static function identify($ua) {
-			require_once __DIR__ . '/../data/browsers-bots.php';
-
-			foreach (self::$BOTS as $i => $bot) {
-				if (preg_match($bot['regexp'], $ua, $match)) {
-					return new Browser([
-						'name'		=> $bot['name'],
-						'stock'		=> false,
-						'version'	=> isset($match[1]) && $match[1] ? new Version([ 'value' => $match[1], 'details' => isset($bot['details']) ? $bot['details'] : null ]) : null
-					]);
-				}
-			}
-		}
-	}
-
-
-	class Chrome {
-		static $DESKTOP = [];
-		static $MOBILE = [];
-	
-		static function getChannel($platform, $version) {
-			require_once __DIR__ . '/../data/browsers-chrome.php';
-
-			$version = implode('.', array_slice(explode('.', $version), 0, 3));
-
-			switch($platform) {
-				case 'desktop':	if (isset(Chrome::$DESKTOP[$version])) return Chrome::$DESKTOP[$version]; break;
-				case 'mobile':	if (isset(Chrome::$MOBILE[$version])) return Chrome::$MOBILE[$version]; break;
-			}
-
-			return 'canary';
-		}
-	}
 
 	class BrowserIds {
 		static $ANDROID_BROWSERS = [];
@@ -164,8 +125,8 @@
 				$model = self::cleanup($model);
 				if (preg_match('/AndroVM/iu', $model)  || $model == 'Emulator' || $model == 'x86 Emulator' || $model == 'x86 VirtualBox' || $model == 'vm') {
 					return new Device([
-						'type'			=> Constants\DeviceType::EMULATOR,
-						'identified'	=> Constants\Id::PATTERN,
+						'type'			=> TYPE_EMULATOR,
+						'identified'	=> ID_PATTERN,
 						'manufacturer'	=> null,
 						'model'			=> null,
 						'generic'		=> false
@@ -178,8 +139,8 @@
 
 		static function identifyBlackBerry($model) {
 			$device = new Device ([
-				'type'			=> Constants\DeviceType::MOBILE,
-				'identified'	=> Constants\Id::PATTERN,
+				'type'			=> TYPE_MOBILE,
+				'identified'	=> ID_PATTERN,
 				'manufacturer'	=> 'RIM',
 				'model'			=> 'BlackBerry ' . $model,
 				'generic'		=> false
@@ -187,7 +148,7 @@
 
 			if (isset(self::$BLACKBERRY_MODELS[$model])) {
 				$device->model = 'BlackBerry ' . self::$BLACKBERRY_MODELS[$model] . ' ' . $model;
-				$device->identified |= Constants\Id::MATCH_UA;
+				$device->identified |= ID_MATCH_UA;
 			}
 
 			return $device;
@@ -199,8 +160,8 @@
 			if ($cleanup) $model = self::cleanup($model);
 
 			$device = new Device ([
-				'type'			=> Constants\DeviceType::MOBILE,
-				'identified'	=> Constants\Id::NONE,
+				'type'			=> TYPE_MOBILE,
+				'identified'	=> ID_NONE,
 				'manufacturer'	=> null,
 				'model'			=> $model,
 				'identifier'	=> $original,
@@ -230,24 +191,14 @@
 				if ($match) {
  					$device->manufacturer = $match[0];
 					$device->model = self::applyMatches($match[1], $model, $pattern);
-					$device->identified = Constants\Id::MATCH_UA;
+					if (isset($match[2])) $device->type = $match[2];
+					if (isset($match[3])) $device->flag = $match[3];
+					$device->identified = ID_MATCH_UA;
 
-					if (isset($match[2])) {
-						if (is_array($match[2])) {
-							$device->type = $match[2][0];
-							$device->subtype = $match[2][1];
-						} 
-						else {
-							$device->type = $match[2];
-						}
-					}
 
-					if (isset($match[3])) {						
-						$device->flag = $match[3];
-					}
-					
+
 					if ($device->manufacturer == null && $device->model == null) {
-						$device->identified = Constants\Id::PATTERN;
+						$device->identified = ID_PATTERN;
 					}
 
 					return $device;

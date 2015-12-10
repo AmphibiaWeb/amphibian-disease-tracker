@@ -10,5 +10,4 @@
 			'Palm-TunX'								=> [ 'Palm', 'LifeDrive' ],
 			'hspr-H102'								=> [ 'Palm', 'Treo 650' ],
 			'Palm-Zir4'								=> [ 'Palm', 'Tungsten E2' ],
-			'Palm-Zi72'								=> [ 'Palm', 'Zire 72' ],
 		];

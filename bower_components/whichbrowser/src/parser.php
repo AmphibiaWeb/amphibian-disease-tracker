@@ -4,10 +4,10 @@
 
 	include_once 'constants.php';
 	include_once 'primitives.php';
-	include_once 'analyser.php';
+	include_once 'engine.php';
 	include_once 'data.php';
 
-	class Parser extends Analyser {
+	class Parser extends ParserEngine {
 		public $browser;
 		public $engine;
 		public $os;
@@ -32,12 +32,10 @@
 			
 			if (count($arguments) >= 2) {
 				$valid = $valid && $this->$x->name == $arguments[1];
+			}
 			
-				if (count($arguments) >= 4 && !empty($this->$x->version) && $valid) {
-					$valid = $valid && $this->$x->version->is($arguments[2], $arguments[3]);
-				}
-
-				if ($valid) return true;
+			if (count($arguments) >= 4 && !empty($this->$x->version) && $valid) {
+				$valid = $valid && $this->$x->version->is($arguments[2], $arguments[3]);
 			}
 
 			return $valid;
@@ -65,32 +63,12 @@
 			return (!empty($this->device->series) && $this->device->series == $d) || (!empty($this->device->model) && $this->device->model == $d);
 		}
 
-		public function getType() {
-			return $this->device->type . (!empty($this->device->subtype) ? ':' . $this->device->subtype : '');
-		}
-
 		public function isType() {
 			$arguments = func_get_args();
 
-			for ($a = 0; $a < count($arguments); $a++) { 
-				if (strpos($arguments[$a], ':') !== false) {
-					list($type, $subtype) = explode(':', $arguments[$a]);
-					if ($type == $this->device->type && $subtype == $this->device->subtype) {
-						return true;
-					}
-				}
-				else {
-					if ($arguments[$a] == $this->device->type) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
-		public function isDetected() {
-			return $this->browser->isDetected() || $this->os->isDetected() || $this->engine->isDetected() || $this->device->isDetected();
+			$valid = false;
+			for ($a = 0; $a < count($arguments); $a++) $valid = $valid || $arguments[$a] == $this->device->type;
+			return $valid;
 		}
 
 		private function a($s) {
