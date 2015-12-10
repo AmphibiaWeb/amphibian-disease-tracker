@@ -131,53 +131,58 @@ loadCreateNewProject = ->
   <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required autovalidate="true"></paper-input>
   <h2 class="new-title">Project Parameters</h2>
   <section class="project-inputs clearfix">
-    <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate="true"></paper-input>
-    <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
-    <h2 class="new-title">Lab Parameters</h2>
-    <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
-    <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
-    <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></gold-email-input>
-    <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
-    <h2 class="new-title">Project Notes</h2>
-    <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
-    <h2 class="new-title">Data Permissions</h2>
-    <div class="col-xs-12">
-      <span class="toggle-off-label iron-label">Private Dataset</span>
-      <paper-toggle-button id="data-encumbrance-toggle">Public Dataset</paper-toggle-button>
-    </div>
-      <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
-    <h2 class="new-title">Project Area of Interest</h2>
-    <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
-    <div class="col-xs-12">
-      <span class="toggle-off-label iron-label">Locality Name</span>
-      <paper-toggle-button id="transect-input-toggle">Coordinate List</paper-toggle-button>
-    </div>
-    <p id="transect-instructions" class="col-xs-12"></p>
-    <div id="transect-input" class="col-md-6 col-xs-12">
-    </div>
-    <div id="carto-rendered-map" class="col-md-6">
-      <div id="carto-map-container" class="carto-map map">
+    <div class="row">
+      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate="true"></paper-input>
+      <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
+      <h2 class="new-title">Lab Parameters</h2>
+      <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
+      <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
+      <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></gold-email-input>
+      <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
+      <h2 class="new-title">Project Notes</h2>
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
+      <h2 class="new-title">Data Permissions</h2>
+      <div class="col-xs-12">
+        <span class="toggle-off-label iron-label">Private Dataset</span>
+        <paper-toggle-button id="data-encumbrance-toggle">Public Dataset</paper-toggle-button>
       </div>
+        <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
+      <h2 class="new-title">Project Area of Interest</h2>
+      <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
+      <div class="col-xs-12">
+        <span class="toggle-off-label iron-label">Locality Name</span>
+        <paper-toggle-button id="transect-input-toggle">Coordinate List</paper-toggle-button>
+      </div>
+      <p id="transect-instructions" class="col-xs-12"></p>
+      <div id="transect-input" class="col-md-6 col-xs-12">
+      </div>
+      <div id="carto-rendered-map" class="col-md-6">
+        <div id="carto-map-container" class="carto-map map">
+        </div>
+      </div>
+      <br/><br/>
+      <paper-checkbox checked id="has-data">My project already has data</paper-checkbox>
+      <br/><br/>
     </div>
-    <br/><br/>
-    <paper-checkbox checked id="has-data">My project already has data</paper-checkbox>
   </section>
   <section id="uploader-container-section" class="data-section">
-  <h2 class="new-title">Uploading your project data</h2>
-  <p>Drag and drop as many files as you need below. </p>
-  <p>
-    To save your project, we need at least one file with structured data containing coordinates.
-    Please note that the data <strong>must</strong> have a header row,
-    and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
-  </p>
+    <h2 class="new-title">Uploading your project data</h2>
+    <p>Drag and drop as many files as you need below. </p>
+    <p>
+      To save your project, we need at least one file with structured data containing coordinates.
+      Please note that the data <strong>must</strong> have a header row,
+      and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
+    </p>
   </section>
   <section class="project-inputs clearfix data-section">
-    <h2 class="new-title">Project Data</h2>
-    <h3 class="new-title">Data Parameters</h3>
-    <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
-    <p>Etc</p>
+    <div class="row">
+      <h2 class="new-title">Project Data</h2>
+      <h3 class="new-title">Data Parameters</h3>
+      <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
+      <p>Etc</p>
+    </div>      
   </section>
-  <section id="submission-section">
+  <section id="submission-section col-xs-8 col-md-6 pull-right">
     <button id="upload-data" class="btn btn-success click" data-function="finalizeData">Save Data &amp; Create Project</button>
     <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
   </section>
