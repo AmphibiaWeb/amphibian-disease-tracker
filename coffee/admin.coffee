@@ -177,17 +177,34 @@ loadCreateNewProject = ->
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
     <p>Etc</p>
   </section>
+  <section id="submission-section">
+    <button id="upload-data" class="btn btn-success click" data-function="finalizeData">Save Data &amp; Create Project</button>
+    <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
+  </section>
   """
   $("main #main-body").append html
   bootstrapUploader()
   bootstrapTransect()
   $("#has-data").on "iron-change", ->
-    if $(this).get(0).checked
+    unless $(this).get(0).checked
       $(".data-section").attr("hidden","hidden")
     else
       $(".data-section").removeAttr("hidden")
+  bindClicks()
   foo()
   false
+
+finalizeData = ->
+  ###
+  # Make sure everythign is uploaded, validate, and POST to the server
+  ###
+  foo()
+
+resetForm = ->
+  ###
+  # Kill it dead
+  ###
+  foo()
 
 loadProjectBrowser = ->
   startAdminActionHelper()
