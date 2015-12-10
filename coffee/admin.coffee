@@ -145,7 +145,7 @@ loadCreateNewProject = ->
     <h2 class="new-title">Data Permissions</h2>
     <div class="col-xs-12">
       <span class="toggle-off-label iron-label">Private Dataset</span>
-      <paper-toggle-button id="transect-input-toggle">Public Dataset</paper-toggle-button>
+      <paper-toggle-button id="data-encumbrance-toggle">Public Dataset</paper-toggle-button>
     </div>      
       <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
     <h2 class="new-title">Project Area of Interest</h2>
