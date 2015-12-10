@@ -71,7 +71,7 @@
 		}
 
 		public function toArray() {
-			$result = [];
+			$result = array();
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->alias)) $result['alias'] = $this->alias;
