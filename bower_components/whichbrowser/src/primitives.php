@@ -168,11 +168,11 @@
 				if (count($arguments) == 1) {
 					$compare = $arguments[0];
 				}
-				
+
 				if (count($arguments) >= 2) {
 					$operator = $arguments[0];
 					$compare = $arguments[1];
-				}				
+				}
 
 				if (!is_null($compare)) {
 					$min = min(substr_count($this->value, '.'), substr_count($compare, '.')) + 1;
@@ -233,9 +233,11 @@
 				if (preg_match("/([0-9]+)(?:\.([0-9]+))?(?:\.([0-9]+))?(?:\.([0-9]+))?(?:([ab])([0-9]+))?/", $this->value, $match)) {
 					$v = array( $match[1] );
                     $twoTest = array_key_exists(2, $match) && strlen($match[2]);
+                    $threeTest = array_key_exists(3, $match) && strlen($match[3]);
+                    $fourTest = array_key_exists(4, $match) && strlen($match[4]);
 					if ($twoTest) $varray() = $match[2];
-					if (array_key_exists(3, $match) && strlen($match[3])) $varray() = $match[3];
-					if (array_key_exists(4, $match) && strlen($match[4])) $varray() = $match[4];
+					if ($threeTest) $varray() = $match[3];
+					if ($fourTest) $varray() = $match[4];
 
 					if (!empty($this->details)) {
 						if ($this->details < 0) array_splice($v, $this->details, 0 - $this->details);
@@ -246,7 +248,7 @@
 						for ($i = 0; $i < count($v); $i++) {
 							if ($v[$i] > 999) {
 								array_splice($v, $i, 1);
-							}					
+							}
 						}
 					}
 
@@ -256,7 +258,7 @@
 				}
 			}
 
-			return $version;		
+			return $version;
 		}
 
 		public function toArray() {
@@ -286,4 +288,3 @@
 			return $result;
 		}
 	}
-
