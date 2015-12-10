@@ -141,7 +141,8 @@ loadCreateNewProject = ->
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
       <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required autovalidate="true"></paper-input>#{getInfoTooltip("Test")}
-      <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
+      <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11"></paper-input>
+      #{getInfoTooltip("E.g.  a DOI or other reference")}
       <h2 class="new-title">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
@@ -153,8 +154,8 @@ loadCreateNewProject = ->
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
         <paper-toggle-button id="data-encumbrance-toggle">Public Dataset</paper-toggle-button>
-      </div>
         <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
+      </div>
       <h2 class="new-title col-xs-12">Project Area of Interest</h2>
       <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
       <div class="col-xs-12">
