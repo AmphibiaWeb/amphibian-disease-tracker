@@ -132,7 +132,8 @@ loadCreateNewProject = ->
   <h2 class="new-title">Project Parameters</h2>
   <section class="project-inputs clearfix">
     <div class="row">
-      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-12" required autovalidate="true"></paper-input>
+      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required autovalidate="true"></paper-input>
+      <span class="glyphicon glyphicon-info-sign col-xs-1" data-toggle="tooltip" title="Informational field tooltip"></span>
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-12"></paper-input>
       <h2 class="new-title">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
