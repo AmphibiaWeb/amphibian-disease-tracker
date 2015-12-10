@@ -60,7 +60,7 @@ populateAdminActions = ->
         </paper-button>
         <paper-button id="view-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:visibility"></iron-icon>
-            View All Projects
+            View All My Projects
         </paper-button>
   """
   $("#admin-actions-block").html adminActions
@@ -140,13 +140,11 @@ loadCreateNewProject = ->
     <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
     <h2 class="new-title">Project Notes</h2>
     <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
-    <h2 class="new-title">Data Parameters</h2>
-    <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
     <h2 class="new-title">Data Permissions</h2>
     <div class="col-xs-12">
       <span class="toggle-off-label iron-label">Private Dataset</span>
       <paper-toggle-button id="data-encumbrance-toggle">Public Dataset</paper-toggle-button>
-    </div>      
+    </div>
       <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
     <h2 class="new-title">Project Area of Interest</h2>
     <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
@@ -161,8 +159,10 @@ loadCreateNewProject = ->
       <div id="carto-map-container" class="carto-map map">
       </div>
     </div>
+    <br/><br/>
+    <paper-checkbox checked>My project already has data</paper-checkbox>
   </section>
-  <p>Etc</p>
+
   <h2 class="new-title">Uploading your project data</h2>
   <p>Drag and drop as many files as you need below. </p>
   <p>
@@ -170,6 +170,12 @@ loadCreateNewProject = ->
     Please note that the data <strong>must</strong> have a header row,
     and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
   </p>
+  <h2 class="new-title">Project Data</h2>
+  <section class="project-inputs clearfix">
+    <h3 class="new-title">Data Parameters</h3>
+    <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
+    <p>Etc</p>
+  </section>
   """
   $("main #main-body").append html
   bootstrapUploader()
