@@ -14,7 +14,7 @@
 		public $device;
 
 		public $camouflage = false;
-		public $features = [];
+		public $features = array();
 
 		public function __construct($options) {
 			$this->browser = new Browser();
