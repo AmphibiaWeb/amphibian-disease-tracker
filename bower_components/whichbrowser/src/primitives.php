@@ -231,7 +231,7 @@
 
 			if (!empty($this->value)) {
 				if (preg_match("/([0-9]+)(?:\.([0-9]+))?(?:\.([0-9]+))?(?:\.([0-9]+))?(?:([ab])([0-9]+))?/", $this->value, $match)) {
-					$v = [ $match[1] ];
+					$v = array( $match[1] );
 					if (array_key_exists(2, $match) && strlen($match[2])) $varray() = $match[2];
 					if (array_key_exists(3, $match) && strlen($match[3])) $varray() = $match[3];
 					if (array_key_exists(4, $match) && strlen($match[4])) $varray() = $match[4];
