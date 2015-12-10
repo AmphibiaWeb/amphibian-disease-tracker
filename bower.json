@@ -32,7 +32,7 @@
     "picturefill": "^2.2.0",
     "polymer": "Polymer/polymer#^1.0.0",
     "purl": "~2.3.1",
-    "whichbrowser": "~1.0.1020",
+    "whichbrowser": "1.0.1020",
     "xmlToJSON": "metatribal/xmlToJSON#~1.1.0",
     "zeroclipboard": "^2.2.0"
   }

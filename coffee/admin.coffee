@@ -136,18 +136,18 @@ loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
-  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required autovalidate="true"></paper-input>
+  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required auto-validate></paper-input>
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required autovalidate="true"></paper-input>#{getInfoTooltip("Test")}
+      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate></paper-input>#{getInfoTooltip("Test")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
       <h2 class="new-title">Lab Parameters</h2>
-      <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
-      <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
-      <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></gold-email-input>
-      <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required autovalidate="true"></paper-input>
+      <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
+      <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
+      <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>
+      <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
       <h2 class="new-title col-xs-12">Data Permissions</h2>
