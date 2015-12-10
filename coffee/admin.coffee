@@ -143,7 +143,7 @@ loadCreateNewProject = ->
       <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate></paper-input>#{getInfoTooltip("Test")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
-      <h2 class="new-title">Lab Parameters</h2>
+      <h2 class="new-title col-xs-12">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>

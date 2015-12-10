@@ -235,7 +235,7 @@
                     $twoTest = array_key_exists(2, $match) && strlen($match[2]);
                     $threeTest = array_key_exists(3, $match) && strlen($match[3]);
                     $fourTest = array_key_exists(4, $match) && strlen($match[4]);
-					if ($twoTest) $varray() = $match[2];
+					if ($twoTest == true) $varray() = $match[2];
 					if ($threeTest) $varray() = $match[3];
 					if ($fourTest) $varray() = $match[4];
 
