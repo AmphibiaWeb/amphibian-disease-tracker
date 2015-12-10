@@ -162,7 +162,7 @@ loadCreateNewProject = ->
     <br/><br/>
     <paper-checkbox checked>My project already has data</paper-checkbox>
   </section>
-
+  <section id="uploader-container-section">
   <h2 class="new-title">Uploading your project data</h2>
   <p>Drag and drop as many files as you need below. </p>
   <p>
@@ -170,6 +170,7 @@ loadCreateNewProject = ->
     Please note that the data <strong>must</strong> have a header row,
     and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
   </p>
+  </section>
   <h2 class="new-title">Project Data</h2>
   <section class="project-inputs clearfix">
     <h3 class="new-title">Data Parameters</h3>
@@ -344,7 +345,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
       </fieldset>
     </form>
     """
-    $("main #main-body").append html
+    $("main #uploader-container-section").append html
     $(selector).submit (e) ->
       e.preventDefault()
       e.stopPropagation()
