@@ -142,10 +142,17 @@ loadCreateNewProject = ->
     <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
     <h2 class="new-title">Data Parameters</h2>
     <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
-    <h2 class="new-title">Transects</h2>
+    <h2 class="new-title">Data Permissions</h2>
+    <div class="col-xs-12">
+      <span class="toggle-off-label iron-label">Private Dataset</span>
+      <paper-toggle-button id="transect-input-toggle">Public Dataset</paper-toggle-button>
+    </div>      
+      <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
+    <h2 class="new-title">Project Area of Interest</h2>
+    <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
     <div class="col-xs-12">
       <span class="toggle-off-label iron-label">Locality Name</span>
-      <paper-toggle-button id="transect-input-toggle" checked>Coordinate List</paper-toggle-button>
+      <paper-toggle-button id="transect-input-toggle">Coordinate List</paper-toggle-button>
     </div>
     <p id="transect-instructions" class="col-xs-12"></p>
     <div id="transect-input" class="col-md-6 col-xs-12">

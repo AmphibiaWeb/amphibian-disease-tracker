@@ -942,7 +942,9 @@ class UserFunctions extends DBHelper
           case 'su_flag':
           case 'disabled':
             $store[$key] = false;
-          break;
+            break;
+          case "random_seed":
+              $store[$key] = $iv;
           default:
             $store[$key] = '';
           }
