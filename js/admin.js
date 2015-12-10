@@ -123,7 +123,7 @@ getInfoTooltip = function(message) {
   if (message == null) {
     message = "No Message Provided";
   }
-  html = "<div class=\"col-xs-1\">\n  <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"" + message + "\"></span>\n</div>";
+  html = "<div class=\"col-xs-1 adjacent-info\">\n  <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"" + message + "\"></span>\n</div>";
   return html;
 };
 

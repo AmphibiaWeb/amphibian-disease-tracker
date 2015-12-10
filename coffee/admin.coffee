@@ -126,7 +126,7 @@ loadEditor = ->
 
 getInfoTooltip = (message = "No Message Provided") ->
   html = """
-      <div class="col-xs-1">
+      <div class="col-xs-1 adjacent-info">
         <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="#{message}"></span>
       </div>
   """

@@ -7149,6 +7149,9 @@ iron-autogrow-textarea.project-field {
 .submission-section {
   margin-buttom: 3rem;
 }
+.adjacent-info {
+  margin-top: 1.5em;
+}
 .map {
   height: 50vh;
   display: block;
