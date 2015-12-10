@@ -157,8 +157,8 @@ loadCreateNewProject = ->
         <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
       </div>
       <h2 class="new-title col-xs-12">Project Area of Interest</h2>
-      <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
       <div class="col-xs-12">
+        <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
         <span class="toggle-off-label iron-label">Locality Name</span>
         <paper-toggle-button id="transect-input-toggle">Coordinate List</paper-toggle-button>
       </div>
