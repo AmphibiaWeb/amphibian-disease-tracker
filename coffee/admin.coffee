@@ -127,10 +127,10 @@ loadEditor = ->
 loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
-  <h2 class="new-title">Project Title</h2>
+  <h2 class="new-title col-xs-12">Project Title</h2>
   <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required autovalidate="true"></paper-input>
-  <h2 class="new-title">Project Parameters</h2>
-  <section class="project-inputs clearfix">
+  <h2 class="new-title col-xs-12">Project Parameters</h2>
+  <section class="project-inputs clearfix col-xs-12">
     <div class="row">
       <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required autovalidate="true"></paper-input>
       <span class="glyphicon glyphicon-info-sign col-xs-1" data-toggle="tooltip" title="Informational field tooltip"></span>
@@ -166,7 +166,7 @@ loadCreateNewProject = ->
       <br/><br/>
     </div>
   </section>
-  <section id="uploader-container-section" class="data-section">
+  <section id="uploader-container-section col-xs-12" class="data-section">
     <h2 class="new-title">Uploading your project data</h2>
     <p>Drag and drop as many files as you need below. </p>
     <p>
@@ -175,7 +175,7 @@ loadCreateNewProject = ->
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>alt</code>, and <code>coordinateUncertaintyInMeters</code>.
     </p>
   </section>
-  <section class="project-inputs clearfix data-section">
+  <section class="project-inputs clearfix data-section col-xs-12">
     <div class="row">
       <h2 class="new-title">Project Data</h2>
       <h3 class="new-title">Data Parameters</h3>
@@ -183,9 +183,11 @@ loadCreateNewProject = ->
       <p>Etc</p>
     </div>      
   </section>
-  <section id="submission-section col-xs-8 col-md-6 pull-right">
-    <button id="upload-data" class="btn btn-success click" data-function="finalizeData">Save Data &amp; Create Project</button>
-    <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
+  <section id="submission-section col-xs-12">
+    <div class="pull-right">
+      <button id="upload-data" class="btn btn-success click" data-function="finalizeData">Save Data &amp; Create Project</button>
+      <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
+    </div>
   </section>
   """
   $("main #main-body").append html
