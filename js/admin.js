@@ -286,7 +286,13 @@ bootstrapTransect = function() {
           };
           $("#carto-map-container").empty();
           return createMap(null, "carto-map-container", options, function(vis, map) {
-            mapOverlayPolygon(boundingBox);
+            var k, mpArr, points;
+            mpArr = new Array();
+            for (k in boundingBox) {
+              points = boundingBox[k];
+              mpArr.push(points);
+            }
+            mapOverlayPolygon(mpArr);
             return false;
           });
         };
@@ -368,13 +374,35 @@ bootstrapTransect = function() {
   return false;
 };
 
-mapOverlayPolygon = function(polygonObjectParams) {
+mapOverlayPolygon = function(polygonObjectParams, overlayOptions) {
+  var geoMultiPoly;
+  if (overlayOptions == null) {
+    overlayOptions = null;
+  }
+
+  /*
+   *
+   *
+   * @param polygonObjectParams ->
+   *  an array of point arrays: http://geojson.org/geojson-spec.html#multipolygon
+   */
   if (typeof polygonObjectParams !== "object") {
     console.warn("mapOverlayPolygon() got an invalid data type to overlay!");
     return false;
   }
+  if (overlayOptions !== "object") {
+    overlayOptions = {
+      fillColor: "#ff7800"
+    };
+  }
   console.info("Should overlay polygon from bounds here");
-  if ($("#carto-map-container").exists() && $("#carto-map-container .cartodb-map-wrapper").exists()) {
+  if ($("#carto-map-container").exists() && $("#carto-map-container .cartodb-map-wrapper").exists() && (geo.cartoMap != null)) {
+    geoMultiPoly = {
+      type: "MultiPolygon",
+      coordinates: polygonObjectParams
+    };
+    console.info("Rendering GeoJSON MultiPolygon", geoMultiPoly);
+    L.geoJSON(geoMultiPoly, overlayOptions).addTo(geo.cartoMap);
     foo();
   } else {
     console.warn("There's no map yet! Can't overlay polygon");
