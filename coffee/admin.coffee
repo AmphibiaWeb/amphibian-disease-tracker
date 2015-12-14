@@ -187,8 +187,8 @@ loadCreateNewProject = ->
   </section>
   <section class="project-inputs clearfix data-section col-xs-12">
     <div class="row">
-      <h2 class="new-title">Project Data</h2>
-      <h3 class="new-title">Data Parameters</h3>
+      <h2 class="new-title">Project Data Summary</h2>
+      <h3 class="new-title">Calculated Data Parameters</h3>
       <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
       <p>Etc</p>
     </div>
