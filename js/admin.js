@@ -164,7 +164,7 @@ resetForm = function() {
 
 getTableCoordinates = function(table) {
   if (table == null) {
-    table = "t3395272a91c29a424e25ac960d478d88_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+    table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
   }
 
   /*
@@ -179,7 +179,7 @@ getTableCoordinates = function(table) {
 addPointsToMap = function(table) {
   var sublayerOptions;
   if (table == null) {
-    table = "t3395272a91c29a424e25ac960d478d88_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+    table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
   }
 
   /*
