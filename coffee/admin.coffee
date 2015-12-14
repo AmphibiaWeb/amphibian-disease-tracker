@@ -224,6 +224,38 @@ resetForm = ->
   ###
   foo()
 
+
+getTableCoordinates = (table = "t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb") ->
+  ###
+  #
+  #
+  # Sample:
+  # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
+  ###
+  false
+
+
+
+pointToLatLng = (pointString) ->
+  ###
+  # Take point of form
+  #
+  # "POINT(37.878086 37.878086)"
+  #
+  # and return a json obj
+  ###
+  unless pointString.search "POINT" is 0
+    console.warn "Invalid point string"
+    return false
+  pointSSV = pointString.slice 6, -1
+  pointArr = pointSSV.split " "
+  pointObj =
+    lat: pointArr[0]
+    lng: pointArr[1]
+  pointObj
+
+
+
 loadProjectBrowser = ->
   startAdminActionHelper()
   html = """

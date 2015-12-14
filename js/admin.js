@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, pointToLatLng, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -160,6 +160,43 @@ resetForm = function() {
    * Kill it dead
    */
   return foo();
+};
+
+getTableCoordinates = function(table) {
+  if (table == null) {
+    table = "t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+  }
+
+  /*
+   *
+   *
+   * Sample:
+   * https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
+   */
+  return false;
+};
+
+pointToLatLng = function(pointString) {
+
+  /*
+   * Take point of form
+   *
+   * "POINT(37.878086 37.878086)"
+   *
+   * and return a json obj
+   */
+  var pointArr, pointObj, pointSSV;
+  if (!pointString.search("POINT" === 0)) {
+    console.warn("Invalid point string");
+    return false;
+  }
+  pointSSV = pointString.slice(6, -1);
+  pointArr = pointSSV.split(" ");
+  pointObj = {
+    lat: pointArr[0],
+    lng: pointArr[1]
+  };
+  return pointObj;
 };
 
 loadProjectBrowser = function() {
