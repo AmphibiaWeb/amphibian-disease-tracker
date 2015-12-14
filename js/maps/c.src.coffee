@@ -934,6 +934,8 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
       cartoVis = vis
       cartoMap = vis.getNativeMap()
+      geo.cartoMap = cartoMap
+      geo.cartoViz = vis
       callback(cartoVis, cartoMap)
     .error (errorString) ->
       toastStatusMessage("Couldn't load maps!")

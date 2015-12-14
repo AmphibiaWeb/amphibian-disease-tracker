@@ -1257,6 +1257,8 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       cartoVis = vis;
       cartoMap = vis.getNativeMap();
+      geo.cartoMap = cartoMap;
+      geo.cartoViz = vis;
       return callback(cartoVis, cartoMap);
     }).error(function(errorString) {
       toastStatusMessage("Couldn't load maps!");

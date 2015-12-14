@@ -225,7 +225,7 @@ resetForm = ->
   foo()
 
 
-getTableCoordinates = (table = "t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb") ->
+getTableCoordinates = (table = "t3395272a91c29a424e25ac960d478d88_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb") ->
   ###
   #
   #
@@ -234,6 +234,26 @@ getTableCoordinates = (table = "t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e
   ###
   false
 
+
+addPointsToMap = (table = "t3395272a91c29a424e25ac960d478d88_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb") ->
+  ###
+  #
+  ###
+  unless geo.cartoMap?
+    console.warn "Can't add points to a map without an instanced map!"
+    return false
+  sublayerOptions =
+    sql: "SELECT * FROM #{table}"
+  # Add a layer as per
+  # http://docs.cartodb.com/tutorials/create_map_cartodbjs/
+  cartodb
+  .createLayer geo.cartoMap, geo.cartoViz
+  .addTo geo.cartoMap
+  .on "done", (layer) ->
+    layer.getSubLayer(0).set sublayerOptions
+  .on "error", (layer) ->
+    false
+  false
 
 
 pointToLatLng = (pointString) ->

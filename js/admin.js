@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, pointToLatLng, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, pointToLatLng, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -164,7 +164,7 @@ resetForm = function() {
 
 getTableCoordinates = function(table) {
   if (table == null) {
-    table = "t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+    table = "t3395272a91c29a424e25ac960d478d88_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
   }
 
   /*
@@ -173,6 +173,30 @@ getTableCoordinates = function(table) {
    * Sample:
    * https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
    */
+  return false;
+};
+
+addPointsToMap = function(table) {
+  var sublayerOptions;
+  if (table == null) {
+    table = "t3395272a91c29a424e25ac960d478d88_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+  }
+
+  /*
+   *
+   */
+  if (geo.cartoMap == null) {
+    console.warn("Can't add points to a map without an instanced map!");
+    return false;
+  }
+  sublayerOptions = {
+    sql: "SELECT * FROM " + table
+  };
+  cartodb.createLayer(geo.cartoMap, geo.cartoViz).addTo(geo.cartoMap).on("done", function(layer) {
+    return layer.getSubLayer(0).set(sublayerOptions);
+  }).on("error", function(layer) {
+    return false;
+  });
   return false;
 };
 
