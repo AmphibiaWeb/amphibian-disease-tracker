@@ -424,7 +424,7 @@ bootstrapTransect = ->
 
 
 
-mapOverlayPolygon = (polygonObjectParams, overlayOptions = null) ->
+mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOptions = null) ->
   ###
   #
   #
@@ -434,18 +434,26 @@ mapOverlayPolygon = (polygonObjectParams, overlayOptions = null) ->
   if typeof polygonObjectParams isnt "object"
     console.warn "mapOverlayPolygon() got an invalid data type to overlay!"
     return false
-  if overlayOptions isnt "object"
+  if typeof overlayOptions isnt "object"
     overlayOptions =
       fillColor: "#ff7800"
+  if typeof regionProperties isnt "object"
+    regionProperties = null
   console.info "Should overlay polygon from bounds here"
   if $("#carto-map-container").exists() and $("#carto-map-container .cartodb-map-wrapper").exists() and geo.cartoMap?
     # Example:
     # http://leafletjs.com/examples/geojson.html
+    coordinateArray = new Array()
+    coordinateArray.push polygonObjectParams
     geoMultiPoly =
-      type: "MultiPolygon"
-      coordinates: polygonObjectParams
+      type: "Polygon"
+      coordinates: coordinateArray
+    geoJSON =
+      type: "Feature"
+      properties: regionProperties
+      geometry: geoMultiPoly
     console.info "Rendering GeoJSON MultiPolygon", geoMultiPoly
-    L.geoJSON(geoMultiPoly, overlayOptions).addTo geo.cartoMap
+    L.geoJson(geoMultiPoly, overlayOptions).addTo geo.cartoMap
     foo()
   else
     # No map yet ...
