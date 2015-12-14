@@ -1229,7 +1229,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     console.info("Can't create map without a data visualization identifier");
   }
   postConfig = function() {
-    var fakeDiv;
+    var fakeDiv, leafletOptions;
     if (options == null) {
       options = {
         cartodb_logo: false,
@@ -1241,6 +1241,10 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         zoom: 7
       };
     }
+    leafletOptions = {
+      center: [window.locationData.lat, window.locationData.lng],
+      zoom: 7
+    };
     if (!$("#" + targetId).exists()) {
       fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
       $("main #main-body").append(fakeDiv);
@@ -1253,6 +1257,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         });
       };
     }
+    geo.leafletMap = new L.map(targetId);
     return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
       console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       cartoVis = vis;
@@ -1275,6 +1280,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     } else {
       dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataVisIdentifier + "/viz.json";
     }
+    geo.cartoUrl = dataVisUrl;
     return postConfig();
   } else {
     dataVisJson = new Object();
@@ -1292,6 +1298,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       return dataVisJson = dataVisIdentifier;
     }).always(function() {
       dataVisUrl = dataVisJson;
+      geo.cartoUrl = dataVisUrl;
       return postConfig();
     });
   }

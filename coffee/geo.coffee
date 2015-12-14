@@ -72,6 +72,9 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       center_lat: window.locationData.lat
       center_lon: window.locationData.lng
       zoom: 7
+    leafletOptions =
+      center: [window.locationData.lat, window.locationData.lng]
+      zoom: 7
     unless $("##{targetId}").exists()
       fakeDiv = """
       <div id="#{targetId}" class="carto-map wide-map">
@@ -88,6 +91,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
           # page in Carto
           layer.setInteraction true
           layer.on "featureOver", defaultMapMouseOverBehaviour
+    geo.leafletMap = new L.map(targetId)
     cartodb.createVis targetId, dataVisUrl, options
     .done (vis, layers) ->
       console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
@@ -109,6 +113,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       dataVisUrl = dataVisIdentifier
     else
       dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataVisIdentifier}/viz.json"
+    geo.cartoUrl = dataVisUrl
     postConfig()
   else
     # Construct our own data for viz.jon to use with our data
@@ -127,6 +132,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       dataVisJson = dataVisIdentifier
     .always ->
       dataVisUrl = dataVisJson
+      geo.cartoUrl = dataVisUrl
       postConfig()
 
 geo.requestCartoUpload = (totalData, dataTable, operation) ->

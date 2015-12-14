@@ -415,7 +415,9 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       geometry: geoMultiPoly
     };
     console.info("Rendering GeoJSON MultiPolygon", geoMultiPoly);
-    L.geoJson(geoMultiPoly, overlayOptions).addTo(geo.cartoMap);
+    geo.overlayPolygon = geoJSON;
+    geo.overlayOptions = overlayOptions;
+    L.geoJson(geoJSON, overlayOptions).addTo(geo.cartoMap);
     foo();
   } else {
     console.warn("There's no map yet! Can't overlay polygon");
