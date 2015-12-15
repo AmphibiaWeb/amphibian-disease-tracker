@@ -286,13 +286,7 @@ bootstrapTransect = function() {
           };
           $("#carto-map-container").empty();
           return createMap(null, "carto-map-container", options, function(vis, map) {
-            var k, mpArr, points;
-            mpArr = new Array();
-            for (k in boundingBox) {
-              points = boundingBox[k];
-              mpArr.push(points);
-            }
-            mapOverlayPolygon(mpArr);
+            mapOverlayPolygon(boundingBox);
             return false;
           });
         };
@@ -375,7 +369,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions) {
-  var coordinateArray, geoJSON, geoMultiPoly;
+  var coordinateArray, gMapPaths, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, points, temp;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -389,6 +383,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
    * @param polygonObjectParams ->
    *  an array of point arrays: http://geojson.org/geojson-spec.html#multipolygon
    */
+  gMapPoly = new Object();
   if (typeof polygonObjectParams !== "object") {
     console.warn("mapOverlayPolygon() got an invalid data type to overlay!");
     return false;
@@ -398,13 +393,26 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       fillColor: "#ff7800"
     };
   }
+  gMapPoly.fillColor = overlayOptions.fillColor;
+  gMapPoly.fillOpacity = 0.35;
   if (typeof regionProperties !== "object") {
     regionProperties = null;
   }
   console.info("Should overlay polygon from bounds here");
   if ($("#carto-map-container").exists() && $("#carto-map-container .cartodb-map-wrapper").exists() && (geo.cartoMap != null)) {
+    mpArr = new Array();
+    gMapPaths = new Array();
+    for (k in polygonObjectParams) {
+      points = polygonObjectParams[k];
+      mpArr.push(points);
+      temp = new Object();
+      temp.lat = points[0];
+      temp.lng = points[1];
+      gMapPaths.push(temp);
+    }
     coordinateArray = new Array();
-    coordinateArray.push(polygonObjectParams);
+    coordinateArray.push(mpArr);
+    gMapPoly.paths = gMapPaths;
     geoMultiPoly = {
       type: "Polygon",
       coordinates: coordinateArray
@@ -417,7 +425,10 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     console.info("Rendering GeoJSON MultiPolygon", geoMultiPoly);
     geo.overlayPolygon = geoJSON;
     geo.overlayOptions = overlayOptions;
-    L.geoJson(geoJSON, overlayOptions).addTo(geo.cartoMap);
+    L.geoJson(geoJSON, overlayOptions).addTo(geo.leafletMap);
+    console.info("Rendering Google Maps polygon", gMapPoly);
+    gPolygon = google.maps.Polygon(gMapPoly);
+    gPolygon.setMap(geo.googleMap);
     foo();
   } else {
     console.warn("There's no map yet! Can't overlay polygon");

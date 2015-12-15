@@ -1229,7 +1229,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     console.info("Can't create map without a data visualization identifier");
   }
   postConfig = function() {
-    var fakeDiv, leafletOptions;
+    var fakeDiv, gMapCallback, googleMapOptions, leafletOptions;
     if (options == null) {
       options = {
         cartodb_logo: false,
@@ -1243,7 +1243,11 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     }
     leafletOptions = {
       center: [options.center_lat, options.center_lon],
-      zoom: 7
+      zoom: 7,
+      sublayers: {
+        type: "http",
+        urlTemplate: "https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png"
+      }
     };
     geo.leafletOptions = leafletOptions;
     if (!$("#" + targetId).exists()) {
@@ -1253,30 +1257,33 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     if (typeof callback !== "function") {
       callback = function(cartoVis, cartoMap) {
         return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
-          layer.setInteraction(true);
-          return layer.on("featureOver", defaultMapMouseOverBehaviour);
+          try {
+            layer.setInteraction(true);
+            return layer.on("featureOver", defaultMapMouseOverBehaviour);
+          } catch (_error) {
+            return console.warn("Can't set carto map interaction");
+          }
         });
       };
     }
     geo.leafletMap = new L.map(targetId, leafletOptions);
-    return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
-      console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
-      cartoVis = vis;
-      cartoMap = vis.getNativeMap();
-      geo.cartoMap = cartoMap;
-      geo.cartoViz = vis;
-      return cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo(geo.cartoMap).on("done", function(layer) {
-        console.info("Callback on leaflet layer creation");
-        layer.setInteraction(true);
-        layer.on("featureOver", defaultMapMouseOverBehaviour);
-        return callback(cartoVis, cartoMap);
-      }).on("error", function(layer) {
-        return callback(cartoVis, cartoMap);
-      });
-    }).error(function(errorString) {
+    googleMapOptions = {
+      center: new google.maps.LatLng(options.center_lat, options.center_lon),
+      zoom: 7,
+      mapTypeId: google.maps.MapTypeId.HYBRID
+    };
+    geo.googleMap = new google.maps.Map(document.getElementById(targetId), googleMapOptions);
+    gMapCallback = function(layer) {
+      console.info("Fetched data into Google Map from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
+      geo.mapLayer = layer;
+      geo.cartoMap = geo.googleMap;
+      return false;
+    };
+    cartodb.createLayer(geo.googleMap, geo.cartoUrl, {}, gMapCallback).addTo(geo.googleMap).on("error", function(errorString) {
       toastStatusMessage("Couldn't load maps!");
       return console.error("Couldn't get map - " + errorString);
     });
+    return false;
   };
 
   /*

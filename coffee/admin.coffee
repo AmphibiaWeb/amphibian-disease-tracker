@@ -346,10 +346,7 @@ bootstrapTransect = ->
           $("#carto-map-container").empty()
           createMap null, "carto-map-container", options, (vis, map) ->
             # Map has been created, play with the data!
-            mpArr = new Array()
-            for k, points of boundingBox
-              mpArr.push points
-            mapOverlayPolygon(mpArr)
+            mapOverlayPolygon(boundingBox)
             false
         loadJS "js/cartodb.js", doCallback, false
         stopLoad()
@@ -431,20 +428,32 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
   # @param polygonObjectParams ->
   #  an array of point arrays: http://geojson.org/geojson-spec.html#multipolygon
   ###
+  gMapPoly = new Object()
   if typeof polygonObjectParams isnt "object"
     console.warn "mapOverlayPolygon() got an invalid data type to overlay!"
     return false
   if typeof overlayOptions isnt "object"
     overlayOptions =
       fillColor: "#ff7800"
+  gMapPoly.fillColor = overlayOptions.fillColor
+  gMapPoly.fillOpacity = 0.35
   if typeof regionProperties isnt "object"
     regionProperties = null
   console.info "Should overlay polygon from bounds here"
   if $("#carto-map-container").exists() and $("#carto-map-container .cartodb-map-wrapper").exists() and geo.cartoMap?
     # Example:
     # http://leafletjs.com/examples/geojson.html
+    mpArr = new Array()
+    gMapPaths = new Array()
+    for k, points of polygonObjectParams
+      mpArr.push points
+      temp = new Object()
+      temp.lat = points[0]
+      temp.lng = points[1]
+      gMapPaths.push temp
     coordinateArray = new Array()
-    coordinateArray.push polygonObjectParams
+    coordinateArray.push mpArr
+    gMapPoly.paths = gMapPaths
     geoMultiPoly =
       type: "Polygon"
       coordinates: coordinateArray
@@ -455,7 +464,10 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     console.info "Rendering GeoJSON MultiPolygon", geoMultiPoly
     geo.overlayPolygon = geoJSON
     geo.overlayOptions = overlayOptions
-    L.geoJson(geoJSON, overlayOptions).addTo geo.cartoMap
+    L.geoJson(geoJSON, overlayOptions).addTo geo.leafletMap
+    console.info "Rendering Google Maps polygon", gMapPoly
+    gPolygon = google.maps.Polygon(gMapPoly)
+    gPolygon.setMap geo.googleMap
     foo()
   else
     # No map yet ...

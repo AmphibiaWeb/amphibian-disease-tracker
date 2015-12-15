@@ -913,9 +913,13 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       center_lat: window.locationData.lat
       center_lon: window.locationData.lng
       zoom: 7
+    # https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png
     leafletOptions =
       center: [options.center_lat, options.center_lon]
       zoom: 7
+      sublayers:
+        type: "http"
+        urlTemplate: "https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png"
     geo.leafletOptions = leafletOptions
     unless $("##{targetId}").exists()
       fakeDiv = """
@@ -931,28 +935,47 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
         .done (layer) ->
           # The actual interaction infowindow popup is decided on the data
           # page in Carto
-          layer.setInteraction true
-          layer.on "featureOver", defaultMapMouseOverBehaviour
+          try
+            layer.setInteraction true
+            layer.on "featureOver", defaultMapMouseOverBehaviour
+          catch
+            console.warn "Can't set carto map interaction"
     geo.leafletMap = new L.map(targetId, leafletOptions)
-    cartodb.createVis targetId, dataVisUrl, options
-    .done (vis, layers) ->
-      console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
-      cartoVis = vis
-      cartoMap = vis.getNativeMap()
-      geo.cartoMap = cartoMap
-      geo.cartoViz = vis
-      # Add leaflet map
-      cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo geo.cartoMap
-      .on "done", (layer) ->
-        console.info "Callback on leaflet layer creation"
-        layer.setInteraction true
-        layer.on "featureOver", defaultMapMouseOverBehaviour
-        callback(cartoVis, cartoMap)
-      .on "error", (layer) ->
-        callback(cartoVis, cartoMap)
-    .error (errorString) ->
+    googleMapOptions =
+      center: new google.maps.LatLng(options.center_lat, options.center_lon)
+      zoom: 7
+      mapTypeId: google.maps.MapTypeId.HYBRID
+    geo.googleMap = new google.maps.Map document.getElementById(targetId), googleMapOptions
+    gMapCallback = (layer) ->
+      console.info "Fetched data into Google Map from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
+      geo.mapLayer = layer
+      geo.cartoMap = geo.googleMap
+      false
+    cartodb.createLayer(geo.googleMap, geo.cartoUrl, {}, gMapCallback).addTo(geo.googleMap)
+    .on "error", (errorString) ->
+    # cartodb.createVis targetId, dataVisUrl, options
+    # .done (vis, layers) ->
+    #   console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
+    #   cartoVis = vis
+    #   cartoMap = vis.getNativeMap()
+    #   geo.cartoMap = cartoMap
+    #   geo.cartoViz = vis
+    # .error (errorString) ->
       toastStatusMessage("Couldn't load maps!")
       console.error "Couldn't get map - #{errorString}"
+    # # Add leaflet map
+    # cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo geo.cartoMap
+    # .on "done", (layer) ->
+    #   try
+    #     # Leaflet layers? https://gist.github.com/crofty/2197701
+    #     console.info "Callback on leaflet layer creation"
+    #     layer.setInteraction true
+    #     layer.on "featureOver", defaultMapMouseOverBehaviour
+    #   catch
+    #     console.warn "Can't set leaflet interaction"
+    # .on "error", (layer) ->
+    #   console.warn "Couldn't create leaflet layer"
+    false
   ###
   # Now that we have the helper function, let's get the viz data
   ###
