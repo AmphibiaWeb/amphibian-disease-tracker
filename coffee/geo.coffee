@@ -114,12 +114,18 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       if typeof callback is "function"
         callback(layer, geo.cartoMap)
       false
-    cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap)
-    .on "done", (layer) ->
-      gMapCallback(layer)
-    .on "error", (errorString) ->
-      toastStatusMessage("Couldn't load maps!")
-      console.error "Couldn't get map - #{errorString}"
+    try
+      cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap)
+      .on "done", (layer) ->
+        gMapCallback(layer)
+      .on "error", (errorString) ->
+        toastStatusMessage("Couldn't load maps!")
+        console.error "Couldn't get map - #{errorString}"
+    catch
+      # Try the callback anyway
+      console.warn "The map threw an error! #{e.message}"
+      console.wan e.stack
+      callback(null, geo.cartoMap)
     false
   ###
   # Now that we have the helper function, let's get the viz data

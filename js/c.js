@@ -1283,12 +1283,18 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       }
       return false;
     };
-    cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap).on("done", function(layer) {
-      return gMapCallback(layer);
-    }).on("error", function(errorString) {
-      toastStatusMessage("Couldn't load maps!");
-      return console.error("Couldn't get map - " + errorString);
-    });
+    try {
+      cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap).on("done", function(layer) {
+        return gMapCallback(layer);
+      }).on("error", function(errorString) {
+        toastStatusMessage("Couldn't load maps!");
+        return console.error("Couldn't get map - " + errorString);
+      });
+    } catch (_error) {
+      console.warn("The map threw an error! " + e.message);
+      console.wan(e.stack);
+      callback(null, geo.cartoMap);
+    }
     return false;
   };
 
