@@ -1259,13 +1259,19 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       };
     }
     geo.leafletMap = new L.map(targetId, leafletOptions);
-    return cartodb.createVis(geo.leafletMap, dataVisUrl, options).done(function(vis, layers) {
+    return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
       console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       cartoVis = vis;
       cartoMap = vis.getNativeMap();
       geo.cartoMap = cartoMap;
       geo.cartoViz = vis;
-      return callback(cartoVis, cartoMap);
+      return cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo(geo.cartoMap).done(function(layer) {
+        console.info("Callback on leaflet layer creation");
+        layer.setInteraction(true);
+        return layer.on("featureOver", defaultMapMouseOverBehaviour);
+      }).always(function() {
+        return callback(cartoVis, cartoMap);
+      });
     }).error(function(errorString) {
       toastStatusMessage("Couldn't load maps!");
       return console.error("Couldn't get map - " + errorString);

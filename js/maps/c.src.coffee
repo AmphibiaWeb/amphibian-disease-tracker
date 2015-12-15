@@ -934,7 +934,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
           layer.setInteraction true
           layer.on "featureOver", defaultMapMouseOverBehaviour
     geo.leafletMap = new L.map(targetId, leafletOptions)
-    cartodb.createVis geo.leafletMap, dataVisUrl, options
+    cartodb.createVis targetId, dataVisUrl, options
     .done (vis, layers) ->
       console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
       cartoVis = vis
@@ -942,8 +942,13 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       geo.cartoMap = cartoMap
       geo.cartoViz = vis
       # Add leaflet map
-      #cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo(geo.cartoMap)
-      callback(cartoVis, cartoMap)
+      cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo geo.cartoMap
+      .done (layer) ->
+        console.info "Callback on leaflet layer creation"
+        layer.setInteraction true
+        layer.on "featureOver", defaultMapMouseOverBehaviour
+      .always ->
+        callback(cartoVis, cartoMap)
     .error (errorString) ->
       toastStatusMessage("Couldn't load maps!")
       console.error "Couldn't get map - #{errorString}"
