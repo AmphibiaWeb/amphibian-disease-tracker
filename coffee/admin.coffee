@@ -362,6 +362,15 @@ bootstrapTransect = ->
             zoom: 7 # Should calc it ... http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
           $("#carto-map-container").empty()
           geo.boundingBox = boundingBox
+          # Ref:
+          # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
+          # http://documentation.cartodb.com/api/v2/viz/23f2abd6-481b-11e4-8fb1-0e4fddd5de28/viz.json
+          geo?.dataTable ?= "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
+          vizJsonElements =
+            layers: [
+              options:
+                sql: "SELECT * FROM #{geo.dataTable}"
+              ]
           createMap null, "carto-map-container", options, (layer, map) ->
             # Map has been created, play with the data!
             mapOverlayPolygon(boundingBox)

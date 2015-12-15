@@ -982,6 +982,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       dataVisJson = result
       for key, value of dataVisIdentifier
         # Merge them
+        # Overwrite full dataset with user provided one
         dataVisJson[key] = value
     .fail (result, status) ->
       # Get something!
@@ -1251,6 +1252,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           prettyHtml = JsonHuman.format cartoResults
           $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
         bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
+        geo.dataTable = dataTable
         foo()
         # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto

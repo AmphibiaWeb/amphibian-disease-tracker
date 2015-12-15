@@ -1579,6 +1579,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
           $("#main-body").append("<div class='alert alert-success'><strong>Success! Carto said</strong>" + ($(prettyHtml).html()) + "</div>");
         } catch (_error) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
+        geo.dataTable = dataTable;
         foo();
         dataBlobUrl = "";
         if (!isNull(dataBlobUrl)) {

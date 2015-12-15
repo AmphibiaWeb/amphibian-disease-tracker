@@ -290,7 +290,7 @@ bootstrapTransect = function() {
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
         doCallback = function() {
-          var options;
+          var options, vizJsonElements;
           options = {
             cartodb_logo: false,
             https: true,
@@ -302,6 +302,20 @@ bootstrapTransect = function() {
           };
           $("#carto-map-container").empty();
           geo.boundingBox = boundingBox;
+          if (typeof geo !== "undefined" && geo !== null) {
+            if (geo.dataTable == null) {
+              geo.dataTable = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+            }
+          }
+          vizJsonElements = {
+            layers: [
+              {
+                options: {
+                  sql: "SELECT * FROM " + geo.dataTable
+                }
+              }
+            ]
+          };
           return createMap(null, "carto-map-container", options, function(layer, map) {
             mapOverlayPolygon(boundingBox);
             return false;
