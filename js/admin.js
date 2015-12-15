@@ -269,8 +269,8 @@ bootstrapTransect = function() {
         boundingBox = {
           nw: [bbEW.j, bbNS.O],
           ne: [bbEW.j, bbNS.j],
-          sw: [bbEW.O, bbNS.O],
-          se: [bbEW.O, bbNS.j]
+          se: [bbEW.O, bbNS.O],
+          sw: [bbEW.O, bbNS.j]
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
         doCallback = function() {

@@ -1266,7 +1266,6 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         });
       };
     }
-    geo.leafletMap = new L.map(targetId, leafletOptions);
     googleMapOptions = {
       center: new google.maps.LatLng(options.center_lat, options.center_lon),
       zoom: 7,
