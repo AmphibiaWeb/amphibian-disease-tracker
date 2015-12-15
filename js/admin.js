@@ -290,7 +290,7 @@ bootstrapTransect = function() {
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
         doCallback = function() {
-          return renderMapHelper(boundingBox);
+          return renderMapHelper(boundingBox, lat, lng);
         };
         return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
       } else {
@@ -298,22 +298,45 @@ bootstrapTransect = function() {
       }
     });
   };
-  renderMapHelper = function(overlayBoundingBox) {
+  renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
 
     /*
      *
      */
-    var e, options, vizJsonElements;
+    var coords, e, i, j, l, len, len1, options, totalLat, totalLng, vizJsonElements, zoomCalc;
     try {
       geo.boundingBox = overlayBoundingBox;
+      zoomCalc = 7;
+      if (centerLat == null) {
+        i = 0;
+        totalLat = 0;
+        for (j = 0, len = overlayBoundingBox.length; j < len; j++) {
+          coords = overlayBoundingBox[j];
+          ++i;
+          totalLat += coords[0];
+        }
+        centerLat = totalLat / i;
+      }
+      if (centerLng == null) {
+        i = 0;
+        totalLng = 0;
+        for (l = 0, len1 = overlayBoundingBox.length; l < len1; l++) {
+          coords = overlayBoundingBox[l];
+          ++i;
+          totalLng += coords[1];
+        }
+        centerLng = totalLng / i;
+      }
+      centerLat = toFloat(centerLat);
+      centerLng = toFloat(centerLng);
       options = {
         cartodb_logo: false,
         https: true,
         mobile_layout: true,
         gmaps_base_type: "hybrid",
-        center_lat: lat,
-        center_lon: lng,
-        zoom: 7
+        center_lat: centerLat,
+        center_lon: centerLng,
+        zoom: zoomCalc
       };
       $("#carto-map-container").empty();
       if (typeof geo !== "undefined" && geo !== null) {

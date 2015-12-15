@@ -352,27 +352,46 @@ bootstrapTransect = ->
           sw: [bbEW.O, bbNS.j]
         console.info "Got bounds: ", [lat, lng], boundingBox
         doCallback = ->
-          renderMapHelper(boundingBox)
+          renderMapHelper(boundingBox, lat, lng)
         loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
         #stopLoad()
       else
         stopLoadError "Couldn't find location: #{status}"
 
 
-  renderMapHelper = (overlayBoundingBox) ->
+  renderMapHelper = (overlayBoundingBox, centerLat, centerLng) ->
     ###
     #
     ###
     try
       geo.boundingBox = overlayBoundingBox
+      # Calculate the zoom factor
+      # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
+      zoomCalc = 7
+      unless centerLat?
+        i = 0
+        totalLat = 0
+        for coords in overlayBoundingBox
+          ++i
+          totalLat += coords[0]
+        centerLat = totalLat / i
+      unless centerLng?
+        i = 0
+        totalLng = 0
+        for coords in overlayBoundingBox
+          ++i
+          totalLng += coords[1]
+        centerLng = totalLng / i
+      centerLat = toFloat(centerLat)
+      centerLng = toFloat(centerLng)
       options =
         cartodb_logo: false
         https: true # Secure forcing is leading to resource errors
         mobile_layout: true
         gmaps_base_type: "hybrid"
-        center_lat: lat
-        center_lon: lng
-        zoom: 7 # Should calc it ... http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
+        center_lat: centerLat
+        center_lon: centerLng
+        zoom: zoomCalc
       $("#carto-map-container").empty()
       # Ref:
       # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
