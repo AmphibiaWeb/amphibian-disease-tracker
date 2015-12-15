@@ -267,10 +267,10 @@ bootstrapTransect = function() {
         bbEW = bounds.O;
         bbNS = bounds.j;
         boundingBox = {
-          nw: [bbEW.O, bbNS.O],
+          nw: [bbEW.j, bbNS.j],
           ne: [bbEW.j, bbNS.O],
           sw: [bbEW.O, bbNS.j],
-          se: [bbEW.j, bbNS.j]
+          se: [bbEW.O, bbNS.O]
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
         doCallback = function() {
@@ -285,12 +285,13 @@ bootstrapTransect = function() {
             zoom: 7
           };
           $("#carto-map-container").empty();
+          geo.boundingBox = boundingBox;
           return createMap(null, "carto-map-container", options, function(vis, map) {
             mapOverlayPolygon(boundingBox);
             return false;
           });
         };
-        loadJS("js/cartodb.js", doCallback, false);
+        loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
         return stopLoad();
       } else {
         return stopLoadError("Couldn't find location: " + status);
@@ -374,7 +375,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     regionProperties = null;
   }
   if (overlayOptions == null) {
-    overlayOptions = null;
+    overlayOptions = new Object();
   }
 
   /*
@@ -389,9 +390,10 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     return false;
   }
   if (typeof overlayOptions !== "object") {
-    overlayOptions = {
-      fillColor: "#ff7800"
-    };
+    overlayOptions = new Object();
+  }
+  if (overlayOptions.fillColor == null) {
+    overlayOptions.fillColor = "#ff7800";
   }
   gMapPoly.fillColor = overlayOptions.fillColor;
   gMapPoly.fillOpacity = 0.35;
@@ -399,7 +401,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     regionProperties = null;
   }
   console.info("Should overlay polygon from bounds here");
-  if ($("#carto-map-container").exists() && $("#carto-map-container .cartodb-map-wrapper").exists() && (geo.cartoMap != null)) {
+  if ($("#carto-map-container").exists() && (geo.cartoMap != null)) {
     mpArr = new Array();
     gMapPaths = new Array();
     for (k in polygonObjectParams) {
@@ -425,9 +427,8 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     console.info("Rendering GeoJSON MultiPolygon", geoMultiPoly);
     geo.overlayPolygon = geoJSON;
     geo.overlayOptions = overlayOptions;
-    L.geoJson(geoJSON, overlayOptions).addTo(geo.leafletMap);
     console.info("Rendering Google Maps polygon", gMapPoly);
-    gPolygon = google.maps.Polygon(gMapPoly);
+    gPolygon = new google.maps.Polygon(gMapPoly);
     gPolygon.setMap(geo.googleMap);
     foo();
   } else {

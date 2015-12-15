@@ -329,10 +329,10 @@ bootstrapTransect = ->
         bbEW = bounds.O
         bbNS = bounds.j
         boundingBox =
-          nw: [bbEW.O, bbNS.O]
+          nw: [bbEW.j, bbNS.j]
           ne: [bbEW.j, bbNS.O]
           sw: [bbEW.O, bbNS.j]
-          se: [bbEW.j, bbNS.j]
+          se: [bbEW.O, bbNS.O]
         console.info "Got bounds: ", [lat, lng], boundingBox
         doCallback = ->
           options =
@@ -344,11 +344,12 @@ bootstrapTransect = ->
             center_lon: lng
             zoom: 7
           $("#carto-map-container").empty()
+          geo.boundingBox = boundingBox
           createMap null, "carto-map-container", options, (vis, map) ->
             # Map has been created, play with the data!
             mapOverlayPolygon(boundingBox)
             false
-        loadJS "js/cartodb.js", doCallback, false
+        loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
         stopLoad()
       else
         stopLoadError "Couldn't find location: #{status}"
@@ -421,7 +422,7 @@ bootstrapTransect = ->
 
 
 
-mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOptions = null) ->
+mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOptions = new Object()) ->
   ###
   #
   #
@@ -433,14 +434,14 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     console.warn "mapOverlayPolygon() got an invalid data type to overlay!"
     return false
   if typeof overlayOptions isnt "object"
-    overlayOptions =
-      fillColor: "#ff7800"
+    overlayOptions = new Object()
+  overlayOptions.fillColor ?= "#ff7800"
   gMapPoly.fillColor = overlayOptions.fillColor
   gMapPoly.fillOpacity = 0.35
   if typeof regionProperties isnt "object"
     regionProperties = null
   console.info "Should overlay polygon from bounds here"
-  if $("#carto-map-container").exists() and $("#carto-map-container .cartodb-map-wrapper").exists() and geo.cartoMap?
+  if $("#carto-map-container").exists() and geo.cartoMap?
     # Example:
     # http://leafletjs.com/examples/geojson.html
     mpArr = new Array()
@@ -464,9 +465,11 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     console.info "Rendering GeoJSON MultiPolygon", geoMultiPoly
     geo.overlayPolygon = geoJSON
     geo.overlayOptions = overlayOptions
-    L.geoJson(geoJSON, overlayOptions).addTo geo.leafletMap
+    # L.geoJson(geoJSON, overlayOptions).addTo geo.leafletMap
     console.info "Rendering Google Maps polygon", gMapPoly
-    gPolygon = google.maps.Polygon(gMapPoly)
+    # See
+    # https://developers.google.com/maps/documentation/javascript/examples/polygon-simple
+    gPolygon = new google.maps.Polygon(gMapPoly)
     gPolygon.setMap geo.googleMap
     foo()
   else
