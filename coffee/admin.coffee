@@ -352,7 +352,7 @@ bootstrapTransect = ->
           sw: [bbEW.O, bbNS.j]
         console.info "Got bounds: ", [lat, lng], boundingBox
         doCallback = ->
-          renderMapHelper(boundingBox, lat, lng)
+          geo.renderMapHelper(boundingBox, lat, lng)
         loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
         #stopLoad()
       else
@@ -379,20 +379,21 @@ bootstrapTransect = ->
       # Calculate the zoom factor
       # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
       zoomCalc = 7
-      unless centerLat?
+      unless typeof centerLat is "number"
         i = 0
-        totalLat = 0
-        for coords in overlayBoundingBox
+        totalLat = 0.0
+        for k, coords of overlayBoundingBox
           ++i
           totalLat += coords[0]
-        centerLat = totalLat / i
-      unless centerLng?
+          console.info coords, i, totalLat
+        centerLat = toFloat(totalLat) / toFloat(i)
+      unless typeof centerLng is "number"
         i = 0
-        totalLng = 0
-        for coords in overlayBoundingBox
+        totalLng = 0.0
+        for k, coords of overlayBoundingBox
           ++i
           totalLng += coords[1]
-        centerLng = totalLng / i
+        centerLng = toFloat(totalLng) / toFloat(i)
       centerLat = toFloat(centerLat)
       centerLng = toFloat(centerLng)
       options =
@@ -487,7 +488,8 @@ bootstrapTransect = ->
                 ++i
                 bbox[i] = coord
               doCallback = ->
-                renderMapHelper(bbox)
+                geo.renderMapHelper(bbox)
+              geo.boundingBox = bbox
               loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
             else
               console.warn "There is one or more invalid coordinates preventing the UI from being shown."

@@ -106,6 +106,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       zoom: 7
       mapTypeId: google.maps.MapTypeId.HYBRID
     geo.googleMap = new google.maps.Map document.getElementById(targetId), googleMapOptions
+    geo.cartoMap = geo.googleMap
     gMapCallback = (layer) ->
       console.info "Fetched data into Google Map from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
       geo.mapLayer = layer
@@ -113,7 +114,9 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       if typeof callback is "function"
         callback(layer, geo.cartoMap)
       false
-    cartodb.createLayer(geo.googleMap, geo.cartoUrl, {}, gMapCallback).addTo(geo.googleMap)
+    cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap)
+    .on "done", (layer) ->
+      gMapCallback(layer)
     .on "error", (errorString) ->
       toastStatusMessage("Couldn't load maps!")
       console.error "Couldn't get map - #{errorString}"

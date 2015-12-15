@@ -290,7 +290,7 @@ bootstrapTransect = function() {
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
         doCallback = function() {
-          return renderMapHelper(boundingBox, lat, lng);
+          return geo.renderMapHelper(boundingBox, lat, lng);
         };
         return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
       } else {
@@ -299,7 +299,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var coords, e, i, j, l, len, len1, options, totalLat, totalLng, vizJsonElements, zoomCalc;
+    var coords, e, i, k, options, totalLat, totalLng, vizJsonElements, zoomCalc;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -322,25 +322,26 @@ bootstrapTransect = function() {
     try {
       geo.boundingBox = overlayBoundingBox;
       zoomCalc = 7;
-      if (centerLat == null) {
+      if (typeof centerLat !== "number") {
         i = 0;
-        totalLat = 0;
-        for (j = 0, len = overlayBoundingBox.length; j < len; j++) {
-          coords = overlayBoundingBox[j];
+        totalLat = 0.0;
+        for (k in overlayBoundingBox) {
+          coords = overlayBoundingBox[k];
           ++i;
           totalLat += coords[0];
+          console.info(coords, i, totalLat);
         }
-        centerLat = totalLat / i;
+        centerLat = toFloat(totalLat) / toFloat(i);
       }
-      if (centerLng == null) {
+      if (typeof centerLng !== "number") {
         i = 0;
-        totalLng = 0;
-        for (l = 0, len1 = overlayBoundingBox.length; l < len1; l++) {
-          coords = overlayBoundingBox[l];
+        totalLng = 0.0;
+        for (k in overlayBoundingBox) {
+          coords = overlayBoundingBox[k];
           ++i;
           totalLng += coords[1];
         }
-        centerLng = totalLng / i;
+        centerLng = toFloat(totalLng) / toFloat(i);
       }
       centerLat = toFloat(centerLat);
       centerLng = toFloat(centerLng);
@@ -442,8 +443,9 @@ bootstrapTransect = function() {
                   bbox[i] = coord;
                 }
                 doCallback = function() {
-                  return renderMapHelper(bbox);
+                  return geo.renderMapHelper(bbox);
                 };
+                geo.boundingBox = bbox;
                 return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
               } else {
                 return console.warn("There is one or more invalid coordinates preventing the UI from being shown.");

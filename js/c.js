@@ -1273,6 +1273,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       mapTypeId: google.maps.MapTypeId.HYBRID
     };
     geo.googleMap = new google.maps.Map(document.getElementById(targetId), googleMapOptions);
+    geo.cartoMap = geo.googleMap;
     gMapCallback = function(layer) {
       console.info("Fetched data into Google Map from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       geo.mapLayer = layer;
@@ -1282,7 +1283,9 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       }
       return false;
     };
-    cartodb.createLayer(geo.googleMap, geo.cartoUrl, {}, gMapCallback).addTo(geo.googleMap).on("error", function(errorString) {
+    cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap).on("done", function(layer) {
+      return gMapCallback(layer);
+    }).on("error", function(errorString) {
       toastStatusMessage("Couldn't load maps!");
       return console.error("Couldn't get map - " + errorString);
     });
