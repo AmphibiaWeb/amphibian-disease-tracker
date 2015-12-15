@@ -370,7 +370,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions) {
-  var coordinateArray, gMapPaths, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, points, temp;
+  var coordPoint, coordinateArray, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -404,13 +404,35 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
   if ($("#carto-map-container").exists() && (geo.cartoMap != null)) {
     mpArr = new Array();
     gMapPaths = new Array();
+    gMapPathsAlt = new Array();
+    northCoord = -90;
+    southCoord = 90;
+    eastCoord = -180;
+    westCoord = 180;
     for (k in polygonObjectParams) {
       points = polygonObjectParams[k];
       mpArr.push(points);
       temp = new Object();
       temp.lat = points[0];
       temp.lng = points[1];
-      gMapPaths.push(temp);
+      if (temp.lat > northCoord) {
+        northCoord = temp.lat;
+      }
+      if (temp.lat < southCoord) {
+        southCoord = temp.lat;
+      }
+      if (temp.lng < westCoord) {
+        westCoord = temp.lng;
+      }
+      if (tmp.lng > eastCoord) {
+        eastCoord = temp.lng;
+      }
+      gMapPathsAlt.push(new Point(temp.lat, temp.lng));
+    }
+    gMapPathsAlt.sort(pointSort);
+    for (k in gMapPathsAlt) {
+      coordPoint = gMapPathsAlt[k];
+      gMapPaths.push(coordPoint.getObj());
     }
     coordinateArray = new Array();
     coordinateArray.push(mpArr);

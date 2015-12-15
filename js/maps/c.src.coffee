@@ -1288,5 +1288,85 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
   false
 
 
+Point = (lat, lng) ->
+  # From
+  # http://stackoverflow.com/a/2863378
+  @x = (lng + 180) * 360
+  @y = (lat + 90) * 180
+  @distance = (that) ->
+    dx = that.x - @x
+    dy = that.y - @y
+    Math.sqrt dx**2 + dy**2
+  @slope = (that) ->
+    dx = that.x - @x
+    dy = that.y - @y
+    dy / dx
+  @toString = =>
+    "#{@x}, #{@y}"
+  @getObj = =>
+    o =
+      lat: @x
+      lng: @y
+    o
+
+
+
+`
+// A custom sort function that sorts p1 and p2 based on their slope
+// that is formed from the upper most point from the array of points.
+function pointSort(p1, p2) {
+    // Exclude the 'upper' point from the sort (which should come first).
+    if(p1 == upper) return -1;
+    if(p2 == upper) return 1;
+
+    // Find the slopes of 'p1' and 'p2' when a line is
+    // drawn from those points through the 'upper' point.
+    var m1 = upper.slope(p1);
+    var m2 = upper.slope(p2);
+
+    // 'p1' and 'p2' are on the same line towards 'upper'.
+    if(m1 == m2) {
+        // The point closest to 'upper' will come first.
+        return p1.distance(upper) < p2.distance(upper) ? -1 : 1;
+    }
+
+    // If 'p1' is to the right of 'upper' and 'p2' is the the left.
+    if(m1 <= 0 && m2 > 0) return -1;
+
+    // If 'p1' is to the left of 'upper' and 'p2' is the the right.
+    if(m1 > 0 && m2 <= 0) return 1;
+
+    // It seems that both slopes are either positive, or negative.
+    return m1 > m2 ? -1 : 1;
+}
+
+// Find the upper most point. In case of a tie, get the left most point.
+function upperLeft(points) {
+    var top = points[0];
+    for(var i = 1; i < points.length; i++) {
+        var temp = points[i];
+        if(temp.y > top.y || (temp.y == top.y && temp.x < top.x)) {
+            top = temp;
+        }
+    }
+    return top;
+}
+
+
+function distance(lat1, lng1, lat2, lng2) {
+  var R = 6371; // km
+  var dLat = (lat2-lat1).toRad();
+  var dLon = (lng2-lng1).toRad();
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}`
+
+
+
+
+
 $ ->
   # init()

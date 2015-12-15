@@ -446,12 +446,56 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     # http://leafletjs.com/examples/geojson.html
     mpArr = new Array()
     gMapPaths = new Array()
+    gMapPathsAlt = new Array()
+    northCoord = -90
+    southCoord = 90
+    eastCoord = -180
+    westCoord = 180
     for k, points of polygonObjectParams
       mpArr.push points
       temp = new Object()
       temp.lat = points[0]
       temp.lng = points[1]
-      gMapPaths.push temp
+      if temp.lat > northCoord
+        northCoord = temp.lat
+      if temp.lat < southCoord
+        southCoord = temp.lat
+      if temp.lng < westCoord
+        westCoord = temp.lng
+      if tmp.lng > eastCoord
+        eastCoord = temp.lng
+      gMapPathsAlt.push new Point(temp.lat, temp.lng)
+    # gMapPathsAlt.sort (a, b) ->
+    #   return ((a.lat < b.lat) ? -1 : ((a.lat == b.lat) ? 0 : 1))
+    # lats = new Array()
+    # lngs = new Array()
+    # for k, coords of gMapPathsAlt
+    #   lats.push coords.lat
+    # gMapPathsAlt.sort (a, b) ->
+    #   return ((a.lng < b.lng) ? -1 : ((a.lng == b.lng) ? 0 : 1))
+    # for k, coords of gMapPathsAlt
+    #   lngs.push coords.lng
+    gMapPathsAlt.sort pointSort
+    for k, coordPoint of gMapPathsAlt
+      gMapPaths.push coordPoint.getObj()
+    # if mpArr.length is 4
+    #   # Build dumb bounding box
+    #   # Coordinate order matters
+    #   gMapPaths.push
+    #     lat: northCoord
+    #     lng: westCoord
+    #   gMapPaths.push
+    #     lat: northCoord
+    #     lng: eastCoord
+    #   gMapPaths.push
+    #     lat: southCoord
+    #     lng: eastCoord
+    #   gMapPaths.push
+    #     lat: southCoord
+    #     lng: westCoord
+    # else
+    #   # Build the loop right
+    #   gMapPaths = gMapPathsAlt
     coordinateArray = new Array()
     coordinateArray.push mpArr
     gMapPoly.paths = gMapPaths

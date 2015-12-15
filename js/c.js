@@ -1,4 +1,4 @@
-var activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1609,6 +1609,91 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
     return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit.");
   });
   return false;
+};
+
+Point = function(lat, lng) {
+  this.x = (lng + 180) * 360;
+  this.y = (lat + 90) * 180;
+  this.distance = function(that) {
+    var dx, dy;
+    dx = that.x - this.x;
+    dy = that.y - this.y;
+    return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+  };
+  this.slope = function(that) {
+    var dx, dy;
+    dx = that.x - this.x;
+    dy = that.y - this.y;
+    return dy / dx;
+  };
+  this.toString = (function(_this) {
+    return function() {
+      return _this.x + ", " + _this.y;
+    };
+  })(this);
+  return this.getObj = (function(_this) {
+    return function() {
+      var o;
+      o = {
+        lat: _this.x,
+        lng: _this.y
+      };
+      return o;
+    };
+  })(this);
+};
+
+
+// A custom sort function that sorts p1 and p2 based on their slope
+// that is formed from the upper most point from the array of points.
+function pointSort(p1, p2) {
+    // Exclude the 'upper' point from the sort (which should come first).
+    if(p1 == upper) return -1;
+    if(p2 == upper) return 1;
+
+    // Find the slopes of 'p1' and 'p2' when a line is
+    // drawn from those points through the 'upper' point.
+    var m1 = upper.slope(p1);
+    var m2 = upper.slope(p2);
+
+    // 'p1' and 'p2' are on the same line towards 'upper'.
+    if(m1 == m2) {
+        // The point closest to 'upper' will come first.
+        return p1.distance(upper) < p2.distance(upper) ? -1 : 1;
+    }
+
+    // If 'p1' is to the right of 'upper' and 'p2' is the the left.
+    if(m1 <= 0 && m2 > 0) return -1;
+
+    // If 'p1' is to the left of 'upper' and 'p2' is the the right.
+    if(m1 > 0 && m2 <= 0) return 1;
+
+    // It seems that both slopes are either positive, or negative.
+    return m1 > m2 ? -1 : 1;
+}
+
+// Find the upper most point. In case of a tie, get the left most point.
+function upperLeft(points) {
+    var top = points[0];
+    for(var i = 1; i < points.length; i++) {
+        var temp = points[i];
+        if(temp.y > top.y || (temp.y == top.y && temp.x < top.x)) {
+            top = temp;
+        }
+    }
+    return top;
+}
+
+
+function distance(lat1, lng1, lat2, lng2) {
+  var R = 6371; // km
+  var dLat = (lat2-lat1).toRad();
+  var dLon = (lng2-lng1).toRad();
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
 };
 
 $(function() {});
