@@ -102,11 +102,12 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       geo.cartoViz = vis
       # Add leaflet map
       cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo geo.cartoMap
-      .done (layer) ->
+      .on "done", (layer) ->
         console.info "Callback on leaflet layer creation"
         layer.setInteraction true
         layer.on "featureOver", defaultMapMouseOverBehaviour
-      .always ->
+        callback(cartoVis, cartoMap)
+      .on "error", (layer) ->
         callback(cartoVis, cartoMap)
     .error (errorString) ->
       toastStatusMessage("Couldn't load maps!")

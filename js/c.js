@@ -1265,11 +1265,12 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       cartoMap = vis.getNativeMap();
       geo.cartoMap = cartoMap;
       geo.cartoViz = vis;
-      return cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo(geo.cartoMap).done(function(layer) {
+      return cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo(geo.cartoMap).on("done", function(layer) {
         console.info("Callback on leaflet layer creation");
         layer.setInteraction(true);
-        return layer.on("featureOver", defaultMapMouseOverBehaviour);
-      }).always(function() {
+        layer.on("featureOver", defaultMapMouseOverBehaviour);
+        return callback(cartoVis, cartoMap);
+      }).on("error", function(layer) {
         return callback(cartoVis, cartoMap);
       });
     }).error(function(errorString) {
