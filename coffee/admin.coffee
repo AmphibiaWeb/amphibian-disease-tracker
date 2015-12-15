@@ -329,10 +329,10 @@ bootstrapTransect = ->
         bbEW = bounds.O
         bbNS = bounds.j
         boundingBox =
-          nw: [bbEW.j, bbNS.j]
-          ne: [bbEW.j, bbNS.O]
-          sw: [bbEW.O, bbNS.j]
-          se: [bbEW.O, bbNS.O]
+          nw: [bbEW.j, bbNS.O]
+          ne: [bbEW.j, bbNS.j]
+          sw: [bbEW.O, bbNS.O]
+          se: [bbEW.O, bbNS.j]
         console.info "Got bounds: ", [lat, lng], boundingBox
         doCallback = ->
           options =
@@ -345,7 +345,7 @@ bootstrapTransect = ->
             zoom: 7
           $("#carto-map-container").empty()
           geo.boundingBox = boundingBox
-          createMap null, "carto-map-container", options, (vis, map) ->
+          createMap null, "carto-map-container", options, (layer, map) ->
             # Map has been created, play with the data!
             mapOverlayPolygon(boundingBox)
             false

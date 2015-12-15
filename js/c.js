@@ -1255,7 +1255,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       $("main #main-body").append(fakeDiv);
     }
     if (typeof callback !== "function") {
-      callback = function(cartoVis, cartoMap) {
+      callback = function(layer, cartoMap) {
         return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
           try {
             layer.setInteraction(true);
@@ -1277,6 +1277,9 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       console.info("Fetched data into Google Map from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       geo.mapLayer = layer;
       geo.cartoMap = geo.googleMap;
+      if (typeof callback === "function") {
+        callback(layer, geo.cartoMap);
+      }
       return false;
     };
     cartodb.createLayer(geo.googleMap, geo.cartoUrl, {}, gMapCallback).addTo(geo.googleMap).on("error", function(errorString) {

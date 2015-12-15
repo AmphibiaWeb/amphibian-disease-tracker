@@ -88,7 +88,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       """
       $("main #main-body").append fakeDiv
     unless typeof callback is "function"
-      callback = (cartoVis, cartoMap) ->
+      callback = (layer, cartoMap) ->
         # For whatever reason, we still need to manually add the data
         cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
         .done (layer) ->
@@ -109,6 +109,8 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       console.info "Fetched data into Google Map from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
       geo.mapLayer = layer
       geo.cartoMap = geo.googleMap
+      if typeof callback is "function"
+        callback(layer, geo.cartoMap)
       false
     cartodb.createLayer(geo.googleMap, geo.cartoUrl, {}, gMapCallback).addTo(geo.googleMap)
     .on "error", (errorString) ->
