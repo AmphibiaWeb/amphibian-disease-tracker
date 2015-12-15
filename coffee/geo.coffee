@@ -73,8 +73,9 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       center_lon: window.locationData.lng
       zoom: 7
     leafletOptions =
-      center: [window.locationData.lat, window.locationData.lng]
+      center: [options.center_lat, options.center_lon]
       zoom: 7
+    geo.leafletOptions = leafletOptions
     unless $("##{targetId}").exists()
       fakeDiv = """
       <div id="#{targetId}" class="carto-map wide-map">
@@ -91,14 +92,16 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
           # page in Carto
           layer.setInteraction true
           layer.on "featureOver", defaultMapMouseOverBehaviour
-    geo.leafletMap = new L.map(targetId)
-    cartodb.createVis targetId, dataVisUrl, options
+    geo.leafletMap = new L.map(targetId, leafletOptions)
+    cartodb.createVis geo.leafletMap, dataVisUrl, options
     .done (vis, layers) ->
       console.info "Fetched data from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
       cartoVis = vis
       cartoMap = vis.getNativeMap()
       geo.cartoMap = cartoMap
       geo.cartoViz = vis
+      # Add leaflet map
+      #cartodb.createLayer(geo.leafletMap, geo.cartoUrl).addTo(geo.cartoMap)
       callback(cartoVis, cartoMap)
     .error (errorString) ->
       toastStatusMessage("Couldn't load maps!")

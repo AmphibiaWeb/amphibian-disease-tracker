@@ -1242,9 +1242,10 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       };
     }
     leafletOptions = {
-      center: [window.locationData.lat, window.locationData.lng],
+      center: [options.center_lat, options.center_lon],
       zoom: 7
     };
+    geo.leafletOptions = leafletOptions;
     if (!$("#" + targetId).exists()) {
       fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
       $("main #main-body").append(fakeDiv);
@@ -1257,8 +1258,8 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         });
       };
     }
-    geo.leafletMap = new L.map(targetId);
-    return cartodb.createVis(targetId, dataVisUrl, options).done(function(vis, layers) {
+    geo.leafletMap = new L.map(targetId, leafletOptions);
+    return cartodb.createVis(geo.leafletMap, dataVisUrl, options).done(function(vis, layers) {
       console.info("Fetched data from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       cartoVis = vis;
       cartoMap = vis.getNativeMap();
