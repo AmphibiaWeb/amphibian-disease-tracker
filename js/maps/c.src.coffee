@@ -935,6 +935,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
         .done (layer) ->
           # The actual interaction infowindow popup is decided on the data
           # page in Carto
+          geo.mapLayer = layer
           try
             layer.setInteraction true
             layer.on "featureOver", defaultMapMouseOverBehaviour

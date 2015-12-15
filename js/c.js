@@ -1257,6 +1257,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     if (typeof callback !== "function") {
       callback = function(layer, cartoMap) {
         return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+          geo.mapLayer = layer;
           try {
             layer.setInteraction(true);
             return layer.on("featureOver", defaultMapMouseOverBehaviour);

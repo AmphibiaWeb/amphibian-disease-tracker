@@ -246,17 +246,20 @@ addPointsToMap = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea
     sql: "SELECT * FROM #{table}"
   # Add a layer as per
   # http://docs.cartodb.com/tutorials/create_map_cartodbjs/
-  cartodb
-  .createLayer geo.cartoMap, geo.cartoViz
-  .addTo geo.cartoMap
-  .on "done", (layer) ->
-    layer.getSubLayer(0).set sublayerOptions
-  .on "error", (layer) ->
-    false
+  geo.mapLayer.getSubLayer(0).set sublayerOptions
+  # cartodb
+  # .createLayer geo.cartoMap, geo.cartoUrl
+  # .addTo geo.cartoMap
+  # .on "done", (layer) ->
+  #   layer.getSubLayer(0).set sublayerOptions
+  # .on "error", (layer) ->
+  #   false
+  ## ALT:
+  ## https://developers.google.com/maps/documentation/javascript/examples/marker-simple
   false
 
 
-pointToLatLng = (pointString) ->
+pointStringToLatLng = (pointString) ->
   ###
   # Take point of form
   #
@@ -274,7 +277,21 @@ pointToLatLng = (pointString) ->
     lng: pointArr[1]
   pointObj
 
-
+pointStringToPoing = (pointString) ->
+  ###
+  # Take point of form
+  #
+  # "POINT(37.878086 37.878086)"
+  #
+  # and return a json obj
+  ###
+  unless pointString.search "POINT" is 0
+    console.warn "Invalid point string"
+    return false
+  pointSSV = pointString.slice 6, -1
+  pointArr = pointSSV.split " "
+  point = new Point(pointArr[0], pointArr[1])
+  point
 
 loadProjectBrowser = ->
   startAdminActionHelper()

@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, pointToLatLng, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoing, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -192,15 +192,11 @@ addPointsToMap = function(table) {
   sublayerOptions = {
     sql: "SELECT * FROM " + table
   };
-  cartodb.createLayer(geo.cartoMap, geo.cartoViz).addTo(geo.cartoMap).on("done", function(layer) {
-    return layer.getSubLayer(0).set(sublayerOptions);
-  }).on("error", function(layer) {
-    return false;
-  });
+  geo.mapLayer.getSubLayer(0).set(sublayerOptions);
   return false;
 };
 
-pointToLatLng = function(pointString) {
+pointStringToLatLng = function(pointString) {
 
   /*
    * Take point of form
@@ -221,6 +217,26 @@ pointToLatLng = function(pointString) {
     lng: pointArr[1]
   };
   return pointObj;
+};
+
+pointStringToPoing = function(pointString) {
+
+  /*
+   * Take point of form
+   *
+   * "POINT(37.878086 37.878086)"
+   *
+   * and return a json obj
+   */
+  var point, pointArr, pointSSV;
+  if (!pointString.search("POINT" === 0)) {
+    console.warn("Invalid point string");
+    return false;
+  }
+  pointSSV = pointString.slice(6, -1);
+  pointArr = pointSSV.split(" ");
+  point = new Point(pointArr[0], pointArr[1]);
+  return point;
 };
 
 loadProjectBrowser = function() {
