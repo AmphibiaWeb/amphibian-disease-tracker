@@ -312,6 +312,7 @@ bootstrapTransect = function() {
      * @param float centerLat -> the centering for the latitude
      * @param float centerLng -> the centering for the longitude
      */
+    startLoad();
     if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
       window.recallMapHelper = function() {
         return geo.renderMapHelper(overlayBoundingBox, centerLat, centerLng);
@@ -340,7 +341,8 @@ bootstrapTransect = function() {
       mapWidth = $(geo.mapSelector).width();
       adjAngle = 360 / angle;
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
-      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2) - 1;
+      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
+      --zoomCalc;
       if (zoomCalc === 0) {
         zoomCalc = 7;
       }

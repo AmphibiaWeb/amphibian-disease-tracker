@@ -368,6 +368,7 @@ bootstrapTransect = ->
     # @param float centerLat -> the centering for the latitude
     # @param float centerLng -> the centering for the longitude
     ###
+    startLoad()
     unless google?.maps?
       # Load it
       window.recallMapHelper = ->
@@ -392,7 +393,8 @@ bootstrapTransect = ->
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE
       # Calculate the zoom factor
       # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
-      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2) - 1
+      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2)
+      --zoomCalc # Zoom out one point, less tight fit
       if zoomCalc is 0
         zoomCalc = 7
       unless typeof centerLat is "number"
