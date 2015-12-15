@@ -420,11 +420,13 @@ bootstrapTransect = ->
             # if 3+, send the polygon to be drawn
             coords = new Array()
             coordsRaw = val.split("\n")
+            console.info "Raw coordinate info:", coordsRaw
             for coordPair in coordsRaw
-              if coordPair.search "," > 0 and not isNull coordPair
+              if coordPair.search(",") > 0 and not isNull coordPair
                 coordSplit = coordPair.split(",")
-                tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])]
-                coords.push tmp
+                if coordSplit.length is 2
+                  tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])]
+                  coords.push tmp
             if coords.length >= 3
               console.info "Coords:", coords
               # Objectify!

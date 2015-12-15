@@ -358,12 +358,15 @@ bootstrapTransect = function() {
             if (lines > 3) {
               coords = new Array();
               coordsRaw = val.split("\n");
+              console.info("Raw coordinate info:", coordsRaw);
               for (j = 0, len = coordsRaw.length; j < len; j++) {
                 coordPair = coordsRaw[j];
-                if (coordPair.search("," > 0 && !isNull(coordPair))) {
+                if (coordPair.search(",") > 0 && !isNull(coordPair)) {
                   coordSplit = coordPair.split(",");
-                  tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
-                  coords.push(tmp);
+                  if (coordSplit.length === 2) {
+                    tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
+                    coords.push(tmp);
+                  }
                 }
               }
               if (coords.length >= 3) {
