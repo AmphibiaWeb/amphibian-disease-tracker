@@ -359,10 +359,21 @@ bootstrapTransect = ->
         stopLoadError "Couldn't find location: #{status}"
 
 
-  renderMapHelper = (overlayBoundingBox, centerLat, centerLng) ->
+  geo.renderMapHelper = (overlayBoundingBox = geo.boundingBox, centerLat, centerLng) ->
     ###
+    # Helper function to consistently render the map
     #
+    # @param Object overlayBoundingBox -> an object with values of
+    # [lat,lng] arrays
+    # @param float centerLat -> the centering for the latitude
+    # @param float centerLng -> the centering for the longitude
     ###
+    unless google?.maps?
+      # Load it
+      window.recallMapHelper = ->
+        geo.renderMapHelper(overlayBoundingBox, centerLat, centerLng)
+      loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=recallMapHelper"
+      return false
     try
       geo.boundingBox = overlayBoundingBox
       # Calculate the zoom factor
@@ -392,6 +403,7 @@ bootstrapTransect = ->
         center_lat: centerLat
         center_lon: centerLng
         zoom: zoomCalc
+      geo.mapParams = options
       $("#carto-map-container").empty()
       # Ref:
       # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
@@ -408,9 +420,11 @@ bootstrapTransect = ->
           mapOverlayPolygon(overlayBoundingBox)
           stopLoad()
         catch e
+          console.error "There was an error drawing your bounding box - #{e.emssage}"
           stopLoadError "There was an error drawing your bounding box - #{e.emssage}"
         false
     catch e
+      console.error "There was an error rendering the map - #{e.message}"
       stopLoadError "There was an error rendering the map - #{e.message}"
 
 
@@ -540,15 +554,14 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       properties: regionProperties
       geometry: geoMultiPoly
     console.info "Rendering GeoJSON MultiPolygon", geoMultiPoly
-    geo.overlayPolygon = geoJSON
+    geo.geoJsonBoundingBox = geoJSON
     geo.overlayOptions = overlayOptions
-    # L.geoJson(geoJSON, overlayOptions).addTo geo.leafletMap
     console.info "Rendering Google Maps polygon", gMapPoly
+    geo.canonicalBoundingBox = gMapPoly
     # See
     # https://developers.google.com/maps/documentation/javascript/examples/polygon-simple
     gPolygon = new google.maps.Polygon(gMapPoly)
     gPolygon.setMap geo.googleMap
-    foo()
   else
     # No map yet ...
     console.warn "There's no map yet! Can't overlay polygon"

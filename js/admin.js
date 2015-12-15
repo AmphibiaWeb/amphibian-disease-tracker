@@ -255,7 +255,7 @@ bootstrapTransect = function() {
   /*
    *
    */
-  var geocodeEvent, renderMapHelper, setupTransectUi, showCartoTransectMap;
+  var geocodeEvent, setupTransectUi, showCartoTransectMap;
   showCartoTransectMap = function(coordList) {
     foo();
     return false;
@@ -298,12 +298,27 @@ bootstrapTransect = function() {
       }
     });
   };
-  renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
+  geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
+    var coords, e, i, j, l, len, len1, options, totalLat, totalLng, vizJsonElements, zoomCalc;
+    if (overlayBoundingBox == null) {
+      overlayBoundingBox = geo.boundingBox;
+    }
 
     /*
+     * Helper function to consistently render the map
      *
+     * @param Object overlayBoundingBox -> an object with values of
+     * [lat,lng] arrays
+     * @param float centerLat -> the centering for the latitude
+     * @param float centerLng -> the centering for the longitude
      */
-    var coords, e, i, j, l, len, len1, options, totalLat, totalLng, vizJsonElements, zoomCalc;
+    if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
+      window.recallMapHelper = function() {
+        return geo.renderMapHelper(overlayBoundingBox, centerLat, centerLng);
+      };
+      loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=recallMapHelper");
+      return false;
+    }
     try {
       geo.boundingBox = overlayBoundingBox;
       zoomCalc = 7;
@@ -338,6 +353,7 @@ bootstrapTransect = function() {
         center_lon: centerLng,
         zoom: zoomCalc
       };
+      geo.mapParams = options;
       $("#carto-map-container").empty();
       if (typeof geo !== "undefined" && geo !== null) {
         if (geo.dataTable == null) {
@@ -360,12 +376,14 @@ bootstrapTransect = function() {
           stopLoad();
         } catch (_error) {
           e = _error;
+          console.error("There was an error drawing your bounding box - " + e.emssage);
           stopLoadError("There was an error drawing your bounding box - " + e.emssage);
         }
         return false;
       });
     } catch (_error) {
       e = _error;
+      console.error("There was an error rendering the map - " + e.message);
       return stopLoadError("There was an error rendering the map - " + e.message);
     }
   };
@@ -516,12 +534,12 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       geometry: geoMultiPoly
     };
     console.info("Rendering GeoJSON MultiPolygon", geoMultiPoly);
-    geo.overlayPolygon = geoJSON;
+    geo.geoJsonBoundingBox = geoJSON;
     geo.overlayOptions = overlayOptions;
     console.info("Rendering Google Maps polygon", gMapPoly);
+    geo.canonicalBoundingBox = gMapPoly;
     gPolygon = new google.maps.Polygon(gMapPoly);
     gPolygon.setMap(geo.googleMap);
-    foo();
   } else {
     console.warn("There's no map yet! Can't overlay polygon");
   }
