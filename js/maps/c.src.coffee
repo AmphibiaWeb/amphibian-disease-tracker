@@ -1288,6 +1288,20 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
   false
 
 
+sortPoints = (pointArray) ->
+  ###
+  # Take an array of points and return a Google Maps compatible array
+  # of coordinate objects
+  ###
+  window.upper = upperLeft pointArray
+  pointArray.sort pointSort
+  sortedPoints = new Array()
+  for coordPoint in pointArray
+    sortedPoints.push coordPoint.getObj()
+  delete window.upper
+  sortedPoints
+
+
 Point = (lat, lng) ->
   # From
   # http://stackoverflow.com/a/2863378

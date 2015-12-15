@@ -342,7 +342,7 @@ bootstrapTransect = ->
             gmaps_base_type: "hybrid"
             center_lat: lat
             center_lon: lng
-            zoom: 7
+            zoom: 7 # Should calc it ... http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
           $("#carto-map-container").empty()
           geo.boundingBox = boundingBox
           createMap null, "carto-map-container", options, (layer, map) ->
@@ -461,11 +461,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       temp.lat = points[0]
       temp.lng = points[1]
       gMapPathsAlt.push new Point(temp.lat, temp.lng)
-    window.upper = upperLeft gMapPathsAlt # Required for sort
-    gMapPathsAlt.sort pointSort
-    console.info "Point collection:", gMapPathsAlt
-    for coordPoint in gMapPathsAlt
-      gMapPaths.push coordPoint.getObj()
+    gMapPaths = sortPoints gMapPathsAlt
     coordinateArray = new Array()
     coordinateArray.push mpArr
     gMapPoly.paths = gMapPaths

@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1609,6 +1609,24 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
     return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit.");
   });
   return false;
+};
+
+sortPoints = function(pointArray) {
+
+  /*
+   * Take an array of points and return a Google Maps compatible array
+   * of coordinate objects
+   */
+  var coordPoint, k, len, sortedPoints;
+  window.upper = upperLeft(pointArray);
+  pointArray.sort(pointSort);
+  sortedPoints = new Array();
+  for (k = 0, len = pointArray.length; k < len; k++) {
+    coordPoint = pointArray[k];
+    sortedPoints.push(coordPoint.getObj());
+  }
+  delete window.upper;
+  return sortedPoints;
 };
 
 Point = function(lat, lng) {
