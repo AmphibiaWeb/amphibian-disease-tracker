@@ -299,14 +299,11 @@ bootstrapTransect = function() {
     });
   };
   geocodeEvent = function() {
-    var coords;
     if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
       loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=geocodeLookupCallback");
     } else {
       geocodeLookupCallback();
     }
-    coords = new Array();
-    showCartoTransectMap(coords);
     return false;
   };
   (setupTransectUi = function() {
@@ -323,7 +320,7 @@ bootstrapTransect = function() {
     if (p$("#transect-input-toggle").checked) {
       $(p$("#coord-input").textarea).keyup((function(_this) {
         return function(e) {
-          var coordPair, coordSplit, coords, coordsRaw, i, kc, len, lines, tmp, val;
+          var bbox, coord, coordPair, coordSplit, coords, coordsRaw, i, j, kc, l, len, len1, lines, tmp, val;
           kc = e.keyCode ? e.keyCode : e.which;
           if (kc === 13) {
             val = $(p$("#coord-input").textarea).val();
@@ -331,8 +328,8 @@ bootstrapTransect = function() {
             if (lines > 3) {
               coords = new Array();
               coordsRaw = val.split("\n");
-              for (i = 0, len = coordsRaw.length; i < len; i++) {
-                coordPair = coordsRaw[i];
+              for (j = 0, len = coordsRaw.length; j < len; j++) {
+                coordPair = coordsRaw[j];
                 if (coordPair.search("," > 0 && !isNull(coordPair))) {
                   coordSplit = coordPair.split(",");
                   tmp = [toFloat(coordSplit[0]), toFloat(coordSplit[1])];
@@ -341,7 +338,14 @@ bootstrapTransect = function() {
               }
               if (coords.length >= 3) {
                 console.info("Coords:", coords);
-                return showCartoTransectMap(coords);
+                i = 0;
+                bbox = new Object();
+                for (l = 0, len1 = coords.length; l < len1; l++) {
+                  coord = coords[l];
+                  ++i;
+                  bbox[i] = coord;
+                }
+                return mapOverlayPolygon(bbox);
               } else {
                 return console.warn("There is one or more invalid coordinates preventing the UI from being shown.");
               }
@@ -370,7 +374,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions) {
-  var coordPoint, coordinateArray, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, i, k, len, mpArr, northCoord, points, southCoord, temp, westCoord;
+  var coordPoint, coordinateArray, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, j, k, len, mpArr, northCoord, points, southCoord, temp, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -420,8 +424,8 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     window.upper = upperLeft(gMapPathsAlt);
     gMapPathsAlt.sort(pointSort);
     console.info("Point collection:", gMapPathsAlt);
-    for (i = 0, len = gMapPathsAlt.length; i < len; i++) {
-      coordPoint = gMapPathsAlt[i];
+    for (j = 0, len = gMapPathsAlt.length; j < len; j++) {
+      coordPoint = gMapPathsAlt[j];
       gMapPaths.push(coordPoint.getObj());
     }
     coordinateArray = new Array();

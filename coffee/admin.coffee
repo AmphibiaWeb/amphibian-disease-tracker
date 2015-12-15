@@ -361,8 +361,6 @@ bootstrapTransect = ->
       loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=geocodeLookupCallback"
     else
       geocodeLookupCallback()
-    coords = new Array()
-    showCartoTransectMap(coords)
     false
 
   # Actual boostrapping
@@ -403,7 +401,13 @@ bootstrapTransect = ->
                 coords.push tmp
             if coords.length >= 3
               console.info "Coords:", coords
-              showCartoTransectMap(coords)
+              # Objectify!
+              i = 0
+              bbox = new Object()
+              for coord in coords
+                ++i
+                bbox[i] = coord
+              mapOverlayPolygon(bbox)
             else
               console.warn "There is one or more invalid coordinates preventing the UI from being shown."
     else
