@@ -340,7 +340,10 @@ bootstrapTransect = function() {
       mapWidth = $(geo.mapSelector).width();
       adjAngle = 360 / angle;
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
-      zoomCalc = Math.round(Math.log(mapWidth * mapScale) / Math.LN2);
+      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2) - 1;
+      if (zoomCalc === 0) {
+        zoomCalc = 7;
+      }
       if (typeof centerLat !== "number") {
         i = 0;
         totalLat = 0.0;

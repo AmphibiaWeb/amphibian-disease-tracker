@@ -392,7 +392,9 @@ bootstrapTransect = ->
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE
       # Calculate the zoom factor
       # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
-      zoomCalc = Math.round(Math.log(mapWidth * mapScale) / Math.LN2)
+      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2) - 1
+      if zoomCalc is 0
+        zoomCalc = 7
       unless typeof centerLat is "number"
         i = 0
         totalLat = 0.0
