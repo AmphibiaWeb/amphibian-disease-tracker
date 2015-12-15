@@ -904,6 +904,8 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   unless dataVisIdentifier?
     console.info "Can't create map without a data visualization identifier"
   # Set up post-configuration helper
+  geo.mapId = targetId
+  geo.mapSelector = "##{targetId}"
   postConfig = ->
     options ?=
       cartodb_logo: false

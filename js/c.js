@@ -1228,6 +1228,8 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   if (dataVisIdentifier == null) {
     console.info("Can't create map without a data visualization identifier");
   }
+  geo.mapId = targetId;
+  geo.mapSelector = "#" + targetId;
   postConfig = function() {
     var fakeDiv, forceCallback, gMapCallback, googleMapOptions;
     if (options == null) {

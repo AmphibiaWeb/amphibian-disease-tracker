@@ -376,9 +376,23 @@ bootstrapTransect = ->
       return false
     try
       geo.boundingBox = overlayBoundingBox
+      eastMost = -180
+      westMost = 180
+      for k, coords of overlayBoundingBox
+        if coords[1] < westMost
+          westMost = coords[1]
+        if coords[1] > eastMost
+          eastMost = coords[1]
+      GLOBE_WIDTH_GOOGLE = 256 # Constant
+      angle = eastMost - westMost
+      if angle < 0
+        angle += 360
+      mapWidth = $(geo.mapSelector).width()
+      adjAngle = 360 / angle
+      mapScale = adjAngle / GLOBE_WIDTH_GOOGLE
       # Calculate the zoom factor
       # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
-      zoomCalc = 7
+      zoomCalc = Math.round(Math.log(mapWidth * mapScale) / Math.LN2)
       unless typeof centerLat is "number"
         i = 0
         totalLat = 0.0

@@ -299,7 +299,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var coords, e, i, k, options, totalLat, totalLng, vizJsonElements, zoomCalc;
+    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, e, eastMost, i, k, mapScale, mapWidth, options, totalLat, totalLng, vizJsonElements, westMost, zoomCalc;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -321,7 +321,26 @@ bootstrapTransect = function() {
     }
     try {
       geo.boundingBox = overlayBoundingBox;
-      zoomCalc = 7;
+      eastMost = -180;
+      westMost = 180;
+      for (k in overlayBoundingBox) {
+        coords = overlayBoundingBox[k];
+        if (coords[1] < westMost) {
+          westMost = coords[1];
+        }
+        if (coords[1] > eastMost) {
+          eastMost = coords[1];
+        }
+      }
+      GLOBE_WIDTH_GOOGLE = 256;
+      angle = eastMost - westMost;
+      if (angle < 0) {
+        angle += 360;
+      }
+      mapWidth = $(geo.mapSelector).width();
+      adjAngle = 360 / angle;
+      mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
+      zoomCalc = Math.round(Math.log(mapWidth * mapScale) / Math.LN2);
       if (typeof centerLat !== "number") {
         i = 0;
         totalLat = 0.0;
