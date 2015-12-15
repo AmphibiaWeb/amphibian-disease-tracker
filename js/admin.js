@@ -255,7 +255,7 @@ bootstrapTransect = function() {
   /*
    *
    */
-  var geocodeEvent, setupTransectUi, showCartoTransectMap;
+  var geocodeEvent, renderMapHelper, setupTransectUi, showCartoTransectMap;
   showCartoTransectMap = function(coordList) {
     foo();
     return false;
@@ -290,45 +290,67 @@ bootstrapTransect = function() {
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
         doCallback = function() {
-          var options, vizJsonElements;
-          options = {
-            cartodb_logo: false,
-            https: true,
-            mobile_layout: true,
-            gmaps_base_type: "hybrid",
-            center_lat: lat,
-            center_lon: lng,
-            zoom: 7
-          };
-          $("#carto-map-container").empty();
-          geo.boundingBox = boundingBox;
-          if (typeof geo !== "undefined" && geo !== null) {
-            if (geo.dataTable == null) {
-              geo.dataTable = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
-            }
-          }
-          vizJsonElements = {
-            layers: [
-              {
-                options: {
-                  sql: "SELECT * FROM " + geo.dataTable
-                }
-              }
-            ]
-          };
-          return createMap(null, "carto-map-container", options, function(layer, map) {
-            mapOverlayPolygon(boundingBox);
-            return false;
-          });
+          return renderMapHelper(boundingBox);
         };
-        loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
-        return stopLoad();
+        return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
       } else {
         return stopLoadError("Couldn't find location: " + status);
       }
     });
   };
+  renderMapHelper = function(overlayBoundingBox) {
+
+    /*
+     *
+     */
+    var e, options, vizJsonElements;
+    try {
+      geo.boundingBox = overlayBoundingBox;
+      options = {
+        cartodb_logo: false,
+        https: true,
+        mobile_layout: true,
+        gmaps_base_type: "hybrid",
+        center_lat: lat,
+        center_lon: lng,
+        zoom: 7
+      };
+      $("#carto-map-container").empty();
+      if (typeof geo !== "undefined" && geo !== null) {
+        if (geo.dataTable == null) {
+          geo.dataTable = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+        }
+      }
+      vizJsonElements = {
+        layers: [
+          {
+            options: {
+              sql: "SELECT * FROM " + geo.dataTable
+            }
+          }
+        ]
+      };
+      return createMap(null, "carto-map-container", options, function(layer, map) {
+        var e;
+        try {
+          mapOverlayPolygon(overlayBoundingBox);
+          stopLoad();
+        } catch (_error) {
+          e = _error;
+          stopLoadError("There was an error drawing your bounding box - " + e.emssage);
+        }
+        return false;
+      });
+    } catch (_error) {
+      e = _error;
+      return stopLoadError("There was an error rendering the map - " + e.message);
+    }
+  };
   geocodeEvent = function() {
+
+    /*
+     * Event handler for the geocoder
+     */
     if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
       loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=geocodeLookupCallback");
     } else {
@@ -350,7 +372,7 @@ bootstrapTransect = function() {
     if (p$("#transect-input-toggle").checked) {
       $(p$("#coord-input").textarea).keyup((function(_this) {
         return function(e) {
-          var bbox, coord, coordPair, coordSplit, coords, coordsRaw, i, j, kc, l, len, len1, lines, tmp, val;
+          var bbox, coord, coordPair, coordSplit, coords, coordsRaw, doCallback, i, j, kc, l, len, len1, lines, tmp, val;
           kc = e.keyCode ? e.keyCode : e.which;
           if (kc === 13) {
             val = $(p$("#coord-input").textarea).val();
@@ -378,7 +400,10 @@ bootstrapTransect = function() {
                   ++i;
                   bbox[i] = coord;
                 }
-                return mapOverlayPolygon(bbox);
+                doCallback = function() {
+                  return renderMapHelper(bbox);
+                };
+                return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
               } else {
                 return console.warn("There is one or more invalid coordinates preventing the UI from being shown.");
               }

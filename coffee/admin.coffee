@@ -352,35 +352,53 @@ bootstrapTransect = ->
           sw: [bbEW.O, bbNS.j]
         console.info "Got bounds: ", [lat, lng], boundingBox
         doCallback = ->
-          options =
-            cartodb_logo: false
-            https: true # Secure forcing is leading to resource errors
-            mobile_layout: true
-            gmaps_base_type: "hybrid"
-            center_lat: lat
-            center_lon: lng
-            zoom: 7 # Should calc it ... http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
-          $("#carto-map-container").empty()
-          geo.boundingBox = boundingBox
-          # Ref:
-          # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
-          # http://documentation.cartodb.com/api/v2/viz/23f2abd6-481b-11e4-8fb1-0e4fddd5de28/viz.json
-          geo?.dataTable ?= "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
-          vizJsonElements =
-            layers: [
-              options:
-                sql: "SELECT * FROM #{geo.dataTable}"
-              ]
-          createMap null, "carto-map-container", options, (layer, map) ->
-            # Map has been created, play with the data!
-            mapOverlayPolygon(boundingBox)
-            false
+          renderMapHelper(boundingBox)
         loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
-        stopLoad()
+        #stopLoad()
       else
         stopLoadError "Couldn't find location: #{status}"
-  # geo?.geocodeLookupCallback = geocodeLookupCallback
+
+
+  renderMapHelper = (overlayBoundingBox) ->
+    ###
+    #
+    ###
+    try
+      geo.boundingBox = overlayBoundingBox
+      options =
+        cartodb_logo: false
+        https: true # Secure forcing is leading to resource errors
+        mobile_layout: true
+        gmaps_base_type: "hybrid"
+        center_lat: lat
+        center_lon: lng
+        zoom: 7 # Should calc it ... http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
+      $("#carto-map-container").empty()
+      # Ref:
+      # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
+      # http://documentation.cartodb.com/api/v2/viz/23f2abd6-481b-11e4-8fb1-0e4fddd5de28/viz.json
+      geo?.dataTable ?= "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
+      vizJsonElements =
+        layers: [
+          options:
+            sql: "SELECT * FROM #{geo.dataTable}"
+          ]
+      createMap null, "carto-map-container", options, (layer, map) ->
+        # Map has been created, play with the data!
+        try
+          mapOverlayPolygon(overlayBoundingBox)
+          stopLoad()
+        catch e
+          stopLoadError "There was an error drawing your bounding box - #{e.emssage}"
+        false
+    catch e
+      stopLoadError "There was an error rendering the map - #{e.message}"
+
+
   geocodeEvent = ->
+    ###
+    # Event handler for the geocoder
+    ###
     # Do reverse geocode
     unless google?.maps?
       # Load the JS
@@ -435,7 +453,9 @@ bootstrapTransect = ->
               for coord in coords
                 ++i
                 bbox[i] = coord
-              mapOverlayPolygon(bbox)
+              doCallback = ->
+                renderMapHelper(bbox)
+              loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
             else
               console.warn "There is one or more invalid coordinates preventing the UI from being shown."
     else
