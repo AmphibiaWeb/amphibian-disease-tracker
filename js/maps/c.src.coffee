@@ -913,14 +913,6 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       center_lat: window.locationData.lat
       center_lon: window.locationData.lng
       zoom: 7
-    # https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png
-    leafletOptions =
-      center: [options.center_lat, options.center_lon]
-      zoom: 7
-      sublayers:
-        type: "http"
-        urlTemplate: "https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png"
-    geo.leafletOptions = leafletOptions
     unless $("##{targetId}").exists()
       fakeDiv = """
       <div id="#{targetId}" class="carto-map wide-map">
@@ -944,7 +936,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     # Create a map layer
     googleMapOptions =
       center: new google.maps.LatLng(options.center_lat, options.center_lon)
-      zoom: 7
+      zoom: options.zoom
       mapTypeId: google.maps.MapTypeId.HYBRID
     geo.googleMap = new google.maps.Map document.getElementById(targetId), googleMapOptions
     geo.cartoMap = geo.googleMap
@@ -952,21 +944,29 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       console.info "Fetched data into Google Map from CartoDB account #{cartoAccount}, from data set #{dataVisIdentifier}"
       geo.mapLayer = layer
       geo.cartoMap = geo.googleMap
+      clearTimeout forceCallback
       if typeof callback is "function"
         callback(layer, geo.cartoMap)
       false
     try
-      cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap)
+      console.info "About to render map with options", geo.cartoUrl, options
+      cartodb.createLayer(geo.googleMap, geo.cartoUrl, options).addTo(geo.googleMap)
       .on "done", (layer) ->
         gMapCallback(layer)
       .on "error", (errorString) ->
         toastStatusMessage("Couldn't load maps!")
         console.error "Couldn't get map - #{errorString}"
+      forceCallback = delay 1000, ->
+        if typeof callback is "function"
+          console.warn "Callback wasn't called, forcing"
+          callback(null, geo.cartoMap)
     catch
       # Try the callback anyway
       console.warn "The map threw an error! #{e.message}"
       console.wan e.stack
-      callback(null, geo.cartoMap)
+      clearTimeout forceCallback
+      if typeof callback is "function"
+        callback(null, geo.cartoMap)
     false
   ###
   # Now that we have the helper function, let's get the viz data

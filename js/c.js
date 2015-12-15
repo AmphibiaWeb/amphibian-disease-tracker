@@ -1229,7 +1229,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     console.info("Can't create map without a data visualization identifier");
   }
   postConfig = function() {
-    var fakeDiv, gMapCallback, googleMapOptions, leafletOptions;
+    var fakeDiv, forceCallback, gMapCallback, googleMapOptions;
     if (options == null) {
       options = {
         cartodb_logo: false,
@@ -1241,15 +1241,6 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         zoom: 7
       };
     }
-    leafletOptions = {
-      center: [options.center_lat, options.center_lon],
-      zoom: 7,
-      sublayers: {
-        type: "http",
-        urlTemplate: "https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png"
-      }
-    };
-    geo.leafletOptions = leafletOptions;
     if (!$("#" + targetId).exists()) {
       fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
       $("main #main-body").append(fakeDiv);
@@ -1269,7 +1260,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     }
     googleMapOptions = {
       center: new google.maps.LatLng(options.center_lat, options.center_lon),
-      zoom: 7,
+      zoom: options.zoom,
       mapTypeId: google.maps.MapTypeId.HYBRID
     };
     geo.googleMap = new google.maps.Map(document.getElementById(targetId), googleMapOptions);
@@ -1278,22 +1269,33 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       console.info("Fetched data into Google Map from CartoDB account " + cartoAccount + ", from data set " + dataVisIdentifier);
       geo.mapLayer = layer;
       geo.cartoMap = geo.googleMap;
+      clearTimeout(forceCallback);
       if (typeof callback === "function") {
         callback(layer, geo.cartoMap);
       }
       return false;
     };
     try {
-      cartodb.createLayer(geo.googleMap, geo.cartoUrl).addTo(geo.googleMap).on("done", function(layer) {
+      console.info("About to render map with options", geo.cartoUrl, options);
+      cartodb.createLayer(geo.googleMap, geo.cartoUrl, options).addTo(geo.googleMap).on("done", function(layer) {
         return gMapCallback(layer);
       }).on("error", function(errorString) {
         toastStatusMessage("Couldn't load maps!");
         return console.error("Couldn't get map - " + errorString);
       });
+      forceCallback = delay(1000, function() {
+        if (typeof callback === "function") {
+          console.warn("Callback wasn't called, forcing");
+          return callback(null, geo.cartoMap);
+        }
+      });
     } catch (_error) {
       console.warn("The map threw an error! " + e.message);
       console.wan(e.stack);
-      callback(null, geo.cartoMap);
+      clearTimeout(forceCallback);
+      if (typeof callback === "function") {
+        callback(null, geo.cartoMap);
+      }
     }
     return false;
   };
