@@ -1293,6 +1293,8 @@ Point = (lat, lng) ->
   # http://stackoverflow.com/a/2863378
   @x = (lng + 180) * 360
   @y = (lat + 90) * 180
+  @lat = lat
+  @lng = lng
   @distance = (that) ->
     dx = that.x - @x
     dy = that.y - @y
@@ -1301,13 +1303,14 @@ Point = (lat, lng) ->
     dx = that.x - @x
     dy = that.y - @y
     dy / dx
-  @toString = =>
+  @toString = ->
     "#{@x}, #{@y}"
-  @getObj = =>
+  @getObj = ->
     o =
-      lat: @x
-      lng: @y
+      lat: @lat
+      lng: @lng
     o
+  this.toString()
 
 
 

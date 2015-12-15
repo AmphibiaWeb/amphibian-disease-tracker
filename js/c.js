@@ -1614,6 +1614,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
 Point = function(lat, lng) {
   this.x = (lng + 180) * 360;
   this.y = (lat + 90) * 180;
+  this.lat = lat;
+  this.lng = lng;
   this.distance = function(that) {
     var dx, dy;
     dx = that.x - this.x;
@@ -1626,21 +1628,18 @@ Point = function(lat, lng) {
     dy = that.y - this.y;
     return dy / dx;
   };
-  this.toString = (function(_this) {
-    return function() {
-      return _this.x + ", " + _this.y;
+  this.toString = function() {
+    return this.x + ", " + this.y;
+  };
+  this.getObj = function() {
+    var o;
+    o = {
+      lat: this.lat,
+      lng: this.lng
     };
-  })(this);
-  return this.getObj = (function(_this) {
-    return function() {
-      var o;
-      o = {
-        lat: _this.x,
-        lng: _this.y
-      };
-      return o;
-    };
-  })(this);
+    return o;
+  };
+  return this.toString();
 };
 
 
