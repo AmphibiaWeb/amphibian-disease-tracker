@@ -353,7 +353,7 @@ bootstrapTransect = function() {
       if (zoomCalc < 1) {
         zoomCalc = 7;
       }
-      console.info("Calculated zoom " + zoomCalc + ", from original " + oz + " and loosened " + zo + " from", overlayBoundingBox);
+      console.info("Calculated zoom " + zoomCalc + ", from original " + oz + " and loosened " + zo + " from", overlayBoundingBox, mapWidth, mapScale);
       if (typeof centerLat !== "number") {
         i = 0;
         totalLat = 0.0;
