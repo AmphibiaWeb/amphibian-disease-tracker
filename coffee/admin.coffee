@@ -391,7 +391,7 @@ bootstrapTransect = ->
       angle = eastMost - westMost
       if angle < 0
         angle += 360
-      mapWidth = $(geo.mapSelector).width()
+      mapWidth = $(geo.mapSelector).width() ? 650
       adjAngle = 360 / angle
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE
       # Calculate the zoom factor

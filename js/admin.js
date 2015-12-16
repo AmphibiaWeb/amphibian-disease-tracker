@@ -304,7 +304,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, e, eastMost, i, k, mapScale, mapWidth, options, oz, totalLat, totalLng, vizJsonElements, westMost, zo, zoomCalc;
+    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, e, eastMost, i, k, mapScale, mapWidth, options, oz, ref, totalLat, totalLng, vizJsonElements, westMost, zo, zoomCalc;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -343,7 +343,7 @@ bootstrapTransect = function() {
       if (angle < 0) {
         angle += 360;
       }
-      mapWidth = $(geo.mapSelector).width();
+      mapWidth = (ref = $(geo.mapSelector).width()) != null ? ref : 650;
       adjAngle = 360 / angle;
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
       zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
