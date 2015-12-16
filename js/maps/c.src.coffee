@@ -1241,7 +1241,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
       console.info "GeoJSON:", geoJson
       console.info "GeoJSON String:", dataGeometry
       console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
-      $.post "api.php", args
+      $.post "api.php", args, "json"
       .done (result) ->
         console.log "Got back", result
         if result.status isnt true
@@ -1338,6 +1338,10 @@ Point = (lat, lng) ->
       lat: @lat
       lng: @lng
     o
+  @getLat = ->
+    @lat
+  @getLng = ->
+    @lng
   this.toString()
 
 geo.Point = Point
@@ -1381,18 +1385,6 @@ function upperLeft(points) {
         }
     }
     return top;
-}
-
-
-function distance(lat1, lng1, lat2, lng2) {
-  var R = 6371; // km
-  var dLat = (lat2-lat1).toRad();
-  var dLon = (lng2-lng1).toRad();
-  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
-          Math.sin(dLon/2) * Math.sin(dLon/2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
 }`
 
 geo.distance = (lat1, lng1, lat2, lng2) ->
@@ -1407,7 +1399,7 @@ geo.distance = (lat1, lng1, lat2, lng2) ->
   semiLat = dLat / 2
   semiLng = dLon / 2
   # Get the actual curves
-  arc = Math.sin(semiLat) ** 2 + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.sin(smiLng) **2
+  arc = Math.sin(semiLat)**2 + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.sin(smiLng)**2
   curve = 2 * Math.atan2 Math.sqrt(arc), Math.sqrt(1-arc)
   # Return the real distance
   R * curve

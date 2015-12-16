@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoing, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -24,6 +24,8 @@ dataFileParams.hasDataFile = false;
 dataFileParams.fileName = null;
 
 dataFileParams.filePath = null;
+
+dataAttrs = new Object();
 
 helperDir = "helpers/";
 
@@ -219,7 +221,7 @@ pointStringToLatLng = function(pointString) {
   return pointObj;
 };
 
-pointStringToPoing = function(pointString) {
+pointStringToPoint = function(pointString) {
 
   /*
    * Take point of form
@@ -504,13 +506,16 @@ bootstrapTransect = function() {
   return false;
 };
 
-mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions) {
+mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions, map) {
   var coordinateArray, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
   if (overlayOptions == null) {
     overlayOptions = new Object();
+  }
+  if (map == null) {
+    map = geo.googleMap;
   }
 
   /*
@@ -571,20 +576,102 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     console.info("Rendering Google Maps polygon", gMapPoly);
     geo.canonicalBoundingBox = gMapPoly;
     gPolygon = new google.maps.Polygon(gMapPoly);
-    gPolygon.setMap(geo.googleMap);
+    gPolygon.setMap(map);
   } else {
     console.warn("There's no map yet! Can't overlay polygon");
   }
   return false;
 };
 
-mapAddPoints = function(pointArray) {
+mapAddPoints = function(pointArray, pointInfoArray, map) {
+  var i, infoWindow, iwConstructor, j, l, len, len1, marker, markerArray, markerConstructor, point, title;
+  if (map == null) {
+    map = geo.googleMap;
+  }
 
   /*
    *
    *
-   * @param array pointArray ->
+   * @param array pointArray -> an array of geo.Point instances
+   * @param array pointInfoArray -> An array of objects of type
+   *   {"title":"Point Title","html":"Point infoWindow HTML"}
+   *   If this is empty, no such popup will be added.
+   * @param google.maps.Map map -> A google Map object
    */
+  for (j = 0, len = pointArray.length; j < len; j++) {
+    point = pointArray[j];
+    if (!(point instanceof geo.Point)) {
+      console.warn("Invalid datatype in array -- array must be constructed of Point objects");
+      return false;
+    }
+  }
+  markerArray = new Array();
+  i = 0;
+  for (l = 0, len1 = pointArray.length; l < len1; l++) {
+    point = pointArray[l];
+    title = pointInfoArray != null ? pointInfoArray[i].title : "";
+    markerConstructor = {
+      position: point.getObj(),
+      map: map,
+      title: title
+    };
+    marker = new google.maps.Marker(markerConstructor);
+    if (!isNull(title)) {
+      iwConstructor = {
+        content: pointInfoArray[i].html
+      };
+      infoWindow = new google.maps.InfoWindow(iwConstructor);
+      marker.addListener("click", function() {
+        return infoWindow.open(map, marker);
+      });
+    }
+    markerArray.push(marker);
+    ++i;
+  }
+  return markerArray;
+};
+
+getCanonicalDataCoords = function(table, callback) {
+  var apiPostSqlQuery, args, sqlQuery;
+  if (table == null) {
+    table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+  }
+
+  /*
+   * Fetch data coordinate points
+   */
+  if (typeof callback !== "function") {
+    console.error("This function needs a callback function as the second argument");
+    return false;
+  }
+  sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM " + table;
+  apiPostSqlQuery = encodeURIComponents(encode64(sqlQuery));
+  args = "action=fetch&sql_query=" + apiPostSqlQuery;
+  $.post("api.php", args, "json").done(function(result) {
+    var cartoResponse, coords, data, i, info, point, ref, row, textPoint;
+    cartoResponse = result.parsed_responses[0];
+    coords = new Array();
+    info = new Array();
+    ref = cartoResponse.rows;
+    for (i in ref) {
+      row = ref[i];
+      textPoint = row.st_astext;
+      point = pointStringToPoint(textPoint);
+      data = {
+        title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
+        html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
+      };
+      coords.push(point);
+      info.push(data);
+    }
+    return callback(coords, data);
+  }).error(function(result, status) {
+    if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
+      return callback(dataAttrs.coords);
+    } else {
+      return console.error("No valid coordinates accessible!");
+    }
+  });
   return false;
 };
 
@@ -811,7 +898,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, d, date, daysFrom1900to1970, daysFrom1904to1970, e, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, date, daysFrom1900to1970, daysFrom1904to1970, e, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -851,6 +938,8 @@ newGeoDataHandler = function(dataObject) {
       p$("#project-disease").value = sampleRow.diseaseTested;
     }
     parsedData = new Object();
+    dataAttrs.coords = new Array();
+    dataAttrs.coordsFull = new Array();
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -929,8 +1018,18 @@ newGeoDataHandler = function(dataObject) {
         }
         tRow[column] = cleanValue;
       }
+      coords = {
+        lat: tRow.decimalLatitude,
+        lng: tRow.decimalLongitude,
+        alt: tRow.alt,
+        uncertainty: tRow.coordinateUncertaintyMeters
+      };
+      coordsPoint = new Point(coords.lat, coords.lng);
+      dataAttrs.coords.push(coordsPoint);
+      dataAttrs.coordsFull.push(coords);
       parsedData[n] = tRow;
     }
+    dataAttrs.dataObj = parsedData;
     try {
       prettyHtml = JsonHuman.format(parsedData);
       $("#main-body").append(prettyHtml);

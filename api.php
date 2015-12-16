@@ -65,6 +65,7 @@ function returnAjax($data)
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']):null;
 switch($do)
 {
+case "fetch":
 case "upload":
     doCartoSqlApiPush($_REQUEST);
     break;

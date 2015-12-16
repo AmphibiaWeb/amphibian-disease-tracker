@@ -14,6 +14,8 @@ dataFileParams.hasDataFile = false
 dataFileParams.fileName = null
 dataFileParams.filePath = null
 
+dataAttrs = new Object()
+
 helperDir = "helpers/"
 user =  $.cookie "#{adminParams.domain}_link"
 
@@ -277,7 +279,7 @@ pointStringToLatLng = (pointString) ->
     lng: pointArr[1]
   pointObj
 
-pointStringToPoing = (pointString) ->
+pointStringToPoint = (pointString) ->
   ###
   # Take point of form
   #
@@ -319,7 +321,7 @@ bootstrapTransect = ->
   window.geocodeLookupCallback = ->
     ###
     # Reverse geocode locality search
-    # 
+    #
     ###
     startLoad()
     locality = p$("#locality-input").value
@@ -532,7 +534,7 @@ bootstrapTransect = ->
 
 
 
-mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOptions = new Object()) ->
+mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOptions = new Object(), map = geo.googleMap) ->
   ###
   #
   #
@@ -586,22 +588,95 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     # See
     # https://developers.google.com/maps/documentation/javascript/examples/polygon-simple
     gPolygon = new google.maps.Polygon(gMapPoly)
-    gPolygon.setMap geo.googleMap
+    gPolygon.setMap map
   else
     # No map yet ...
     console.warn "There's no map yet! Can't overlay polygon"
   false
 
 
-mapAddPoints = (pointArray) ->
+mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
   ###
   #
   #
-  # @param array pointArray -> 
+  # @param array pointArray -> an array of geo.Point instances
+  # @param array pointInfoArray -> An array of objects of type
+  #   {"title":"Point Title","html":"Point infoWindow HTML"}
+  #   If this is empty, no such popup will be added.
+  # @param google.maps.Map map -> A google Map object
   ###
-  # Create the list of points
-  # Create the Google object
+  # Check the list of points
+  for point in pointArray
+    unless point instanceof geo.Point
+      console.warn "Invalid datatype in array -- array must be constructed of Point objects"
+      return false
+  markerArray = new Array()
   # Add points to geo.googleMap
+  # https://developers.google.com/maps/documentation/javascript/examples/marker-simple
+  i = 0
+  for point in pointArray
+    title = if pointInfoArray? then pointInfoArray[i].title else ""
+    markerConstructor =
+      position: point.getObj()
+      map: map
+      title: title
+    marker = new google.maps.Marker markerConstructor
+    # If we have a non-empty title, we should fill out information for
+    # the point, too.
+    unless isNull title
+      iwConstructor =
+        content: pointInfoArray[i].html
+      infoWindow = new google.maps.InfoWindow iwConstructor
+      marker.addListener "click", ->
+        infoWindow.open map, marker
+    markerArray.push marker
+    ++i
+  markerArray
+
+
+getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb", callback) ->
+  ###
+  # Fetch data coordinate points
+  ###
+  if typeof callback isnt "function"
+    console.error "This function needs a callback function as the second argument"
+    return false
+  # Validate the user
+  # Try to get the data straight from the CartoDB database
+  # EG:
+  # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
+  sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM #{table}"
+  apiPostSqlQuery = encodeURIComponents encode64 sqlQuery
+  args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  $.post "api.php", args, "json"
+  .done (result) ->
+    cartoResponse = result.parsed_responses[0]
+    coords = new Array()
+    info = new Array()
+    for i, row of cartoResponse.rows
+      textPoint = row.st_astext
+      point = pointStringToPoint textPoint
+      data =
+        title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
+        html: """
+        <p>
+          <span class="sciname italic">#{row.genus} #{row.specificepithet} #{row.infraspecificepithet}</span> collected on #{row.dateidentified}
+        </p>
+        <p>
+          <strong>Status:</strong>
+          Sampled by #{row.samplemethod}, disease status #{row.diseasedetected} for #{row.diseasetested}
+        </p>
+        """
+      coords.push point
+      info.push data
+    # Push the coordinates and the formatted infowindows
+    callback coords, data
+  .error (result, status) ->
+    # On error, return direct from file upload
+    if dataAttrs?.coords?
+      callback dataAttrs.coords
+    else
+      console.error "No valid coordinates accessible!"
   false
 
 
@@ -897,6 +972,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
     # Clean up the data for CartoDB
     # FIMS it up
     parsedData = new Object()
+    dataAttrs.coords = new Array()
+    dataAttrs.coordsFull = new Array()
     # Iterate over the data, coerce some data types
     for n, row of dataObject
       tRow = new Object()
@@ -962,7 +1039,17 @@ newGeoDataHandler = (dataObject = new Object()) ->
               # Non-string
               cleanValue = value
         tRow[column] = cleanValue
+      coords =
+        lat: tRow.decimalLatitude
+        lng: tRow.decimalLongitude
+        alt: tRow.alt
+        uncertainty: tRow.coordinateUncertaintyMeters
+      coordsPoint = new Point(coords.lat, coords.lng)
+      dataAttrs.coords.push coordsPoint
+      dataAttrs.coordsFull.push coords
       parsedData[n] = tRow
+    # Save the upload
+    dataAttrs.dataObj = parsedData
     try
       # http://marianoguerra.github.io/json.human.js/
       prettyHtml = JsonHuman.format parsedData
