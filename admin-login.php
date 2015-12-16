@@ -29,7 +29,7 @@
   </head>
   <body>
     <?php
-       $debug = true;
+       $debug = false;
        if($debug) {
            echo "<div class='alert alert-danger'><strong>Warning:</strong> Debugging is enabled on admin-login.php</div>";
            ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
