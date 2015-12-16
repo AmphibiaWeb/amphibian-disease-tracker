@@ -162,7 +162,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       geo.cartoUrl = dataVisUrl
       postConfig()
 
-geo.requestCartoUpload = (totalData, dataTable, operation) ->
+geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   ###
   # Acts as a shim between the server-side uploader and the client.
   # Send a request to the server to authenticate the current user
@@ -439,6 +439,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
           dataVisUrl = dataBlobUrl
         else
           dataVisUrl = ""
+        parentCallback = ->
+          if typeof callback is "function"
+            callback(geo.dataTable)
+          else
+            console.info "requestCartoUpload recieved no callback"
         unless isNull cartoMap
           cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
           .done (layer) ->
@@ -446,10 +451,12 @@ geo.requestCartoUpload = (totalData, dataTable, operation) ->
             # page in Carto
             layer.setInteraction true
             layer.on "featureOver", defaultMapMouseOverBehaviour
+            parentCallback()
         else
           geo.init ->
             # Callback
-            createMap dataVisUrl
+            createMap dataVisUrl, undefined, undefined, ->
+              parentCallback()
             false
     else
       console.error "Unable to authenticate session. Please log in."
@@ -497,6 +504,11 @@ Point = (lat, lng) ->
       lat: @lat
       lng: @lng
     o
+  @getLatLng = ->
+    if google?.maps?
+      return new google.maps.LatLng(@lat,@lng)
+    else
+      return @getObj()
   @getLat = ->
     @lat
   @getLng = ->

@@ -1335,7 +1335,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   }
 };
 
-geo.requestCartoUpload = function(totalData, dataTable, operation) {
+geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
 
   /*
    * Acts as a shim between the server-side uploader and the client.
@@ -1566,7 +1566,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
       console.info("GeoJSON String:", dataGeometry);
       console.warn("Want to post:", uri.urlString + "api.php?" + args);
       return $.post("api.php", args, "json").done(function(result) {
-        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, prettyHtml, response;
+        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, parentCallback, prettyHtml, response;
         console.log("Got back", result);
         if (result.status !== true) {
           console.error("Got an error from the server!");
@@ -1602,14 +1602,24 @@ geo.requestCartoUpload = function(totalData, dataTable, operation) {
         } else {
           dataVisUrl = "";
         }
+        parentCallback = function() {
+          if (typeof callback === "function") {
+            return callback(geo.dataTable);
+          } else {
+            return console.info("requestCartoUpload recieved no callback");
+          }
+        };
         if (!isNull(cartoMap)) {
           return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
             layer.setInteraction(true);
-            return layer.on("featureOver", defaultMapMouseOverBehaviour);
+            layer.on("featureOver", defaultMapMouseOverBehaviour);
+            return parentCallback();
           });
         } else {
           return geo.init(function() {
-            createMap(dataVisUrl);
+            createMap(dataVisUrl, void 0, void 0, function() {
+              return parentCallback();
+            });
             return false;
           });
         }
@@ -1671,6 +1681,13 @@ Point = function(lat, lng) {
       lng: this.lng
     };
     return o;
+  };
+  this.getLatLng = function() {
+    if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) != null) {
+      return new google.maps.LatLng(this.lat, this.lng);
+    } else {
+      return this.getObj();
+    }
   };
   this.getLat = function() {
     return this.lat;

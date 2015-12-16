@@ -403,7 +403,7 @@ bootstrapTransect = ->
       if zoomCalc < 1
         zoomCalc = 7
       console.info "Calculated zoom #{zoomCalc}, from original #{oz} and loosened #{zo} from", overlayBoundingBox, mapWidth, mapScale
-      
+
       unless typeof centerLat is "number"
         i = 0
         totalLat = 0.0
@@ -630,7 +630,7 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
       title: title
     marker = new google.maps.Marker markerConstructor
     markers[i] =
-      marker: marker      
+      marker: marker
     # If we have a non-empty title, we should fill out information for
     # the point, too.
     unless isNull title
@@ -1081,8 +1081,6 @@ newGeoDataHandler = (dataObject = new Object()) ->
       dataAttrs.coords.push coordsPoint
       dataAttrs.coordsFull.push coords
       parsedData[n] = tRow
-    # Save the upload
-    dataAttrs.dataObj = parsedData
     try
       # http://marianoguerra.github.io/json.human.js/
       prettyHtml = JsonHuman.format parsedData
@@ -1093,11 +1091,29 @@ newGeoDataHandler = (dataObject = new Object()) ->
       console.info parsedData
     # Create a project identifier from the user hash and project title
     projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
+    # Define the transect ring
+    # If it's not already picked, let's get it from the dataset
+    getCoordsFromData = ->
+      ###
+      # We need to do some smart trimming in here for total inclusion
+      # points ...
+      ###
+      i = 0
+      j = new Object()
+      sorted = sortPoints(dataAttrs.coords)
+      for coordsObj in sorted
+        j[i] = [coordsObj.lat, coordsObj.lng]
+        ++i
+      j
+    geo.boundingBox ?= getCoordsFromData()
     totalData =
-      transectRing: undefined # Read in, manually entered
+      transectRing: geo.boundingBox
       data: parsedData
-    geo.requestCartoUpload(totalData, projectIdentifier, "create")
-    mapOverlayPolygon totalData.transectRing
+    # Save the upload
+    dataAttrs.dataObj = totalData
+    geo.requestCartoUpload totalData, projectIdentifier, "create", (table) ->
+      mapOverlayPolygon totalData.transectRing
+      getCanonicalDataCoords(table)
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"

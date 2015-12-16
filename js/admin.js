@@ -450,7 +450,7 @@ bootstrapTransect = function() {
     if (p$("#transect-input-toggle").checked) {
       $(p$("#coord-input").textarea).keyup((function(_this) {
         return function(e) {
-          var bbox, coord, coordPair, coordSplit, coords, coordsRaw, doCallback, i, j, kc, l, len, len1, lines, tmp, val;
+          var bbox, coord, coordPair, coordSplit, coords, coordsRaw, doCallback, i, kc, l, len, len1, lines, m, tmp, val;
           kc = e.keyCode ? e.keyCode : e.which;
           if (kc === 13) {
             val = $(p$("#coord-input").textarea).val();
@@ -459,8 +459,8 @@ bootstrapTransect = function() {
               coords = new Array();
               coordsRaw = val.split("\n");
               console.info("Raw coordinate info:", coordsRaw);
-              for (j = 0, len = coordsRaw.length; j < len; j++) {
-                coordPair = coordsRaw[j];
+              for (l = 0, len = coordsRaw.length; l < len; l++) {
+                coordPair = coordsRaw[l];
                 if (coordPair.search(",") > 0 && !isNull(coordPair)) {
                   coordSplit = coordPair.split(",");
                   if (coordSplit.length === 2) {
@@ -473,8 +473,8 @@ bootstrapTransect = function() {
                 console.info("Coords:", coords);
                 i = 0;
                 bbox = new Object();
-                for (l = 0, len1 = coords.length; l < len1; l++) {
-                  coord = coords[l];
+                for (m = 0, len1 = coords.length; m < len1; m++) {
+                  coord = coords[m];
                   ++i;
                   bbox[i] = coord;
                 }
@@ -588,7 +588,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
 };
 
 mapAddPoints = function(pointArray, pointInfoArray, map) {
-  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, j, k, l, len, len1, marker, markerConstructor, markerContainer, markers, point, pointLatLng, ref, title;
+  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, k, l, len, len1, m, marker, markerConstructor, markerContainer, markers, point, pointLatLng, ref, title;
   if (map == null) {
     map = geo.googleMap;
   }
@@ -602,8 +602,8 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
    *   If this is empty, no such popup will be added.
    * @param google.maps.Map map -> A google Map object
    */
-  for (j = 0, len = pointArray.length; j < len; j++) {
-    point = pointArray[j];
+  for (l = 0, len = pointArray.length; l < len; l++) {
+    point = pointArray[l];
     if (!(point instanceof geo.Point)) {
       console.warn("Invalid datatype in array -- array must be constructed of Point objects");
       return false;
@@ -612,8 +612,8 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
   markers = new Object();
   infoWindows = new Array();
   i = 0;
-  for (l = 0, len1 = pointArray.length; l < len1; l++) {
-    point = pointArray[l];
+  for (m = 0, len1 = pointArray.length; m < len1; m++) {
+    point = pointArray[m];
     title = pointInfoArray != null ? (ref = pointInfoArray[i]) != null ? ref.title : void 0 : "";
     pointLatLng = point.getObj();
     gmLatLng = new google.maps.LatLng(pointLatLng.lat, pointLatLng.lng);
@@ -938,7 +938,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, date, daysFrom1900to1970, daysFrom1904to1970, e, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, date, daysFrom1900to1970, daysFrom1904to1970, e, getCoordsFromData, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, secondsPerDay, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1069,7 +1069,6 @@ newGeoDataHandler = function(dataObject) {
       dataAttrs.coordsFull.push(coords);
       parsedData[n] = tRow;
     }
-    dataAttrs.dataObj = parsedData;
     try {
       prettyHtml = JsonHuman.format(parsedData);
       $("#main-body").append(prettyHtml);
@@ -1080,12 +1079,35 @@ newGeoDataHandler = function(dataObject) {
       console.info(parsedData);
     }
     projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
+    getCoordsFromData = function() {
+
+      /*
+       * We need to do some smart trimming in here for total inclusion
+       * points ...
+       */
+      var coordsObj, i, j, l, len, sorted;
+      i = 0;
+      j = new Object();
+      sorted = sortPoints(dataAttrs.coords);
+      for (l = 0, len = sorted.length; l < len; l++) {
+        coordsObj = sorted[l];
+        j[i] = [coordsObj.lat, coordsObj.lng];
+        ++i;
+      }
+      return j;
+    };
+    if (geo.boundingBox == null) {
+      geo.boundingBox = getCoordsFromData();
+    }
     totalData = {
-      transectRing: void 0,
+      transectRing: geo.boundingBox,
       data: parsedData
     };
-    geo.requestCartoUpload(totalData, projectIdentifier, "create");
-    mapOverlayPolygon(totalData.transectRing);
+    dataAttrs.dataObj = totalData;
+    geo.requestCartoUpload(totalData, projectIdentifier, "create", function(table) {
+      mapOverlayPolygon(totalData.transectRing);
+      return getCanonicalDataCoords(table);
+    });
   } catch (_error) {
     e = _error;
     console.error(e.message);
