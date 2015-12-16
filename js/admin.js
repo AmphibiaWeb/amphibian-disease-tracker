@@ -353,7 +353,7 @@ bootstrapTransect = function() {
       if (zoomCalc < 1) {
         zoomCalc = 7;
       }
-      console.info("Calculated zoom " + zoomCalc + ", from original " + oz + " and loosened " + zo);
+      console.info("Calculated zoom " + zoomCalc + ", from original " + oz + " and loosened " + zo + " from", overlayBoundingBox);
       if (typeof centerLat !== "number") {
         i = 0;
         totalLat = 0.0;
@@ -651,7 +651,7 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
         var e;
         try {
           this.iw.open(map, this);
-          return console.info("Opening infoWindow #" + this.iwk, geo.markers[this.iwk], this.self);
+          return console.info("Opening infoWindow #" + this.iwk);
         } catch (_error) {
           e = _error;
           return console.error("Invalid infowindow @ " + this.iwk + "!", infoWindows, markerContainer, this.iw);

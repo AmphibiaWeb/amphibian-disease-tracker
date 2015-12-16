@@ -402,7 +402,7 @@ bootstrapTransect = ->
       zo = zoomCalc
       if zoomCalc < 1
         zoomCalc = 7
-      console.info "Calculated zoom #{zoomCalc}, from original #{oz} and loosened #{zo}"
+      console.info "Calculated zoom #{zoomCalc}, from original #{oz} and loosened #{zo} from", overlayBoundingBox
       unless typeof centerLat is "number"
         i = 0
         totalLat = 0.0
@@ -655,7 +655,7 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
       marker.addListener "click", ->
         try
           @iw.open map, this #geo.markers[@iwk]
-          console.info "Opening infoWindow ##{@iwk}", geo.markers[@iwk], @self
+          console.info "Opening infoWindow ##{@iwk}"
         catch e
           console.error "Invalid infowindow @ #{@iwk}!", infoWindows, markerContainer, @iw
     geo.markers = markers
