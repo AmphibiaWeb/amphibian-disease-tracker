@@ -293,6 +293,7 @@ bootstrapTransect = function() {
           sw: [bbEW.O, bbNS.j]
         };
         console.info("Got bounds: ", [lat, lng], boundingBox);
+        geo.boundingBox = boundingBox;
         doCallback = function() {
           return geo.renderMapHelper(boundingBox, lat, lng);
         };
@@ -587,7 +588,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
 };
 
 mapAddPoints = function(pointArray, pointInfoArray, map) {
-  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, j, k, l, len, len1, len2, m, marker, markerConstructor, markers, point, pointLatLng, ref, title;
+  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, j, k, l, len, len1, marker, markerConstructor, markerContainer, markers, point, pointLatLng, ref, title;
   if (map == null) {
     map = geo.googleMap;
   }
@@ -608,7 +609,7 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
       return false;
     }
   }
-  markers = new Array();
+  markers = new Object();
   infoWindows = new Array();
   i = 0;
   for (l = 0, len1 = pointArray.length; l < len1; l++) {
@@ -622,27 +623,42 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
       title: title
     };
     marker = new google.maps.Marker(markerConstructor);
-    markers.push(marker);
+    markers[i] = {
+      marker: marker
+    };
     if (!isNull(title)) {
       iwConstructor = {
         content: pointInfoArray[i].html
       };
       infoWindow = new google.maps.InfoWindow(iwConstructor);
+      markers[i].infoWindow = infoWindow;
       infoWindows.push(infoWindow);
     } else {
       console.info("Key " + i + " has no title in pointInfoArray", pointInfoArray[i]);
     }
     ++i;
   }
-  k = 0;
-  for (m = 0, len2 = markers.length; m < len2; m++) {
-    marker = markers[m];
-    marker.addListener("click", (function(_this) {
-      return function() {
-        return infoWindows[k].open(map, marker);
-      };
-    })(this));
-    ++k;
+  if (!isNull(infoWindows)) {
+    dataAttrs.coordInfoWindows = infoWindows;
+    for (k in markers) {
+      markerContainer = markers[k];
+      marker = markerContainer.marker;
+      marker.unbind("click");
+      marker.self = marker;
+      marker.iw = markerContainer.infoWindow;
+      marker.iwk = k;
+      marker.addListener("click", function() {
+        var e;
+        try {
+          this.iw.open(map, this);
+          return console.info("Opening infoWindow #" + this.iwk, geo.markers[this.iwk], this.self);
+        } catch (_error) {
+          e = _error;
+          return console.error("Invalid infowindow @ " + this.iwk + "!", infoWindows, markerContainer, this.iw);
+        }
+      });
+    }
+    geo.markers = markers;
   }
   return markers;
 };
