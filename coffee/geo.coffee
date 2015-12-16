@@ -100,7 +100,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   # Set up post-configuration helper
   geo.mapId = targetId
   geo.mapSelector = "##{targetId}"
-  postConfig = ->    i
+  postConfig = ->
     options ?=
       cartodb_logo: false
       https: true # Secure forcing is leading to resource errors

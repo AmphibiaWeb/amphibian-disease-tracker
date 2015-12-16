@@ -304,7 +304,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, e, eastMost, i, k, mapScale, mapWidth, options, oz, ref, totalLat, totalLng, vizJsonElements, westMost, zo, zoomCalc;
+    var coords, e, i, k, options, totalLat, totalLng, vizJsonElements;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -327,33 +327,6 @@ bootstrapTransect = function() {
     }
     try {
       geo.boundingBox = overlayBoundingBox;
-      eastMost = -180;
-      westMost = 180;
-      for (k in overlayBoundingBox) {
-        coords = overlayBoundingBox[k];
-        if (coords[1] < westMost) {
-          westMost = coords[1];
-        }
-        if (coords[1] > eastMost) {
-          eastMost = coords[1];
-        }
-      }
-      GLOBE_WIDTH_GOOGLE = 256;
-      angle = eastMost - westMost;
-      if (angle < 0) {
-        angle += 360;
-      }
-      mapWidth = (ref = $(geo.mapSelector).width()) != null ? ref : 650;
-      adjAngle = 360 / angle;
-      mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
-      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
-      oz = zoomCalc;
-      --zoomCalc;
-      zo = zoomCalc;
-      if (zoomCalc < 1) {
-        zoomCalc = 7;
-      }
-      console.info("Calculated zoom " + zoomCalc + ", from original " + oz + " and loosened " + zo + " from", overlayBoundingBox, mapWidth, mapScale);
       if (typeof centerLat !== "number") {
         i = 0;
         totalLat = 0.0;
@@ -384,7 +357,7 @@ bootstrapTransect = function() {
         gmaps_base_type: "hybrid",
         center_lat: centerLat,
         center_lon: centerLng,
-        zoom: zoomCalc
+        zoom: getMapZoom(overlayBoundingBox)
       };
       geo.mapParams = options;
       $("#carto-map-container").empty();

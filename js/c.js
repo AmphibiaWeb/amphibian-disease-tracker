@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1176,6 +1176,8 @@ adData = new Object();
 
 window.geo = new Object();
 
+geo.GLOBE_WIDTH_GOOGLE = 256;
+
 geo.init = function(doCallback) {
 
   /*
@@ -1202,6 +1204,46 @@ geo.init = function(doCallback) {
   };
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };
+
+getMapZoom = function(bb) {
+
+  /*
+   * Get the zoom factor for Google Maps
+   */
+  var adjAngle, angle, coords, eastMost, k, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc;
+  if (bb != null) {
+    eastMost = -180;
+    westMost = 180;
+    for (k in bb) {
+      coords = bb[k];
+      if (coords[1] < westMost) {
+        westMost = coords[1];
+      }
+      if (coords[1] > eastMost) {
+        eastMost = coords[1];
+      }
+    }
+    angle = eastMost - westMost;
+    if (angle < 0) {
+      angle += 360;
+    }
+    mapWidth = (ref = $(geo.mapSelector).width()) != null ? ref : 650;
+    adjAngle = 360 / angle;
+    mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE;
+    zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
+    oz = zoomCalc;
+    --zoomCalc;
+    zo = zoomCalc;
+    if (zoomCalc < 1) {
+      zoomCalc = 7;
+    }
+  } else {
+    zoomCalc = 7;
+  }
+  return zoomCalc;
+};
+
+geo.getMapZoom = getMapZoom;
 
 defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
@@ -1231,38 +1273,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   geo.mapId = targetId;
   geo.mapSelector = "#" + targetId;
   postConfig = function() {
-    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, eastMost, fakeDiv, forceCallback, gMapCallback, googleMapOptions, k, mapScale, mapWidth, oz, ref, ref1, westMost, zo, zoomCalc;
-    if (geo.boundingBox != null) {
-      eastMost = -180;
-      westMost = 180;
-      ref = geo.boundingBox;
-      for (k in ref) {
-        coords = ref[k];
-        if (coords[1] < westMost) {
-          westMost = coords[1];
-        }
-        if (coords[1] > eastMost) {
-          eastMost = coords[1];
-        }
-      }
-      GLOBE_WIDTH_GOOGLE = 256;
-      angle = eastMost - westMost;
-      if (angle < 0) {
-        angle += 360;
-      }
-      mapWidth = (ref1 = $(geo.mapSelector).width()) != null ? ref1 : 650;
-      adjAngle = 360 / angle;
-      mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
-      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
-      oz = zoomCalc;
-      --zoomCalc;
-      zo = zoomCalc;
-      if (zoomCalc < 1) {
-        zoomCalc = 7;
-      }
-    } else {
-      zoomCalc = 7;
-    }
+    var fakeDiv, forceCallback, gMapCallback, googleMapOptions;
     if (options == null) {
       options = {
         cartodb_logo: false,
@@ -1271,7 +1282,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         gmaps_base_type: "hybrid",
         center_lat: window.locationData.lat,
         center_lon: window.locationData.lng,
-        zoom: zoomCalc
+        zoom: getMapZoom(geo.boundingBox)
       };
     }
     if (!$("#" + targetId).exists()) {
