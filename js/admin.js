@@ -1058,15 +1058,22 @@ newGeoDataHandler = function(dataObject) {
        * We need to do some smart trimming in here for total inclusion
        * points ...
        */
-      var coordsObj, i, j, l, len, sorted;
+      var coordsObj, i, j, l, len, sorted, textEntry;
       i = 0;
       j = new Object();
       sorted = sortPoints(dataAttrs.coords);
+      textEntry = "";
       for (l = 0, len = sorted.length; l < len; l++) {
         coordsObj = sorted[l];
         j[i] = [coordsObj.lat, coordsObj.lng];
+        textEntry += coordsObj.lat + "," + coordsObj.lng;
         ++i;
       }
+      try {
+        p$("#transect-input-toggle").checked = true;
+        textEntry += "\n";
+        $(p$("#coord-input").textarea).val(textEntry);
+      } catch (_error) {}
       return j;
     };
     if (geo.boundingBox == null) {

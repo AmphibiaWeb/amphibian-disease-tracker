@@ -1077,9 +1077,17 @@ newGeoDataHandler = (dataObject = new Object()) ->
       i = 0
       j = new Object()
       sorted = sortPoints(dataAttrs.coords)
+      textEntry = ""
       for coordsObj in sorted
         j[i] = [coordsObj.lat, coordsObj.lng]
+        textEntry += """
+        #{coordsObj.lat},#{coordsObj.lng}
+        """
         ++i
+      try
+        p$("#transect-input-toggle").checked = true
+        textEntry += "\n"
+        $(p$("#coord-input").textarea).val(textEntry)
       j
     geo.boundingBox ?= getCoordsFromData()
     totalData =
