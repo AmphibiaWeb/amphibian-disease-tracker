@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, foo, formatScientificNames, gMapsApiKey, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1205,6 +1205,41 @@ geo.init = function(doCallback) {
   return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
 };
 
+getMapCenter = function(bb) {
+  var center, centerLat, centerLng, coords, i, k, totalLat, totalLng;
+  if (bb != null) {
+    i = 0;
+    totalLat = 0.0;
+    for (k in bb) {
+      coords = bb[k];
+      ++i;
+      totalLat += coords[0];
+      console.info(coords, i, totalLat);
+    }
+    centerLat = toFloat(totalLat) / toFloat(i);
+    i = 0;
+    totalLng = 0.0;
+    for (k in bb) {
+      coords = bb[k];
+      ++i;
+      totalLng += coords[1];
+    }
+    centerLng = toFloat(totalLng) / toFloat(i);
+    centerLat = toFloat(centerLat);
+    centerLng = toFloat(centerLng);
+    center = {
+      lat: centerLat,
+      lng: centerLng
+    };
+  } else {
+    center = {
+      lat: window.locationData.lat,
+      lng: window.locationData.lng
+    };
+  }
+  return center;
+};
+
 getMapZoom = function(bb) {
 
   /*
@@ -1285,6 +1320,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         zoom: getMapZoom(geo.boundingBox)
       };
     }
+    geo.mapParams = options;
     if (!$("#" + targetId).exists()) {
       fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
       $("main #main-body").append(fakeDiv);
@@ -1659,6 +1695,17 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           });
         } else {
           return geo.init(function() {
+            var center, options;
+            center = getMapCenter(geo.boundingBox);
+            options = {
+              cartodb_logo: false,
+              https: true,
+              mobile_layout: true,
+              gmaps_base_type: "hybrid",
+              center_lat: center.lat,
+              center_lon: center.lng,
+              zoom: getMapZoom(geo.boundingBox)
+            };
             createMap(dataVisUrl, void 0, void 0, function() {
               return parentCallback();
             });

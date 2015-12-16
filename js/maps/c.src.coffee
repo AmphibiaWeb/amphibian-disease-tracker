@@ -889,6 +889,33 @@ geo.init = (doCallback) ->
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
 
+getMapCenter = (bb) ->
+  if bb?
+    i = 0
+    totalLat = 0.0
+    for k, coords of bb
+      ++i
+      totalLat += coords[0]
+      console.info coords, i, totalLat
+    centerLat = toFloat(totalLat) / toFloat(i)
+    i = 0
+    totalLng = 0.0
+    for k, coords of bb
+      ++i
+      totalLng += coords[1]
+    centerLng = toFloat(totalLng) / toFloat(i)
+    centerLat = toFloat(centerLat)
+    centerLng = toFloat(centerLng)
+    center =
+      lat: centerLat
+      lng: centerLng
+  else
+    center =
+      lat: window.locationData.lat
+      lng: window.locationData.lng
+  center
+
+
 getMapZoom = (bb) ->
   ###
   # Get the zoom factor for Google Maps
@@ -944,12 +971,13 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   postConfig = ->
     options ?=
       cartodb_logo: false
-      https: true # Secure forcing is leading to resource errors
+      https: true
       mobile_layout: true
       gmaps_base_type: "hybrid"
       center_lat: window.locationData.lat
       center_lon: window.locationData.lng
       zoom: getMapZoom(geo.boundingBox)
+    geo.mapParams = options
     unless $("##{targetId}").exists()
       fakeDiv = """
       <div id="#{targetId}" class="carto-map wide-map">
@@ -1333,6 +1361,15 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         else
           geo.init ->
             # Callback
+            center = getMapCenter(geo.boundingBox)
+            options =
+              cartodb_logo: false
+              https: true
+              mobile_layout: true
+              gmaps_base_type: "hybrid"
+              center_lat: center.lat
+              center_lon: center.lng
+              zoom: getMapZoom(geo.boundingBox)
             createMap dataVisUrl, undefined, undefined, ->
               parentCallback()
             false
