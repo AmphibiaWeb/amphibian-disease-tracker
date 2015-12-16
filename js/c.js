@@ -1604,11 +1604,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       }
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
       args = "action=upload&sql_query=" + apiPostSqlQuery;
-      console.info("STOPPING INCOMPLETE EXECUTION");
-      console.info("Would query with args", args);
-      console.info("Have query:");
+      console.info("Querying:");
       console.info(sqlQuery);
-      $("#main-body").append("<pre>Would send Carto:\n\n " + sqlQuery + "</pre>");
       console.info("GeoJSON:", geoJson);
       console.info("GeoJSON String:", dataGeometry);
       console.warn("Want to post:", uri.urlString + "api.php?" + args);
@@ -1636,7 +1633,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         console.info("Carto was succesfful! Got results", cartoResults);
         try {
           prettyHtml = JsonHuman.format(cartoResults);
-          $("#main-body").append("<div class='alert alert-success'><strong>Success! Carto said</strong>" + ($(prettyHtml).html()) + "</div>");
         } catch (_error) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         geo.dataTable = dataTable;
