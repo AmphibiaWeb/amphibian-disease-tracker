@@ -396,9 +396,12 @@ bootstrapTransect = ->
       # Calculate the zoom factor
       # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
       zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2)
+      oz = zoomCalc
       --zoomCalc # Zoom out one point, less tight fit
-      if zoomCalc is 0
+      zo = zoomCalc
+      if zoomCalc < 1
         zoomCalc = 7
+      console.info "Calculated zoom #{zoomCalc}, from original #{oz} and loosened #{zo}"
       unless typeof centerLat is "number"
         i = 0
         totalLat = 0.0
@@ -610,31 +613,37 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
     unless point instanceof geo.Point
       console.warn "Invalid datatype in array -- array must be constructed of Point objects"
       return false
-  markerArray = new Array()
+  markers = new Array()
+  infoWindows = new Array()
   # Add points to geo.googleMap
   # https://developers.google.com/maps/documentation/javascript/examples/marker-simple
   i = 0
   for point in pointArray
-    title = if pointInfoArray? then pointInfoArray[i].title else ""
+    title = if pointInfoArray? then pointInfoArray[i]?.title else ""
+    pointLatLng = point.getObj()
+    gmLatLng = new google.maps.LatLng(pointLatLng.lat, pointLatLng.lng)
     markerConstructor =
-      position: point.getObj()
+      position: gmLatLng
       map: map
       title: title
     marker = new google.maps.Marker markerConstructor
+    markers.push marker
     # If we have a non-empty title, we should fill out information for
     # the point, too.
     unless isNull title
       iwConstructor =
         content: pointInfoArray[i].html
       infoWindow = new google.maps.InfoWindow iwConstructor
-      marker.addListener "click", ->
-        infoWindow.open map, marker
-    markerArray.push marker
+      infoWindows.push infoWindow
+      markers[i].addListener "click", ->
+        infoWindows[i].open map, marker[i]
+    else
+      console.info "Key #{i} has no title in pointInfoArray", pointInfoArray[i]
     ++i
-  markerArray
+  markers
 
 
-getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb", callback) ->
+getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb", callback = mapAddPoints) ->
   ###
   # Fetch data coordinate points
   ###
@@ -646,7 +655,7 @@ getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c
   # EG:
   # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
   sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM #{table}"
-  apiPostSqlQuery = encodeURIComponents encode64 sqlQuery
+  apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
   $.post "api.php", args, "json"
   .done (result) ->
@@ -655,6 +664,8 @@ getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c
     info = new Array()
     for i, row of cartoResponse.rows
       textPoint = row.st_astext
+      if isNull row.infraspecificepithet
+        row.infraspecificepithet = ""
       point = pointStringToPoint textPoint
       data =
         title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
@@ -670,11 +681,13 @@ getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c
       coords.push point
       info.push data
     # Push the coordinates and the formatted infowindows
-    callback coords, data
+    dataAttrs.coords = coords
+    dataAttrs.markerInfo = info
+    callback coords, info
   .error (result, status) ->
     # On error, return direct from file upload
     if dataAttrs?.coords?
-      callback dataAttrs.coords
+      callback dataAttrs.coords, dataAttrs.markerInfo
     else
       console.error "No valid coordinates accessible!"
   false

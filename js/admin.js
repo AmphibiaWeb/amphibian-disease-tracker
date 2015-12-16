@@ -303,7 +303,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, e, eastMost, i, k, mapScale, mapWidth, options, totalLat, totalLng, vizJsonElements, westMost, zoomCalc;
+    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, e, eastMost, i, k, mapScale, mapWidth, options, oz, totalLat, totalLng, vizJsonElements, westMost, zo, zoomCalc;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -346,10 +346,13 @@ bootstrapTransect = function() {
       adjAngle = 360 / angle;
       mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
       zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
+      oz = zoomCalc;
       --zoomCalc;
-      if (zoomCalc === 0) {
+      zo = zoomCalc;
+      if (zoomCalc < 1) {
         zoomCalc = 7;
       }
+      console.info("Calculated zoom " + zoomCalc + ", from original " + oz + " and loosened " + zo);
       if (typeof centerLat !== "number") {
         i = 0;
         totalLat = 0.0;
@@ -584,7 +587,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
 };
 
 mapAddPoints = function(pointArray, pointInfoArray, map) {
-  var i, infoWindow, iwConstructor, j, l, len, len1, marker, markerArray, markerConstructor, point, title;
+  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, j, l, len, len1, marker, markerConstructor, markers, point, pointLatLng, ref, title;
   if (map == null) {
     map = geo.googleMap;
   }
@@ -605,36 +608,45 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
       return false;
     }
   }
-  markerArray = new Array();
+  markers = new Array();
+  infoWindows = new Array();
   i = 0;
   for (l = 0, len1 = pointArray.length; l < len1; l++) {
     point = pointArray[l];
-    title = pointInfoArray != null ? pointInfoArray[i].title : "";
+    title = pointInfoArray != null ? (ref = pointInfoArray[i]) != null ? ref.title : void 0 : "";
+    pointLatLng = point.getObj();
+    gmLatLng = new google.maps.LatLng(pointLatLng.lat, pointLatLng.lng);
     markerConstructor = {
-      position: point.getObj(),
+      position: gmLatLng,
       map: map,
       title: title
     };
     marker = new google.maps.Marker(markerConstructor);
+    markers.push(marker);
     if (!isNull(title)) {
       iwConstructor = {
         content: pointInfoArray[i].html
       };
       infoWindow = new google.maps.InfoWindow(iwConstructor);
-      marker.addListener("click", function() {
-        return infoWindow.open(map, marker);
+      infoWindows.push(infoWindow);
+      markers[i].addListener("click", function() {
+        return infoWindows[i].open(map, marker[i]);
       });
+    } else {
+      console.info("Key " + i + " has no title in pointInfoArray", pointInfoArray[i]);
     }
-    markerArray.push(marker);
     ++i;
   }
-  return markerArray;
+  return markers;
 };
 
 getCanonicalDataCoords = function(table, callback) {
   var apiPostSqlQuery, args, sqlQuery;
   if (table == null) {
     table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
+  }
+  if (callback == null) {
+    callback = mapAddPoints;
   }
 
   /*
@@ -645,7 +657,7 @@ getCanonicalDataCoords = function(table, callback) {
     return false;
   }
   sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM " + table;
-  apiPostSqlQuery = encodeURIComponents(encode64(sqlQuery));
+  apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
     var cartoResponse, coords, data, i, info, point, ref, row, textPoint;
@@ -656,6 +668,9 @@ getCanonicalDataCoords = function(table, callback) {
     for (i in ref) {
       row = ref[i];
       textPoint = row.st_astext;
+      if (isNull(row.infraspecificepithet)) {
+        row.infraspecificepithet = "";
+      }
       point = pointStringToPoint(textPoint);
       data = {
         title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
@@ -664,10 +679,12 @@ getCanonicalDataCoords = function(table, callback) {
       coords.push(point);
       info.push(data);
     }
-    return callback(coords, data);
+    dataAttrs.coords = coords;
+    dataAttrs.markerInfo = info;
+    return callback(coords, info);
   }).error(function(result, status) {
     if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
-      return callback(dataAttrs.coords);
+      return callback(dataAttrs.coords, dataAttrs.markerInfo);
     } else {
       return console.error("No valid coordinates accessible!");
     }
