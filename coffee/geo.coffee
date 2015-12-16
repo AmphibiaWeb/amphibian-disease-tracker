@@ -491,7 +491,7 @@ Point = (lat, lng) ->
     dy = that.y - @y
     dy / dx
   @toString = ->
-    "#{@x}, #{@y}"
+    "(#{@x}, #{@y})"
   @getObj = ->
     o =
       lat: @lat
@@ -499,7 +499,7 @@ Point = (lat, lng) ->
     o
   this.toString()
 
-
+geo.Point = Point
 
 `
 // A custom sort function that sorts p1 and p2 based on their slope
@@ -554,7 +554,22 @@ function distance(lat1, lng1, lat2, lng2) {
   return R * c;
 }`
 
-
+geo.distance = (lat1, lng1, lat2, lng2) ->
+  ###
+  # Distance across Earth curvature
+  ###
+  # Radius of Earth, const (Volumentric Mean)
+  # http://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html
+  R = 6371
+  dLat = (lat2 - lat2).toRad()
+  dLon = (lng2 - lng1).toRad()
+  semiLat = dLat / 2
+  semiLng = dLon / 2
+  # Get the actual curves
+  arc = Math.sin(semiLat) ** 2 + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.sin(smiLng) **2
+  curve = 2 * Math.atan2 Math.sqrt(arc), Math.sqrt(1-arc)
+  # Return the real distance
+  R * curve
 
 
 

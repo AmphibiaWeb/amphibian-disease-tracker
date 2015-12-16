@@ -1662,7 +1662,7 @@ Point = function(lat, lng) {
     return dy / dx;
   };
   this.toString = function() {
-    return this.x + ", " + this.y;
+    return "(" + this.x + ", " + this.y + ")";
   };
   this.getObj = function() {
     var o;
@@ -1674,6 +1674,8 @@ Point = function(lat, lng) {
   };
   return this.toString();
 };
+
+geo.Point = Point;
 
 
 // A custom sort function that sorts p1 and p2 based on their slope
@@ -1726,6 +1728,22 @@ function distance(lat1, lng1, lat2, lng2) {
           Math.sin(dLon/2) * Math.sin(dLon/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
+};
+
+geo.distance = function(lat1, lng1, lat2, lng2) {
+
+  /*
+   * Distance across Earth curvature
+   */
+  var R, arc, curve, dLat, dLon, semiLat, semiLng;
+  R = 6371;
+  dLat = (lat2 - lat2).toRad();
+  dLon = (lng2 - lng1).toRad();
+  semiLat = dLat / 2;
+  semiLng = dLon / 2;
+  arc = Math.pow(Math.sin(semiLat), 2) + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.pow(Math.sin(smiLng), 2);
+  curve = 2 * Math.atan2(Math.sqrt(arc), Math.sqrt(1 - arc));
+  return R * curve;
 };
 
 $(function() {});
