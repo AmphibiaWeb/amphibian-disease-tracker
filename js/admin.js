@@ -1067,7 +1067,7 @@ newGeoDataHandler = function(dataObject) {
       for (l = 0, len = sorted.length; l < len; l++) {
         coordsObj = sorted[l];
         j[i] = [coordsObj.lat, coordsObj.lng];
-        textEntry += coordsObj.lat + "," + coordsObj.lng;
+        textEntry += coordsObj.lat + "," + coordsObj.lng + "\n";
         ++i;
       }
       try {

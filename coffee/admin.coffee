@@ -1082,6 +1082,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
         j[i] = [coordsObj.lat, coordsObj.lng]
         textEntry += """
         #{coordsObj.lat},#{coordsObj.lng}
+        
         """
         ++i
       try
