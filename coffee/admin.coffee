@@ -647,45 +647,45 @@ getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c
     console.error "This function needs a callback function as the second argument"
     return false
   # Validate the user
-  # Try to get the data straight from the CartoDB database
-  # EG:
-  # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
-  sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM #{table}"
-  apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
-  args = "action=fetch&sql_query=#{apiPostSqlQuery}"
-  $.post "api.php", args, "json"
-  .done (result) ->
-    cartoResponse = result.parsed_responses[0]
-    coords = new Array()
-    info = new Array()
-    for i, row of cartoResponse.rows
-      textPoint = row.st_astext
-      if isNull row.infraspecificepithet
-        row.infraspecificepithet = ""
-      point = pointStringToPoint textPoint
-      data =
-        title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
-        html: """
-        <p>
-          <span class="sciname italic">#{row.genus} #{row.specificepithet} #{row.infraspecificepithet}</span> collected on #{row.dateidentified}
-        </p>
-        <p>
-          <strong>Status:</strong>
-          Sampled by #{row.samplemethod}, disease status #{row.diseasedetected} for #{row.diseasetested}
-        </p>
-        """
-      coords.push point
-      info.push data
-    # Push the coordinates and the formatted infowindows
-    dataAttrs.coords = coords
-    dataAttrs.markerInfo = info
-    callback coords, info
-  .error (result, status) ->
-    # On error, return direct from file upload
-    if dataAttrs?.coords?
-      callback dataAttrs.coords, dataAttrs.markerInfo
-    else
-      console.error "No valid coordinates accessible!"
+  verifyLoginCredentials (data) ->
+    # Try to get the data straight from the CartoDB database
+    sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM #{table}"
+    apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
+    args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+    $.post "api.php", args, "json"
+    .done (result) ->
+      cartoResponse = result.parsed_responses[0]
+      coords = new Array()
+      info = new Array()
+      for i, row of cartoResponse.rows
+        textPoint = row.st_astext
+        if isNull row.infraspecificepithet
+          row.infraspecificepithet = ""
+        point = pointStringToPoint textPoint
+        data =
+          title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
+          html: """
+          <p>
+            <span class="sciname italic">#{row.genus} #{row.specificepithet} #{row.infraspecificepithet}</span> collected on #{row.dateidentified}
+          </p>
+          <p>
+            <strong>Status:</strong>
+            Sampled by #{row.samplemethod}, disease status #{row.diseasedetected} for #{row.diseasetested}
+          </p>
+          """
+        coords.push point
+        info.push data
+      # Push the coordinates and the formatted infowindows
+      dataAttrs.coords = coords
+      dataAttrs.markerInfo = info
+      callback coords, info
+    .error (result, status) ->
+      # On error, return direct from file upload
+      if dataAttrs?.coords?
+        callback dataAttrs.coords, dataAttrs.markerInfo
+      else
+        stopLoadError "Couldn't get bounding coordinates from data"
+        console.error "No valid coordinates accessible!"
   false
 
 
@@ -904,7 +904,7 @@ excelHandler = (path, hasHeaders = true) ->
       From upload, fetched #{rows} rows.#{randomData}
       </pre>
       """
-      $("#main-body").append html
+      # $("#main-body").append html
       newGeoDataHandler(result.data)
       stopLoad()
   .fail (result, error) ->
@@ -1060,7 +1060,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     try
       # http://marianoguerra.github.io/json.human.js/
       prettyHtml = JsonHuman.format parsedData
-      $("#main-body").append prettyHtml
+      # $("#main-body").append prettyHtml
     catch e
       console.warn "Couldn't pretty set!"
       console.warn e.stack

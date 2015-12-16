@@ -1302,7 +1302,6 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           # $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
         bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
         geo.dataTable = dataTable
-        foo()
         # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto
         # Post this data over to the back end

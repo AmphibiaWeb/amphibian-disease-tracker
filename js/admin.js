@@ -637,7 +637,6 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
 };
 
 getCanonicalDataCoords = function(table, callback) {
-  var apiPostSqlQuery, args, sqlQuery;
   if (table == null) {
     table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb";
   }
@@ -652,38 +651,42 @@ getCanonicalDataCoords = function(table, callback) {
     console.error("This function needs a callback function as the second argument");
     return false;
   }
-  sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM " + table;
-  apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
-  args = "action=fetch&sql_query=" + apiPostSqlQuery;
-  $.post("api.php", args, "json").done(function(result) {
-    var cartoResponse, coords, data, i, info, point, ref, row, textPoint;
-    cartoResponse = result.parsed_responses[0];
-    coords = new Array();
-    info = new Array();
-    ref = cartoResponse.rows;
-    for (i in ref) {
-      row = ref[i];
-      textPoint = row.st_astext;
-      if (isNull(row.infraspecificepithet)) {
-        row.infraspecificepithet = "";
+  verifyLoginCredentials(function(data) {
+    var apiPostSqlQuery, args, sqlQuery;
+    sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM " + table;
+    apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
+    args = "action=fetch&sql_query=" + apiPostSqlQuery;
+    return $.post("api.php", args, "json").done(function(result) {
+      var cartoResponse, coords, i, info, point, ref, row, textPoint;
+      cartoResponse = result.parsed_responses[0];
+      coords = new Array();
+      info = new Array();
+      ref = cartoResponse.rows;
+      for (i in ref) {
+        row = ref[i];
+        textPoint = row.st_astext;
+        if (isNull(row.infraspecificepithet)) {
+          row.infraspecificepithet = "";
+        }
+        point = pointStringToPoint(textPoint);
+        data = {
+          title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
+          html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
+        };
+        coords.push(point);
+        info.push(data);
       }
-      point = pointStringToPoint(textPoint);
-      data = {
-        title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
-        html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
-      };
-      coords.push(point);
-      info.push(data);
-    }
-    dataAttrs.coords = coords;
-    dataAttrs.markerInfo = info;
-    return callback(coords, info);
-  }).error(function(result, status) {
-    if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
-      return callback(dataAttrs.coords, dataAttrs.markerInfo);
-    } else {
-      return console.error("No valid coordinates accessible!");
-    }
+      dataAttrs.coords = coords;
+      dataAttrs.markerInfo = info;
+      return callback(coords, info);
+    }).error(function(result, status) {
+      if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
+        return callback(dataAttrs.coords, dataAttrs.markerInfo);
+      } else {
+        stopLoadError("Couldn't get bounding coordinates from data");
+        return console.error("No valid coordinates accessible!");
+      }
+    });
   });
   return false;
 };
@@ -857,7 +860,6 @@ excelHandler = function(path, hasHeaders) {
         randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
       }
       html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
-      $("#main-body").append(html);
       newGeoDataHandler(result.data);
       return stopLoad();
     });
@@ -1044,7 +1046,6 @@ newGeoDataHandler = function(dataObject) {
     }
     try {
       prettyHtml = JsonHuman.format(parsedData);
-      $("#main-body").append(prettyHtml);
     } catch (_error) {
       e = _error;
       console.warn("Couldn't pretty set!");

@@ -1636,7 +1636,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         } catch (_error) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         geo.dataTable = dataTable;
-        foo();
         dataBlobUrl = "";
         if (!isNull(dataBlobUrl)) {
           dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
