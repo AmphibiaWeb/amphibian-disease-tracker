@@ -635,11 +635,17 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
         content: pointInfoArray[i].html
       infoWindow = new google.maps.InfoWindow iwConstructor
       infoWindows.push infoWindow
-      markers[i].addListener "click", ->
-        infoWindows[i].open map, marker[i]
+      # markers[i].addListener "click", ->
+      #   infoWindows[i].open map, markers[i]
     else
       console.info "Key #{i} has no title in pointInfoArray", pointInfoArray[i]
     ++i
+  # Bind all those info windows
+  k = 0
+  for marker in markers
+    marker.addListener "click", =>
+      infoWindows[k].open map, marker
+    ++k
   markers
 
 

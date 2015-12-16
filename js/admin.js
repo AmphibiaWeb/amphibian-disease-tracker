@@ -587,7 +587,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
 };
 
 mapAddPoints = function(pointArray, pointInfoArray, map) {
-  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, j, l, len, len1, marker, markerConstructor, markers, point, pointLatLng, ref, title;
+  var gmLatLng, i, infoWindow, infoWindows, iwConstructor, j, k, l, len, len1, len2, m, marker, markerConstructor, markers, point, pointLatLng, ref, title;
   if (map == null) {
     map = geo.googleMap;
   }
@@ -629,13 +629,20 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
       };
       infoWindow = new google.maps.InfoWindow(iwConstructor);
       infoWindows.push(infoWindow);
-      markers[i].addListener("click", function() {
-        return infoWindows[i].open(map, marker[i]);
-      });
     } else {
       console.info("Key " + i + " has no title in pointInfoArray", pointInfoArray[i]);
     }
     ++i;
+  }
+  k = 0;
+  for (m = 0, len2 = markers.length; m < len2; m++) {
+    marker = markers[m];
+    marker.addListener("click", (function(_this) {
+      return function() {
+        return infoWindows[k].open(map, marker);
+      };
+    })(this));
+    ++k;
   }
   return markers;
 };
