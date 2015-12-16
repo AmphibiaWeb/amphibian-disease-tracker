@@ -311,16 +311,16 @@ loadProjectBrowser = ->
 
 bootstrapTransect = ->
   ###
-  #
+  # Load up the region of interest UI into the DOM, and bind all the
+  # events, and set up helper functions.
   ###
-  # Helper function : Show the map
-  showCartoTransectMap = (coordList) ->
-    foo()
-    false
 
   # Helper function: Do the geocoding
-  # Reverse geocode locality search
   window.geocodeLookupCallback = ->
+    ###
+    # Reverse geocode locality search
+    # 
+    ###
     startLoad()
     locality = p$("#locality-input").value
     # https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple
@@ -461,6 +461,9 @@ bootstrapTransect = ->
 
   # Actual boostrapping
   do setupTransectUi = ->
+    ###
+    # Create the toggles and instructions, then place them into the DOM
+    ###
     if p$("#transect-input-toggle").checked
       # Coordinates
       instructions = """
@@ -478,7 +481,9 @@ bootstrapTransect = ->
       """
     $("#transect-instructions").html instructions
     $("#transect-input").html transectInput
+    ## Conditionals based on the checked state of the toggle
     if p$("#transect-input-toggle").checked
+      # Toggle is on = coordinate list
       $(p$("#coord-input").textarea).keyup (e) =>
         kc = if e.keyCode then e.keyCode else e.which
         if kc is 13
@@ -511,7 +516,7 @@ bootstrapTransect = ->
               loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
             else
               console.warn "There is one or more invalid coordinates preventing the UI from being shown."
-    else
+    else # Toggle is off = locality search
       $("#locality-input").keyup (e) ->
         kc = if e.keyCode then e.keyCode else e.which
         if kc is 13
@@ -585,6 +590,18 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
   else
     # No map yet ...
     console.warn "There's no map yet! Can't overlay polygon"
+  false
+
+
+mapAddPoints = (pointArray) ->
+  ###
+  #
+  #
+  # @param array pointArray -> 
+  ###
+  # Create the list of points
+  # Create the Google object
+  # Add points to geo.googleMap
   false
 
 

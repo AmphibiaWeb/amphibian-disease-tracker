@@ -3,7 +3,7 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoing, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, addPointsToMap, bootstrapTransect, bootstrapUploader, csvHandler, dataFileParams, excelHandler, finalizeData, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoing, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
 
 window.adminParams = new Object();
 
@@ -253,14 +253,16 @@ loadProjectBrowser = function() {
 bootstrapTransect = function() {
 
   /*
-   *
+   * Load up the region of interest UI into the DOM, and bind all the
+   * events, and set up helper functions.
    */
-  var geocodeEvent, setupTransectUi, showCartoTransectMap;
-  showCartoTransectMap = function(coordList) {
-    foo();
-    return false;
-  };
+  var geocodeEvent, setupTransectUi;
   window.geocodeLookupCallback = function() {
+
+    /*
+     * Reverse geocode locality search
+     *
+     */
     var geocoder, locality, request;
     startLoad();
     locality = p$("#locality-input").value;
@@ -425,6 +427,10 @@ bootstrapTransect = function() {
     return false;
   };
   (setupTransectUi = function() {
+
+    /*
+     * Create the toggles and instructions, then place them into the DOM
+     */
     var instructions, transectInput;
     if (p$("#transect-input-toggle").checked) {
       instructions = "Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.";
@@ -569,6 +575,16 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
   } else {
     console.warn("There's no map yet! Can't overlay polygon");
   }
+  return false;
+};
+
+mapAddPoints = function(pointArray) {
+
+  /*
+   *
+   *
+   * @param array pointArray ->
+   */
   return false;
 };
 
