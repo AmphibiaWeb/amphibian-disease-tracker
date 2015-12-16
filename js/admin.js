@@ -9,7 +9,7 @@ window.adminParams = new Object();
 
 adminParams.domain = "amphibiandisease";
 
-adminParams.apiTarget = "admin_api.php";
+adminParams.apiTarget = "admin-api.php";
 
 adminParams.adminPageUrl = "https://" + adminParams.domain + ".org/admin-page.html";
 
