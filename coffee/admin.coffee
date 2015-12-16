@@ -353,6 +353,7 @@ bootstrapTransect = ->
           se: [bbEW.O, bbNS.O]
           sw: [bbEW.O, bbNS.j]
         console.info "Got bounds: ", [lat, lng], boundingBox
+        geo.boundingBox = boundingBox
         doCallback = ->
           geo.renderMapHelper(boundingBox, lat, lng)
         loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
@@ -613,7 +614,7 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
     unless point instanceof geo.Point
       console.warn "Invalid datatype in array -- array must be constructed of Point objects"
       return false
-  markers = new Array()
+  markers = new Object()
   infoWindows = new Array()
   # Add points to geo.googleMap
   # https://developers.google.com/maps/documentation/javascript/examples/marker-simple
@@ -627,13 +628,15 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
       map: map
       title: title
     marker = new google.maps.Marker markerConstructor
-    markers.push marker
+    markers[i] =
+      marker: marker      
     # If we have a non-empty title, we should fill out information for
     # the point, too.
     unless isNull title
       iwConstructor =
         content: pointInfoArray[i].html
       infoWindow = new google.maps.InfoWindow iwConstructor
+      markers[i].infoWindow = infoWindow
       infoWindows.push infoWindow
       # markers[i].addListener "click", ->
       #   infoWindows[i].open map, markers[i]
@@ -641,11 +644,21 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
       console.info "Key #{i} has no title in pointInfoArray", pointInfoArray[i]
     ++i
   # Bind all those info windows
-  k = 0
-  for marker in markers
-    marker.addListener "click", =>
-      infoWindows[k].open map, marker
-    ++k
+  unless isNull infoWindows
+    dataAttrs.coordInfoWindows = infoWindows
+    for k, markerContainer of markers
+      marker = markerContainer.marker
+      marker.unbind("click")
+      marker.self = marker
+      marker.iw = markerContainer.infoWindow
+      marker.iwk = k
+      marker.addListener "click", ->
+        try
+          @iw.open map, this #geo.markers[@iwk]
+          console.info "Opening infoWindow ##{@iwk}", geo.markers[@iwk], @self
+        catch e
+          console.error "Invalid infowindow @ #{@iwk}!", infoWindows, markerContainer, @iw
+    geo.markers = markers
   markers
 
 
