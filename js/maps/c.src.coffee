@@ -926,7 +926,7 @@ geo.getMapZoom = getMapZoom
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
-createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "map", options, callback) ->
+createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "carto-map-container", options, callback) ->
   ###
   # Creates a map and does some simple bindings.
   #

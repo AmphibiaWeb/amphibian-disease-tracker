@@ -1255,7 +1255,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28";
   }
   if (targetId == null) {
-    targetId = "map";
+    targetId = "carto-map-container";
   }
 
   /*
