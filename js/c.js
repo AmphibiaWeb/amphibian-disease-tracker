@@ -408,21 +408,21 @@ loadJS = function(src, callback, doCallbackOnError) {
 };
 
 String.prototype.toTitleCase = function() {
-  var k, l, len, len1, lower, lowerRegEx, lowers, str, upper, upperRegEx, uppers;
+  var l, len, len1, lower, lowerRegEx, lowers, m, str, upper, upperRegEx, uppers;
   str = this.replace(/([^\W_]+[^\s-]*) */g, function(txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
   lowers = ["A", "An", "The", "And", "But", "Or", "For", "Nor", "As", "At", "By", "For", "From", "In", "Into", "Near", "Of", "On", "Onto", "To", "With"];
-  for (k = 0, len = lowers.length; k < len; k++) {
-    lower = lowers[k];
+  for (l = 0, len = lowers.length; l < len; l++) {
+    lower = lowers[l];
     lowerRegEx = new RegExp("\\s" + lower + "\\s", "g");
     str = str.replace(lowerRegEx, function(txt) {
       return txt.toLowerCase();
     });
   }
   uppers = ["Id", "Tv"];
-  for (l = 0, len1 = uppers.length; l < len1; l++) {
-    upper = uppers[l];
+  for (m = 0, len1 = uppers.length; m < len1; m++) {
+    upper = uppers[m];
     upperRegEx = new RegExp("\\b" + upper + "\\b", "g");
     str = str.replace(upperRegEx, upper.toUpperCase());
   }
@@ -1231,7 +1231,38 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   geo.mapId = targetId;
   geo.mapSelector = "#" + targetId;
   postConfig = function() {
-    var fakeDiv, forceCallback, gMapCallback, googleMapOptions;
+    var GLOBE_WIDTH_GOOGLE, adjAngle, angle, coords, eastMost, fakeDiv, forceCallback, gMapCallback, googleMapOptions, k, mapScale, mapWidth, oz, ref, ref1, westMost, zo, zoomCalc;
+    if (geo.boundingBox != null) {
+      eastMost = -180;
+      westMost = 180;
+      ref = geo.boundingBox;
+      for (k in ref) {
+        coords = ref[k];
+        if (coords[1] < westMost) {
+          westMost = coords[1];
+        }
+        if (coords[1] > eastMost) {
+          eastMost = coords[1];
+        }
+      }
+      GLOBE_WIDTH_GOOGLE = 256;
+      angle = eastMost - westMost;
+      if (angle < 0) {
+        angle += 360;
+      }
+      mapWidth = (ref1 = $(geo.mapSelector).width()) != null ? ref1 : 650;
+      adjAngle = 360 / angle;
+      mapScale = adjAngle / GLOBE_WIDTH_GOOGLE;
+      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
+      oz = zoomCalc;
+      --zoomCalc;
+      zo = zoomCalc;
+      if (zoomCalc < 1) {
+        zoomCalc = 7;
+      }
+    } else {
+      zoomCalc = 7;
+    }
     if (options == null) {
       options = {
         cartodb_logo: false,
@@ -1240,7 +1271,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
         gmaps_base_type: "hybrid",
         center_lat: window.locationData.lat,
         center_lon: window.locationData.lng,
-        zoom: 7
+        zoom: zoomCalc
       };
     }
     if (!$("#" + targetId).exists()) {
@@ -1382,7 +1413,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1427,15 +1458,15 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
       try {
         userTransectRing = JSON.parse(totalData.transectRing);
-        for (k = 0, len = userTransectRing.length; k < len; k++) {
-          coordinatePair = userTransectRing[k];
+        for (l = 0, len = userTransectRing.length; l < len; l++) {
+          coordinatePair = userTransectRing[l];
           if (coordinatePair.length !== 2) {
             throw {
               message: "Bad coordinate length for '" + coordinatePair + "'"
             };
           }
-          for (l = 0, len1 = coordinatePair.length; l < len1; l++) {
-            coordinate = coordinatePair[l];
+          for (m = 0, len1 = coordinatePair.length; m < len1; m++) {
+            coordinate = coordinatePair[m];
             if (!isNumber(coordinate)) {
               throw {
                 message: "Bad coordinate number '" + coordinate + "'"
@@ -1647,12 +1678,12 @@ sortPoints = function(pointArray) {
    * Take an array of points and return a Google Maps compatible array
    * of coordinate objects
    */
-  var coordPoint, k, len, sortedPoints;
+  var coordPoint, l, len, sortedPoints;
   window.upper = upperLeft(pointArray);
   pointArray.sort(pointSort);
   sortedPoints = new Array();
-  for (k = 0, len = pointArray.length; k < len; k++) {
-    coordPoint = pointArray[k];
+  for (l = 0, len = pointArray.length; l < len; l++) {
+    coordPoint = pointArray[l];
     sortedPoints.push(coordPoint.getObj());
   }
   delete window.upper;

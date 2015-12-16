@@ -20,6 +20,7 @@ cartoVis = null
 
 adData = new Object()
 window.geo = new Object()
+geo.GLOBE_WIDTH_GOOGLE = 256 # Constant
 
 geo.init = (doCallback) ->
   ###
@@ -47,6 +48,40 @@ geo.init = (doCallback) ->
   loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
 
 
+getMapZoom = (bb) ->
+  ###
+  # Get the zoom factor for Google Maps
+  ###
+  if bb?
+    eastMost = -180
+    westMost = 180
+    for k, coords of bb
+      if coords[1] < westMost
+        westMost = coords[1]
+      if coords[1] > eastMost
+        eastMost = coords[1]
+    angle = eastMost - westMost
+    if angle < 0
+      angle += 360
+    mapWidth = $(geo.mapSelector).width() ? 650
+    adjAngle = 360 / angle
+    mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE
+    # Calculate the zoom factor
+    # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
+    zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2)
+    oz = zoomCalc
+    --zoomCalc # Zoom out one point, less tight fit
+    zo = zoomCalc
+    if zoomCalc < 1
+      zoomCalc = 7
+    # console.info "Calculated zoom #{zoomCalc}, from original #{oz} and loosened #{zo} from", bb, mapWidth, mapScale
+  else
+    zoomCalc = 7
+  zoomCalc
+
+geo.getMapZoom = getMapZoom
+
+
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
@@ -65,7 +100,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   # Set up post-configuration helper
   geo.mapId = targetId
   geo.mapSelector = "##{targetId}"
-  postConfig = ->
+  postConfig = ->    i
     options ?=
       cartodb_logo: false
       https: true # Secure forcing is leading to resource errors
@@ -73,7 +108,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       gmaps_base_type: "hybrid"
       center_lat: window.locationData.lat
       center_lon: window.locationData.lng
-      zoom: 7
+      zoom: getMapZoom(geo.boundingBox)
     unless $("##{targetId}").exists()
       fakeDiv = """
       <div id="#{targetId}" class="carto-map wide-map">

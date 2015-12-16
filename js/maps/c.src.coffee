@@ -907,6 +907,31 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   geo.mapId = targetId
   geo.mapSelector = "##{targetId}"
   postConfig = ->
+    if geo.boundingBox?
+      eastMost = -180
+      westMost = 180
+      for k, coords of geo.boundingBox
+        if coords[1] < westMost
+          westMost = coords[1]
+        if coords[1] > eastMost
+          eastMost = coords[1]
+      GLOBE_WIDTH_GOOGLE = 256 # Constant
+      angle = eastMost - westMost
+      if angle < 0
+        angle += 360
+      mapWidth = $(geo.mapSelector).width() ? 650
+      adjAngle = 360 / angle
+      mapScale = adjAngle / GLOBE_WIDTH_GOOGLE
+      # Calculate the zoom factor
+      # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
+      zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2)
+      oz = zoomCalc
+      --zoomCalc # Zoom out one point, less tight fit
+      zo = zoomCalc
+      if zoomCalc < 1
+        zoomCalc = 7
+    else
+      zoomCalc = 7
     options ?=
       cartodb_logo: false
       https: true # Secure forcing is leading to resource errors
@@ -914,7 +939,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       gmaps_base_type: "hybrid"
       center_lat: window.locationData.lat
       center_lon: window.locationData.lng
-      zoom: 7
+      zoom: zoomCalc
     unless $("##{targetId}").exists()
       fakeDiv = """
       <div id="#{targetId}" class="carto-map wide-map">
