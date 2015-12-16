@@ -1376,7 +1376,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
   }
   dataTable = dataTable + "_" + link;
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
-  $.post("admin_api.php", args, "json").done(function(result) {
+  if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.apiTarget : void 0) == null) {
+    console.warn("Administration file not loaded. Upload cannot continue");
+    stopLoadError("Administration file not loaded. Upload cannot continue");
+    return false;
+  }
+  $.post(adminParams.apiTarget, args, "json").done(function(result) {
     var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
@@ -1630,7 +1635,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     }
   }).error(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
-    console.warn(uri.urlString + "admin_api.php?" + args);
+    console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit.");
   });
   return false;

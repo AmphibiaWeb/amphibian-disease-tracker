@@ -217,7 +217,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   #
   # Some of this could, in theory, be done via
   # http://docs.cartodb.com/cartodb-platform/cartodb-js/sql/
-  $.post "admin_api.php", args, "json"
+  unless adminParams?.apiTarget?
+    console.warn "Administration file not loaded. Upload cannot continue"
+    stopLoadError "Administration file not loaded. Upload cannot continue"
+    return false
+  $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     if result.status
       ###
@@ -463,7 +467,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       toastStatusMessage "Sorry, your session has expired. Please log in and try again."
   .error (result, status) ->
     console.error "Couldn't communicate with server!", result, status
-    console.warn "#{uri.urlString}admin_api.php?#{args}"
+    console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     toastStatusMessage "There was a problem communicating with the server. Please try again in a bit."
   false
 
