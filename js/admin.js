@@ -553,7 +553,14 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     console.info("Rendering Google Maps polygon", gMapPoly);
     geo.canonicalBoundingBox = gMapPoly;
     gPolygon = new google.maps.Polygon(gMapPoly);
+    if (geo.googlePolygon != null) {
+      geo.googlePolygon.setMap(null);
+    }
+    geo.googlePolygon = gPolygon;
     gPolygon.setMap(map);
+    if (!isNull(dataAttrs.coords || isNull(geo.dataTable))) {
+      getCanonicalDataCoords(geo.dataTable);
+    }
   } else {
     console.warn("There's no map yet! Can't overlay polygon");
   }
@@ -1086,8 +1093,7 @@ newGeoDataHandler = function(dataObject) {
     };
     dataAttrs.dataObj = totalData;
     geo.requestCartoUpload(totalData, projectIdentifier, "create", function(table) {
-      mapOverlayPolygon(totalData.transectRing);
-      return getCanonicalDataCoords(table);
+      return mapOverlayPolygon(totalData.transectRing);
     });
   } catch (_error) {
     e = _error;

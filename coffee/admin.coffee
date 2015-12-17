@@ -569,7 +569,15 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     # See
     # https://developers.google.com/maps/documentation/javascript/examples/polygon-simple
     gPolygon = new google.maps.Polygon(gMapPoly)
+    if geo.googlePolygon?
+      # Set the map to null to remove it
+      # https://developers.google.com/maps/documentation/javascript/reference#Polygon
+      geo.googlePolygon.setMap(null) #setVisible(false)
+    geo.googlePolygon = gPolygon
     gPolygon.setMap map
+    # Try to get data for this
+    unless isNull dataAttrs.coords or isNull geo.dataTable
+      getCanonicalDataCoords(geo.dataTable)
   else
     # No map yet ...
     console.warn "There's no map yet! Can't overlay polygon"
@@ -1098,7 +1106,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     dataAttrs.dataObj = totalData
     geo.requestCartoUpload totalData, projectIdentifier, "create", (table) ->
       mapOverlayPolygon totalData.transectRing
-      getCanonicalDataCoords(table)
+      # getCanonicalDataCoords(table)
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"
