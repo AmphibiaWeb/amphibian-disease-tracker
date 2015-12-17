@@ -1671,6 +1671,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           prettyHtml = JsonHuman.format(cartoResults);
         } catch (_error) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
+        toastStatusMessage("Data parse and upload successful");
         geo.dataTable = dataTable;
         dataBlobUrl = "";
         if (!isNull(dataBlobUrl)) {

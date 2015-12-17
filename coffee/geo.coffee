@@ -488,6 +488,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           prettyHtml = JsonHuman.format cartoResults
           # $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
         bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
+        toastStatusMessage("Data parse and upload successful")
         geo.dataTable = dataTable
         # resultRows = cartoResults.rows
         # Update the overlay for sending to Carto

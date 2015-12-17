@@ -142,16 +142,16 @@ loadCreateNewProject = ->
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Disease Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate></paper-input>#{getInfoTooltip("Test")}
+      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate></paper-input>#{getInfoTooltip("Bd, Bsal, or other")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
       <h2 class="new-title col-xs-12">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>
-      <paper-input label="Project Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
+      <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
-      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3"></iron-autogrow-textarea>
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract")}
       <h2 class="new-title col-xs-12">Data Permissions</h2>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
@@ -160,7 +160,12 @@ loadCreateNewProject = ->
       </div>
       <h2 class="new-title col-xs-12">Project Area of Interest</h2>
       <div class="col-xs-12">
-        <p>This represents the approximate collection region for your samples. If you don't enter anything, we'll guess from your dataset.</p>
+        <p>
+          This represents the approximate collection region for your samples.
+          <strong>
+            Leave blank for a bounding box to be calculated from your sample sites
+          </strong>.
+        </p>
         <span class="toggle-off-label iron-label">Locality Name</span>
         <paper-toggle-button id="transect-input-toggle">Coordinate List</paper-toggle-button>
       </div>
@@ -189,10 +194,10 @@ loadCreateNewProject = ->
   </section>
   <section class="project-inputs clearfix data-section col-xs-12">
     <div class="row">
-      <h2 class="new-title">Project Data Summary</h2>
-      <h3 class="new-title">Calculated Data Parameters</h3>
+      <h2 class="new-title col-xs-12">Project Data Summary</h2>
+      <h3 class="new-title col-xs-12">Calculated Data Parameters</h3>
       <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
-      <p>Etc</p>
+      <p class="col-xs-12">Etc</p>
     </div>
   </section>
   <section id="submission-section col-xs-12">
