@@ -68,6 +68,9 @@ switch($admin_req)
   case "delete":
     returnAjax(deleteEntry($_REQUEST));
     break;
+  case "test":
+      returnAjax($db->testSettings());
+      break;
   default:
     returnAjax(getLoginState($_REQUEST,true));
   }
