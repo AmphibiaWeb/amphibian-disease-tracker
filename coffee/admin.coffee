@@ -199,6 +199,11 @@ loadCreateNewProject = ->
       <h2 class="new-title col-xs-12">Project Data Summary</h2>
       <h3 class="new-title col-xs-12">Calculated Data Parameters</h3>
       <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number" data-field="disease_samples"></paper-input>
+      <paper-input label="Positive Samples" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="positive-samples" readonly type="number" data-field="disease_positive"></paper-input>
+      <paper-input label="Negative Samples" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="negative-samples" readonly type="number" data-field="disease_negative"></paper-input>
+      <paper-input label="No Confidence Samples" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="no_confidence-samples" readonly type="number" data-field="disease_no_confidence"></paper-input>
+      <paper-input label="Disease Morbidity" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="morbidity-count" readonly type="number" data-field="disease_morbidity"></paper-input>
+      <paper-input label="Disease Mortality" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="mortality-count" readonly type="number" data-field="disease_mortality"></paper-input>
       <p class="col-xs-12">Etc</p>
     </div>
   </section>
@@ -240,15 +245,15 @@ finalizeData = ->
     return false
   postData = new Object()
   for el in $(".project-field")
-    if $(el).hasClass("x-scope")
+    if $(el).hasClass("iron-autogrow-textarea-0")
       input = $($(el).get(0).textarea).val()
     else
       input = $(el).val()
     key = $(el).attr("data-field") ? $(el).attr("id")
     if $(el).attr("type") is "number"
-      postData.key = toInt input
+      postData[key] = toInt input
     else
-      postData.key = input
+      postData[key] = input
   postData.boundingBox = geo.boundingBox
   # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
   # Sampled species
@@ -445,12 +450,12 @@ bootstrapTransect = ->
       # Ref:
       # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
       # http://documentation.cartodb.com/api/v2/viz/23f2abd6-481b-11e4-8fb1-0e4fddd5de28/viz.json
-      geo?.dataTable ?= "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
-      vizJsonElements =
-        layers: [
-          options:
-            sql: "SELECT * FROM #{geo.dataTable}"
-          ]
+      # geo?.dataTable ?= "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
+      # vizJsonElements =
+      #   layers: [
+      #     options:
+      #       sql: "SELECT * FROM #{geo.dataTable}"
+      #     ]
       createMap null, "carto-map-container", options, (layer, map) ->
         # Map has been created, play with the data!
         try
@@ -1137,9 +1142,32 @@ newGeoDataHandler = (dataObject = new Object()) ->
         $(p$("#coord-input").textarea).val(textEntry)
       j
     geo.boundingBox ?= getCoordsFromData()
+    samplesMeta =
+      mortality: 0
+      morbidity: 0
+      positive: 0
+      negative: 0
+      no_confidence: 0
+    for k, data of dataAttrs.dataObj.data
+      switch data.diseaseDetected
+        when true
+          samplesMeta.morbidity++
+          samplesMeta.positive++
+        when false
+          samplesMeta.negative++
+        when "NO_CONFIDENCE"
+          samplesMeta.no_confidence++
+      if data.fatal
+        samplesMeta.mortality++
+    p$("#positive-samples").value = samplesMeta.positive
+    p$("#negative-samples").value = samplesMeta.negative
+    p$("#no_confidence-samples").value = samplesMeta.no_confidence
+    p$("#morbidity-count").value = samplesMeta.morbidity
+    p$("#mortality-count").value = samplesMeta.mortality
     totalData =
       transectRing: geo.boundingBox
       data: parsedData
+      samples: samplesMeta
     # Save the upload
     dataAttrs.dataObj = totalData
     geo.requestCartoUpload totalData, projectIdentifier, "create", (table) ->
