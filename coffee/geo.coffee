@@ -529,7 +529,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
               center_lat: center.lat
               center_lon: center.lng
               zoom: getMapZoom(geo.boundingBox)
-            createMap dataVisUrl, undefined, undefined, ->
+            createMap dataVisUrl, undefined, options, ->
               parentCallback()
             false
     else

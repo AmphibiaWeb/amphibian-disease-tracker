@@ -1706,7 +1706,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
               center_lon: center.lng,
               zoom: getMapZoom(geo.boundingBox)
             };
-            createMap(dataVisUrl, void 0, void 0, function() {
+            createMap(dataVisUrl, void 0, options, function() {
               return parentCallback();
             });
             return false;
