@@ -153,7 +153,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref, ref1;
+  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -180,11 +180,13 @@ finalizeData = function() {
     } else {
       input = $(el).val();
     }
-    key = (ref1 = $(el).attr("data-field")) != null ? ref1 : $(el).attr("id");
-    if ($(el).attr("type") === "number") {
-      postData[key] = toInt(input);
-    } else {
-      postData[key] = input;
+    key = $(el).attr("data-field");
+    if (!isNull(key)) {
+      if ($(el).attr("type") === "number") {
+        postData[key] = toInt(input);
+      } else {
+        postData[key] = input;
+      }
     }
   }
   center = getMapCenter(geo.boundingBox);
@@ -205,11 +207,15 @@ finalizeData = function() {
   postData["public"] = p$("#data-encumbrance-toggle").checked;
   args = "perform=new&data=" + (jsonTo64(postData));
   console.info("Data object constructed:", postData);
-  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+  return $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log(result);
+    foo();
+    stopLoad();
+    return false;
+  }).error(function(result, status) {
+    stopLoadError("There was a problem saving your data. Please try again");
     return false;
   });
-  return foo();
 };
 
 resetForm = function() {

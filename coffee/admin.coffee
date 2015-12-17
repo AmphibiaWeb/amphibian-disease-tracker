@@ -249,16 +249,15 @@ finalizeData = ->
       input = $($(el).get(0).textarea).val()
     else
       input = $(el).val()
-    key = $(el).attr("data-field") ? $(el).attr("id")
-    if $(el).attr("type") is "number"
-      postData[key] = toInt input
-    else
-      postData[key] = input
+    key = $(el).attr("data-field")
+    unless isNull key
+      if $(el).attr("type") is "number"
+        postData[key] = toInt input
+      else
+        postData[key] = input
   # postData.boundingBox = geo.boundingBox
   # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
   # Sampled species
-  # Totals for disease_samples, disease_positive, disease_negative,
-  #   disease_no_confidence, disease_morbidity, disease_mortality
   # sample_collection_start
   # sample_collection_end
   # sampling_months
@@ -288,8 +287,12 @@ finalizeData = ->
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log result
+    foo()
+    stopLoad()
     false
-  foo()
+  .error (result, status) ->
+    stopLoadError "There was a problem saving your data. Please try again"
+    false
 
 resetForm = ->
   ###
