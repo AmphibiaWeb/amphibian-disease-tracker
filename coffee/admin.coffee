@@ -120,6 +120,7 @@ startAdminActionHelper = ->
 
 loadEditor = ->
   startAdminActionHelper()
+  toastStatusMessage "Would load editor for this. Blocked on #22"
   # Get the data ref
   adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
   geo.init()
