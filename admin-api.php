@@ -219,6 +219,8 @@ function listProjects($unauthenticated = true) {
     $l = $db->openDB();
     $r = mysqli_query( $l, $query );
     $authorizedProjects = array();
+    $queries = array();
+    $queries[] = $query;
     while ( $row = mysqli_fetch_row($r) ) {
         $authorizedProjects[] = $row[0];
     }
@@ -230,6 +232,7 @@ function listProjects($unauthenticated = true) {
         }
         if (!empty( $uid )) {
             $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE (`access_data` LIKE '%" . $uid . "%' OR `author`='$uid')";
+            $queries[] = $query;
             $r = mysqli_query($l,$query);
             while ( $row = mysqli_fetch_row($r) ) {
                 $authorizedProjects[] = $row[0];
@@ -241,6 +244,7 @@ function listProjects($unauthenticated = true) {
         "status" => true,
         "projects" => $authorizedProjects,
         "table" => $db->getTable(),
+        "queries" => $queries,
     );
     
     return $result;
