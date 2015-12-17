@@ -937,7 +937,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, data, date, daysFrom1900to1970, daysFrom1904to1970, e, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, ref, row, rows, sampleRow, samplesMeta, secondsPerDay, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, data, date, daysFrom1900to1970, daysFrom1904to1970, e, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, samplesMeta, secondsPerDay, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1111,9 +1111,8 @@ newGeoDataHandler = function(dataObject) {
       negative: 0,
       no_confidence: 0
     };
-    ref = dataAttrs.dataObj.data;
-    for (k in ref) {
-      data = ref[k];
+    for (k in parsedData) {
+      data = parsedData[k];
       switch (data.diseaseDetected) {
         case true:
           samplesMeta.morbidity++;

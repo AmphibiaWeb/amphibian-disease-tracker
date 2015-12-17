@@ -1148,7 +1148,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       positive: 0
       negative: 0
       no_confidence: 0
-    for k, data of dataAttrs.dataObj.data
+    for k, data of parsedData
       switch data.diseaseDetected
         when true
           samplesMeta.morbidity++
