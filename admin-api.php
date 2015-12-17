@@ -214,7 +214,7 @@ function listProjects($unauthenticated = true) {
      * @param bool $unauthenticated -> Check for authorized projects
      * to the user if false. Default true.
      ***/
-    global $db, $loginStatus;
+    global $db, $login_status;
     $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE `public` IS TRUE";
     $l = $db->openDB();
     $r = mysqli_query( $l, $query );
@@ -226,9 +226,9 @@ function listProjects($unauthenticated = true) {
     }
     if(!$unauthenticated) {
         try {
-            $uid = $loginStatus["detail"]["uid"];
+            $uid = $login_status["detail"]["uid"];
         } catch(Exception $e) {
-            
+            $queries[] = "UNAUTHORIZED";
         }
         if (!empty( $uid )) {
             $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE (`access_data` LIKE '%" . $uid . "%' OR `author`='$uid')";
@@ -245,6 +245,7 @@ function listProjects($unauthenticated = true) {
         "projects" => $authorizedProjects,
         "table" => $db->getTable(),
         "queries" => $queries,
+        "check_authentication" => !$unauthenticated,
     );
     
     return $result;
