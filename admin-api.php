@@ -49,8 +49,13 @@ if(!function_exists('elapsed'))
 $admin_req=isset($_REQUEST['perform']) ? strtolower($_REQUEST['perform']):null;
 
 
+
 $login_status = getLoginState($get);
+
 if($login_status["status"] !== true) {
+    if($admin_req == "list") {
+        returnAjax(listProjects());
+    }
   $login_status["error"] = "Invalid user";
   $login_status["human_error"] = "You're not logged in as a valid user to edit this. Please log in and try again.";
   returnAjax($login_status);
@@ -68,6 +73,9 @@ switch($admin_req)
   case "delete":
     returnAjax(deleteEntry($_REQUEST));
     break;
+  case "list":
+      returnAjax(listProjects(false));
+      break;
   // case "test":
   //     returnAjax($db->testSettings());
   //     break;
@@ -197,6 +205,44 @@ function deleteEntry($get)
     $result["human_error"] = "Failed to delete item '$id' from the database";
   }
   return $result;
+}
+
+function listProjects($unauthenticated = true) {
+    /***
+     * List accessible projects to the user.
+     *
+     * @param bool $unauthenticated -> Check for authorized projects
+     * to the user if false. Default true.
+     ***/
+    global $db, $loginStatus;
+    $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE `public`=TRUE";
+    $l = $db->openDB();
+    $r = mysqli_query( $l, $query );
+    $authorizedProjects = array();
+    while ( $row = mysqli_fetch_row($r) ) {
+        $authorizedProjects[] = $row[0];
+    }
+    if(!$unauthenticated) {
+        try {
+            $uid = $loginStatus["detail"]["uid"];
+        } catch(Exception $e) {
+            
+        }
+        if (!empty( $uid )) {
+            $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE `access_data` LIKE '%" . $uid . "%'";
+            $r = mysqli_query($l,$query);
+            while ( $row = mysqli_fetch_row($r) ) {
+                $authorizedProjects[] = $row[0];
+            }
+        }
+    }
+    
+    $result = array(
+        "status" => true,
+        "projects" => $authorizedProjects
+    );
+    
+    return $result;
 }
 
 ?>
