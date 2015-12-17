@@ -138,7 +138,7 @@ loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
-  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required auto-validate data-field="project_field"></paper-input>
+  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required auto-validate data-field="project_title"></paper-input>
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
