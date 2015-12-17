@@ -440,9 +440,10 @@ class DBHelper
                 $l = $this->openDB();
                 mysqli_query($l, 'BEGIN');
                 if (mysqli_query($l, $querystring) === false) {
+                    $error = mysqli_error($l);
                     $r = mysqli_query($l, 'ROLLBACK');
 
-                    return array(false,'rollback_status' => $r,'error' => mysqli_error($l),'query' => $querystring);
+                    return array(false,'rollback_status' => $r,'error' => $error,'query' => $querystring);
                 }
             }
             $querystring = 'UPDATE `'.$this->getTable().'` SET ';
@@ -475,9 +476,10 @@ class DBHelper
                     
                     return $r;
                 } else {
+                    $error = mysqli_error($l);
                     $r = mysqli_query($l, 'ROLLBACK');
 
-                    return array(false,'rollback_status' => $r,'result' => $res2,'error' => mysqli_error($l),'query' => $querystring);
+                    return array(false,'rollback_status' => $r,'result' => $res2,'error' => $error,'query' => $querystring);
                 }
             }
         } else {
