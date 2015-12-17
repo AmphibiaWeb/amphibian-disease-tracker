@@ -373,7 +373,7 @@ loadProjectBrowser = ->
       publicList.push projectId
     for projectId, projectTitle of result.projects
       # Or lock-outline ??
-      icon = if projectId in publicList then """<iron-icon icon="icons:lock-open"></iron-icon>""" else """<iron-icon icon="social:public"></iron-icon>"""
+      icon = if projectId in publicList then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock-open"></iron-icon>"""
       html = """
       <li>
         <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId}">

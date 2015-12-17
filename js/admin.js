@@ -310,7 +310,7 @@ loadProjectBrowser = function() {
     ref1 = result.projects;
     for (projectId in ref1) {
       projectTitle = ref1[projectId];
-      icon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"icons:lock-open\"></iron-icon>" : "<iron-icon icon=\"social:public\"></iiron-icon>";
+      icon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock-open\"></iron-icon>";
       html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + projectId + "\">\n    " + icon + " " + projectTitle + "\n  </button>\n</li>";
       $("#project-list").append(html);
     }
