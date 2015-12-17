@@ -319,8 +319,7 @@ loadProjectBrowser = function() {
       project = $(this).attr("data-project");
       return loadProject(project);
     });
-    stopLoad();
-    return foo();
+    return stopLoad();
   }).error(function(result, status) {
     return stopLoadError("There was a problem loading viable projects");
   });
@@ -328,7 +327,7 @@ loadProjectBrowser = function() {
 };
 
 loadProject = function(projectId) {
-  foo();
+  toastStatusMessage("Would load project " + projectId);
   return false;
 };
 
