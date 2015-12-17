@@ -215,7 +215,7 @@ function listProjects($unauthenticated = true) {
      * to the user if false. Default true.
      ***/
     global $db, $loginStatus;
-    $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE `public`=TRUE";
+    $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE `public` IS TRUE";
     $l = $db->openDB();
     $r = mysqli_query( $l, $query );
     $authorizedProjects = array();
@@ -239,7 +239,8 @@ function listProjects($unauthenticated = true) {
     
     $result = array(
         "status" => true,
-        "projects" => $authorizedProjects
+        "projects" => $authorizedProjects,
+        "table" => $db->getTable(),
     );
     
     return $result;
