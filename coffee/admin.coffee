@@ -354,16 +354,51 @@ pointStringToPoint = (pointString) ->
 
 loadProjectBrowser = ->
   startAdminActionHelper()
-  html = """
-  <div class='bs-callout bs-callout-warn center-block col-md-5'>
-    <p>Function worked, there's just nothing to show yet.</p>
-    <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>
-  </div>
-  """
-  $("#main-body").html html
-  # Get a data ref
-  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
-  geo.init()
+  startLoad()
+  args = "perform=list"
+  $.get adminParams.apiTarget, args, "json"
+  .done (result) ->
+    html = """
+    <h2 class="new-title col-xs-12">Available Projects</h2>
+    <ul id="project-list" class="col-xs-12 col-md-6">
+    </ul>
+    <div class='bs-callout bs-callout-warn center-block col-md-5'>
+      <p>Function worked, there's just nothing to show yet.</p>
+      <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>
+    </div>
+    """
+    $("#main-body").html html
+    publicList = new Array()
+    for k, projectId of result.public_projects
+      publicList.push projectId
+    for projectId, projectTitle of result.projects
+      # Or lock-outline ??
+      icon = if projectId in publicList then """<iron-icon icon="icons:lock-open"></iron-icon>""" else """<iron-icon icon="social:public"></iron-icon>"""
+      html = """
+      <li>
+        <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId}">
+          #{icon} #{projectTitle}
+        </button>
+      </li>
+      """
+      $("#project-list").append html
+    $("#project-list button")
+    .unbind()
+    .click ->
+      project = $(this).attr("data-project")
+      loadProject(project)
+    stopLoad()
+    # # Get a data ref
+    # adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
+    # geo.init()
+    foo()
+  .error (result, status) ->
+    stopLoadError "There was a problem loading viable projects"
+
+  false
+
+
+loadProject = (projectId) ->
   foo()
   false
 

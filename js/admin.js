@@ -3,7 +3,8 @@
  * The main coffeescript file for administrative stuff
  * Triggered from admin-page.html
  */
-var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler;
+var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 window.adminParams = new Object();
 
@@ -292,12 +293,41 @@ pointStringToPoint = function(pointString) {
 };
 
 loadProjectBrowser = function() {
-  var html;
+  var args;
   startAdminActionHelper();
-  html = "<div class='bs-callout bs-callout-warn center-block col-md-5'>\n  <p>Function worked, there's just nothing to show yet.</p>\n  <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>\n</div>";
-  $("#main-body").html(html);
-  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
-  geo.init();
+  startLoad();
+  args = "perform=list";
+  $.get(adminParams.apiTarget, args, "json").done(function(result) {
+    var html, icon, k, projectId, projectTitle, publicList, ref, ref1;
+    html = "<h2 class=\"new-title col-xs-12\">Available Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>\n<div class='bs-callout bs-callout-warn center-block col-md-5'>\n  <p>Function worked, there's just nothing to show yet.</p>\n  <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>\n</div>";
+    $("#main-body").html(html);
+    publicList = new Array();
+    ref = result.public_projects;
+    for (k in ref) {
+      projectId = ref[k];
+      publicList.push(projectId);
+    }
+    ref1 = result.projects;
+    for (projectId in ref1) {
+      projectTitle = ref1[projectId];
+      icon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"icons:lock-open\"></iron-icon>" : "<iron-icon icon=\"social:public\"></iiron-icon>";
+      html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + projectId + "\">\n    " + icon + " " + projectTitle + "\n  </button>\n</li>";
+      $("#project-list").append(html);
+    }
+    $("#project-list button").unbind().click(function() {
+      var project;
+      project = $(this).attr("data-project");
+      return loadProject(project);
+    });
+    stopLoad();
+    return foo();
+  }).error(function(result, status) {
+    return stopLoadError("There was a problem loading viable projects");
+  });
+  return false;
+};
+
+loadProject = function(projectId) {
   foo();
   return false;
 };

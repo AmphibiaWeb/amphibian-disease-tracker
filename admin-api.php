@@ -215,14 +215,15 @@ function listProjects($unauthenticated = true) {
      * to the user if false. Default true.
      ***/
     global $db, $login_status;
-    $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE `public` IS TRUE";
+    $query = "SELECT `project_id`,`project_title` FROM " . $db->getTable() . " WHERE `public` IS TRUE";
     $l = $db->openDB();
     $r = mysqli_query( $l, $query );
     $authorizedProjects = array();
     $queries = array();
     $queries[] = $query;
     while ( $row = mysqli_fetch_row($r) ) {
-        $authorizedProjects[] = $row[0];
+        $authorizedProjects[$row[0]] = $row[1];
+        $publicProjects[] = $row[0];
     }
     if(!$unauthenticated) {
         try {
@@ -231,11 +232,11 @@ function listProjects($unauthenticated = true) {
             $queries[] = "UNAUTHORIZED";
         }
         if (!empty( $uid )) {
-            $query = "SELECT `project_id` FROM " . $db->getTable() . " WHERE (`access_data` LIKE '%" . $uid . "%' OR `author`='$uid')";
+            $query = "SELECT `project_id`,`project_title` FROM " . $db->getTable() . " WHERE (`access_data` LIKE '%" . $uid . "%' OR `author`='$uid')";
             $queries[] = $query;
             $r = mysqli_query($l,$query);
             while ( $row = mysqli_fetch_row($r) ) {
-                $authorizedProjects[] = $row[0];
+                $authorizedProjects[$row[0]] = $row[1];
             }
         }
     }
@@ -243,8 +244,8 @@ function listProjects($unauthenticated = true) {
     $result = array(
         "status" => true,
         "projects" => $authorizedProjects,
+        "public_projects" => $publicProjects,
         "table" => $db->getTable(),
-        "queries" => $queries,
         "check_authentication" => !$unauthenticated,
     );
     
