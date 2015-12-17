@@ -280,7 +280,8 @@ finalizeData = ->
   cartoData =
     table: geo.dataTable
   postData.carto_id = JSON.stringify cartoData
-  postData.project_id = md5("#{geo.dataTable}#{postData.author}#{Date.now()}")
+  uniqueId = md5("#{geo.dataTable}#{postData.author}#{Date.now()}")
+  postData.project_id = uniqueId
   # Public or private?
   postData.public = p$("#data-encumbrance-toggle").checked
   args = "perform=new&data=#{jsonTo64(postData)}"

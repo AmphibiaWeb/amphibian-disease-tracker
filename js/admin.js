@@ -153,7 +153,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref;
+  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref, uniqueId;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -204,7 +204,8 @@ finalizeData = function() {
     table: geo.dataTable
   };
   postData.carto_id = JSON.stringify(cartoData);
-  postData.project_id = md5("" + geo.dataTable + postData.author + (Date.now()));
+  uniqueId = md5("" + geo.dataTable + postData.author + (Date.now()));
+  postData.project_id = uniqueId;
   postData["public"] = p$("#data-encumbrance-toggle").checked;
   args = "perform=new&data=" + (jsonTo64(postData));
   console.info("Data object constructed:", postData);
