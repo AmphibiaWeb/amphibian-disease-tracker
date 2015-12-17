@@ -125,7 +125,7 @@ class DBHelper
         return $this->cols;
     }
 
-    public function testSettings($table = null, $detail = false)
+    protected function testSettings($table = null, $detail = false)
     {
         $l = $this->openDB();
         if (!empty($table)) {
