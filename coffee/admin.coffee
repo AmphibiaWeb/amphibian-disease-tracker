@@ -123,14 +123,14 @@ loadEditor = ->
   # Load up the editor interface for projects with access
   ###
   startAdminActionHelper()
-  
+
   editProject = (projectId) ->
     ###
     # Load the edit interface for a specific project
     ###
     toastStatusMessage "Would load editor for this."
     false
-  
+
   do showEditList = ->
     ###
     # Show a list of icons for editable projects. Blocked on #22, it's
@@ -150,12 +150,14 @@ loadEditor = ->
       for k, projectId of result.authored_projects
         authoredList.push projectId
       for projectId, projectTitle of result.projects
+        icon = if projectId in authoredList then """<iron-icon icon="social:person" data-toggle="tooltip" title="Author"></iron-icon>""" else """<iron-icon icon="social:group" data-toggle="tooltip" title="Collaborator"></iron-icon>"""
         if projectId in authoredList
           html = """
           <li>
             <button class="btn btn-primary" data-project="#{projectId}">
               #{projectTitle} / ##{projectId.substring(0,8)}
             </button>
+            #{icon}
           </li>
           """
           $("#project-list").append html
@@ -268,7 +270,6 @@ loadCreateNewProject = ->
     else
       $(".data-section").removeAttr("hidden")
   bindClicks()
-  foo()
   false
 
 finalizeData = ->
@@ -359,7 +360,7 @@ getTableCoordinates = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e
   #
   # Sample:
   # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
-  ###
+  ###  
   false
 
 

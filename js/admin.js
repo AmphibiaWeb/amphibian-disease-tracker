@@ -138,7 +138,7 @@ loadEditor = function() {
     startLoad();
     args = "perform=list";
     return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-      var authoredList, html, k, projectId, projectTitle, ref, ref1;
+      var authoredList, html, icon, k, projectId, projectTitle, ref, ref1;
       html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
       $("#main-body").html(html);
       authoredList = new Array();
@@ -150,8 +150,9 @@ loadEditor = function() {
       ref1 = result.projects;
       for (projectId in ref1) {
         projectTitle = ref1[projectId];
+        icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
         if (indexOf.call(authoredList, projectId) >= 0) {
-          html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n</li>";
+          html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
           $("#project-list").append(html);
         }
       }
@@ -192,7 +193,6 @@ loadCreateNewProject = function() {
     }
   });
   bindClicks();
-  foo();
   return false;
 };
 
