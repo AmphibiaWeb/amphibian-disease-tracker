@@ -138,20 +138,22 @@ loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
-  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required auto-validate></paper-input>
+  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required auto-validate data-field="project_field"></paper-input>
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate></paper-input>#{getInfoTooltip("Bd, Bsal, or other")}
-      <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11"></paper-input>
+      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate data-field="disease"></paper-input>#{getInfoTooltip("Bd, Bsal, or other")}
+      <paper-input label="Pathogen Strain" id="project-disease-strain" class="project-field col-md-6 col-xs-11" data-field="disease_strain"></paper-input>#{getInfoTooltip("For example, Hepatitus A, B, C would enter the appropriate letter here")}
+      <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11" data-field="reference_id"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
+      <paper-input label="Publication DOI" id="pub-doi" class="project-field col-md-6 col-xs-11" data-field="publication"></paper-input>
       <h2 class="new-title col-xs-12">Lab Parameters</h2>
-      <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
+      <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate data-field="pi_lab"></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
-      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract")}
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3"></iron-autogrow-textarea data-field="sample_notes">#{getInfoTooltip("Project notes or brief abstract")}
       <h2 class="new-title col-xs-12">Data Permissions</h2>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
@@ -196,7 +198,7 @@ loadCreateNewProject = ->
     <div class="row">
       <h2 class="new-title col-xs-12">Project Data Summary</h2>
       <h3 class="new-title col-xs-12">Calculated Data Parameters</h3>
-      <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number"></paper-input>
+      <paper-input label="Samples Counted" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="samplecount" readonly type="number" data-field="disease_samples"></paper-input>
       <p class="col-xs-12">Etc</p>
     </div>
   </section>
@@ -223,6 +225,58 @@ finalizeData = ->
   ###
   # Make sure everythign is uploaded, validate, and POST to the server
   ###
+  startLoad()
+  dataCheck = true
+  $("[required]").each ->
+    # Make sure each is really filled out
+    try
+      val = $(this).val()
+      if isNull val
+        $(this).get(0).focus()
+        dataCheck = false
+        return false
+  unless dataCheck
+    stopLoadError "Please fill out all required fields"
+    return false
+  postData = new Object()
+  for el in $(".project-field")
+    if $(el).hasClass("x-scope")
+      input = $($(el).get(0).textarea).val()
+    else
+      input = $(el).val()
+    key = $(el).attr("data-field") ? $(el).attr("id")
+    if $(el).attr("type") is "number"
+      postData.key = toInt input
+    else
+      postData.key = input
+  postData.boundingBox = geo.boundingBox
+  # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
+  # Sampled species
+  # Totals for disease_samples, disease_positive, disease_negative,
+  #   disease_no_confidence, disease_morbidity, disease_mortality
+  # sample_collection_start
+  # sample_collection_end
+  # sampling_months
+  # sampling_years
+  # sampling_methods_used
+  # sample_dispositions_used
+  # sample_catalog_numbers
+  # sample_field_numbers
+  center = getMapCenter(geo.boundingBox)
+  postData.lat = center.lat
+  postData.lng = center.lng
+  # Bounding box coords
+  postData.author = $.cookie("#{adminParams.domain}_link")
+  postData.author_data =
+    name: ""
+    affiliation: ""
+    lab: ""
+    entry_date: ""
+  postData.carto_id =
+    table: geo.dataTable
+  # Public or private?
+  postData.public = p$("#data-encumbrance-toggle").checked
+  console.info "Data object constructed:", postData
   foo()
 
 resetForm = ->
@@ -239,30 +293,6 @@ getTableCoordinates = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e
   # Sample:
   # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
   ###
-  false
-
-
-addPointsToMap = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb") ->
-  ###
-  #
-  ###
-  unless geo.cartoMap?
-    console.warn "Can't add points to a map without an instanced map!"
-    return false
-  sublayerOptions =
-    sql: "SELECT * FROM #{table}"
-  # Add a layer as per
-  # http://docs.cartodb.com/tutorials/create_map_cartodbjs/
-  geo.mapLayer.getSubLayer(0).set sublayerOptions
-  # cartodb
-  # .createLayer geo.cartoMap, geo.cartoUrl
-  # .addTo geo.cartoMap
-  # .on "done", (layer) ->
-  #   layer.getSubLayer(0).set sublayerOptions
-  # .on "error", (layer) ->
-  #   false
-  ## ALT:
-  ## https://developers.google.com/maps/documentation/javascript/examples/marker-simple
   false
 
 
@@ -465,7 +495,7 @@ bootstrapTransect = ->
       Please enter a name of a locality
       """
       transectInput = """
-      <paper-input id="locality-input" label="Locality" class="pull-left" required autovalidate></paper-input> <paper-icon-button class="pull-left" id="do-search-locality" icon="icons:search"></paper-icon-button>
+      <paper-input id="locality-input" label="Locality" class="pull-left"></paper-input> <paper-icon-button class="pull-left" id="do-search-locality" icon="icons:search"></paper-icon-button>
       """
     $("#transect-instructions").html instructions
     $("#transect-input").html transectInput
@@ -652,10 +682,13 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
   markers
 
 
-getCanonicalDataCoords = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb", callback = mapAddPoints) ->
+getCanonicalDataCoords = (table, callback = mapAddPoints) ->
   ###
   # Fetch data coordinate points
   ###
+  if isNull table
+    console.error "A table must be specified!"
+    return false
   if typeof callback isnt "function"
     console.error "This function needs a callback function as the second argument"
     return false
@@ -1095,7 +1128,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
         j[i] = [coordsObj.lat, coordsObj.lng]
         textEntry += """
         #{coordsObj.lat},#{coordsObj.lng}
-        
+
         """
         ++i
       try

@@ -1,7 +1,10 @@
-sample_id:
+project_id:
   type: "varchar(255)"
   logical: "string"
   unique: true
+project_title:
+  type: "varchar(512)"
+  logical: "string"
 reference_id:
   # For offsite references. No internal use.
   # Could be initial, GUID, etc.
@@ -50,7 +53,7 @@ includes_gymnophiona:
   # Computed, from AW clade lookup
   type: "boolean"
 sampled_species:
-  # Computed list from unique 
+  # Computed list from unique
   type: "text"
   logical: "csv"
   sample: "Batrachoseps attenuatus, Lithobates catesbeianus"
