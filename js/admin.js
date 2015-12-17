@@ -204,13 +204,20 @@ finalizeData = function() {
     table: geo.dataTable
   };
   postData.carto_id = JSON.stringify(cartoData);
+  postData.project_id = md5("" + geo.dataTable + postData.author + (Date.now()));
   postData["public"] = p$("#data-encumbrance-toggle").checked;
   args = "perform=new&data=" + (jsonTo64(postData));
   console.info("Data object constructed:", postData);
   return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    console.log(result);
-    foo();
-    stopLoad();
+    if (result.status === true) {
+      toastStatusMessage("Data successfully saved to server (Warning: Parsing incomplete! Test Mode!)");
+      bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+      stopLoad();
+    } else {
+      console.error(result.error.error);
+      console.log(result);
+      stopLoadError(result.human_error);
+    }
     return false;
   }).error(function(result, status) {
     stopLoadError("There was a problem saving your data. Please try again");
