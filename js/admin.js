@@ -429,7 +429,7 @@ bootstrapTransect = function() {
     var instructions, transectInput;
     if (p$("#transect-input-toggle").checked) {
       instructions = "Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.";
-      transectInput = "<iron-autogrow-textarea id=\"coord-input\" class=\"\" required rows=\"3\"></iron-autogrow-textarea>";
+      transectInput = "<iron-autogrow-textarea id=\"coord-input\" class=\"\" rows=\"3\"></iron-autogrow-textarea>";
     } else {
       instructions = "Please enter a name of a locality";
       transectInput = "<paper-input id=\"locality-input\" label=\"Locality\" class=\"pull-left\"></paper-input> <paper-icon-button class=\"pull-left\" id=\"do-search-locality\" icon=\"icons:search\"></paper-icon-button>";
@@ -973,7 +973,7 @@ newGeoDataHandler = function(dataObject) {
     }
     rows = Object.size(dataObject);
     p$("#samplecount").value = rows;
-    if (isNull(p$("#project-disease"))) {
+    if (isNull($("#project-disease").val())) {
       p$("#project-disease").value = sampleRow.diseaseTested;
     }
     parsedData = new Object();

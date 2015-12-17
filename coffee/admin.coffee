@@ -493,7 +493,7 @@ bootstrapTransect = ->
       Please input a list of coordinates, in the form <code>lat, lng</code>, with one set on each line. <strong>Please press <kbd>enter</kbd> to insert a new line after your last coordinate</strong>.
       """
       transectInput = """
-      <iron-autogrow-textarea id="coord-input" class="" required rows="3"></iron-autogrow-textarea>
+      <iron-autogrow-textarea id="coord-input" class="" rows="3"></iron-autogrow-textarea>
       """
     else
       instructions = """
@@ -1027,7 +1027,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       return false
     rows = Object.size(dataObject)
     p$("#samplecount").value = rows
-    if isNull p$("#project-disease")
+    if isNull $("#project-disease").val()
       p$("#project-disease").value = sampleRow.diseaseTested
     # Clean up the data for CartoDB
     # FIMS it up
