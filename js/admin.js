@@ -114,11 +114,57 @@ startAdminActionHelper = function() {
 };
 
 loadEditor = function() {
+
+  /*
+   * Load up the editor interface for projects with access
+   */
+  var editProject, showEditList;
   startAdminActionHelper();
-  toastStatusMessage("Would load editor for this. Blocked on #22");
-  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28";
-  geo.init();
-  foo();
+  editProject = function(projectId) {
+
+    /*
+     * Load the edit interface for a specific project
+     */
+    toastStatusMessage("Would load editor for this.");
+    return false;
+  };
+  (showEditList = function() {
+
+    /*
+     * Show a list of icons for editable projects. Blocked on #22, it's
+     * just based on authorship right now.
+     */
+    var args;
+    startLoad();
+    args = "perform=list";
+    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
+      var authoredList, html, k, projectId, projectTitle, ref, ref1;
+      html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+      $("#main-body").html(html);
+      authoredList = new Array();
+      ref = result.authored_projects;
+      for (k in ref) {
+        projectId = ref[k];
+        authoredList.push(projectId);
+      }
+      ref1 = result.projects;
+      for (projectId in ref1) {
+        projectTitle = ref1[projectId];
+        if (indexOf.call(authoredList, projectId) >= 0) {
+          html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n</li>";
+          $("#project-list").append(html);
+        }
+      }
+      $("#project-list button").unbind().click(function() {
+        var project;
+        project = $(this).attr("data-project");
+        return editProject(project);
+      });
+      return stopLoad();
+    }).error(function(result, status) {
+      return stopLoadError("There was a problem loading viable projects");
+    });
+  })();
   return false;
 };
 

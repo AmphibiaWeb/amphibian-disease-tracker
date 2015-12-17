@@ -119,13 +119,57 @@ startAdminActionHelper = ->
 
 
 loadEditor = ->
+  ###
+  # Load up the editor interface for projects with access
+  ###
   startAdminActionHelper()
-  toastStatusMessage "Would load editor for this. Blocked on #22"
-  # Get the data ref
-  adData.cartoRef = "38544c04-5e56-11e5-8515-0e4fddd5de28"
-  geo.init()
-  foo()
+  
+  editProject = (projectId) ->
+    ###
+    # Load the edit interface for a specific project
+    ###
+    toastStatusMessage "Would load editor for this."
+    false
+  
+  do showEditList = ->
+    ###
+    # Show a list of icons for editable projects. Blocked on #22, it's
+    # just based on authorship right now.
+    ###
+    startLoad()
+    args = "perform=list"
+    $.get adminParams.apiTarget, args, "json"
+    .done (result) ->
+      html = """
+      <h2 class="new-title col-xs-12">Editable Projects</h2>
+      <ul id="project-list" class="col-xs-12 col-md-6">
+      </ul>
+      """
+      $("#main-body").html html
+      authoredList = new Array()
+      for k, projectId of result.authored_projects
+        authoredList.push projectId
+      for projectId, projectTitle of result.projects
+        if projectId in authoredList
+          html = """
+          <li>
+            <button class="btn btn-primary" data-project="#{projectId}">
+              #{projectTitle} / ##{projectId.substring(0,8)}
+            </button>
+          </li>
+          """
+          $("#project-list").append html
+      $("#project-list button")
+      .unbind()
+      .click ->
+        project = $(this).attr("data-project")
+        editProject(project)
+      stopLoad()
+    .error (result, status) ->
+      stopLoadError "There was a problem loading viable projects"
   false
+
+
 
 getInfoTooltip = (message = "No Message Provided") ->
   html = """
