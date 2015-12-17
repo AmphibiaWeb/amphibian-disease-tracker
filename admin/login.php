@@ -621,7 +621,7 @@ else if($_REQUEST['q']=='create')
               </label>
 	      <input type='text' name='honey' id='honey' class='hide'/>
 </div>
-        <p>Please solve the <a href='https://en.wikipedia.org/wiki/CAPTCHA' class='newwindow'>CAPTCHA test</a> below</p>
+        <p>Please do the<a href='https://en.wikipedia.org/wiki/CAPTCHA' class='newwindow'>CAPTCHA test</a> below to prove you're human:</p>
         <script src='https://www.google.com/recaptcha/api.js'></script>
         <div class=\"g-recaptcha\" data-sitekey=\"".$recaptcha_public_key."\"></div>
 
