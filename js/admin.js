@@ -299,7 +299,7 @@ loadProjectBrowser = function() {
   args = "perform=list";
   $.get(adminParams.apiTarget, args, "json").done(function(result) {
     var html, icon, k, projectId, projectTitle, publicList, ref, ref1;
-    html = "<h2 class=\"new-title col-xs-12\">Available Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>\n<div class='bs-callout bs-callout-warn center-block col-md-5'>\n  <p>Function worked, there's just nothing to show yet.</p>\n  <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>\n</div>";
+    html = "<h2 class=\"new-title col-xs-12\">Available Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
     $("#main-body").html(html);
     publicList = new Array();
     ref = result.public_projects;
@@ -311,7 +311,7 @@ loadProjectBrowser = function() {
     for (projectId in ref1) {
       projectTitle = ref1[projectId];
       icon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock-open\"></iron-icon>";
-      html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + projectId + "\">\n    " + icon + " " + projectTitle + "\n  </button>\n</li>";
+      html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectTitle + "\n  </button>\n</li>";
       $("#project-list").append(html);
     }
     $("#project-list button").unbind().click(function() {

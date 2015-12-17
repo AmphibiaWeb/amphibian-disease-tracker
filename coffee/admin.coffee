@@ -362,10 +362,6 @@ loadProjectBrowser = ->
     <h2 class="new-title col-xs-12">Available Projects</h2>
     <ul id="project-list" class="col-xs-12 col-md-6">
     </ul>
-    <div class='bs-callout bs-callout-warn center-block col-md-5'>
-      <p>Function worked, there's just nothing to show yet.</p>
-      <p>Imagine the beautiful and functional browser of all projects you have access to of your dreams, here.</p>
-    </div>
     """
     $("#main-body").html html
     publicList = new Array()
@@ -376,7 +372,7 @@ loadProjectBrowser = ->
       icon = if projectId in publicList then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock-open"></iron-icon>"""
       html = """
       <li>
-        <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId}">
+        <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId.substring(0,8)}...">
           #{icon} #{projectTitle}
         </button>
       </li>

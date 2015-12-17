@@ -7152,6 +7152,14 @@ iron-autogrow-textarea.project-field {
 .adjacent-info {
   margin-top: 1.5em;
 }
+#project-list button {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  margin-left: .5rem;
+}
+#project-list {
+  list-style-type: none;
+}
 .map {
   height: 50vh;
   display: block;
