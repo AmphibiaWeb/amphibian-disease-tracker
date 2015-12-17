@@ -153,7 +153,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var center, dataCheck, el, input, key, l, len, postData, ref, ref1;
+  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref, ref1;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -187,22 +187,28 @@ finalizeData = function() {
       postData[key] = input;
     }
   }
-  postData.boundingBox = geo.boundingBox;
   center = getMapCenter(geo.boundingBox);
   postData.lat = center.lat;
   postData.lng = center.lng;
   postData.author = $.cookie(adminParams.domain + "_link");
-  postData.author_data = {
+  authorData = {
     name: "",
     affiliation: "",
     lab: "",
     entry_date: ""
   };
-  postData.carto_id = {
+  postData.author_data = JSON.stringify(authorData);
+  cartoData = {
     table: geo.dataTable
   };
+  postData.carto_id = JSON.stringify(cartoData);
   postData["public"] = p$("#data-encumbrance-toggle").checked;
+  args = "perform=new&data=" + (jsonTo64(postData));
   console.info("Data object constructed:", postData);
+  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    console.log(result);
+    return false;
+  });
   return foo();
 };
 

@@ -150,7 +150,7 @@ function saveEntry($get)
 function newEntry($get)
 {
   /***
-   * Create a new taxon entry
+   * Create a new entry
    *
    *
    * @param data a base 64-encoded JSON string of the data to insert

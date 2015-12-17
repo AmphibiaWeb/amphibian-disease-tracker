@@ -254,7 +254,7 @@ finalizeData = ->
       postData[key] = toInt input
     else
       postData[key] = input
-  postData.boundingBox = geo.boundingBox
+  # postData.boundingBox = geo.boundingBox
   # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
   # Sampled species
   # Totals for disease_samples, disease_positive, disease_negative,
@@ -272,16 +272,23 @@ finalizeData = ->
   postData.lng = center.lng
   # Bounding box coords
   postData.author = $.cookie("#{adminParams.domain}_link")
-  postData.author_data =
+  authorData =
     name: ""
     affiliation: ""
     lab: ""
     entry_date: ""
-  postData.carto_id =
+  postData.author_data = JSON.stringify authorData
+  cartoData =
     table: geo.dataTable
+  postData.carto_id = JSON.stringify cartoData
   # Public or private?
   postData.public = p$("#data-encumbrance-toggle").checked
+  args = "perform=new&data=#{jsonTo64(postData)}"
   console.info "Data object constructed:", postData
+  $.post adminParams.apiTarget, args, "json"
+  .done (result) ->
+    console.log result
+    false
   foo()
 
 resetForm = ->
