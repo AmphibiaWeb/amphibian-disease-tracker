@@ -12,7 +12,7 @@ over thirty years ago to protect Europe's wild plants and animals. In December 2
 had its 35th annual Standing Committee meeting at the Palace of Europe in Strasbourg, France. 
 With _Bsal_ already decimating wild European fire salamander populations in the Netherlands and 
 its spread to the UK and Germany via the pet trade, the Convention's Standing Committee has officially 
-recommended restrictions on trade and best management practices. The Committee stresses the 
+recommended best management practices and restrictions on trade. The Committee stresses the 
 importance of implementation and enforcement in order to conserve amphibian biodiversity.
 
 The recommendations include immediate salamander trade restrictions until risk assessments and 
