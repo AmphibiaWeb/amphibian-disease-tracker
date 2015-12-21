@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "The European Council Recommends Salamander Trade Restrictions to Minimize the Spread of Disease"
-date:   2015-11-20 08:43:59
+date:   2015-12-21 08:43:59
 author: Tiffany Yap
 categories: News
 ---
