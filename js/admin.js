@@ -399,7 +399,7 @@ bootstrapTransect = function() {
       address: locality
     };
     return geocoder.geocode(request, function(result, status) {
-      var bbEW, bbNS, boundingBox, bounds, doCallback, lat, lng, loc;
+      var bbEW, bbNS, boundingBox, bounds, doCallback, e, lat, lng, loc;
       if (status === google.maps.GeocoderStatus.OK) {
         console.info("Google said:", result);
         if (!$("#locality-lookup-result").exists()) {
@@ -410,14 +410,21 @@ bootstrapTransect = function() {
         lat = loc.lat();
         lng = loc.lng();
         bounds = result[0].geometry.viewport;
-        bbEW = bounds.O;
-        bbNS = bounds.j;
-        boundingBox = {
-          nw: [bbEW.j, bbNS.O],
-          ne: [bbEW.j, bbNS.j],
-          se: [bbEW.O, bbNS.O],
-          sw: [bbEW.O, bbNS.j]
-        };
+        try {
+          bbEW = bounds.O;
+          bbNS = bounds.j;
+          boundingBox = {
+            nw: [bbEW.j, bbNS.O],
+            ne: [bbEW.j, bbNS.j],
+            se: [bbEW.O, bbNS.O],
+            sw: [bbEW.O, bbNS.j]
+          };
+        } catch (_error) {
+          e = _error;
+          console.warn("Danger: There was an error calculating the bounding box");
+          console.info("Got bounds", bounds);
+          console.info("Got geometry", result[0].geometry);
+        }
         console.info("Got bounds: ", [lat, lng], boundingBox);
         geo.boundingBox = boundingBox;
         doCallback = function() {
