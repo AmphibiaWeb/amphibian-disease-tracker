@@ -411,17 +411,18 @@ bootstrapTransect = function() {
         lng = loc.lng();
         bounds = result[0].geometry.viewport;
         try {
-          bbEW = bounds.O;
+          bbEW = bounds.N;
           bbNS = bounds.j;
           boundingBox = {
-            nw: [bbEW.j, bbNS.O],
+            nw: [bbEW.j, bbNS.N],
             ne: [bbEW.j, bbNS.j],
-            se: [bbEW.O, bbNS.O],
-            sw: [bbEW.O, bbNS.j]
+            se: [bbEW.N, bbNS.N],
+            sw: [bbEW.N, bbNS.j]
           };
         } catch (_error) {
           e = _error;
-          console.warn("Danger: There was an error calculating the bounding box");
+          console.warn("Danger: There was an error calculating the bounding box (" + e.message + ")");
+          console.warn(e.stack);
           console.info("Got bounds", bounds);
           console.info("Got geometry", result[0].geometry);
         }
