@@ -74,7 +74,7 @@ _coming soon_
     
 ###More information
 
-[Salamander Fungus](http://www.salamanderfungus.org/task-force/)
+[Salamander Fungus](http://www.salamanderfungus.org/task-force/)    
 [AmphibiaWeb on the Salamander Fungus](http://amphibiaweb.org/chytrid/Bsal.html)     
 [PARC Bsal Task Team](http://parcplace.org/parcplace/resources/disease-task-team.html)      
 [Amphibian Survival Alliance](http://www.amphibians.org/)
