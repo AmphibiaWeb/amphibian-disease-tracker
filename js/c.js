@@ -1144,7 +1144,7 @@ $(function() {
   try {
     checkAdmin();
     if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.loadAdminUi : void 0) === true) {
-      return loadJS("js/admin.min.js", function() {
+      return loadJS("js/admin.js", function() {
         console.info("Loaded admin file");
         return loadAdminUi();
       });
