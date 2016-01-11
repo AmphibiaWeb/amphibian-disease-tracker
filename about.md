@@ -66,15 +66,16 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 ### Maps
-_coming soon_
+[Example Maps](http://updates.amphibiandisease.org/maps/)
 
 ### Upload and Manage your datasets
 _coming soon_
 
     
-For more information, see the resources below:
+###More information
 
-[AmphibiaWeb](http://amphibiaweb.org)     
+[Salamander Fungus](http://www.salamanderfungus.org/task-force/)
+[AmphibiaWeb on the Salamander Fungus](http://amphibiaweb.org/chytrid/Bsal.html)     
 [PARC Bsal Task Team](http://parcplace.org/parcplace/resources/disease-task-team.html)      
 [Amphibian Survival Alliance](http://www.amphibians.org/)
 
