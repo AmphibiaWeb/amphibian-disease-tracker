@@ -1090,6 +1090,7 @@ newGeoDataHandler = function(dataObject) {
       for (column in row) {
         value = row[column];
         switch (column) {
+          case "ContactName":
           case "basisOfRecord":
           case "occurrenceID":
           case "institutionCode":
