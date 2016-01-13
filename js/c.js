@@ -1562,6 +1562,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         alt: "decimal",
         coordinateUncertaintyInMeters: "decimal",
         Collector: "varchar",
+        fimsExtra: "json",
         the_geom: "varchar"
       };
       switch (operation) {
@@ -1666,7 +1667,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           stopLoadError("CartoDB returned an error: " + cartoHasError);
           return false;
         }
-        console.info("Carto was succesfful! Got results", cartoResults);
+        console.info("Carto was successful! Got results", cartoResults);
         try {
           prettyHtml = JsonHuman.format(cartoResults);
         } catch (_error) {}

@@ -360,7 +360,7 @@ getTableCoordinates = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e
   #
   # Sample:
   # https://tigerhawkvok.cartodb.com/api/v2/sql?q=SELECT+ST_AsText(the_geom)+FROM+t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb&api_key=4837dd9b4df48f6f7ca584bd1c0e205d618bd723
-  ###  
+  ###
   false
 
 
@@ -1130,11 +1130,45 @@ newGeoDataHandler = (dataObject = new Object()) ->
     parsedData = new Object()
     dataAttrs.coords = new Array()
     dataAttrs.coordsFull = new Array()
+    fimsExtra = new Object()
     # Iterate over the data, coerce some data types
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
         switch column
+          # Change FIMS to internal structure:
+          # http://www.biscicol.org/biocode-fims/templates.jsp
+          # Expects:
+          #  id: "int"
+          #  collectionID: "varchar"
+          #  catalogNumber: "varchar"
+          #  fieldNumber: "varchar"
+          #  diseaseTested: "varchar"
+          #  diseaseStrain: "varchar"
+          #  sampleMethod: "varchar"
+          #  sampleDisposition: "varchar"
+          #  diseaseDetected: "varchar"
+          #  fatal: "boolean"
+          #  cladeSampled: "varchar"
+          #  genus: "varchar"
+          #  specificEpithet: "varchar"
+          #  infraspecificEpithet: "varchar"
+          #  lifeStage: "varchar"
+          #  dateIdentified: "date" # Should be ISO8601; coerce it!
+          #  decimalLatitude: "decimal"
+          #  decimalLongitude: "decimal"
+          #  alt: "decimal"
+          #  coordinateUncertaintyInMeters: "decimal"
+          #  Collector: "varchar"
+          #  the_geom: "varchar"
+          #
+          when "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
+            fimsExtra[column] = value
+          when "specimenDisposition"
+            column = "sampleDisposition"
+          when "elevation"
+            column = "alt"
+          # Data handling
           when "dateIdentified"
             # Coerce to ISO8601
             try
@@ -1203,6 +1237,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
       coordsPoint = new Point(coords.lat, coords.lng)
       dataAttrs.coords.push coordsPoint
       dataAttrs.coordsFull.push coords
+      try
+        tRow.fimsExtra = JSON.stringify fimsExtra
+      catch
+        console.warn "Couldn't store FIMS extra data", fimsExtra
       parsedData[n] = tRow
     try
       # http://marianoguerra.github.io/json.human.js/

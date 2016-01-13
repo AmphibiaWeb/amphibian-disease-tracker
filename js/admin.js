@@ -1041,7 +1041,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, data, date, daysFrom1900to1970, daysFrom1904to1970, e, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, samplesMeta, secondsPerDay, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, data, date, daysFrom1900to1970, daysFrom1904to1970, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, samplesMeta, secondsPerDay, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1083,12 +1083,39 @@ newGeoDataHandler = function(dataObject) {
     parsedData = new Object();
     dataAttrs.coords = new Array();
     dataAttrs.coordsFull = new Array();
+    fimsExtra = new Object();
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
       for (column in row) {
         value = row[column];
         switch (column) {
+          case "basisOfRecord":
+          case "occurrenceID":
+          case "institutionCode":
+          case "collectionCode":
+          case "labNumber":
+          case "originalsource":
+          case "datum":
+          case "georeferenceSource":
+          case "depth":
+          case "Collector2":
+          case "Collector3":
+          case "verbatimLocality":
+          case "Habitat":
+          case "Test_Method":
+          case "eventRemarks":
+          case "quantityDetected":
+          case "dilutionFactor":
+          case "cycleTimeFirstDetection":
+            fimsExtra[column] = value;
+            break;
+          case "specimenDisposition":
+            column = "sampleDisposition";
+            break;
+          case "elevation":
+            column = "alt";
+            break;
           case "dateIdentified":
             try {
               if ((0 < value && value < 10e5)) {
@@ -1170,6 +1197,11 @@ newGeoDataHandler = function(dataObject) {
       coordsPoint = new Point(coords.lat, coords.lng);
       dataAttrs.coords.push(coordsPoint);
       dataAttrs.coordsFull.push(coords);
+      try {
+        tRow.fimsExtra = JSON.stringify(fimsExtra);
+      } catch (_error) {
+        console.warn("Couldn't store FIMS extra data", fimsExtra);
+      }
       parsedData[n] = tRow;
     }
     try {

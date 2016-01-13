@@ -360,6 +360,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       # Rows per-sample ...
       # FIMS based
       # Uses DarwinCore terms
+      # http://www.biscicol.org/biocode-fims/templates.jsp#
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
       columnDatatype =
         id: "int"
@@ -383,6 +384,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         alt: "decimal"
         coordinateUncertaintyInMeters: "decimal"
         Collector: "varchar"
+        fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
         the_geom: "varchar"
       # Construct the SQL query
       switch operation
@@ -482,7 +484,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         unless cartoHasError is false
           stopLoadError "CartoDB returned an error: #{cartoHasError}"
           return false
-        console.info "Carto was succesfful! Got results", cartoResults
+        console.info "Carto was successful! Got results", cartoResults
         try
           # http://marianoguerra.github.io/json.human.js/
           prettyHtml = JsonHuman.format cartoResults
@@ -591,7 +593,7 @@ Point = (lat, lng) ->
   this.toString()
 
 geo.Point = Point
-
+# Find a minimum convex polygon
 `
 // A custom sort function that sorts p1 and p2 based on their slope
 // that is formed from the upper most point from the array of points.
