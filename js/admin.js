@@ -1083,6 +1083,7 @@ newGeoDataHandler = function(dataObject) {
     parsedData = new Object();
     dataAttrs.coords = new Array();
     dataAttrs.coordsFull = new Array();
+    dataAttrs.fimsData = new Array();
     fimsExtra = new Object();
     for (n in dataObject) {
       row = dataObject[n];
@@ -1198,6 +1199,7 @@ newGeoDataHandler = function(dataObject) {
       coordsPoint = new Point(coords.lat, coords.lng);
       dataAttrs.coords.push(coordsPoint);
       dataAttrs.coordsFull.push(coords);
+      dataAttrs.fimsData.push(fimsExtra);
       try {
         tRow.fimsExtra = JSON.stringify(fimsExtra);
       } catch (_error) {

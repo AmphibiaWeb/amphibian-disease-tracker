@@ -1130,6 +1130,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     parsedData = new Object()
     dataAttrs.coords = new Array()
     dataAttrs.coordsFull = new Array()
+    dataAttrs.fimsData = new Array()
     fimsExtra = new Object()
     # Iterate over the data, coerce some data types
     for n, row of dataObject
@@ -1237,6 +1238,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       coordsPoint = new Point(coords.lat, coords.lng)
       dataAttrs.coords.push coordsPoint
       dataAttrs.coordsFull.push coords
+      dataAttrs.fimsData.push fimsExtra
       try
         tRow.fimsExtra = JSON.stringify fimsExtra
       catch
