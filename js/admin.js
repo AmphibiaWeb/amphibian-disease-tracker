@@ -604,7 +604,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions, map) {
-  var caHull, chPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, temp2, westCoord;
+  var caHull, chPoints, chSortedPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, temp2, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -641,6 +641,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
   if ($("#carto-map-container").exists() && (geo.cartoMap != null)) {
     mpArr = new Array();
     chPoints = new Array();
+    chSortedPoints = new Array();
     gMapPaths = new Array();
     gMapPathsAlt = new Array();
     northCoord = -90;

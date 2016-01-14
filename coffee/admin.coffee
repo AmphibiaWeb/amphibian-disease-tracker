@@ -678,6 +678,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     # http://leafletjs.com/examples/geojson.html
     mpArr = new Array()
     chPoints = new Array()
+    chSortedPoints = new Array()
     gMapPaths = new Array()
     gMapPathsAlt = new Array()
     northCoord = -90
