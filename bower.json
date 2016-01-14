@@ -34,6 +34,7 @@
     "purl": "~2.3.1",
     "whichbrowser": "1.0.1020",
     "xmlToJSON": "metatribal/xmlToJSON#~1.1.0",
-    "zeroclipboard": "^2.2.0"
+    "zeroclipboard": "^2.2.0",
+    "paper-card": "PolymerElements/paper-card#~1.0.9"
   }
 }
