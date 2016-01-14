@@ -7021,6 +7021,15 @@ paper-dialog-scrollable {
 html >>> .capitalize {
   text-transform: capitalize;
 }
+.fixed-bar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+}
+header#header-bar {
+  background: #5677fc;
+  color: #fff;
+}
 /* Loader */
 #loader {
   position: fixed;
