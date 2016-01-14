@@ -240,9 +240,12 @@ loadCreateNewProject = ->
       Please note that the data <strong>must</strong> have a header row,
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>elevation</code>, and <code>coordinateUncertaintyInMeters</code>.
     </p>
-    <p>
+    <div class="alert alert-info" role="alert">
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org</a>.
+    </div>
+    <div class="alert alert-warning" role="alert">
       <strong>If the data is in Excel</strong>, ensure that it is in a single-sheet workbook.
-    </p>
+    </div>
   </section>
   <section class="project-inputs clearfix data-section col-xs-12">
     <div class="row">
