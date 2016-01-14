@@ -568,10 +568,16 @@ sortPoints = (pointArray, asObj = true) ->
 
 
 fPoint = (lat, lng) ->
+  @latval = lat
+  @lngval = lng
   @lat = ->
-    return lat
+    @latval
   @lng = ->
-    return lng
+    @lngval
+  @toString = ->
+    "(#{@x}, #{@y})"
+  this.toString()
+
 
 Point = (lat, lng) ->
   # From
@@ -706,7 +712,7 @@ getConvexHullConfig = (points, map = geo.googleMap) ->
     fillOpacity: 0.35
     strokeWidth: 2
     strokeColor: "#0000FF"
-    strokeOpacity: 0.5        
+    strokeOpacity: 0.5
   # cHullPoly = new google.maps.Polygon polygonConfig
   # false
 
@@ -736,10 +742,10 @@ getConvexHullConfig = (points, map = geo.googleMap) ->
      chainHull_2D( points, points.length, hullPoints );
      polyline = new google.maps.Polygon({
       map: map,
-      paths:hullPoints, 
+      paths:hullPoints,
       fillColor:"#FF0000",
-      strokeWidth:2, 
-      fillOpacity:0.5, 
+      strokeWidth:2,
+      fillOpacity:0.5,
       strokeColor:"#0000FF",
       strokeOpacity:0.5
      });
@@ -780,15 +786,15 @@ function sortPointY(a, b) {
     return a.lat() - b.lat();
 }
 
-function isLeft(P0, P1, P2) {    
+function isLeft(P0, P1, P2) {
     return (P1.lng() - P0.lng()) * (P2.lat() - P0.lat()) - (P2.lng() - P0.lng()) * (P1.lat() - P0.lat());
 }
 //===================================================================
 
 // chainHull_2D(): A.M. Andrew's monotone chain 2D convex hull algorithm
 // http://softsurfer.com/Archive/algorithm_0109/algorithm_0109.htm
-// 
-//     Input:  P[] = an array of 2D points 
+//
+//     Input:  P[] = an array of 2D points
 //                   presorted by increasing x- and y-coordinates
 //             n = the number of points in P[]
 //     Output: H[] = an array of the convex hull vertices (max is n)
@@ -803,16 +809,16 @@ function chainHull_2D(P, n, H) {
     // Get the indices of points with min x-coord and min|max y-coord
     var minmin = 0,
         minmax;
-        
+
     var xmin = P[0].lng();
     for (i = 1; i < n; i++) {
         if (P[i].lng() != xmin) {
             break;
         }
     }
-    
+
     minmax = i - 1;
-    if (minmax == n - 1) { // degenerate case: all x-coords == xmin 
+    if (minmax == n - 1) { // degenerate case: all x-coords == xmin
         H[++top] = P[minmin];
         if (P[minmax].lat() != P[minmin].lat()) // a nontrivial segment
             H[++top] = P[minmax];
@@ -825,7 +831,7 @@ function chainHull_2D(P, n, H) {
     var xmax = P[n - 1].lng();
     for (i = n - 2; i >= 0; i--) {
         if (P[i].lng() != xmax) {
-            break; 
+            break;
         }
     }
     maxmin = i + 1;
@@ -838,7 +844,7 @@ function chainHull_2D(P, n, H) {
         if (isLeft(P[minmin], P[maxmin], P[i]) >= 0 && i < maxmin) {
             continue; // ignore P[i] above or on the lower line
         }
-        
+
         while (top > 0) { // there are at least 2 points on the stack
             // test if P[i] is left of the line at the stack top
             if (isLeft(H[top - 1], H[top], P[i]) > 0) {
@@ -848,7 +854,7 @@ function chainHull_2D(P, n, H) {
                 top--; // pop top point off stack
             }
         }
-        
+
         H[++top] = P[i]; // push P[i] onto stack
     }
 
@@ -856,7 +862,7 @@ function chainHull_2D(P, n, H) {
     if (maxmax != maxmin) { // if distinct xmax points
         H[++top] = P[maxmax]; // push maxmax point onto stack
     }
-    
+
     bot = top; // the bottom point of the upper hull stack
     i = maxmin;
     while (--i >= minmax) {
@@ -864,10 +870,10 @@ function chainHull_2D(P, n, H) {
         if (isLeft(P[maxmax], P[minmax], P[i]) >= 0 && i > minmax) {
             continue; // ignore P[i] below or on the upper line
         }
-        
+
         while (top > bot) { // at least 2 points on the upper stack
             // test if P[i] is left of the line at the stack top
-            if (isLeft(H[top - 1], H[top], P[i]) > 0) { 
+            if (isLeft(H[top - 1], H[top], P[i]) > 0) {
                 break;  // P[i] is a new hull vertex
             }
             else {
@@ -875,18 +881,18 @@ function chainHull_2D(P, n, H) {
             }
         }
 
-// breaks algorithm        
+// breaks algorithm
 //        if (P[i].lng() == H[0].lng() && P[i].lat() == H[0].lat()) {
 //            return top + 1; // special case (mgomes)
 //        }
-        
+
         H[++top] = P[i]; // push P[i] onto stack
     }
-    
+
     if (minmax != minmin) {
         H[++top] = P[minmin]; // push joining endpoint onto stack
     }
-    
+
     return top + 1;
 }
 `
