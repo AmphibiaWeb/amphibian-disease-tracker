@@ -7029,6 +7029,20 @@ html >>> .capitalize {
 header#header-bar {
   background: #5677fc;
   color: #fff;
+  padding: .5rem;
+  margin: 0;
+}
+.subtitle {
+  font-weight: 300;
+  text-indent: 2em;
+}
+.login-button {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+.title-image {
+  display: inline-block;
+  max-height: 2rem;
 }
 #amphibian-images-carousel {
   display: block;
@@ -7037,8 +7051,8 @@ header#header-bar {
 }
 #amphibian-images-carousel,
 #amphibian-images-carousel img {
-  max-width: 80vw;
-  max-height: 50vh;
+  max-width: 40vw;
+  max-height: 60vh;
 }
 /* Loader */
 #loader {
