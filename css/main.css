@@ -7023,7 +7023,10 @@ html >>> .capitalize {
 }
 .fixed-bar {
   position: fixed;
+  margin-top: 0px !important;
   top: 0px;
+  width: 100%;
+  z-index: 999;
 }
 header#header-bar {
   background: #5677fc;

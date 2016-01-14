@@ -820,10 +820,20 @@ bsAlert = (message, type = "warning", fallbackContainer = "body", selector = "#b
   $("#{selector} .alert-message").html(message)
 
 
+animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, raisedElevation = 4) ->
+  handlerIn = ->
+    $(this).attr "elevation", raisedElevation
+  handlerOut = ->
+    $(this).attr "elevation", defaultElevation
+  $(selector).hover handlerIn, handlerOut    
+  false
+
+
 $ ->
   bindClicks()
   formatScientificNames()
   lightboxImages()
+  animateHoverShadows()
   try
     $("body").tooltip
       selector: "[data-toggle='tooltip']"

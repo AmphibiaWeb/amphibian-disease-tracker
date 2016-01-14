@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1129,10 +1129,32 @@ bsAlert = function(message, type, fallbackContainer, selector) {
   return $(selector + " .alert-message").html(message);
 };
 
+animateHoverShadows = function(selector, defaultElevation, raisedElevation) {
+  var handlerIn, handlerOut;
+  if (selector == null) {
+    selector = "paper-card.card-tile";
+  }
+  if (defaultElevation == null) {
+    defaultElevation = 2;
+  }
+  if (raisedElevation == null) {
+    raisedElevation = 4;
+  }
+  handlerIn = function() {
+    return $(this).attr("elevation", raisedElevation);
+  };
+  handlerOut = function() {
+    return $(this).attr("elevation", defaultElevation);
+  };
+  $(selector).hover(handlerIn, handlerOut);
+  return false;
+};
+
 $(function() {
   bindClicks();
   formatScientificNames();
   lightboxImages();
+  animateHoverShadows();
   try {
     $("body").tooltip({
       selector: "[data-toggle='tooltip']"
