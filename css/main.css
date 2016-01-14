@@ -7034,6 +7034,11 @@ paper-dropdown.dropdown {
 paper-toggle-button {
   margin-left: 1rem;
 }
+paper-toggle-button.red {
+  --paper-toggle-button-checked-bar-color: var(--paper-red-500);
+  --paper-toggle-button-checked-button-color: var(--paper-red-500);
+  --paper-toggle-button-checked-ink-color: var(--paper-red-500);
+}
 paper-icon-button {
   vertical-align: middle;
 }
