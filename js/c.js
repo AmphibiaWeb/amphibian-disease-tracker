@@ -1728,7 +1728,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
 };
 
 sortPoints = function(pointArray, asObj) {
-  var coordPoint, l, len, sortedPoints;
+  var coordPoint, l, len, pointFunc, sortedPoints;
   if (asObj == null) {
     asObj = true;
   }
@@ -1745,7 +1745,14 @@ sortPoints = function(pointArray, asObj) {
     if (asObj) {
       sortedPoints.push(coordPoint.getObj());
     } else {
-      sortedPoints.push(coordPoint);
+      pointFunc = new Object();
+      pointFunc.lat = function() {
+        return coordPoint.lat;
+      };
+      pointFunc.lng = function() {
+        return coordPoint.lng;
+      };
+      sortedPoints.push(pointFunc);
     }
   }
   delete window.upper;

@@ -557,7 +557,12 @@ sortPoints = (pointArray, asObj = true) ->
     if asObj
       sortedPoints.push coordPoint.getObj()
     else
-      sortedPoints.push coordPoint
+      pointFunc = new Object()
+      pointFunc.lat = ->
+        return coordPoint.lat
+      pointFunc.lng = ->
+        return coordPoint.lng
+      sortedPoints.push pointFunc
   delete window.upper
   sortedPoints
 
