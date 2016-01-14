@@ -657,7 +657,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     }
     gMapPaths = sortPoints(gMapPathsAlt);
     chPoints = sortPoints(gMapPathsAlt, false);
-    chSortedPoints = chPoints;
+    chSortedPoints = gMapPathsAlt;
     chSortedPoints.sort(sortPointY);
     chSortedPoints.sort(sortPointX);
     coordinateArray = new Array();
@@ -687,7 +687,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       console.info(gMapPaths);
     }
     console.info("Got hulls", cpHull, caHull, cmpHull);
-    console.info("Sources", chPoints, chSortedPoints, coordinateArray, gMapPaths);
+    console.info("Sources", chPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt);
     gMapPoly.paths = gMapPaths;
     geoMultiPoly = {
       type: "Polygon",

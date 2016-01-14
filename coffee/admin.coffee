@@ -698,7 +698,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       gMapPathsAlt.push new Point(temp.lat, temp.lng)
     gMapPaths = sortPoints gMapPathsAlt
     chPoints = sortPoints gMapPathsAlt, false
-    chSortedPoints = chPoints
+    chSortedPoints = gMapPathsAlt
     chSortedPoints.sort sortPointY
     chSortedPoints.sort sortPointX
     coordinateArray = new Array()
@@ -722,7 +722,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       console.warn e.stack
       console.info gMapPaths
     console.info "Got hulls", cpHull, caHull, cmpHull
-    console.info "Sources", chPoints, chSortedPoints, coordinateArray, gMapPaths
+    console.info "Sources", chPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt
     gMapPoly.paths = gMapPaths
     geoMultiPoly =
       type: "Polygon"
