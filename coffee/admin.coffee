@@ -677,6 +677,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     # Example:
     # http://leafletjs.com/examples/geojson.html
     mpArr = new Array()
+    chPoints = new Array()
     gMapPaths = new Array()
     gMapPathsAlt = new Array()
     northCoord = -90
@@ -688,22 +689,36 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       temp = new Object()
       temp.lat = points[0]
       temp.lng = points[1]
+      # temp2 = new Object()
+      # temp2.lat = ->
+      #   return points[0]
+      # temp2.lng = ->
+      #   return points[1]
+      # chPoints.push temp2
       gMapPathsAlt.push new Point(temp.lat, temp.lng)
     gMapPaths = sortPoints gMapPathsAlt
+    chPoints = sortPoints gMapPathsAlt, false
     coordinateArray = new Array()
     coordinateArray.push mpArr
+    try
+      cpHull = getConvexHullPoints chPoints
+    catch e
+      console.error "Convex hull points CHP failed! - #{e.message}"
+      console.warn e.stack
+      console.info chPoints
     try
       caHull = getConvexHullPoints coordinateArray
     catch e
       console.error "Convex hull points CA failed! - #{e.message}"
       console.warn e.stack
-      console.info coordinateArray, gMapPaths
+      console.info coordinateArray
     try
       cmpHull = getConvexHullPoints gMapPaths
     catch e
       console.error "Convex hull points CMP failed! - #{e.message}"
       console.warn e.stack
-      console.info coordinateArray, gMapPaths
+      console.info gMapPaths
+    console.info "Got hulls", cpHull, caHull, cmpHull
     gMapPoly.paths = gMapPaths
     geoMultiPoly =
       type: "Polygon"

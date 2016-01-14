@@ -1386,7 +1386,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   false
 
 
-sortPoints = (pointArray) ->
+sortPoints = (pointArray, asObj = true) ->
   ###
   # Take an array of points and return a Google Maps compatible array
   # of coordinate objects
@@ -1395,7 +1395,10 @@ sortPoints = (pointArray) ->
   pointArray.sort pointSort
   sortedPoints = new Array()
   for coordPoint in pointArray
-    sortedPoints.push coordPoint.getObj()
+    if asObj
+      sortedPoints.push coordPoint.getObj()
+    else
+      sortedPoints.push coordPoint
   delete window.upper
   sortedPoints
 

@@ -1727,19 +1727,26 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
   return false;
 };
 
-sortPoints = function(pointArray) {
+sortPoints = function(pointArray, asObj) {
+  var coordPoint, l, len, sortedPoints;
+  if (asObj == null) {
+    asObj = true;
+  }
 
   /*
    * Take an array of points and return a Google Maps compatible array
    * of coordinate objects
    */
-  var coordPoint, l, len, sortedPoints;
   window.upper = upperLeft(pointArray);
   pointArray.sort(pointSort);
   sortedPoints = new Array();
   for (l = 0, len = pointArray.length; l < len; l++) {
     coordPoint = pointArray[l];
-    sortedPoints.push(coordPoint.getObj());
+    if (asObj) {
+      sortedPoints.push(coordPoint.getObj());
+    } else {
+      sortedPoints.push(coordPoint);
+    }
   }
   delete window.upper;
   return sortedPoints;

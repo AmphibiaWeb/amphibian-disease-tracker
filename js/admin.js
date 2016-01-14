@@ -604,7 +604,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions, map) {
-  var caHull, cmpHull, coordinateArray, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
+  var caHull, chPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -640,6 +640,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
   console.info("Should overlay polygon from bounds here");
   if ($("#carto-map-container").exists() && (geo.cartoMap != null)) {
     mpArr = new Array();
+    chPoints = new Array();
     gMapPaths = new Array();
     gMapPathsAlt = new Array();
     northCoord = -90;
@@ -655,15 +656,24 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       gMapPathsAlt.push(new Point(temp.lat, temp.lng));
     }
     gMapPaths = sortPoints(gMapPathsAlt);
+    chPoints = sortPoints(gMapPathsAlt, false);
     coordinateArray = new Array();
     coordinateArray.push(mpArr);
+    try {
+      cpHull = getConvexHullPoints(chPoints);
+    } catch (_error) {
+      e = _error;
+      console.error("Convex hull points CHP failed! - " + e.message);
+      console.warn(e.stack);
+      console.info(chPoints);
+    }
     try {
       caHull = getConvexHullPoints(coordinateArray);
     } catch (_error) {
       e = _error;
       console.error("Convex hull points CA failed! - " + e.message);
       console.warn(e.stack);
-      console.info(coordinateArray, gMapPaths);
+      console.info(coordinateArray);
     }
     try {
       cmpHull = getConvexHullPoints(gMapPaths);
@@ -671,8 +681,9 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       e = _error;
       console.error("Convex hull points CMP failed! - " + e.message);
       console.warn(e.stack);
-      console.info(coordinateArray, gMapPaths);
+      console.info(gMapPaths);
     }
+    console.info("Got hulls", cpHull, caHull, cmpHull);
     gMapPoly.paths = gMapPaths;
     geoMultiPoly = {
       type: "Polygon",
