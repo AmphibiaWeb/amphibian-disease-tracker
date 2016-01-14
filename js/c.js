@@ -658,27 +658,20 @@ mapNewWindows = function(stopPropagation) {
     stopPropagation = true;
   }
   return $(".newwindow").each(function() {
-    var curHref, openInNewWindow;
+    var curHref;
     curHref = $(this).attr("href");
     if (curHref == null) {
       curHref = $(this).attr("data-href");
     }
-    openInNewWindow = function(url) {
-      if (url == null) {
-        return false;
-      }
-      window.open(url);
-      return false;
-    };
     $(this).click(function(e) {
       if (stopPropagation) {
         e.preventDefault();
         e.stopPropagation();
       }
-      return openInNewWindow(curHref);
+      return openTab(curHref);
     });
     return $(this).keypress(function() {
-      return openInNewWindow(curHref);
+      return openTab(curHref);
     });
   });
 };

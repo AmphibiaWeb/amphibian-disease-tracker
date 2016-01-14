@@ -471,17 +471,13 @@ mapNewWindows = (stopPropagation = true) ->
     if not curHref?
       # Support non-standard elements
       curHref = $(this).attr("data-href")
-    openInNewWindow = (url) ->
-      if not url? then return false
-      window.open(url)
-      return false
     $(this).click (e) ->
       if stopPropagation
         e.preventDefault()
         e.stopPropagation()
-      openInNewWindow(curHref)
+      openTab(curHref)
     $(this).keypress ->
-      openInNewWindow(curHref)
+      openTab(curHref)
 
 deepJQuery = (selector) ->
   ###
