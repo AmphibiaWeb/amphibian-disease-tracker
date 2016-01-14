@@ -678,7 +678,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     # http://leafletjs.com/examples/geojson.html
     mpArr = new Array()
     chPoints = new Array()
-    chSortedPoints = new Array()
+    chAltPoints = new Array()
     gMapPaths = new Array()
     gMapPathsAlt = new Array()
     northCoord = -90
@@ -695,10 +695,11 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
         return points[0]
       temp2.lng = ->
         return points[1]
-      chSortedPoints.push temp2
+      chAltPoints.push temp2
       gMapPathsAlt.push new Point(temp.lat, temp.lng)
     gMapPaths = sortPoints gMapPathsAlt
     chPoints = sortPoints gMapPathsAlt, false
+    chSortedPoints = chAltPoints
     chSortedPoints.sort sortPointY
     chSortedPoints.sort sortPointX
     coordinateArray = new Array()
@@ -722,7 +723,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       console.warn e.stack
       console.info gMapPaths
     console.info "Got hulls", cpHull, caHull, cmpHull
-    console.info "Sources", chPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt
+    console.info "Sources", chPoints, chAltPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt
     gMapPoly.paths = gMapPaths
     geoMultiPoly =
       type: "Polygon"

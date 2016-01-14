@@ -604,7 +604,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions, map) {
-  var caHull, chPoints, chSortedPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, temp2, westCoord;
+  var caHull, chAltPoints, chPoints, chSortedPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, temp2, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -641,7 +641,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
   if ($("#carto-map-container").exists() && (geo.cartoMap != null)) {
     mpArr = new Array();
     chPoints = new Array();
-    chSortedPoints = new Array();
+    chAltPoints = new Array();
     gMapPaths = new Array();
     gMapPathsAlt = new Array();
     northCoord = -90;
@@ -661,11 +661,12 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       temp2.lng = function() {
         return points[1];
       };
-      chSortedPoints.push(temp2);
+      chAltPoints.push(temp2);
       gMapPathsAlt.push(new Point(temp.lat, temp.lng));
     }
     gMapPaths = sortPoints(gMapPathsAlt);
     chPoints = sortPoints(gMapPathsAlt, false);
+    chSortedPoints = chAltPoints;
     chSortedPoints.sort(sortPointY);
     chSortedPoints.sort(sortPointX);
     coordinateArray = new Array();
@@ -695,7 +696,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       console.info(gMapPaths);
     }
     console.info("Got hulls", cpHull, caHull, cmpHull);
-    console.info("Sources", chPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt);
+    console.info("Sources", chPoints, chAltPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt);
     gMapPoly.paths = gMapPaths;
     geoMultiPoly = {
       type: "Polygon",
