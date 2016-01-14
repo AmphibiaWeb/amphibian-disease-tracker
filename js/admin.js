@@ -684,6 +684,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       console.info(gMapPaths);
     }
     console.info("Got hulls", cpHull, caHull, cmpHull);
+    console.info("Sources", chPoints, coordinateArray, gMapPaths);
     gMapPoly.paths = gMapPaths;
     geoMultiPoly = {
       type: "Polygon",
