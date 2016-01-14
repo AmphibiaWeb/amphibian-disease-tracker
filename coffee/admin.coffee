@@ -241,7 +241,7 @@ loadCreateNewProject = ->
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>elevation</code>, and <code>coordinateUncertaintyInMeters</code>.
     </p>
     <div class="alert alert-info" role="alert">
-      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>.
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Your data will be validated with the same service.
     </div>
     <div class="alert alert-warning" role="alert">
       <strong>If the data is in Excel</strong>, ensure that it is in a single-sheet workbook. Data across multiple sheets in one workbook may be improperly processed.
@@ -262,7 +262,7 @@ loadCreateNewProject = ->
   </section>
   <section id="submission-section col-xs-12">
     <div class="pull-right">
-      <button id="upload-data" class="btn btn-success click" data-function="finalizeData">Save Data &amp; Create Project</button>
+      <button id="upload-data" class="btn btn-success click" data-function="finalizeData"><iron-icon icon="icons:lock-open"></iron-icon> Save Data &amp; Create Private Project</button>
       <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
     </div>
   </section>
@@ -275,6 +275,9 @@ loadCreateNewProject = ->
       $(".data-section").attr("hidden","hidden")
     else
       $(".data-section").removeAttr("hidden")
+  $("#data-encumbrance-toggle").on "iron-change", ->
+    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> Save Data &amp; Create Public Project""" else """<iron-icon icon="icons:lock-open"></iron-icon> Save Data &amp; Create Private Project"""
+    $("#upload-data").html buttonLabel
   bindClicks()
   false
 
