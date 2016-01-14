@@ -238,7 +238,7 @@ loadCreateNewProject = ->
     <p>
       To save your project, we need at least one file with structured data containing coordinates.
       Please note that the data <strong>must</strong> have a header row,
-      and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>elevation</code>, and <code>coordinateUncertaintyInMeters</code>. 
+      and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>elevation</code>, and <code>coordinateUncertaintyInMeters</code>.
     </p>
     <p>
       <strong>If the data is in Excel</strong>, ensure that it is in a single-sheet workbook.
@@ -694,9 +694,14 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     coordinateArray.push mpArr
     try
       caHull = getConvexHullPoints coordinateArray
+    catch e
+      console.error "Convex hull points CA failed! - #{e.message}"
+      console.warn e.stack
+      console.info coordinateArray, gMapPaths
+    try
       cmpHull = getConvexHullPoints gMapPaths
     catch e
-      console.error "Convex hull points failed! - #{e.message}"
+      console.error "Convex hull points CMP failed! - #{e.message}"
       console.warn e.stack
       console.info coordinateArray, gMapPaths
     gMapPoly.paths = gMapPaths
