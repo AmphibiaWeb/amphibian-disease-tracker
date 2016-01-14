@@ -7030,7 +7030,8 @@ header#header-bar {
   background: #5677fc;
   color: #fff;
   padding: .5rem;
-  margin: 0;
+  margin-top: -10px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
 .subtitle {
   font-weight: 300;
