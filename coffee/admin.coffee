@@ -698,6 +698,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       gMapPathsAlt.push new Point(temp.lat, temp.lng)
     gMapPaths = sortPoints gMapPathsAlt
     chPoints = sortPoints gMapPathsAlt, false
+    chSortedPoints = chPoints
     chSortedPoints.sort sortPointY
     chSortedPoints.sort sortPointX
     coordinateArray = new Array()

@@ -604,7 +604,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions, map) {
-  var caHull, chPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
+  var caHull, chPoints, chSortedPoints, cmpHull, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -657,6 +657,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     }
     gMapPaths = sortPoints(gMapPathsAlt);
     chPoints = sortPoints(gMapPathsAlt, false);
+    chSortedPoints = chPoints;
     chSortedPoints.sort(sortPointY);
     chSortedPoints.sort(sortPointX);
     coordinateArray = new Array();
