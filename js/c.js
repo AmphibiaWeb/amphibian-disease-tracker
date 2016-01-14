@@ -1899,7 +1899,7 @@ getConvexHullPoints = function(points) {
       lat: point.lat(),
       lng: point.lng()
     };
-    realHull.push(point);
+    realHull.push(temp);
   }
   console.info("Got hull from " + points.length + " points:", realHull);
   return realHull;
