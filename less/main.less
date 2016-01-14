@@ -241,6 +241,17 @@ header#header-bar {
     max-height: 60vh;
 }
 
+.center-on-large {
+    .text-center;
+    .center-block;
+}
+
+@media(min-width: @screen-md-min) {
+    .center-on-large {
+        width: 200% / 3;
+    }
+}
+
 .card-tile {
     
 }

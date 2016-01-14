@@ -7061,6 +7061,17 @@ header#header-bar {
   max-width: 40vw;
   max-height: 60vh;
 }
+.center-on-large {
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 992px) {
+  .center-on-large {
+    width: 66.66666667%;
+  }
+}
 /* Loader */
 #loader {
   position: fixed;
