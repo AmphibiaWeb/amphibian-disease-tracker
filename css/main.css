@@ -7039,6 +7039,12 @@ paper-toggle-button.red {
   --paper-toggle-button-checked-button-color: var(--paper-red-500);
   --paper-toggle-button-checked-ink-color: var(--paper-red-500);
 }
+.toggle-off-label {
+  display: inline-block !important;
+}
+.toggle-off-label + paper-toggle-button {
+  display: inline-block;
+}
 paper-icon-button {
   vertical-align: middle;
 }
