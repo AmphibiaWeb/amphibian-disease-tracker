@@ -654,7 +654,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
       temp = new Object();
       temp.lat = points[0];
       temp.lng = points[1];
-      chAltPoints.push(new fPoints(temp.lat, temp.lng));
+      chAltPoints.push(new fPoint(temp.lat, temp.lng));
       gMapPathsAlt.push(new Point(temp.lat, temp.lng));
     }
     gMapPaths = sortPoints(gMapPathsAlt);
