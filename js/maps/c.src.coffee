@@ -1408,6 +1408,12 @@ sortPoints = (pointArray, asObj = true) ->
   sortedPoints
 
 
+fPoint = (lat, lng) ->
+  @lat = ->
+    return lat
+  @lng = ->
+    return lng
+
 Point = (lat, lng) ->
   # From
   # http://stackoverflow.com/a/2863378
