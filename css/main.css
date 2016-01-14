@@ -7030,6 +7030,16 @@ header#header-bar {
   background: #5677fc;
   color: #fff;
 }
+#amphibian-images-carousel {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#amphibian-images-carousel,
+#amphibian-images-carousel img {
+  max-width: 80vw;
+  max-height: 50vh;
+}
 /* Loader */
 #loader {
   position: fixed;
