@@ -700,7 +700,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     coordinateArray = new Array()
     coordinateArray.push mpArr
     try
-      cpHull = getConvexHullPoints chPoints
+      cpHull = getConvexHullPoints chSortedPoints
     catch e
       console.error "Convex hull points CHP failed! - #{e.message}"
       console.warn e.stack
@@ -719,7 +719,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
       console.info gMapPaths
     console.info "Got hulls", cpHull, caHull, cmpHull
     console.info "Sources", chPoints, chAltPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt
-    gMapPoly.paths = gMapPaths
+    gMapPoly.paths = cpHull # gMapPaths
     geoMultiPoly =
       type: "Polygon"
       coordinates: coordinateArray

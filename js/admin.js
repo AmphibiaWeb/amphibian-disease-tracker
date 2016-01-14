@@ -665,7 +665,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     coordinateArray = new Array();
     coordinateArray.push(mpArr);
     try {
-      cpHull = getConvexHullPoints(chPoints);
+      cpHull = getConvexHullPoints(chSortedPoints);
     } catch (_error) {
       e = _error;
       console.error("Convex hull points CHP failed! - " + e.message);
@@ -690,7 +690,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     }
     console.info("Got hulls", cpHull, caHull, cmpHull);
     console.info("Sources", chPoints, chAltPoints, chSortedPoints, coordinateArray, gMapPaths, gMapPathsAlt);
-    gMapPoly.paths = gMapPaths;
+    gMapPoly.paths = cpHull;
     geoMultiPoly = {
       type: "Polygon",
       coordinates: coordinateArray
