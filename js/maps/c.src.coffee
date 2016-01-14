@@ -1523,7 +1523,14 @@ sortPointY = (a, b) ->
 getConvexHullPoints = (points) ->
   hullPoints = new Array()
   chainHull_2D points, points.length, hullPoints
-  hullPoints  
+  realHull = new Array()
+  for point in hullPoints
+    temp =
+      lat: point.lat()
+      lng: point.lng()
+    realHull.push point
+  console.info "Got hull from #{points.length} points:", realHull
+  realHull
 
 getConvexHullConfig = (points, map = geo.googleMap) ->
   hullPoints = getConvexHullPoints points

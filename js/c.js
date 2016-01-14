@@ -1889,10 +1889,20 @@ sortPointY = function(a, b) {
 };
 
 getConvexHullPoints = function(points) {
-  var hullPoints;
+  var hullPoints, l, len, point, realHull, temp;
   hullPoints = new Array();
   chainHull_2D(points, points.length, hullPoints);
-  return hullPoints;
+  realHull = new Array();
+  for (l = 0, len = hullPoints.length; l < len; l++) {
+    point = hullPoints[l];
+    temp = {
+      lat: point.lat(),
+      lng: point.lng()
+    };
+    realHull.push(point);
+  }
+  console.info("Got hull from " + points.length + " points:", realHull);
+  return realHull;
 };
 
 getConvexHullConfig = function(points, map) {
