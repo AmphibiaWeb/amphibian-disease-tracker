@@ -200,7 +200,7 @@ paper-dialog-scrollable {
 // Home Page
 
 .fixed-bar {
-    position: sticky;
+    position: fixed; //sticky;
     top: 0px;
 }
 
@@ -253,6 +253,16 @@ header#header-bar {
 }
 
 .card-tile {
+    vertical-align: top;
+}
+
+// paper-card.card-tile .header .title-text.paper-card {
+//     color: @material-indigo !important;
+//     text-shadow: 1px 1px 3px rgba(0,0,0,.45);
+// }
+
+paper-card.card-tile .header iron-image img {
+    filter: grayscale(50%) opacity(.25);
     
 }
 

@@ -7022,8 +7022,7 @@ html >>> .capitalize {
   text-transform: capitalize;
 }
 .fixed-bar {
-  position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
   top: 0px;
 }
 header#header-bar {
@@ -7071,6 +7070,13 @@ header#header-bar {
   .center-on-large {
     width: 66.66666667%;
   }
+}
+.card-tile {
+  vertical-align: top;
+}
+paper-card.card-tile .header iron-image img {
+  -webkit-filter: grayscale(50%) opacity(0.25);
+          filter: grayscale(50%) opacity(0.25);
 }
 /* Loader */
 #loader {
