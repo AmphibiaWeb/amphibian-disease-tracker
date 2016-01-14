@@ -7033,6 +7033,10 @@ header#header-bar {
   margin-top: -10px;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
+.main-title {
+  font-weight: 100;
+  font-size: 47px;
+}
 .subtitle {
   font-weight: 300;
   text-indent: 2em;
