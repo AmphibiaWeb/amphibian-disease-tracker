@@ -262,7 +262,7 @@ loadCreateNewProject = ->
   </section>
   <section id="submission-section col-xs-12">
     <div class="pull-right">
-      <button id="upload-data" class="btn btn-success click" data-function="finalizeData"><iron-icon icon="icons:lock-open"></iron-icon> Save Data &amp; Create Private Project</button>
+      <button id="upload-data" class="btn btn-success click" data-function="finalizeData"><iron-icon icon="icons:lock-open"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project</button>
       <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
     </div>
   </section>
@@ -273,10 +273,12 @@ loadCreateNewProject = ->
   $("#has-data").on "iron-change", ->
     unless $(this).get(0).checked
       $(".data-section").attr("hidden","hidden")
+      $(".label-with-data").attr("hidden","hidden")
     else
       $(".data-section").removeAttr("hidden")
+      $(".label-with-data").removeAttr("hidden")
   $("#data-encumbrance-toggle").on "iron-change", ->
-    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> Save Data &amp; Create Public Project""" else """<iron-icon icon="icons:lock-open"></iron-icon> Save Data &amp; Create Private Project"""
+    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Public Project""" else """<iron-icon icon="icons:lock-open"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project"""
     $("#upload-data").html buttonLabel
   bindClicks()
   false
