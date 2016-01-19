@@ -7076,6 +7076,19 @@ header#header-bar {
 }
 .card-tile {
   vertical-align: top;
+  margin-top: 1rem;
+}
+@media (max-width: 768px) {
+  .card-tile {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #amphibian-images-carousel,
+  #amphibian-images-carousel img {
+    max-width: 90vw;
+    max-height: 60vh;
+  }
 }
 paper-card.card-tile .header iron-image img {
   -webkit-filter: grayscale(50%) opacity(0.25);
