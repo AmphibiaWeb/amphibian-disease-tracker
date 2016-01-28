@@ -1,7 +1,18 @@
 
 /*
  * The main coffeescript file for administrative stuff
+ * Bootstraps some of the other loads, sets up parameters, and contains
+ * code for the main creator/uploader.
+ *
  * Triggered from admin-page.html
+ *
+ * Compiles into ./js/admin.js via ./Gruntfile.coffee
+ *
+ * For administrative editor code, look at ./coffee/admin-editor.coffee
+ * For adminstrative viewer code, look at ./coffee/admin-viewer.coffee
+ *
+ * @path ./coffee/admin.coffee
+ * @author Philip Kahn
  */
 var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -111,62 +122,6 @@ startAdminActionHelper = function() {
     $(".tooltip").tooltip("hide");
     return populateAdminActions();
   });
-};
-
-loadEditor = function() {
-
-  /*
-   * Load up the editor interface for projects with access
-   */
-  var editProject, showEditList;
-  startAdminActionHelper();
-  editProject = function(projectId) {
-
-    /*
-     * Load the edit interface for a specific project
-     */
-    toastStatusMessage("Would load editor for this.");
-    return false;
-  };
-  (showEditList = function() {
-
-    /*
-     * Show a list of icons for editable projects. Blocked on #22, it's
-     * just based on authorship right now.
-     */
-    var args;
-    startLoad();
-    args = "perform=list";
-    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-      var authoredList, html, icon, k, projectId, projectTitle, ref, ref1;
-      html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
-      $("#main-body").html(html);
-      authoredList = new Array();
-      ref = result.authored_projects;
-      for (k in ref) {
-        projectId = ref[k];
-        authoredList.push(projectId);
-      }
-      ref1 = result.projects;
-      for (projectId in ref1) {
-        projectTitle = ref1[projectId];
-        icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
-        if (indexOf.call(authoredList, projectId) >= 0) {
-          html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
-          $("#project-list").append(html);
-        }
-      }
-      $("#project-list button").unbind().click(function() {
-        var project;
-        project = $(this).attr("data-project");
-        return editProject(project);
-      });
-      return stopLoad();
-    }).error(function(result, status) {
-      return stopLoadError("There was a problem loading viable projects");
-    });
-  })();
-  return false;
 };
 
 getInfoTooltip = function(message) {
@@ -1325,5 +1280,81 @@ $(function() {
     });
   });
 });
+
+
+/*
+ * Split-out coffeescript file for adminstrative editor.
+ *
+ * This is included in ./js/admin.js via ./Gruntfile.coffee
+ *
+ * For adminstrative viewer code, look at ./coffee/admin-viewer.coffee
+ *
+ * @path ./coffee/admin-editor.coffee
+ * @author Philip Kahn
+ */
+
+loadEditor = function() {
+
+  /*
+   * Load up the editor interface for projects with access
+   */
+  var editProject, showEditList;
+  startAdminActionHelper();
+  editProject = function(projectId) {
+
+    /*
+     * Load the edit interface for a specific project
+     */
+    toastStatusMessage("Would load editor for this.");
+    return false;
+  };
+  (showEditList = function() {
+
+    /*
+     * Show a list of icons for editable projects. Blocked on #22, it's
+     * just based on authorship right now.
+     */
+    var args;
+    startLoad();
+    args = "perform=list";
+    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
+      var authoredList, html, icon, k, projectId, projectTitle, ref, ref1;
+      html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+      $("#main-body").html(html);
+      authoredList = new Array();
+      ref = result.authored_projects;
+      for (k in ref) {
+        projectId = ref[k];
+        authoredList.push(projectId);
+      }
+      ref1 = result.projects;
+      for (projectId in ref1) {
+        projectTitle = ref1[projectId];
+        icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
+        if (indexOf.call(authoredList, projectId) >= 0) {
+          html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
+          $("#project-list").append(html);
+        }
+      }
+      $("#project-list button").unbind().click(function() {
+        var project;
+        project = $(this).attr("data-project");
+        return editProject(project);
+      });
+      return stopLoad();
+    }).error(function(result, status) {
+      return stopLoadError("There was a problem loading viable projects");
+    });
+  })();
+  return false;
+};
+
+
+/*
+ *
+ *
+ * @path ./coffee/admin-viewer.coffee
+ * @author Philip Kahn
+ */
 
 //# sourceMappingURL=maps/admin.js.map
