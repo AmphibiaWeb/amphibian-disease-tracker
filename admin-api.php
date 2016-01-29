@@ -76,6 +76,9 @@ switch($admin_req)
   case "list":
       returnAjax(listProjects(false));
       break;
+  case "get":
+      returnAjax(readProjectData($_REQUEST));
+      break;
   // case "test":
   //     returnAjax($db->testSettings());
   //     break;
@@ -132,7 +135,7 @@ function saveEntry($get)
                   $thumbArr = explode(".",$img);
                   $extension = array_pop($thumbArr);
                   $outputFile = dirname(__FILE__)."/".implode(".",$thumbArr)."-thumb.".$extension;
-                  $imgDetails["resize_status"] = $i->resizeImage($outputFile,256,256); 
+                  $imgDetails["resize_status"] = $i->resizeImage($outputFile,256,256);
               }
               catch(Exception $e)
               {
@@ -245,7 +248,7 @@ function listProjects($unauthenticated = true) {
             }
         }
     }
-    
+
     $result = array(
         "status" => true,
         "projects" => $authorizedProjects,
@@ -254,8 +257,86 @@ function listProjects($unauthenticated = true) {
         "table" => $db->getTable(),
         "check_authentication" => !$unauthenticated,
     );
-    
+
     return $result;
+}
+
+
+function checkProjectAuthorized($projectData, $uid) {
+    /***
+     * Helper function for checking authorization
+     ***/
+    $isAuthor = $projectData["author"] == $uid;
+    $isPublic = $projectData["public"];
+    $accessList = explode(",", $projectData["access_data"]);
+    $editList = array();
+    $viewList = array();
+    foreach ($accessList as $viewer) {
+        $permissions = explode(":", $viewer);
+        $user = $permissions[0];
+        $access = $permissions[1];
+        if ($access == "READ") {
+            $viewList[] = $user;
+        }
+        if ($access == "EDIT") {
+            $editList[] = $user;
+        }
+        # Any other access value, including nullish, gives no permissions
+    }
+    $isEditor = array_exists($uid, $editList); ### CHECK ME
+    $isViewer = array_exists($uid, $viewList); ### CHECK ME
+    $response = array(
+        "can_edit" => $isAuthor || $isEditor,
+        "can_view" => $isAuthor || $isEditor || $isViewer ||$isPublic,
+        "is_author" => $isAuthor,
+    );
+    return $response;
+}
+
+
+function readProjectData($get, $debug = false) {
+    /***
+     *
+     ***/
+    global $db, $login_status;
+    $project = $db->sanitize($get["project"]);
+    # Base response
+    $response = array(
+        "status" => false,
+        "error" => "Unprocessed read",
+        "human_error" => "Server error handling project read",
+        "project" => array(
+            "project_id" => $project,
+            "public" => false,
+        ),
+        "user" => array(
+            "user" => $login_status["detail"],
+            "has_edit_permissions" => false,
+            "has_view_permisssions" => false,
+            "is_author" => false,
+        ),
+
+    );
+    if($debug) $response["debug"] = array();
+    # Actual projecting
+    $query = "SELECT * FROM " . $db->getTable() . " WHERE `project_id`='" . $project . "'";
+    if($debug) $response["debug"]["query"] = $query;
+    $l = $db->openDB();
+    $r = mysqli_query( $l, $query );
+    $row = mysqli_fetch_assoc($r);
+    # First check the user auth
+    $uid = $login_status["detail"]["uid"];
+    $permission = checkProjectAuthorized($row, $uid);
+    if ($permissions["can_view"] !== true) {
+        return $response;
+    }
+    $response["user"]["has_edit_permissions"] = $permission["can_edit"];
+    $response["user"]["has_view_permissions"] = $permission["can_view"];
+    $response["user"]["is_author"] = $permission["is_author"];
+    # If it's good, append it
+    $response["project"] = $row;
+    # Return it!
+    return $response;
 }
 
 ?>

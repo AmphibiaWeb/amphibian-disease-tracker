@@ -30,7 +30,7 @@ loadEditor = ->
       # Get the details for the project
       opid = projectId
       projectId = encodeURIComponent projectId
-      args = "perform=get&project=#{projectId}&user=#{user}"
+      args = "perform=get&project=#{projectId}"
       $.post adminParams.apiTarget, args, "json"
       .done (result) ->
         try

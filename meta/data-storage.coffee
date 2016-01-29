@@ -214,13 +214,14 @@ pi_lab:
 access_data:
   # Who can access this data?
   # The author is always permitted
-  # All other entries are user links in CSV
+  # All other entries are user links in CSV, followed by ":" and
+  # either "READ" or "EDIT".
   # This field is ignored if "public" is truthy
   # If the value of this field is "link", then it's unlisted but
   # available without login
   type: "text"
   logical: "csv"
-  sample: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33,62cdb7020ff920e5aa642c3d4066950dd1f01f4d"
+  sample: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33:EDIT,62cdb7020ff920e5aa642c3d4066950dd1f01f4d:READ"
 publication:
   type: "varchar(255)"
   logical: "doi"

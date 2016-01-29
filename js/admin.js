@@ -1280,7 +1280,7 @@ loadEditor = function() {
       user = userDetail.uid;
       opid = projectId;
       projectId = encodeURIComponent(projectId);
-      args = "perform=get&project=" + projectId + "&user=" + user;
+      args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
         var e, error, ref;
         try {
