@@ -53,6 +53,51 @@ loadEditor = ->
           # Populate the UI, prefilling the data
           ## DO THE THING
           toastStatusMessage "Good user, would load editor for project"
+          project = result.project
+          # Helper functions to bind to upcoming buttons
+          popManageUserAccess = ->
+            false
+          # Userlist
+          userHtml = ""
+          for user in project.access_data.total
+            icon = ""
+            if user in project.access_data.editors_list
+              icon = """
+              <icon-icon></iron-icon>
+              """
+            else if user in project.access_data.viewers_list
+              icon = """
+              <icon-icon></iron-icon>
+              """
+            userHtml += """
+            <tr>
+              <td colspan="5">#{user}</td>
+              <td></td>
+            </tr>
+            """
+          # The actual HTML
+          html = """
+          <section id="manage-users" class="col-xs-12 col-md-4">
+            <div class="alert alert-info">
+              <h3>Project Collaborators</h3>
+              <table class="table table-striped table-collapsed" cols="6">
+                <thead>
+                  <tr>
+                    <td colspan="5">User</td>
+                    <td>Permissions</td>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section id="project-basics" class="col-xs-12 col-md-8">
+          </section>
+          <section id="project-data" class="col-xs-12 clearfix">
+          </section>
+          """
+          $("#main-body").html html
           stopLoad()
         catch e
           stopLoadError "There was an error loading your project"
@@ -102,6 +147,3 @@ loadEditor = ->
     .error (result, status) ->
       stopLoadError "There was a problem loading viable projects"
   false
-
-
-

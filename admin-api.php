@@ -340,6 +340,9 @@ function readProjectData($get, $debug = false) {
     $accessData = array(
         "editors" => array(),
         "viewers" => array(),
+        "total" => array(),
+        "editors_list" => array(),
+        "viewers_list" => array(),
     );
     $u = new UserFunctions();
     foreach ($permission["editors"] as $editor) {
@@ -350,6 +353,8 @@ function readProjectData($get, $debug = false) {
             "user_id" => $u->getHardlink(),
         );
         $accessData["editors"][] = $editor;
+        $accessData["editors_list"][] = $u->getUsername();
+        $accessData["total"][] = $u->getUsername();
     }
     foreach ($permission["viewers"] as $viewer) {
         # Get the viewer data
@@ -359,7 +364,10 @@ function readProjectData($get, $debug = false) {
             "user_id" => $u->getHardlink(),
         );
         $accessData["viewers"][] = $viewer;
+        $accessData["viewers_list"][] = $u->getUsername();
+        $accessData["total"][] = $u->getUsername();
     }
+    sort($accessData["total"]); ## CHECK ME
     # Replace the dumb permissions
     $row["access_data"] = $accessData;
     # Append it
