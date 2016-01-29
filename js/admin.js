@@ -1350,8 +1350,11 @@ loadEditor = function() {
             }
             userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td>" + icon + "</td>\n</tr>";
           }
-          html = "<section id=\"manage-users\" class=\"col-xs-12 col-md-4\">\n  <div class=\"alert alert-info\">\n    <h3>Project Collaborators</h3>\n    <table class=\"table table-striped table-collapsed\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8\">\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n</section>";
+          html = "<section id=\"manage-users\" class=\"col-xs-12 col-md-4\">\n  <div class=\"alert alert-info clearfix\">\n    <h3>Project Collaborators</h3>\n    <table class=\"table table-striped table-collapsed clearfix\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8\">\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n</section>";
           $("#main-body").html(html);
+          $("#manage-users").click(function() {
+            return popManageUserAccess();
+          });
           return stopLoad();
         } catch (_error) {
           e = _error;

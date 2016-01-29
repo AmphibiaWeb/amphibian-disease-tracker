@@ -1388,6 +1388,7 @@ loadEditor = ->
               .click ->
                 user = $(this).attr "data-user"
                 permission = $(this).attr "data-permission"
+                # Handle it 
                 toastStatusMessage "Would grant #{user} permission '#{permission}'"
               # Open the dialog
               safariDialogHelper "#user-setter-dialog"
@@ -1419,9 +1420,9 @@ loadEditor = ->
           # The actual HTML
           html = """
           <section id="manage-users" class="col-xs-12 col-md-4">
-            <div class="alert alert-info">
+            <div class="alert alert-info clearfix">
               <h3>Project Collaborators</h3>
-              <table class="table table-striped table-collapsed" cols="6">
+              <table class="table table-striped table-collapsed clearfix" cols="6">
                 <thead>
                   <tr>
                     <td colspan="5">User</td>
@@ -1432,6 +1433,7 @@ loadEditor = ->
                   #{userHtml}
                 </tbody>
               </table>
+              <paper-button class="manage-users pull-right" id="manage-users">Manage Users</paper-button>
             </div>
           </section>
           <section id="project-basics" class="col-xs-12 col-md-8">
@@ -1440,6 +1442,9 @@ loadEditor = ->
           </section>
           """
           $("#main-body").html html
+          # Events
+          $("#manage-users").click ->
+            popManageUserAccess()
           stopLoad()
         catch e
           stopLoadError "There was an error loading your project"
