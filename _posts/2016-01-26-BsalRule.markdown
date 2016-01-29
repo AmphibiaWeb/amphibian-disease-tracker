@@ -6,33 +6,13 @@ author: Tiffany Yap
 categories: News
 ---
 
-In an unprecedented wildlife policy move, the US Fish and Wildlife Service (USFWS) has come out with an 
-[interim rule](http://www.fws.gov/injuriouswildlife/salamanders.html)
-that lists 201 salamander species as "injurious" to wildlife due to the risk of a pathogen 
-(the chytrid fungal pathogen that is lethal to salamanders, _Bsal_) under the Lacey Act. 
-In the rule that takes effect on January 28, 2016, the import or interstate trade 
- of listed species (live, dead, or parts) is prohibited, though permits may be granted for scientific, medical, 
- educational, or zoological purposes. There is a 60 day public comment period, which ends on March 14, 2016.
- The rule can be found [here](http://www.fws.gov/policy/library/2016/2016-00452.pdf).
+In an unprecedented wildlife policy move, the US Fish and Wildlife Service (USFWS) has come out with an [interim rule](http://www.fws.gov/injuriouswildlife/salamanders.html) that lists 201 salamander species as "injurious" to wildlife due to the risk of a pathogen (the chytrid fungal pathogen that is lethal to salamanders, _Bsal_) under the Lacey Act. In the rule that takes effect on January 28, 2016, the import or interstate trade of listed species (live, dead, or parts) is prohibited, though permits may be granted for scientific, medical, educational, or zoological purposes. There is a 60 day public comment period, which ends on March 14, 2016. The rule can be found [here](http://www.fws.gov/policy/library/2016/2016-00452.pdf).
  
- Comments must be submitted as follows:
+Comments can be submitted online [here](http://www.regulations.gov/#!docketDetail;D=FWS-HQ-FAC-2015-0005).
  
- Federal eRulemaking Portal: http:// www.regulations.gov. 
- Search for Docket No. FWS–HQ–FAC–2015–0005 and follow the instructions for submitting comments.
+Comments can be viewed [here](http://www.regulations.gov/#!docketBrowser;rpp=25;po=0;dct=PS;D=FWS-HQ-FAC-2015-0005).
  
- Mail, Hand Delivery, or Courier: Public Comments Processing, 
- Attn: FWS–HQ–FAC–2015–0005; Division of Policy, Performance, and Management Programs; 
- United States Fish and Wildlife Service; MS: BPHC; 5275 Leesburg Pike; Falls Church, VA 22041– 3803.
- 
- In addition to the USFWS ruling the US Geological Survey (USGS) came out with an 
- [open-file report](https://pubs.er.usgs.gov/publication/ofr20151233) in which they call for a proactive 
- approach to prevent _Bsal_ from entering the US and containing its spread if it is found in the US. They  
- cite the need for cooperative research and  management efforts to develop and implement effective 
- prevention and containment strategies. In the report, the USGS identifies top research priorities and states that
- they are currently developing a _Bsal_ Strategic Action plan, an emergency response plan, a monitoring and 
- surveillance program, a standardized diagnostic approach, decision models for natural resource agencies, 
- and a reporting database for salamander mortalities. The hope is to develop effective management strategies 
- for _Bsal_ which could influence or be adapted for other emerging infectious disease in wildlife.
+In addition to the USFWS ruling the US Geological Survey (USGS) came out with an [open-file report](https://pubs.er.usgs.gov/publication/ofr20151233) in which they call for a proactive approach to prevent _Bsal_ from entering the US and containing its spread if it is found in the US. They cite the need for cooperative research and  management efforts to develop and implement effective prevention and containment strategies. In the report, the USGS identifies top research priorities and states that they are currently developing a _Bsal_ Strategic Action plan, an emergency response plan, a monitoring and surveillance program, a standardized diagnostic approach, decision models for natural resource agencies, and a reporting database for salamander mortalities. The hope is to develop effective management strategies for _Bsal_ which could influence or be adapted for other emerging infectious disease in wildlife.
  
  This is an exciting time for biodiversity conservation, management, and policy!
  
