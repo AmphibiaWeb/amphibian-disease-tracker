@@ -1347,16 +1347,16 @@ loadEditor = ->
             icon = ""
             if user in project.access_data.editors_list
               icon = """
-              <icon-icon></iron-icon>
+              <icon-icon icon="image:edit"></iron-icon>
               """
             else if user in project.access_data.viewers_list
               icon = """
-              <icon-icon></iron-icon>
+              <icon-icon icon="image:remove-red-eye"></iron-icon>
               """
             userHtml += """
             <tr>
               <td colspan="5">#{user}</td>
-              <td></td>
+              <td>#{icon}</td>
             </tr>
             """
           # The actual HTML
@@ -1372,6 +1372,7 @@ loadEditor = ->
                   </tr>
                 </thead>
                 <tbody>
+                  #{userHtml}
                 </tbody>
               </table>
             </div>

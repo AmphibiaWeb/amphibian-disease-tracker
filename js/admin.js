@@ -1311,13 +1311,13 @@ loadEditor = function() {
             user = ref1[l];
             icon = "";
             if (indexOf.call(project.access_data.editors_list, user) >= 0) {
-              icon = "<icon-icon></iron-icon>";
+              icon = "<icon-icon icon=\"image:edit\"></iron-icon>";
             } else if (indexOf.call(project.access_data.viewers_list, user) >= 0) {
-              icon = "<icon-icon></iron-icon>";
+              icon = "<icon-icon icon=\"image:remove-red-eye\"></iron-icon>";
             }
-            userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td></td>\n</tr>";
+            userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td>" + icon + "</td>\n</tr>";
           }
-          html = "<section id=\"manage-users\" class=\"col-xs-12 col-md-4\">\n  <div class=\"alert alert-info\">\n    <h3>Project Collaborators</h3>\n    <table class=\"table table-striped table-collapsed\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n      </tbody>\n    </table>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8\">\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n</section>";
+          html = "<section id=\"manage-users\" class=\"col-xs-12 col-md-4\">\n  <div class=\"alert alert-info\">\n    <h3>Project Collaborators</h3>\n    <table class=\"table table-striped table-collapsed\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8\">\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n</section>";
           $("#main-body").html(html);
           return stopLoad();
         } catch (_error) {
