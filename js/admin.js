@@ -1341,7 +1341,9 @@ loadEditor = function() {
           for (l = 0, len = ref1.length; l < len; l++) {
             user = ref1[l];
             icon = "";
-            if (indexOf.call(project.access_data.editors_list, user) >= 0) {
+            if (user === project.access_data.author) {
+              icon = "<icon-icon icon=\"social:person\"></iron-icon>";
+            } else if (indexOf.call(project.access_data.editors_list, user) >= 0) {
               icon = "<icon-icon icon=\"image:edit\"></iron-icon>";
             } else if (indexOf.call(project.access_data.viewers_list, user) >= 0) {
               icon = "<icon-icon icon=\"image:remove-red-eye\"></iron-icon>";

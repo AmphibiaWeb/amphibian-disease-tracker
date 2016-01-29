@@ -114,7 +114,11 @@ loadEditor = ->
           userHtml = ""
           for user in project.access_data.total
             icon = ""
-            if user in project.access_data.editors_list
+            if user is project.access_data.author
+              icon = """
+              <icon-icon icon="social:person"></iron-icon>
+              """
+            else if user in project.access_data.editors_list
               icon = """
               <icon-icon icon="image:edit"></iron-icon>
               """
