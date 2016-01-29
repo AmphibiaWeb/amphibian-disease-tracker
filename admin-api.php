@@ -337,14 +337,18 @@ function readProjectData($get, $debug = false) {
     $response["user"]["has_view_permissions"] = $permission["can_view"];
     $response["user"]["is_author"] = $permission["is_author"];
     # Rewrite the users to be more practical
+    $u = new UserFunctions();
+    $u->getUser($row["author"]);
     $accessData = array(
         "editors" => array(),
         "viewers" => array(),
         "total" => array(),
         "editors_list" => array(),
         "viewers_list" => array(),
+        "author" => $u->getUsername(),
+        "composite" => array(),
     );
-    $u = new UserFunctions();
+
     foreach ($permission["editors"] as $editor) {
         # Get the editor data
         $detail = $u->getUser($editor);
@@ -355,6 +359,7 @@ function readProjectData($get, $debug = false) {
         $accessData["editors"][] = $editor;
         $accessData["editors_list"][] = $u->getUsername();
         $accessData["total"][] = $u->getUsername();
+        $accessData["composite"][$u->getUsername()] = $editor;
     }
     foreach ($permission["viewers"] as $viewer) {
         # Get the viewer data
@@ -365,7 +370,10 @@ function readProjectData($get, $debug = false) {
         );
         $accessData["viewers"][] = $viewer;
         $accessData["viewers_list"][] = $u->getUsername();
-        $accessData["total"][] = $u->getUsername();
+        $accessData["composite"][$u->getUsername()] = $viewer;
+        if (!array_exists($accessData["total"], $u->getUsername())) { ## CheckMe
+            $accessData["total"][] = $u->getUsername();
+        }
     }
     sort($accessData["total"]); ## CHECK ME
     # Replace the dumb permissions

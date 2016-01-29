@@ -190,6 +190,10 @@ bounding_box_w:
   # West coordinate of bounding box (for area searches)
   type: "double"
   logical: "number"
+bounding_polygon:
+  # array of points corresponding to bounding polygon
+  type: "text"
+  logical: "array"
 transect_file:
   # relative path to KML file of transect coordinates
   type: "varchar(255)"
