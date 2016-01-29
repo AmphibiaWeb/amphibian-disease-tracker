@@ -1340,57 +1340,60 @@ loadEditor = ->
           project = result.project
           # Helper functions to bind to upcoming buttons
           popManageUserAccess = ->
-            # For each user in the access list, give some toggles
-            userHtml = ""
-            for user in project.access_data.total
-              isAuthor = user is project.access_data.author
-              isEditor =  user in project.access_data.editors_list
-              isViewer = not isEditor
-              editDisabled = if isEditor or isAuthor then "disabled data-toggle='tooltip' title='Make Editor'" else ""
-              viewerDisabled = if isViewer or isAuthor then "disabled data-toggle='tooltip' title='Make Read-Only'" else ""
-              authorDisabled = if isAuthor then "disabled data-toggle='tooltip' title='Grant Ownership'" else ""
-              uid = project.access_data.composite[user]["user_id"]
-              theirHtml += """
-              <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}"> </paper-icon-button>
-              <paper-icon-button icon="image:remove-red-eye" #{viewerDisabled} class="set-permission" data-permission="read" data-user="#{uid}"> </paper-icon-button>
-              """
-              # Only the current author can change authors
-              if result.user.is_author
+            verifyLoginCredentials (credentialResult) ->
+              # For each user in the access list, give some toggles
+              userHtml = ""
+              for user in project.access_data.total
+                isAuthor = user is project.access_data.author
+                isEditor =  user in project.access_data.editors_list
+                isViewer = not isEditor
+                editDisabled = if isEditor or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Editor'"
+                viewerDisabled = if isViewer or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Read-Only'"
+                authorDisabled = if isAuthor then "disabled" else "data-toggle='tooltip' title='Grant Ownership'"
+                uid = project.access_data.composite[user]["user_id"]
                 theirHtml += """
-                <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}"> </paper-icon-button>
+                <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}"> </paper-icon-button>
+                <paper-icon-button icon="image:remove-red-eye" #{viewerDisabled} class="set-permission" data-permission="read" data-user="#{uid}"> </paper-icon-button>
                 """
-              userHtml += """
-              <li>#{theirHtml}</li>
+                # Only the current author can change authors
+                if result.user.is_author
+                  theirHtml += """
+                  <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}"> </paper-icon-button>
+                  """
+                userHtml += """
+                <li>#{theirHtml}</li>
+                """
+              userHtml = """
+              <ul class="simple-list">
+                #{userHtml}
+              </ul>
               """
-            userHtml = """
-            <ul class="simple-list">
-              #{userHtml}
-            </ul>
-            """
-            # Put it in a dialog
-            dialogHtml = """
-            <paper-dialog modal id="user-setter-dialog">
-              <paper-dialog-scrollable>
-              </paper-dialog-scrollable>
-              <div class="buttons">
-                <paper-button class="add-user"><iron-icon icon="social:person-add"></iron-icon> Add User</paper-button>
-                <paper-button class="close-dialog" dialog-dismiss>Done</paper-button>
-              </div>
-            </paper-dialog>
-            """
-            # Add it to the DOM
-            $("#user-setter-dialog").remove()
-            $("body").append dialogHtml
-            # Event the buttons
-            $(".set-permission")
-            .unbind()
-            .click ->
-              user = $(this).attr "data-user"
-              permission = $(this).attr "data-permission"
-              toastStatusMessage "Would grant #{user} permission '#{permission}'"
-            # Open the dialog
-            safariDialogHelper "#user-setter-dialog"
-            false
+              # Put it in a dialog
+              dialogHtml = """
+              <paper-dialog modal id="user-setter-dialog">
+                <paper-dialog-scrollable>
+                </paper-dialog-scrollable>
+                <div class="buttons">
+                  <paper-button class="add-user"><iron-icon icon="social:person-add"></iron-icon> Add User</paper-button>
+                  <paper-button class="close-dialog" dialog-dismiss>Done</paper-button>
+                </div>
+              </paper-dialog>
+              """
+              # Add it to the DOM
+              $("#user-setter-dialog").remove()
+              $("body").append dialogHtml
+              # Event the buttons
+              $(".set-permission")
+              .unbind()
+              .click ->
+                user = $(this).attr "data-user"
+                permission = $(this).attr "data-permission"
+                toastStatusMessage "Would grant #{user} permission '#{permission}'"
+              # Open the dialog
+              safariDialogHelper "#user-setter-dialog"
+              false
+          ## End Bindings
+          ## Real DOM stuff
           # Userlist
           userHtml = ""
           for user in project.access_data.total

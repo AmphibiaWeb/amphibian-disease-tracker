@@ -1303,36 +1303,38 @@ loadEditor = function() {
           toastStatusMessage("Good user, would load editor for project");
           project = result.project;
           popManageUserAccess = function() {
-            var authorDisabled, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, uid, userHtml, viewerDisabled;
-            userHtml = "";
-            ref1 = project.access_data.total;
-            for (l = 0, len = ref1.length; l < len; l++) {
-              user = ref1[l];
-              isAuthor = user === project.access_data.author;
-              isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
-              isViewer = !isEditor;
-              editDisabled = isEditor || isAuthor ? "disabled data-toggle='tooltip' title='Make Editor'" : "";
-              viewerDisabled = isViewer || isAuthor ? "disabled data-toggle='tooltip' title='Make Read-Only'" : "";
-              authorDisabled = isAuthor ? "disabled data-toggle='tooltip' title='Grant Ownership'" : "";
-              uid = project.access_data.composite[user]["user_id"];
-              theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\"> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\"> </paper-icon-button>";
-              if (result.user.is_author) {
-                theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\"> </paper-icon-button>";
+            return verifyLoginCredentials(function(credentialResult) {
+              var authorDisabled, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, uid, userHtml, viewerDisabled;
+              userHtml = "";
+              ref1 = project.access_data.total;
+              for (l = 0, len = ref1.length; l < len; l++) {
+                user = ref1[l];
+                isAuthor = user === project.access_data.author;
+                isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
+                isViewer = !isEditor;
+                editDisabled = isEditor || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Editor'";
+                viewerDisabled = isViewer || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Read-Only'";
+                authorDisabled = isAuthor ? "disabled" : "data-toggle='tooltip' title='Grant Ownership'";
+                uid = project.access_data.composite[user]["user_id"];
+                theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\"> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\"> </paper-icon-button>";
+                if (result.user.is_author) {
+                  theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\"> </paper-icon-button>";
+                }
+                userHtml += "<li>" + theirHtml + "</li>";
               }
-              userHtml += "<li>" + theirHtml + "</li>";
-            }
-            userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
-            dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <paper-dialog-scrollable>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
-            $("#user-setter-dialog").remove();
-            $("body").append(dialogHtml);
-            $(".set-permission").unbind().click(function() {
-              var permission;
-              user = $(this).attr("data-user");
-              permission = $(this).attr("data-permission");
-              return toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
+              userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
+              dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <paper-dialog-scrollable>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
+              $("#user-setter-dialog").remove();
+              $("body").append(dialogHtml);
+              $(".set-permission").unbind().click(function() {
+                var permission;
+                user = $(this).attr("data-user");
+                permission = $(this).attr("data-permission");
+                return toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
+              });
+              safariDialogHelper("#user-setter-dialog");
+              return false;
             });
-            safariDialogHelper("#user-setter-dialog");
-            return false;
           };
           userHtml = "";
           ref1 = project.access_data.total;
