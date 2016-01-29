@@ -141,6 +141,15 @@ getInfoTooltip = (message = "No Message Provided") ->
   """
   html
 
+
+alertBadProject = (projectId) ->
+  # Unified "Bad Project" toast.
+  projectId = if projectId? then "project #{projectId}" else "this project"
+  stopLoadError "Sorry, #{projectId} doesn't exist"
+  false
+
+
+
 loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
@@ -369,47 +378,6 @@ pointStringToPoint = (pointString) ->
   point = new Point(pointArr[0], pointArr[1])
   point
 
-loadProjectBrowser = ->
-  startAdminActionHelper()
-  startLoad()
-  args = "perform=list"
-  $.get adminParams.apiTarget, args, "json"
-  .done (result) ->
-    html = """
-    <h2 class="new-title col-xs-12">Available Projects</h2>
-    <ul id="project-list" class="col-xs-12 col-md-6">
-    </ul>
-    """
-    $("#main-body").html html
-    publicList = new Array()
-    for k, projectId of result.public_projects
-      publicList.push projectId
-    for projectId, projectTitle of result.projects
-      # Or lock-outline ??
-      icon = if projectId in publicList then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock-open"></iron-icon>"""
-      html = """
-      <li>
-        <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId.substring(0,8)}...">
-          #{icon} #{projectTitle}
-        </button>
-      </li>
-      """
-      $("#project-list").append html
-    $("#project-list button")
-    .unbind()
-    .click ->
-      project = $(this).attr("data-project")
-      loadProject(project)
-    stopLoad()
-  .error (result, status) ->
-    stopLoadError "There was a problem loading viable projects"
-
-  false
-
-
-loadProject = (projectId) ->
-  toastStatusMessage "Would load project #{projectId}"
-  false
 
 
 bootstrapTransect = ->
@@ -1336,7 +1304,47 @@ loadEditor = ->
     ###
     # Load the edit interface for a specific project
     ###
-    toastStatusMessage "Would load editor for this."
+    # Empty out the main view
+    startAdminActionHelper()
+    startLoad()
+    # Is the user good?
+    verifyLoginCredentials (credentialResult) ->
+      userDetail =  credentialResult.detail
+      user = userDetail.uid
+      # Get the details for the project
+      opid = projectId
+      projectId = encodeURIComponent projectId
+      args = "perform=get&project=#{projectId}&user=#{user}"
+      $.post adminParams.apiTarget, args, "json"
+      .done (result) ->
+        try
+          # Check the result
+          unless result.status is true
+            error = result.human_error ? result.error
+            unless error?
+              error = "Unidentified Error"
+            stopLoadError "There was a problem loading your project (#{error})"
+            return false
+          unless result.user.has_edit_permissions is true
+            if result.user.has_view_permissions or result.project.public is true
+              # Not eligible to edit. Load project viewer instead.
+              loadProject opid, "Ineligible to edit #{opid}, loading as read-only"
+              return false
+            # No edit or view permissions, and project isn't public.
+            # Give generic error
+            alertBadProject opid
+            return false
+          # Populate the UI, prefilling the data
+          ## DO THE THING
+          toastStatusMessage "Good user, would load editor for project"
+          stopLoad()
+        catch e
+          stopLoadError "There was an error loading your project"
+          console.error "Unhandled exception loading project! #{e.message}"
+          console.warn e.stack
+          return false
+      .error (result, status) ->
+        stopLoadError "We couldn't load your project. Please try again."
     false
 
   do showEditList = ->
@@ -1385,6 +1393,55 @@ loadEditor = ->
 ###
 #
 #
+# This is included in ./js/admin.js via ./Gruntfile.coffee
+#
+# For administrative editor code, look at ./coffee/admin-editor.coffee
+#
 # @path ./coffee/admin-viewer.coffee
 # @author Philip Kahn
 ###
+
+
+loadProjectBrowser = ->
+  startAdminActionHelper()
+  startLoad()
+  args = "perform=list"
+  $.get adminParams.apiTarget, args, "json"
+  .done (result) ->
+    html = """
+    <h2 class="new-title col-xs-12">Available Projects</h2>
+    <ul id="project-list" class="col-xs-12 col-md-6">
+    </ul>
+    """
+    $("#main-body").html html
+    publicList = new Array()
+    for k, projectId of result.public_projects
+      publicList.push projectId
+    for projectId, projectTitle of result.projects
+      # Or lock-outline ??
+      icon = if projectId in publicList then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock-open"></iron-icon>"""
+      html = """
+      <li>
+        <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId.substring(0,8)}...">
+          #{icon} #{projectTitle}
+        </button>
+      </li>
+      """
+      $("#project-list").append html
+    $("#project-list button")
+    .unbind()
+    .click ->
+      project = $(this).attr("data-project")
+      loadProject(project)
+    stopLoad()
+  .error (result, status) ->
+    stopLoadError "There was a problem loading viable projects"
+
+  false
+
+
+loadProject = (projectId, message = "") ->
+  toastStatusMessage "Would load project #{projectId} to view"
+  false
+
+

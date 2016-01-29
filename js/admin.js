@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 window.adminParams = new Object();
@@ -131,6 +131,12 @@ getInfoTooltip = function(message) {
   }
   html = "<div class=\"col-xs-1 adjacent-info\">\n  <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"" + message + "\"></span>\n</div>";
   return html;
+};
+
+alertBadProject = function(projectId) {
+  projectId = projectId != null ? "project " + projectId : "this project";
+  stopLoadError("Sorry, " + projectId + " doesn't exist");
+  return false;
 };
 
 loadCreateNewProject = function() {
@@ -299,45 +305,6 @@ pointStringToPoint = function(pointString) {
   pointArr = pointSSV.split(" ");
   point = new Point(pointArr[0], pointArr[1]);
   return point;
-};
-
-loadProjectBrowser = function() {
-  var args;
-  startAdminActionHelper();
-  startLoad();
-  args = "perform=list";
-  $.get(adminParams.apiTarget, args, "json").done(function(result) {
-    var html, icon, k, projectId, projectTitle, publicList, ref, ref1;
-    html = "<h2 class=\"new-title col-xs-12\">Available Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
-    $("#main-body").html(html);
-    publicList = new Array();
-    ref = result.public_projects;
-    for (k in ref) {
-      projectId = ref[k];
-      publicList.push(projectId);
-    }
-    ref1 = result.projects;
-    for (projectId in ref1) {
-      projectTitle = ref1[projectId];
-      icon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock-open\"></iron-icon>";
-      html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectTitle + "\n  </button>\n</li>";
-      $("#project-list").append(html);
-    }
-    $("#project-list button").unbind().click(function() {
-      var project;
-      project = $(this).attr("data-project");
-      return loadProject(project);
-    });
-    return stopLoad();
-  }).error(function(result, status) {
-    return stopLoadError("There was a problem loading viable projects");
-  });
-  return false;
-};
-
-loadProject = function(projectId) {
-  toastStatusMessage("Would load project " + projectId);
-  return false;
 };
 
 bootstrapTransect = function() {
@@ -1305,7 +1272,47 @@ loadEditor = function() {
     /*
      * Load the edit interface for a specific project
      */
-    toastStatusMessage("Would load editor for this.");
+    startAdminActionHelper();
+    startLoad();
+    verifyLoginCredentials(function(credentialResult) {
+      var args, opid, userDetail;
+      userDetail = credentialResult.detail;
+      user = userDetail.uid;
+      opid = projectId;
+      projectId = encodeURIComponent(projectId);
+      args = "perform=get&project=" + projectId + "&user=" + user;
+      return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+        var e, error, ref;
+        try {
+          if (result.status !== true) {
+            error = (ref = result.human_error) != null ? ref : result.error;
+            if (error == null) {
+              error = "Unidentified Error";
+            }
+            stopLoadError("There was a problem loading your project (" + error + ")");
+            return false;
+          }
+          if (result.user.has_edit_permissions !== true) {
+            if (result.user.has_view_permissions || result.project["public"] === true) {
+              loadProject(opid, "Ineligible to edit " + opid + ", loading as read-only");
+              return false;
+            }
+            alertBadProject(opid);
+            return false;
+          }
+          toastStatusMessage("Good user, would load editor for project");
+          return stopLoad();
+        } catch (_error) {
+          e = _error;
+          stopLoadError("There was an error loading your project");
+          console.error("Unhandled exception loading project! " + e.message);
+          console.warn(e.stack);
+          return false;
+        }
+      }).error(function(result, status) {
+        return stopLoadError("We couldn't load your project. Please try again.");
+      });
+    });
     return false;
   };
   (showEditList = function() {
@@ -1353,8 +1360,54 @@ loadEditor = function() {
 /*
  *
  *
+ * This is included in ./js/admin.js via ./Gruntfile.coffee
+ *
+ * For administrative editor code, look at ./coffee/admin-editor.coffee
+ *
  * @path ./coffee/admin-viewer.coffee
  * @author Philip Kahn
  */
+
+loadProjectBrowser = function() {
+  var args;
+  startAdminActionHelper();
+  startLoad();
+  args = "perform=list";
+  $.get(adminParams.apiTarget, args, "json").done(function(result) {
+    var html, icon, k, projectId, projectTitle, publicList, ref, ref1;
+    html = "<h2 class=\"new-title col-xs-12\">Available Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+    $("#main-body").html(html);
+    publicList = new Array();
+    ref = result.public_projects;
+    for (k in ref) {
+      projectId = ref[k];
+      publicList.push(projectId);
+    }
+    ref1 = result.projects;
+    for (projectId in ref1) {
+      projectTitle = ref1[projectId];
+      icon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock-open\"></iron-icon>";
+      html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectTitle + "\n  </button>\n</li>";
+      $("#project-list").append(html);
+    }
+    $("#project-list button").unbind().click(function() {
+      var project;
+      project = $(this).attr("data-project");
+      return loadProject(project);
+    });
+    return stopLoad();
+  }).error(function(result, status) {
+    return stopLoadError("There was a problem loading viable projects");
+  });
+  return false;
+};
+
+loadProject = function(projectId, message) {
+  if (message == null) {
+    message = "";
+  }
+  toastStatusMessage("Would load project " + projectId + " to view");
+  return false;
+};
 
 //# sourceMappingURL=maps/admin.js.map

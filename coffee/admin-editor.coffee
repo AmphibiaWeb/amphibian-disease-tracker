@@ -20,7 +20,47 @@ loadEditor = ->
     ###
     # Load the edit interface for a specific project
     ###
-    toastStatusMessage "Would load editor for this."
+    # Empty out the main view
+    startAdminActionHelper()
+    startLoad()
+    # Is the user good?
+    verifyLoginCredentials (credentialResult) ->
+      userDetail =  credentialResult.detail
+      user = userDetail.uid
+      # Get the details for the project
+      opid = projectId
+      projectId = encodeURIComponent projectId
+      args = "perform=get&project=#{projectId}&user=#{user}"
+      $.post adminParams.apiTarget, args, "json"
+      .done (result) ->
+        try
+          # Check the result
+          unless result.status is true
+            error = result.human_error ? result.error
+            unless error?
+              error = "Unidentified Error"
+            stopLoadError "There was a problem loading your project (#{error})"
+            return false
+          unless result.user.has_edit_permissions is true
+            if result.user.has_view_permissions or result.project.public is true
+              # Not eligible to edit. Load project viewer instead.
+              loadProject opid, "Ineligible to edit #{opid}, loading as read-only"
+              return false
+            # No edit or view permissions, and project isn't public.
+            # Give generic error
+            alertBadProject opid
+            return false
+          # Populate the UI, prefilling the data
+          ## DO THE THING
+          toastStatusMessage "Good user, would load editor for project"
+          stopLoad()
+        catch e
+          stopLoadError "There was an error loading your project"
+          console.error "Unhandled exception loading project! #{e.message}"
+          console.warn e.stack
+          return false
+      .error (result, status) ->
+        stopLoadError "We couldn't load your project. Please try again."
     false
 
   do showEditList = ->
