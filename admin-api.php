@@ -289,6 +289,8 @@ function checkProjectAuthorized($projectData, $uid) {
         "can_edit" => $isAuthor || $isEditor,
         "can_view" => $isAuthor || $isEditor || $isViewer ||$isPublic,
         "is_author" => $isAuthor,
+        "editors" => $editList,
+        "viewers" => $viewList,
     );
     return $response;
 }
@@ -330,10 +332,37 @@ function readProjectData($get, $debug = false) {
     if ($permissions["can_view"] !== true) {
         return $response;
     }
+    # It's good, so set permissions
     $response["user"]["has_edit_permissions"] = $permission["can_edit"];
     $response["user"]["has_view_permissions"] = $permission["can_view"];
     $response["user"]["is_author"] = $permission["is_author"];
-    # If it's good, append it
+    # Rewrite the users to be more practical
+    $accessData = array(
+        "editors" => array(),
+        "viewers" => array(),
+    );
+    $u = new UserFunctions();
+    foreach ($permission["editors"] as $editor) {
+        # Get the editor data
+        $detail = $u->getUser($editor);
+        $editor = array(
+            "email" => $u->getUsername(),
+            "user_id" => $u->getHardlink(),
+        );
+        $accessData["editors"][] = $editor;
+    }
+    foreach ($permission["viewers"] as $viewer) {
+        # Get the viewer data
+        $detail = $u->getUser($viewer);
+        $viewer = array(
+            "email" => $u->getUsername(),
+            "user_id" => $u->getHardlink(),
+        );
+        $accessData["viewers"][] = $viewer;
+    }
+    # Replace the dumb permissions
+    $row["access_data"] = $accessData;
+    # Append it
     $response["project"] = $row;
     # Return it!
     return $response;
