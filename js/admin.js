@@ -1285,6 +1285,7 @@ loadEditor = function() {
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
         var e, error, html, icon, l, len, popManageUserAccess, project, ref, ref1, userHtml;
         try {
+          console.info("Server said", result);
           if (result.status !== true) {
             error = (ref = result.human_error) != null ? ref : result.error;
             if (error == null) {
@@ -1293,7 +1294,6 @@ loadEditor = function() {
             stopLoadError("There was a problem loading your project (" + error + ")");
             console.error("Couldn't load project! (POST OK) Error: " + result.error);
             console.warn("Attempted", adminParams.apiTarget + "?" + args);
-            console.info("Server said", result);
             return false;
           }
           if (result.user.has_edit_permissions !== true) {
