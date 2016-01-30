@@ -2040,11 +2040,11 @@ class UserFunctions extends DBHelper
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
                     $testPass = "123abc";
-                    $method = "AES-256-CBC";
+                    $method = self::getPreferredCipherMethod();
                     $iv = self::getIV($this->getUserSeed(), $method);
                     $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $iv);
                     $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
-                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' with '.$method.' from ' .print_r(openssl_get_cipher_methods(),true) . openssl_error_string()));
+                    throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' with '.$method.' from ' .print_r(openssl_get_cipher_methods(),true) ) );
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
@@ -2638,8 +2638,20 @@ class UserFunctions extends DBHelper
     {
         # TODO method to determine best cipher method
         $methods = openssl_get_cipher_methods();
-
-        return 'AES-256-CBC-HMAC-SHA1';
+        $testPass = "123abc";
+        $testString = "FooBar";
+        $testMethods = array(
+            'AES-256-CBC-HMAC-SHA1',
+            "AES-256-CBC",
+        );
+        foreach($testMethods as $method) {
+            $iv = self::getIV($this->getUserSeed(), $method);
+            $foo = openssl_encrypt($testString, $method, $testPass, 0, $iv);
+            $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
+            if ($testString == $bar) {
+                return $method;
+            }
+        }
     }
     
     public static function getIV($base, $method) {
