@@ -1431,6 +1431,7 @@ loadEditor = ->
             """
           # The actual HTML
           html = """
+          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title}<br/><small>Project ##{opid}</small></h2>
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <div class="alert alert-info clearfix">
               <h4>Project Collaborators</h4>
