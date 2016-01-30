@@ -345,7 +345,7 @@ function readProjectData($get, $debug = true) {
         $response["debug"]["permissions"] = $pc;
     }
     $permission = checkProjectAuthorized($row, $uid);
-    if ($permissions["can_view"] !== true) {
+    if ($permission["can_view"] !== true) {
         $response["human_error"] = "You are not authorized to view this project";
         $response["error"] = "ACCESS_AUTHORIZATION_FAILED";
         return $response;
