@@ -1335,7 +1335,7 @@ loadEditor = function() {
                 userHtml += "<li>" + theirHtml + "</span></li>";
               }
               userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
-              dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <paper-dialog-scrollable>\n    " + userHtml + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
+              dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <h2>Manage \"" + project.project_title + "\" users</h2>\n  <paper-dialog-scrollable>\n    " + userHtml + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
               $("#user-setter-dialog").remove();
               $("body").append(dialogHtml);
               $(".set-permission").unbind().click(function() {

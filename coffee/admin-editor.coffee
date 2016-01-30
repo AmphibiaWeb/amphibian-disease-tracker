@@ -99,6 +99,7 @@ loadEditor = ->
               # Put it in a dialog
               dialogHtml = """
               <paper-dialog modal id="user-setter-dialog">
+                <h2>Manage "#{project.project_title}" users</h2>
                 <paper-dialog-scrollable>
                   #{userHtml}
                 </paper-dialog-scrollable>
