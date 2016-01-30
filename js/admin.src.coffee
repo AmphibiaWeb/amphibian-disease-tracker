@@ -1423,9 +1423,9 @@ loadEditor = ->
             """
           # The actual HTML
           html = """
-          <section id="manage-users" class="col-xs-12 col-md-4">
+          <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <div class="alert alert-info clearfix">
-              <h3>Project Collaborators</h3>
+              <h4>Project Collaborators</h4>
               <table class="table table-striped table-collapsed clearfix" cols="6">
                 <thead>
                   <tr>
@@ -1440,9 +1440,11 @@ loadEditor = ->
               <paper-button class="manage-users pull-right" id="manage-users">Manage Users</paper-button>
             </div>
           </section>
-          <section id="project-basics" class="col-xs-12 col-md-8">
+          <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
+            <h3>Project Basics</h3>
           </section>
           <section id="project-data" class="col-xs-12 clearfix">
+            <h3>Project Data Overview</h3>
           </section>
           """
           $("#main-body").html html

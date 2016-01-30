@@ -366,7 +366,12 @@ function readProjectData($get, $debug = true) {
         "author" => $u->getUsername(),
         "composite" => array(),
     );
-
+    # Add the author to the lists
+    $accessData["editors_list"][] = $u->getUsername();
+    $accessData["total"][] = $u->getUsername();
+    $accessData["editors"][] = $u->getHardlink();
+    $accessData["composite"][$u->getUsername()] = $u->getHardlink();
+    # Editors
     foreach ($permission["editors"] as $editor) {
         # Get the editor data
         $detail = $u->getUser($editor);
