@@ -671,7 +671,15 @@
     apiUri = new Object();
   }
 
-  apiUri.o = $.url();
+  try {
+    apiUri.o = $.url();
+  } catch (_error) {
+    if ((typeof uri !== "undefined" && uri !== null ? uri.o : void 0) != null) {
+      apiUri.o = uri.o;
+    } else {
+      console.warn("The PURL library may be improperly loaded!");
+    }
+  }
 
   apiUri.urlString = window.location.origin + "/" + totpParams.subdirectory;
 
@@ -859,8 +867,8 @@
     user = $("#username").val();
     pass = $("#password").val();
     ip = $("#remote").val();
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     args = "action=verifytotp&code=" + code + "&user=" + user + "&password=" + pass + "&remote=" + ip;
     totp = $.post(apiUrlString, args, 'json');
@@ -919,8 +927,8 @@
     user = $("#username").val();
     pass = encodeURIComponent($("#password").val());
     code = $("#code").val();
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     args = "action=removetotp&code=" + code + "&username=" + user + "&password=" + pass + "&base64=true";
     remove_totp = $.post(apiUrlString, args, 'json');
@@ -955,8 +963,8 @@
     password = $("#password").val();
     hash = $("#hash").val();
     key = $("#secret").val();
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     args = "action=maketotp&password=" + password + "&user=" + user;
     totp = $.post(apiUrlString, args, 'json');
@@ -982,8 +990,11 @@
         $("#" + show_alt).click(function() {
           var altImg;
           altImg = "<img src='" + result.raw + "' alt='TOTP barcode'/>";
-          $("" + barcode_div).html(altImg);
-          return $("#" + show_alt).remove();
+          $("#" + barcodeDiv).html(altImg);
+          return $("#" + show_alt).unbind().text("Still don't see it? Click here again to open the image in a new tab.").click(function() {
+            openTab(result.url);
+            return $("#" + show_alt).remove();
+          });
         });
         $("#verify_totp_button").click(function() {
           noSubmit();
@@ -1017,8 +1028,8 @@
     hash = $("#hash").val();
     key = $("#secret").val();
     user = $("#username").val();
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     args = "action=savetotp&secret=" + key + "&user=" + user + "&hash=" + hash + "&code=" + code;
     totp = $.post(apiUrlString, args, 'json');
@@ -1068,8 +1079,8 @@
 
   giveAltVerificationOptions = function() {
     var ajaxLanding, apiUrlString, args, messages, pane_id, pane_messages, remove_id, sms, sms_id, url, user;
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     user = $("#username").val();
     args = "action=cansms&user=" + user;
@@ -1138,8 +1149,8 @@
   verifyPhone = function() {
     var ajaxLanding, apiUrlString, args, auth, url, user, verifyPhoneAjax;
     noSubmit();
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     auth = $("#phone_auth").val() != null ? $("#phone_auth").val() : null;
     user = $("#username").val();
@@ -1278,8 +1289,8 @@
   doRemoveAccountAction = function() {
     var ajaxLanding, apiUrlString, args, code, password, url, username;
     animateLoad();
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     username = $("#username").val();
     password = $("#password").val();
@@ -1319,7 +1330,7 @@
   doAsyncLogin = function(uri, respectRelativePath) {
     var apiUrlString, args, pass64, password, username;
     if (uri == null) {
-      uri = "async_login_handler.php";
+      uri = apiUri.targetApi;
     }
     if (respectRelativePath == null) {
       respectRelativePath = true;
@@ -1371,8 +1382,8 @@
       $("#login").before("<div id='" + pane_messages + "'></div>");
     }
     $("#" + pane_messages).removeClass("alert-danger alert-info").addClass("alert alert-warning").text("Once your password has been reset, your old password will be invalid.");
-    url = $.url();
-    ajaxLanding = "async_login_handler.php";
+    url = apiUri.o;
+    ajaxLanding = apiUri.targetApi;
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding;
     checkButton = "<button class=\"btn btn-warning\" id=\"check-login\">Start Reset</button>";
     $("#login_button").replaceWith(checkButton);
@@ -1537,9 +1548,9 @@
       key = window.resetParams.key;
       username = window.resetParams.user;
       if (isNull(verify)) {
-        verify = $.url().param("verify");
-        key = $.url().param("key");
-        username = $.url().param("user");
+        verify = apiUri.o.param("verify");
+        key = apiUri.o.param("key");
+        username = apiUri.o.param("user");
       }
       html = "<h1>Password Reset Confirmation</h1>\n<div id='login'></div>";
       $("body").append(html);
@@ -1746,13 +1757,13 @@
       loadJS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js", function() {
         var e;
         try {
-          if ($.url().param("showhelp") != null) {
+          if (apiUri.o.param("showhelp") != null) {
             showInstructions();
           }
         } catch (_error) {
           e = _error;
           delay(300, function() {
-            if ($.url().param("showhelp") != null) {
+            if (apiUri.o.param("showhelp") != null) {
               return showInstructions();
             }
           });
@@ -1780,13 +1791,13 @@
       console.log("Couldn't tooltip icon!");
     }
     try {
-      if ($.url().param("showhelp") != null) {
+      if (apiUri.o.param("showhelp") != null) {
         showInstructions();
       }
     } catch (_error) {
       e = _error;
       delay(300, function() {
-        if ($.url().param("showhelp") != null) {
+        if (apiUri.o.param("showhelp") != null) {
           return showInstructions();
         }
       });

@@ -2,7 +2,13 @@
 
 unless typeof apiUri is "object"
   apiUri = new Object()
-apiUri.o = $.url()
+try
+  apiUri.o = $.url()
+catch
+  if uri?.o?
+    apiUri.o = uri.o
+   else
+     console.warn "The PURL library may be improperly loaded!"
 # Why window.location? In case there's a domain in a url key
 apiUri.urlString = window.location.origin  + "/" + totpParams.subdirectory
 apiUri.query = apiUri.o.attr("fragment")
@@ -136,8 +142,8 @@ doTOTPSubmit = (home = window.totpParams.home) ->
   user = $("#username").val()
   pass = $("#password").val()
   ip = $("#remote").val()
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   args = "action=verifytotp&code=#{code}&user=#{user}&password=#{pass}&remote=#{ip}"
   totp = $.post(apiUrlString ,args,'json')
@@ -192,8 +198,8 @@ doTOTPRemove = ->
   user = $("#username").val()
   pass = encodeURIComponent($("#password").val())
   code = $("#code").val()
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   args = "action=removetotp&code=#{code}&username=#{user}&password=#{pass}&base64=true"
   remove_totp = $.post(apiUrlString,args,'json')
@@ -235,8 +241,8 @@ makeTOTP = ->
   password = $("#password").val()
   hash = $("#hash").val()
   key = $("#secret").val()
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   args = "action=maketotp&password=#{password}&user=#{user}"
   totp = $.post(apiUrlString,args,'json')
@@ -278,8 +284,14 @@ makeTOTP = ->
         popupSecret(result.human_secret)
       $("##{show_alt}").click ->
         altImg = "<img src='#{result.raw}' alt='TOTP barcode'/>"
-        $("#{barcode_div}").html(altImg)
-        $("##{show_alt}").remove()
+        $("##{barcodeDiv}").html(altImg)
+
+        $("##{show_alt}")
+        .unbind()
+        .text "Still don't see it? Click here again to open the image in a new tab."
+        .click ->
+          openTab result.url
+          $("##{show_alt}").remove()
       $("#verify_totp_button").click ->
         noSubmit()
         saveTOTP(key,hash)
@@ -309,8 +321,8 @@ saveTOTP = (key,hash) ->
   hash = $("#hash").val()
   key = $("#secret").val()
   user = $("#username").val()
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   args = "action=savetotp&secret=#{key}&user=#{user}&hash=#{hash}&code=#{code}"
   totp = $.post(apiUrlString ,args,'json')
@@ -353,8 +365,8 @@ popupSecret = (secret) ->
 
 giveAltVerificationOptions = ->
   # Put up an overlay, and ask if the user wants to remove 2FA or get a text
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   user = $("#username").val()
   args = "action=cansms&user=#{user}"
@@ -421,8 +433,8 @@ giveAltVerificationOptions = ->
 verifyPhone = ->
   noSubmit()
   # Verify phone auth status
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   auth = if $("#phone_auth").val()? then $("#phone_auth").val() else null
   user = $("#username").val()
@@ -555,8 +567,8 @@ removeAccount = (caller,cookie_key,has2fa = true) ->
 doRemoveAccountAction = ->
   # Actually do the POST and such
   animateLoad()
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   username = $("#username").val()
   password = $("#password").val()
@@ -594,7 +606,7 @@ noSubmit = ->
   event.preventDefault()
   event.returnValue = false
 
-doAsyncLogin = (uri = "async_login_handler.php", respectRelativePath = true) ->
+doAsyncLogin = (uri = apiUri.targetApi, respectRelativePath = true) ->
   noSubmit()
   if respectRelativePath
     apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + uri
@@ -648,8 +660,8 @@ resetPassword = ->
   .removeClass("alert-danger alert-info")
   .addClass("alert alert-warning")
   .text("Once your password has been reset, your old password will be invalid.")
-  url = $.url()
-  ajaxLanding = "async_login_handler.php"
+  url = apiUri.o
+  ajaxLanding = apiUri.targetApi
   apiUrlString = url.attr('protocol') + '://' + url.attr('host') + '/' + window.totpParams.subdirectory + ajaxLanding
   checkButton = """
   <button class="btn btn-warning" id="check-login">Start Reset</button>
@@ -866,9 +878,9 @@ finishPasswordResetHandler = ->
     username = window.resetParams.user
     if isNull(verify)
       # Last-ditch -- if one isn't there, none are
-      verify = $.url().param("verify")
-      key = $.url().param("key")
-      username = $.url().param("user")
+      verify = apiUri.o.param("verify")
+      key = apiUri.o.param("key")
+      username = apiUri.o.param("user")
     html = """
     <h1>Password Reset Confirmation</h1>
     <div id='login'></div>
@@ -1120,10 +1132,10 @@ $ ->
     # Use the CDN out of an abundance of caution
     loadJS "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js", ->
       try
-        if $.url().param("showhelp")? then showInstructions()
+        if apiUri.o.param("showhelp")? then showInstructions()
       catch e
         delay 300, ->
-          if $.url().param("showhelp")? then showInstructions()
+          if apiUri.o.param("showhelp")? then showInstructions()
       $(".do-password-reset").unbind()
       try
         $("#reset-password-icon").tooltip()
@@ -1140,10 +1152,10 @@ $ ->
   catch e
     console.log("Couldn't tooltip icon!")
   try
-    if $.url().param("showhelp")? then showInstructions()
+    if apiUri.o.param("showhelp")? then showInstructions()
   catch e
     delay 300, ->
-      if $.url().param("showhelp")? then showInstructions()
+      if apiUri.o.param("showhelp")? then showInstructions()
   try
     if window.checkPasswordReset is true
       finishPasswordResetHandler()

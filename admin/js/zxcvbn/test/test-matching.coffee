@@ -177,14 +177,40 @@ test 'dictionary matching', (t) ->
         dictionary_name: [name]
 
   # test the default dictionaries
-  matches = matching.dictionary_match 'rosebud'
-  patterns = ['ros', 'rose', 'rosebud', 'bud']
-  ijs = [[0,2], [0,3], [0,6], [4,6]]
+  matches = matching.dictionary_match 'wow'
+  patterns = ['wow']
+  ijs = [[0,2]]
   msg = "default dictionaries"
   check_matches msg, t, matches, 'dictionary', patterns, ijs,
     matched_word: patterns
-    rank: [13085, 65, 245, 786]
-    dictionary_name: ['surnames', 'female_names', 'passwords', 'male_names']
+    rank: [322]
+    dictionary_name: ['us_tv_and_film']
+
+  matching.set_user_input_dictionary ['foo', 'bar']
+  matches = matching.dictionary_match 'foobar'
+  matches = matches.filter (match) ->
+    match.dictionary_name == 'user_inputs'
+  msg = "matches with provided user input dictionary"
+  check_matches msg, t, matches, 'dictionary', ['foo', 'bar'], [[0, 2], [3, 5]],
+    matched_word: ['foo', 'bar']
+    rank: [1, 2]
+  t.end()
+
+test 'reverse dictionary matching', (t) ->
+  test_dicts =
+    d1:
+      123: 1
+      321: 2
+      456: 3
+      654: 4
+  password = '0123456789'
+  matches = matching.reverse_dictionary_match password, test_dicts
+  msg = 'matches against reversed words'
+  check_matches msg, t, matches, 'dictionary', ['123', '456'], [[1, 3], [4, 6]],
+    matched_word: ['321', '654']
+    reversed: [true, true]
+    dictionary_name: ['d1', 'd1']
+    rank: [2, 4]
   t.end()
 
 
@@ -252,6 +278,10 @@ test 'l33t matching', (t) ->
   msg = "doesn't match when multiple l33t substitutions are needed for the same letter"
   t.deepEqual lm('p4@ssword'), [], msg
 
+  msg = "doesn't match single-character l33ted words"
+  matches = matching.l33t_match '4 1 @'
+  t.deepEqual matches, [], msg
+
   # known issue: subsets of substitutions aren't tried.
   # for long inputs, trying every subset of every possible substitution could quickly get large,
   # but there might be a performant way to fix.
@@ -304,9 +334,8 @@ test 'spatial matching', (t) ->
       shifted_count: [shifts]
   t.end()
 
-
 test 'sequence matching', (t) ->
-  for password in ['', 'a', '1', 'ab']
+  for password in ['', 'a', '1']
     msg = "doesn't match length-#{password.length} sequences"
     t.deepEqual matching.sequence_match(password), [], msg
 
@@ -356,10 +385,11 @@ test 'sequence matching', (t) ->
 
 
 test 'repeat matching', (t) ->
-  for password in ['', '#', '##']
+  for password in ['', '#']
     msg = "doesn't match length-#{password.length} repeat patterns"
     t.deepEqual matching.repeat_match(password), [], msg
 
+  # test single-character repeats
   prefixes = ['@', 'y4@']
   suffixes = ['u', 'u%7']
   pattern = '&&&&&'
@@ -367,7 +397,7 @@ test 'repeat matching', (t) ->
     matches = matching.repeat_match password
     msg = "matches embedded repeat patterns"
     check_matches msg, t, matches, 'repeat', [pattern], [[i, j]],
-      repeated_char: ['&']
+      base_token: ['&']
 
   for length in [3, 12]
     for chr in ['a', 'Z', '4', '&']
@@ -375,18 +405,49 @@ test 'repeat matching', (t) ->
       matches = matching.repeat_match pattern
       msg = "matches repeats with base character '#{chr}'"
       check_matches msg, t, matches, 'repeat', [pattern], [[0, pattern.length - 1]],
-        repeated_char: [chr]
+        base_token: [chr]
 
   matches = matching.repeat_match 'BBB1111aaaaa@@@@@@'
   patterns = ['BBB','1111','aaaaa','@@@@@@']
   msg = 'matches multiple adjacent repeats'
   check_matches msg, t, matches, 'repeat', patterns, [[0, 2],[3, 6],[7, 11],[12, 17]],
-    repeated_char: ['B', '1', 'a', '@']
+    base_token: ['B', '1', 'a', '@']
 
   matches = matching.repeat_match '2818BBBbzsdf1111@*&@!aaaaaEUDA@@@@@@1729'
   msg = 'matches multiple repeats with non-repeats in-between'
   check_matches msg, t, matches, 'repeat', patterns, [[4, 6],[12, 15],[21, 25],[30, 35]],
-    repeated_char: ['B', '1', 'a', '@']
+    base_token: ['B', '1', 'a', '@']
+
+  # test multi-character repeats
+  pattern = 'abab'
+  matches = matching.repeat_match pattern
+  msg = 'matches multi-character repeat pattern'
+  check_matches msg, t, matches, 'repeat', [pattern], [[0, pattern.length - 1]],
+    base_token: ['ab']
+
+  pattern = 'aabaab'
+  matches = matching.repeat_match pattern
+  msg = 'matches aabaab as a repeat instead of the aa prefix'
+  check_matches msg, t, matches, 'repeat', [pattern], [[0, pattern.length - 1]],
+    base_token: ['aab']
+
+  pattern = 'abababab'
+  matches = matching.repeat_match pattern
+  msg = 'identifies ab as repeat string, even though abab is also repeated'
+  check_matches msg, t, matches, 'repeat', [pattern], [[0, pattern.length - 1]],
+    base_token: ['ab']
+  t.end()
+
+
+test 'regex matching', (t) ->
+  for [pattern, name] in [
+    ['1922', 'recent_year']
+    ['2017', 'recent_year']
+    ]
+    matches = matching.regex_match pattern
+    msg = "matches #{pattern} as a #{name} pattern"
+    check_matches msg, t, matches, 'regex', [pattern], [[0, pattern.length - 1]],
+      regex_name: [name]
   t.end()
 
 
