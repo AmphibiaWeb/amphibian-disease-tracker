@@ -7252,6 +7252,10 @@ iron-autogrow-textarea.project-field {
 .simple-list {
   list-style-type: none;
 }
+.simple-list {
+  margin-left: 0;
+  padding-left: 0;
+}
 .map {
   height: 50vh;
   display: block;
@@ -7276,4 +7280,9 @@ iron-autogrow-textarea.project-field {
 }
 .media-upload-target {
   width: 80%;
+}
+@media (min-width: 992px) {
+  #user-setting-dialog {
+    min-width: 40vw;
+  }
 }
