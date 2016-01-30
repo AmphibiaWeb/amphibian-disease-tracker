@@ -2042,9 +2042,14 @@ class UserFunctions extends DBHelper
                     $testPass = "123abc";
                     $method = self::getPreferredCipherMethod();
                     $iv = self::getIV($this->getUserSeed(), $method);
+                    #$testPass = md5($testPass);
                     $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $iv);
+                    $foo64 = base64_encode($foo);
+                    $bar64 = openssl_decrypt(base64_decode($foo64), $method, $testPass, 0, $iv);
                     $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
-                    throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' with '.$method.' from ' .print_r(openssl_get_cipher_methods(),true) ) );
+                    $barTrim = rtrim($bar, "\0");
+                    $barTrim64 = rtrim($bar64, "\0");
+                    throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' with '.$method. " (64: $foo64 to $bar64 to $barTrim64 vs ".$barTrim.")" ) );
                     # throw( new Exception('Invalid reset tokens') );
                 }
                 # The token matches -- let's make them a new password and
@@ -2667,12 +2672,12 @@ class UserFunctions extends DBHelper
             }
         }
     }
-    
+
     public static function getIV($base, $method) {
         /***
          *
          ***/
-        
+
         $length = openssl_cipher_iv_length($method);
         while(strlen($base) < $length) {
             $base .= hash("sha512", $base);
@@ -2680,7 +2685,7 @@ class UserFunctions extends DBHelper
         $iv = substr($base, 0, $length);
         return $iv;
     }
-    
+
     public static function encryptThis($key, $string, $iv = '')
     {
         /***
@@ -2710,7 +2715,7 @@ class UserFunctions extends DBHelper
 
         return $encrypted;
     }
-    
+
     public static function decryptThis($key, $encrypted, $iv = '')
     {
         /***
