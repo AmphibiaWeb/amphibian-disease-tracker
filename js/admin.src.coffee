@@ -1343,12 +1343,12 @@ loadEditor = ->
           toastStatusMessage "Good user, would load editor for project"
           project = result.project
           # Listify some stuff for easier functions
-          project.access_data.total = project.access_data.total.toArray()
+          project.access_data.total = Object.toArray project.access_data.total
           project.access_data.total.sort()
-          project.access_data.editors_list = project.access_data.editors_list.toArray()
-          project.access_data.viewers_list = project.access_data.viewers_list.toArray()
-          project.access_data.editors = project.access_data.editors.toArray()
-          project.access_data.viewers = project.access_data.viewers.toArray()
+          project.access_data.editors_list = Object.toArray project.access_data.editors_list
+          project.access_data.viewers_list = Object.toArray project.access_data.viewers_list
+          project.access_data.editors = Object.toArray project.access_data.editors
+          project.access_data.viewers = Object.toArray project.access_data.viewers
           console.info "Project access lists:", project.access_data
           # Helper functions to bind to upcoming buttons
           popManageUserAccess = ->

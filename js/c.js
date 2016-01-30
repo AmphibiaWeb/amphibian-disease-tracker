@@ -128,6 +128,14 @@ Array.prototype.min = function() {
   return Math.min.apply(null, this);
 };
 
+Object.toArray = function(obj) {
+  return Object.keys(obj).map((function(_this) {
+    return function(key) {
+      return obj[key];
+    };
+  })(this));
+};
+
 Object.size = function(obj) {
   var key, size;
   if (typeof obj !== "object") {
