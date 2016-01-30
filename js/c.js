@@ -129,9 +129,11 @@ Array.prototype.min = function() {
 };
 
 Object.prototype.toArray = function() {
-  return Object.keys(this).map(function(key) {
-    return this[key];
-  });
+  return Object.keys(this).map((function(_this) {
+    return function(key) {
+      return _this[key];
+    };
+  })(this));
 };
 
 Object.size = function(obj) {

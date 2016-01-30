@@ -1342,6 +1342,13 @@ loadEditor = ->
           ## DO THE THING
           toastStatusMessage "Good user, would load editor for project"
           project = result.project
+          # Listify some stuff for easier functions
+          project.access_data.total = project.access_data.total.toArray()
+          project.access_data.total.sort()
+          project.access_data.editors_list = project.access_data.editors_list.toArray()
+          project.access_data.viewers_list = project.access_data.viewers_list.toArray()
+          project.access_data.editors = project.access_data.editors.toArray()
+          project.access_data.viewers = project.access_data.viewers.toArray()
           # Helper functions to bind to upcoming buttons
           popManageUserAccess = ->
             verifyLoginCredentials (credentialResult) ->
@@ -1392,7 +1399,7 @@ loadEditor = ->
               .click ->
                 user = $(this).attr "data-user"
                 permission = $(this).attr "data-permission"
-                # Handle it 
+                # Handle it
                 toastStatusMessage "Would grant #{user} permission '#{permission}'"
               # Open the dialog
               safariDialogHelper "#user-setter-dialog"

@@ -77,7 +77,7 @@ Array::max = -> Math.max.apply null, this
 Array::min = -> Math.min.apply null, this
 
 Object::toArray = ->
-  Object.keys(this).map (key) ->
+  Object.keys(this).map (key) =>
     this[key]
 
 Object.size = (obj) ->

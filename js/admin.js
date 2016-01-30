@@ -1306,6 +1306,12 @@ loadEditor = function() {
           }
           toastStatusMessage("Good user, would load editor for project");
           project = result.project;
+          project.access_data.total = project.access_data.total.toArray();
+          project.access_data.total.sort();
+          project.access_data.editors_list = project.access_data.editors_list.toArray();
+          project.access_data.viewers_list = project.access_data.viewers_list.toArray();
+          project.access_data.editors = project.access_data.editors.toArray();
+          project.access_data.viewers = project.access_data.viewers.toArray();
           popManageUserAccess = function() {
             return verifyLoginCredentials(function(credentialResult) {
               var authorDisabled, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, uid, userHtml, viewerDisabled;
