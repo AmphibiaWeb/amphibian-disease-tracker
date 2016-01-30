@@ -1315,11 +1315,12 @@ loadEditor = function() {
           console.info("Project access lists:", project.access_data);
           popManageUserAccess = function() {
             return verifyLoginCredentials(function(credentialResult) {
-              var authorDisabled, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, uid, userHtml, viewerDisabled;
+              var authorDisabled, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, theirHtml, uid, userHtml, viewerDisabled;
               userHtml = "";
               ref1 = project.access_data.total;
               for (l = 0, len = ref1.length; l < len; l++) {
                 user = ref1[l];
+                theirHtml = user + " <span class='set-permission-block'>";
                 isAuthor = user === project.access_data.author;
                 isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
                 isViewer = !isEditor;
@@ -1331,7 +1332,7 @@ loadEditor = function() {
                 if (result.user.is_author) {
                   theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\"> </paper-icon-button>";
                 }
-                userHtml += "<li>" + theirHtml + "</li>";
+                userHtml += "<li>" + theirHtml + "</span></li>";
               }
               userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
               dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <paper-dialog-scrollable>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
@@ -1359,9 +1360,9 @@ loadEditor = function() {
             } else if (indexOf.call(project.access_data.viewers_list, user) >= 0) {
               icon = "<iron-icon icon=\"image:remove-red-eye\"></iron-icon>";
             }
-            userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td>" + icon + "</td>\n</tr>";
+            userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center\">" + icon + "</td>\n</tr>";
           }
-          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + "<br/><small>Project #" + opid + "</small></h2>\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix\">\n    <h4>Project Collaborators</h4>\n    <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n  <h3>Project Data Overview</h3>\n</section>";
+          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + "<br/><small>Project #" + opid + "</small></h2>\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix\">\n    <h4>Project Collaborators</h4>\n    <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n  <h3>Project Data Overview</h3>\n</section>";
           $("#main-body").html(html);
           $("#manage-users").click(function() {
             return popManageUserAccess();

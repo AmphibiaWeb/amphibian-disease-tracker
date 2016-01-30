@@ -1356,6 +1356,7 @@ loadEditor = ->
               # For each user in the access list, give some toggles
               userHtml = ""
               for user in project.access_data.total
+                theirHtml = "#{user} <span class='set-permission-block'>"
                 isAuthor = user is project.access_data.author
                 isEditor =  user in project.access_data.editors_list
                 isViewer = not isEditor
@@ -1373,7 +1374,7 @@ loadEditor = ->
                   <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}"> </paper-icon-button>
                   """
                 userHtml += """
-                <li>#{theirHtml}</li>
+                <li>#{theirHtml}</span></li>
                 """
               userHtml = """
               <ul class="simple-list">
@@ -1426,7 +1427,7 @@ loadEditor = ->
             userHtml += """
             <tr>
               <td colspan="5">#{user}</td>
-              <td>#{icon}</td>
+              <td class="text-center">#{icon}</td>
             </tr>
             """
           # The actual HTML
@@ -1435,7 +1436,7 @@ loadEditor = ->
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <div class="alert alert-info clearfix">
               <h4>Project Collaborators</h4>
-              <table class="table table-striped table-condensed table-responsive table-hover clearfix" cols="6">
+              <table class="table table-striped table-condensed table-responsive table-hover clearfix">
                 <thead>
                   <tr>
                     <td colspan="5">User</td>
