@@ -283,8 +283,8 @@ function checkProjectAuthorized($projectData, $uid) {
         }
         # Any other access value, including nullish, gives no permissions
     }
-    $isEditor = array_exists($uid, $editList); ### CHECK ME
-    $isViewer = array_exists($uid, $viewList); ### CHECK ME
+    $isEditor = in_array($uid, $editList); 
+    $isViewer = in_array($uid, $viewList);
     $response = array(
         "can_edit" => $isAuthor || $isEditor,
         "can_view" => $isAuthor || $isEditor || $isViewer ||$isPublic,
@@ -346,7 +346,7 @@ function readProjectData($get, $debug = false) {
         "editors_list" => array(),
         "viewers_list" => array(),
         "author" => $u->getUsername(),
-        "composite" => array(),
+        "composite" => array(), 
     );
 
     foreach ($permission["editors"] as $editor) {
@@ -371,7 +371,7 @@ function readProjectData($get, $debug = false) {
         $accessData["viewers"][] = $viewer;
         $accessData["viewers_list"][] = $u->getUsername();
         $accessData["composite"][$u->getUsername()] = $viewer;
-        if (!array_exists($accessData["total"], $u->getUsername())) { ## CheckMe
+        if (!in_array($accessData["total"], $u->getUsername())) {
             $accessData["total"][] = $u->getUsername();
         }
     }
