@@ -2039,12 +2039,7 @@ class UserFunctions extends DBHelper
                 $match_token = substr(hash('md5', $test_string), 0, 8);
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
-                    $testPass = "123abc";
-                    $method = self::getPreferredCipherMethod();
-                    $iv = self::getIV($this->getUserSeed(), $method);
-                    $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $iv);
-                    $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
-                    throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' with '.$method.' from ' .print_r(openssl_get_cipher_methods(),true) ) );
+                    throw( new Exception('Invalid reset tokens') );
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
@@ -2636,6 +2631,15 @@ class UserFunctions extends DBHelper
 
     private static function getPreferredCipherMethod()
     {
+        /***
+         * Get the best functional OpenSSL cipher method.
+         *
+         * Should only be called in contexts that the library's
+         * presence is already checked.
+         *
+         * @return string The cipher method that encodes and decodes
+         * best, correctly on the client machine.
+         ***/
         # TODO method to determine best cipher method
         $methods = openssl_get_cipher_methods();
         $testPass = "123abc";
