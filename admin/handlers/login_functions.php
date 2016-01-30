@@ -2041,8 +2041,9 @@ class UserFunctions extends DBHelper
                     # The computed token doesn't match the provided one
                     $testPass = "123abc";
                     $method = "AES-256-CBC-HMAC-SHA1";
-                    $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $this->getUserSeed());
-                    $bar = openssl_decrypt($foo, $method, $testPass, 0, $this->getUserSeed());
+                    $iv = self::getIV($this->getUserSeed(), $method);
+                    $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $iv);
+                    $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
                     throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' from ' .print_r(openssl_get_cipher_methods(),true) . openssl_error_string()));
                 }
                 # The token matches -- let's make them a new password and
@@ -2644,7 +2645,20 @@ class UserFunctions extends DBHelper
 
         return 'AES-256-CBC-HMAC-SHA1';
     }
-
+    
+    public static function getIV($base, $method) {
+        /***
+         *
+         ***/
+        
+        $length = openssl_cipher_iv_length($method);
+        while(strlen($base) < $length) {
+            $base .= hash("sha512", $base);
+        }
+        $iv = substr($base, 0, $length);
+        return $iv;
+    }
+    
     public static function encryptThis($key, $string, $iv = '')
     {
         /***
