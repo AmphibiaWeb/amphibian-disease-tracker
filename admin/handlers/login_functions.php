@@ -1893,7 +1893,7 @@ class UserFunctions extends DBHelper
                 if (substr($rel_dir, -1) != '/' && !empty($rel_dir)) {
                     $rel_dir = $rel_dir.'/';
                 }
-                $email_link = $this->getQualifiedDomain().$rel_dir.$url.'?action=finishpasswordreset&key='.urlencode($user_tokens['key']).'&verify='.urlencode($user_tokens['verify']).'&username='.$this->getUsername();
+                $email_link = $this->getQualifiedDomain().$rel_dir.$url.'?action=finishpasswordreset&key='.urlencode($user_tokens['key']).'&verify='.urlencode($user_tokens['verify']).'&user='.$this->getUsername();
                 $mail = $this->getMailObject();
                 $subject = '['.$this->getDomain().'] Account Reset';
                 $mail->Subject = $subject;
@@ -2039,7 +2039,7 @@ class UserFunctions extends DBHelper
                 $match_token = substr(hash('md5', $test_string), 0, 8);
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
-                    throw(new Exception('Invalid reset tokens'));
+                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.')'));
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
