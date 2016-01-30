@@ -322,7 +322,7 @@ function readProjectData($get, $debug = true) {
         "user" => array(
             "user" => $login_status["detail"],
             "has_edit_permissions" => false,
-            "has_view_permisssions" => false,
+            "has_view_permissions" => false,
             "is_author" => false,
         ),
 
@@ -393,12 +393,15 @@ function readProjectData($get, $debug = true) {
             $accessData["total"][] = $u->getUsername();
         }
     }
-    sort($accessData["total"]); ## CHECK ME
+    sort($accessData["total"]);
     # Replace the dumb permissions
     $row["access_data"] = $accessData;
     # Append it
-    $response["project"] = $row;
+    $response["project"] = $row;    
     # Return it!
+    $response["status"] = true;
+    $response["error"] = "OK";
+    $response["human_error"] = null;
     return $response;
 }
 
