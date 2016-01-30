@@ -283,7 +283,7 @@ function checkProjectAuthorized($projectData, $uid) {
         }
         # Any other access value, including nullish, gives no permissions
     }
-    $isEditor = in_array($uid, $editList); 
+    $isEditor = in_array($uid, $editList);
     $isViewer = in_array($uid, $viewList);
     $response = array(
         "can_edit" => $isAuthor || $isEditor,
@@ -296,12 +296,20 @@ function checkProjectAuthorized($projectData, $uid) {
 }
 
 
-function readProjectData($get, $debug = false) {
+function readProjectData($get, $debug = true) {
     /***
      *
      ***/
     global $db, $login_status;
     $project = $db->sanitize($get["project"]);
+    $userdata = $login_status["detail"];
+    unset($userdata["source"]);
+    unset($userdata["iv"]);
+    unset($userdata["userdata"]["random_seed"]);
+    unset($userdata["userdata"]["special_1"]);
+    unset($userdata["userdata"]["special_2"]);
+    unset($userdata["userdata"]["su_flag"]);
+    unset($userdata["userdata"]["admin_flag"]);
     # Base response
     $response = array(
         "status" => false,
@@ -327,9 +335,19 @@ function readProjectData($get, $debug = false) {
     $r = mysqli_query( $l, $query );
     $row = mysqli_fetch_assoc($r);
     # First check the user auth
-    $uid = $login_status["detail"]["uid"];
+    $uid = $userdata["uid"];
+    if($debug) {
+        $pc = array(
+            "checked_id" => $uid,
+            "checked_data" => $row,
+            "performed_query" => $query,
+        );
+        $response["debug"]["permissions"] = $pc;
+    }
     $permission = checkProjectAuthorized($row, $uid);
     if ($permissions["can_view"] !== true) {
+        $response["human_error"] = "You are not authorized to view this project";
+        $response["error"] = "ACCESS_AUTHORIZATION_FAILED";
         return $response;
     }
     # It's good, so set permissions
@@ -346,7 +364,7 @@ function readProjectData($get, $debug = false) {
         "editors_list" => array(),
         "viewers_list" => array(),
         "author" => $u->getUsername(),
-        "composite" => array(), 
+        "composite" => array(),
     );
 
     foreach ($permission["editors"] as $editor) {
