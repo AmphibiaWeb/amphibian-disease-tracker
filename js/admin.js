@@ -1290,6 +1290,9 @@ loadEditor = function() {
               error = "Unidentified Error";
             }
             stopLoadError("There was a problem loading your project (" + error + ")");
+            console.error("Couldn't load project! (POST OK) Error: " + result.error);
+            console.warn("Attempted", adminParams.apiTarget + "?" + args);
+            console.info("Server said", result);
             return false;
           }
           if (result.user.has_edit_permissions !== true) {
