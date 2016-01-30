@@ -30,11 +30,11 @@
   <body>
     <?php
        $debug = false;
-       if($debug) {
+       if ($debug) {
            echo "<div class='alert alert-danger'><strong>Warning:</strong> Debugging is enabled on admin-login.php</div>";
-           ini_set("error_log","/usr/local/web/amphibian_disease/error-admin.log");
-           ini_set("display_errors",1);
-           ini_set("log_errors",1);
+           ini_set('error_log', '/usr/local/web/amphibian_disease/error-admin.log');
+           ini_set('display_errors', 1);
+           ini_set('log_errors', 1);
            error_reporting(E_ALL);
            // $string = "Foobar";
            // $pass = "123";
@@ -44,8 +44,8 @@
            // $encrypt_test = "<pre>OpenSSL Encrypt Test: \n\n $methods \n\n $encrypted \n\n $decrypted</pre>";
            // echo $encrypt_test;
        }
-       require_once("DB_CONFIG.php");
-       require_once("admin/login.php");
+       require_once 'DB_CONFIG.php';
+       require_once 'admin/login.php';
        echo $login_output;
        ?>
   </body>
