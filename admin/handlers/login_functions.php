@@ -2039,7 +2039,7 @@ class UserFunctions extends DBHelper
                 $match_token = substr(hash('md5', $test_string), 0, 8);
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
-                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.')'));
+                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.'])'));
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
