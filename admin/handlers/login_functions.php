@@ -2039,7 +2039,7 @@ class UserFunctions extends DBHelper
                 $match_token = substr(hash('md5', $test_string), 0, 8);
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
-                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.'])'));
+                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().'])'));
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
@@ -2646,6 +2646,7 @@ class UserFunctions extends DBHelper
         /***
          * @param string $key
          * @param string $string
+         * @param string $iv -> Initialization value
          * @return string An encrypted, base64-encoded result
          ***/
 
@@ -2673,6 +2674,7 @@ class UserFunctions extends DBHelper
         /***
      * @param string $key
      * @param string $encrypted A base 64 encoded string
+     * @param string $iv -> Initialization value
      * @return string The decrypted string
      ***/
         $decoded = base64_decode($encrypted);
