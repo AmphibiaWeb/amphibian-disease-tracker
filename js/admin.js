@@ -1335,6 +1335,9 @@ loadEditor = function() {
                 userHtml += "<li>" + theirHtml + "</span></li>";
               }
               userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
+              if (project.access_data.total.length === 1) {
+                userHtml += "<div id=\"single-user-warning\">\n  <iron-icon icon=\"icons:warning\"></iron-icon> <strong>Head's-up</strong>: You can't change permissions when a project only has one user. Consider adding another user first.\n</div>";
+              }
               dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <h2>Manage \"" + project.project_title + "\" users</h2>\n  <paper-dialog-scrollable>\n    " + userHtml + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
               $("#user-setter-dialog").remove();
               $("body").append(dialogHtml);

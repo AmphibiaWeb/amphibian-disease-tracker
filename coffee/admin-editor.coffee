@@ -96,6 +96,12 @@ loadEditor = ->
                 #{userHtml}
               </ul>
               """
+              if project.access_data.total.length is 1
+                userHtml += """
+                <div id="single-user-warning">
+                  <iron-icon icon="icons:warning"></iron-icon> <strong>Head's-up</strong>: You can't change permissions when a project only has one user. Consider adding another user first.
+                </div>
+                """
               # Put it in a dialog
               dialogHtml = """
               <paper-dialog modal id="user-setter-dialog">

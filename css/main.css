@@ -7282,7 +7282,7 @@ iron-autogrow-textarea.project-field {
   width: 80%;
 }
 @media (min-width: 992px) {
-  #user-setting-dialog {
+  #user-setter-dialog {
     min-width: 40vw;
   }
 }
