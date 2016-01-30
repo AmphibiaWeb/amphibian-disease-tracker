@@ -128,15 +128,15 @@ loadEditor = ->
             icon = ""
             if user is project.access_data.author
               icon = """
-              <icon-icon icon="social:person"></iron-icon>
+              <iron-icon icon="social:person"></iron-icon>
               """
             else if user in project.access_data.editors_list
               icon = """
-              <icon-icon icon="image:edit"></iron-icon>
+              <iron-icon icon="image:edit"></iron-icon>
               """
             else if user in project.access_data.viewers_list
               icon = """
-              <icon-icon icon="image:remove-red-eye"></iron-icon>
+              <iron-icon icon="image:remove-red-eye"></iron-icon>
               """
             userHtml += """
             <tr>
@@ -149,7 +149,7 @@ loadEditor = ->
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <div class="alert alert-info clearfix">
               <h4>Project Collaborators</h4>
-              <table class="table table-striped table-collapsed clearfix" cols="6">
+              <table class="table table-striped table-condensed table-responsive table-hover clearfix" cols="6">
                 <thead>
                   <tr>
                     <td colspan="5">User</td>

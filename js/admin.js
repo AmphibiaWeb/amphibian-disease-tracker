@@ -1353,15 +1353,15 @@ loadEditor = function() {
             user = ref1[l];
             icon = "";
             if (user === project.access_data.author) {
-              icon = "<icon-icon icon=\"social:person\"></iron-icon>";
+              icon = "<iron-icon icon=\"social:person\"></iron-icon>";
             } else if (indexOf.call(project.access_data.editors_list, user) >= 0) {
-              icon = "<icon-icon icon=\"image:edit\"></iron-icon>";
+              icon = "<iron-icon icon=\"image:edit\"></iron-icon>";
             } else if (indexOf.call(project.access_data.viewers_list, user) >= 0) {
-              icon = "<icon-icon icon=\"image:remove-red-eye\"></iron-icon>";
+              icon = "<iron-icon icon=\"image:remove-red-eye\"></iron-icon>";
             }
             userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td>" + icon + "</td>\n</tr>";
           }
-          html = "<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix\">\n    <h4>Project Collaborators</h4>\n    <table class=\"table table-striped table-collapsed clearfix\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n  <h3>Project Data Overview</h3>\n</section>";
+          html = "<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix\">\n    <h4>Project Collaborators</h4>\n    <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\" cols=\"6\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n  <h3>Project Data Overview</h3>\n</section>";
           $("#main-body").html(html);
           $("#manage-users").click(function() {
             return popManageUserAccess();
