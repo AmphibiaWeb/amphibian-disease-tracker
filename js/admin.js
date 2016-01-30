@@ -115,6 +115,7 @@ verifyLoginCredentials = function(callback) {
 startAdminActionHelper = function() {
   var showActionsHtml;
   $("#admin-actions-block").empty();
+  $("#pib-wrapper-dashboard").remove();
   showActionsHtml = "<span id=\"pib-wrapper-dashboard\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"Administration Home\" data-placement=\"bottom\">\n  <paper-icon-button icon=\"icons:dashboard\" class=\"admin-action\" id=\"show-actions\">\n  </paper-icon-button>\n</span>";
   $("#pib-wrapper-settings").after(showActionsHtml);
   return $("#show-actions").click(function() {

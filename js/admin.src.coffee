@@ -117,6 +117,7 @@ verifyLoginCredentials = (callback) ->
 startAdminActionHelper = ->
   # Empty out admin actions block
   $("#admin-actions-block").empty()
+  $("#pib-wrapper-dashboard").remove()
   showActionsHtml = """
   <span id="pib-wrapper-dashboard" class="pib-wrapper" data-toggle="tooltip" title="Administration Home" data-placement="bottom">
     <paper-icon-button icon="icons:dashboard" class="admin-action" id="show-actions">
