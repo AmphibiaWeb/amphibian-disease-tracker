@@ -2040,9 +2040,9 @@ class UserFunctions extends DBHelper
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
                     $testPass = "123abc";
-                    $foo = openssl_encrypt("FooBar", self::getPreferredCipherMethod(), $testPass, 0, $this->getUserSeed());
-                    $bar = openssl_decrypt($foo, self::getPreferredCipherMethod(), $testPass, 0, $this->getUserSeed());
-                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' '));
+                    $foo = openssl_encrypt("FooBar", self::getPreferredCipherMethod(), $testPass);
+                    $bar = openssl_decrypt($foo, self::getPreferredCipherMethod(), $testPass);
+                    throw(new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getUserSeed().']). Tested '.$foo.' decoding to '.$bar.' from ' .print_r(openssl_get_cipher_methods(),true)));
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
