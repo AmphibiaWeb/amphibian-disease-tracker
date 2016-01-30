@@ -18,7 +18,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-postcss')
   grunt.loadNpmTasks('grunt-contrib-less')
   # https://www.npmjs.com/package/grunt-phplint
-  grunt.loadNpmTasks("grunt-phplint");
+  grunt.loadNpmTasks("grunt-phplint")
+  grunt.loadNpmTasks('grunt-php-cs-fixer')
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     shell:
@@ -136,6 +137,14 @@ module.exports = (grunt) ->
         files:
           "js/c.js":["coffee/core.coffee", "coffee/geo.coffee"]
           "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee"]
+    phpcsfixer:
+      app:
+        dir: ["app-api.php", "api.php", "meta.php", "admin-login.php"]
+      options:
+        ignoreExitCode: true
+        verbose: true
+        #diff: true
+        #dryRun: true
     watch:
       scripts:
         files: ["coffee/*.coffee"]
