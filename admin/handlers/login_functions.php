@@ -2658,7 +2658,8 @@ class UserFunctions extends DBHelper
         }
         if (function_exists(openssl_encrypt)) {
             $method = self::getPreferredCipherMethod();
-            $encrypted = openssl_encrypt($string, $method, $cipherkey, OPENSSL_RAW_DATA, $iv);
+            # http://us3.php.net/manual/en/function.openssl-encrypt.php
+            $encrypted = openssl_encrypt($string, $method, $cipherkey, 0, $iv);
         } elseif (function_exists(mcrypt_encrypt)) {
             $encrypted = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $cipherkey, $string, MCRYPT_MODE_CBC, $iv);
         } else {
@@ -2687,7 +2688,8 @@ class UserFunctions extends DBHelper
         }
         if (function_exists(openssl_decrypt)) {
             $method = self::getPreferredCipherMethod();
-            $decrypted = openssl_decrypt($string, $method, $cipherkey, OPENSSL_RAW_DATA, $iv);
+            # http://us3.php.net/manual/en/function.openssl-decrypt.php
+            $decrypted = openssl_decrypt($string, $method, $cipherkey, 0, $iv);
         } elseif (function_exists(mcrypt_decrypt)) {
             $decrypted = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $cipherkey, $decoded, MCRYPT_MODE_CBC, $iv);
         } else {
