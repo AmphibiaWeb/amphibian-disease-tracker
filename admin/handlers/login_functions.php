@@ -2638,9 +2638,9 @@ class UserFunctions extends DBHelper
     {
         # TODO method to determine best cipher method
         $methods = openssl_get_cipher_methods();
-        return "AES-256-CBC";
         $testPass = "123abc";
         $testString = "FooBar";
+        $testIV = sha1($testString);
         $testMethods = array(
             'AES-256-CBC-HMAC-SHA1',
             "AES-128-CBC-HMAC-SHA1",
@@ -2649,7 +2649,7 @@ class UserFunctions extends DBHelper
             "AES-128-CBC",
         );
         foreach($testMethods as $method) {
-            $iv = self::getIV($this->getUserSeed(), $method);
+            $iv = self::getIV($testIV, $method);
             $foo = openssl_encrypt($testString, $method, $testPass, 0, $iv);
             $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
             if ($testString == $bar) {
