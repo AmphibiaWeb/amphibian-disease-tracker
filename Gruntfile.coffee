@@ -159,10 +159,11 @@ module.exports = (grunt) ->
         files: ["app.html"]
         tasks: ["bootlint","shell:vulcanize","uglify:vulcanize","string-replace:vulcanize"]
       php:
-        files: ["*.php", "helpers/*.php"]
+        files: ["*.php", "helpers/*.php", "admin/*.php", "admin/handlers/*.php"]
         tasks: ["phplint"]
     phplint:
       root: ["*.php", "helpers/*.php", "core/*/*.php", "core/*.php"]
+      admin: ["admin/*.php", "admin/handlers/*.php"]
     bootlint:
       options:
         stoponerror: false
