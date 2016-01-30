@@ -1335,7 +1335,7 @@ loadEditor = function() {
                 userHtml += "<li>" + theirHtml + "</span></li>";
               }
               userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
-              dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <paper-dialog-scrollable>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
+              dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <paper-dialog-scrollable>\n    " + userHtml + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add User</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
               $("#user-setter-dialog").remove();
               $("body").append(dialogHtml);
               $(".set-permission").unbind().click(function() {
@@ -1343,6 +1343,9 @@ loadEditor = function() {
                 user = $(this).attr("data-user");
                 permission = $(this).attr("data-permission");
                 return toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
+              });
+              $(".add-user").unbind().click(function() {
+                return toastStatusMessage("Would replace dialog with a new one to add a new user to project");
               });
               safariDialogHelper("#user-setter-dialog");
               return false;

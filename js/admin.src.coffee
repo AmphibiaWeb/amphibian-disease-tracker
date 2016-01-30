@@ -1385,6 +1385,7 @@ loadEditor = ->
               dialogHtml = """
               <paper-dialog modal id="user-setter-dialog">
                 <paper-dialog-scrollable>
+                  #{userHtml}
                 </paper-dialog-scrollable>
                 <div class="buttons">
                   <paper-button class="add-user"><iron-icon icon="social:person-add"></iron-icon> Add User</paper-button>
@@ -1403,6 +1404,10 @@ loadEditor = ->
                 permission = $(this).attr "data-permission"
                 # Handle it
                 toastStatusMessage "Would grant #{user} permission '#{permission}'"
+              $(".add-user")
+              .unbind()
+              .click ->
+                toastStatusMessage "Would replace dialog with a new one to add a new user to project"
               # Open the dialog
               safariDialogHelper "#user-setter-dialog"
               false
