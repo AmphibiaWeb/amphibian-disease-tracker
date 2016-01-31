@@ -1909,7 +1909,7 @@ class UserFunctions extends DBHelper
                 $to = $this->getUsername();
                 $headers = 'MIME-Version: 1.0'."\r\n";
                 $headers .= 'Content-type: text/html; charset=iso-8859-1'."\r\n";
-                $headers .= 'From: Account Registration <blackhole@'.$this->getDomain().'>';
+                $headers .= 'From: ['.$this->getDomain().'] Mailer Bot <blackhole@'.$this->getDomain().'>';
                 #mail($to,$subject,$body,$headers);
                 # You can include email as a callback arg for debugging, but
                 # not for release -- VERY insecure
