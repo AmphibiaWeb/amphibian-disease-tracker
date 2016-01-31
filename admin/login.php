@@ -340,8 +340,8 @@ if($_REQUEST['q']=='submitlogin')
             $is_encrypted = empty($res["encrypted_hash"]) || empty($res["encrypted_secret"]);
             $hash =  $is_encrypted ? $_COOKIE[$cookieauth]:$res["encrypted_hash"];
             $secret =  $is_encrypted ? $_COOKIE[$cookiekey]:$res["encrypted_secret"];
-            $totp_buffer = "<section id='totp_prompt'>
-  <div class='$totp_class alert alert-danger' id='totp_message'>".$res["human_error"]."</div>
+            $totp_buffer = "<section id='totp_prompt' class='row'>
+  <div class='$totp_class alert alert-danger col-xs-12 col-md-6 center-block' id='totp_message'>".$res["human_error"]."</div>
   <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal'>
     <fieldset>
       <legend>Two-Factor Authentication</legend>
@@ -755,7 +755,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                   {
                                     # Give user 2FA
                                       $totp_add_form = "<section id='totp_add' class='row'>
-  <div id='totp_message' class='col-xs-12 col-md-6 alert alert-warning'>
+  <div id='totp_message' class='col-xs-12 col-md-6 alert alert-warning center-block'>
     Two factor authentication is required when setting up an account with Lemotion. If you don't know what this is, click \"Help with two-factor authentication\" below.
   </div>
   <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
@@ -842,8 +842,8 @@ else if(isset($_REQUEST['2fa']))
       if($logged_in && !$user->has2FA())
       {
           # Give user 2FA
-          $totp_add_form = "<section id='totp_add'>
-  <div id='totp_message' class='alert alert-info'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</div>
+          $totp_add_form = "<section id='totp_add' class='row'>
+  <div id='totp_message' class='alert alert-info col-xs-12 col-md-6 center-block'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</div>
   <form id='totp_start' onsubmit='event.preventDefault();'>
     <fieldset>
       <legend>Login to continue</legend>
@@ -862,10 +862,8 @@ else if(isset($_REQUEST['2fa']))
       else if ($logged_in && $user->has2FA())
       {
           # Remove 2FA from the user
-          $totp_remove_form = "<section id='totp_remove_section'>
-  <div class='alert alert-warning'>
-    <div id='totp_message' class='alert alert-warning'>Are you sure you want to disable two-factor authentication?</div>
-  </div>
+          $totp_remove_form = "<section id='totp_remove_section' class='row'>
+    <div id='totp_message' class='alert alert-warning col-xs-12 col-md-6 center-block'>Are you sure you want to disable two-factor authentication?</div>
   <form id='totp_remove' onsubmit='event.preventDefault();' class='form-horizontal'>
     <fieldset>
       <legend>Remove Two-Factor Authentication</legend>
