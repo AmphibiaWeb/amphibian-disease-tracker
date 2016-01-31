@@ -1388,7 +1388,7 @@ loadEditor = function() {
           $("#main-body").html(html);
           topPosition = $("#data-management").position().top;
           affixOptions = {
-            top: topPosition
+            bottom: topPosition
           };
           $("#data-management").affix(affixOptions);
           console.info("Affixed at " + topPosition + "px");
