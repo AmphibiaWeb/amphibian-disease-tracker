@@ -912,7 +912,7 @@ finishPasswordResetHandler = ->
       html = """
       <div class="alert alert-danger">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <strong>There was a problem resetting your password.</strong> #{result.human_error}. We suggest <a href="#{apiUri.urlString}" class="alert-link">going back</a> and trying again.
+        <strong>There was a problem resetting your password.</strong> #{result.human_error} We suggest <a href="#{apiUri.urlString}" class="alert-link">going back</a> and trying again.
       </div>
       """
       $("#login").before(html)
