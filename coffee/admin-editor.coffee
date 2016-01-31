@@ -329,12 +329,17 @@ showAddUserDialog = ->
   <paper-dialog modal id="add-new-user">
   <h2>Add New User To Project</h2>
   <paper-dialog-scrollable>
-    <p>Search by email, real name, or username below.</p>
+    <p>Search by email, real name, or username below. Click on a search result to queue a user for adding.</p>
     <div class="form-horizontal" id="search-user-form-container">
       <div class="form-group">
         <label for="search-user" class="sr-only form-label">Search User</label>
         <input type="text" id="search-user" name="search-user" class="form-control"/>
       </div>
+      <paper-material id="user-search-result" class="pop-result" hidden>
+        <div class="result-list">
+          <div class="user-search-result">foo@bar.com | Jane Smith | FooBar</div>
+        </div>
+      </paper-material>
     </div>
     <p>Adding users:</p>
     <ul class="simple-list">

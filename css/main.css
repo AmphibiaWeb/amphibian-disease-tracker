@@ -7336,3 +7336,8 @@ iron-autogrow-textarea.project-field {
 .card-actions paper-button {
   color: #3f51b5;
 }
+.result-list {
+  overflow-y: scroll;
+  max-height: 20vh;
+  width: 100%;
+}
