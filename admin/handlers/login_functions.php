@@ -2039,19 +2039,19 @@ class UserFunctions extends DBHelper
                 $match_token = substr(hash('md5', $test_string), 0, 8);
                 if ($match_token != $verify) {
                     # The computed token doesn't match the provided one
-                    $testPass = "123abc";
-                    $method = self::getPreferredCipherMethod();
-                    $iv = self::getIV();
-                    $testPass = md5($testPass);
-                    $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $iv);
-                    $foo64 = base64_encode($foo);
-                    $bar64 = openssl_decrypt(base64_decode($foo64), $method, $testPass, 0, $iv);
-                    $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
-                    $barTrim = rtrim($bar, "\0");
-                    $barTrim64 = rtrim($bar64, "\0");
-                    $testPass = substr($testPass, 0, 8);
-                    $faz = self::encryptThis("FooBar", $testPass, $this->getIV());
-                    $baz = self::decryptThis($faz, $testPass);
+                    // $testPass = "123abc";
+                    // $method = self::getPreferredCipherMethod();
+                    // $iv = self::getIV();
+                    // $testPass = md5($testPass);
+                    // $foo = openssl_encrypt("FooBar", $method, $testPass, 0, $iv);
+                    // $foo64 = base64_encode($foo);
+                    // $bar64 = openssl_decrypt(base64_decode($foo64), $method, $testPass, 0, $iv);
+                    // $bar = openssl_decrypt($foo, $method, $testPass, 0, $iv);
+                    // $barTrim = rtrim($bar, "\0");
+                    // $barTrim64 = rtrim($bar64, "\0");
+                    // $testPass = substr($testPass, 0, 8);
+                    // $faz = self::encryptThis("FooBar", $testPass, $this->getIV());
+                    // $baz = self::decryptThis($faz, $testPass);
                     #throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getIV().']). Tested '.$foo.' decoding to '.$bar.' with '.$method. " (64: $foo64 to $bar64 to $barTrim64 vs ".$barTrim.") Also $faz -> $baz and " . openssl_error_string() ) );
                     throw( new Exception('Invalid reset tokens') );
                 }
