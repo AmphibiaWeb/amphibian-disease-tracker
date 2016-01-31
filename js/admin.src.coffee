@@ -248,7 +248,7 @@ loadCreateNewProject = ->
       $(".data-section").removeAttr("hidden")
       $(".label-with-data").removeAttr("hidden")
   $("#data-encumbrance-toggle").on "iron-change", ->
-    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Public Project""" else """<iron-icon icon="icons:lock-open"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project"""
+    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Public Project""" else """<iron-icon icon="icons:lock"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project"""
     $("#upload-data").html buttonLabel
   bindClicks()
   false
@@ -306,6 +306,9 @@ finalizeData = ->
   postData.author_data = JSON.stringify authorData
   cartoData =
     table: geo.dataTable
+    raw_data: dataFileParams
+    bounding_polygon: geo?.canonicalBoundingBox
+    bounding_polygon_geojson: geo?.geoJsonBoundingBox
   postData.carto_id = JSON.stringify cartoData
   uniqueId = md5("#{geo.dataTable}#{postData.author}#{Date.now()}")
   postData.project_id = uniqueId
@@ -647,7 +650,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     gMapPoly.paths = cpHull # gMapPaths
     geoMultiPoly =
       type: "Polygon"
-      coordinates: coordinateArray
+      coordinates: cpHull # coordinateArray
     geoJSON =
       type: "Feature"
       properties: regionProperties
@@ -1443,6 +1446,18 @@ loadEditor = ->
               <td class="text-center">#{icon}</td>
             </tr>
             """
+          # Prepare States
+          icon = if project.public.toBool() then """<iron-icon icon="social:public" class="material-green"></iron-icon>""" else """<iron-icon icon="icons:lock" class="material-red"></iron-icon>"""
+          conditionalReadonly = if result.user.has_edit_permissions then "" else "readonly"
+          anuraState = if project.includes_anura.toBool() then "checked disabled" else "disabled"
+          caudataState = if project.includes_caudata.toBool() then "checked disabled" else "disabled"
+          gymnophionaState = if project.includes_gymnophiona.toBool() then "checked disabled" else "disabled"
+          try
+            cartoParsed = JSON.parse project.carto_id
+          catch
+            console.error "Couldn't parase the carto JSON!", project.carto_id
+            toastStatusMessage "We couldn't parse your data. Please try again later."
+            cartoParsed = new Object()
           # The actual HTML
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title}<br/><small>Project ##{opid}</small></h2>
@@ -1465,9 +1480,32 @@ loadEditor = ->
           </section>
           <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Basics</h3>
+            <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project_title" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Primary Disease" value="#{project.disease}"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project_title" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
           </section>
-          <section id="project-data" class="col-xs-12 clearfix">
+          <section id="data-management" class="col-xs-12 col-md-4 pull-right">
+            <div class="alert alert-info clearfix sticky">
+              <h4>Project Data</h4>
+              Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
+              <br/><br/>
+              Uploader here
+            </div>
+          </section>
+          <section id="project-data" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Data Overview</h3>
+            <h4>Project Studies:</h4>
+            <paper-checkbox #{anuraState}>Anura</paper-checkbox>
+            <paper-checkbox #{caudataState}>Caudata</paper-checkbox>
+            <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
+            <h4>Sample Metrics</h4>
+            <h4>Locality &amp; Transect Data</h4>
+            <h3>Project Meta Parameters</h3>
+            <h4>Project funding status</h4>
           </section>
           """
           $("#main-body").html html

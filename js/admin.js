@@ -158,7 +158,7 @@ loadCreateNewProject = function() {
   });
   $("#data-encumbrance-toggle").on("iron-change", function() {
     var buttonLabel;
-    buttonLabel = p$("#data-encumbrance-toggle").checked ? "<iron-icon icon=\"social:public\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Public Project" : "<iron-icon icon=\"icons:lock-open\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Private Project";
+    buttonLabel = p$("#data-encumbrance-toggle").checked ? "<iron-icon icon=\"social:public\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Public Project" : "<iron-icon icon=\"icons:lock\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Private Project";
     return $("#upload-data").html(buttonLabel);
   });
   bindClicks();
@@ -218,7 +218,10 @@ finalizeData = function() {
   };
   postData.author_data = JSON.stringify(authorData);
   cartoData = {
-    table: geo.dataTable
+    table: geo.dataTable,
+    raw_data: dataFileParams,
+    bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
+    bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
   };
   postData.carto_id = JSON.stringify(cartoData);
   uniqueId = md5("" + geo.dataTable + postData.author + (Date.now()));
@@ -607,7 +610,7 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     gMapPoly.paths = cpHull;
     geoMultiPoly = {
       type: "Polygon",
-      coordinates: coordinateArray
+      coordinates: cpHull
     };
     geoJSON = {
       type: "Feature",
@@ -1283,7 +1286,7 @@ loadEditor = function() {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var e, error, html, icon, l, len, popManageUserAccess, project, ref, ref1, userHtml;
+        var anuraState, cartoParsed, caudataState, conditionalReadonly, e, error, gymnophionaState, html, icon, l, len, popManageUserAccess, project, ref, ref1, userHtml;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1369,7 +1372,19 @@ loadEditor = function() {
             }
             userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center\">" + icon + "</td>\n</tr>";
           }
-          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + "<br/><small>Project #" + opid + "</small></h2>\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix\">\n    <h4>Project Collaborators</h4>\n    <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 clearfix\">\n  <h3>Project Data Overview</h3>\n</section>";
+          icon = project["public"].toBool() ? "<iron-icon icon=\"social:public\" class=\"material-green\"></iron-icon>" : "<iron-icon icon=\"icons:lock\" class=\"material-red\"></iron-icon>";
+          conditionalReadonly = result.user.has_edit_permissions ? "" : "readonly";
+          anuraState = project.includes_anura.toBool() ? "checked disabled" : "disabled";
+          caudataState = project.includes_caudata.toBool() ? "checked disabled" : "disabled";
+          gymnophionaState = project.includes_gymnophiona.toBool() ? "checked disabled" : "disabled";
+          try {
+            cartoParsed = JSON.parse(project.carto_id);
+          } catch (_error) {
+            console.error("Couldn't parase the carto JSON!", project.carto_id);
+            toastStatusMessage("We couldn't parse your data. Please try again later.");
+            cartoParsed = new Object();
+          }
+          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + "<br/><small>Project #" + opid + "</small></h2>\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix\">\n    <h4>Project Collaborators</h4>\n    <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n      <thead>\n        <tr>\n          <td colspan=\"5\">User</td>\n          <td>Permissions</td>\n        </tr>\n      </thead>\n      <tbody>\n        " + userHtml + "\n      </tbody>\n    </table>\n    <paper-button class=\"manage-users pull-right\" id=\"manage-users\">Manage Users</paper-button>\n  </div>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project_title\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Disease\" value=\"" + project.disease + "\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project_title\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <div class=\"alert alert-info clearfix sticky\">\n    <h4>Project Data</h4>\n    Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n    <br/><br/>\n    Uploader here\n  </div>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n  <h4>Project Studies:</h4>\n  <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n  <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n  <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n  <h4>Sample Metrics</h4>\n  <h4>Locality &amp; Transect Data</h4>\n  <h3>Project Meta Parameters</h3>\n  <h4>Project funding status</h4>\n</section>";
           $("#main-body").html(html);
           $("#manage-users").click(function() {
             return popManageUserAccess();

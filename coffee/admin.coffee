@@ -248,7 +248,7 @@ loadCreateNewProject = ->
       $(".data-section").removeAttr("hidden")
       $(".label-with-data").removeAttr("hidden")
   $("#data-encumbrance-toggle").on "iron-change", ->
-    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Public Project""" else """<iron-icon icon="icons:lock-open"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project"""
+    buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Public Project""" else """<iron-icon icon="icons:lock"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project"""
     $("#upload-data").html buttonLabel
   bindClicks()
   false
@@ -306,6 +306,9 @@ finalizeData = ->
   postData.author_data = JSON.stringify authorData
   cartoData =
     table: geo.dataTable
+    raw_data: dataFileParams
+    bounding_polygon: geo?.canonicalBoundingBox
+    bounding_polygon_geojson: geo?.geoJsonBoundingBox
   postData.carto_id = JSON.stringify cartoData
   uniqueId = md5("#{geo.dataTable}#{postData.author}#{Date.now()}")
   postData.project_id = uniqueId
@@ -647,7 +650,7 @@ mapOverlayPolygon = (polygonObjectParams, regionProperties = null, overlayOption
     gMapPoly.paths = cpHull # gMapPaths
     geoMultiPoly =
       type: "Polygon"
-      coordinates: coordinateArray
+      coordinates: cpHull # coordinateArray
     geoJSON =
       type: "Feature"
       properties: regionProperties
