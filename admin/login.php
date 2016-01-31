@@ -727,7 +727,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                     $deferredJS.="\nwindow.location.href=\"$durl\";";
                                     header("Refresh: 3; url=".$durl);
                                   }
-                                else 
+                                else
                                 {
                                   # Let's show a nice message
                                   $html = "<p >You may <a href='$baseurl/$redirect_url'>want to visit your administration page</a>, but otherwise we suggest <a href='$baseurl'>going home</a> and navigating from there.</p>";
@@ -847,14 +847,23 @@ else if(isset($_REQUEST['2fa']))
   <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
     <fieldset>
       <legend>Login to continue</legend>
-      <input type='email' value='".$user->getUsername()."' readonly='readonly' id='username' name='username'/><br/>
-      <input type='password' id='password' name='password'/><br/>
+      <div class='form-group'>
+        <label for='username' class='sr-only'>Username:</label>
+        <input type='email' value='".$user->getUsername()."' readonly='readonly' id='username' name='username' class='form-control'/>
+      </div>
+      <div class='form-group'>
+        <label for='password' class='sr-only'>Password:</label>
+        <input type='password' id='password' name='password' placeholder='Verify Password'/>
+      </div>
       <input type='hidden' id='secret' name='secret' value='".$_COOKIE[$cookiekey]."'/>
       <input type='hidden' id='hash' name='hash' value='".$_COOKIE[$cookieauth]."'/>
+      <br/>
       <button id='add_totp_button' class='totpbutton btn btn-primary'>Add Two-Factor Authentication</button>
     </fieldset>
   </form>
-  <a href='#' id='totp_help'>Help with Two-Factor Authentication</a>
+  <div class='alert alert-info col-xs-12 col-md-6'>
+    <button id='totp_help' class='alert-link btn btn-link'>Help with Two-Factor Authentication</button>
+  </div>
 </section>";
           if($require_two_factor) $totp_add_form = "<h1>This site requires two-factor authentication</h1><h2>Please set up two-factor authentication to continue.</h2>".$totp_add_form;
           $login_output .= $totp_add_form;
