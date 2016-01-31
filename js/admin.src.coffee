@@ -1642,6 +1642,7 @@ showAddUserDialog = ->
   """
   unless $("#add-new-user").exists()
     $("body").append dialogHtml
+  safariDialogHelper "#add-new-user"
   # Events
   # Bind type-to-search
   $("#search-user").keyup ->

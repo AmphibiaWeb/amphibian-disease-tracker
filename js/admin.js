@@ -1466,6 +1466,7 @@ showAddUserDialog = function() {
   if (!$("#add-new-user").exists()) {
     $("body").append(dialogHtml);
   }
+  safariDialogHelper("#add-new-user");
   $("#search-user").keyup(function() {
     var debugHtml;
     console.log("Should search", $(this).val());
