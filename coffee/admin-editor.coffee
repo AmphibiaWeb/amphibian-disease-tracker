@@ -235,7 +235,8 @@ loadEditor = ->
           topPosition = $("#data-management").offset().top
           affixOptions =
             top: topPosition
-          $("#data-management").attr "data-offset-top", topPosition
+            bottom: 0
+          #$("#data-management").attr "data-offset-top", topPosition
           $("#data-management").affix affixOptions
           console.info "Affixed at #{topPosition}px"
           $("#manage-users").click ->
