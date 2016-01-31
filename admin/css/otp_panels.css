@@ -1,11 +1,11 @@
 .close-popup {
     position: absolute;
-    top: -30px;
+    top: -1em;
     right: -10px;
     cursor: pointer;
-    padding: 6px;
-    width: 1em;
-    height: 1em;
+    padding: .25em;
+    width: 2em;
+    height: 2em;
     text-align: center;
     background: rgba(255, 255, 255, .9);
     border-radius: 50px;
@@ -16,7 +16,8 @@
     -o-transition: all .2s linear;
 }
 .close-popup:hover, .danger {
-    background: rgba(215, 0, 20, .75)
+    background: rgba(215, 0, 20, .75);
+    color:white;
 }
 #secret_id_panel {
     min-height: 2em;
