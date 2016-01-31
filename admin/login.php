@@ -341,7 +341,7 @@ if($_REQUEST['q']=='submitlogin')
             $hash =  $is_encrypted ? $_COOKIE[$cookieauth]:$res["encrypted_hash"];
             $secret =  $is_encrypted ? $_COOKIE[$cookiekey]:$res["encrypted_secret"];
             $totp_buffer = "<section id='totp_prompt' class='row'>
-  <div class='$totp_class alert alert-danger col-xs-12 col-md-6 center-block' id='totp_message'>".$res["human_error"]."</div>
+  <div class='$totp_class alert alert-danger col-xs-12 col-md-6 force-center' id='totp_message'>".$res["human_error"]."</div>
   <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal clearfix col-xs-12'>
     <fieldset>
       <legend>Two-Factor Authentication</legend>
@@ -690,11 +690,11 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                             $res=$user->createUser($_POST['username'],$_POST['password'],array($_POST['fname'],$_POST['lname']),$_POST['dname'],$_POST['phone']);
                             if($res["status"])
                               {
-                                $login_output.="<div class='alert alert-success text-center center-block'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+                                $login_output.="<div class='alert alert-success text-center force-center'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
 <h3> ".$res["message"]." </h3><p>You can <a class='alert-link' href='".$self_url."'>return to your profile page here</a>.</p></div>"; //jumpto1
                                 if($user->needsManualAuth())
                                   {
-                                    $login_output.="<div class='alert alert-warning text-center center-block'><p>Your ability to login will be restricted until you've been authorized.</p></div>";
+                                    $login_output.="<div class='alert alert-warning text-center force-center'><p>Your ability to login will be restricted until you've been authorized.</p></div>";
                                   }
                                 // email user
                                 $to=$_POST['username'];
@@ -755,7 +755,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                   {
                                     # Give user 2FA
                                       $totp_add_form = "<section id='totp_add' class='row'>
-  <div id='totp_message' class='col-xs-12 col-md-6 alert alert-warning center-block'>
+  <div id='totp_message' class='col-xs-12 col-md-6 alert alert-warning force-center'>
     Two factor authentication is required when setting up an account with $shorturl. If you don't know what this is, click \"Help with two-factor authentication\" below.
   </div>
   <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
@@ -775,7 +775,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
       <button id='add_totp_button' class='totpbutton btn btn-primary'>Add Two-Factor Authentication</button>
     </fieldset>
   </form>
-  <div class='alert alert-info col-xs-12 col-md-6'>
+  <div class='alert col-xs-12 col-md-6 force-center'>
     <button id='totp_help' class='alert-link btn btn-link'>Help with Two-Factor Authentication</button>
   </div>
 </section>";
@@ -843,7 +843,7 @@ else if(isset($_REQUEST['2fa']))
       {
           # Give user 2FA
           $totp_add_form = "<section id='totp_add' class='row'>
-  <div id='totp_message' class='alert alert-info col-xs-12 col-md-6 center-block'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</div>
+  <div id='totp_message' class='alert alert-info col-xs-12 col-md-6 force-center'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</div>
   <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
     <fieldset>
       <legend>Login to continue</legend>
@@ -861,7 +861,7 @@ else if(isset($_REQUEST['2fa']))
       <button id='add_totp_button' class='totpbutton btn btn-primary'>Add Two-Factor Authentication</button>
     </fieldset>
   </form>
-  <div class='alert alert-info col-xs-12 col-md-6'>
+  <div class='alert force-center col-xs-12 col-md-6'>
     <button id='totp_help' class='alert-link btn btn-link'>Help with Two-Factor Authentication</button>
   </div>
 </section>";
@@ -872,7 +872,7 @@ else if(isset($_REQUEST['2fa']))
       {
           # Remove 2FA from the user
           $totp_remove_form = "<section id='totp_remove_section' class='row'>
-    <div id='totp_message' class='alert alert-warning col-xs-12 col-md-6 center-block'>Are you sure you want to disable two-factor authentication?</div>
+    <div id='totp_message' class='alert alert-warning col-xs-12 col-md-6 force-center'>Are you sure you want to disable two-factor authentication?</div>
   <form id='totp_remove' onsubmit='event.preventDefault();' class='form-horizontal col-xs-12 clearfix'>
     <fieldset>
       <legend>Remove Two-Factor Authentication</legend>

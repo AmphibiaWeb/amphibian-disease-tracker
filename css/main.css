@@ -7220,6 +7220,28 @@ paper-radio-button #radioContainer div {
 .clear {
   clear: both;
 }
+.force-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  float: none !important;
+}
+.force-center:before,
+.force-center:after {
+  content: " ";
+  display: table;
+}
+.force-center:after {
+  clear: both;
+}
+.force-center:before,
+.force-center:after {
+  content: " ";
+  display: table;
+}
+.force-center:after {
+  clear: both;
+}
 paper-button.admin-action {
   background: #4CAF50;
   color: #fff;
