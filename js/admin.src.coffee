@@ -1661,6 +1661,8 @@ showAddUserDialog = ->
       """
       $(this).before debugHtml
     $("#debug-placeholder").text $(this).val()
+  $("body .user-search-result").click ->
+    toastStatusMessage "Add to the list"
   # bind add button
   $("#add-user").click ->
     toastStatusMessage "Would save the list above"

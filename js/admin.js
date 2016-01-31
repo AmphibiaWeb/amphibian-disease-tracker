@@ -1476,6 +1476,9 @@ showAddUserDialog = function() {
     }
     return $("#debug-placeholder").text($(this).val());
   });
+  $("body .user-search-result").click(function() {
+    return toastStatusMessage("Add to the list");
+  });
   $("#add-user").click(function() {
     return toastStatusMessage("Would save the list above");
   });
