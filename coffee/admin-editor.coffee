@@ -354,4 +354,19 @@ showAddUserDialog = ->
   """
   unless $("#add-new-user").exists()
     $("body").append dialogHtml
+  # Events
+  # Bind type-to-search
+  $("#search-user").keyup ->
+    console.log "Should search", $(this).val()
+    unless $("#debug-alert").exists()
+      debugHtml = """
+      <div class="alert alert-warning">
+        Would search against "<span id="debug-placeholder"></span>". Incomplete.
+      </div>
+      """
+      $(this).before debugHtml
+    $("#debug-placeholder").text $(this).val()
+  # bind add button
+  $("#add-user").click ->
+    toastStatusMessage "Would save the list above"
   false

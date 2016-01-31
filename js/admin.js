@@ -1466,6 +1466,18 @@ showAddUserDialog = function() {
   if (!$("#add-new-user").exists()) {
     $("body").append(dialogHtml);
   }
+  $("#search-user").keyup(function() {
+    var debugHtml;
+    console.log("Should search", $(this).val());
+    if (!$("#debug-alert").exists()) {
+      debugHtml = "<div class=\"alert alert-warning\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete.\n</div>";
+      $(this).before(debugHtml);
+    }
+    return $("#debug-placeholder").text($(this).val());
+  });
+  $("#add-user").click(function() {
+    return toastStatusMessage("Would save the list above");
+  });
   return false;
 };
 
