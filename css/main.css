@@ -7349,7 +7349,11 @@ iron-autogrow-textarea.project-field {
 }
 .user-search-result {
   cursor: pointer;
+  padding: .5rem;
   border-bottom: 1px solid #eee;
+}
+.user-search-result:last-of-type {
+  border-bottom: none;
 }
 .user-search-result:hover {
   background: #eee;
