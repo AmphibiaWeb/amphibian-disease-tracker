@@ -174,21 +174,24 @@ loadEditor = ->
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title}<br/><small>Project ##{opid}</small></h2>
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
-            <div class="alert alert-info clearfix">
-              <h4>Project Collaborators</h4>
-              <table class="table table-striped table-condensed table-responsive table-hover clearfix">
-                <thead>
-                  <tr>
-                    <td colspan="5">User</td>
-                    <td>Permissions</td>
-                  </tr>
-                </thead>
-                <tbody>
-                  #{userHtml}
-                </tbody>
-              </table>
-              <paper-button class="manage-users pull-right" id="manage-users">Manage Users</paper-button>
-            </div>
+            <paper-card class="clearfix" heading="Project Collaborators">
+              <div class="card-contents">
+                <table class="table table-striped table-condensed table-responsive table-hover clearfix">
+                  <thead>
+                    <tr>
+                      <td colspan="5">User</td>
+                      <td>Permissions</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    #{userHtml}
+                  </tbody>
+                </table>
+              </div>
+              <div class="card-actions">
+                <paper-button class="manage-users" id="manage-users">Manage Users</paper-button>
+              </div>
+            </paper-card>
           </section>
           <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Basics</h3>
