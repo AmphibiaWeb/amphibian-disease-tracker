@@ -260,7 +260,7 @@ makeTOTP = ->
       show_secret_id = "show_secret"
       show_alt = "showAltBarcode"
       barcodeDiv = "secretBarcode"
-      html = "<form id='totp_verify' onsubmit='event.preventDefault();' class='col-xs-12'>
+      html = "<form id='totp_verify' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
   <p class='text-muted text-center center-block'>If you're unable to scan the barcode below, <button href='#' id='#{show_secret_id}' class='btn btn-link'>click here to manually input your key.</button></p>
   <div id='#{barcodeDiv}' class='text-center center-block'>
     #{result.svg}
@@ -502,10 +502,10 @@ showInstructions = (path = "help/instructions_pop.html") ->
     href:window.totpParams.popStylesheetPath
     }).appendTo("head")
   # Load the instructions
-  $.get window.totpParams.relative+path
+  $.get "#{window.totpParams.relative}#{path}"
   .done (html) ->
-    $("article").after(html)
-    $("article").addClass("blur")
+    $("#login_block").after(html)
+    $("#login_block").addClass("blur")
     # Fill the images
     assetPath = "#{window.totpParams.relative}assets/"
     $(".android").html("<img src='#{assetPath}playstore.png' alt='Google Play Store'/>")
