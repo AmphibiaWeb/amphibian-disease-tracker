@@ -232,6 +232,10 @@ loadEditor = ->
           """
           $("#main-body").html html
           # Events
+          affixOptions =
+            top: ->
+              @top = $("#data-management").position().top
+          $("#data-management").affix affixOptions
           $("#manage-users").click ->
             popManageUserAccess()
           stopLoad()
