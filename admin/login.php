@@ -754,21 +754,32 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                 if($ask_twofactor_at_signup)
                                   {
                                     # Give user 2FA
-                                    $totp_add_form = "<section id='totp_add'>
-  <p id='totp_message'>Two factor authentication is required when setting up an account with Lemotion. If you don't know what this is, click \"Help with two-factor authentication\" below.</p>
-  <form id='totp_start' onsubmit='event.preventDefault();'>
+                                      $totp_add_form = "<section id='totp_add' class='row'>
+  <div id='totp_message' class='col-xs-12 col-md-6 alert alert-warning'>
+    Two factor authentication is required when setting up an account with Lemotion. If you don't know what this is, click \"Help with two-factor authentication\" below.
+  </div>
+  <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
     <fieldset>
       <legend>Login to continue</legend>
-      <input type='email' value='".$user->getUsername()."' readonly='readonly' id='username' name='username'/><br/>
-      <input type='password' id='password' name='password'/><br/>
+      <div class='form-group'>
+        <label for='username' class='sr-only'>Username:</label>
+        <input type='email' value='".$user->getUsername()."' readonly='readonly' id='username' name='username' class='form-control'/>
+      </div>
+      <div class='form-group'>
+        <label for='password' class='sr-only'>Password:</label>
+        <input type='password' id='password' name='password' placeholder='Verify Password'/>
+      </div>
       <input type='hidden' id='secret' name='secret' value='".$_COOKIE[$cookiekey]."'/>
       <input type='hidden' id='hash' name='hash' value='".$_COOKIE[$cookieauth]."'/>
+      <br/>
       <button id='add_totp_button' class='totpbutton btn btn-primary'>Add Two-Factor Authentication</button>
     </fieldset>
   </form>
-  <a href='#' id='totp_help'>Help with Two-Factor Authentication</a>
+  <div class='alert alert-info col-xs-12 col-md-6'>
+    <button id='totp_help' class='alert-link btn btn-link'>Help with Two-Factor Authentication</button>
+  </div>
 </section>";
-                                    $login_output .= "<h2>Adding two-factor authentication</h2>".$totp_add_form;
+                                    $login_output .= "<h2 class='row'>Adding two-factor authentication</h2>".$totp_add_form;
                                   }
 
                               }
