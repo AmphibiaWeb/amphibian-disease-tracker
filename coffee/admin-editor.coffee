@@ -232,9 +232,10 @@ loadEditor = ->
           """
           $("#main-body").html html
           # Events
-          topPosition = $("#data-management").position().top
+          topPosition = $("#data-management").offset().top
           affixOptions =
-            bottom: topPosition
+            top: topPosition
+          $("#data-management").attr "data-offset-top", topPosition
           $("#data-management").affix affixOptions
           console.info "Affixed at #{topPosition}px"
           $("#manage-users").click ->
