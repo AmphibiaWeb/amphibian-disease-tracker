@@ -342,7 +342,7 @@ if($_REQUEST['q']=='submitlogin')
             $secret =  $is_encrypted ? $_COOKIE[$cookiekey]:$res["encrypted_secret"];
             $totp_buffer = "<section id='totp_prompt' class='row'>
   <div class='$totp_class alert alert-danger col-xs-12 col-md-6 center-block' id='totp_message'>".$res["human_error"]."</div>
-  <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal'>
+  <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal clearfix col-xs-12'>
     <fieldset>
       <legend>Two-Factor Authentication</legend>
       <input type='number' id='totp_code' name='totp_code' placeholder='Code' pattern='[0-9]{6}' size='6' maxlength='6'/>
@@ -756,7 +756,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
                                     # Give user 2FA
                                       $totp_add_form = "<section id='totp_add' class='row'>
   <div id='totp_message' class='col-xs-12 col-md-6 alert alert-warning center-block'>
-    Two factor authentication is required when setting up an account with Lemotion. If you don't know what this is, click \"Help with two-factor authentication\" below.
+    Two factor authentication is required when setting up an account with $shorturl. If you don't know what this is, click \"Help with two-factor authentication\" below.
   </div>
   <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
     <fieldset>
@@ -844,7 +844,7 @@ else if(isset($_REQUEST['2fa']))
           # Give user 2FA
           $totp_add_form = "<section id='totp_add' class='row'>
   <div id='totp_message' class='alert alert-info col-xs-12 col-md-6 center-block'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</div>
-  <form id='totp_start' onsubmit='event.preventDefault();'>
+  <form id='totp_start' onsubmit='event.preventDefault();' class='col-xs-12 clearfix'>
     <fieldset>
       <legend>Login to continue</legend>
       <input type='email' value='".$user->getUsername()."' readonly='readonly' id='username' name='username'/><br/>
@@ -864,7 +864,7 @@ else if(isset($_REQUEST['2fa']))
           # Remove 2FA from the user
           $totp_remove_form = "<section id='totp_remove_section' class='row'>
     <div id='totp_message' class='alert alert-warning col-xs-12 col-md-6 center-block'>Are you sure you want to disable two-factor authentication?</div>
-  <form id='totp_remove' onsubmit='event.preventDefault();' class='form-horizontal'>
+  <form id='totp_remove' onsubmit='event.preventDefault();' class='form-horizontal col-xs-12 clearfix'>
     <fieldset>
       <legend>Remove Two-Factor Authentication</legend>
       <input type='email' value='".$user->getUsername()."' readonly='readonly' id='username' name='username'/><br/>
