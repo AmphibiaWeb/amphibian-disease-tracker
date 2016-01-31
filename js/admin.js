@@ -1351,7 +1351,7 @@ loadEditor = function() {
                 return toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
               });
               $(".add-user").unbind().click(function() {
-                showAddUserDialog();
+                showAddUserDialog(project.access_data.total);
                 return false;
               });
               safariDialogHelper("#user-setter-dialog");
@@ -1459,7 +1459,11 @@ loadEditor = function() {
   return false;
 };
 
-showAddUserDialog = function() {
+showAddUserDialog = function(refAccessList) {
+
+  /*
+   * @param Array refAccessList  -> array of emails already with access
+   */
   var dialogHtml;
   toastStatusMessage("Would replace dialog with a new one to add a new user to project");
   dialogHtml = "<paper-dialog modal id=\"add-new-user\">\n<h2>Add New User To Project</h2>\n<paper-dialog-scrollable>\n  <p>Search by email, real name, or username below. Click on a search result to queue a user for adding.</p>\n  <div class=\"form-horizontal\" id=\"search-user-form-container\">\n    <div class=\"form-group\">\n      <label for=\"search-user\" class=\"sr-only form-label\">Search User</label>\n      <input type=\"text\" id=\"search-user\" name=\"search-user\" class=\"form-control\"/>\n    </div>\n    <paper-material id=\"user-search-result-container\" class=\"pop-result\" hidden>\n      <div class=\"result-list\">\n        <div class=\"user-search-result\" data-uid=\"456\"><span class=\"email\">foo@bar.com</span> | <span class=\"name\">Jane Smith</span> | <span class=\"user\">FooBar</span></div>\n        <div class=\"user-search-result\" data-uid=\"123\"><span class=\"email\">foo2@bar.com</span> | <span class=\"name\">John Smith</span> | <span class=\"user\">FooBar2</span></div>\n      </div>\n    </paper-material>\n  </div>\n  <p>Adding users:</p>\n  <ul class=\"simple-list\" id=\"user-add-queue\">\n    <!--\n      <li class=\"list-add-users\" data-uid=\"789\">\n        jsmith@sample.com\n      </li>\n    -->\n  </ul>\n</paper-dialog-scrollable>\n<div class=\"buttons\">\n  <paper-button id=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add</paper-button>\n  <paper-button dialog-dismiss>Done</paper-button>\n</div>\n</paper-dialog>";
@@ -1482,13 +1486,28 @@ showAddUserDialog = function() {
     }
   });
   $("body .user-search-result").click(function() {
-    var email, listHtml, uid;
+    var currentQueueUids, email, l, len, listHtml, ref, uid;
     uid = $(this).attr("data-uid");
     console.info("Clicked on " + uid);
-    email = $(this).text();
-    listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\">" + email + "</li>";
-    $("#user-add-queue").append(listHtml);
-    return toastStatusMessage("Add '" + uid + "' to the list");
+    email = $(this).find(".email").text();
+    currentQueueUids = new Array();
+    ref = $("#user-add-queue .list-add-users");
+    for (l = 0, len = ref.length; l < len; l++) {
+      user = ref[l];
+      currentQueueUids.push($(user).attr("data-uid"));
+    }
+    if (indexOf.call(refAccessList, email) < 0) {
+      if (indexOf.call(currentQueueUids, uid) < 0) {
+        listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\">" + email + "</li>";
+        return $("#user-add-queue").append(listHtml);
+      } else {
+        toastStatusMessage(email + " is already in the addition queue");
+        return false;
+      }
+    } else {
+      toastStatusMessage(email + " already has access to this project");
+      return false;
+    }
   });
   $("#add-user").click(function() {
     return toastStatusMessage("Would save the list above");

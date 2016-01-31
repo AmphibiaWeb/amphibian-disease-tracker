@@ -129,7 +129,7 @@ loadEditor = ->
               $(".add-user")
               .unbind()
               .click ->
-                showAddUserDialog()
+                showAddUserDialog(project.access_data.total)
                 false
               # Open the dialog
               safariDialogHelper "#user-setter-dialog"
@@ -323,7 +323,10 @@ loadEditor = ->
   false
 
 
-showAddUserDialog = ->
+showAddUserDialog = (refAccessList) ->
+  ###
+  # @param Array refAccessList  -> array of emails already with access
+  ###
   toastStatusMessage "Would replace dialog with a new one to add a new user to project"
   dialogHtml = """
   <paper-dialog modal id="add-new-user">
@@ -380,12 +383,22 @@ showAddUserDialog = ->
   $("body .user-search-result").click ->
     uid = $(this).attr "data-uid"
     console.info "Clicked on #{uid}"
-    email = $(this).text()
-    listHtml = """
-    <li class="list-add-users" data-uid="#{uid}">#{email}</li>
-    """
-    $("#user-add-queue").append listHtml
-    toastStatusMessage "Add '#{uid}' to the list"
+    email = $(this).find(".email").text()
+    currentQueueUids = new Array()
+    for user in $("#user-add-queue .list-add-users")
+      currentQueueUids.push $(user).attr "data-uid"
+    unless email in refAccessList
+      unless uid in currentQueueUids
+        listHtml = """
+        <li class="list-add-users" data-uid="#{uid}">#{email}</li>
+        """
+        $("#user-add-queue").append listHtml
+      else
+        toastStatusMessage "#{email} is already in the addition queue"
+        return false
+    else
+      toastStatusMessage "#{email} already has access to this project"
+      return false
   # bind add button
   $("#add-user").click ->
     toastStatusMessage "Would save the list above"
