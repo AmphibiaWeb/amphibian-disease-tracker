@@ -1463,7 +1463,7 @@ loadEditor = ->
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title}<br/><small>Project ##{opid}</small></h2>
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Collaborators">
-              <div class="card-contents">
+              <div class="card-content">
                 <table class="table table-striped table-condensed table-responsive table-hover clearfix">
                   <thead>
                     <tr>

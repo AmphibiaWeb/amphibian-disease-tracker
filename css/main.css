@@ -7313,3 +7313,7 @@ iron-autogrow-textarea.project-field {
 #data-management.affix {
   right: 0;
 }
+.pull-right paper-card {
+  width: 100%;
+  margin-bottom: 2rem;
+}
