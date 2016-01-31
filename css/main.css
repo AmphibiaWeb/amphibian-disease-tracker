@@ -7339,6 +7339,9 @@ iron-autogrow-textarea.project-field {
 #add-user paper-dialog-scrollable {
   min-height: 50vh;
 }
+#search-user-form-container {
+  position: relative;
+}
 #user-search-result-container {
   padding: .5rem;
   margin-top: -1rem;

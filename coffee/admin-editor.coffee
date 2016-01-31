@@ -337,13 +337,13 @@ showAddUserDialog = ->
       </div>
       <paper-material id="user-search-result-container" class="pop-result" hidden>
         <div class="result-list">
-          <div class="user-search-result" data-uid="456">foo@bar.com | Jane Smith | FooBar</div>
-          <div class="user-search-result" data-uid="123">foo2@bar.com | John Smith | FooBar2</div>
+          <div class="user-search-result" data-uid="456"><span class="email">foo@bar.com</span> | <span class="name">Jane Smith</span> | <span class="user">FooBar</span></div>
+          <div class="user-search-result" data-uid="123"><span class="email">foo2@bar.com</span> | <span class="name">John Smith</span> | <span class="user">FooBar2</span></div>
         </div>
       </paper-material>
     </div>
     <p>Adding users:</p>
-    <ul class="simple-list">
+    <ul class="simple-list" id="user-add-queue">
       <!--
         <li class="list-add-users" data-uid="789">
           jsmith@sample.com
@@ -372,8 +372,19 @@ showAddUserDialog = ->
       """
       $(this).before debugHtml
     $("#debug-placeholder").text $(this).val()
+    if isNull $(this).val()
+      $("#user-search-result-container").prop "hidden", "hidden"
+    else
+      $("#user-search-result-container").removeProp "hidden"
+
   $("body .user-search-result").click ->
-    toastStatusMessage "Add to the list"
+    uid = $(this).attr "data-uid"
+    email = $(this).text()
+    listHtml = """
+    <li class="list-add-users" data-uid="#{uid}"></li>
+    """
+    $("#user-add-queue").append listHtml
+    toastStatusMessage "Add '#{uid}' to the list"
   # bind add button
   $("#add-user").click ->
     toastStatusMessage "Would save the list above"

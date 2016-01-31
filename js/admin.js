@@ -1462,7 +1462,7 @@ loadEditor = function() {
 showAddUserDialog = function() {
   var dialogHtml;
   toastStatusMessage("Would replace dialog with a new one to add a new user to project");
-  dialogHtml = "<paper-dialog modal id=\"add-new-user\">\n<h2>Add New User To Project</h2>\n<paper-dialog-scrollable>\n  <p>Search by email, real name, or username below. Click on a search result to queue a user for adding.</p>\n  <div class=\"form-horizontal\" id=\"search-user-form-container\">\n    <div class=\"form-group\">\n      <label for=\"search-user\" class=\"sr-only form-label\">Search User</label>\n      <input type=\"text\" id=\"search-user\" name=\"search-user\" class=\"form-control\"/>\n    </div>\n    <paper-material id=\"user-search-result-container\" class=\"pop-result\" hidden>\n      <div class=\"result-list\">\n        <div class=\"user-search-result\" data-uid=\"456\">foo@bar.com | Jane Smith | FooBar</div>\n        <div class=\"user-search-result\" data-uid=\"123\">foo2@bar.com | John Smith | FooBar2</div>\n      </div>\n    </paper-material>\n  </div>\n  <p>Adding users:</p>\n  <ul class=\"simple-list\">\n    <!--\n      <li class=\"list-add-users\" data-uid=\"789\">\n        jsmith@sample.com\n      </li>\n    -->\n  </ul>\n</paper-dialog-scrollable>\n<div class=\"buttons\">\n  <paper-button id=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add</paper-button>\n  <paper-button dialog-dismiss>Done</paper-button>\n</div>\n</paper-dialog>";
+  dialogHtml = "<paper-dialog modal id=\"add-new-user\">\n<h2>Add New User To Project</h2>\n<paper-dialog-scrollable>\n  <p>Search by email, real name, or username below. Click on a search result to queue a user for adding.</p>\n  <div class=\"form-horizontal\" id=\"search-user-form-container\">\n    <div class=\"form-group\">\n      <label for=\"search-user\" class=\"sr-only form-label\">Search User</label>\n      <input type=\"text\" id=\"search-user\" name=\"search-user\" class=\"form-control\"/>\n    </div>\n    <paper-material id=\"user-search-result-container\" class=\"pop-result\" hidden>\n      <div class=\"result-list\">\n        <div class=\"user-search-result\" data-uid=\"456\"><span class=\"email\">foo@bar.com</span> | <span class=\"name\">Jane Smith</span> | <span class=\"user\">FooBar</span></div>\n        <div class=\"user-search-result\" data-uid=\"123\"><span class=\"email\">foo2@bar.com</span> | <span class=\"name\">John Smith</span> | <span class=\"user\">FooBar2</span></div>\n      </div>\n    </paper-material>\n  </div>\n  <p>Adding users:</p>\n  <ul class=\"simple-list\" id=\"user-add-queue\">\n    <!--\n      <li class=\"list-add-users\" data-uid=\"789\">\n        jsmith@sample.com\n      </li>\n    -->\n  </ul>\n</paper-dialog-scrollable>\n<div class=\"buttons\">\n  <paper-button id=\"add-user\"><iron-icon icon=\"social:person-add\"></iron-icon> Add</paper-button>\n  <paper-button dialog-dismiss>Done</paper-button>\n</div>\n</paper-dialog>";
   if (!$("#add-new-user").exists()) {
     $("body").append(dialogHtml);
   }
@@ -1474,10 +1474,20 @@ showAddUserDialog = function() {
       debugHtml = "<div class=\"alert alert-warning\" id=\"debug-alert\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete.\n</div>";
       $(this).before(debugHtml);
     }
-    return $("#debug-placeholder").text($(this).val());
+    $("#debug-placeholder").text($(this).val());
+    if (isNull($(this).val())) {
+      return $("#user-search-result-container").prop("hidden", "hidden");
+    } else {
+      return $("#user-search-result-container").removeProp("hidden");
+    }
   });
   $("body .user-search-result").click(function() {
-    return toastStatusMessage("Add to the list");
+    var email, listHtml, uid;
+    uid = $(this).attr("data-uid");
+    email = $(this).text();
+    listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\"></li>";
+    $("#user-add-queue").append(listHtml);
+    return toastStatusMessage("Add '" + uid + "' to the list");
   });
   $("#add-user").click(function() {
     return toastStatusMessage("Would save the list above");
