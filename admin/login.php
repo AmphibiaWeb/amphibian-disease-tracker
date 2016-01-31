@@ -767,7 +767,7 @@ if ($debug) $login_output .= "<pre>".displayDebug($resp)."</pre>";
       </div>
       <div class='form-group'>
         <label for='password' class='sr-only'>Password:</label>
-        <input type='password' id='password' name='password' placeholder='Verify Password'/>
+        <input type='password' id='password' name='password' placeholder='Verify Password' class='form-control'/>
       </div>
       <input type='hidden' id='secret' name='secret' value='".$_COOKIE[$cookiekey]."'/>
       <input type='hidden' id='hash' name='hash' value='".$_COOKIE[$cookieauth]."'/>
@@ -853,7 +853,7 @@ else if(isset($_REQUEST['2fa']))
       </div>
       <div class='form-group'>
         <label for='password' class='sr-only'>Password:</label>
-        <input type='password' id='password' name='password' placeholder='Verify Password'/>
+        <input type='password' id='password' name='password' placeholder='Verify Password' class='form-control'/>
       </div>
       <input type='hidden' id='secret' name='secret' value='".$_COOKIE[$cookiekey]."'/>
       <input type='hidden' id='hash' name='hash' value='".$_COOKIE[$cookieauth]."'/>
