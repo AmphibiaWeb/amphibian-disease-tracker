@@ -164,10 +164,10 @@ loadEditor = ->
             unless project.public.toBool()
               """
               <div class="col-xs-12">
-                <paper-toggle id="public" class="project-params">
+                <paper-toggle-button id="public" class="project-params">
                   <iron-icon icon="icons:warning" class="material-red"></iron-icon>
                   Make this project public
-                </paper-toggle> <span class="text-muted small">Once saved, this cannot be undone</span>
+                </paper-toggle-button> <span class="text-muted small">Once saved, this cannot be undone</span>
               </div>
               """
             else "<!-- This project is already public -->"
