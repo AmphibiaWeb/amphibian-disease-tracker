@@ -243,8 +243,7 @@ loadEditor = ->
             top: topPosition
             bottom: 0
             target: window
-          #$("#data-management").attr "data-offset-top", topPosition
-          $("#data-management").affix affixOptions
+          # $("#data-management").affix affixOptions
           console.info "Affixed at #{topPosition}px", affixOptions
           $("#manage-users").click ->
             popManageUserAccess()

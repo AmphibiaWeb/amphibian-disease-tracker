@@ -1392,7 +1392,6 @@ loadEditor = function() {
             bottom: 0,
             target: window
           };
-          $("#data-management").affix(affixOptions);
           console.info("Affixed at " + topPosition + "px", affixOptions);
           $("#manage-users").click(function() {
             return popManageUserAccess();
