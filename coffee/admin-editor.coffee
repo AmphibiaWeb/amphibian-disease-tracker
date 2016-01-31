@@ -159,7 +159,7 @@ loadEditor = ->
             </tr>
             """
           # Prepare States
-          icon = if project.public.toBool() then """<iron-icon icon="social:public" class="material-green"></iron-icon>""" else """<iron-icon icon="icons:lock" class="material-red"></iron-icon>"""
+          icon = if project.public.toBool() then """<iron-icon icon="social:public" class="materialgreentext"></iron-icon>""" else """<iron-icon icon="icons:lock" class="materialredtext"></iron-icon>"""
           conditionalReadonly = if result.user.has_edit_permissions then "" else "readonly"
           anuraState = if project.includes_anura.toBool() then "checked disabled" else "disabled"
           caudataState = if project.includes_caudata.toBool() then "checked disabled" else "disabled"

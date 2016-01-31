@@ -1372,7 +1372,7 @@ loadEditor = function() {
             }
             userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center\">" + icon + "</td>\n</tr>";
           }
-          icon = project["public"].toBool() ? "<iron-icon icon=\"social:public\" class=\"material-green\"></iron-icon>" : "<iron-icon icon=\"icons:lock\" class=\"material-red\"></iron-icon>";
+          icon = project["public"].toBool() ? "<iron-icon icon=\"social:public\" class=\"materialgreentext\"></iron-icon>" : "<iron-icon icon=\"icons:lock\" class=\"materialredtext\"></iron-icon>";
           conditionalReadonly = result.user.has_edit_permissions ? "" : "readonly";
           anuraState = project.includes_anura.toBool() ? "checked disabled" : "disabled";
           caudataState = project.includes_caudata.toBool() ? "checked disabled" : "disabled";
