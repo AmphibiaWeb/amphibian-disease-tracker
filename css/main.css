@@ -6957,9 +6957,19 @@ paper-fab.materialblue.paper-fab-0:hover {
   background: #4CAF50;
   color: #fff;
 }
+.materialgreentext {
+  color: #4CAF50;
+}
 .materialindigo {
   background: #3f51b5;
   color: #fff;
+}
+.materialred {
+  background: #F44336;
+  color: #fff;
+}
+.materialredtext {
+  color: #F44336;
 }
 .extreme-danger {
   box-shadow: 0 0 2em 0.25em #f00;

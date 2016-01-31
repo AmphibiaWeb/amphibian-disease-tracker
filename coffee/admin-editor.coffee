@@ -249,6 +249,7 @@ loadEditor = ->
           console.info "Affixed at #{topPosition}px", affixOptions
           $("#manage-users").click ->
             popManageUserAccess()
+          # bootstrapUploader("data-card")
           stopLoad()
         catch e
           stopLoadError "There was an error loading your project"
