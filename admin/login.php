@@ -341,7 +341,7 @@ if($_REQUEST['q']=='submitlogin')
             $hash =  $is_encrypted ? $_COOKIE[$cookieauth]:$res["encrypted_hash"];
             $secret =  $is_encrypted ? $_COOKIE[$cookiekey]:$res["encrypted_secret"];
             $totp_buffer = "<section id='totp_prompt'>
-  <p class='$totp_class' id='totp_message'>".$res["human_error"]."</p>
+  <div class='$totp_class alert alert-danger' id='totp_message'>".$res["human_error"]."</div>
   <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal'>
     <fieldset>
       <legend>Two-Factor Authentication</legend>
@@ -843,7 +843,7 @@ else if(isset($_REQUEST['2fa']))
       {
           # Give user 2FA
           $totp_add_form = "<section id='totp_add'>
-  <p id='totp_message'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</p>
+  <div id='totp_message' class='alert alert-info'>Two factor authentication is very secure, but when you enable it, you'll be unable to log in without your mobile device.</div>
   <form id='totp_start' onsubmit='event.preventDefault();'>
     <fieldset>
       <legend>Login to continue</legend>
@@ -864,7 +864,7 @@ else if(isset($_REQUEST['2fa']))
           # Remove 2FA from the user
           $totp_remove_form = "<section id='totp_remove_section'>
   <div class='alert alert-warning'>
-    <p id='totp_message'>Are you sure you want to disable two-factor authentication?</p>
+    <div id='totp_message' class='alert alert-warning'>Are you sure you want to disable two-factor authentication?</div>
   </div>
   <form id='totp_remove' onsubmit='event.preventDefault();' class='form-horizontal'>
     <fieldset>
