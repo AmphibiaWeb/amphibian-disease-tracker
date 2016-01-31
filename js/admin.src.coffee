@@ -1489,12 +1489,15 @@ loadEditor = ->
             <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
           </section>
           <section id="data-management" class="col-xs-12 col-md-4 pull-right">
-            <div class="alert alert-info clearfix">
-              <h4>Project Data</h4>
-              Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
-              <br/><br/>
-              Uploader here
-            </div>
+            <paper-card class="clearfix" heading="Project Data">
+              <div class="card-content">
+                Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
+                <br/><br/>
+                Uploader here
+                <br/><br/>
+                Should affix itself to the top  of the window when scrolling.
+              </div>
+            </paper-card>
           </section>
           <section id="project-data" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Data Overview</h3>
