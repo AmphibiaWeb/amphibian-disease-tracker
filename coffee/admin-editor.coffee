@@ -337,17 +337,16 @@ showAddUserDialog = ->
       </div>
       <paper-material id="user-search-result-container" class="pop-result" hidden>
         <div class="result-list">
-          <div class="user-search-result">foo@bar.com | Jane Smith | FooBar</div>
-          <div class="user-search-result">foo2@bar.com | John Smith | FooBar2</div>
+          <div class="user-search-result" data-uid="456">foo@bar.com | Jane Smith | FooBar</div>
+          <div class="user-search-result" data-uid="123">foo2@bar.com | John Smith | FooBar2</div>
         </div>
       </paper-material>
     </div>
     <p>Adding users:</p>
     <ul class="simple-list">
       <!--
-        <li>
+        <li class="list-add-users" data-uid="789">
           jsmith@sample.com
-          <input type='hidden' class='list-add-users' value='FOOBAR'/>
         </li>
       -->
     </ul>
