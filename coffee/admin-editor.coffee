@@ -200,7 +200,7 @@ loadEditor = ->
             <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
           </section>
-          <section id="data-management" class="col-xs-12 col-md-4 pull-right">
+          <section id="data-management" class="col-xs-12 col-md-4 pull-right" data-spy="affix" data-offset-top="60">
             <div class="alert alert-info clearfix sticky">
               <h4>Project Data</h4>
               Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
@@ -210,14 +210,24 @@ loadEditor = ->
           </section>
           <section id="project-data" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Data Overview</h3>
-            <h4>Project Studies:</h4>
-            <paper-checkbox #{anuraState}>Anura</paper-checkbox>
-            <paper-checkbox #{caudataState}>Caudata</paper-checkbox>
-            <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
-            <h4>Sample Metrics</h4>
-            <h4>Locality &amp; Transect Data</h4>
+              <h4>Project Studies:</h4>
+                <paper-checkbox #{anuraState}>Anura</paper-checkbox>
+                <paper-checkbox #{caudataState}>Caudata</paper-checkbox>
+                <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
+              <h4>Sample Metrics</h4>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+              <h4>Locality &amp; Transect Data</h4>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
             <h3>Project Meta Parameters</h3>
-            <h4>Project funding status</h4>
+              <h4>Project funding status</h4>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
           </section>
           """
           $("#main-body").html html
