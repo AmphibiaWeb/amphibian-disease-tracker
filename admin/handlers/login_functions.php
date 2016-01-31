@@ -2738,7 +2738,7 @@ class UserFunctions extends DBHelper
         if (function_exists(openssl_decrypt)) {
             $method = self::getPreferredCipherMethod();
             # http://us3.php.net/manual/en/function.openssl-decrypt.php
-            $decrypted = openssl_decrypt($string, $method, $cipherkey, 0, $iv);
+            $decrypted = openssl_decrypt($decoded, $method, $cipherkey, 0, $iv);
         } elseif (function_exists(mcrypt_decrypt)) {
             $decrypted = mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $cipherkey, $decoded, MCRYPT_MODE_CBC, $iv);
         } else {
