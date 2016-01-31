@@ -1520,10 +1520,11 @@ loadEditor = ->
           """
           $("#main-body").html html
           # Events
+          topPosition = $("#data-management").position().top
           affixOptions =
-            top: ->
-              @top = $("#data-management").position().top
+            top: topPosition
           $("#data-management").affix affixOptions
+          console.info "Affixed at #{topPosition}px"
           $("#manage-users").click ->
             popManageUserAccess()
           stopLoad()
