@@ -201,7 +201,7 @@ loadEditor = ->
             <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
           </section>
           <section id="data-management" class="col-xs-12 col-md-4 pull-right" data-spy="affix" data-offset-top="10">
-            <div class="alert alert-info clearfix sticky">
+            <div class="alert alert-info clearfix">
               <h4>Project Data</h4>
               Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
               <br/><br/>
