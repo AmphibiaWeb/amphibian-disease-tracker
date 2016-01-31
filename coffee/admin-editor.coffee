@@ -361,7 +361,7 @@ showAddUserDialog = ->
     console.log "Should search", $(this).val()
     unless $("#debug-alert").exists()
       debugHtml = """
-      <div class="alert alert-warning">
+      <div class="alert alert-warning" id="debug-alert">
         Would search against "<span id="debug-placeholder"></span>". Incomplete.
       </div>
       """

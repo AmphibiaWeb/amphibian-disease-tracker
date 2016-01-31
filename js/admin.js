@@ -1471,7 +1471,7 @@ showAddUserDialog = function() {
     var debugHtml;
     console.log("Should search", $(this).val());
     if (!$("#debug-alert").exists()) {
-      debugHtml = "<div class=\"alert alert-warning\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete.\n</div>";
+      debugHtml = "<div class=\"alert alert-warning\" id=\"debug-alert\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete.\n</div>";
       $(this).before(debugHtml);
     }
     return $("#debug-placeholder").text($(this).val());
