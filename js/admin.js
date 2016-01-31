@@ -1478,14 +1478,15 @@ showAddUserDialog = function() {
     if (isNull($(this).val())) {
       return $("#user-search-result-container").prop("hidden", "hidden");
     } else {
-      return $("#user-search-result-container").removeProp("hidden");
+      return $("#user-search-result-container").removeAttr("hidden");
     }
   });
   $("body .user-search-result").click(function() {
     var email, listHtml, uid;
     uid = $(this).attr("data-uid");
+    console.info("Clicked on " + uid);
     email = $(this).text();
-    listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\"></li>";
+    listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\">" + email + "</li>";
     $("#user-add-queue").append(listHtml);
     return toastStatusMessage("Add '" + uid + "' to the list");
   });

@@ -1663,13 +1663,14 @@ showAddUserDialog = ->
     if isNull $(this).val()
       $("#user-search-result-container").prop "hidden", "hidden"
     else
-      $("#user-search-result-container").removeProp "hidden"
+      $("#user-search-result-container").removeAttr "hidden"
 
   $("body .user-search-result").click ->
     uid = $(this).attr "data-uid"
+    console.info "Clicked on #{uid}"
     email = $(this).text()
     listHtml = """
-    <li class="list-add-users" data-uid="#{uid}"></li>
+    <li class="list-add-users" data-uid="#{uid}">#{email}</li>
     """
     $("#user-add-queue").append listHtml
     toastStatusMessage "Add '#{uid}' to the list"
