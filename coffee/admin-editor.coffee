@@ -110,7 +110,7 @@ loadEditor = ->
                   #{userHtml}
                 </paper-dialog-scrollable>
                 <div class="buttons">
-                  <paper-button class="add-user"><iron-icon icon="social:person-add"></iron-icon> Add User</paper-button>
+                  <paper-button class="add-user" dialog-confirm><iron-icon icon="social:group-add"></iron-icon> Add Users</paper-button>
                   <paper-button class="close-dialog" dialog-dismiss>Done</paper-button>
                 </div>
               </paper-dialog>
@@ -326,5 +326,32 @@ loadEditor = ->
 showAddUserDialog = ->
   toastStatusMessage "Would replace dialog with a new one to add a new user to project"
   dialogHtml = """
+  <paper-dialog modal id="add-new-user">
+  <h2>Add New User To Project</h2>
+  <paper-dialog-scrollable>
+    <p>Search by email, real name, or username below.</p>
+    <div class="form-horizontal" id="search-user-form-container">
+      <div class="form-group">
+        <label for="search-user" class="sr-only form-label">Search User</label>
+        <input type="text" id="search-user" name="search-user" class="form-control"/>
+      </div>
+    </div>
+    <p>Adding users:</p>
+    <ul class="simple-list">
+      <!--
+        <li>
+          jsmith@sample.com
+          <input type='hidden' class='list-add-users' value='FOOBAR'/>
+        </li>
+      -->
+    </ul>
+  </paper-dialog-scrollable>
+  <div class="buttons">
+    <paper-button id="add-user"><iron-icon icon="social:person-add"></iron-icon> Add</paper-button>
+    <paper-button dialog-dismiss>Done</paper-button>
+  </div>
+</paper-dialog>
   """
+  unless $("#add-new-user").exists()
+    $("body").append dialogHtml
   false
