@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 window.adminParams = new Object();
@@ -1348,7 +1348,8 @@ loadEditor = function() {
                 return toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
               });
               $(".add-user").unbind().click(function() {
-                return toastStatusMessage("Would replace dialog with a new one to add a new user to project");
+                showAddUserDialog();
+                return false;
               });
               safariDialogHelper("#user-setter-dialog");
               return false;
@@ -1425,6 +1426,13 @@ loadEditor = function() {
       return stopLoadError("There was a problem loading viable projects");
     });
   })();
+  return false;
+};
+
+showAddUserDialog = function() {
+  var dialogHtml;
+  toastStatusMessage("Would replace dialog with a new one to add a new user to project");
+  dialogHtml = "  ";
   return false;
 };
 

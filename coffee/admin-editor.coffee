@@ -129,7 +129,8 @@ loadEditor = ->
               $(".add-user")
               .unbind()
               .click ->
-                toastStatusMessage "Would replace dialog with a new one to add a new user to project"
+                showAddUserDialog()
+                false
               # Open the dialog
               safariDialogHelper "#user-setter-dialog"
               false
@@ -236,4 +237,11 @@ loadEditor = ->
       stopLoad()
     .error (result, status) ->
       stopLoadError "There was a problem loading viable projects"
+  false
+
+
+showAddUserDialog = ->
+  toastStatusMessage "Would replace dialog with a new one to add a new user to project"
+  dialogHtml = """
+  """
   false
