@@ -1390,7 +1390,7 @@ loadEditor = function() {
           affixOptions = {
             top: topPosition,
             bottom: 0,
-            target: "window"
+            target: window
           };
           $("#data-management").affix(affixOptions);
           console.info("Affixed at " + topPosition + "px");
