@@ -159,7 +159,19 @@ loadEditor = ->
             </tr>
             """
           # Prepare States
-          icon = if project.public.toBool() then """<iron-icon icon="social:public" class="materialgreentext"></iron-icon>""" else """<iron-icon icon="icons:lock" class="materialredtext"></iron-icon>"""
+          icon = if project.public.toBool() then """<iron-icon icon="social:public" class="material-green" data-toggle="tooltip" title="Public Project"></iron-icon>""" else """<iron-icon icon="icons:lock" class="material-red" data-toggle="tooltip" title="Private Project"></iron-icon>"""
+          publicToggle =
+            unless project.public.toBool()
+              """
+              <div class="col-xs-12">
+                <paper-toggle id="public" class="project-params">
+                  <iron-icon icon="icons:warning" class="material-red"></iron-icon>
+                  Make this project public
+                </paper-toggle> <span class="text-muted small">Once saved, this cannot be undone</span>
+              </div>
+              """
+            else ""
+              
           conditionalReadonly = if result.user.has_edit_permissions then "" else "readonly"
           anuraState = if project.includes_anura.toBool() then "checked disabled" else "disabled"
           caudataState = if project.includes_caudata.toBool() then "checked disabled" else "disabled"
@@ -173,6 +185,7 @@ loadEditor = ->
           # The actual HTML
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
+          #{publicToggle}
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Collaborators" elevation="2">
               <div class="card-content">
@@ -239,6 +252,7 @@ loadEditor = ->
           </section>
           """
           $("#main-body").html html
+          # Watch for changes and toggle save watcher state
           # Events
           topPosition = $("#data-management").offset().top
           affixOptions =
