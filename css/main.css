@@ -7336,8 +7336,21 @@ iron-autogrow-textarea.project-field {
 .card-actions paper-button {
   color: #3f51b5;
 }
+#add-user paper-dialog-scrollable {
+  min-height: 50vh;
+}
+#user-search-result-container {
+  padding: .5rem;
+  margin-top: -1rem;
+}
 .result-list {
-  overflow-y: scroll;
   max-height: 20vh;
   width: 100%;
+}
+.user-search-result {
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+.user-search-result:hover {
+  background: #eee;
 }

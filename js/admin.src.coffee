@@ -1623,9 +1623,10 @@ showAddUserDialog = ->
         <label for="search-user" class="sr-only form-label">Search User</label>
         <input type="text" id="search-user" name="search-user" class="form-control"/>
       </div>
-      <paper-material id="user-search-result" class="pop-result" hidden>
+      <paper-material id="user-search-result-container" class="pop-result" hidden>
         <div class="result-list">
           <div class="user-search-result">foo@bar.com | Jane Smith | FooBar</div>
+          <div class="user-search-result">foo2@bar.com | John Smith | FooBar2</div>
         </div>
       </paper-material>
     </div>
