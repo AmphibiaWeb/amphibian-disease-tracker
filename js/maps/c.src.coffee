@@ -63,7 +63,7 @@ toInt = (str) ->
   if not isNumber(str) or isNull(str) then return 0
   parseInt(str)
 
-String::toBool = -> @toString().toLowerCase() is 'true'
+String::toBool = -> @toString().toLowerCase() is 'true' or @toString() is "1"
 
 Boolean::toBool = -> @toString() is 'true'
 

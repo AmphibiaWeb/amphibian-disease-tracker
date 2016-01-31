@@ -105,7 +105,7 @@ toInt = function(str) {
 };
 
 String.prototype.toBool = function() {
-  return this.toString().toLowerCase() === 'true';
+  return this.toString().toLowerCase() === 'true' || this.toString() === "1";
 };
 
 Boolean.prototype.toBool = function() {
