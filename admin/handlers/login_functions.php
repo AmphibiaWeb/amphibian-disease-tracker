@@ -2052,8 +2052,8 @@ class UserFunctions extends DBHelper
                     $testPass = substr($testPass, 0, 8);
                     $faz = self::encryptThis("FooBar", $testPass, $this->getIV());
                     $baz = self::decryptThis($faz, $testPass);
-                    throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getIV().']). Tested '.$foo.' decoding to '.$bar.' with '.$method. " (64: $foo64 to $bar64 to $barTrim64 vs ".$barTrim.") Also $faz -> $baz and " . openssl_error_string() ) );
-                    # throw( new Exception('Invalid reset tokens') );
+                    #throw( new Exception('Invalid reset tokens (got '.$string.' and match '.$match_token.' from '.$salt.' and '.$secret.' [input->'.$key.':'.$verify.' with iv '.$this->getIV().']). Tested '.$foo.' decoding to '.$bar.' with '.$method. " (64: $foo64 to $bar64 to $barTrim64 vs ".$barTrim.") Also $faz -> $baz and " . openssl_error_string() ) );
+                    throw( new Exception('Invalid reset tokens') );
                 }
                 # The token matches -- let's make them a new password and
                 # provide it.
