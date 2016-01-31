@@ -7224,6 +7224,7 @@ paper-radio-button #radioContainer div {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
   float: none !important;
 }
 .force-center:before,
