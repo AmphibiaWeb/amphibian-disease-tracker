@@ -172,9 +172,9 @@ loadEditor = ->
             cartoParsed = new Object()
           # The actual HTML
           html = """
-          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title}<br/><small>Project ##{opid}</small></h2>
+          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
-            <paper-card class="clearfix" heading="Project Collaborators">
+            <paper-card class="clearfix" heading="Project Collaborators" elevation="2">
               <div class="card-content">
                 <table class="table table-striped table-condensed table-responsive table-hover clearfix">
                   <thead>
@@ -204,13 +204,15 @@ loadEditor = ->
             <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
           </section>
           <section id="data-management" class="col-xs-12 col-md-4 pull-right">
-            <paper-card class="clearfix" heading="Project Data">
+            <paper-card class="clearfix" heading="Project Data" elevation="2" id="data-card">
               <div class="card-content">
                 Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
                 <br/><br/>
                 Uploader here
                 <br/><br/>
                 Should affix itself to the top  of the window when scrolling.
+                <div id="uploader-container-section">
+                </div>
               </div>
             </paper-card>
           </section>

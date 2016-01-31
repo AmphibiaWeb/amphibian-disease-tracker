@@ -7317,3 +7317,9 @@ iron-autogrow-textarea.project-field {
   width: 100%;
   margin-bottom: 2rem;
 }
+.pull-right .paper-card-0 .header.paper-card .title-text.paper-card {
+  color: #009688;
+}
+.card-actions paper-button {
+  color: #3f51b5;
+}
