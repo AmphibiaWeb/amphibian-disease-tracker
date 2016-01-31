@@ -1452,14 +1452,17 @@ loadEditor = ->
             unless project.public.toBool()
               """
               <div class="col-xs-12">
-                <paper-toggle-button id="public" class="project-params">
-                  <iron-icon icon="icons:warning" class="material-red"></iron-icon>
+                <paper-toggle-button id="public" class="project-params danger-toggle red">
+                  <iron-icon icon="icons:warning"></iron-icon>
                   Make this project public
                 </paper-toggle-button> <span class="text-muted small">Once saved, this cannot be undone</span>
               </div>
               """
             else "<!-- This project is already public -->"
-              
+          # dangerToggleStyle = """
+          # paper-toggle-button
+          # """
+          # $("style[is='custom-style']")
           conditionalReadonly = if result.user.has_edit_permissions then "" else "readonly"
           anuraState = if project.includes_anura.toBool() then "checked disabled" else "disabled"
           caudataState = if project.includes_caudata.toBool() then "checked disabled" else "disabled"
@@ -1551,6 +1554,11 @@ loadEditor = ->
           console.info "Affixed at #{topPosition}px", affixOptions
           $("#manage-users").click ->
             popManageUserAccess()
+          $(".danger-toggle").on "iron-change", ->
+            if $(this).get(0).checked
+              $(this).find("iron-icon").addClass("material-red")
+            else
+              $(this).find("iron-icon").removeClass("material-red")
           # bootstrapUploader("data-card")
           stopLoad()
         catch e

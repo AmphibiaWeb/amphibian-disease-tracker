@@ -1373,7 +1373,7 @@ loadEditor = function() {
             userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center\">" + icon + "</td>\n</tr>";
           }
           icon = project["public"].toBool() ? "<iron-icon icon=\"social:public\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Public Project\"></iron-icon>" : "<iron-icon icon=\"icons:lock\" class=\"material-red\" data-toggle=\"tooltip\" title=\"Private Project\"></iron-icon>";
-          publicToggle = !project["public"].toBool() ? "<div class=\"col-xs-12\">\n  <paper-toggle-button id=\"public\" class=\"project-params\">\n    <iron-icon icon=\"icons:warning\" class=\"material-red\"></iron-icon>\n    Make this project public\n  </paper-toggle-button> <span class=\"text-muted small\">Once saved, this cannot be undone</span>\n</div>" : "<!-- This project is already public -->";
+          publicToggle = !project["public"].toBool() ? "<div class=\"col-xs-12\">\n  <paper-toggle-button id=\"public\" class=\"project-params danger-toggle red\">\n    <iron-icon icon=\"icons:warning\"></iron-icon>\n    Make this project public\n  </paper-toggle-button> <span class=\"text-muted small\">Once saved, this cannot be undone</span>\n</div>" : "<!-- This project is already public -->";
           conditionalReadonly = result.user.has_edit_permissions ? "" : "readonly";
           anuraState = project.includes_anura.toBool() ? "checked disabled" : "disabled";
           caudataState = project.includes_caudata.toBool() ? "checked disabled" : "disabled";
@@ -1396,6 +1396,13 @@ loadEditor = function() {
           console.info("Affixed at " + topPosition + "px", affixOptions);
           $("#manage-users").click(function() {
             return popManageUserAccess();
+          });
+          $(".danger-toggle").on("iron-change", function() {
+            if ($(this).get(0).checked) {
+              return $(this).find("iron-icon").addClass("material-red");
+            } else {
+              return $(this).find("iron-icon").removeClass("material-red");
+            }
           });
           return stopLoad();
         } catch (_error) {
