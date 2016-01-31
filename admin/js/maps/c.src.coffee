@@ -1006,7 +1006,7 @@ showInstructions = (path = "help/instructions_pop.html") ->
     $(".app_link_container a").addClass("newwindow")
     mapNewWindows()
     $(".close-popup").click ->
-      $("article").removeClass("blur")
+      $("#login_block").removeClass("blur")
       $("#cover_wrapper").remove()
   .fail (result,status) ->
     console.error("Failed to load instructions @ #{path}",result,status)

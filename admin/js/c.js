@@ -1233,7 +1233,7 @@
       $(".app_link_container a").addClass("newwindow");
       mapNewWindows();
       return $(".close-popup").click(function() {
-        $("article").removeClass("blur");
+        $("#login_block").removeClass("blur");
         return $("#cover_wrapper").remove();
       });
     }).fail(function(result, status) {
