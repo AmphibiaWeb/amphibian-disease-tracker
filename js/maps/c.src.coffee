@@ -769,6 +769,8 @@ safariDialogHelper = (selector = "#download-chooser", counter = 0, callback) ->
       # Safari is stupid and like to throw an error. Presumably
       # it's VERY slow about creating the element.
       d$(selector).get(0).open()
+      delay 125, ->
+        d$(selector).get(0).refit()
       if typeof callback is "function"
         callback()
       stopLoad()

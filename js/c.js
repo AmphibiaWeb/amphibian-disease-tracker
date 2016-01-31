@@ -1070,6 +1070,9 @@ safariDialogHelper = function(selector, counter, callback) {
   if (counter < 10) {
     try {
       d$(selector).get(0).open();
+      delay(125, function() {
+        return d$(selector).get(0).refit();
+      });
       if (typeof callback === "function") {
         callback();
       }
