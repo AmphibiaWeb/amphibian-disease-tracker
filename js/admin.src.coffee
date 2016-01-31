@@ -1458,7 +1458,7 @@ loadEditor = ->
                 </paper-toggle> <span class="text-muted small">Once saved, this cannot be undone</span>
               </div>
               """
-            else ""
+            else "<!-- This project is already public -->"
               
           conditionalReadonly = if result.user.has_edit_permissions then "" else "readonly"
           anuraState = if project.includes_anura.toBool() then "checked disabled" else "disabled"
