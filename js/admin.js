@@ -1629,6 +1629,21 @@ loadProject = function(projectId, message) {
   return false;
 };
 
+
+/*
+ * Split-out coffeescript file for data validation.
+ * This file contains async validation code to check entries.
+ *
+ * This is included in ./js/admin.js via ./Gruntfile.coffee
+ *
+ * For administrative functions for project creation, editing, or
+ * viewing, check ./coffee/admin.coffee, ./coffee/admin-editor.coffee,
+ * and ./coffee/admin-viewer.coffee (respectively).
+ *
+ * @path ./coffee/admin-validation.coffee
+ * @author Philip Kahn
+ */
+
 if (typeof window.validationMeta !== "object") {
   window.validationMeta = new Object();
 }
