@@ -1278,6 +1278,8 @@ loadEditor = function() {
      */
     startAdminActionHelper();
     startLoad();
+    window.projectParams = new Object();
+    window.projectParams.pid = projectId;
     verifyLoginCredentials(function(credentialResult) {
       var args, opid, userDetail;
       userDetail = credentialResult.detail;
@@ -1475,7 +1477,7 @@ showAddUserDialog = function(refAccessList) {
     var debugHtml;
     console.log("Should search", $(this).val());
     if (!$("#debug-alert").exists()) {
-      debugHtml = "<div class=\"alert alert-warning\" id=\"debug-alert\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete.\n</div>";
+      debugHtml = "<div class=\"alert alert-warning\" id=\"debug-alert\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete. Sample result shown.\n</div>";
       $(this).before(debugHtml);
     }
     $("#debug-placeholder").text($(this).val());
@@ -1499,7 +1501,9 @@ showAddUserDialog = function(refAccessList) {
     if (indexOf.call(refAccessList, email) < 0) {
       if (indexOf.call(currentQueueUids, uid) < 0) {
         listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\">" + email + "</li>";
-        return $("#user-add-queue").append(listHtml);
+        $("#user-add-queue").append(listHtml);
+        $("#search-user").val("");
+        return $("#user-search-result-container").prop("hidden", "hidden");
       } else {
         toastStatusMessage(email + " is already in the addition queue");
         return false;
@@ -1510,7 +1514,15 @@ showAddUserDialog = function(refAccessList) {
     }
   });
   $("#add-user").click(function() {
-    return toastStatusMessage("Would save the list above");
+    var l, len, ref, toAddUids;
+    toAddUids = new Array();
+    ref = $("#user-add-queue .list-add-users");
+    for (l = 0, len = ref.length; l < len; l++) {
+      user = ref[l];
+      toAddUids.push($(user).attr("data-uid"));
+    }
+    console.info("Saving list of " + toAddUids.length + " UIDs to " + window.projectParams.pid, toAddUids);
+    return toastStatusMessage("Would save the list above of " + toAddUids.length + " UIDs to " + window.projectParams.pid);
   });
   return false;
 };

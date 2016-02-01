@@ -1311,6 +1311,8 @@ loadEditor = ->
     # Empty out the main view
     startAdminActionHelper()
     startLoad()
+    window.projectParams = new Object()
+    window.projectParams.pid = projectId
     # Is the user good?
     verifyLoginCredentials (credentialResult) ->
       userDetail =  credentialResult.detail
@@ -1658,7 +1660,7 @@ showAddUserDialog = (refAccessList) ->
     unless $("#debug-alert").exists()
       debugHtml = """
       <div class="alert alert-warning" id="debug-alert">
-        Would search against "<span id="debug-placeholder"></span>". Incomplete.
+        Would search against "<span id="debug-placeholder"></span>". Incomplete. Sample result shown.
       </div>
       """
       $(this).before debugHtml
@@ -1681,6 +1683,8 @@ showAddUserDialog = (refAccessList) ->
         <li class="list-add-users" data-uid="#{uid}">#{email}</li>
         """
         $("#user-add-queue").append listHtml
+        $("#search-user").val ""
+        $("#user-search-result-container").prop "hidden", "hidden"
       else
         toastStatusMessage "#{email} is already in the addition queue"
         return false
@@ -1689,7 +1693,12 @@ showAddUserDialog = (refAccessList) ->
       return false
   # bind add button
   $("#add-user").click ->
-    toastStatusMessage "Would save the list above"
+    toAddUids = new Array()
+    for user in $("#user-add-queue .list-add-users")
+      toAddUids.push $(user).attr "data-uid"
+    console.info "Saving list of #{toAddUids.length} UIDs to #{window.projectParams.pid}", toAddUids
+    # Push needs to be server authenticated, to prevent API spoofs
+    toastStatusMessage "Would save the list above of #{toAddUids.length} UIDs to #{window.projectParams.pid}"
   false
 
 ###
