@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 window.adminParams = new Object();
@@ -1406,7 +1406,6 @@ loadEditor = function() {
             bottom: 0,
             target: window
           };
-          console.info("Affixed at " + topPosition + "px", affixOptions);
           $("#manage-users").click(function() {
             return popManageUserAccess();
           });
@@ -1417,7 +1416,7 @@ loadEditor = function() {
               return $(this).find("iron-icon").removeClass("material-red");
             }
           });
-          return stopLoad();
+          return getProjectCartoData(project.carto_id);
         } catch (_error) {
           e = _error;
           stopLoadError("There was an error loading your project");
@@ -1475,6 +1474,8 @@ loadEditor = function() {
 showAddUserDialog = function(refAccessList) {
 
   /*
+   * Open up a dialog to show the "Add a user" interface
+   *
    * @param Array refAccessList  -> array of emails already with access
    */
   var dialogHtml;
@@ -1544,6 +1545,31 @@ showAddUserDialog = function(refAccessList) {
     toastStatusMessage("Would save the list above of " + toAddUids.length + " UIDs to " + window.projectParams.pid);
     return console.log("Would push args to", adminParams.apiTarget + "?" + args);
   });
+  return false;
+};
+
+getProjectCartoData = function(cartoObj) {
+
+  /*
+   * Get the data from CartoDB, map it out, show summaries, etc.
+   *
+   * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
+   */
+  var cartoData, cartoTable, e;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(cartoObj);
+    } catch (_error) {
+      e = _error;
+      console.error("cartoObj must be JSON string or obj, given", cartoObj);
+      return false;
+    }
+  } else {
+    cartoData = cartoObj;
+  }
+  cartoTable = cartoData.table;
+  toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
+  stopLoad();
   return false;
 };
 

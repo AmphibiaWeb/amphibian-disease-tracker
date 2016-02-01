@@ -1568,7 +1568,7 @@ loadEditor = ->
             bottom: 0
             target: window
           # $("#data-management").affix affixOptions
-          console.info "Affixed at #{topPosition}px", affixOptions
+          # console.info "Affixed at #{topPosition}px", affixOptions
           $("#manage-users").click ->
             popManageUserAccess()
           $(".danger-toggle").on "iron-change", ->
@@ -1577,7 +1577,8 @@ loadEditor = ->
             else
               $(this).find("iron-icon").removeClass("material-red")
           # bootstrapUploader("data-card")
-          stopLoad()
+          # Load more detailed data from CartoDB
+          getProjectCartoData project.carto_id
         catch e
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"
@@ -1630,6 +1631,8 @@ loadEditor = ->
 
 showAddUserDialog = (refAccessList) ->
   ###
+  # Open up a dialog to show the "Add a user" interface
+  #
   # @param Array refAccessList  -> array of emails already with access
   ###
   dialogHtml = """
@@ -1721,6 +1724,28 @@ showAddUserDialog = (refAccessList) ->
     # Push needs to be server authenticated, to prevent API spoofs
     toastStatusMessage "Would save the list above of #{toAddUids.length} UIDs to #{window.projectParams.pid}"
     console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
+  false
+
+
+
+getProjectCartoData = (cartoObj) ->
+  ###
+  # Get the data from CartoDB, map it out, show summaries, etc.
+  #
+  # @param string|Object cartoObj -> the (JSON formatted) carto data blob. 
+  ###
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse cartoObj
+    catch e
+      console.error "cartoObj must be JSON string or obj, given", cartoObj
+      return false
+  else
+    cartoData = cartoObj
+  cartoTable = cartoData.table
+  # Ping Carto on this and get the data
+  toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
+  stopLoad()
   false
 
 ###
