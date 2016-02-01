@@ -725,7 +725,7 @@ bindClicks = function(selector) {
    * to execute a function data-function or to go to a
    * URL data-href.
    */
-  return $(selector).each(function() {
+  $(selector).each(function() {
     var callable, url;
     try {
       url = $(this).attr("data-href");
@@ -772,9 +772,8 @@ bindClicks = function(selector) {
       return console.error("There was a problem binding to #" + ($(this).attr("id")) + " - " + e.message);
     }
   });
+  return false;
 };
-
-u(false);
 
 getPosterFromSrc = function(srcString) {
 
