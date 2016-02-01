@@ -1537,6 +1537,15 @@ loadEditor = ->
                 </div>
               </div>
             </paper-card>
+            <paper-card class="clearfix" heading="Project Status" elevation="2" id="save-card">
+              <div class="card-content">
+                <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>
+              </div>
+              <div class="card-actions">
+                <paper-button id="save-project">Save Project</paper-button>
+                <paper-button id="discard-changes-exit">Discard Changes &amp; Exit</paper-button>
+              </div>
+            </paper-card>
           </section>
           <section id="project-data" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Data Overview</h3>
@@ -1745,6 +1754,8 @@ getProjectCartoData = (cartoObj) ->
     cartoData = cartoObj
   cartoTable = cartoData.table
   # Ping Carto on this and get the data
+  # The existence of the carto data will change the content in the
+  # data upload card
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
   stopLoad()
   false
@@ -1830,6 +1841,8 @@ validateFimsData = (dataObject, callback = null) ->
   #  containing the parsed data to be validated by FIMS
   # @param function callback -> callback function
   ###
+  console.info "Validating", dataObject.data
+  # Post the object over to FIMS
   # When we're successful, run the dependent callback
   if typeof callback is "function"
     callback(dataObject)
