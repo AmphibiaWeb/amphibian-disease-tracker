@@ -1617,7 +1617,6 @@ showAddUserDialog = (refAccessList) ->
   ###
   # @param Array refAccessList  -> array of emails already with access
   ###
-  toastStatusMessage "Would replace dialog with a new one to add a new user to project"
   dialogHtml = """
   <paper-dialog modal id="add-new-user">
   <h2>Add New User To Project</h2>
@@ -1645,8 +1644,8 @@ showAddUserDialog = (refAccessList) ->
     </ul>
   </paper-dialog-scrollable>
   <div class="buttons">
-    <paper-button id="add-user"><iron-icon icon="social:person-add"></iron-icon> Add</paper-button>
-    <paper-button dialog-dismiss>Done</paper-button>
+    <paper-button id="add-user" dialog-confirm><iron-icon icon="social:person-add"></iron-icon> Save Additions</paper-button>
+    <paper-button dialog-dismiss>Cancel</paper-button>
   </div>
 </paper-dialog>
   """
