@@ -555,7 +555,7 @@ bindClicks = (selector = ".click") ->
               console.error("'#{callable}()' is a bad function - #{e.message}")
     catch e
       console.error("There was a problem binding to ##{$(this).attr("id")} - #{e.message}")
-  false
+u  false
 
 getPosterFromSrc = (srcString) ->
   ###

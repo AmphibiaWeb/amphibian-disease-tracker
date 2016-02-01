@@ -90,6 +90,12 @@ loadEditor = ->
                   theirHtml += """
                   <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}"> </paper-icon-button>
                   """
+                if result.user.has_edit_permissions and user isnt isAuthor and user isnt result.user.user.userdata.username
+                  # Delete button
+                  theirHtml += """
+                  <paper-icon-button icon="icons:delete" class="set-permission" data-permission="delete" data-user="#{uid}">
+                  </paper-icon-button>
+                  """
                 userHtml += """
                 <li>#{theirHtml}</span></li>
                 """
@@ -127,7 +133,16 @@ loadEditor = ->
                 user = $(this).attr "data-user"
                 permission = $(this).attr "data-permission"
                 # Handle it
+                permissionsObj = new Object()
+                userList = new Array()
+                userList.push user
+                permissionsObj[permission] = userList
+                j64 = jsonTo64 permissionsObj
+                args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
+                # Push needs to be server authenticated, to prevent API spoofs
                 toastStatusMessage "Would grant #{user} permission '#{permission}'"
+                console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
+                false
               $(".add-user")
               .unbind()
               .click ->
@@ -407,7 +422,15 @@ showAddUserDialog = (refAccessList) ->
     toAddUids = new Array()
     for user in $("#user-add-queue .list-add-users")
       toAddUids.push $(user).attr "data-uid"
+    if toAddUids.length < 1
+      toastStatusMessage "No users added!"
+      return false
     console.info "Saving list of #{toAddUids.length} UIDs to #{window.projectParams.pid}", toAddUids
+    jsonUids =
+      add: toAddUids
+    uidArgs = jsonTo64 jsonUids
+    args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{uidArgs}"
     # Push needs to be server authenticated, to prevent API spoofs
     toastStatusMessage "Would save the list above of #{toAddUids.length} UIDs to #{window.projectParams.pid}"
+    console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
   false

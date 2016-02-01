@@ -1337,6 +1337,9 @@ loadEditor = function() {
                 if (result.user.is_author) {
                   theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\"> </paper-icon-button>";
                 }
+                if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user.user.userdata.username) {
+                  theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\">\n</paper-icon-button>";
+                }
                 userHtml += "<li>" + theirHtml + "</span></li>";
               }
               userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
@@ -1347,10 +1350,18 @@ loadEditor = function() {
               $("#user-setter-dialog").remove();
               $("body").append(dialogHtml);
               $(".set-permission").unbind().click(function() {
-                var permission;
+                var j64, permission, permissionsObj, userList;
                 user = $(this).attr("data-user");
                 permission = $(this).attr("data-permission");
-                return toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
+                permissionsObj = new Object();
+                userList = new Array();
+                userList.push(user);
+                permissionsObj[permission] = userList;
+                j64 = jsonTo64(permissionsObj);
+                args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
+                toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
+                console.log("Would push args to", adminParams.apiTarget + "?" + args);
+                return false;
               });
               $(".add-user").unbind().click(function() {
                 showAddUserDialog(project.access_data.total);
@@ -1513,15 +1524,25 @@ showAddUserDialog = function(refAccessList) {
     }
   });
   $("#add-user").click(function() {
-    var l, len, ref, toAddUids;
+    var args, jsonUids, l, len, ref, toAddUids, uidArgs;
     toAddUids = new Array();
     ref = $("#user-add-queue .list-add-users");
     for (l = 0, len = ref.length; l < len; l++) {
       user = ref[l];
       toAddUids.push($(user).attr("data-uid"));
     }
+    if (toAddUids.length < 1) {
+      toastStatusMessage("No users added!");
+      return false;
+    }
     console.info("Saving list of " + toAddUids.length + " UIDs to " + window.projectParams.pid, toAddUids);
-    return toastStatusMessage("Would save the list above of " + toAddUids.length + " UIDs to " + window.projectParams.pid);
+    jsonUids = {
+      add: toAddUids
+    };
+    uidArgs = jsonTo64(jsonUids);
+    args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + uidArgs;
+    toastStatusMessage("Would save the list above of " + toAddUids.length + " UIDs to " + window.projectParams.pid);
+    return console.log("Would push args to", adminParams.apiTarget + "?" + args);
   });
   return false;
 };
