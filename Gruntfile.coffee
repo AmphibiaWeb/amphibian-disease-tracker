@@ -136,7 +136,7 @@ module.exports = (grunt) ->
           sourceMap: true
         files:
           "js/c.js":["coffee/core.coffee", "coffee/geo.coffee"]
-          "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee"]
+          "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee"]
     phpcsfixer:
       app:
         dir: ["api.php", "meta.php", "admin-login.php"]
