@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateFimsData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 window.adminParams = new Object();
@@ -1227,9 +1227,11 @@ newGeoDataHandler = function(dataObject) {
       data: parsedData,
       samples: samplesMeta
     };
-    dataAttrs.dataObj = totalData;
-    geo.requestCartoUpload(totalData, projectIdentifier, "create", function(table) {
-      return mapOverlayPolygon(totalData.transectRing);
+    validateFimsData(totalData, function(validatedData) {
+      dataAttrs.dataObj = validatedData;
+      return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table) {
+        return mapOverlayPolygon(validatedData.transectRing);
+      });
     });
   } catch (_error) {
     e = _error;
@@ -1624,6 +1626,68 @@ loadProject = function(projectId, message) {
     message = "";
   }
   toastStatusMessage("Would load project " + projectId + " to view");
+  return false;
+};
+
+if (typeof window.validationMeta !== "object") {
+  window.validationMeta = new Object();
+}
+
+validateFimsData = function(dataObject, callback) {
+  if (callback == null) {
+    callback = null;
+  }
+
+  /*
+   *
+   *
+   * @param Object dataObject -> object with at least one key, "data",
+   *  containing the parsed data to be validated by FIMS
+   * @param function callback -> callback function
+   */
+  if (typeof callback === "function") {
+    callback(dataObject);
+  }
+  return false;
+};
+
+validateAWebTaxon = function(taxonObj, callback) {
+  var doCallback, prettyTaxon, ref;
+  if (callback == null) {
+    callback = null;
+  }
+
+  /*
+   *
+   *
+   * @param Object taxonObj -> object with keys "genus", "species", and
+   *   optionally "subspecies"
+   * @param function callback -> Callback function
+   */
+  if (((ref = window.validataionMeta) != null ? ref.validatedTaxons : void 0) == null) {
+    if (typeof window.validationMeta !== "object") {
+      window.validationMeta = new Object();
+    }
+    window.validationMeta.validatedTaxons = new Array();
+  }
+  doCallback = function(validatedTaxon) {
+    if (typeof callback === "function") {
+      callback(validatedTaxon);
+    }
+    return false;
+  };
+  if (indexOf.call(window.validationMeta.validatedTaxons, taxonObj) >= 0) {
+    console.info("Already validated taxon, skipping revalidation", taxonObj);
+    doCallback(taxonObj);
+    return false;
+  }
+  window.validationMeta.validatedTaxons.push(taxonObj);
+  doCallback(taxonObj);
+  return false;
+  prettyTaxon = taxonObj.genus + " " + taxonObj.species;
+  prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
+  bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
+  console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
   return false;
 };
 
