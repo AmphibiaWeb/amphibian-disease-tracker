@@ -371,7 +371,7 @@ showAddUserDialog = (refAccessList) ->
     </ul>
   </paper-dialog-scrollable>
   <div class="buttons">
-    <paper-button id="add-user" dialog-confirm><iron-icon icon="social:person-add"></iron-icon> Save Additions</paper-button>
+    <paper-button id="add-user"><iron-icon icon="social:person-add"></iron-icon> Save Additions</paper-button>
     <paper-button dialog-dismiss>Cancel</paper-button>
   </div>
 </paper-dialog>
@@ -423,7 +423,7 @@ showAddUserDialog = (refAccessList) ->
     for user in $("#user-add-queue .list-add-users")
       toAddUids.push $(user).attr "data-uid"
     if toAddUids.length < 1
-      toastStatusMessage "No users added!"
+      toastStatusMessage "Please add at least one user to the access list."
       return false
     console.info "Saving list of #{toAddUids.length} UIDs to #{window.projectParams.pid}", toAddUids
     jsonUids =
