@@ -1262,11 +1262,12 @@ newGeoDataHandler = (dataObject = new Object()) ->
       transectRing: geo.boundingBox
       data: parsedData
       samples: samplesMeta
-    # Save the upload
-    dataAttrs.dataObj = totalData
-    geo.requestCartoUpload totalData, projectIdentifier, "create", (table) ->
-      mapOverlayPolygon totalData.transectRing
-      # getCanonicalDataCoords(table)
+    validateFimsData totalData, (validatedData) ->
+      # Save the upload
+      dataAttrs.dataObj = validatedData
+      geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
+        mapOverlayPolygon validatedData.transectRing
+        # getCanonicalDataCoords(table)
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"
