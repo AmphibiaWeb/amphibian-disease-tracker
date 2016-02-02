@@ -1749,7 +1749,7 @@ getProjectCartoData = (cartoObj) ->
       cartoData = JSON.parse cartoObj
     catch
       # Is it DB escaped?
-      cartoStringifiedObj = cartoObj.replace(/&quote;/mg, '"')
+      cartoStringifiedObj = cartoObj.replace(/\&quot;/mg, '"')
       try
         cartoData = JSON.parse cartoStringifiedObj
       catch
@@ -1848,6 +1848,8 @@ validateFimsData = (dataObject, callback = null) ->
   # @param function callback -> callback function
   ###
   console.info "Validating", dataObject.data
+  fimsPostTarget = ""
+  # Format the JSON for FIMS
   # Post the object over to FIMS
   # When we're successful, run the dependent callback
   if typeof callback is "function"

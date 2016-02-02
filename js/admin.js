@@ -1562,7 +1562,7 @@ getProjectCartoData = function(cartoObj) {
     try {
       cartoData = JSON.parse(cartoObj);
     } catch (_error) {
-      cartoStringifiedObj = cartoObj.replace(/&quote;/mg, '"');
+      cartoStringifiedObj = cartoObj.replace(/\&quot;/mg, '"');
       try {
         cartoData = JSON.parse(cartoStringifiedObj);
       } catch (_error) {
@@ -1654,6 +1654,7 @@ if (typeof window.validationMeta !== "object") {
 }
 
 validateFimsData = function(dataObject, callback) {
+  var fimsPostTarget;
   if (callback == null) {
     callback = null;
   }
@@ -1666,6 +1667,7 @@ validateFimsData = function(dataObject, callback) {
    * @param function callback -> callback function
    */
   console.info("Validating", dataObject.data);
+  fimsPostTarget = "";
   if (typeof callback === "function") {
     callback(dataObject);
   }

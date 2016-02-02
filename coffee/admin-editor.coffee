@@ -460,7 +460,7 @@ getProjectCartoData = (cartoObj) ->
       cartoData = JSON.parse cartoObj
     catch
       # Is it DB escaped?
-      cartoStringifiedObj = cartoObj.replace(/&quote;/mg, '"')
+      cartoStringifiedObj = cartoObj.replace(/\&quot;/mg, '"')
       try
         cartoData = JSON.parse cartoStringifiedObj
       catch
