@@ -6967,7 +6967,7 @@ paper-fab.materialblue.paper-fab-0:hover {
 }
 .materialred {
   background: #F44336;
-  color: #fff;
+  color: #fff!important;
 }
 .materialredtext,
 .material-red {

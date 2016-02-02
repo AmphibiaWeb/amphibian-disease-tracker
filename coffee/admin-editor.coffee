@@ -309,7 +309,7 @@ loadEditor = ->
             # Replace the delete button
             if $("#confirm-delete-project").exists()
               button = """
-                <paper-button id="delete-project"><iron-icon icon="icons:delete"></iron-icon> Delete this project</paper-button>
+                <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
               """
               $("#confirm-delete-project").replaceWith button
             # Save it
