@@ -1563,7 +1563,11 @@ loadEditor = ->
               </div>
               <div class="card-actions">
                 <paper-button id="save-project"><iron-icon icon="icons:save" class="material-green"></iron-icon> Save Project</paper-button>
+              </div>
+              <div class="card-actions">
                 <paper-button id="discard-changes-exit"><iron-icon icon="icons:undo"></iron-icon> Discard Changes &amp; Exit</paper-button>
+              </div>
+              <div class="card-actions">
                 <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
               </div>
             </paper-card>
