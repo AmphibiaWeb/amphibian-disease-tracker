@@ -1199,7 +1199,7 @@ checkFileVersion = function(forceNow) {
             return document.location.reload(true);
           });
         }
-        return console.warn("Your current version is out of date! Please refresh the page.");
+        return console.warn("Your current version of this page is out of date! Please refresh the page.");
       } else if (forceNow) {
         return console.info("Your version is up to date: have " + window._adp.lastMod + ", got " + result.last_mod);
       }
