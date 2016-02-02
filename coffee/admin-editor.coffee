@@ -506,5 +506,11 @@ getProjectCartoData = (cartoObj) ->
   # The existence of the carto data will change the content in the
   # data upload card
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
+  # Draw a map web component
+  # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
+  # https://elements.polymer-project.org/elements/google-map
+  # Poly is cartoData.bounding_polygon.paths
+  # Fill download button
+  # File data is in cartoData.raw_data
   stopLoad()
   false
