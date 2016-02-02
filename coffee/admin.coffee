@@ -1091,6 +1091,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     dataAttrs.fimsData = new Array()
     fimsExtra = new Object()
     # Iterate over the data, coerce some data types
+    toastStatusMessage "Please wait, parsing your data"
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1175,6 +1176,19 @@ newGeoDataHandler = (dataObject = new Object()) ->
           when "fatal"
             cleanValue = value.toBool()
           when "decimalLatitude", "decimalLongitude", "alt", "coordinateUncertaintyInMeters"
+            # Sanity -- do the coordinates exist on earth?
+            if not isNumber value
+              stopLoadError "Detected an invalid number for #{column} at row #{n} ('#{value}')"
+              return false
+            if column is "decimalLatitude" and -90 > value > 90
+              stopLoadError "Detected an invalid latitude #{value} at row #{n}"
+              return false
+            if column is "decimalLongitude" and -180 > value > 180
+              stopLoadError "Detected an invalid longitude #{value} at row #{n}"
+              return false
+            if column is "coordinateUncertaintyInMeters" and value <= 0
+              stopLoadError "Coordinate uncertainty must be >= 0 at row #{n}"
+              return false
             cleanValue = toFloat value
           when "diseaseDetected"
             if isBool value
@@ -1202,6 +1216,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
       catch
         console.warn "Couldn't store FIMS extra data", fimsExtra
       parsedData[n] = tRow
+      if n %% 500
+        toastStatusMessage "Processed #{n} rows ..."
     try
       # http://marianoguerra.github.io/json.human.js/
       prettyHtml = JsonHuman.format parsedData

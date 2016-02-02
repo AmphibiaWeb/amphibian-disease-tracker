@@ -466,6 +466,7 @@ getProjectCartoData = (cartoObj) ->
   else
     cartoData = cartoObj
   cartoTable = cartoData.table
+  console.info "Working with Carto data base set", cartoData
   # Ping Carto on this and get the data
   # The existence of the carto data will change the content in the
   # data upload card

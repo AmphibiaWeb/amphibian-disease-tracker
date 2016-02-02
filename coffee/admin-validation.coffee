@@ -27,6 +27,7 @@ validateFimsData = (dataObject, callback = null) ->
   fimsPostTarget = ""
   # Format the JSON for FIMS
   # Post the object over to FIMS
+  # Get back an ARK
   # When we're successful, run the dependent callback
   if typeof callback is "function"
     callback(dataObject)

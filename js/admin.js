@@ -15,6 +15,7 @@
  * @author Philip Kahn
  */
 var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateFimsData, verifyLoginCredentials, zipHandler,
+  modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 window.adminParams = new Object();
@@ -1035,6 +1036,7 @@ newGeoDataHandler = function(dataObject) {
     dataAttrs.coordsFull = new Array();
     dataAttrs.fimsData = new Array();
     fimsExtra = new Object();
+    toastStatusMessage("Please wait, parsing your data");
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -1122,6 +1124,22 @@ newGeoDataHandler = function(dataObject) {
           case "decimalLongitude":
           case "alt":
           case "coordinateUncertaintyInMeters":
+            if (!isNumber(value)) {
+              stopLoadError("Detected an invalid number for " + column + " at row " + n + " ('" + value + "')");
+              return false;
+            }
+            if (column === "decimalLatitude" && (-90 > value && value > 90)) {
+              stopLoadError("Detected an invalid latitude " + value + " at row " + n);
+              return false;
+            }
+            if (column === "decimalLongitude" && (-180 > value && value > 180)) {
+              stopLoadError("Detected an invalid longitude " + value + " at row " + n);
+              return false;
+            }
+            if (column === "coordinateUncertaintyInMeters" && value <= 0) {
+              stopLoadError("Coordinate uncertainty must be >= 0 at row " + n);
+              return false;
+            }
             cleanValue = toFloat(value);
             break;
           case "diseaseDetected":
@@ -1156,6 +1174,9 @@ newGeoDataHandler = function(dataObject) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
+      if (modulo(n, 500)) {
+        toastStatusMessage("Processed " + n + " rows ...");
+      }
     }
     try {
       prettyHtml = JsonHuman.format(parsedData);
@@ -1571,6 +1592,7 @@ getProjectCartoData = function(cartoObj) {
     cartoData = cartoObj;
   }
   cartoTable = cartoData.table;
+  console.info("Working with Carto data base set", cartoData);
   toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
   stopLoad();
   return false;
