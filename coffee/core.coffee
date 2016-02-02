@@ -881,7 +881,7 @@ checkFileVersion = (forceNow = false) ->
       delay 5*60*1000, ->
         # Delay 5 minutes
         checkVersion()
-  if forceNow or not ssar.lastMod?
+  if forceNow or not window._adp.lastMod?
     checkVersion()
     return true
   false
@@ -894,6 +894,7 @@ $ ->
   formatScientificNames()
   lightboxImages()
   animateHoverShadows()
+  checkFileVersion()
   try
     $("body").tooltip
       selector: "[data-toggle='tooltip']"

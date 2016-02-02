@@ -1211,7 +1211,7 @@ checkFileVersion = function(forceNow) {
       });
     });
   };
-  if (forceNow || (ssar.lastMod == null)) {
+  if (forceNow || (window._adp.lastMod == null)) {
     checkVersion();
     return true;
   }
@@ -1225,6 +1225,7 @@ $(function() {
   formatScientificNames();
   lightboxImages();
   animateHoverShadows();
+  checkFileVersion();
   try {
     $("body").tooltip({
       selector: "[data-toggle='tooltip']"
