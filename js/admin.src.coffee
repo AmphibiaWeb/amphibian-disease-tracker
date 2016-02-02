@@ -1489,7 +1489,7 @@ loadEditor = ->
             cartoParsed = JSON.parse project.carto_id
           catch
             console.error "Couldn't parase the carto JSON!", project.carto_id
-            toastStatusMessage "We couldn't parse your data. Please try again later."
+            stopLoadError "We couldn't parse your data. Please try again later."
             cartoParsed = new Object()
           # The actual HTML
           html = """
