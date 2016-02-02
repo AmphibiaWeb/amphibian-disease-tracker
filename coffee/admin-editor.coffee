@@ -244,6 +244,10 @@ loadEditor = ->
                 Uploader here
                 <br/><br/>
                 Should affix itself to the top  of the window when scrolling.
+                <iron-label>
+                  Append Data
+                  <paper-toggle id="replace-data-toggle" checked>Replace Data</paper-toggle>
+                </iron-label>
                 <div id="uploader-container-section">
                 </div>
               </div>
@@ -253,8 +257,9 @@ loadEditor = ->
                 <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>
               </div>
               <div class="card-actions">
-                <paper-button id="save-project">Save Project</paper-button>
-                <paper-button id="discard-changes-exit">Discard Changes &amp; Exit</paper-button>
+                <paper-button id="save-project"><iron-icon icon="icons:save" class="material-green"></iron-icon> Save Project</paper-button>
+                <paper-button id="discard-changes-exit"><iron-icon icon="icons:undo"></iron-icon> Discard Changes &amp; Exit</paper-button>
+                <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
               </div>
             </paper-card>
           </section>
@@ -283,6 +288,32 @@ loadEditor = ->
           $("#main-body").html html
           # Watch for changes and toggle save watcher state
           # Events
+          $("#delete-project").click ->
+            confirmButton = """
+            <paper-button id="confirm-delete-project" class="materialred">
+              <iron-icon icon="icons:warning"></iron-icon> Confirm Project Deletion
+            </paper-button>
+            """
+            $(this).replaceWith confirmButton
+            $("#confirm-delete-project").click ->
+              toastStatusMessage "TODO Would delete this project"
+              # Return home
+              # showEditList()
+              false
+            false
+          $("#save-project").click ->
+            # Replace the delete button
+            if $("#confirm-delete-project").exists()
+              button = """
+                <paper-button id="delete-project"><iron-icon icon="icons:delete"></iron-icon> Delete this project</paper-button>
+              """
+              $("#confirm-delete-project").replaceWith button
+            # Save it
+            toastStatusMessage "TODO Would save this project"
+            false
+          $("#discard-changes-exit").click ->
+            showEditList()
+            false
           topPosition = $("#data-management").offset().top
           affixOptions =
             top: topPosition
@@ -453,7 +484,7 @@ getProjectCartoData = (cartoObj) ->
   ###
   # Get the data from CartoDB, map it out, show summaries, etc.
   #
-  # @param string|Object cartoObj -> the (JSON formatted) carto data blob. 
+  # @param string|Object cartoObj -> the (JSON formatted) carto data blob.
   ###
   unless typeof cartoObj is "object"
     try
