@@ -18,6 +18,8 @@ window.debounce_timer = null
 
 window.adminParams ?= new Object()
 
+window._adp ?= new Object()
+
 isBool = (str,strict = false) ->
   if strict
     return typeof str is "boolean"
@@ -840,6 +842,51 @@ animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, 
     $(this).attr "elevation", defaultElevation
   $(selector).hover handlerIn, handlerOut
   false
+
+
+checkFileVersion = (forceNow = false) ->
+  ###
+  # Check to see if the file on the server is up-to-date with what the
+  # user sees.
+  #
+  # @param bool forceNow force a check now
+  ###
+  checkVersion = ->
+    $.get("#{uri.urlString}meta.php","do=get_last_mod","json")
+    .done (result) ->
+      if forceNow
+        console.log("Forced version check:",result)
+      unless isNumber result.last_mod
+        return false
+      unless ssar.lastMod?
+        window._adp.lastMod = result.last_mod
+      if result.last_mod > ssar.lastMod
+        # File has updated
+        html = """
+        <div id="outdated-warning" class="alert alert-warning alert-dismissible fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <strong>We have page updates!</strong> This page has been updated since you last refreshed. <a class="alert-link" id="refresh-page" style="cursor:pointer">Click here to refresh now</a> and get bugfixes and updates.
+        </div>
+        """
+        unless $("#outdated-warning").exists()
+          $("body").append(html)
+          $("#refresh-page").click ->
+            document.location.reload(true)
+        console.warn("Your current version is out of date! Please refresh the page.")
+      else if forceNow
+        console.info("Your version is up to date: have #{window._adp.lastMod}, got #{result.last_mod}")
+    .fail ->
+      console.warn("Couldn't check file version!!")
+    .always ->
+      delay 5*60*1000, ->
+        # Delay 5 minutes
+        checkVersion()
+  if forceNow or not ssar.lastMod?
+    checkVersion()
+    return true
+  false
+
+window.checkFileVersion = checkFileVersion
 
 
 $ ->

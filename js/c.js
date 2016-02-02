@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -24,6 +24,10 @@ window.debounce_timer = null;
 
 if (window.adminParams == null) {
   window.adminParams = new Object();
+}
+
+if (window._adp == null) {
+  window._adp = new Object();
 }
 
 isBool = function(str, strict) {
@@ -1162,6 +1166,59 @@ animateHoverShadows = function(selector, defaultElevation, raisedElevation) {
   $(selector).hover(handlerIn, handlerOut);
   return false;
 };
+
+checkFileVersion = function(forceNow) {
+  var checkVersion;
+  if (forceNow == null) {
+    forceNow = false;
+  }
+
+  /*
+   * Check to see if the file on the server is up-to-date with what the
+   * user sees.
+   *
+   * @param bool forceNow force a check now
+   */
+  checkVersion = function() {
+    return $.get(uri.urlString + "meta.php", "do=get_last_mod", "json").done(function(result) {
+      var html;
+      if (forceNow) {
+        console.log("Forced version check:", result);
+      }
+      if (!isNumber(result.last_mod)) {
+        return false;
+      }
+      if (ssar.lastMod == null) {
+        window._adp.lastMod = result.last_mod;
+      }
+      if (result.last_mod > ssar.lastMod) {
+        html = "<div id=\"outdated-warning\" class=\"alert alert-warning alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>We have page updates!</strong> This page has been updated since you last refreshed. <a class=\"alert-link\" id=\"refresh-page\" style=\"cursor:pointer\">Click here to refresh now</a> and get bugfixes and updates.\n</div>";
+        if (!$("#outdated-warning").exists()) {
+          $("body").append(html);
+          $("#refresh-page").click(function() {
+            return document.location.reload(true);
+          });
+        }
+        return console.warn("Your current version is out of date! Please refresh the page.");
+      } else if (forceNow) {
+        return console.info("Your version is up to date: have " + window._adp.lastMod + ", got " + result.last_mod);
+      }
+    }).fail(function() {
+      return console.warn("Couldn't check file version!!");
+    }).always(function() {
+      return delay(5 * 60 * 1000, function() {
+        return checkVersion();
+      });
+    });
+  };
+  if (forceNow || (ssar.lastMod == null)) {
+    checkVersion();
+    return true;
+  }
+  return false;
+};
+
+window.checkFileVersion = checkFileVersion;
 
 $(function() {
   bindClicks();
