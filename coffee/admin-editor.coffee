@@ -244,10 +244,10 @@ loadEditor = ->
                 Uploader here
                 <br/><br/>
                 Should affix itself to the top  of the window when scrolling.
-                <iron-label>
-                  Append Data
+                <div>
+                  <span class="toggle-off-label iron-label">Append Data</span>
                   <paper-toggle-button id="replace-data-toggle" checked>Replace Data</paper-toggle-button>
-                </iron-label>
+                </div>
                 <div id="uploader-container-section">
                 </div>
               </div>
