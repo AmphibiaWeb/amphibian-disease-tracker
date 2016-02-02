@@ -48,11 +48,6 @@ if(!function_exists('elapsed'))
 
 $admin_req=isset($_REQUEST['perform']) ? strtolower($_REQUEST['perform']):null;
 
-## ONE OFF CHANGE
-$l = $db->openDB();
-$query = "ALTER TABLE `" . $db->getTable() . "` MODIFY `carto_id` TEXT";
-$result = mysqli_query($l, $query);
-returnAjax($result);
 
 $login_status = getLoginState($get);
 
