@@ -1568,6 +1568,7 @@ getProjectCartoData = function(cartoObj) {
       } catch (_error) {
         console.error("cartoObj must be JSON string or obj, given", cartoObj);
         console.warn("Cleaned obj:", cartoStringifiedObj);
+        stopLoadError("Couldn't parse data");
         return false;
       }
     }
