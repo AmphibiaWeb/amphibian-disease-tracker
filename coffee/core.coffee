@@ -872,9 +872,9 @@ checkFileVersion = (forceNow = false) ->
           $("body").append(html)
           $("#refresh-page").click ->
             document.location.reload(true)
-        console.warn("Your current version is out of date! Please refresh the page.")
+        console.warn("Your current version of this page is out of date! Please refresh the page.")
       else if forceNow
-        console.info("Your version is up to date: have #{window._adp.lastMod}, got #{result.last_mod}")
+        console.info "Your version is up to date: have #{window._adp.lastMod}, got #{result.last_mod}"
     .fail ->
       console.warn("Couldn't check file version!!")
     .always ->
