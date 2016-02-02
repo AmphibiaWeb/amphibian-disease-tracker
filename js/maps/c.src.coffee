@@ -113,6 +113,17 @@ roundNumberSigfig = (number, digits = 0) ->
   "#{significand}#{trailingDigits}"
 
 
+
+deEscape = (string) ->
+  string = string.replace(/\&quot;/mg, '"')
+  string = string.replace(/\&quote;/mg, '"')
+  string = string.replace(/\&#95;/mg, '_')
+  string = string.replace(/\&#39;/mg, "'")
+  string = string.replace(/\&#34;/mg, '"')
+  string
+
+
+
 jsonTo64 = (obj) ->
   if typeof obj is "array"
     obj = toObject(arr)
@@ -827,7 +838,7 @@ animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, 
     $(this).attr "elevation", raisedElevation
   handlerOut = ->
     $(this).attr "elevation", defaultElevation
-  $(selector).hover handlerIn, handlerOut    
+  $(selector).hover handlerIn, handlerOut
   false
 
 

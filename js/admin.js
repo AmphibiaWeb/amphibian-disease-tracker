@@ -1394,9 +1394,9 @@ loadEditor = function() {
           caudataState = project.includes_caudata.toBool() ? "checked disabled" : "disabled";
           gymnophionaState = project.includes_gymnophiona.toBool() ? "checked disabled" : "disabled";
           try {
-            cartoParsed = JSON.parse(project.carto_id);
+            cartoParsed = JSON.parse(deEscape(project.carto_id));
           } catch (_error) {
-            console.error("Couldn't parase the carto JSON!", project.carto_id);
+            console.error("Couldn't parse the carto JSON!", project.carto_id);
             stopLoadError("We couldn't parse your data. Please try again later.");
             cartoParsed = new Object();
           }
@@ -1557,20 +1557,15 @@ getProjectCartoData = function(cartoObj) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var cartoData, cartoStringifiedObj, cartoTable;
+  var cartoData, cartoTable;
   if (typeof cartoObj !== "object") {
     try {
-      cartoData = JSON.parse(cartoObj);
+      cartoData = JSON.parse(deEscape(cartoObj));
     } catch (_error) {
-      cartoStringifiedObj = cartoObj.replace(/\&quot;/mg, '"');
-      try {
-        cartoData = JSON.parse(cartoStringifiedObj);
-      } catch (_error) {
-        console.error("cartoObj must be JSON string or obj, given", cartoObj);
-        console.warn("Cleaned obj:", cartoStringifiedObj);
-        stopLoadError("Couldn't parse data");
-        return false;
-      }
+      console.error("cartoObj must be JSON string or obj, given", cartoObj);
+      console.warn("Cleaned obj:", deEscape(cartoObj));
+      stopLoadError("Couldn't parse data");
+      return false;
     }
   } else {
     cartoData = cartoObj;

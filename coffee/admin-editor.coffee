@@ -197,9 +197,9 @@ loadEditor = ->
           caudataState = if project.includes_caudata.toBool() then "checked disabled" else "disabled"
           gymnophionaState = if project.includes_gymnophiona.toBool() then "checked disabled" else "disabled"
           try
-            cartoParsed = JSON.parse project.carto_id
+            cartoParsed = JSON.parse deEscape project.carto_id
           catch
-            console.error "Couldn't parase the carto JSON!", project.carto_id
+            console.error "Couldn't parse the carto JSON!", project.carto_id
             stopLoadError "We couldn't parse your data. Please try again later."
             cartoParsed = new Object()
           # The actual HTML
@@ -457,17 +457,12 @@ getProjectCartoData = (cartoObj) ->
   ###
   unless typeof cartoObj is "object"
     try
-      cartoData = JSON.parse cartoObj
+      cartoData = JSON.parse deEscape cartoObj
     catch
-      # Is it DB escaped?
-      cartoStringifiedObj = cartoObj.replace(/\&quot;/mg, '"')
-      try
-        cartoData = JSON.parse cartoStringifiedObj
-      catch
-        console.error "cartoObj must be JSON string or obj, given", cartoObj
-        console.warn "Cleaned obj:", cartoStringifiedObj
-        stopLoadError "Couldn't parse data"
-        return false
+      console.error "cartoObj must be JSON string or obj, given", cartoObj
+      console.warn "Cleaned obj:", deEscape cartoObj
+      stopLoadError "Couldn't parse data"
+      return false
   else
     cartoData = cartoObj
   cartoTable = cartoData.table
