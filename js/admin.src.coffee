@@ -1747,9 +1747,15 @@ getProjectCartoData = (cartoObj) ->
   unless typeof cartoObj is "object"
     try
       cartoData = JSON.parse cartoObj
-    catch e
-      console.error "cartoObj must be JSON string or obj, given", cartoObj
-      return false
+    catch
+      # Is it DB escaped?
+      cartoStringifiedObj = cartoObj.replace(/&quote;/mg, '"')
+      try
+        cartoData = JSON.parse cartoStringifiedObj
+      catch
+        console.error "cartoObj must be JSON string or obj, given", cartoObj
+        console.warn "Cleaned obj:", cartoStringifiedObj
+        return false
   else
     cartoData = cartoObj
   cartoTable = cartoData.table

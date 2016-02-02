@@ -24,6 +24,8 @@ validateFimsData = (dataObject, callback = null) ->
   # @param function callback -> callback function
   ###
   console.info "Validating", dataObject.data
+  fimsPostTarget = ""
+  # Format the JSON for FIMS
   # Post the object over to FIMS
   # When we're successful, run the dependent callback
   if typeof callback is "function"

@@ -1557,14 +1557,19 @@ getProjectCartoData = function(cartoObj) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var cartoData, cartoTable, e;
+  var cartoData, cartoStringifiedObj, cartoTable;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(cartoObj);
     } catch (_error) {
-      e = _error;
-      console.error("cartoObj must be JSON string or obj, given", cartoObj);
-      return false;
+      cartoStringifiedObj = cartoObj.replace(/&quote;/mg, '"');
+      try {
+        cartoData = JSON.parse(cartoStringifiedObj);
+      } catch (_error) {
+        console.error("cartoObj must be JSON string or obj, given", cartoObj);
+        console.warn("Cleaned obj:", cartoStringifiedObj);
+        return false;
+      }
     }
   } else {
     cartoData = cartoObj;
