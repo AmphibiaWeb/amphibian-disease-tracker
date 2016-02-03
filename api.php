@@ -58,7 +58,8 @@ function returnAjax($data)
     header('Cache-Control: no-cache, must-revalidate');
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
     header('Content-type: application/json');
-    $json = json_encode($data, JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE);
+    $data = array_map("html_entities", $data);
+    $json = html_entity_decode(json_encode($data, JSON_FORCE_OBJECT));
     $replace_array = array('&quot;','&#34;');
     print str_replace($replace_array, '\\"', $json);
     exit();
