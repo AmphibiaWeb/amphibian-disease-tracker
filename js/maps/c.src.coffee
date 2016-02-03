@@ -449,11 +449,13 @@ toastStatusMessage = (message, className = "", duration = 3000, selector = "#sta
   unless window.metaTracker?.isToasting?
     unless window.metaTracker?
       window.metaTracker = new Object()
+      window.metaTracker.toastTracker = new Array()
       window.metaTracker.isToasting = false
   if window.metaTracker.isToasting
-    delay 250, ->
+    timeout = delay 250, ->
       # Wait and call again
       toastStatusMessage(message, className, duration, selector)
+    window.metaTracker.toastTracker.push timeout
     return false
   window.metaTracker.isToasting = true
   if not isNumber(duration)
@@ -474,6 +476,12 @@ toastStatusMessage = (message, className = "", duration = 3000, selector = "#sta
     $(selector).removeClass(className)
     $(selector).attr("text","")
     window.metaTracker.isToasting = false
+
+
+cleanupToasts = ->
+  for timeout in window.metaTracker.toastTracker
+    try
+      clearTimeout timeout
 
 openLink = (url) ->
   if not url? then return false

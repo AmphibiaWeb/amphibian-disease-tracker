@@ -7040,6 +7040,7 @@ html >>> .capitalize {
   width: 50%;
   margin: 0;
   left: 25%;
+  z-index: 250;
 }
 @media (max-width: 767px) {
   #outdated-warning,
