@@ -1264,7 +1264,7 @@ newGeoDataHandler = function(dataObject) {
         }
         taxonListString += "\n" + taxonString;
       }
-      p$("#species-list").bindValue(taxonListString);
+      p$("#species-list").bindValue = taxonListString;
       dataAttrs.dataObj = validatedData;
       return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table) {
         return mapOverlayPolygon(validatedData.transectRing);
