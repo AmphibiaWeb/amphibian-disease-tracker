@@ -1722,7 +1722,7 @@ getProjectCartoData = function(cartoObj) {
   if (window.dropperParams == null) {
     window.dropperParams = new Object();
   }
-  window.dropperParms.dropTargetSelector = "#data-card-uploader";
+  window.dropperParams.dropTargetSelector = "#data-card-uploader";
   bootstrapUploader("data-card-uploader", "");
   return false;
 };
