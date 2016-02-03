@@ -1620,7 +1620,7 @@ getProjectCartoData = function(cartoObj) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var cartoData, cartoTable, html, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, html, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
@@ -1639,6 +1639,16 @@ getProjectCartoData = function(cartoObj) {
   console.info("Got zoom", zoom);
   $("#transect-viewport").attr("zoom", zoom);
   toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
+  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable;
+  console.info("Would ping", cartoQuery);
+  apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
+  args = "action=upload&sql_query=" + apiPostSqlQuery;
+  $.post("api.php", args, "json").done(function(result) {
+    console.info("Carto query got result:", result);
+    return stopLoad();
+  }).fail(function(result, status) {
+    return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+  });
   if (cartoData.raw_data.hasDataFile) {
     html = "<p>\n  Your project already has data associated with it.\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + cartoData.raw_data.fileName + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);
@@ -1647,7 +1657,6 @@ getProjectCartoData = function(cartoObj) {
     $("#append-replace-data-toggle").attr("hidden", "hidden");
   }
   bootstrapUploader("data-card-uploader", "");
-  stopLoad();
   return false;
 };
 
