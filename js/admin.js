@@ -1253,8 +1253,9 @@ newGeoDataHandler = function(dataObject) {
       samples: samplesMeta
     };
     validateData(totalData, function(validatedData) {
-      var l, len, ref, taxon, taxonListString, taxonString;
+      var i, l, len, ref, taxon, taxonListString, taxonString;
       taxonListString = "";
+      i = 0;
       ref = validatedData.validated_taxa;
       for (l = 0, len = ref.length; l < len; l++) {
         taxon = ref[l];
@@ -1262,7 +1263,11 @@ newGeoDataHandler = function(dataObject) {
         if (!isNull(taxon.subspecies)) {
           taxonString += " " + taxon.subspecies;
         }
-        taxonListString += "\n" + taxonString;
+        if (i > 0) {
+          taxonListString += "\n";
+        }
+        taxonListString += "" + taxonString;
+        ++i;
       }
       p$("#species-list").bindValue = taxonListString;
       dataAttrs.dataObj = validatedData;

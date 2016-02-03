@@ -1284,11 +1284,15 @@ newGeoDataHandler = (dataObject = new Object()) ->
     validateData totalData, (validatedData) ->
       # Save the upload
       taxonListString = ""
+      i = 0
       for taxon in validatedData.validated_taxa
         taxonString = "#{taxon.genus} #{taxon.species}"
         unless isNull taxon.subspecies
           taxonString += " #{taxon.subspecies}"
-        taxonListString += "\n#{taxonString}"
+        if i > 0
+          taxonListString += "\n"
+        taxonListString += "#{taxonString}"
+        ++i
       p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
