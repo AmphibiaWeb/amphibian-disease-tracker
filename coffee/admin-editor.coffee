@@ -586,7 +586,7 @@ getProjectCartoData = (cartoObj) ->
     $("#data-card .card-content .variable-card-content").html html
     $.get "meta.php", "do=get_last_mod&file=#{cartoData.raw_data.fileName}", "json"
     .done (result) ->
-      time = result.last_mod
+      time = toInt(result.last_mod) * 1000 # Seconds -> Milliseconds
       console.log "Last modded", time, result
       if isNumber time
         t = new Date(time)
