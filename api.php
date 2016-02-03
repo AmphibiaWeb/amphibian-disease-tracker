@@ -261,6 +261,7 @@ function doAWebValidate($get) {
         $aWebPretty[$prettyKey] = $val;
     }
     $response["status"] = true;
+    # Note that Unicode characters may return escaped! eg, \u00e9.
     $response["validated_taxon"] = $aWebPretty;
     returnAjax($response);
     
