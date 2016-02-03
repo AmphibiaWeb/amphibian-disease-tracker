@@ -578,7 +578,7 @@ getProjectCartoData = (cartoObj) ->
     # We already have a data file
     html = """
     <p>
-      Your project already has data associated with it. <span id="last-modified-file></span>"
+      Your project already has data associated with it. <span id="last-modified-file"></span>
     </p>
     <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{cartoData.raw_data.fileName}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
     <p>You can upload more data below, or replace this existing data.</p>
