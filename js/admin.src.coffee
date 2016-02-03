@@ -1217,7 +1217,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       catch
         console.warn "Couldn't store FIMS extra data", fimsExtra
       parsedData[n] = tRow
-      if n %% 500
+      if n %% 500 is 0
         toastStatusMessage "Processed #{n} rows ..."
     try
       # http://marianoguerra.github.io/json.human.js/
@@ -1965,6 +1965,23 @@ loadProject = (projectId, message = "") ->
 unless typeof window.validationMeta is "object"
   window.validationMeta = new Object()
 
+
+
+validateData = (dataObject, callback = null) ->
+  ###
+  #
+  ###
+  console.info "Doing nested validation"
+  validateFimsData dataObject, ->
+    validateTaxonData dataObject, ->
+      # When we're successful, run the dependent callback
+      if typeof callback is "function"
+        callback(dataObject)
+      else
+        console.warn "validateData had no defined callback!"
+        console.info "Got back", dataObject
+  false
+
 validateFimsData = (dataObject, callback = null) ->
   ###
   #
@@ -1973,7 +1990,7 @@ validateFimsData = (dataObject, callback = null) ->
   #  containing the parsed data to be validated by FIMS
   # @param function callback -> callback function
   ###
-  console.info "Validating", dataObject.data
+  console.info "FIMS Validating", dataObject.data
   fimsPostTarget = ""
   # Format the JSON for FIMS
   # Post the object over to FIMS
@@ -1984,6 +2001,36 @@ validateFimsData = (dataObject, callback = null) ->
   false
 
 
+validateTaxonData = (dataObject, callback = null) ->
+  ###
+  #
+  ###
+  data = dataObject.data
+  taxa = new Array()
+  for n, row of data
+    taxon =
+      genus: row.genus
+      species: row.specificEpithet
+      subspecies: row.infraspecificEpithet
+      clade: row.cladeSampled
+    unless taxa.containsObject taxon
+      taxa.push taxon
+  console.info "Found #{taxa.length} unique taxa:", taxa
+  do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
+    validateAWebTaxon taxonArray[key], (result) ->
+      if result.invalid is true
+        stopLoadError result.response.human_error
+        console.error result.response.error
+        return false
+      taxonArray[key] = result
+      key++
+      if key < taxonArray.length
+        taxonValidatorLoop(taxonArray, key)
+      else
+        dataObject.validated_taxa  = taxonArray
+        callback(dataObject)
+  false
+
 validateAWebTaxon = (taxonObj, callback = null) ->
   ###
   #
@@ -1992,7 +2039,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
   #   optionally "subspecies"
   # @param function callback -> Callback function
   ###
-  unless window.validataionMeta?.validatedTaxons?
+  unless window.validationMeta?.validatedTaxons?
     # Just being thorough on this check
     unless typeof window.validationMeta is "object"
       window.validationMeta = new Object()
@@ -2003,19 +2050,26 @@ validateAWebTaxon = (taxonObj, callback = null) ->
       callback(validatedTaxon)
     false
   # Check the taxon against pre-validated ones
-  if taxonObj in window.validationMeta.validatedTaxons
+  if window.validationMeta.validatedTaxons.containsObject taxonObj
     console.info "Already validated taxon, skipping revalidation", taxonObj
     doCallback(taxonObj)
     return false
-  # POST the data over to AWeb
-  # Success! Save validated taxon, and run callback
-  window.validationMeta.validatedTaxons.push taxonObj
-  doCallback(taxonObj)
-  return false
-  # On fail, notify the user that the taxon wasn't actually validated
-  # with a BSAlert, rather than toast
-  prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
-  prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
-  bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
-  console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb"
+  args = "action=validate&genus=#{taxonObj.genus}&species=#{taxonObj.species}"
+  $.post "api.php", args, "json"
+  .done (result) ->
+    if result.status
+      # Success! Save validated taxon, and run callback
+      window.validationMeta.validatedTaxons.push taxonObj
+    else
+      taxonObj.invalid = true
+    taxonObj.response = result
+    doCallback(taxonObj)
+    return false
+  .fail (result, status) ->
+    # On fail, notify the user that the taxon wasn't actually validated
+    # with a BSAlert, rather than toast
+    prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
+    prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
+    bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
+    console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb"
   false

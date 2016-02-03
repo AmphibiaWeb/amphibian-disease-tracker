@@ -78,6 +78,16 @@ Array::max = -> Math.max.apply null, this
 
 Array::min = -> Math.min.apply null, this
 
+Array::containsObject = (obj) ->
+  # Value-ish rather than indexOf
+  # Uses underscore, but since I don't usually use it ...
+  try
+    res = _.find this, (val) ->
+      _.isEqual obj, val
+    typeof res is "object"
+  catch e
+    console.error "Please load underscore.js before using this."
+    console.info  "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"
 
 Object.toArray = (obj) ->
   Object.keys(obj).map (key) =>

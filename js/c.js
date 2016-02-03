@@ -132,6 +132,20 @@ Array.prototype.min = function() {
   return Math.min.apply(null, this);
 };
 
+Array.prototype.containsObject = function(obj) {
+  var res;
+  try {
+    res = _.find(this, function(val) {
+      return _.isEqual(obj, val);
+    });
+    return typeof res === "object";
+  } catch (_error) {
+    e = _error;
+    console.error("Please load underscore.js before using this.");
+    return console.info("https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js");
+  }
+};
+
 Object.toArray = function(obj) {
   return Object.keys(obj).map((function(_this) {
     return function(key) {
