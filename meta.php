@@ -50,9 +50,15 @@ function returnAjax($data)
     exit();
 }
 
-function getUserFileModTime()
+function getUserFileModTime($get = array())
 {
-    return filemtime('js/c.min.js');
+    if(!empty($get["file"])) {
+        $file = $get["file"];
+    }
+    else {
+        $file = "js/c.min.js";
+    }
+    return filemtime($file);
 }
 
 function doUploadImage()

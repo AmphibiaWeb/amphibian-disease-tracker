@@ -844,7 +844,7 @@ animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, 
   false
 
 
-checkFileVersion = (forceNow = false) ->
+checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
   ###
   # Check to see if the file on the server is up-to-date with what the
   # user sees.
@@ -852,7 +852,7 @@ checkFileVersion = (forceNow = false) ->
   # @param bool forceNow force a check now
   ###
   checkVersion = ->
-    $.get("#{uri.urlString}meta.php","do=get_last_mod","json")
+    $.get("#{uri.urlString}meta.php","do=get_last_mod&file=#{file}","json")
     .done (result) ->
       if forceNow
         console.log("Forced version check:",result)

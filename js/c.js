@@ -1167,10 +1167,13 @@ animateHoverShadows = function(selector, defaultElevation, raisedElevation) {
   return false;
 };
 
-checkFileVersion = function(forceNow) {
+checkFileVersion = function(forceNow, file) {
   var checkVersion;
   if (forceNow == null) {
     forceNow = false;
+  }
+  if (file == null) {
+    file = "js/c.min.js";
   }
 
   /*
@@ -1180,7 +1183,7 @@ checkFileVersion = function(forceNow) {
    * @param bool forceNow force a check now
    */
   checkVersion = function() {
-    return $.get(uri.urlString + "meta.php", "do=get_last_mod", "json").done(function(result) {
+    return $.get(uri.urlString + "meta.php", "do=get_last_mod&file=" + file, "json").done(function(result) {
       var html;
       if (forceNow) {
         console.log("Forced version check:", result);
