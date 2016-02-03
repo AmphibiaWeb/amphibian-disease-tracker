@@ -1217,7 +1217,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       catch
         console.warn "Couldn't store FIMS extra data", fimsExtra
       parsedData[n] = tRow
-      if n %% 500
+      if n %% 500 is 0
         toastStatusMessage "Processed #{n} rows ..."
     try
       # http://marianoguerra.github.io/json.human.js/

@@ -7033,7 +7033,8 @@ paper-dialog-scrollable {
 html >>> .capitalize {
   text-transform: capitalize;
 }
-#outdated-warning {
+#outdated-warning,
+.hanging-alert {
   position: fixed;
   top: 0;
   width: 50%;
@@ -7041,7 +7042,8 @@ html >>> .capitalize {
   left: 25%;
 }
 @media (max-width: 767px) {
-  #outdated-warning {
+  #outdated-warning,
+  .hanging-alert {
     width: 80%;
     left: 10%;
   }

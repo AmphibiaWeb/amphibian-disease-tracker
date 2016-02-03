@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateFimsData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1178,7 +1178,7 @@ newGeoDataHandler = function(dataObject) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
-      if (modulo(n, 500)) {
+      if (modulo(n, 500) === 0) {
         toastStatusMessage("Processed " + n + " rows ...");
       }
     }
@@ -1759,6 +1759,34 @@ if (typeof window.validationMeta !== "object") {
   window.validationMeta = new Object();
 }
 
+validateData = function(dataObject, callback) {
+  var timer;
+  if (callback == null) {
+    callback = null;
+  }
+
+  /*
+   *
+   */
+  console.info("Doing nested validation");
+  timer = Date.now();
+  validateFimsData(dataObject, function() {
+    return validateTaxonData(dataObject, function() {
+      var elapsed;
+      elapsed = Date.now() - timer;
+      console.info("Validation took " + elapsed + "ms");
+      toastStatusMessage("Your dataset has been successfully validated");
+      if (typeof callback === "function") {
+        return callback(dataObject);
+      } else {
+        console.warn("validateData had no defined callback!");
+        return console.info("Got back", dataObject);
+      }
+    });
+  });
+  return false;
+};
+
 validateFimsData = function(dataObject, callback) {
   var fimsPostTarget;
   if (callback == null) {
@@ -1772,7 +1800,7 @@ validateFimsData = function(dataObject, callback) {
    *  containing the parsed data to be validated by FIMS
    * @param function callback -> callback function
    */
-  console.info("Validating", dataObject.data);
+  console.info("FIMS Validating", dataObject.data);
   fimsPostTarget = "";
   if (typeof callback === "function") {
     callback(dataObject);
@@ -1780,8 +1808,57 @@ validateFimsData = function(dataObject, callback) {
   return false;
 };
 
+validateTaxonData = function(dataObject, callback) {
+  var data, grammar, n, row, taxa, taxon, taxonValidatorLoop;
+  if (callback == null) {
+    callback = null;
+  }
+
+  /*
+   *
+   */
+  data = dataObject.data;
+  taxa = new Array();
+  for (n in data) {
+    row = data[n];
+    taxon = {
+      genus: row.genus,
+      species: row.specificEpithet,
+      subspecies: row.infraspecificEpithet,
+      clade: row.cladeSampled
+    };
+    if (!taxa.containsObject(taxon)) {
+      taxa.push(taxon);
+    }
+  }
+  console.info("Found " + taxa.length + " unique taxa:", taxa);
+  grammar = taxa.length > 1 ? "taxa" : "taxon";
+  toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
+  (taxonValidatorLoop = function(taxonArray, key) {
+    return validateAWebTaxon(taxonArray[key], function(result) {
+      var message;
+      if (result.invalid === true) {
+        stopLoadError(result.response.human_error);
+        console.error(result.response.error);
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + result.response.human_error + ". We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
+        bsAlert(message);
+        return false;
+      }
+      taxonArray[key] = result;
+      key++;
+      if (key < taxonArray.length) {
+        return taxonValidatorLoop(taxonArray, key);
+      } else {
+        dataObject.validated_taxa = taxonArray;
+        return callback(dataObject);
+      }
+    });
+  })(taxa, 0);
+  return false;
+};
+
 validateAWebTaxon = function(taxonObj, callback) {
-  var doCallback, prettyTaxon, ref;
+  var args, doCallback, ref;
   if (callback == null) {
     callback = null;
   }
@@ -1793,7 +1870,7 @@ validateAWebTaxon = function(taxonObj, callback) {
    *   optionally "subspecies"
    * @param function callback -> Callback function
    */
-  if (((ref = window.validataionMeta) != null ? ref.validatedTaxons : void 0) == null) {
+  if (((ref = window.validationMeta) != null ? ref.validatedTaxons : void 0) == null) {
     if (typeof window.validationMeta !== "object") {
       window.validationMeta = new Object();
     }
@@ -1805,18 +1882,28 @@ validateAWebTaxon = function(taxonObj, callback) {
     }
     return false;
   };
-  if (indexOf.call(window.validationMeta.validatedTaxons, taxonObj) >= 0) {
+  if (window.validationMeta.validatedTaxons.containsObject(taxonObj)) {
     console.info("Already validated taxon, skipping revalidation", taxonObj);
     doCallback(taxonObj);
     return false;
   }
-  window.validationMeta.validatedTaxons.push(taxonObj);
-  doCallback(taxonObj);
-  return false;
-  prettyTaxon = taxonObj.genus + " " + taxonObj.species;
-  prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
-  bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
-  console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
+  args = "action=validate&genus=" + taxonObj.genus + "&species=" + taxonObj.species;
+  $.post("api.php", args, "json").done(function(result) {
+    if (result.status) {
+      window.validationMeta.validatedTaxons.push(taxonObj);
+    } else {
+      taxonObj.invalid = true;
+    }
+    taxonObj.response = result;
+    doCallback(taxonObj);
+    return false;
+  }).fail(function(result, status) {
+    var prettyTaxon;
+    prettyTaxon = taxonObj.genus + " " + taxonObj.species;
+    prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
+    bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
+    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
+  });
   return false;
 };
 

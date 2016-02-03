@@ -132,6 +132,20 @@ Array.prototype.min = function() {
   return Math.min.apply(null, this);
 };
 
+Array.prototype.containsObject = function(obj) {
+  var res;
+  try {
+    res = _.find(this, function(val) {
+      return _.isEqual(obj, val);
+    });
+    return typeof res === "object";
+  } catch (_error) {
+    e = _error;
+    console.error("Please load underscore.js before using this.");
+    return console.info("https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js");
+  }
+};
+
 Object.toArray = function(obj) {
   return Object.keys(obj).map((function(_this) {
     return function(key) {
@@ -1139,9 +1153,12 @@ bsAlert = function(message, type, fallbackContainer, selector) {
    * for available types
    */
   if (!$(selector).exists()) {
-    html = "<div class=\"alert alert-" + type + " alert-dismissable\" role=\"alert\" id=\"" + (selector.slice(1)) + "\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    <div class=\"alert-message\"></div>\n</div>";
+    html = "<div class=\"alert alert-" + type + " alert-dismissable hanging-alert\" role=\"alert\" id=\"" + (selector.slice(1)) + "\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    <div class=\"alert-message\"></div>\n</div>";
     topContainer = $("main").exists() ? "main" : $("article").exists() ? "article" : fallbackContainer;
     $(topContainer).prepend(html);
+  } else {
+    $(selector).removeClass("alert-warning alert-info alert-danger alert-success");
+    $(selector).addClass("alert-" + type);
   }
   return $(selector + " .alert-message").html(message);
 };
