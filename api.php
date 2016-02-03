@@ -252,7 +252,7 @@ function doAWebValidate($get) {
     foreach($aWebMatch as $key=>$val) {
         $prettyKey = $aWebCols[$key];
         $prettyKey = str_replace("/", "_or_", $prettyKey);
-        if(strpos(",", $val) !== false) {
+        if(strpos($val, ",") !== false) {
             $val = explode(",", $val);
             foreach($val as $k=>$v) {
                 $val[$k] = trim($v);
