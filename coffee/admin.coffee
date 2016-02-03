@@ -834,7 +834,10 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
       console.info "Loaded drag drop helper"
       if needsInit
         console.info "Reinitialized dropper"
-        window.dropperParams.initailize()
+        try
+          window.dropperParams.initialize()
+        catch
+          console.warn "Couldn't reinitialize dropper!"
       window.dropperParams.postUploadHandler = (file, result) ->
         ###
         # The callback function for handleDragDropImage
