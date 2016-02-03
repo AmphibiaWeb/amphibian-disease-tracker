@@ -825,6 +825,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   # Validate the user before guessing
   verifyLoginCredentials ->
     window.dropperParams ?= new Object()
+    window.dropperParams.dropTargetSelector = selector
     window.dropperParams.uploadPath = "uploaded/#{user}/"
     loadJS "helpers/js-dragdrop/client-upload.min.js", ->
       # Successfully uploaded the file

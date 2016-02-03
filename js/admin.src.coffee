@@ -825,6 +825,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   # Validate the user before guessing
   verifyLoginCredentials ->
     window.dropperParams ?= new Object()
+    window.dropperParams.dropTargetSelector = selector
     window.dropperParams.uploadPath = "uploaded/#{user}/"
     loadJS "helpers/js-dragdrop/client-upload.min.js", ->
       # Successfully uploaded the file
@@ -1927,8 +1928,6 @@ getProjectCartoData = (cartoObj) ->
     # We don't already have a data file
     $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
     $("#append-replace-data-toggle").attr "hidden", "hidden"
-  window.dropperParams ?= new Object()
- # window.dropperParams.dropTargetSelector = "#data-card-uploader"
   bootstrapUploader("data-card-uploader", "")
   false
 

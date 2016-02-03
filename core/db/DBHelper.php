@@ -178,7 +178,9 @@ class DBHelper
             $search[] = '@<[\/\!]*?[^<>]*?>@si'; // Strip out HTML tags
         }
         $output = preg_replace($search, '', $input);
-
+        # Replace HTML brackets for anything that slipped through
+        $output = str_replace("<", "&#60;", $output);
+        $output = str_replace(">", "&#62;", $output);
         return $output;
     }
 
@@ -473,7 +475,7 @@ class DBHelper
                 $res2 = mysqli_query($l, $querystring);
                 if ($res2 !== false) {
                     $r = mysqli_query($l, 'COMMIT');
-                    
+
                     return $r;
                 } else {
                     $error = mysqli_error($l);
@@ -662,20 +664,20 @@ class DBHelper
             return $error;
         }
     }
-    
-    
+
+
     public function columnExists($columnName) {
         /***
          * Check if the specified column exists
          *
          * @returns bool
          ***/
-        
+
         $l = $this->openDB();
         $result = mysqli_query($l, "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
         return (mysqli_num_rows($result)) ? TRUE : FALSE;
     }
-    
+
     protected function addColumn($columnName, $columnType = null) {
         /***
          * Add a new column. DATA MUST BE SANITIZED BEFORE CALLING!
