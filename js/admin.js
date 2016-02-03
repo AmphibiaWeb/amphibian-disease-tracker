@@ -1698,11 +1698,15 @@ getProjectCartoData = function(cartoObj) {
     $.post("meta.php", "do=get_last_mod&file=" + cartoData.raw_data.fileName, "json").done(function(result) {
       var iso, t, time, timeString;
       time = result.last_mod;
-      console.log("Last modded", time);
-      t = new Date(time);
-      iso = t.toISOString();
-      timeString = (iso.slice(0, iso.search("T"))) + " " + (t.toTimeString().split(" ")[0]);
-      $("#last-modified-file").text("Last uploaded on " + timeString + ".");
+      console.log("Last modded", time, result);
+      if (isNumber(time)) {
+        t = new Date(time);
+        iso = t.toISOString();
+        timeString = (iso.slice(0, iso.search("T"))) + " " + (t.toTimeString().split(" ")[0]);
+        $("#last-modified-file").text("Last uploaded on " + timeString + ".");
+      } else {
+        console.warn("Didn't get a number back to check last mod time for " + cartoData.raw_data.fileName);
+      }
       return false;
     }).fail(function(result, status) {
       console.warn("Couldn't get last mod time for " + cartoData.raw_data.fileName);
