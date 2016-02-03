@@ -66,12 +66,16 @@ function returnAjax($data)
 
 # parse_str($_SERVER['QUERY_STRING'],$_POST);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
+
 switch ($do) {
-case 'fetch':
-case 'upload':
-    doCartoSqlApiPush($_REQUEST);
-    break;
-default:
+  case 'fetch':
+  case 'upload':
+      doCartoSqlApiPush($_REQUEST);
+      break;
+  case "validate":
+      doAWebValidate($_REQUEST);
+      break;
+  default:
     returnAjax(array(
         'status' => false,
         'error' => 'Invalid action',
@@ -81,6 +85,7 @@ default:
         'post' => $_POST,
         'get' => $_GET,
     ));
+    
 }
 
 function checkColumnExists($column_list)
@@ -165,4 +170,35 @@ function doCartoSqlApiPush($get)
             'human_error' => 'There was a problem uploading to the CartoDB server.',
         ));
     }
+}
+
+function tsvHelper($tsv) {
+    return str_getcsv($tsv, "\t");
+}
+
+function doAWebValidate($get) {
+    /***
+     *
+     ***/
+    $amphibiaWebListTarget = "http://amphibiaweb.org/amphib_names.txt";
+    $localAWebTarget = dirname(__FILE__) . "/aweb_list.txt";
+    $dayOffset = 60 * 60 * 24;
+    $response = array();
+    # How old is our copy?
+    if (filemtime($localAWebTarget) + $dayOffset < time()) {
+        # Fetch a new copy
+        $aWebList = file_get_contents($amphibiaWebListTarget);
+        $h = fopen($localAWebTarget, "w+");
+        $bytes = fwrite($h, $aWebList);
+        fclose($h);
+        if ($bytes === false) {
+            $response["notices"] = array();
+            $response["notices"][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
+        }
+    }
+    
+    //$aWebList = file_get_contents($localAWebTarget);
+    $aWebListArray = array_map("tsvHelper", $localAWebTarget);
+    returnAjax($aWebListArray); # Testing
+    
 }
