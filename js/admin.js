@@ -1178,7 +1178,7 @@ newGeoDataHandler = function(dataObject) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
-      if (modulo(n, 500) === 0) {
+      if (modulo(n, 500) === 0 && n > 0) {
         toastStatusMessage("Processed " + n + " rows ...");
       }
     }
@@ -1850,9 +1850,10 @@ validateTaxonData = function(dataObject, callback) {
     return validateAWebTaxon(taxonArray[key], function(result) {
       var message;
       if (result.invalid === true) {
+        cleanupToasts();
         stopLoadError(result.response.human_error);
         console.error(result.response.error);
-        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + result.response.human_error + ". We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + result.response.human_error + " We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
         bsAlert(message);
         return false;
       }

@@ -75,9 +75,10 @@ validateTaxonData = (dataObject, callback = null) ->
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     validateAWebTaxon taxonArray[key], (result) ->
       if result.invalid is true
+        cleanupToasts()
         stopLoadError result.response.human_error
         console.error result.response.error
-        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{result.response.human_error}. We stopped validation at that point. Please correct taxonomy issues and try uploading again."
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{result.response.human_error} We stopped validation at that point. Please correct taxonomy issues and try uploading again."
         bsAlert(message)
         return false
       taxonArray[key] = result

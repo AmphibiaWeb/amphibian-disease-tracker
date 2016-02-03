@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, cleanupToasts, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -621,7 +621,7 @@ stopLoadError = function(message, elId, fadeOut) {
 };
 
 toastStatusMessage = function(message, className, duration, selector) {
-  var html, ref;
+  var html, ref, timeout;
   if (className == null) {
     className = "";
   }
@@ -638,13 +638,15 @@ toastStatusMessage = function(message, className, duration, selector) {
   if (((ref = window.metaTracker) != null ? ref.isToasting : void 0) == null) {
     if (window.metaTracker == null) {
       window.metaTracker = new Object();
+      window.metaTracker.toastTracker = new Array();
       window.metaTracker.isToasting = false;
     }
   }
   if (window.metaTracker.isToasting) {
-    delay(250, function() {
+    timeout = delay(250, function() {
       return toastStatusMessage(message, className, duration, selector);
     });
+    window.metaTracker.toastTracker.push(timeout);
     return false;
   }
   window.metaTracker.isToasting = true;
@@ -666,6 +668,19 @@ toastStatusMessage = function(message, className, duration, selector) {
     $(selector).attr("text", "");
     return window.metaTracker.isToasting = false;
   });
+};
+
+cleanupToasts = function() {
+  var l, len, ref, results, timeout;
+  ref = window.metaTracker.toastTracker;
+  results = [];
+  for (l = 0, len = ref.length; l < len; l++) {
+    timeout = ref[l];
+    try {
+      results.push(clearTimeout(timeout));
+    } catch (_error) {}
+  }
+  return results;
 };
 
 openLink = function(url) {
