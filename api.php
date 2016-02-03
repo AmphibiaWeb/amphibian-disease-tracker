@@ -221,7 +221,8 @@ function doAWebValidate($get) {
         $genusList[] = $genus;
         $synon = explode(",", strtolower($entry[8]));
         foreach($synon as $oldName) {
-            $synonymList[$oldName] = $k;
+            $key = trim($oldName);
+            $synonymList[$key] = $k;
         }
     }
     # First check: Does the genus exist?
