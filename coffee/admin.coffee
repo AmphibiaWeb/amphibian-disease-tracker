@@ -1051,6 +1051,7 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   # Server will validate the user, and only a user can remove their
   # own files
   args = "action=removefile&path=#{encode64 removeFile}&user=#{user}"
+  # TODO FINISH THIS
   false
 
 newGeoDataHandler = (dataObject = new Object()) ->

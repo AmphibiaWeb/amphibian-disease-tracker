@@ -186,6 +186,7 @@ function doAWebValidate($get) {
     $response = array(
         "status" => false,
         "args_provided" => $get,
+        "notices" => array(),
     );
     # We need, at minimum, genus and species
     if(empty($get["genus"]) or empty($get["species"])) {
@@ -201,7 +202,6 @@ function doAWebValidate($get) {
         $bytes = fwrite($h, $aWebList);
         fclose($h);
         if ($bytes === false) {
-            $response["notices"] = array();
             $response["notices"][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
         }
     }
@@ -276,6 +276,7 @@ function doAWebValidate($get) {
             $aWebPretty["subspecies"] = $get["subspecies"];
         }
         $response["status"] = true;
+        $response["notices"][] = "Your entry '$testSpecies' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
         # Note that Unicode characters may return escaped! eg, \u00e9.
         $response["validated_taxon"] = $aWebPretty;
         returnAjax($response);
@@ -319,6 +320,7 @@ function doAWebValidate($get) {
             $aWebPretty["subspecies"] = $get["subspecies"];
         }
         $response["status"] = true;
+        $response["notices"][] = "Your entry '$testSpecies' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
         # Note that Unicode characters may return escaped! eg, \u00e9.
         $response["validated_taxon"] = $aWebPretty;
         returnAjax($response);
