@@ -1972,9 +1972,13 @@ validateData = (dataObject, callback = null) ->
   #
   ###
   console.info "Doing nested validation"
+  timer = Date.now()
   validateFimsData dataObject, ->
     validateTaxonData dataObject, ->
       # When we're successful, run the dependent callback
+      elapsed = Date.now() - timer
+      console.info "Validation took #{elapsed}ms"
+      toastStatusMessage "Your dataset has been successfully validated"
       if typeof callback is "function"
         callback(dataObject)
       else
@@ -2016,11 +2020,15 @@ validateTaxonData = (dataObject, callback = null) ->
     unless taxa.containsObject taxon
       taxa.push taxon
   console.info "Found #{taxa.length} unique taxa:", taxa
+  grammar = if taxa.length > 1 then "taxa" else "taxon"
+  toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     validateAWebTaxon taxonArray[key], (result) ->
       if result.invalid is true
         stopLoadError result.response.human_error
         console.error result.response.error
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{result.response.human_error}. We stopped validation at that point. Please correct taxonomy issues and try uploading again."
+        bsAlert(message)
         return false
       taxonArray[key] = result
       key++

@@ -835,13 +835,16 @@ bsAlert = (message, type = "warning", fallbackContainer = "body", selector = "#b
   ###
   if not $(selector).exists()
     html = """
-    <div class="alert alert-#{type} alert-dismissable" role="alert" id="#{selector.slice(1)}">
+    <div class="alert alert-#{type} alert-dismissable hanging-alert" role="alert" id="#{selector.slice(1)}">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <div class="alert-message"></div>
     </div>
     """
     topContainer = if $("main").exists() then "main" else if $("article").exists() then "article" else fallbackContainer
     $(topContainer).prepend(html)
+  else
+    $(selector).removeClass "alert-warning alert-info alert-danger alert-success"
+    $(selector).addClass "alert-#{type}"
   $("#{selector} .alert-message").html(message)
 
 
