@@ -805,7 +805,11 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
       console.info("Loaded drag drop helper");
       if (needsInit) {
         console.info("Reinitialized dropper");
-        window.dropperParams.initailize();
+        try {
+          window.dropperParams.initialize();
+        } catch (_error) {
+          console.warn("Couldn't reinitialize dropper!");
+        }
       }
       return window.dropperParams.postUploadHandler = function(file, result) {
 
