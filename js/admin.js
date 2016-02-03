@@ -1694,6 +1694,7 @@ getProjectCartoData = function(cartoObj) {
     console.error("Couldn't talk to back end server to ping carto!");
     return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
   });
+  window.dataFileparams = cartoData.raw_data;
   if (cartoData.raw_data.hasDataFile) {
     html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + cartoData.raw_data.fileName + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);

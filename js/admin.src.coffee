@@ -1894,6 +1894,7 @@ getProjectCartoData = (cartoObj) ->
   .fail (result, status) ->
     console.error "Couldn't talk to back end server to ping carto!"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
+  window.dataFileparams = cartoData.raw_data
   if cartoData.raw_data.hasDataFile
     # We already have a data file
     html = """
