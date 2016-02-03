@@ -297,7 +297,6 @@ function doAWebValidate($get) {
             # Nope, just failed
             $response["error"] = "INVALID_SPECIES";
             $response["human_error"] = "No species '$providedSpecies' isn't a valid AmphibiaWeb species in the genus '$providedGenus', nor is '$testSpecies' a recognized synonym.";
-            $response["synonyms"] = $synonymList;
             returnAjax($response);
         }
         # Let's play the synonym game again!
