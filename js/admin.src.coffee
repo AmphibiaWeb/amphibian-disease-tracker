@@ -827,9 +827,14 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
     window.dropperParams ?= new Object()
     window.dropperParams.dropTargetSelector = selector
     window.dropperParams.uploadPath = "uploaded/#{user}/"
+    # Need to make this re-initialize ...
+    needsInit = window.dropperParams.hasInitialized is true
     loadJS "helpers/js-dragdrop/client-upload.min.js", ->
-      # Successfully uploaded the file
+      # Successfully loaded the file
       console.info "Loaded drag drop helper"
+      if needsInit
+        console.info "Reinitialized dropper"
+        window.dropperParams.initailize()
       window.dropperParams.postUploadHandler = (file, result) ->
         ###
         # The callback function for handleDragDropImage

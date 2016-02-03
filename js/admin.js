@@ -794,13 +794,19 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
     });
   }
   return verifyLoginCredentials(function() {
+    var needsInit;
     if (window.dropperParams == null) {
       window.dropperParams = new Object();
     }
     window.dropperParams.dropTargetSelector = selector;
     window.dropperParams.uploadPath = "uploaded/" + user + "/";
+    needsInit = window.dropperParams.hasInitialized === true;
     loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
       console.info("Loaded drag drop helper");
+      if (needsInit) {
+        console.info("Reinitialized dropper");
+        window.dropperParams.initailize();
+      }
       return window.dropperParams.postUploadHandler = function(file, result) {
 
         /*
