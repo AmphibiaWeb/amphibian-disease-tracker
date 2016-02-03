@@ -1644,7 +1644,7 @@ getProjectCartoData = function(cartoObj) {
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
-  args = "action=upload&sql_query=" + apiPostSqlQuery;
+  args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
     var error, geoJson, k, lat, lng, marker, ref, row, rows, truncateLength, workingMap;
     console.info("Carto query got result:", result);
