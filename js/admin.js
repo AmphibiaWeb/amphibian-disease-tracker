@@ -1655,9 +1655,11 @@ getProjectCartoData = function(cartoObj) {
   }
   cartoTable = cartoData.table;
   console.info("Working with Carto data base set", cartoData);
-  zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
-  console.info("Got zoom", zoom);
-  $("#transect-viewport").attr("zoom", zoom);
+  try {
+    zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
+    console.info("Got zoom", zoom);
+    $("#transect-viewport").attr("zoom", zoom);
+  } catch (_error) {}
   toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
   console.info("Would ping cartodb with", cartoQuery);
@@ -1692,6 +1694,7 @@ getProjectCartoData = function(cartoObj) {
     console.error("Couldn't talk to back end server to ping carto!");
     return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
   });
+  window.dataFileparams = cartoData.raw_data;
   if (cartoData.raw_data.hasDataFile) {
     html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + cartoData.raw_data.fileName + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);
@@ -1702,7 +1705,7 @@ getProjectCartoData = function(cartoObj) {
       if (isNumber(time)) {
         t = new Date(time);
         iso = t.toISOString();
-        timeString = (iso.slice(0, iso.search("T"))) + " " + (t.toTimeString().split(" ")[0]);
+        timeString = "" + (iso.slice(0, iso.search("T")));
         $("#last-modified-file").text("Last uploaded on " + timeString + ".");
       } else {
         console.warn("Didn't get a number back to check last mod time for " + cartoData.raw_data.fileName);
@@ -1716,6 +1719,10 @@ getProjectCartoData = function(cartoObj) {
     $("#data-card .card-content .variable-card-content").html("<p>You can upload data to your project here:</p>");
     $("#append-replace-data-toggle").attr("hidden", "hidden");
   }
+  if (window.dropperParams == null) {
+    window.dropperParams = new Object();
+  }
+  window.dropperParms.dropTargetSelector = "#data-card-uploader";
   bootstrapUploader("data-card-uploader", "");
   return false;
 };
