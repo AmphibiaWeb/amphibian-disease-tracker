@@ -13,7 +13,7 @@
 		}
 
 		public function toJavaScript() {
-			$lines = array();
+			$lines = [];
 
 			foreach ($this as $key => $value) {
 				if (!is_null($value)) {
@@ -71,7 +71,7 @@
 		}
 
 		public function toArray() {
-			$result = array();
+			$result = [];
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->alias)) $result['alias'] = $this->alias;
@@ -86,7 +86,7 @@
 
 	class Engine extends NameVersionPrimitive {
 		public function toArray() {
-			$result = array();
+			$result = [];
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->version)) $result['version'] = $this->version->toArray();
@@ -102,7 +102,7 @@
 		public $family;
 
 		public function toArray() {
-			$result = array();
+			$result = [];
 
 			if (!empty($this->name)) $result['name'] = $this->name;
 			if (!empty($this->family)) $result['family'] = $this->family;
@@ -141,7 +141,7 @@
 		}
 
 		public function toArray() {
-			$result = array();
+			$result = [];
 
 			if (!empty($this->type)) $result['type'] = $this->type;
 			if (!empty($this->manufacturer)) $result['manufacturer'] = $this->manufacturer;
@@ -168,11 +168,11 @@
 				if (count($arguments) == 1) {
 					$compare = $arguments[0];
 				}
-
+				
 				if (count($arguments) >= 2) {
 					$operator = $arguments[0];
 					$compare = $arguments[1];
-				}
+				}				
 
 				if (!is_null($compare)) {
 					$min = min(substr_count($this->value, '.'), substr_count($compare, '.')) + 1;
@@ -231,13 +231,10 @@
 
 			if (!empty($this->value)) {
 				if (preg_match("/([0-9]+)(?:\.([0-9]+))?(?:\.([0-9]+))?(?:\.([0-9]+))?(?:([ab])([0-9]+))?/", $this->value, $match)) {
-					$v = array( $match[1] );
-                    $twoTest = array_key_exists(2, $match) && strlen($match[2]);
-                    $threeTest = array_key_exists(3, $match) && strlen($match[3]);
-                    $fourTest = array_key_exists(4, $match) && strlen($match[4]);
-					if ($twoTest == true) $varray() = $match[2];
-					if ($threeTest) $varray() = $match[3];
-					if ($fourTest) $varray() = $match[4];
+					$v = [ $match[1] ];
+					if (array_key_exists(2, $match) && strlen($match[2])) $v[] = $match[2];
+					if (array_key_exists(3, $match) && strlen($match[3])) $v[] = $match[3];
+					if (array_key_exists(4, $match) && strlen($match[4])) $v[] = $match[4];
 
 					if (!empty($this->details)) {
 						if ($this->details < 0) array_splice($v, $this->details, 0 - $this->details);
@@ -248,7 +245,7 @@
 						for ($i = 0; $i < count($v); $i++) {
 							if ($v[$i] > 999) {
 								array_splice($v, $i, 1);
-							}
+							}					
 						}
 					}
 
@@ -258,11 +255,11 @@
 				}
 			}
 
-			return $version;
+			return $version;		
 		}
 
 		public function toArray() {
-			$result = array();
+			$result = [];
 
 			if (!empty($this->value)) {
 				if (!empty($this->details)) {
@@ -288,3 +285,4 @@
 			return $result;
 		}
 	}
+

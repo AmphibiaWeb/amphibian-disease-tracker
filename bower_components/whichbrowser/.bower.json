@@ -1,14 +1,14 @@
 {
   "name": "whichbrowser",
   "homepage": "https://github.com/WhichBrowser/WhichBrowser",
-  "version": "1.0.1041",
-  "_release": "1.0.1041",
+  "version": "1.0.1040",
+  "_release": "1.0.1040",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.1041",
-    "commit": "823fecd252bde31a6a4868407785509bfc5622ec"
+    "tag": "v1.0.1040",
+    "commit": "a257a1b99610ac52fce367d5c0ec7e2134fdbe43"
   },
   "_source": "git://github.com/WhichBrowser/WhichBrowser.git",
-  "_target": "^1.0.1020",
+  "_target": "1.0.1040",
   "_originalSource": "whichbrowser"
 }
