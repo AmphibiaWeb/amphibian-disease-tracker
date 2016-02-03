@@ -87,12 +87,12 @@
     window.dropperParams.clickTargets = ["#do-upload-file"];
     window.dropperParams.mimeTypes = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/zip,application/x-7z-compressed,application/x-zip-compressed,image/*,application/7z";
     console.log(window.dropperParams);
-    return (dropperParams.initialize = function() {
+    return (window.dropperParams.initialize = function() {
       return loadJS(window.dropperParams.metaPath + "js/drop-upload.min.js", function() {
         return ready(dropperParams.dropTargetSelector, function(element) {
           console.info(dropperParams.dropTargetSelector + " is ready, binding");
           $(window.dropperParams.dropTargetSelector).parent().after(uploadButton);
-          dropperParams.hasInitialized = true;
+          window.dropperParams.hasInitialized = true;
           return window.dropperParams.handleDragDropImage(dropperParams.dropTargetSelector, dropperParams.postUploadHandler);
         });
       });

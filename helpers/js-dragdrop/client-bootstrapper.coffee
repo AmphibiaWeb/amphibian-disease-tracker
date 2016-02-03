@@ -89,12 +89,12 @@ $ ->
   console.log window.dropperParams
   # We shouldn't actually instantiate the dropper until the element
   # exists
-  do dropperParams.initialize = ->
+  do window.dropperParams.initialize = ->
     loadJS "#{window.dropperParams.metaPath}js/drop-upload.min.js", ->
       ready dropperParams.dropTargetSelector, (element) ->
         console.info "#{dropperParams.dropTargetSelector} is ready, binding"
         $(window.dropperParams.dropTargetSelector).parent().after uploadButton
-        dropperParams.hasInitialized = true
+        window.dropperParams.hasInitialized = true
         # Do base binding
         # The post upload handler should be in integration.coffee, and
         # should either be here, or directly integrated into a greater application
