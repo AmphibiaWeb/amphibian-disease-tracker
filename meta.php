@@ -54,10 +54,13 @@ function getUserFileModTime($get = array())
 {
     if(!empty($get["file"])) {
         $file = $get["file"];
+        if(!file_exists($file)) {
+            return "INVALID_FILE";
+        }
     }
     else {
         $file = "js/c.min.js";
-    }
+    }    
     return filemtime($file);
 }
 

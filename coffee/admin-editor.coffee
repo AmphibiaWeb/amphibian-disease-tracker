@@ -578,12 +578,21 @@ getProjectCartoData = (cartoObj) ->
     # We already have a data file
     html = """
     <p>
-      Your project already has data associated with it.
+      Your project already has data associated with it. <span id="last-modified-file></span>"
     </p>
     <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{cartoData.raw_data.fileName}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
     <p>You can upload more data below, or replace this existing data.</p>
     """
     $("#data-card .card-content .variable-card-content").html html
+    $.post "meta.php", "do=get_last_mod&file=#{cartoData.raw_data.fileName}", "json"
+    .done (result) ->
+      time = result.last_mod
+      console.log "Last modded", time
+      false
+    .fail (result, status) ->
+      # We don't really care, actually.
+      console.warn "Couldn't get last mod time for #{cartoData.raw_data.fileName}"
+      false
   else
     # We don't already have a data file
     $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
