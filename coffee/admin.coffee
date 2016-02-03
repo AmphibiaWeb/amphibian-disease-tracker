@@ -170,7 +170,7 @@ loadCreateNewProject = ->
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
-      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3"></iron-autogrow-textarea data-field="sample_notes">#{getInfoTooltip("Project notes or brief abstract")}
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract")}
       <h2 class="new-title col-xs-12">Data Permissions</h2>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
@@ -227,6 +227,8 @@ loadCreateNewProject = ->
       <paper-input label="No Confidence Samples" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="no_confidence-samples" readonly type="number" data-field="disease_no_confidence"></paper-input>
       <paper-input label="Disease Morbidity" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="morbidity-count" readonly type="number" data-field="disease_morbidity"></paper-input>
       <paper-input label="Disease Mortality" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="mortality-count" readonly type="number" data-field="disease_mortality"></paper-input>
+      <h4 class="new-title col-xs-12">Species in dataset</h4>
+      <iron-autogrow-textarea id="species-list" class="project-field col-md-6 col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
       <p class="col-xs-12">Etc</p>
     </div>
   </section>
@@ -1279,8 +1281,15 @@ newGeoDataHandler = (dataObject = new Object()) ->
       transectRing: geo.boundingBox
       data: parsedData
       samples: samplesMeta
-    validateFimsData totalData, (validatedData) ->
+    validateData totalData, (validatedData) ->
       # Save the upload
+      taxonListString = ""
+      for taxon in validatedData.validated_taxa
+        taxonString = "#{taxon.genus} #{taxon.species}"
+        unless isNull taxon.subspecies
+          taxonString += " #{taxon.subspecies}"
+        taxonListString += "\n#{taxonString}"
+      p$("#species-list").value = taxonListString
       dataAttrs.dataObj = validatedData
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
         mapOverlayPolygon validatedData.transectRing
