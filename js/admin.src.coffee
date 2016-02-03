@@ -1849,9 +1849,10 @@ getProjectCartoData = (cartoObj) ->
     cartoData = cartoObj
   cartoTable = cartoData.table
   console.info "Working with Carto data base set", cartoData
-  zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
-  console.info "Got zoom", zoom
-  $("#transect-viewport").attr "zoom", zoom
+  try
+    zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
+    console.info "Got zoom", zoom
+    $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
@@ -1910,8 +1911,8 @@ getProjectCartoData = (cartoObj) ->
       if isNumber time
         t = new Date(time)
         iso = t.toISOString()
-
-        timeString = "#{iso.slice(0, iso.search("T"))} #{t.toTimeString().split(" ")[0]}"
+        #  Not good enough time resolution to use t.toTimeString().split(" ")[0]
+        timeString = "#{iso.slice(0, iso.search("T"))}"
         $("#last-modified-file").text "Last uploaded on #{timeString}."
       else
         console.warn "Didn't get a number back to check last mod time for #{cartoData.raw_data.fileName}"
@@ -1924,6 +1925,8 @@ getProjectCartoData = (cartoObj) ->
     # We don't already have a data file
     $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
     $("#append-replace-data-toggle").attr "hidden", "hidden"
+  window.dropperParams ?= new Object()
+  window.dropperParms.dropTargetSelector = "#data-card-uploader"
   bootstrapUploader("data-card-uploader", "")
   false
 
