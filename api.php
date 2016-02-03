@@ -214,6 +214,7 @@ function doAWebValidate($get) {
      * Object {0: "order", 1: "family", 2: "subfamily", 3: "genus", 4: "subgenus", 5: "species", 6: "common_name", 7: "gaa_name", 8: "synonymies", 9: "itis_names", 10: "iucn", 11: "isocc", 12: "intro_isocc", 13: "aweb_uid", 14: "uri/guid", 15: "taxon_notes_public"}
      */
     $genusList = array();
+    $synonymList = array();
     foreach($aWebListArray as $k=>$entry) {
         if($k == 0) continue; # Prevent match on "genus"
         $genus = strtolower($entry[3]);
@@ -250,6 +251,13 @@ function doAWebValidate($get) {
     $aWebPretty = array();
     foreach($aWebMatch as $key=>$val) {
         $prettyKey = $aWebCols[$key];
+        $prettyKey = str_replace("/", "_or_", $prettyKey);
+        if(strpos(",", $val) !== false) {
+            $val = explode(",", $val);
+            foreach($val as $k=>$v) {
+                $val[$k] = trim($v);
+            }
+        }
         $aWebPretty[$prettyKey] = $val;
     }
     $response["status"] = true;
