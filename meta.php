@@ -92,7 +92,13 @@ case 'upload_image':
     returnAjax(doUploadImage());
     break;
 default:
-    $default_answer = array('status' => false, 'error' => 'Invalid action', 'human_error' => 'No valid action was supplied.');
+    $default_answer = array(
+        'status' => false, 
+        'error' => 'Invalid action', 
+        'human_error' => 'No valid action was supplied.',
+        "provided_args" => $_REQUEST,
+        "requested_action" => $do,
+    );
     # doUploadImage()
     returnAjax($default_answer);
 }
