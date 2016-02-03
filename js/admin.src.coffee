@@ -2040,6 +2040,7 @@ validateTaxonData = (dataObject, callback = null) ->
         console.error result.response.error
         message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{result.response.human_error} We stopped validation at that point. Please correct taxonomy issues and try uploading again."
         bsAlert(message)
+        removeDataFile()
         return false
       taxonArray[key] = result
       key++
