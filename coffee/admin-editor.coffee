@@ -220,9 +220,12 @@ loadEditor = ->
                 <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
                 """
             mapHtml += "    </google-map-poly>"
-          #   zoom = """zoom="#{getMapZoom(poly.paths, "#transect-viewport")}" """
-          # else
-          #   zoom = ""
+          googleMap = """
+                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
+                  #{mapHtml}
+                </google-map>
+          """
+          geo.googleMapWebComponent = googleMap
           # The actual HTML
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
@@ -298,9 +301,7 @@ loadEditor = ->
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
               <h4>Locality &amp; Transect Data</h4>
-                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
-                  #{mapHtml}
-                </google-map>
+                #{googleMap}
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
@@ -525,7 +526,6 @@ getProjectCartoData = (cartoObj) ->
   console.info "Working with Carto data base set", cartoData
   zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
   console.info "Got zoom", zoom
-  zoom--
   $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
@@ -542,7 +542,9 @@ getProjectCartoData = (cartoObj) ->
         error = "Unknown error"
       stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
       return false
-    rows = result.parsed_responses.rows
+    rows = result.parsed_responses[0].rows
+    truncateLength = 0 - "</google-map>".length
+    workingMap = geo.googleMapWebComponent.slice 0, truncateLength
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       lat = geoJson.coordinates[0]
@@ -557,7 +559,12 @@ getProjectCartoData = (cartoObj) ->
         </p>
       </google-map-marker>
       """
-      $("#transect-viewport").append marker
+      console.log "Marker:", marker
+      # $("#transect-viewport").append marker
+      workingMap += marker
+    # p$("#transect-viewport").resize()
+    workingMap += "</google-map>"
+    $("#transect-viewport").replaceWith workingMap
     stopLoad()
   .fail (result, status) ->
     console.error "Couldn't talk to back end server to ping carto!"
