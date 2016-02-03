@@ -1928,7 +1928,7 @@ getProjectCartoData = (cartoObj) ->
     $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
     $("#append-replace-data-toggle").attr "hidden", "hidden"
   window.dropperParams ?= new Object()
-  window.dropperParams.dropTargetSelector = "#data-card-uploader"
+ # window.dropperParams.dropTargetSelector = "#data-card-uploader"
   bootstrapUploader("data-card-uploader", "")
   false
 
