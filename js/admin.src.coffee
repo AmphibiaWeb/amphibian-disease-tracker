@@ -1831,6 +1831,7 @@ getProjectCartoData = (cartoObj) ->
   console.info "Working with Carto data base set", cartoData
   zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
   console.info "Got zoom", zoom
+  zoom--
   $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
@@ -1841,7 +1842,28 @@ getProjectCartoData = (cartoObj) ->
   $.post "api.php", args, "json"
   .done (result) ->
     console.info "Carto query got result:", result
-    # Fill the points as markers
+    unless result.status
+      error = result.human_error ? result.error
+      unless error?
+        error = "Unknown error"
+      stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
+      return false
+    rows = result.parsed_responses.rows
+    for k, row of rows
+      geoJson = JSON.parse row.st_asgeojson
+      lat = geoJson.coordinates[0]
+      lng = geoJson.coordinates[1]
+      # Fill the points as markers
+      marker = """
+      <google-map-marker latitude="#{lat}" longitude="#{lng}">
+        <p>
+          <em>#{row.genus} #{row.specificepithet}</em>
+          <br/>
+          Tested <strong>#{row.diseasedetected}</strong> for #{row.diseasetested}
+        </p>
+      </google-map-marker>
+      """
+      $("#transect-viewport").append marker
     stopLoad()
   .fail (result, status) ->
     console.error "Couldn't talk to back end server to ping carto!"

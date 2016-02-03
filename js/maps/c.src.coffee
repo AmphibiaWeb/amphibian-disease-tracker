@@ -995,11 +995,11 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
     eastMost = -180
     westMost = 180
     for k, coords of bb
-      lat = if coords.lat? then coords.lat else coords[1]
-      if lat < westMost
-        westMost = lat
-      if lat > eastMost
-        eastMost = lat
+      lng = if coords.lng? then coords.lng else coords[1]
+      if lng < westMost
+        westMost = lng
+      if lng > eastMost
+        eastMost = lng
     angle = eastMost - westMost
     if angle < 0
       angle += 360
@@ -1454,7 +1454,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   .error (result, status) ->
     console.error "Couldn't communicate with server!", result, status
     console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-    toastStatusMessage "There was a problem communicating with the server. Please try again in a bit."
+    toastStatusMessage "There was a problem communicating with the server. Please try again in a bit. (E-001)"
   false
 
 

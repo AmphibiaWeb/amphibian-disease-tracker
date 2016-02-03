@@ -1637,6 +1637,7 @@ getProjectCartoData = function(cartoObj) {
   console.info("Working with Carto data base set", cartoData);
   zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
   console.info("Got zoom", zoom);
+  zoom--;
   $("#transect-viewport").attr("zoom", zoom);
   toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
@@ -1644,7 +1645,25 @@ getProjectCartoData = function(cartoObj) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=upload&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
+    var error, geoJson, k, lat, lng, marker, ref, row, rows;
     console.info("Carto query got result:", result);
+    if (!result.status) {
+      error = (ref = result.human_error) != null ? ref : result.error;
+      if (error == null) {
+        error = "Unknown error";
+      }
+      stopLoadError("Sorry, we couldn't retrieve your information at the moment (" + error + ")");
+      return false;
+    }
+    rows = result.parsed_responses.rows;
+    for (k in rows) {
+      row = rows[k];
+      geoJson = JSON.parse(row.st_asgeojson);
+      lat = geoJson.coordinates[0];
+      lng = geoJson.coordinates[1];
+      marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em>\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
+      $("#transect-viewport").append(marker);
+    }
     return stopLoad();
   }).fail(function(result, status) {
     console.error("Couldn't talk to back end server to ping carto!");

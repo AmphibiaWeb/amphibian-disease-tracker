@@ -1334,7 +1334,7 @@ getMapCenter = function(bb) {
 };
 
 getMapZoom = function(bb, selector) {
-  var adjAngle, angle, coords, eastMost, k, lat, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc;
+  var adjAngle, angle, coords, eastMost, k, lng, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1347,12 +1347,12 @@ getMapZoom = function(bb, selector) {
     westMost = 180;
     for (k in bb) {
       coords = bb[k];
-      lat = coords.lat != null ? coords.lat : coords[1];
-      if (lat < westMost) {
-        westMost = lat;
+      lng = coords.lng != null ? coords.lng : coords[1];
+      if (lng < westMost) {
+        westMost = lng;
       }
-      if (lat > eastMost) {
-        eastMost = lat;
+      if (lng > eastMost) {
+        eastMost = lng;
       }
     }
     angle = eastMost - westMost;
@@ -1819,7 +1819,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
   }).error(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
     console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
-    return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit.");
+    return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit. (E-001)");
   });
   return false;
 };
