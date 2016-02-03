@@ -1696,9 +1696,13 @@ getProjectCartoData = function(cartoObj) {
     html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file></span>\"\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + cartoData.raw_data.fileName + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);
     $.post("meta.php", "do=get_last_mod&file=" + cartoData.raw_data.fileName, "json").done(function(result) {
-      var time;
+      var iso, t, time, timeString;
       time = result.last_mod;
       console.log("Last modded", time);
+      t = new Date(time);
+      iso = t.toISOString();
+      timeString = (iso.slice(0, iso.search("T"))) + " " + (t.toTimeString().split(" ")[0]);
+      $("#last-modified-file").text("Last uploaded on " + timeString + ".");
       return false;
     }).fail(function(result, status) {
       console.warn("Couldn't get last mod time for " + cartoData.raw_data.fileName);
