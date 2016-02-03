@@ -1498,14 +1498,17 @@ loadEditor = ->
           icon = if project.public.toBool() then """<iron-icon icon="social:public" class="material-green" data-toggle="tooltip" title="Public Project"></iron-icon>""" else """<iron-icon icon="icons:lock" class="material-red" data-toggle="tooltip" title="Private Project"></iron-icon>"""
           publicToggle =
             unless project.public.toBool()
-              """
-              <div class="col-xs-12">
-                <paper-toggle-button id="public" class="project-params danger-toggle red">
-                  <iron-icon icon="icons:warning"></iron-icon>
-                  Make this project public
-                </paper-toggle-button> <span class="text-muted small">Once saved, this cannot be undone</span>
-              </div>
-              """
+              if result.user.is_author
+                """
+                <div class="col-xs-12">
+                  <paper-toggle-button id="public" class="project-params danger-toggle red">
+                    <iron-icon icon="icons:warning"></iron-icon>
+                    Make this project public
+                  </paper-toggle-button> <span class="text-muted small">Once saved, this cannot be undone</span>
+                </div>
+                """
+              else
+                "<!-- This user does not have permission to toggle the public state of this project -->"
             else "<!-- This project is already public -->"
           # dangerToggleStyle = """
           # paper-toggle-button
@@ -1545,6 +1548,11 @@ loadEditor = ->
                 </google-map>
           """
           geo.googleMapWebComponent = googleMap
+          deleteCardAction = if result.user.is_author then """
+          <div class="card-actions">
+                <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
+              </div>
+          """ else ""
           # The actual HTML
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
@@ -1603,9 +1611,7 @@ loadEditor = ->
               <div class="card-actions">
                 <paper-button id="discard-changes-exit"><iron-icon icon="icons:undo"></iron-icon> Discard Changes &amp; Exit</paper-button>
               </div>
-              <div class="card-actions">
-                <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
-              </div>
+              #{deleteCardAction}
             </paper-card>
           </section>
           <section id="project-data" class="col-xs-12 col-md-8 clearfix">
@@ -1878,7 +1884,6 @@ getProjectCartoData = (cartoObj) ->
         </p>
       </google-map-marker>
       """
-      console.log "Marker:", marker
       # $("#transect-viewport").append marker
       workingMap += marker
     # p$("#transect-viewport").resize()
