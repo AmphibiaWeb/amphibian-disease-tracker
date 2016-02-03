@@ -797,6 +797,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
     if (window.dropperParams == null) {
       window.dropperParams = new Object();
     }
+    window.dropperParams.dropTargetSelector = selector;
     window.dropperParams.uploadPath = "uploaded/" + user + "/";
     loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
       console.info("Loaded drag drop helper");
@@ -1718,9 +1719,6 @@ getProjectCartoData = function(cartoObj) {
   } else {
     $("#data-card .card-content .variable-card-content").html("<p>You can upload data to your project here:</p>");
     $("#append-replace-data-toggle").attr("hidden", "hidden");
-  }
-  if (window.dropperParams == null) {
-    window.dropperParams = new Object();
   }
   bootstrapUploader("data-card-uploader", "");
   return false;
