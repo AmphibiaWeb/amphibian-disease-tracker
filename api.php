@@ -219,10 +219,29 @@ function doAWebValidate($get) {
         if($k == 0) continue; # Prevent match on "genus"
         $genus = strtolower($entry[3]);
         $genusList[] = $genus;
-        $synon = explode(",", strtolower($entry[8]));
-        foreach($synon as $oldName) {
-            $key = trim($oldName);
-            $synonymList[$key] = $k;
+        $synonEntry = strtolower($entry[8]);
+        if(!empty($synonEntry)) {
+            if(strpos($synonEntry, ",") !== false) {
+                $synon = explode(",", $synonEntry);
+            } else {
+                $synon = array($synonEntry);
+            }
+            foreach($synon as $oldName) {
+                $key = trim($oldName);
+                $synonymList[$key] = $k;
+            }
+        }
+        $itisEntry = strtolower($entry[9]);
+        if(!empty($itisEntry)) {
+            if(strpos($itisEntry, ",") !== false) {
+                $itis = explode(",", $itisEntry);
+            } else {
+                $itis = array($itisEntry);
+            }        
+            foreach($itis as $oldName) {
+                $key = trim($oldName);
+                $synonymList[$key] = $k;
+            }
         }
     }
     # First check: Does the genus exist?
