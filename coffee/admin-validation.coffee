@@ -113,10 +113,15 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     doCallback(taxonObj)
     return false
   args = "action=validate&genus=#{taxonObj.genus}&species=#{taxonObj.species}"
+  if taxonObj.subspecies?
+    args += "&subspecies=#{taxonObj.subspecies}"
   $.post "api.php", args, "json"
   .done (result) ->
     if result.status
       # Success! Save validated taxon, and run callback
+      taxonObj.genus = result.validated_taxon.genus
+      taxonObj.species = result.validated_taxon.species
+      taxonObj.subspecies = result.validated_taxon.subspecies
       window.validationMeta.validatedTaxons.push taxonObj
     else
       taxonObj.invalid = true

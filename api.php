@@ -271,8 +271,36 @@ function doAWebValidate($get) {
         }
     }
     if(!array_key_exists($providedSpecies, $speciesList)) {
-        $response["error"] = "INVALID_SPECIES";
-        $response["human_error"] = "No species '$providedSpecies' isn't a valid AmphibiaWeb species in the genus '$providedGenus'";
+        # Are they using an old name?
+        $testSpecies = $providedGenus . " " . $providedSpecies;
+        if(!array_key_exists($testSpecies, $synonymList)) {
+            # Nope, just failed
+            $response["error"] = "INVALID_SPECIES";
+            $response["human_error"] = "No species '$providedSpecies' isn't a valid AmphibiaWeb species in the genus '$providedGenus'";
+            returnAjax($response);
+        }
+        # Let's play the synonym game again!
+        $row = $synonymList[$testSpecies];
+        $aWebMatch = $aWebListArray[$row];
+        $aWebCols = $aWebListArray[0];
+        $aWebPretty = array();
+        foreach($aWebMatch as $key=>$val) {
+            $prettyKey = $aWebCols[$key];
+            $prettyKey = str_replace("/", "_or_", $prettyKey);
+            if(strpos($val, ",") !== false) {
+                $val = explode(",", $val);
+                foreach($val as $k=>$v) {
+                    $val[$k] = trim($v);
+                }
+            }
+            $aWebPretty[$prettyKey] = $val;
+        }
+        if(empty($aWebPretty["subspecies"]) && !empty($get["subspecies"])) {
+            $aWebPretty["subspecies"] = $get["subspecies"];
+        }
+        $response["status"] = true;
+        # Note that Unicode characters may return escaped! eg, \u00e9.
+        $response["validated_taxon"] = $aWebPretty;
         returnAjax($response);
     }
     # The genus and species is valid.
