@@ -225,8 +225,20 @@ function doAWebValidate($get) {
                 $synon = explode(",", $synonEntry);
             } else {
                 $synon = array($synonEntry);
-            }        
+            }
             foreach($synon as $oldName) {
+                $key = trim($oldName);
+                $synonymList[$key] = $k;
+            }
+        }
+        $itisEntry = strtolower($entry[9]);
+        if(!empty($itisEntry)) {
+            if(strpos($itisEntry, ",") !== false) {
+                $itis = explode(",", $itisEntry);
+            } else {
+                $itis = array($itisEntry);
+            }        
+            foreach($itis as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
             }
