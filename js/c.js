@@ -1333,29 +1333,33 @@ getMapCenter = function(bb) {
   return center;
 };
 
-getMapZoom = function(bb) {
+getMapZoom = function(bb, selector) {
+  var adjAngle, angle, coords, eastMost, k, lat, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc;
+  if (selector == null) {
+    selector = geo.mapSelector;
+  }
 
   /*
    * Get the zoom factor for Google Maps
    */
-  var adjAngle, angle, coords, eastMost, k, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc;
   if (bb != null) {
     eastMost = -180;
     westMost = 180;
     for (k in bb) {
       coords = bb[k];
-      if (coords[1] < westMost) {
-        westMost = coords[1];
+      lat = coords.lat != null ? coords.lat : coords[1];
+      if (lat < westMost) {
+        westMost = lat;
       }
-      if (coords[1] > eastMost) {
-        eastMost = coords[1];
+      if (lat > eastMost) {
+        eastMost = lat;
       }
     }
     angle = eastMost - westMost;
     if (angle < 0) {
       angle += 360;
     }
-    mapWidth = (ref = $(geo.mapSelector).width()) != null ? ref : 650;
+    mapWidth = (ref = $(selector).width()) != null ? ref : 650;
     adjAngle = 360 / angle;
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE;
     zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);

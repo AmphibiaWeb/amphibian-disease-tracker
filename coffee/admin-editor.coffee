@@ -220,6 +220,9 @@ loadEditor = ->
                 <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
                 """
             mapHtml += "    </google-map-poly>"
+          #   zoom = """zoom="#{getMapZoom(poly.paths, "#transect-viewport")}" """
+          # else
+          #   zoom = ""
           # The actual HTML
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
@@ -298,7 +301,7 @@ loadEditor = ->
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
               <h4>Locality &amp; Transect Data</h4>
-                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers>
+                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
                   #{mapHtml}
                 </google-map>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
@@ -523,6 +526,9 @@ getProjectCartoData = (cartoObj) ->
     cartoData = cartoObj
   cartoTable = cartoData.table
   console.info "Working with Carto data base set", cartoData
+  zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
+  console.info "Got zoom", zoom
+  $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
   # The existence of the carto data will change the content in the
   # data upload card

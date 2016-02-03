@@ -987,7 +987,7 @@ getMapCenter = (bb) ->
   center
 
 
-getMapZoom = (bb) ->
+getMapZoom = (bb, selector = geo.mapSelector) ->
   ###
   # Get the zoom factor for Google Maps
   ###
@@ -995,14 +995,15 @@ getMapZoom = (bb) ->
     eastMost = -180
     westMost = 180
     for k, coords of bb
-      if coords[1] < westMost
-        westMost = coords[1]
-      if coords[1] > eastMost
-        eastMost = coords[1]
+      lat = if coords.lat? then coords.lat else coords[1]
+      if lat < westMost
+        westMost = lat
+      if lat > eastMost
+        eastMost = lat
     angle = eastMost - westMost
     if angle < 0
       angle += 360
-    mapWidth = $(geo.mapSelector).width() ? 650
+    mapWidth = $(selector).width() ? 650
     adjAngle = 360 / angle
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE
     # Calculate the zoom factor
