@@ -198,7 +198,7 @@ function doAWebValidate($get) {
     }
     
     //$aWebList = file_get_contents($localAWebTarget);
-    $aWebListArray = array_map("tsvHelper", $localAWebTarget);
+    $aWebListArray = array_map("tsvHelper", file($localAWebTarget));
     returnAjax($aWebListArray); # Testing
     
 }
