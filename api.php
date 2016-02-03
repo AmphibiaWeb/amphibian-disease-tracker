@@ -58,7 +58,7 @@ function returnAjax($data)
     header('Cache-Control: no-cache, must-revalidate');
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
     header('Content-type: application/json');
-    $json = json_encode($data, JSON_FORCE_OBJECT);
+    $json = json_encode($data, JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE);
     $replace_array = array('&quot;','&#34;');
     print str_replace($replace_array, '\\"', $json);
     exit();
@@ -252,9 +252,6 @@ function doAWebValidate($get) {
     foreach($aWebMatch as $key=>$val) {
         $prettyKey = $aWebCols[$key];
         $prettyKey = str_replace("/", "_or_", $prettyKey);
-        $val = preg_replace('/u(00[\da-fA-F]{2})/', '&#x$1;', $val);
-        # $val = preg_replace('/\\\\u([\da-fA-F]{4})/', '&#x$1;', $val);
-        $val = html_entity_decode($val);
         if(strpos($val, ",") !== false) {
             $val = explode(",", $val);
             foreach($val as $k=>$v) {
