@@ -584,7 +584,7 @@ getProjectCartoData = (cartoObj) ->
     <p>You can upload more data below, or replace this existing data.</p>
     """
     $("#data-card .card-content .variable-card-content").html html
-    $.post "meta.php", "do=get_last_mod&file=#{cartoData.raw_data.fileName}", "json"
+    $.get "meta.php", "do=get_last_mod&file=#{cartoData.raw_data.fileName}", "json"
     .done (result) ->
       time = result.last_mod
       console.log "Last modded", time, result
