@@ -1289,7 +1289,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
         unless isNull taxon.subspecies
           taxonString += " #{taxon.subspecies}"
         taxonListString += "\n#{taxonString}"
-      p$("#species-list").value = taxonListString
+      p$("#species-list").bindValue taxonListString
       dataAttrs.dataObj = validatedData
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
         mapOverlayPolygon validatedData.transectRing
@@ -1986,7 +1986,8 @@ validateData = (dataObject, callback = null) ->
     validateTaxonData dataObject, ->
       # When we're successful, run the dependent callback
       elapsed = Date.now() - timer
-      console.info "Validation took #{elapsed}ms"
+      console.info "Validation took #{elapsed}ms", dataObject
+      cleanupToasts()
       toastStatusMessage "Your dataset has been successfully validated"
       if typeof callback is "function"
         callback(dataObject)

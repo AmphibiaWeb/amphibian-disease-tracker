@@ -1264,7 +1264,7 @@ newGeoDataHandler = function(dataObject) {
         }
         taxonListString += "\n" + taxonString;
       }
-      p$("#species-list").value = taxonListString;
+      p$("#species-list").bindValue(taxonListString);
       dataAttrs.dataObj = validatedData;
       return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table) {
         return mapOverlayPolygon(validatedData.transectRing);
@@ -1786,7 +1786,8 @@ validateData = function(dataObject, callback) {
     return validateTaxonData(dataObject, function() {
       var elapsed;
       elapsed = Date.now() - timer;
-      console.info("Validation took " + elapsed + "ms");
+      console.info("Validation took " + elapsed + "ms", dataObject);
+      cleanupToasts();
       toastStatusMessage("Your dataset has been successfully validated");
       if (typeof callback === "function") {
         return callback(dataObject);

@@ -27,7 +27,8 @@ validateData = (dataObject, callback = null) ->
     validateTaxonData dataObject, ->
       # When we're successful, run the dependent callback
       elapsed = Date.now() - timer
-      console.info "Validation took #{elapsed}ms"
+      console.info "Validation took #{elapsed}ms", dataObject
+      cleanupToasts()
       toastStatusMessage "Your dataset has been successfully validated"
       if typeof callback is "function"
         callback(dataObject)
