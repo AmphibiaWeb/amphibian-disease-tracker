@@ -1907,6 +1907,11 @@ getProjectCartoData = (cartoObj) ->
     .done (result) ->
       time = result.last_mod
       console.log "Last modded", time
+      t = new Date(time)
+      iso = t.toISOString()
+      
+      timeString = "#{iso.slice(0, iso.search("T"))} #{t.toTimeString().split(" ")[0]}"
+      $("#last-modified-file").text "Last uploaded on #{timeString}."
       false
     .fail (result, status) ->
       # We don't really care, actually.
