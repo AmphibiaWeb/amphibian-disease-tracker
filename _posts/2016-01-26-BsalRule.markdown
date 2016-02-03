@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "The US takes action to ward of salamander disease crisis"
+title:  "The US takes action to ward off salamander disease crisis"
 date:   2016-01-26 08:43:59
 author: Tiffany Yap
 categories: News
