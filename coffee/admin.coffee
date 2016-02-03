@@ -1289,7 +1289,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
         unless isNull taxon.subspecies
           taxonString += " #{taxon.subspecies}"
         taxonListString += "\n#{taxonString}"
-      p$("#species-list").value = taxonListString
+      p$("#species-list").bindValue taxonListString
       dataAttrs.dataObj = validatedData
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
         mapOverlayPolygon validatedData.transectRing
