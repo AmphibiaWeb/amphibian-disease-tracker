@@ -183,7 +183,16 @@ function doAWebValidate($get) {
     $amphibiaWebListTarget = "http://amphibiaweb.org/amphib_names.txt";
     $localAWebTarget = dirname(__FILE__) . "/aweb_list.txt";
     $dayOffset = 60 * 60 * 24;
-    $response = array();
+    $response = array(
+        "status" => false,
+        "args_provided" => $get,
+    );
+    # We need, at minimum, genus and species
+    if(empty($get["genus"]) or empty($get["species"])) {
+        $response["error"] = "MISSING_ARGUMENTS";
+        $response["human_error"] = "You need to provide both a genus and species to validate";
+        returnAjax($response);
+    }
     # How old is our copy?
     if (filemtime($localAWebTarget) + $dayOffset < time()) {
         # Fetch a new copy
@@ -199,6 +208,52 @@ function doAWebValidate($get) {
     
     //$aWebList = file_get_contents($localAWebTarget);
     $aWebListArray = array_map("tsvHelper", file($localAWebTarget));
-    returnAjax($aWebListArray); # Testing
+    /*
+     * For a given row, we have this numeric key to real id mapping:
+     *
+     * Object {0: "order", 1: "family", 2: "subfamily", 3: "genus", 4: "subgenus", 5: "species", 6: "common_name", 7: "gaa_name", 8: "synonymies", 9: "itis_names", 10: "iucn", 11: "isocc", 12: "intro_isocc", 13: "aweb_uid", 14: "uri/guid", 15: "taxon_notes_public"}
+     */
+    $genusList = array();
+    foreach($aWebListArray as $k=>$entry) {
+        if($k == 0) continue; # Prevent match on "genus"
+        $genus = strtolower($entry[3]);
+        $genusList[] = $genus;
+    }
+    # First check: Does the genus exist?
+    $providedGenus = strtolower($get["genus"]);
+    if (!in_array($providedGenus, $genusList)) {
+        $response["error"] = "INVALID_GENUS";
+        $response["human_error"] = "'$providedGenus' isn't a valid AmphibiaWeb genus";
+        returnAjax($response);
+    }
+    # Cool, so the genus exists. 
+    $providedSpecies = strtolower($get["species"]);
+    $speciesList = array();
+    foreach($aWebListArray as $row=>$entry) {
+        if($row == 0) continue; # Prevent match on "species"
+        $genus = strtolower($entry[3]);
+        if($genus == $providedGenus) {
+            $species = $entry[5];
+            $speciesList[$species] = $row;            
+        }
+    }    
+    if(!array_key_exists($providedSpecies, $speciesList)) {
+        $response["error"] = "INVALID_SPECIES";
+        $response["human_error"] = "No species '$providedSpecies' isn't a valid AmphibiaWeb species in the genus '$providedGenus'";
+        returnAjax($response);
+    }
+    # The genus and species is valid.
+    # Prep for the user response
+    $aWebRow = $speciesList[$providedSpecies];    
+    $aWebMatch = $aWebListArray[$aWebRow];
+    $aWebCols = $aWebListArray[0];
+    $aWebPretty = array();
+    foreach($aWebMatch as $key=>$val) {
+        $prettyKey = $aWebCols[$key];
+        $aWebPretty[$prettyKey] = $val;
+    }
+    $response["status"] = true;
+    $response["validated_taxon"] = $aWebPretty;
+    returnAjax($response);
     
 }
