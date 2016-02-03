@@ -1639,14 +1639,15 @@ getProjectCartoData = function(cartoObj) {
   console.info("Got zoom", zoom);
   $("#transect-viewport").attr("zoom", zoom);
   toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable;
-  console.info("Would ping", cartoQuery);
+  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
+  console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=upload&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
     console.info("Carto query got result:", result);
     return stopLoad();
   }).fail(function(result, status) {
+    console.error("Couldn't talk to back end server to ping carto!");
     return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
   });
   if (cartoData.raw_data.hasDataFile) {

@@ -528,8 +528,8 @@ getProjectCartoData = (cartoObj) ->
   $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM #{cartoTable}"
-  console.info "Would ping", cartoQuery
+  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=upload&sql_query=#{apiPostSqlQuery}"
   $.post "api.php", args, "json"
@@ -538,6 +538,7 @@ getProjectCartoData = (cartoObj) ->
     # Fill the points as markers
     stopLoad()
   .fail (result, status) ->
+    console.error "Couldn't talk to back end server to ping carto!"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
   if cartoData.raw_data.hasDataFile
     # We already have a data file
