@@ -202,6 +202,24 @@ loadEditor = ->
             console.error "Couldn't parse the carto JSON!", project.carto_id
             stopLoadError "We couldn't parse your data. Please try again later."
             cartoParsed = new Object()
+          mapHtml = ""
+          if cartoParsed.bounding_polygon?.paths?
+            # Draw a map web component
+            # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
+            # https://elements.polymer-project.org/elements/google-map
+            # Poly is cartoParsed.bounding_polygon.paths
+            poly = cartoParsed.bounding_polygon
+            mapHtml = """
+            <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
+            """
+            usedPoints = new Array()
+            for point in poly.paths
+              unless point in usedPoints
+                usedPoints.push point
+                mapHtml += """
+                <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+                """
+            mapHtml += "    </google-map-poly>"
           # The actual HTML
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
@@ -280,7 +298,8 @@ loadEditor = ->
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
               <h4>Locality &amp; Transect Data</h4>
-                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}">
+                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers>
+                  #{mapHtml}
                 </google-map>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
@@ -504,25 +523,6 @@ getProjectCartoData = (cartoObj) ->
     cartoData = cartoObj
   cartoTable = cartoData.table
   console.info "Working with Carto data base set", cartoData
-  # Update map poly
-  if cartoData.bounding_polygon?.paths?
-    # Draw a map web component
-    # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
-    # https://elements.polymer-project.org/elements/google-map
-    # Poly is cartoData.bounding_polygon.paths
-    poly = cartoData.bounding_polygon
-    mapHtml = """
-    <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
-    """
-    usedPoints = new Array()
-    for point in poly.paths
-      unless point in usedPoints
-        usedPoints.push point
-        mapHtml += """
-        <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
-        """
-    mapHtml += "    </google-map-poly>"
-    $("#transect-viewport").append mapHtml
   # Ping Carto on this and get the data
   # The existence of the carto data will change the content in the
   # data upload card

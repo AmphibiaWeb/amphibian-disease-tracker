@@ -7033,6 +7033,19 @@ paper-dialog-scrollable {
 html >>> .capitalize {
   text-transform: capitalize;
 }
+#outdated-warning {
+  position: fixed;
+  top: 0;
+  width: 50%;
+  margin: 0;
+  left: 25%;
+}
+@media (max-width: 767px) {
+  #outdated-warning {
+    width: 80%;
+    left: 10%;
+  }
+}
 .fixed-bar {
   position: fixed;
   margin-top: 0px !important;
@@ -7316,6 +7329,7 @@ iron-autogrow-textarea.project-field {
 }
 .media-upload-target {
   width: 80%;
+  min-height: 5rem;
 }
 @media (min-width: 992px) {
   #user-setter-dialog,
@@ -7360,4 +7374,7 @@ iron-autogrow-textarea.project-field {
 }
 .user-search-result:hover {
   background: #eee;
+}
+google-map#transect-viewport {
+  height: 45vh;
 }
