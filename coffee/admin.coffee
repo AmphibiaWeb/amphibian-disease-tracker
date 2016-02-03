@@ -795,7 +795,7 @@ getCanonicalDataCoords = (table, callback = mapAddPoints) ->
 
 
 
-bootstrapUploader = (uploadFormId = "file-uploader") ->
+bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   ###
   # Bootstrap the file uploader into existence
   ###
@@ -805,7 +805,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
   unless $(selector).exists()
     # Create it
     html = """
-    <form id="#{uploadFormId}-form" class="col-md-4 clearfix">
+    <form id="#{uploadFormId}-form" class="#{bsColWidth} clearfix">
       <p class="visible-xs-block">Tap the button to upload a file</p>
       <fieldset class="hidden-xs">
         <legend>Upload Files</legend>
@@ -815,6 +815,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
     </form>
     """
     $("main #uploader-container-section").append html
+    console.info "Appended upload form"
     $(selector).submit (e) ->
       e.preventDefault()
       e.stopPropagation()

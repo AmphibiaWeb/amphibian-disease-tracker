@@ -795,7 +795,7 @@ getCanonicalDataCoords = (table, callback = mapAddPoints) ->
 
 
 
-bootstrapUploader = (uploadFormId = "file-uploader") ->
+bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   ###
   # Bootstrap the file uploader into existence
   ###
@@ -805,7 +805,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
   unless $(selector).exists()
     # Create it
     html = """
-    <form id="#{uploadFormId}-form" class="col-md-4 clearfix">
+    <form id="#{uploadFormId}-form" class="#{bsColWidth} clearfix">
       <p class="visible-xs-block">Tap the button to upload a file</p>
       <fieldset class="hidden-xs">
         <legend>Upload Files</legend>
@@ -815,6 +815,7 @@ bootstrapUploader = (uploadFormId = "file-uploader") ->
     </form>
     """
     $("main #uploader-container-section").append html
+    console.info "Appended upload form"
     $(selector).submit (e) ->
       e.preventDefault()
       e.stopPropagation()
@@ -1544,12 +1545,13 @@ loadEditor = ->
           <section id="data-management" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Data" elevation="2" id="data-card">
               <div class="card-content">
+                <div class="variable-card-content">
                 Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
-                <br/><br/>
+                </div>
                 Uploader here
                 <br/><br/>
                 Should affix itself to the top  of the window when scrolling.
-                <div>
+                <div id="append-replace-data-toggle">
                   <span class="toggle-off-label iron-label">Append Data</span>
                   <paper-toggle-button id="replace-data-toggle" checked>Replace Data</paper-toggle-button>
                 </div>
@@ -1584,6 +1586,8 @@ loadEditor = ->
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
               <h4>Locality &amp; Transect Data</h4>
+                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}">
+                </google-map>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
@@ -1637,7 +1641,6 @@ loadEditor = ->
               $(this).find("iron-icon").addClass("material-red")
             else
               $(this).find("iron-icon").removeClass("material-red")
-          # bootstrapUploader("data-card")
           # Load more detailed data from CartoDB
           getProjectCartoData project.carto_id
         catch e
@@ -1807,10 +1810,46 @@ getProjectCartoData = (cartoObj) ->
     cartoData = cartoObj
   cartoTable = cartoData.table
   console.info "Working with Carto data base set", cartoData
+  # Update map poly
+  if cartoData.bounding_polygon?.paths?
+    # Draw a map web component
+    # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
+    # https://elements.polymer-project.org/elements/google-map
+    # Poly is cartoData.bounding_polygon.paths
+    poly = cartoData.bounding_polygon
+    mapHtml = """
+    <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
+    """
+    usedPoints = new Array()
+    for point in poly.paths
+      unless point in usedPoints
+        usedPoints.push point
+        mapHtml += """
+        <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+        """
+    mapHtml += "    </google-map-poly>"
+    $("#transect-viewport").append mapHtml
   # Ping Carto on this and get the data
   # The existence of the carto data will change the content in the
   # data upload card
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
+  # Fill download button
+  # File data is in cartoData.raw_data
+  if cartoData.raw_data.hasDataFile
+    # We already have a data file
+    html = """
+    <p>
+      Your project already has data associated with it.
+    </p>
+    <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{cartoData.raw_data.filePath}"><iron-icon icon="icons:download"></iron-icon> Download File</button>
+    <p>You can upload more data below, or replace this existing data.</p>
+    """
+    $("#data-card .card-content .variable-card-content").html html
+  else
+    # We don't already have a data file
+    $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
+    $("#append-replace-data-toggle").attr "hidden", "hidden"
+  bootstrapUploader("data-card-uploader", "")
   stopLoad()
   false
 
