@@ -1697,7 +1697,7 @@ getProjectCartoData = function(cartoObj) {
     $("#data-card .card-content .variable-card-content").html(html);
     $.get("meta.php", "do=get_last_mod&file=" + cartoData.raw_data.fileName, "json").done(function(result) {
       var iso, t, time, timeString;
-      time = result.last_mod;
+      time = toInt(result.last_mod) * 1000;
       console.log("Last modded", time, result);
       if (isNumber(time)) {
         t = new Date(time);
