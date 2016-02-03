@@ -1569,9 +1569,6 @@ loadEditor = ->
                 <div class="variable-card-content">
                 Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
                 </div>
-                Uploader here
-                <br/><br/>
-                Should affix itself to the top  of the window when scrolling.
                 <div id="append-replace-data-toggle">
                   <span class="toggle-off-label iron-label">Append Data</span>
                   <paper-toggle-button id="replace-data-toggle" checked>Replace Data</paper-toggle-button>
@@ -1836,18 +1833,15 @@ getProjectCartoData = (cartoObj) ->
   console.info "Got zoom", zoom
   $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
-  # The existence of the carto data will change the content in the
-  # data upload card
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
-  # Fill download button
-  # File data is in cartoData.raw_data
+  # Fill the points as markers
   if cartoData.raw_data.hasDataFile
     # We already have a data file
     html = """
     <p>
       Your project already has data associated with it.
     </p>
-    <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{cartoData.raw_data.filePath}"><iron-icon icon="icons:download"></iron-icon> Download File</button>
+    <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{cartoData.raw_data.fileName}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
     <p>You can upload more data below, or replace this existing data.</p>
     """
     $("#data-card .card-content .variable-card-content").html html
