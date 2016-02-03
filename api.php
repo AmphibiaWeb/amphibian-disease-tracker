@@ -252,7 +252,8 @@ function doAWebValidate($get) {
     foreach($aWebMatch as $key=>$val) {
         $prettyKey = $aWebCols[$key];
         $prettyKey = str_replace("/", "_or_", $prettyKey);
-        $val = preg_replace('/\\\\u([\da-fA-F]{4})/', '&#x$1;', $val);
+        $val = preg_replace('/u(00[\da-fA-F]{2})/', '&#x$1;', $val);
+        # $val = preg_replace('/\\\\u([\da-fA-F]{4})/', '&#x$1;', $val);
         $val = html_entity_decode($val);
         if(strpos($val, ",") !== false) {
             $val = explode(",", $val);
