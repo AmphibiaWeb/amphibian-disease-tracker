@@ -123,7 +123,7 @@ function doCartoSqlApiPush($get)
         $cartoTable = preg_replace('/(?i)SELECT .*FROM[ `]*(t[0-9a-f]*_[0-9a-f]*)[ `]*.*;/m', '$1', $sqlQuery);
         $accessListLookupQuery = "SELECT `author`, `access_data` FROM `" . $db->getTable() . "` WHERE `carto_id` LIKE '%" . $cartoTable . "%'";
         $l = $db->openDB();
-        $r = mysqli_query($l, $query);
+        $r = mysqli_query($l, $accessListLookupQuery);
         $row = mysqli_fetch_assoc($r);
         $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row["access_data"]);
         $users = explode(",", $csvString);
