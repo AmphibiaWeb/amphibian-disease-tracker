@@ -1258,7 +1258,7 @@ oa.googleOAuthCallback = function(googleClient) {
   try {
     profile = googleClient != null ? googleClient.getBasicProfile() : void 0;
   } catch (_error) {}
-  if (profile == null) {
+  if (profile != null) {
     console.info("Profile", profile);
     name = profile.getName();
     email = profile.getEmail();
