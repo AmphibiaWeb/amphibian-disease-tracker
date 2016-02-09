@@ -73,7 +73,7 @@ class Google_Cache_File implements CacheInterface
     if ($this->acquireReadLock($storageFile)) {
       if (filesize($storageFile) > 0) {
         $data = fread($this->fh, filesize($storageFile));
-        $data =  unserialize($data);
+        $data = unserialize($data);
       } else {
         $this->log(
             'debug',
@@ -81,7 +81,7 @@ class Google_Cache_File implements CacheInterface
             array('file' => $storageFile)
         );
       }
-      $this->unlock($storageFile);
+      $this->unlock();
     }
 
     $this->log(
@@ -100,8 +100,8 @@ class Google_Cache_File implements CacheInterface
       // We serialize the whole request object, since we don't only want the
       // responseContent but also the postBody used, headers, size, etc.
       $data = serialize($value);
-      $result = fwrite($this->fh, $data);
-      $this->unlock($storageFile);
+      fwrite($this->fh, $data);
+      $this->unlock();
 
       $this->log(
           'debug',
@@ -151,7 +151,9 @@ class Google_Cache_File implements CacheInterface
     // use the first 2 characters of the hash as a directory prefix
     // this should prevent slowdowns due to huge directory listings
     // and thus give some basic amount of scalability
-    $storageDir = $this->path . '/' . substr(md5($file), 0, 2);
+    $dirHash = substr(md5($file), 0, 2);
+    // trim the directory separator from the path to prevent double separators
+    $storageDir = rtrim($this->path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $dirHash;
     if ($forWrite && ! is_dir($storageDir)) {
       if (! mkdir($storageDir, 0700, true)) {
         $this->log(
@@ -210,7 +212,7 @@ class Google_Cache_File implements CacheInterface
     return true;
   }
 
-  public function unlock($storageFile)
+  public function unlock()
   {
     if ($this->fh) {
       flock($this->fh, LOCK_UN);

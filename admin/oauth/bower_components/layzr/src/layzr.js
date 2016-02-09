@@ -1,157 +1,127 @@
-'use strict';
+import knot from 'knot.js'
 
-// CONSTRUCTOR
+export default (options = {}) => {
+  // private
 
-function Layzr(options) {
-  // debounce
-  this._lastScroll = 0;
-  this._ticking    = false;
+  let prevLoc = getLoc()
+  let ticking
+
+  let nodes
+  let windowHeight
 
   // options
-  options = options || {};
 
-  this._optionsContainer  = document.querySelector(options.container) || window;
-  this._optionsSelector   = options.selector || '[data-layzr]';
-  this._optionsAttr       = options.attr || 'data-layzr';
-  this._optionsAttrRetina = options.retinaAttr || 'data-layzr-retina';
-  this._optionsAttrBg     = options.bgAttr || 'data-layzr-bg';
-  this._optionsAttrHidden = options.hiddenAttr || 'data-layzr-hidden';
-  this._optionsThreshold  = options.threshold || 0;
-  this._optionsCallback   = options.callback || null;
-
-  // properties
-  this._retina  = window.devicePixelRatio > 1;
-  this._srcAttr = this._retina ? this._optionsAttrRetina : this._optionsAttr;
-
-  // nodelist
-  this._nodes = document.querySelectorAll(this._optionsSelector);
-
-  // scroll and resize handler
-  this._handlerBind = this._requestScroll.bind(this);
-
-  // call to create
-  this._create();
-}
-
-// DEBOUNCE HELPERS
-// adapted from: http://www.html5rocks.com/en/tutorials/speed/animations/
-
-Layzr.prototype._requestScroll = function() {
-  if(this._optionsContainer === window) {
-    this._lastScroll = window.pageYOffset;
-  }
-  else {
-    this._lastScroll = this._optionsContainer.scrollTop + this._getOffset(this._optionsContainer);
+  const settings = {
+    normal: options.normal || 'data-normal',
+    retina: options.retina || 'data-retina',
+    srcset: options.srcset || 'data-srcset',
+    threshold: options.threshold || 0
   }
 
-  this._requestTick();
-};
+  // feature detection
+  // https://github.com/Modernizr/Modernizr/blob/master/feature-detects/img/srcset.js
 
-Layzr.prototype._requestTick = function() {
-  if(!this._ticking) {
-    requestAnimationFrame(this.update.bind(this));
-    this._ticking = true;
-  }
-};
+  const srcset = document.body.classList.contains('srcset') || 'srcset' in document.createElement('img')
 
-// OFFSET HELPER
-// remember, getBoundingClientRect is relative to the viewport
+  // device pixel ratio
+  // not supported in IE10 - https://msdn.microsoft.com/en-us/library/dn265030(v=vs.85).aspx
 
-Layzr.prototype._getOffset = function(node) {
-  return node.getBoundingClientRect().top + window.pageYOffset;
-};
+  const dpr = window.devicePixelRatio || window.screen.deviceXDPI / window.screen.logicalXDPI
 
-// HEIGHT HELPER
+  // instance
 
-Layzr.prototype._getContainerHeight = function() {
-  return this._optionsContainer.innerHeight
-      || this._optionsContainer.offsetHeight;
-}
+  const instance = knot({
+    handlers: handlers,
+    check: check,
+    update: update
+  })
 
-// LAYZR METHODS
+  return instance
 
-Layzr.prototype._create = function() {
-  // fire scroll event once
-  this._handlerBind();
+  // location helper
 
-  // bind scroll and resize event
-  this._optionsContainer.addEventListener('scroll', this._handlerBind, false);
-  this._optionsContainer.addEventListener('resize', this._handlerBind, false);
-};
-
-Layzr.prototype._destroy = function() {
-  // unbind scroll and resize event
-  this._optionsContainer.removeEventListener('scroll', this._handlerBind, false);
-  this._optionsContainer.removeEventListener('resize', this._handlerBind, false);
-};
-
-Layzr.prototype._inViewport = function(node) {
-  // get viewport top and bottom offset
-  var viewportTop = this._lastScroll;
-  var viewportBottom = viewportTop + this._getContainerHeight();
-
-  // get node top and bottom offset
-  var nodeTop = this._getOffset(node);
-  var nodeBottom = nodeTop + this._getContainerHeight();
-
-  // calculate threshold, convert percentage to pixel value
-  var threshold = (this._optionsThreshold / 100) * window.innerHeight;
-
-  // return if node in viewport
-  return nodeBottom >= viewportTop - threshold
-      && nodeTop <= viewportBottom + threshold
-      && !node.hasAttribute(this._optionsAttrHidden);
-};
-
-Layzr.prototype._reveal = function(node) {
-  // get node source
-  var source = node.getAttribute(this._srcAttr) || node.getAttribute(this._optionsAttr);
-
-  // set node src or bg image
-  if(node.hasAttribute(this._optionsAttrBg)) {
-    node.style.backgroundImage = 'url(' + source + ')';
-  }
-  else {
-    node.setAttribute('src', source);
+  function getLoc() {
+    return window.scrollY || window.pageYOffset
   }
 
-  // call the callback
-  if(typeof this._optionsCallback === 'function') {
-    // "this" will be the node in the callback
-    this._optionsCallback.call(node);
+  // debounce helpers
+
+  function requestScroll() {
+    prevLoc = getLoc()
+    requestFrame()
   }
 
-  // remove node data attributes
-  node.removeAttribute(this._optionsAttr);
-  node.removeAttribute(this._optionsAttrRetina);
-  node.removeAttribute(this._optionsAttrBg);
-  node.removeAttribute(this._optionsAttrHidden);
-};
-
-Layzr.prototype.updateSelector = function() {
-  // update cached list of nodes matching selector
-  this._nodes = document.querySelectorAll(this._optionsSelector);
-};
-
-Layzr.prototype.update = function() {
-  // cache nodelist length
-  var nodesLength = this._nodes.length;
-
-  // loop through nodes
-  for(var i = 0; i < nodesLength; i++) {
-    // cache node
-    var node = this._nodes[i];
-
-    // check if node has mandatory attribute
-    if(node.hasAttribute(this._optionsAttr)) {
-      // check if node in viewport
-      if(this._inViewport(node)) {
-        // reveal node
-        this._reveal(node);
-      }
+  function requestFrame() {
+    if(!ticking) {
+      requestAnimationFrame(() => check())
+      ticking = true
     }
   }
 
-  // allow for more animation frames
-  this._ticking = false;
-};
+  // offset helper
+
+  function getOffset(node) {
+    return node.getBoundingClientRect().top + prevLoc
+  }
+
+  // in viewport helper
+
+  function inViewport(node) {
+    const viewTop = prevLoc
+    const viewBot = viewTop + windowHeight
+
+    const nodeTop = getOffset(node)
+    const nodeBot = nodeTop + node.offsetHeight
+
+    const offset = (settings.threshold / 100) * windowHeight
+
+    return nodeBot >= viewTop - offset
+        && nodeTop <= viewBot + offset
+  }
+
+  // source helper
+
+  function setSource(node) {
+    instance.emit('src:before', node)
+
+    // prefer srcset, fallback to pixel density
+    if(srcset && node.hasAttribute(settings.srcset)) {
+      node.setAttribute('srcset', node.getAttribute(settings.srcset))
+    }
+    else {
+      const retina = dpr > 1 && node.getAttribute(settings.retina)
+      node.setAttribute('src', retina || node.getAttribute(settings.normal))
+    }
+
+    instance.emit('src:after', node)
+
+    ;[settings.normal, settings.retina, settings.srcset].forEach(attr => node.removeAttribute(attr))
+
+    update()
+  }
+
+  // API
+
+  function handlers(flag) {
+    const action = flag
+      ? 'addEventListener'
+      : 'removeEventListener'
+
+    ;['scroll', 'resize'].forEach(event => window[action](event, requestScroll))
+    return this
+  }
+
+  function check() {
+    windowHeight = window.innerHeight
+
+    nodes.forEach(node => inViewport(node) && setSource(node))
+
+    ticking = false
+    return this
+  }
+
+  function update() {
+    nodes = Array.prototype.slice.call(document.querySelectorAll(`[${ settings.normal }]`))
+    return this
+  }
+}
