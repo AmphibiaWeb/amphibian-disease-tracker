@@ -112,8 +112,45 @@ function checkColumnExists($column_list)
 
 function doCartoSqlApiPush($get)
 {
-    global $cartodb_username, $cartodb_api_key;
+    global $cartodb_username, $cartodb_api_key, $db;
     $sqlQuery = decode64($get['sql_query']);
+    # If it's a "SELECT" style statement, make sure the accessing user
+    # has permissions to read this dataset
+    $searchSql = strtolower($sqlQuery);
+    if(strpos($searchSql, "select") !== false) {
+        # Check the user
+        # If bad, kick the access out
+        $cartoTable = preg_replace('/(?i)SELECT .*FROM[ `]*(t[0-9a-f]*_[0-9a-f]*)[ `]*.*;/m', '$1', $sqlQuery);
+        $accessListLookupQuery = "SELECT `author`, `access_data` FROM `" . $db->getTable() . "` WHERE `carto_id` LIKE '%" . $cartoTable . "%'";
+        $l = $db->openDB();
+        $r = mysqli_query($l, $accessListLookupQuery);
+        $row = mysqli_fetch_assoc($r);
+        $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row["access_data"]);
+        $users = explode(",", $csvString);
+        $users[] = $row["author"];
+        # Get current user ID
+        require_once(dirname(__FILE__)."/admin/async_login_handler.php");
+        $login_status = getLoginState($get);
+        if($login_status["status"] !== true) {
+            $response = array(
+                "status" => false,
+                "error" => "NOT_LOGGED_IN",
+                "human_error" => "Attempted to read from table `$cartoTable` without being logged in",
+                "args_provided" => $get,
+            );
+            returnAjax($response);
+        }
+        $uid = $login_status["detail"]["uid"];
+        if(!in_array($uid, $users)) {
+            $response = array(
+                "status" => false,
+                "error" => "UNAUTHORIZED_USER",
+                "human_error" => "User $uid isn't authorized to access this dataset",
+                "args_provided" => $get,
+            );
+            returnAjax($response);            
+        }
+    }
     if (empty($sqlQuery)) {
         returnAjax(array(
         'status' => false,

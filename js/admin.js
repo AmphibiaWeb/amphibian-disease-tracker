@@ -171,7 +171,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref, uniqueId;
+  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref, taxonData, uniqueId;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -228,6 +228,9 @@ finalizeData = function() {
   uniqueId = md5("" + geo.dataTable + postData.author + (Date.now()));
   postData.project_id = uniqueId;
   postData["public"] = p$("#data-encumbrance-toggle").checked;
+  taxonData = _adp.data.taxa.validated;
+  postData.sampled_clades = _adp.data.taxa.clades.join(",");
+  postData.sampled_species = _adp.data.taxa.list.join(",");
   args = "perform=new&data=" + (jsonTo64(postData));
   console.info("Data object constructed:", postData);
   return $.post(adminParams.apiTarget, args, "json").done(function(result) {
@@ -1264,8 +1267,10 @@ newGeoDataHandler = function(dataObject) {
       samples: samplesMeta
     };
     validateData(totalData, function(validatedData) {
-      var i, l, len, ref, taxon, taxonListString, taxonString;
+      var cladeList, i, l, len, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
+      taxonList = new Array();
+      cladeList = new Array();
       i = 0;
       ref = validatedData.validated_taxa;
       for (l = 0, len = ref.length; l < len; l++) {
@@ -1278,10 +1283,19 @@ newGeoDataHandler = function(dataObject) {
           taxonListString += "\n";
         }
         taxonListString += "" + taxonString;
+        taxonList.push(taxonString);
+        if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
+          cladeList.push(taxon.response.validated_taxon.family);
+        }
         ++i;
       }
       p$("#species-list").bindValue = taxonListString;
       dataAttrs.dataObj = validatedData;
+      _adp.data.dataObj = validatedData;
+      _adp.data.taxa = new Object();
+      _adp.data.taxa.list = taxonList;
+      _adp.data.taxa.clades = cladeList;
+      _adp.data.taxa.validated = validatedData.validated_taxa;
       return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table) {
         return mapOverlayPolygon(validatedData.transectRing);
       });

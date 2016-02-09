@@ -316,6 +316,9 @@ finalizeData = ->
   postData.project_id = uniqueId
   # Public or private?
   postData.public = p$("#data-encumbrance-toggle").checked
+  taxonData = _adp.data.taxa.validated
+  postData.sampled_clades = _adp.data.taxa.clades.join ","
+  postData.sampled_species = _adp.data.taxa.list.join ","
   args = "perform=new&data=#{jsonTo64(postData)}"
   console.info "Data object constructed:", postData
   $.post adminParams.apiTarget, args, "json"
@@ -1294,6 +1297,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
     validateData totalData, (validatedData) ->
       # Save the upload
       taxonListString = ""
+      taxonList = new Array()
+      cladeList = new Array()
       i = 0
       for taxon in validatedData.validated_taxa
         taxonString = "#{taxon.genus} #{taxon.species}"
@@ -1302,9 +1307,17 @@ newGeoDataHandler = (dataObject = new Object()) ->
         if i > 0
           taxonListString += "\n"
         taxonListString += "#{taxonString}"
+        taxonList.push taxonString
+        unless taxon.response.validated_taxon.family in cladeList
+          cladeList.push taxon.response.validated_taxon.family
         ++i
       p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData
+      _adp.data.dataObj = validatedData
+      _adp.data.taxa = new Object()
+      _adp.data.taxa.list = taxonList
+      _adp.data.taxa.clades = cladeList
+      _adp.data.taxa.validated = validatedData.validated_taxa
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
         mapOverlayPolygon validatedData.transectRing
         # getCanonicalDataCoords(table)
