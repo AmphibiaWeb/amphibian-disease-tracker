@@ -42,7 +42,7 @@ oa.googleOAuthCallback = (googleClient) ->
   console.info "Google said", googleClient
   try
     profile =  googleClient?.getBasicProfile()
-  unless profile?
+  if profile?
     console.info "Profile", profile
     name = profile.getName()
     email = profile.getEmail()
