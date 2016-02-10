@@ -20,6 +20,11 @@ header('Access-Control-Allow-Origin: *');
 
 $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
+require_once(dirname(__FILE__)."/admin/async_login_handler.php");
+
+$udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
+$login_status = getLoginState($get);
+
 $start_script_timer = microtime_float();
 
 $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
@@ -49,26 +54,26 @@ if (!function_exists('elapsed')) {
     }
 }
 
-function returnAjax($data)
-{
-    /***
-     * Return the data as a JSON object
-     *
-     * @param array $data
-     *
-     ***/
-    if (!is_array($data)) {
-        $data = array($data);
-    }
-    $data['execution_time'] = elapsed();
-    header('Cache-Control: no-cache, must-revalidate');
-    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-    header('Content-type: application/json');
-    $json = json_encode($data, JSON_FORCE_OBJECT); #  | JSON_UNESCAPED_UNICODE
-    $replace_array = array('&quot;','&#34;');
-    print str_replace($replace_array, '\\"', $json);
-    exit();
-}
+// function returnAjax($data)
+// {
+//     /***
+//      * Return the data as a JSON object
+//      *
+//      * @param array $data
+//      *
+//      ***/
+//     if (!is_array($data)) {
+//         $data = array($data);
+//     }
+//     $data['execution_time'] = elapsed();
+//     header('Cache-Control: no-cache, must-revalidate');
+//     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+//     header('Content-type: application/json');
+//     $json = json_encode($data, JSON_FORCE_OBJECT); #  | JSON_UNESCAPED_UNICODE
+//     $replace_array = array('&quot;','&#34;');
+//     print str_replace($replace_array, '\\"', $json);
+//     exit();
+// }
 
 # parse_str($_SERVER['QUERY_STRING'],$_POST);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
@@ -118,7 +123,7 @@ function checkColumnExists($column_list)
 
 function doCartoSqlApiPush($get)
 {
-    global $cartodb_username, $cartodb_api_key, $db;
+global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
     $sqlQuery = decode64($get['sql_query']);
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
@@ -135,8 +140,6 @@ function doCartoSqlApiPush($get)
         $users = explode(",", $csvString);
         $users[] = $row["author"];
         # Get current user ID
-        require_once(dirname(__FILE__)."/admin/async_login_handler.php");
-        $login_status = getLoginState($get);
         if($login_status["status"] !== true) {
             $response = array(
                 "status" => false,
