@@ -153,7 +153,8 @@ data-onfailure='onFailureCallback'>
         catch(Exception $e)
           {
             // oauth2
-              require_once 'lib/google-php-client/vendor/autoload.php';
+              require_once 'lib/vendor/autoload.php';
+              # require_once 'lib/google-php-client/vendor/autoload.php';
               # require_once 'lib/google-php-client/src/Google/Service/Oauth2.php';
             $client = new Google_Client();
             $client->setApplicationName($sitename." Login");
