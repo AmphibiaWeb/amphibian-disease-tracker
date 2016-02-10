@@ -5,7 +5,7 @@
  * Setup
  *****************/
 
-$show_debug = true;
+# $show_debug = true;
 
 if($show_debug) {
 error_reporting(E_ALL);
