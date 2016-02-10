@@ -5,7 +5,13 @@
  * Setup
  *****************/
 
-#$show_debug = true;
+$show_debug = true;
+
+if($show_debug) {
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+error_log("Login is running in debug mode!");
+}
 
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
