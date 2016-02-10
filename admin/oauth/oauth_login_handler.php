@@ -92,7 +92,8 @@ default:
 }
 
 function authGoogle($get) {
-    require_once 'lib/google-php-client/vendor/autoload.php';
+    require_once 'lib/vendor/autoload.php';
+    # require_once 'lib/google-php-client/vendor/autoload.php';
     global $google_clientid, $google_secret, $google_config_file_path;
 
     /*************************************************
