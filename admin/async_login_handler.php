@@ -47,32 +47,34 @@ if ($allow_insecure_connections !== true) {
     }
 }
 
-function returnAjax($data)
-{
-    if (!is_array($data)) {
-        $data = array($data);
+if(!function_exists("returnAjax")) {
+    function returnAjax($data)
+    {
+        if (!is_array($data)) {
+            $data = array($data);
+        }
+        $data['execution_time'] = elapsed();
+        $data['completed'] = microtime_float();
+        global $do;
+        $data['requested_action'] = $do;
+        $data['args_provided'] = $_REQUEST;
+        if (!isset($data['status'])) {
+            $data['status'] = false;
+            $data['error'] = 'Server returned null or otherwise no status.';
+            $data['human_error'] = "Server didn't respond correctly. Please try again.";
+            $data['app_error_code'] = -10;
+        }
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json');
+        global $billingTokens;
+        if (is_array($billingTokens)) {
+            $data['billing_meta'] = $billingTokens;
+        }
+        print @json_encode($data, JSON_FORCE_OBJECT);
+        exit();
     }
-    $data['execution_time'] = elapsed();
-    $data['completed'] = microtime_float();
-    global $do;
-    $data['requested_action'] = $do;
-    $data['args_provided'] = $_REQUEST;
-    if (!isset($data['status'])) {
-        $data['status'] = false;
-        $data['error'] = 'Server returned null or otherwise no status.';
-        $data['human_error'] = "Server didn't respond correctly. Please try again.";
-        $data['app_error_code'] = -10;
-    }
-    header('Cache-Control: no-cache, must-revalidate');
-    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-    header('Content-type: application/json');
-    global $billingTokens;
-    if (is_array($billingTokens)) {
-        $data['billing_meta'] = $billingTokens;
-    }
-    print @json_encode($data, JSON_FORCE_OBJECT);
-    exit();
-}
+  }
 
 parse_str($_SERVER['QUERY_STRING'], $_GET);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
