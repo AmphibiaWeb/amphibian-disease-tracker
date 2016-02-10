@@ -20,6 +20,7 @@ header('Access-Control-Allow-Origin: *');
 
 $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
+$print_login_state = false;
 require_once(dirname(__FILE__)."/admin/async_login_handler.php");
 
 $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
