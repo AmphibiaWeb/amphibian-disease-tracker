@@ -319,7 +319,7 @@ finalizeData = ->
   taxonData = _adp.data.taxa.validated
   postData.sampled_clades = _adp.data.taxa.clades.join ","
   postData.sampled_species = _adp.data.taxa.list.join ","
-  for k, taxonObject of taxonData
+  for taxonObject in taxonData
     aweb = taxonObject.response.validated_taxon
     console.info "Aweb taxon result:", aweb
     clade = aweb.order.toLowerCase()
