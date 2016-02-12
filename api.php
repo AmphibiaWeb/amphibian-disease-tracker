@@ -133,13 +133,14 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
         # Check the user
         # If bad, kick the access out
         $cartoTable = preg_replace('/(?i)SELECT .*FROM[ `]*(t[0-9a-f]*_[0-9a-f]*)[ `]*.*;/m', '$1', $sqlQuery);
-        $accessListLookupQuery = "SELECT `author`, `access_data` FROM `" . $db->getTable() . "` WHERE `carto_id` LIKE '%" . $cartoTable . "%'";
+        $accessListLookupQuery = "SELECT `author`, `access_data`, `public` FROM `" . $db->getTable() . "` WHERE `carto_id` LIKE '%" . $cartoTable . "%'";
         $l = $db->openDB();
         $r = mysqli_query($l, $accessListLookupQuery);
         $row = mysqli_fetch_assoc($r);
         $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row["access_data"]);
         $users = explode(",", $csvString);
         $users[] = $row["author"];
+        $isPublic = boolstr($row["public"]);
         # Get current user ID
         if($login_status["status"] !== true) {
             $response = array(
