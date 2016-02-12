@@ -1694,6 +1694,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         alt: "decimal",
         coordinateUncertaintyInMeters: "decimal",
         Collector: "varchar",
+        originalTaxa: "varchar",
         fimsExtra: "json",
         the_geom: "varchar"
       };

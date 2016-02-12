@@ -385,6 +385,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         alt: "decimal"
         coordinateUncertaintyInMeters: "decimal"
         Collector: "varchar"
+        originalTaxa: "varchar"
         fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
         the_geom: "varchar"
       # Construct the SQL query
