@@ -1291,6 +1291,12 @@ newGeoDataHandler = function(dataObject) {
       }
       p$("#species-list").bindValue = taxonListString;
       dataAttrs.dataObj = validatedData;
+      if ((typeof _adp !== "undefined" && _adp !== null ? _adp.data : void 0) == null) {
+        if (typeof _adp === "undefined" || _adp === null) {
+          window._adp = new Object();
+        }
+        window._adp.data = new Object();
+      }
       _adp.data.dataObj = validatedData;
       _adp.data.taxa = new Object();
       _adp.data.taxa.list = taxonList;

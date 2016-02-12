@@ -1313,6 +1313,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
         ++i
       p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData
+      unless _adp?.data?
+        unless _adp?
+          window._adp = new Object()
+        window._adp.data = new Object()
       _adp.data.dataObj = validatedData
       _adp.data.taxa = new Object()
       _adp.data.taxa.list = taxonList
