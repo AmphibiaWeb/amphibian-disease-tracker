@@ -76,7 +76,7 @@ validateTaxonData = (dataObject, callback = null) ->
       taxaString += " #{taxon.subspecies}"
     unless taxaPerRow[taxaString]?
       taxaPerRow[taxaString] = new Array()
-    taxaPerRow.push n
+    taxaPerRow[taxaString].push n
   console.info "Found #{taxa.length} unique taxa:", taxa
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"

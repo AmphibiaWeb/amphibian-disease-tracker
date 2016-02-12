@@ -1915,7 +1915,7 @@ validateTaxonData = function(dataObject, callback) {
     if (taxaPerRow[taxaString] == null) {
       taxaPerRow[taxaString] = new Array();
     }
-    taxaPerRow.push(n);
+    taxaPerRow[taxaString].push(n);
   }
   console.info("Found " + taxa.length + " unique taxa:", taxa);
   grammar = taxa.length > 1 ? "taxa" : "taxon";
