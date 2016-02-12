@@ -2110,6 +2110,8 @@ validateTaxonData = (dataObject, callback = null) ->
       taxonArray[key] = result
       key++
       if key < taxonArray.length
+        if key %% 50 is 0
+          toastStatusMessage "Validating taxa #{key} of #{taxonArray.length} ..."
         taxonValidatorLoop(taxonArray, key)
       else
         dataObject.validated_taxa  = taxonArray

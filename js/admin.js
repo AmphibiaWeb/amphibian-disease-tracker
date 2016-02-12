@@ -1926,6 +1926,9 @@ validateTaxonData = function(dataObject, callback) {
       taxonArray[key] = result;
       key++;
       if (key < taxonArray.length) {
+        if (modulo(key, 50) === 0) {
+          toastStatusMessage("Validating taxa " + key + " of " + taxonArray.length + " ...");
+        }
         return taxonValidatorLoop(taxonArray, key);
       } else {
         dataObject.validated_taxa = taxonArray;
