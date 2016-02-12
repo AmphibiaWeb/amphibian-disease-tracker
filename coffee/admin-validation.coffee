@@ -96,7 +96,7 @@ validateTaxonData = (dataObject, callback = null) ->
         unless isNull taxonArray[key].subspecies
           taxaString += " #{taxonArray[key].subspecies}"
         replaceRows = taxaPerRow[taxaString]
-        console.info "Replacing rows", replaceRows
+        console.info "Replacing rows @ #{taxaString}", replaceRows
         # Replace entries
         for row in replaceRows
           dataObject.data[row].genus = result.genus
