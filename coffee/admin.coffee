@@ -1316,8 +1316,12 @@ newGeoDataHandler = (dataObject = new Object()) ->
           taxonListString += "\n"
         taxonListString += "#{taxonString}"
         taxonList.push taxonString
-        unless taxon.response.validated_taxon.family in cladeList
-          cladeList.push taxon.response.validated_taxon.family
+        try
+          unless taxon.response.validated_taxon.family in cladeList
+            cladeList.push taxon.response.validated_taxon.family
+        catch e
+          console.warn "Couldn't get the family! #{e.message}", taxon.response
+          console.warn e.stack
         ++i
       p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData

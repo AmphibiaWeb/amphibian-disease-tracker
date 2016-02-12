@@ -1292,8 +1292,14 @@ newGeoDataHandler = function(dataObject) {
         }
         taxonListString += "" + taxonString;
         taxonList.push(taxonString);
-        if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
-          cladeList.push(taxon.response.validated_taxon.family);
+        try {
+          if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
+            cladeList.push(taxon.response.validated_taxon.family);
+          }
+        } catch (_error) {
+          e = _error;
+          console.warn("Couldn't get the family! " + e.message, taxon.response);
+          console.warn(e.stack);
         }
         ++i;
       }
@@ -1964,6 +1970,7 @@ validateTaxonData = function(dataObject, callback) {
         return taxonValidatorLoop(taxonArray, key);
       } else {
         dataObject.validated_taxa = taxonArray;
+        console.info("Calling back!", dataObject);
         return callback(dataObject);
       }
     });
