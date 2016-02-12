@@ -116,6 +116,7 @@ validateTaxonData = (dataObject, callback = null) ->
         taxonValidatorLoop(taxonArray, key)
       else
         dataObject.validated_taxa  = taxonArray
+        console.info "Calling back!", dataObject
         callback(dataObject)
   false
 
