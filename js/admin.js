@@ -1939,7 +1939,7 @@ validateTaxonData = function(dataObject, callback) {
           taxaString += " " + taxonArray[key].subspecies;
         }
         replaceRows = taxaPerRow[taxaString];
-        console.info("Replacing rows", replaceRows);
+        console.info("Replacing rows @ " + taxaString, replaceRows);
         for (l = 0, len = replaceRows.length; l < len; l++) {
           row = replaceRows[l];
           dataObject.data[row].genus = result.genus;
