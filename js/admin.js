@@ -1922,7 +1922,7 @@ validateTaxonData = function(dataObject, callback) {
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   (taxonValidatorLoop = function(taxonArray, key) {
     return validateAWebTaxon(taxonArray[key], function(result) {
-      var l, len, message, replaceRows;
+      var e, l, len, message, replaceRows;
       if (result.invalid === true) {
         cleanupToasts();
         stopLoadError(result.response.human_error);
@@ -1932,19 +1932,25 @@ validateTaxonData = function(dataObject, callback) {
         removeDataFile();
         return false;
       }
-      taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
-      if (!isNull(taxonArray[key].subspecies)) {
-        taxaString += " " + taxonArray[key].subspecies;
-      }
-      replaceRows = taxaPerRow[taxaString];
-      for (l = 0, len = replaceRows.length; l < len; l++) {
-        row = replaceRows[l];
-        dataObject.data[row].genus = result.genus;
-        dataObject.data[row].specificEpithet = result.specificEpithet;
-        if (result.infraspecificEpithet == null) {
-          result.infraspecificEpithet = "";
+      try {
+        taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
+        if (!isNull(taxonArray[key].subspecies)) {
+          taxaString += " " + taxonArray[key].subspecies;
         }
-        dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet;
+        replaceRows = taxaPerRow[taxaString];
+        for (l = 0, len = replaceRows.length; l < len; l++) {
+          row = replaceRows[l];
+          dataObject.data[row].genus = result.genus;
+          dataObject.data[row].specificEpithet = result.specificEpithet;
+          if (result.infraspecificEpithet == null) {
+            result.infraspecificEpithet = "";
+          }
+          dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet;
+        }
+      } catch (_error) {
+        e = _error;
+        console.warn("Problem replacing rows! " + e.message);
+        console.warn(e.stack);
       }
       taxonArray[key] = result;
       key++;

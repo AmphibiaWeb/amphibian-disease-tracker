@@ -2114,17 +2114,21 @@ validateTaxonData = (dataObject, callback = null) ->
         bsAlert(message)
         removeDataFile()
         return false
-      taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
-      unless isNull taxonArray[key].subspecies
-        taxaString += " #{taxonArray[key].subspecies}"
-      replaceRows = taxaPerRow[taxaString]
-      # Replace entries
-      for row in replaceRows
-        dataObject.data[row].genus = result.genus
-        dataObject.data[row].specificEpithet = result.specificEpithet
-        unless result.infraspecificEpithet?
-          result.infraspecificEpithet = ""
-        dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet
+      try
+        taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
+        unless isNull taxonArray[key].subspecies
+          taxaString += " #{taxonArray[key].subspecies}"
+        replaceRows = taxaPerRow[taxaString]
+        # Replace entries
+        for row in replaceRows
+          dataObject.data[row].genus = result.genus
+          dataObject.data[row].specificEpithet = result.specificEpithet
+          unless result.infraspecificEpithet?
+            result.infraspecificEpithet = ""
+          dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet
+      catch e
+        console.warn "Problem replacing rows! #{e.message}"
+        console.warn e.stack
       taxonArray[key] = result
       key++
       if key < taxonArray.length
