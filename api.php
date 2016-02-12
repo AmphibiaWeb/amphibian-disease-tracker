@@ -149,6 +149,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
                 "human_error" => "Attempted to read from table `$cartoTable` without being logged in",
                 "args_provided" => $get,
                 "is_public_dataset" => $isPublic,
+                "row_raw" => $row,
             );
             returnAjax($response);
         }
@@ -160,8 +161,9 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
                 "human_error" => "User $uid isn't authorized to access this dataset",
                 "args_provided" => $get,
                 "is_public_dataset" => $isPublic,
+                "row_raw" => $row,
             );
-            returnAjax($response);            
+            returnAjax($response);
         }
     }
     if (empty($sqlQuery)) {
@@ -287,7 +289,7 @@ function doAWebValidate($get) {
                 $itis = explode(",", $itisEntry);
             } else {
                 $itis = array($itisEntry);
-            }        
+            }
             foreach($itis as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
