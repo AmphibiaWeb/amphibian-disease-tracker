@@ -266,7 +266,7 @@ function checkProjectAuthorized($projectData, $uid) {
      * Helper function for checking authorization
      ***/
     $isAuthor = $projectData["author"] == $uid;
-    $isPublic = $projectData["public"];
+    $isPublic = boolstr($projectData["public"]);
     $accessList = explode(",", $projectData["access_data"]);
     $editList = array();
     $viewList = array();
@@ -401,7 +401,11 @@ function readProjectData($get, $debug = true) {
     # Replace the dumb permissions
     $row["access_data"] = $accessData;
     # Append it
-    $response["project"] = $row;    
+    $row["public"] = boolstr($row["public"]);
+    $row["includes_anura"] = boolstr($row["includes_anura"]);
+    $row["includes_caudata"] = boolstr($row["includes_caudata"]);
+    $row["includes_gymnophiona"] = boolstr($row["includes_gymnophiona"]);
+    $response["project"] = $row;
     # Return it!
     $response["status"] = true;
     $response["error"] = "OK";

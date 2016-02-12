@@ -1377,7 +1377,7 @@ loadEditor = function() {
             return false;
           }
           if (result.user.has_edit_permissions !== true) {
-            if (result.user.has_view_permissions || result.project["public"] === true) {
+            if (result.user.has_view_permissions || result.project["public"].toBool() === true) {
               loadProject(opid, "Ineligible to edit " + opid + ", loading as read-only");
               return false;
             }

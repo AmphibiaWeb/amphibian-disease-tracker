@@ -1393,7 +1393,7 @@ loadEditor = ->
             console.warn "Attempted", "#{adminParams.apiTarget}?#{args}"
             return false
           unless result.user.has_edit_permissions is true
-            if result.user.has_view_permissions or result.project.public is true
+            if result.user.has_view_permissions or result.project.public.toBool() is true
               # Not eligible to edit. Load project viewer instead.
               loadProject opid, "Ineligible to edit #{opid}, loading as read-only"
               return false
