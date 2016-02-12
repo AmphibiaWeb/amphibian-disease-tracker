@@ -148,6 +148,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
                 "error" => "NOT_LOGGED_IN",
                 "human_error" => "Attempted to read from table `$cartoTable` without being logged in",
                 "args_provided" => $get,
+                "is_public_dataset" => $isPublic,
             );
             returnAjax($response);
         }
@@ -158,6 +159,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
                 "error" => "UNAUTHORIZED_USER",
                 "human_error" => "User $uid isn't authorized to access this dataset",
                 "args_provided" => $get,
+                "is_public_dataset" => $isPublic,
             );
             returnAjax($response);            
         }
