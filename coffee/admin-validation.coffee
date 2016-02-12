@@ -100,10 +100,11 @@ validateTaxonData = (dataObject, callback = null) ->
         # Replace entries
         for row in replaceRows
           dataObject.data[row].genus = result.genus
-          dataObject.data[row].specificEpithet = result.specificEpithet
-          unless result.infraspecificEpithet?
-            result.infraspecificEpithet = ""
-          dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet
+          dataObject.data[row].specificEpithet = result.species
+          unless result.subspecies?
+            result.subspecies = ""
+          dataObject.data[row].infraspecificEpithet = result.subspecies
+          dataObject.data[row].originalTaxa = taxaString
       catch e
         console.warn "Problem replacing rows! #{e.message}"
         console.warn e.stack

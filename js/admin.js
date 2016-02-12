@@ -1943,11 +1943,12 @@ validateTaxonData = function(dataObject, callback) {
         for (l = 0, len = replaceRows.length; l < len; l++) {
           row = replaceRows[l];
           dataObject.data[row].genus = result.genus;
-          dataObject.data[row].specificEpithet = result.specificEpithet;
-          if (result.infraspecificEpithet == null) {
-            result.infraspecificEpithet = "";
+          dataObject.data[row].specificEpithet = result.species;
+          if (result.subspecies == null) {
+            result.subspecies = "";
           }
-          dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet;
+          dataObject.data[row].infraspecificEpithet = result.subspecies;
+          dataObject.data[row].originalTaxa = taxaString;
         }
       } catch (_error) {
         e = _error;
