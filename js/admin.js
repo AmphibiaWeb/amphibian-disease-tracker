@@ -1886,7 +1886,7 @@ validateFimsData = function(dataObject, callback) {
 };
 
 validateTaxonData = function(dataObject, callback) {
-  var data, grammar, n, row, taxa, taxon, taxonValidatorLoop;
+  var data, grammar, n, row, taxa, taxaPerRow, taxaString, taxon, taxonValidatorLoop;
   if (callback == null) {
     callback = null;
   }
@@ -1896,6 +1896,7 @@ validateTaxonData = function(dataObject, callback) {
    */
   data = dataObject.data;
   taxa = new Array();
+  taxaPerRow = new Object();
   for (n in data) {
     row = data[n];
     taxon = {
@@ -1907,13 +1908,21 @@ validateTaxonData = function(dataObject, callback) {
     if (!taxa.containsObject(taxon)) {
       taxa.push(taxon);
     }
+    taxaString = taxon.genus + " " + taxon.species;
+    if (!isNull(taxon.subspecies)) {
+      taxaString += " " + taxon.subspecies;
+    }
+    if (taxaPerRow[taxaString] == null) {
+      taxaPerRow[taxaString] = new Array();
+    }
+    taxaPerRow.push(n);
   }
   console.info("Found " + taxa.length + " unique taxa:", taxa);
   grammar = taxa.length > 1 ? "taxa" : "taxon";
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   (taxonValidatorLoop = function(taxonArray, key) {
     return validateAWebTaxon(taxonArray[key], function(result) {
-      var message;
+      var l, len, message, replaceRows;
       if (result.invalid === true) {
         cleanupToasts();
         stopLoadError(result.response.human_error);
@@ -1922,6 +1931,20 @@ validateTaxonData = function(dataObject, callback) {
         bsAlert(message);
         removeDataFile();
         return false;
+      }
+      taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
+      if (!isNull(taxonArray[key].subspecies)) {
+        taxaString += " " + taxonArray[key].subspecies;
+      }
+      replaceRows = taxaPerRow[taxaString];
+      for (l = 0, len = replaceRows.length; l < len; l++) {
+        row = replaceRows[l];
+        dataObject.data[row].genus = result.genus;
+        dataObject.data[row].specificEpithet = result.specificEpithet;
+        if (result.infraspecificEpithet == null) {
+          result.infraspecificEpithet = "";
+        }
+        dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet;
       }
       taxonArray[key] = result;
       key++;
