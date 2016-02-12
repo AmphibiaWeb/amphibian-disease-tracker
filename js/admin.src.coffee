@@ -2104,6 +2104,7 @@ validateTaxonData = (dataObject, callback = null) ->
   console.info "Found #{taxa.length} unique taxa:", taxa
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
+  console.info "Replacement tracker", taxaPerRow
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     validateAWebTaxon taxonArray[key], (result) ->
       if result.invalid is true
@@ -2119,6 +2120,7 @@ validateTaxonData = (dataObject, callback = null) ->
         unless isNull taxonArray[key].subspecies
           taxaString += " #{taxonArray[key].subspecies}"
         replaceRows = taxaPerRow[taxaString]
+        console.info "Replacing rows", replaceRows
         # Replace entries
         for row in replaceRows
           dataObject.data[row].genus = result.genus

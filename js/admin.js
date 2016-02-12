@@ -1920,6 +1920,7 @@ validateTaxonData = function(dataObject, callback) {
   console.info("Found " + taxa.length + " unique taxa:", taxa);
   grammar = taxa.length > 1 ? "taxa" : "taxon";
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
+  console.info("Replacement tracker", taxaPerRow);
   (taxonValidatorLoop = function(taxonArray, key) {
     return validateAWebTaxon(taxonArray[key], function(result) {
       var e, l, len, message, replaceRows;
@@ -1938,6 +1939,7 @@ validateTaxonData = function(dataObject, callback) {
           taxaString += " " + taxonArray[key].subspecies;
         }
         replaceRows = taxaPerRow[taxaString];
+        console.info("Replacing rows", replaceRows);
         for (l = 0, len = replaceRows.length; l < len; l++) {
           row = replaceRows[l];
           dataObject.data[row].genus = result.genus;
