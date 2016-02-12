@@ -301,6 +301,8 @@ loadEditor = ->
                 <paper-checkbox #{anuraState}>Anura</paper-checkbox>
                 <paper-checkbox #{caudataState}>Caudata</paper-checkbox>
                 <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
+                <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").join(", ")}"></paper-input>
+                <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").join(", ")}"></paper-input>
               <h4>Sample Metrics</h4>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>

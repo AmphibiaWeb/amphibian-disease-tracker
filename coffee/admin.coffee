@@ -319,6 +319,14 @@ finalizeData = ->
   taxonData = _adp.data.taxa.validated
   postData.sampled_clades = _adp.data.taxa.clades.join ","
   postData.sampled_species = _adp.data.taxa.list.join ","
+  for k, taxonObject of taxonData
+    aweb = taxonObject.response.validated_taxon
+    console.info "Aweb taxon result:", aweb
+    clade = aweb.order.toLowerCase()
+    key = "includes_#{clade}"
+    postData[key] = true
+    # If we have all three, stop checking
+    # if postData.includes_anura and postData.includes_caudata and postData.includes_gymnophiona then break
   args = "perform=new&data=#{jsonTo64(postData)}"
   console.info "Data object constructed:", postData
   $.post adminParams.apiTarget, args, "json"
