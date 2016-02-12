@@ -171,7 +171,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, cartoData, center, dataCheck, el, input, key, l, len, postData, ref, taxonData, uniqueId;
+  var args, authorData, aweb, cartoData, center, clade, dataCheck, el, input, k, key, l, len, postData, ref, taxonData, taxonObject, uniqueId;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -231,6 +231,14 @@ finalizeData = function() {
   taxonData = _adp.data.taxa.validated;
   postData.sampled_clades = _adp.data.taxa.clades.join(",");
   postData.sampled_species = _adp.data.taxa.list.join(",");
+  for (k in taxonData) {
+    taxonObject = taxonData[k];
+    aweb = taxonObject.response.validated_taxon;
+    console.info("Aweb taxon result:", aweb);
+    clade = aweb.order.toLowerCase();
+    key = "includes_" + clade;
+    postData[key] = true;
+  }
   args = "perform=new&data=" + (jsonTo64(postData));
   console.info("Data object constructed:", postData);
   return $.post(adminParams.apiTarget, args, "json").done(function(result) {
@@ -1491,7 +1499,7 @@ loadEditor = function() {
           googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
           geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
-          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + " " + icon + "<br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project_title\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Disease\" value=\"" + project.disease + "\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project_title\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append Data</span>\n        <paper-toggle-button id=\"replace-data-toggle\" checked>Replace Data</paper-toggle-button>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n    <h4>Sample Metrics</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n    <h4>Locality &amp; Transect Data</h4>\n      " + googleMap + "\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n</section>";
+          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + " " + icon + "<br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project_title\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Disease\" value=\"" + project.disease + "\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project_title\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append Data</span>\n        <paper-toggle-button id=\"replace-data-toggle\" checked>Replace Data</paper-toggle-button>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n      <paper-input readonly label=\"Sampled Species\" value=\"" + (project.sampled_species.split(",").join(", ")) + "\"></paper-input>\n      <paper-input readonly label=\"Sampled Clades\" value=\"" + (project.sampled_clades.split(",").join(", ")) + "\"></paper-input>\n    <h4>Sample Metrics</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n    <h4>Locality &amp; Transect Data</h4>\n      " + googleMap + "\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\" class=\"project-param\"></paper-input>\n</section>";
           $("#main-body").html(html);
           $("#delete-project").click(function() {
             var confirmButton;
@@ -1878,7 +1886,7 @@ validateFimsData = function(dataObject, callback) {
 };
 
 validateTaxonData = function(dataObject, callback) {
-  var data, grammar, n, row, taxa, taxon, taxonValidatorLoop;
+  var data, grammar, n, row, taxa, taxaPerRow, taxaString, taxon, taxonValidatorLoop;
   if (callback == null) {
     callback = null;
   }
@@ -1888,6 +1896,7 @@ validateTaxonData = function(dataObject, callback) {
    */
   data = dataObject.data;
   taxa = new Array();
+  taxaPerRow = new Object();
   for (n in data) {
     row = data[n];
     taxon = {
@@ -1899,13 +1908,21 @@ validateTaxonData = function(dataObject, callback) {
     if (!taxa.containsObject(taxon)) {
       taxa.push(taxon);
     }
+    taxaString = taxon.genus + " " + taxon.species;
+    if (!isNull(taxon.subspecies)) {
+      taxaString += " " + taxon.subspecies;
+    }
+    if (taxaPerRow[taxaString] == null) {
+      taxaPerRow[taxaString] = new Array();
+    }
+    taxaPerRow.push(n);
   }
   console.info("Found " + taxa.length + " unique taxa:", taxa);
   grammar = taxa.length > 1 ? "taxa" : "taxon";
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   (taxonValidatorLoop = function(taxonArray, key) {
     return validateAWebTaxon(taxonArray[key], function(result) {
-      var message;
+      var l, len, message, replaceRows;
       if (result.invalid === true) {
         cleanupToasts();
         stopLoadError(result.response.human_error);
@@ -1915,9 +1932,26 @@ validateTaxonData = function(dataObject, callback) {
         removeDataFile();
         return false;
       }
+      taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
+      if (!isNull(taxonArray[key].subspecies)) {
+        taxaString += " " + taxonArray[key].subspecies;
+      }
+      replaceRows = taxaPerRow[taxaString];
+      for (l = 0, len = replaceRows.length; l < len; l++) {
+        row = replaceRows[l];
+        dataObject.data[row].genus = result.genus;
+        dataObject.data[row].specificEpithet = result.specificEpithet;
+        if (result.infraspecificEpithet == null) {
+          result.infraspecificEpithet = "";
+        }
+        dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet;
+      }
       taxonArray[key] = result;
       key++;
       if (key < taxonArray.length) {
+        if (modulo(key, 50) === 0) {
+          toastStatusMessage("Validating taxa " + key + " of " + taxonArray.length + " ...");
+        }
         return taxonValidatorLoop(taxonArray, key);
       } else {
         dataObject.validated_taxa = taxonArray;

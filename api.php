@@ -143,26 +143,24 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
         $users[] = $row["author"];
         $isPublic = boolstr($row["public"]);
         # Get current user ID
-        if($login_status["status"] !== true) {
+        if($login_status["status"] !== true && !$isPublic) {
             $response = array(
                 "status" => false,
                 "error" => "NOT_LOGGED_IN",
                 "human_error" => "Attempted to read from table `$cartoTable` without being logged in",
                 "args_provided" => $get,
                 "is_public_dataset" => $isPublic,
-                "row_raw" => $row,
             );
             returnAjax($response);
         }
         $uid = $login_status["detail"]["uid"];
-        if(!in_array($uid, $users)) {
+        if(!in_array($uid, $users) && !$isPublic) {
             $response = array(
                 "status" => false,
                 "error" => "UNAUTHORIZED_USER",
                 "human_error" => "User $uid isn't authorized to access this dataset",
                 "args_provided" => $get,
                 "is_public_dataset" => $isPublic,
-                "row_raw" => $row,
             );
             returnAjax($response);
         }

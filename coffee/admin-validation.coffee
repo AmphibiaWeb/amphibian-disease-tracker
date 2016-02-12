@@ -62,6 +62,7 @@ validateTaxonData = (dataObject, callback = null) ->
   ###
   data = dataObject.data
   taxa = new Array()
+  taxaPerRow = new Object()
   for n, row of data
     taxon =
       genus: row.genus
@@ -70,6 +71,12 @@ validateTaxonData = (dataObject, callback = null) ->
       clade: row.cladeSampled
     unless taxa.containsObject taxon
       taxa.push taxon
+    taxaString = "#{taxon.genus} #{taxon.species}"
+    unless isNull taxon.subspecies
+      taxaString += " #{taxon.subspecies}"
+    unless taxaPerRow[taxaString]?
+      taxaPerRow[taxaString] = new Array()
+    taxaPerRow.push n
   console.info "Found #{taxa.length} unique taxa:", taxa
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
@@ -83,9 +90,22 @@ validateTaxonData = (dataObject, callback = null) ->
         bsAlert(message)
         removeDataFile()
         return false
+      taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
+      unless isNull taxonArray[key].subspecies
+        taxaString += " #{taxonArray[key].subspecies}"
+      replaceRows = taxaPerRow[taxaString]
+      # Replace entries
+      for row in replaceRows
+        dataObject.data[row].genus = result.genus
+        dataObject.data[row].specificEpithet = result.specificEpithet
+        unless result.infraspecificEpithet?
+          result.infraspecificEpithet = ""
+        dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet
       taxonArray[key] = result
       key++
       if key < taxonArray.length
+        if key %% 50 is 0
+          toastStatusMessage "Validating taxa #{key} of #{taxonArray.length} ..."
         taxonValidatorLoop(taxonArray, key)
       else
         dataObject.validated_taxa  = taxonArray

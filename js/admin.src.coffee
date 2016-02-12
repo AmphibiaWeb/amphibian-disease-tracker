@@ -319,6 +319,14 @@ finalizeData = ->
   taxonData = _adp.data.taxa.validated
   postData.sampled_clades = _adp.data.taxa.clades.join ","
   postData.sampled_species = _adp.data.taxa.list.join ","
+  for k, taxonObject of taxonData
+    aweb = taxonObject.response.validated_taxon
+    console.info "Aweb taxon result:", aweb
+    clade = aweb.order.toLowerCase()
+    key = "includes_#{clade}"
+    postData[key] = true
+    # If we have all three, stop checking
+    # if postData.includes_anura and postData.includes_caudata and postData.includes_gymnophiona then break
   args = "perform=new&data=#{jsonTo64(postData)}"
   console.info "Data object constructed:", postData
   $.post adminParams.apiTarget, args, "json"
@@ -1647,6 +1655,8 @@ loadEditor = ->
                 <paper-checkbox #{anuraState}>Anura</paper-checkbox>
                 <paper-checkbox #{caudataState}>Caudata</paper-checkbox>
                 <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
+                <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").join(", ")}"></paper-input>
+                <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").join(", ")}"></paper-input>
               <h4>Sample Metrics</h4>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
@@ -2076,6 +2086,7 @@ validateTaxonData = (dataObject, callback = null) ->
   ###
   data = dataObject.data
   taxa = new Array()
+  taxaPerRow = new Object()
   for n, row of data
     taxon =
       genus: row.genus
@@ -2084,6 +2095,12 @@ validateTaxonData = (dataObject, callback = null) ->
       clade: row.cladeSampled
     unless taxa.containsObject taxon
       taxa.push taxon
+    taxaString = "#{taxon.genus} #{taxon.species}"
+    unless isNull taxon.subspecies
+      taxaString += " #{taxon.subspecies}"
+    unless taxaPerRow[taxaString]?
+      taxaPerRow[taxaString] = new Array()
+    taxaPerRow.push n
   console.info "Found #{taxa.length} unique taxa:", taxa
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
@@ -2097,9 +2114,22 @@ validateTaxonData = (dataObject, callback = null) ->
         bsAlert(message)
         removeDataFile()
         return false
+      taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
+      unless isNull taxonArray[key].subspecies
+        taxaString += " #{taxonArray[key].subspecies}"
+      replaceRows = taxaPerRow[taxaString]
+      # Replace entries
+      for row in replaceRows
+        dataObject.data[row].genus = result.genus
+        dataObject.data[row].specificEpithet = result.specificEpithet
+        unless result.infraspecificEpithet?
+          result.infraspecificEpithet = ""
+        dataObject.data[row].infraspecificEpithet = result.infraspecificEpithet
       taxonArray[key] = result
       key++
       if key < taxonArray.length
+        if key %% 50 is 0
+          toastStatusMessage "Validating taxa #{key} of #{taxonArray.length} ..."
         taxonValidatorLoop(taxonArray, key)
       else
         dataObject.validated_taxa  = taxonArray
