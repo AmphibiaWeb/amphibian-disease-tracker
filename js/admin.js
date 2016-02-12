@@ -1922,6 +1922,10 @@ validateTaxonData = function(dataObject, callback) {
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   console.info("Replacement tracker", taxaPerRow);
   (taxonValidatorLoop = function(taxonArray, key) {
+    taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
+    if (!isNull(taxonArray[key].subspecies)) {
+      taxaString += " " + taxonArray[key].subspecies;
+    }
     return validateAWebTaxon(taxonArray[key], function(result) {
       var e, l, len, message, replaceRows;
       if (result.invalid === true) {
@@ -1934,12 +1938,8 @@ validateTaxonData = function(dataObject, callback) {
         return false;
       }
       try {
-        taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
-        if (!isNull(taxonArray[key].subspecies)) {
-          taxaString += " " + taxonArray[key].subspecies;
-        }
         replaceRows = taxaPerRow[taxaString];
-        console.info("Replacing rows @ " + taxaString, replaceRows);
+        console.info("Replacing rows @ " + taxaString, replaceRows, taxonArray[key]);
         for (l = 0, len = replaceRows.length; l < len; l++) {
           row = replaceRows[l];
           dataObject.data[row].genus = result.genus;

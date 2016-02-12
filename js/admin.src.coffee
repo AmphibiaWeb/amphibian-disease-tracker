@@ -2106,6 +2106,9 @@ validateTaxonData = (dataObject, callback = null) ->
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
   console.info "Replacement tracker", taxaPerRow
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
+    taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
+    unless isNull taxonArray[key].subspecies
+      taxaString += " #{taxonArray[key].subspecies}"
     validateAWebTaxon taxonArray[key], (result) ->
       if result.invalid is true
         cleanupToasts()
@@ -2116,11 +2119,8 @@ validateTaxonData = (dataObject, callback = null) ->
         removeDataFile()
         return false
       try
-        taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
-        unless isNull taxonArray[key].subspecies
-          taxaString += " #{taxonArray[key].subspecies}"
         replaceRows = taxaPerRow[taxaString]
-        console.info "Replacing rows @ #{taxaString}", replaceRows
+        console.info "Replacing rows @ #{taxaString}", replaceRows, taxonArray[key]
         # Replace entries
         for row in replaceRows
           dataObject.data[row].genus = result.genus
