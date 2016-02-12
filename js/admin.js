@@ -171,7 +171,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, aweb, cartoData, center, clade, dataCheck, el, input, k, key, l, len, postData, ref, taxonData, taxonObject, uniqueId;
+  var args, authorData, aweb, cartoData, center, clade, dataCheck, el, input, key, l, len, len1, m, postData, ref, taxonData, taxonObject, uniqueId;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -231,8 +231,8 @@ finalizeData = function() {
   taxonData = _adp.data.taxa.validated;
   postData.sampled_clades = _adp.data.taxa.clades.join(",");
   postData.sampled_species = _adp.data.taxa.list.join(",");
-  for (k in taxonData) {
-    taxonObject = taxonData[k];
+  for (m = 0, len1 = taxonData.length; m < len1; m++) {
+    taxonObject = taxonData[m];
     aweb = taxonObject.response.validated_taxon;
     console.info("Aweb taxon result:", aweb);
     clade = aweb.order.toLowerCase();
