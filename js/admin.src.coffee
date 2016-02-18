@@ -89,9 +89,23 @@ populateAdminActions = ->
     rawSu = toInt result.detail.userdata.su_flag
     if rawSu.toBool()
       console.info "NOTICE: This is an SUPERUSER Admin"
+      html = """
+      <paper-button id="su-view-projects" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
+        <iron-icon icon="icons:supervisor-account"></iron-icon>
+         <iron-icon icon="icons:create"></iron-icon>
+        (SU) Administrate All Projects
+      </paper-button>
+      """
+      $("#admin-actions-block").append html
+      $("#su-view-projects").click ->
+        showAllProjects()
     false
   false
 
+
+showAllProjects = ->
+  toastStatusMessage "Would validate superuser and show all projects in DB"
+  false
 
 
 verifyLoginCredentials = (callback) ->
