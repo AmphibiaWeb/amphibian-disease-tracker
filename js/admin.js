@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, showAllProjects, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, showAllProjects, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -88,7 +88,7 @@ populateAdminActions = function() {
     rawSu = toInt(result.detail.userdata.su_flag);
     if (rawSu.toBool()) {
       console.info("NOTICE: This is an SUPERUSER Admin");
-      html = "<paper-button id=\"su-view-projects\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>";
+      html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>";
       $("#admin-actions-block").append(html);
       $("#su-view-projects").click(function() {
         return showAllProjects();
@@ -1372,7 +1372,7 @@ $(function() {
  * @author Philip Kahn
  */
 
-loadEditor = function() {
+loadEditor = function(projectPreload) {
 
   /*
    * Load up the editor interface for projects with access
@@ -1579,44 +1579,48 @@ loadEditor = function() {
     });
     return false;
   };
-  (showEditList = function() {
+  if (projectPreload == null) {
+    (showEditList = function() {
 
-    /*
-     * Show a list of icons for editable projects. Blocked on #22, it's
-     * just based on authorship right now.
-     */
-    var args;
-    startLoad();
-    args = "perform=list";
-    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-      var authoredList, html, icon, k, projectId, projectTitle, ref, ref1;
-      html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
-      $("#main-body").html(html);
-      authoredList = new Array();
-      ref = result.authored_projects;
-      for (k in ref) {
-        projectId = ref[k];
-        authoredList.push(projectId);
-      }
-      ref1 = result.projects;
-      for (projectId in ref1) {
-        projectTitle = ref1[projectId];
-        icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
-        if (indexOf.call(authoredList, projectId) >= 0) {
-          html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
-          $("#project-list").append(html);
+      /*
+       * Show a list of icons for editable projects. Blocked on #22, it's
+       * just based on authorship right now.
+       */
+      var args;
+      startLoad();
+      args = "perform=list";
+      return $.get(adminParams.apiTarget, args, "json").done(function(result) {
+        var authoredList, html, icon, k, projectId, projectTitle, ref, ref1;
+        html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+        $("#main-body").html(html);
+        authoredList = new Array();
+        ref = result.authored_projects;
+        for (k in ref) {
+          projectId = ref[k];
+          authoredList.push(projectId);
         }
-      }
-      $("#project-list button").unbind().click(function() {
-        var project;
-        project = $(this).attr("data-project");
-        return editProject(project);
+        ref1 = result.projects;
+        for (projectId in ref1) {
+          projectTitle = ref1[projectId];
+          icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
+          if (indexOf.call(authoredList, projectId) >= 0) {
+            html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
+            $("#project-list").append(html);
+          }
+        }
+        $("#project-list button").unbind().click(function() {
+          var project;
+          project = $(this).attr("data-project");
+          return editProject(project);
+        });
+        return stopLoad();
+      }).error(function(result, status) {
+        return stopLoadError("There was a problem loading viable projects");
       });
-      return stopLoad();
-    }).error(function(result, status) {
-      return stopLoadError("There was a problem loading viable projects");
-    });
-  })();
+    })();
+  } else {
+    editProject(projectPreload);
+  }
   return false;
 };
 
@@ -1838,6 +1842,48 @@ loadProject = function(projectId, message) {
     message = "";
   }
   toastStatusMessage("Would load project " + projectId + " to view");
+  return false;
+};
+
+loadSUProjectBrowser = function() {
+  startAdminActionHelper();
+  startLoad();
+  verifyLoginCredentials(function(result) {
+    var args, rawSu;
+    rawSu = toInt(result.detail.userdata.su_flag);
+    if (!rawSu.toBool()) {
+      stopLoadError("Sorry, you must be an admin to do this");
+      return false;
+    }
+    args = "perform=sulist";
+    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
+      var error, html, icon, list, projectDetails, projectId, ref, ref1;
+      if (result.status !== true) {
+        error = (ref = result.human_error) != null ? ref : "Sorry, you can't do that right now";
+        stopLoadError(error);
+        return false;
+      }
+      html = "<h2 class=\"new-title col-xs-12\">All Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+      $("#main-body").html(html);
+      list = new Array();
+      ref1 = result.projects;
+      for (projectId in ref1) {
+        projectDetails = ref1[projectId];
+        list.push(projectId);
+        icon = projectDetails["public"] ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+        html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectDetails.title + "\n  </button>\n</li>";
+        $("#project-list").append(html);
+      }
+      $("#project-list button").unbind().click(function() {
+        var project;
+        project = $(this).attr("data-project");
+        return loadEditor(project);
+      });
+      return stopLoad();
+    }).error(function(result, status) {
+      return stopLoadError("There was a problem loading projects");
+    });
+  });
   return false;
 };
 
