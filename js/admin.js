@@ -1747,6 +1747,16 @@ getProjectCartoData = function(cartoObj) {
       geoJson = JSON.parse(row.st_asgeojson);
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
+      row.diseaseDetected = (function() {
+        switch (row.diseaseDetected) {
+          case "true":
+            return "positive";
+          case "false":
+            return "negative";
+          default:
+            return row.diseaseDetected;
+        }
+      })();
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em>\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       workingMap += marker;
     }
