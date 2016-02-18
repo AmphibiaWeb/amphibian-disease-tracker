@@ -267,10 +267,34 @@ function listProjects($unauthenticated = true) {
 function suListProjects() {
     global $db, $login_status;
     $suFlag = $login_status["detail"]["userdata"]["su_flag"];
-    return array(
-        "is_su" => strbool($suFlag),
-        "su_val" => $suFlag
-    );
+    $isSu = strbool($suFlag);
+    if(!$isSu) {
+        return array (
+            "status" => false,
+            "error" => "INVALID_PERMISSIONS",
+            "human_error" => "Sorry, you don't have permissions to do that."
+        );
+    }
+    # Get a list of all the projects
+    $query = "SELECT `project_id`,`project_title` FROM " . $db->getTable();
+    try {
+        $l = $db->openDB();
+        $r = mysqli_query($l, $query);
+        $projectList = array();
+        while ($row = mysqli_fetch_row($r)) {
+            $projectList[$row[0]] = $row[1];
+        }
+        return array(
+            "status" => strbool($suFlag),
+            "projects" => $projectList
+        );
+    } catch (Exception $e) {
+        return array(
+            "status" => false,
+            "error" => "SERVER_ERROR",
+            "human_error" => "The server returned an error: " . $e->message()
+        );
+    }
 }
 
 
