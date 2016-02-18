@@ -419,7 +419,7 @@ function readProjectData($get, $debug = true) {
     $response["user"]["is_author"] = $permission["is_author"];
     # Rewrite the users to be more practical
     $u = new UserFunctions();
-    $u->getUser($row["author"]);
+    $detail = $u->getUser($row["author"]);
     $accessData = array(
         "editors" => array(),
         "viewers" => array(),
@@ -427,6 +427,8 @@ function readProjectData($get, $debug = true) {
         "editors_list" => array(),
         "viewers_list" => array(),
         "author" => $u->getUsername(),
+        "author_hardlink" => $row["author"],
+        "author_detail" => $detail,
         "composite" => array(),
     );
     # Add the author to the lists
