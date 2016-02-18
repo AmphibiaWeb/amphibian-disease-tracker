@@ -91,8 +91,8 @@ loadSUProjectBrowser = ->
       .unbind()
       .click ->
         project = $(this).attr("data-project")
-        loadProject(project)
+        loadEditor(project)
       stopLoad()
     .error (result, status) ->
-      stopLoadError "There was a problem loading viable projects"
+      stopLoadError "There was a problem loading projects"
   false

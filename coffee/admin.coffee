@@ -90,7 +90,7 @@ populateAdminActions = ->
     if rawSu.toBool()
       console.info "NOTICE: This is an SUPERUSER Admin"
       html = """
-      <paper-button id="su-view-projects" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
+      <paper-button id="su-view-projects" class="admin-action su-action col-md-3 col-sm-4 col-xs-12" raised>
         <iron-icon icon="icons:supervisor-account"></iron-icon>
          <iron-icon icon="icons:create"></iron-icon>
         (SU) Administrate All Projects
