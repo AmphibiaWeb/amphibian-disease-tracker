@@ -310,7 +310,7 @@ function checkProjectAuthorized($projectData, $uid) {
     $currentUser = $login_status["detail"]["uid"];
     if($uid == $currentUser) {
         $suFlag = $login_status["detail"]["userdata"]["su_flag"];
-        $isSu = strbool($suFlag);
+        $isSu = boolstr($suFlag);
     } else {
         $isSu = false;
     }
@@ -333,7 +333,7 @@ function checkProjectAuthorized($projectData, $uid) {
     }
     $isEditor = in_array($uid, $editList);
     $isViewer = in_array($uid, $viewList);
-    if($isSu) {
+    if($isSu === true) {
         # Superuser is everything!
         if(!$isEditor) {
             $editList[] = $uid;
