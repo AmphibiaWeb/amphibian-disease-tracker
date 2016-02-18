@@ -2065,6 +2065,7 @@ loadSUProjectBrowser = ->
         stopLoadError error
         console.error "Can't do SU listing!"
         console.warn result
+        populateAdminActions()
         return false
       html = """
       <h2 class="new-title col-xs-12">All Projects</h2>

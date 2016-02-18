@@ -267,8 +267,8 @@ function listProjects($unauthenticated = true) {
 function suListProjects() {
     global $db, $login_status;
     $suFlag = $login_status["detail"]["userdata"]["su_flag"];
-    $isSu = strbool($suFlag);
-    if(!$isSu) {
+    $isSu = boolstr($suFlag);
+    if($isSu !== true) {
         return array (
             "status" => false,
             "error" => "INVALID_PERMISSIONS",
@@ -284,12 +284,12 @@ function suListProjects() {
         while ($row = mysqli_fetch_row($r)) {
             $details = array(
                 "title" => $row[1],
-                "public" => strbool($row[2])
+                "public" => boolstr($row[2])
             );
             $projectList[$row[0]] = $details;
         }
         return array(
-            "status" => strbool($suFlag),
+            "status" => boolstr($suFlag),
             "projects" => $projectList
         );
     } catch (Exception $e) {
