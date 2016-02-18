@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -80,9 +80,18 @@ populateAdminActions = function() {
   $("#edit-project").click(function() {
     return loadEditor();
   });
-  return $("#view-project").click(function() {
+  $("#view-project").click(function() {
     return loadProjectBrowser();
   });
+  verifyLoginCredentials(function(result) {
+    var rawSu;
+    rawSu = toInt(result.detail.userdata.su_flag);
+    if (rawSu.toBool()) {
+      console.info("NOTICE: This is an SUPERUSER Admin");
+    }
+    return false;
+  });
+  return false;
 };
 
 verifyLoginCredentials = function(callback) {
@@ -1887,6 +1896,13 @@ validateFimsData = function(dataObject, callback) {
   fimsPostTarget = "";
   if (typeof callback === "function") {
     callback(dataObject);
+  }
+  return false;
+};
+
+mintBcid = function(callback) {
+  if (callback == null) {
+    callback = null;
   }
   return false;
 };

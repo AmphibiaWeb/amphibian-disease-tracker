@@ -413,4 +413,20 @@ function readProjectData($get, $debug = true) {
     return $response;
 }
 
+
+function mintBcid() {
+    /***
+     *
+     *
+     * See
+     * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+     ***/
+    $fimsPassCredential = "";
+    $fimsAuthUrl = "http://www.biscicol.org/biocode-fims/rest/authenticationService/login";
+    $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
+    $fimsAuthArgs = "username=AmphibianDisease&password=" . $fimsPassCredential;
+    $fimsMintArgs = "webAddress=" . "foo" . "&title=" . "foo" . "&graph=" . "foo" . "resourceType=http://purl.org/dc/dcmitype/Dataset"
+
+}
+
 ?>

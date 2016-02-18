@@ -56,6 +56,11 @@ validateFimsData = (dataObject, callback = null) ->
   false
 
 
+mintBcid = (callback = null) ->
+  # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+  false
+
+
 validateTaxonData = (dataObject, callback = null) ->
   ###
   #
