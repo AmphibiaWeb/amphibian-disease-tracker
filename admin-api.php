@@ -496,9 +496,23 @@ function mintBcid($projectLink, $projectTitle) {
     $fimsAuthArgs = "username=" . $fimsUserCredential . "&password=" . $fimsPassCredential;
     $fimsMintArgs = "webAddress=" . $projectUri . "&title=" . $projectTitle . "resourceType=http://purl.org/dc/dcmitype/Dataset";
     # Post the login
-    return json_decode(do_post_request($fimsAuthUrl, $fimsAuthArgs));
+    $dopost = json_decode(do_post_request($fimsAuthUrl, $fimsAuthArgs), true);
+    $opts = array(
+        'http' => array(
+            'method' => 'POST',
+            'request_fulluri' => true,
+            'timeout' => 3.5, # Seconds
+        ),
+    );
+    $context = stream_context_create($opts);
+    $response = file_get_contents($cartoFullUrl, false, $context);
+    $parsed_response = json_decode($response, true);    
+    return array(
+        "fgc" => $parsed_response,
+        "dp" => $dopost,
+    );
     # Post the args
-    $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintArgs));
+    $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintArgs), true);
     # Get the ID in the result
 
 }
