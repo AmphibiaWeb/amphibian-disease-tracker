@@ -339,6 +339,7 @@ function checkProjectAuthorized($projectData, $uid) {
             $editList[] = $uid;
         }
         $isAuthor = true;
+        $isEditor = true;
     }
     $response = array(
         "can_edit" => $isAuthor || $isEditor,
