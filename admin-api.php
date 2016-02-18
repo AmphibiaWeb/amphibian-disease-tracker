@@ -81,9 +81,9 @@ switch($admin_req)
   case "get":
       returnAjax(readProjectData($_REQUEST));
       break;
-  // case "test":
-  //     returnAjax($db->testSettings());
-  //     break;
+  case "test":
+      returnAjax(mintBcid());
+       break;
   default:
     returnAjax(getLoginState($_REQUEST,true));
   }
@@ -489,11 +489,17 @@ function mintBcid($projectLink, $projectTitle) {
      * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
      ***/
     $projectUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
-    $fimsPassCredential = "";
+    $fimsPassCredential = "demo";
+    $fimsUserCredential = "demo"; # AmphibianDisease
     $fimsAuthUrl = "http://www.biscicol.org/biocode-fims/rest/authenticationService/login";
     $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
-    $fimsAuthArgs = "username=AmphibianDisease&password=" . $fimsPassCredential;
+    $fimsAuthArgs = "username=" . $fimsUserCredential . "&password=" . $fimsPassCredential;
     $fimsMintArgs = "webAddress=" . $projectUri . "&title=" . $projectTitle . "resourceType=http://purl.org/dc/dcmitype/Dataset";
+    # Post the login
+    return json_decode(do_post_request($fimsAuthUrl, $fimsAuthArgs));
+    # Post the args
+    $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintArgs));
+    # Get the ID in the result
 
 }
 
