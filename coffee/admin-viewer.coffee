@@ -67,6 +67,8 @@ loadSUProjectBrowser = ->
       unless result.status is true
         error = result.human_error ? "Sorry, you can't do that right now"
         stopLoadError error
+        console.error "Can't do SU listing!"
+        console.warn result
         return false
       html = """
       <h2 class="new-title col-xs-12">All Projects</h2>
@@ -78,7 +80,7 @@ loadSUProjectBrowser = ->
       for projectId, projectDetails of result.projects
         list.push projectId
         # Or lock-outline ??
-        icon = if projectDetails.public then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
+        icon = if projectDetails.public.toBool() then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
         html = """
         <li>
           <button class="btn btn-primary" data-project="#{projectId}" data-toggle="tooltip" title="Project ##{projectId.substring(0,8)}...">

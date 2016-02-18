@@ -1861,6 +1861,8 @@ loadSUProjectBrowser = function() {
       if (result.status !== true) {
         error = (ref = result.human_error) != null ? ref : "Sorry, you can't do that right now";
         stopLoadError(error);
+        console.error("Can't do SU listing!");
+        console.warn(result);
         return false;
       }
       html = "<h2 class=\"new-title col-xs-12\">All Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
@@ -1870,7 +1872,7 @@ loadSUProjectBrowser = function() {
       for (projectId in ref1) {
         projectDetails = ref1[projectId];
         list.push(projectId);
-        icon = projectDetails["public"] ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+        icon = projectDetails["public"].toBool() ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
         html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectDetails.title + "\n  </button>\n</li>";
         $("#project-list").append(html);
       }
