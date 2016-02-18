@@ -88,7 +88,7 @@ populateAdminActions = function() {
     rawSu = toInt(result.detail.userdata.su_flag);
     if (rawSu.toBool()) {
       console.info("NOTICE: This is an SUPERUSER Admin");
-      html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>";
+      html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>";
       $("#admin-actions-block").append(html);
       $("#su-view-projects").click(function() {
         return showAllProjects();

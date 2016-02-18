@@ -7272,7 +7272,7 @@ paper-radio-button #radioContainer div {
 .force-center:after {
   clear: both;
 }
-paper-button.admin-action {
+paper-button[raised].admin-action {
   background: #4CAF50;
   color: #fff;
 }
