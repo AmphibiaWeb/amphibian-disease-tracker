@@ -85,6 +85,12 @@ populateAdminActions = ->
   $("#new-project").click -> loadCreateNewProject()
   $("#edit-project").click -> loadEditor()
   $("#view-project").click -> loadProjectBrowser()
+  verifyLoginCredentials (result) ->
+    rawSu = toInt result.detail.userdata.su_flag
+    if rawSu.toBool()
+      console.info "NOTICE: This is an SUPERUSER Admin"
+    false
+  false
 
 
 
@@ -2081,6 +2087,11 @@ validateFimsData = (dataObject, callback = null) ->
   # When we're successful, run the dependent callback
   if typeof callback is "function"
     callback(dataObject)
+  false
+
+
+mintBcid = (callback = null) ->
+  # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
   false
 
 
