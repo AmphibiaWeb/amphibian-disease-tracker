@@ -338,8 +338,6 @@ function checkProjectAuthorized($projectData, $uid) {
         if(!$isEditor) {
             $editList[] = $uid;
         }
-        $isEditor = true;
-        $isViewer = true;
         $isAuthor = true;
     }
     $response = array(
@@ -348,6 +346,12 @@ function checkProjectAuthorized($projectData, $uid) {
         "is_author" => $isAuthor,
         "editors" => $editList,
         "viewers" => $viewList,
+        "check" => array (
+            "current_user" => $currentUser,
+            "checked_user" => $uid,
+            "is_checked" => $uid == $currentUser,
+            "is_su" => $isSu,
+        ),
     );
     return $response;
 }
@@ -405,6 +409,7 @@ function readProjectData($get, $debug = true) {
     if ($permission["can_view"] !== true) {
         $response["human_error"] = "You are not authorized to view this project";
         $response["error"] = "ACCESS_AUTHORIZATION_FAILED";
+        $response["details"] = $permission;
         return $response;
     }
     # It's good, so set permissions
