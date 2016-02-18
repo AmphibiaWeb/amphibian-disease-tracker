@@ -142,6 +142,8 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
         $users = explode(",", $csvString);
         $users[] = $row["author"];
         $isPublic = boolstr($row["public"]);
+        $suFlag = $login_status["detail"]["userdata"]["su_flag"];
+        $isSu = boolstr($suFlag);
         # Get current user ID
         if($login_status["status"] !== true && !$isPublic) {
             $response = array(
@@ -154,7 +156,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
             returnAjax($response);
         }
         $uid = $login_status["detail"]["uid"];
-        if(!in_array($uid, $users) && !$isPublic) {
+        if(!in_array($uid, $users) && !$isPublic && $isSu !== true) {
             $response = array(
                 "status" => false,
                 "error" => "UNAUTHORIZED_USER",
