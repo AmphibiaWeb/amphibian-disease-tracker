@@ -427,8 +427,6 @@ function readProjectData($get, $debug = true) {
         "editors_list" => array(),
         "viewers_list" => array(),
         "author" => $u->getUsername(),
-        "author_hardlink" => $row["author"],
-        "author_detail" => $detail,
         "composite" => array(),
     );
     # Add the author to the lists
@@ -439,6 +437,7 @@ function readProjectData($get, $debug = true) {
     # Editors
     foreach ($permission["editors"] as $editor) {
         # Get the editor data
+        $u = new UserFunctions($editor, "dblink");
         $detail = $u->getUser($editor);
         $editor = array(
             "email" => $u->getUsername(),
@@ -451,6 +450,7 @@ function readProjectData($get, $debug = true) {
     }
     foreach ($permission["viewers"] as $viewer) {
         # Get the viewer data
+        $u = new UserFunctions($viewer, "dblink");
         $detail = $u->getUser($viewer);
         $viewer = array(
             "email" => $u->getUsername(),
