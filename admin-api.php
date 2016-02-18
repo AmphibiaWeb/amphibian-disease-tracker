@@ -75,6 +75,9 @@ switch($admin_req)
   case "list":
       returnAjax(listProjects(false));
       break;
+  case "sulist":
+      returnAjax(suListProjects(false));
+      break;
   case "get":
       returnAjax(readProjectData($_REQUEST));
       break;
@@ -261,6 +264,16 @@ function listProjects($unauthenticated = true) {
 }
 
 
+function suListProjects() {
+    global $db, $login_status;
+    $suFlag = $login_status["detail"]["userdata"]["su_flag"];
+    return array(
+        "is_su" => strbool($suFlag),
+        "su_val" => $suFlag
+    );
+}
+
+
 function checkProjectAuthorized($projectData, $uid) {
     /***
      * Helper function for checking authorization
@@ -425,7 +438,7 @@ function mintBcid() {
     $fimsAuthUrl = "http://www.biscicol.org/biocode-fims/rest/authenticationService/login";
     $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
     $fimsAuthArgs = "username=AmphibianDisease&password=" . $fimsPassCredential;
-    $fimsMintArgs = "webAddress=" . "foo" . "&title=" . "foo" . "&graph=" . "foo" . "resourceType=http://purl.org/dc/dcmitype/Dataset"
+    $fimsMintArgs = "webAddress=" . "foo" . "&title=" . "foo" . "&graph=" . "foo" . "resourceType=http://purl.org/dc/dcmitype/Dataset";
 
 }
 
