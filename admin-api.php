@@ -418,7 +418,7 @@ function readProjectData($get, $debug = true) {
     $response["user"]["has_view_permissions"] = $permission["can_view"];
     $response["user"]["is_author"] = $permission["is_author"];
     # Rewrite the users to be more practical
-    $u = new UserFunctions();
+    $u = new UserFunctions($row["author"], "dblink");
     $detail = $u->getUser($row["author"]);
     $accessData = array(
         "editors" => array(),
