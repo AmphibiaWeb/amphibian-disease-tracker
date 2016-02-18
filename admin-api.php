@@ -338,9 +338,6 @@ function checkProjectAuthorized($projectData, $uid) {
         if(!$isEditor) {
             $editList[] = $uid;
         }
-        if(!$isViewer) {
-            $viewList[] = $uid;
-        }
         $isEditor = true;
         $isViewer = true;
         $isAuthor = true;
