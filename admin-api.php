@@ -333,7 +333,7 @@ function checkProjectAuthorized($projectData, $uid) {
     }
     $isEditor = in_array($uid, $editList);
     $isViewer = in_array($uid, $viewList);
-    if($isSu === true) {
+    if($isSu) {
         # Superuser is everything!
         if(!$isEditor) {
             $editList[] = $uid;
