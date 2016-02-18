@@ -276,13 +276,17 @@ function suListProjects() {
         );
     }
     # Get a list of all the projects
-    $query = "SELECT `project_id`,`project_title` FROM " . $db->getTable();
+    $query = "SELECT `project_id`,`project_title`, `public` FROM " . $db->getTable();
     try {
         $l = $db->openDB();
         $r = mysqli_query($l, $query);
         $projectList = array();
         while ($row = mysqli_fetch_row($r)) {
-            $projectList[$row[0]] = $row[1];
+            $details = array(
+                "title" => $row[1],
+                "public" => strbool($row[2])
+            );
+            $projectList[$row[0]] = $details;
         }
         return array(
             "status" => strbool($suFlag),
