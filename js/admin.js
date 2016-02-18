@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, showAllProjects, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, showAllProjects, singleDataFileHelper, startAdminActionHelper, user, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1838,6 +1838,48 @@ loadProject = function(projectId, message) {
     message = "";
   }
   toastStatusMessage("Would load project " + projectId + " to view");
+  return false;
+};
+
+loadSUProjectBrowser = function() {
+  startAdminActionHelper();
+  startLoad();
+  verifyLoginCredentials(function(result) {
+    var args, rawSu;
+    rawSu = toInt(result.detail.userdata.su_flag);
+    if (!rawSu.toBool()) {
+      stopLoadError("Sorry, you must be an admin to do this");
+      return false;
+    }
+    args = "perform=sulist";
+    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
+      var error, html, icon, list, projectDetails, projectId, ref, ref1;
+      if (result.status !== true) {
+        error = (ref = result.human_error) != null ? ref : "Sorry, you can't do that right now";
+        stopLoadError(error);
+        return false;
+      }
+      html = "<h2 class=\"new-title col-xs-12\">All Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+      $("#main-body").html(html);
+      list = new Array();
+      ref1 = result.projects;
+      for (projectId in ref1) {
+        projectDetails = ref1[projectId];
+        list.push(projectId);
+        icon = projectDetails["public"] ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+        html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectDetails.title + "\n  </button>\n</li>";
+        $("#project-list").append(html);
+      }
+      $("#project-list button").unbind().click(function() {
+        var project;
+        project = $(this).attr("data-project");
+        return loadProject(project);
+      });
+      return stopLoad();
+    }).error(function(result, status) {
+      return stopLoadError("There was a problem loading viable projects");
+    });
+  });
   return false;
 };
 
