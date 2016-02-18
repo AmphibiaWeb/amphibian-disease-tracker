@@ -306,6 +306,9 @@ function checkProjectAuthorized($projectData, $uid) {
     /***
      * Helper function for checking authorization
      ***/
+    global $login_status;
+    $suFlag = $login_status["detail"]["userdata"]["su_flag"];
+    $isSu = strbool($suFlag);
     $isAuthor = $projectData["author"] == $uid;
     $isPublic = boolstr($projectData["public"]);
     $accessList = explode(",", $projectData["access_data"]);
@@ -325,6 +328,18 @@ function checkProjectAuthorized($projectData, $uid) {
     }
     $isEditor = in_array($uid, $editList);
     $isViewer = in_array($uid, $viewList);
+    if($isSu) {
+        # Superuser is everything!
+        if(!$isEditor) {
+            $editList[] = $uid;
+        }
+        if(!$isViewer) {
+            $viewList[] = $uid;
+        }
+        $isEditor = true;
+        $isViewer = true;
+        $isAuthor = true;
+    }
     $response = array(
         "can_edit" => $isAuthor || $isEditor,
         "can_view" => $isAuthor || $isEditor || $isViewer ||$isPublic,
