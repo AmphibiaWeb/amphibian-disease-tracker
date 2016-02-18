@@ -197,11 +197,11 @@ function newEntry($get)
 function deleteEntry($get)
 {
   /***
-   * Delete a taxon entry
-   * Delete an entry described by the ID parameter
+   * Delete a project entry described by the ID parameter
    *
    * @param $get["id"] The DB id to delete
    ***/
+    return false; # Disabled for now, need auth checks
   global $db;
   $id = $get["id"];
   $result = $db->deleteRow($id,"id");
@@ -472,6 +472,7 @@ function readProjectData($get, $debug = true) {
     $row["includes_caudata"] = boolstr($row["includes_caudata"]);
     $row["includes_gymnophiona"] = boolstr($row["includes_gymnophiona"]);
     $response["project"] = $row;
+    # Do we want to flag if the current user is a superuser?
     # Return it!
     $response["status"] = true;
     $response["error"] = "OK";
