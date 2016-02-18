@@ -98,13 +98,8 @@ populateAdminActions = ->
       """
       $("#admin-actions-block").append html
       $("#su-view-projects").click ->
-        showAllProjects()
+        loadSUProjectBrowser()
     false
-  false
-
-
-showAllProjects = ->
-  toastStatusMessage "Would validate superuser and show all projects in DB"
   false
 
 
