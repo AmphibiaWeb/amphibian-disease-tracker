@@ -872,16 +872,19 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
   #
   # @param bool forceNow force a check now
   ###
-  checkVersion = ->
-    $.get("#{uri.urlString}meta.php","do=get_last_mod&file=#{file}","json")
+  key = file.split("/").pop().split(".")[0]
+  checkVersion = (filePath = file, modKey = key) ->
+    $.get("#{uri.urlString}meta.php","do=get_last_mod&file=#{filePath}","json")
     .done (result) ->
       if forceNow
         console.log("Forced version check:",result)
       unless isNumber result.last_mod
         return false
       unless _adp.lastMod?
-        window._adp.lastMod = result.last_mod
-      if result.last_mod > _adp.lastMod
+        window._adp.lastMod = new Object()
+      unless _adp.lastMod[modKey]?
+        window._adp.lastMod[modKey] = result.last_mod
+      if result.last_mod > _adp.lastMod[modKey]
         # File has updated
         html = """
         <div id="outdated-warning" class="alert alert-warning alert-dismissible fade in" role="alert">
@@ -895,15 +898,19 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
             document.location.reload(true)
         console.warn "Your current version of this page is out of date! Please refresh the page."
       else if forceNow
-        console.info "Your version of this page is up to date: have #{window._adp.lastMod}, got #{result.last_mod}"
+        console.info "Your version of this page is up to date: have #{window._adp.lastMod[modKey]}, got #{result.last_mod}"
     .fail ->
       console.warn("Couldn't check file version!!")
     .always ->
       delay 5*60*1000, ->
         # Delay 5 minutes
-        checkVersion()
-  if forceNow or not window._adp.lastMod?
-    checkVersion()
+        checkVersion(filePath, modKey)
+  try
+    keyExists = window._adp.lastMod[key]
+  catch
+    keyExists = false
+  if forceNow or not window._adp.lastMod? or not keyExists
+    checkVersion(file, key)
     return true
   false
 

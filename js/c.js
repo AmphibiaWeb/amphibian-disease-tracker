@@ -1200,7 +1200,7 @@ animateHoverShadows = function(selector, defaultElevation, raisedElevation) {
 };
 
 checkFileVersion = function(forceNow, file) {
-  var checkVersion;
+  var checkVersion, key, keyExists;
   if (forceNow == null) {
     forceNow = false;
   }
@@ -1214,8 +1214,15 @@ checkFileVersion = function(forceNow, file) {
    *
    * @param bool forceNow force a check now
    */
-  checkVersion = function() {
-    return $.get(uri.urlString + "meta.php", "do=get_last_mod&file=" + file, "json").done(function(result) {
+  key = file.split("/").pop().split(".")[0];
+  checkVersion = function(filePath, modKey) {
+    if (filePath == null) {
+      filePath = file;
+    }
+    if (modKey == null) {
+      modKey = key;
+    }
+    return $.get(uri.urlString + "meta.php", "do=get_last_mod&file=" + filePath, "json").done(function(result) {
       var html;
       if (forceNow) {
         console.log("Forced version check:", result);
@@ -1224,9 +1231,12 @@ checkFileVersion = function(forceNow, file) {
         return false;
       }
       if (_adp.lastMod == null) {
-        window._adp.lastMod = result.last_mod;
+        window._adp.lastMod = new Object();
       }
-      if (result.last_mod > _adp.lastMod) {
+      if (_adp.lastMod[modKey] == null) {
+        window._adp.lastMod[modKey] = result.last_mod;
+      }
+      if (result.last_mod > _adp.lastMod[modKey]) {
         html = "<div id=\"outdated-warning\" class=\"alert alert-warning alert-dismissible fade in\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>We have page updates!</strong> This page has been updated since you last refreshed. <a class=\"alert-link\" id=\"refresh-page\" style=\"cursor:pointer\">Click here to refresh now</a> and get bugfixes and updates.\n</div>";
         if (!$("#outdated-warning").exists()) {
           $("body").append(html);
@@ -1236,18 +1246,23 @@ checkFileVersion = function(forceNow, file) {
         }
         return console.warn("Your current version of this page is out of date! Please refresh the page.");
       } else if (forceNow) {
-        return console.info("Your version of this page is up to date: have " + window._adp.lastMod + ", got " + result.last_mod);
+        return console.info("Your version of this page is up to date: have " + window._adp.lastMod[modKey] + ", got " + result.last_mod);
       }
     }).fail(function() {
       return console.warn("Couldn't check file version!!");
     }).always(function() {
       return delay(5 * 60 * 1000, function() {
-        return checkVersion();
+        return checkVersion(filePath, modKey);
       });
     });
   };
-  if (forceNow || (window._adp.lastMod == null)) {
-    checkVersion();
+  try {
+    keyExists = window._adp.lastMod[key];
+  } catch (_error) {
+    keyExists = false;
+  }
+  if (forceNow || (window._adp.lastMod == null) || !keyExists) {
+    checkVersion(file, key);
     return true;
   }
   return false;

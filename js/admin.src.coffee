@@ -1370,6 +1370,7 @@ $ ->
     $("body").tooltip
       selector: "[data-toggle='tooltip']"
   # The rest of the onload for the admin has been moved to the core.coffee file.
+  checkFileVersion false, "js/admin.min.js"
 
 ###
 # Split-out coffeescript file for adminstrative editor.
