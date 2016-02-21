@@ -563,13 +563,13 @@ getProjectCartoData = (cartoObj) ->
       lat = geoJson.coordinates[0]
       lng = geoJson.coordinates[1]
       # Fill the points as markers
-      row.diseaseDetected = switch row.diseaseDetected
+      row.diseaseDetected = switch row.diseaseDetected.toString().toLowerCase()
         when "true"
           "positive"
         when "false"
           "negative"
         else
-          row.diseaseDetected
+          row.diseaseDetected.toString()
       marker = """
       <google-map-marker latitude="#{lat}" longitude="#{lng}">
         <p>
