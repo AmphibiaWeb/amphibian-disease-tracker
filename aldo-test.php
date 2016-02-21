@@ -50,17 +50,26 @@ $response = array(
 
 # Assuming living on /usr/local/web/aldo-dev
 require_once(dirname(__FILE__)."/../amphibiaweb_disease/DB_CONFIG.php");
+
+$response["data"] = "DB config";
+
 require_once(dirname(__FILE__)."/../amphibiaweb_disease/core/core.php");
 
+$response["data"] = "Core import";
+
 $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+
+$response["data"] = "DB setup";
 
 $print_login_state = false;
 
 require_once(dirname(__FILE__)."/../amphibiaweb_disease/admin/async_login_handler.php");
 
-$udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols); # 5000 ms
+$response["data"] = "Async import"
 
-$result["data"] = "Imports";
+// $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols); # 5000 ms
+
+// $reponse["data"] = "UDB setup";
 
 # Complete import
 # Status: Slow, 5000 ms
