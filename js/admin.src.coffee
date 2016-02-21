@@ -186,6 +186,9 @@ loadCreateNewProject = ->
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract")}
+      <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
+        <div class="markdown-html"></div>
+      </marked-element>
       <h2 class="new-title col-xs-12">Data Permissions</h2>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
@@ -255,6 +258,10 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  ta = p$("#project-notes").textarea
+  $(ta).keyup ->
+    console.info "Keyup change! ", $(this).val()
+    p$("#note-preview").markdown = $(this).val()
   bootstrapUploader()
   bootstrapTransect()
   $("#has-data").on "iron-change", ->
@@ -1609,6 +1616,14 @@ loadEditor = (projectPreload) ->
               </div>
           """ else ""
           # The actual HTML
+          noteHtml = """
+          <h2 class="new-title col-xs-12">Project Notes</h2>
+          <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3" data-field="sample_notes">#{project.sample_notes}</iron-autogrow-textarea>
+          <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
+            <div class="markdown-html"></div>
+            <script type="text/markdown">#{project.sample_notes}</script>
+          </marked-element>
+          """
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -1635,12 +1650,14 @@ loadEditor = (projectPreload) ->
           <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Basics</h3>
             <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project_title" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Primary Disease" value="#{project.disease}"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project_title" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project_title" data-field="project_title"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Primary Pathogen" value="#{project.disease}" data-field="disease"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project_title" data-field="pi_lab"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Reference" value="#{project.reference_id}" id="project_reference" data-field="reference_id"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Publication DOI" value="#{project.publication}" id="doi" data-field="publication"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Contact" value="" id="project_contact"></paper-input>
+            <gold-email-input #{conditionalReadonly} class="project-param" label="Contact Email" value="" id="contact_email"></gold-email-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Diagnostic Lab" value="" id="project_lab"></paper-input>
           </section>
           <section id="data-management" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Data" elevation="2" id="data-card">
