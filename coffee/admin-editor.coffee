@@ -261,12 +261,14 @@ loadEditor = (projectPreload) ->
           <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Basics</h3>
             <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project_title" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Primary Disease" value="#{project.disease}"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project_title" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project_title"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Primary Pathogen" value="#{project.disease}"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project_title"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Reference" value="#{project.reference_id}" id="project_reference"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Publication DOI" value="#{project.publication}" id="doi"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Contact" value="" id="project_contact"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Contact Email" value="" id="contact_email"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Lab" value="" id="project_lab"></paper-input>
           </section>
           <section id="data-management" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Data" elevation="2" id="data-card">
