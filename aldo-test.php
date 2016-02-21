@@ -65,11 +65,11 @@ $print_login_state = false;
 
 require_once(dirname(__FILE__)."/../amphibiaweb_disease/admin/async_login_handler.php");
 
-$response["data"] = "Async import";
+$response["data"] = "Async import"; # 0.02 exec
 
-// $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols); # 5000 ms
+$udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols); 
 
-// $reponse["data"] = "UDB setup";
+$reponse["data"] = "UDB setup"; # 5000 ms exec
 
 # Complete import
 # Status: Slow, 5000 ms
