@@ -73,37 +73,8 @@ $response = array(
 );
 
 # Assuming living on /usr/local/web/aldo-dev
+# Otherwise, path should just be "DB_CONFIG.php"
 require_once(dirname(__FILE__)."/../amphibiaweb_disease/DB_CONFIG.php");
-$print_login_state = false;
-
-
-$response["data"] = "DB config & Import";
-
-require_once(dirname(__FILE__)."/../amphibiaweb_disease/core/core.php");
-
-$response["data"] = "Core import"; # 0.015 exec
-
-
-$cols = array();
-function setCols($cols, $dirty_columns = true)
-{
-    global $db;
-    if (!is_array($cols)) {
-        if (empty($cols)) {
-            returnAjax('No column data provided');
-        } else {
-            returnAjax('Invalid column data type (needs array)');
-        }
-    }
-    $shadow = array();
-    foreach ($cols as $col => $type) {
-        # $col = DBHelper::cleanInput($col); # 32 ms
-        $col = reducedSanitize($col, $dirty_columns); # 5000 ms
-        $shadow[$col] = $type;
-    }
-    $cols = $shadow;
-    return $cols;
-}
 
 function openDB()
 {
@@ -114,29 +85,26 @@ function openDB()
     if ($l = mysqli_connect($sql_url, $default_sql_user, $default_sql_password)) {
         if (mysqli_select_db($l, $default_database)) {
             return $l;
-        } 
+        }
         returnAjax("Could not select DB");
     }
     returnAjax('Could not connect to database.');
 }
 
-function reducedSanitize($input) {
-    global $db;
+
+$n = 60; # ~5000ms
+//$n = 50; # Intermittently ~5000ms
+//$n = 40; # ~ 40-50ms
+$i = 0;
+while($i < $n) {
+    $i++;
     $l = openDB();
-    $output = mysqli_real_escape_string($l, $input);
     mysqli_close($l);
-    return $output;
 }
 
-$response["data"] = "Fn Setcols"; # 33 ms
+$response["data"] = "Looped openDB() $i times";
+$response["n"] = $n;
 
-$ret = setCols($db_cols);
-$response["data"] = "Setcols x1"; # ~35 ms
-$response["cols"] = $ret;
-
-$ret = setCols($db_cols);
-$response["data"] = "Setcols x2"; # ~5000 ms
-$response["cols"] = $ret;
 
 returnAjax($response);
 
