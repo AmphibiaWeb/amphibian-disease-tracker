@@ -1762,7 +1762,7 @@ getProjectCartoData = function(cartoObj) {
       note = "";
       if (taxa !== row.originaltaxa) {
         console.warn(taxa + " was changed from " + row.originaltaxa);
-        note = "(<em>" + row.originalTaxa + "</em>)";
+        note = "(<em>" + row.originaltaxa + "</em>)";
       }
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       workingMap += marker;

@@ -1948,7 +1948,7 @@ getProjectCartoData = (cartoObj) ->
       note = ""
       if taxa isnt row.originaltaxa
         console.warn "#{taxa} was changed from #{row.originaltaxa}"
-        note = "(<em>#{row.originalTaxa}</em>)"
+        note = "(<em>#{row.originaltaxa}</em>)"
       marker = """
       <google-map-marker latitude="#{lat}" longitude="#{lng}">
         <p>
