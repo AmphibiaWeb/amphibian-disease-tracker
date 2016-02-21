@@ -83,7 +83,6 @@ require_once(dirname(__FILE__)."/../amphibiaweb_disease/core/core.php");
 
 $response["data"] = "Core import"; # 0.015 exec
 
-$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
 
 $cols = array();
 function setCols($cols, $dirty_columns = true)
@@ -132,12 +131,12 @@ function reducedSanitize($input) {
 $response["data"] = "Fn Setcols"; # 33 ms
 
 $ret = setCols($db_cols);
-$response["data"] = "Setcols x1"; # 5000 ms
+$response["data"] = "Setcols x1"; # ~35 ms
 $response["cols"] = $ret;
 
-// $ret = setCols($db_cols);
-// $response["data"] = "Setcols x2"; # 5000 ms
-// $response["cols"] = $ret;
+$ret = setCols($db_cols);
+$response["data"] = "Setcols x2"; # ~5000 ms
+$response["cols"] = $ret;
 
 returnAjax($response);
 
