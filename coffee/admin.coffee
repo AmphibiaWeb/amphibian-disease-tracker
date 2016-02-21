@@ -186,6 +186,9 @@ loadCreateNewProject = ->
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract")}
+      <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
+        <div class="markdown-html"></div>
+      </marked-element>
       <h2 class="new-title col-xs-12">Data Permissions</h2>
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
@@ -255,6 +258,10 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  ta = p$("#project-notes").textarea
+  $(ta).keyup ->
+    console.info "Keyup change! ", $(this).val()
+    p$("#note-preview").markdown = $(this).val()
   bootstrapUploader()
   bootstrapTransect()
   $("#has-data").on "iron-change", ->
