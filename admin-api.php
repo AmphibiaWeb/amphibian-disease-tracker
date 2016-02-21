@@ -488,9 +488,10 @@ function mintBcid($projectLink, $projectTitle) {
      * See
      * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
      ***/
+    global $fimsPassword;
     $projectUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
-    $fimsPassCredential = "demo";
-    $fimsUserCredential = "demo"; # AmphibianDisease
+    $fimsPassCredential = $fimsPassword;
+    $fimsUserCredential = "amphibiaweb"; # AmphibianDisease
     $fimsAuthUrl = "http://www.biscicol.org/biocode-fims/rest/authenticationService/login";
     $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
     $fimsAuthArgs = "username=" . $fimsUserCredential . "&password=" . $fimsPassCredential;
