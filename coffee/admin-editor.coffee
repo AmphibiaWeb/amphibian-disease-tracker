@@ -542,7 +542,7 @@ getProjectCartoData = (cartoObj) ->
     $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
   toastStatusMessage "Would ping CartoDB and fetch data for table #{cartoTable}"
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
@@ -570,10 +570,15 @@ getProjectCartoData = (cartoObj) ->
           "negative"
         else
           row.diseasedetected.toString()
+      taxa = "#{row.genus} #{row.specificepithet}"
+      note = ""
+      if taxa isnt row.originaltaxa
+        console.warn "#{taxa} was changed from #{row.originaltaxa}"
+        note = "(<em>#{row.originalTaxa}</em>)"
       marker = """
       <google-map-marker latitude="#{lat}" longitude="#{lng}">
         <p>
-          <em>#{row.genus} #{row.specificepithet}</em>
+          <em>#{row.genus} #{row.specificepithet}</em> #{note}
           <br/>
           Tested <strong>#{row.diseasedetected}</strong> for #{row.diseasetested}
         </p>
