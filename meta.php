@@ -52,6 +52,7 @@ function returnAjax($data)
 
 function getUserFileModTime($get = array())
 {
+    $a = array("defaulted" => false);
     if(!empty($get["file"])) {
         $file = $get["file"];
         if(!file_exists($file)) {
@@ -60,6 +61,7 @@ function getUserFileModTime($get = array())
     }
     else {
         $file = "js/c.min.js";
+        $a["defaulted"] = true;
     }    
     $a = array(
         "last_mod" => filemtime($file),
