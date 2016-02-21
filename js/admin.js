@@ -1348,11 +1348,12 @@ $(function() {
       return openTab(adminParams.adminPageUrl);
     });
   }
-  return loadJS("bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
+  loadJS("bower_components/bootstrap/dist/js/bootstrap.min.js", function() {
     return $("body").tooltip({
       selector: "[data-toggle='tooltip']"
     });
   });
+  return checkFileVersion(false, "js/admin.min.js");
 });
 
 
