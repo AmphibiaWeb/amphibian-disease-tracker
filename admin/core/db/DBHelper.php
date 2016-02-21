@@ -200,9 +200,9 @@ class DBHelper
     $preg = "/[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/";
         if (preg_match($preg, $input) === 1) {
             # It's an email, let's escape it and be done with it
-        $l = $this->openDB();
+            $l = $this->openDB();
             $output = mysqli_real_escape_string($l, $input);
-
+            mysqli_close($l);
             return $output;
         }
         if (is_array($input)) {
@@ -223,6 +223,7 @@ class DBHelper
             }
             $l = $this->openDB();
             $output = mysqli_real_escape_string($l, $input);
+            mysqli_close($l);
         }
 
         return $output;
