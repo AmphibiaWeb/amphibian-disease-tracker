@@ -19,7 +19,8 @@ $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $s
 
 require_once(dirname(__FILE__)."/admin/async_login_handler.php");
 
-$udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
+# Declaring this makes Aldo slow
+# $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols); 
 
 $start_script_timer = microtime_float();
 

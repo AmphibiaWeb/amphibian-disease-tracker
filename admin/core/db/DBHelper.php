@@ -93,7 +93,25 @@ class DBHelper
 
         return $this->url;
     }
-
+    
+    private function setLink($link) {
+        $this->link = $link;
+    }
+    
+    public function getLink() {
+        if(empty($this->link)) {
+            $this->openDB();
+        }
+        return $this->link;
+    }
+    
+    private function invalidateLink() {
+        $this->setLink(null);
+        return $this->openDB();
+    }
+    public function closeLink() {
+        return mysqli_close($this->getLink());
+    }
     protected function setSQLURL($url)
     {
         $this->url = $url;
@@ -127,11 +145,11 @@ class DBHelper
 
     protected function testSettings($table = null, $detail = false)
     {
-        $l = $this->openDB();
+        
         if (!empty($table)) {
             $this->setTable($table);
         }
-        if (mysqli_query($l, 'SELECT * FROM `'.$this->getTable().'` LIMIT 1') === false) {
+        if (mysqli_query($this->getLink(), 'SELECT * FROM `'.$this->getTable().'` LIMIT 1') === false) {
             return $this->createTable($detail);
         }
 
@@ -149,11 +167,11 @@ class DBHelper
         }
         $query .= ',PRIMARY KEY (id),UNIQUE id (id),KEY id_2 (id))';
         $error = false;
-        $l = $this->openDB();
-        $r = mysqli_query($l, $query);
+        
+        $r = mysqli_query($this->getLink(), $query);
         if ($r !== false) {
             $query2 = 'INSERT INTO `'.$this->getTable().'` VALUES()';
-            $r2 = mysqli_query($l, $query2);
+            $r2 = mysqli_query($this->getLink(), $query2);
             if ($r2 === false) {
                 $error = mysqli_error($l);
             }
@@ -178,7 +196,9 @@ class DBHelper
             $search[] = '@<[\/\!]*?[^<>]*?>@si'; // Strip out HTML tags
         }
         $output = preg_replace($search, '', $input);
-
+        # Replace HTML brackets for anything that slipped through
+        $output = str_replace("<", "&#60;", $output);
+        $output = str_replace(">", "&#62;", $output);
         return $output;
     }
 
@@ -200,9 +220,7 @@ class DBHelper
     $preg = "/[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/";
         if (preg_match($preg, $input) === 1) {
             # It's an email, let's escape it and be done with it
-        $l = $this->openDB();
-            $output = mysqli_real_escape_string($l, $input);
-
+            $output = mysqli_real_escape_string($this->getLink(), $input);
             return $output;
         }
         if (is_array($input)) {
@@ -221,8 +239,7 @@ class DBHelper
             $input = str_replace("'", '&#39;', $input);
                 $input = str_replace('"', '&#34;', $input);
             }
-            $l = $this->openDB();
-            $output = mysqli_real_escape_string($l, $input);
+            $output = mysqli_real_escape_string($this->getLink(), $input);
         }
 
         return $output;
@@ -264,6 +281,7 @@ class DBHelper
      ***/
     if ($l = mysqli_connect($this->getSQLURL(), $this->getSQLUser(), $this->getSQLPW())) {
         if (mysqli_select_db($l, $this->getDB())) {
+            $this->setLink($l);
             return $l;
         }
     }
@@ -272,9 +290,9 @@ class DBHelper
 
     protected function getFirstRow($query)
     {
-        $l = $this->openDB();
+        
         try {
-            $result = mysqli_query($l, $query);
+            $result = mysqli_query($this->getLink(), $query);
             if ($result) {
                 $row = mysqli_fetch_assoc($result);
             } else {
@@ -296,7 +314,7 @@ class DBHelper
             $item = $this->sanitize($item);
             $field_name = $this->sanitize($field_name);
         }
-        $l = $this->openDB();
+        
         if (false) {
             #is_numeric($item))
 
@@ -306,7 +324,7 @@ class DBHelper
         }
         $query = 'SELECT * FROM `'.$this->getTable()."` WHERE `$field_name`=".$item_string;
         try {
-            $result = mysqli_query($l, $query);
+            $result = mysqli_query($this->getLink(), $query);
             if ($result === false) {
                 if ($test) {
                     return array('status' => false,'query' => $query,'error' => 'false result');
@@ -343,9 +361,9 @@ class DBHelper
             $field_name = $this->sanitize($field_name);
         }
 
-        $l = $this->openDB();
+        
         $query = 'SELECT * FROM `'.$this->getTable()."` WHERE `$field_name`='$item'";
-        $result = mysqli_query($l, $query);
+        $result = mysqli_query($this->getLink(), $query);
         if ($result === false && $throw === true) {
             throw(new Exception('MySQL error - '.mysqli_error($l)));
         }
@@ -360,9 +378,9 @@ class DBHelper
      *
      * @return int
      ***/
-    $l = $this->openDB();
+    
         $query = 'SELECT * FROM `'.$this->getTable().'` ORDER BY id DESC LIMIT 1';
-        $result = mysqli_query($l, $query);
+        $result = mysqli_query($this->getLink(), $query);
         $rows = mysqli_fetch_row($result);
 
         return $rows[0];
@@ -379,15 +397,15 @@ class DBHelper
      ***/
     $value = $this->sanitize($value);
         $field_name = $this->sanitize($field_name);
-        $l = $this->openDB();
-        mysqli_query($l, 'BEGIN');
+        
+        mysqli_query($this->getLink(), 'BEGIN');
         $query = 'DELETE FROM `'.$this->getTable()."` WHERE `$field_name`='$value'";
-        if (mysqli_query($l, $query)) {
-            mysqli_query($l, 'COMMIT');
+        if (mysqli_query($this->getLink(), $query)) {
+            mysqli_query($this->getLink(), 'COMMIT');
 
             return array('status' => true,'rows' => mysqli_affected_rows($l));
         } else {
-            $r = mysqli_query($l, 'ROLLBACK');
+            $r = mysqli_query($this->getLink(), 'ROLLBACK');
             if ($throw === true) {
                 throw(new Exception('Failed to delete row.'));
             }
@@ -437,12 +455,13 @@ class DBHelper
             if ($test) {
                 $retval = $querystring;
             } else {
-                $l = $this->openDB();
-                mysqli_query($l, 'BEGIN');
-                if (mysqli_query($l, $querystring) === false) {
-                    $r = mysqli_query($l, 'ROLLBACK');
+                
+                mysqli_query($this->getLink(), 'BEGIN');
+                if (mysqli_query($this->getLink(), $querystring) === false) {
+                    $error = mysqli_error($l);
+                    $r = mysqli_query($this->getLink(), 'ROLLBACK');
 
-                    return array(false,'rollback_status' => $r,'error' => mysqli_error($l),'query' => $querystring);
+                    return array(false,'rollback_status' => $r,'error' => $error,'query' => $querystring);
                 }
             }
             $querystring = 'UPDATE `'.$this->getTable().'` SET ';
@@ -469,15 +488,16 @@ class DBHelper
 
                 return $retval;
             } else {
-                $res2 = mysqli_query($l, $querystring);
+                $res2 = mysqli_query($this->getLink(), $querystring);
                 if ($res2 !== false) {
-                    $r = mysqli_query($l, 'COMMIT');
-                    
+                    $r = mysqli_query($this->getLink(), 'COMMIT');
+
                     return $r;
                 } else {
-                    $r = mysqli_query($l, 'ROLLBACK');
+                    $error = mysqli_error($l);
+                    $r = mysqli_query($this->getLink(), 'ROLLBACK');
 
-                    return array(false,'rollback_status' => $r,'result' => $res2,'error' => mysqli_error($l),'query' => $querystring);
+                    return array(false,'rollback_status' => $r,'result' => $res2,'error' => $error,'query' => $querystring);
                 }
             }
         } else {
@@ -543,8 +563,8 @@ class DBHelper
         if ($debug_query === true) {
             return array('status' => false,'debug' => true,'query' => $query,'col_selector' => $col_selector,'boolean_type' => $boolean_type,'ordering' => $order);
         }
-        $l = $this->openDB();
-        $r = mysqli_query($l, $query);
+        
+        $r = mysqli_query($this->getLink(), $query);
 
         return $r === false ? mysqli_error($l) : $r;
     }
@@ -582,8 +602,8 @@ class DBHelper
             $order = ' ORDER BY '.'`'.implode('`,`', $ordering).'`';
             $query .= $order;
         }
-        $l = $this->openDB();
-        $r = mysqli_query($l, $query);
+        
+        $r = mysqli_query($this->getLink(), $query);
 
         return $r === false ? mysqli_error($l) : $r;
     }
@@ -606,22 +626,22 @@ class DBHelper
         if (!$this->is_entry($uval, $column, $precleaned)) {
             throw(new Exception("No item '$uval' exists for column '$column' in ".$this->getTable()));
         }
-        $l = $this->openDB();
+        
         if (!empty($field_name)) {
             $values = array();
             if (is_array($field_name)) {
                 foreach ($field_name as $key) {
                     # Map each field name onto the value of the current value item
                 $item = current($value);
-                    $key = $precleaned ? mysqli_real_escape_string($l, $key) : $this->sanitize($key);
-                    $values[$key] = $precleaned ? mysqli_real_escape_string($l, $item) : $this->sanitize($item);
+                    $key = $precleaned ? mysqli_real_escape_string($this->getLink(), $key) : $this->sanitize($key);
+                    $values[$key] = $precleaned ? mysqli_real_escape_string($this->getLink(), $item) : $this->sanitize($item);
                     next($value);
                 }
             } else {
                 # $field_name isn't an array. Let's make sure $value isn't either
             if (!is_array($value)) {
-                $key = $precleaned ? mysqli_real_escape_string($l, $field_name) : $this->sanitize($field_name);
-                $values[$key] = $precleaned ? mysqli_real_escape_string($l, $value) : $this->sanitize($value);
+                $key = $precleaned ? mysqli_real_escape_string($this->getLink(), $field_name) : $this->sanitize($field_name);
+                $values[$key] = $precleaned ? mysqli_real_escape_string($this->getLink(), $value) : $this->sanitize($value);
             } else {
                 # Mismatched types
                 throw(new Exception("Mismatched types for \$value and \$field_name"));
@@ -632,9 +652,9 @@ class DBHelper
         if (is_array($value) && is_string(key($value))) {
             $values = array();
             foreach ($value as $key => $value) {
-                $key = $precleaned ? mysqli_real_escape_string($l, $key) : $this->sanitize($key);
+                $key = $precleaned ? mysqli_real_escape_string($this->getLink(), $key) : $this->sanitize($key);
                 $key = str_replace('&#95;', '_', $key);
-                $values[$key] = $precleaned ? mysqli_real_escape_string($l, $value) : $this->sanitize($value);
+                $values[$key] = $precleaned ? mysqli_real_escape_string($this->getLink(), $value) : $this->sanitize($value);
             }
         } else {
             throw(new Exception("No column found for \$value"));
@@ -647,33 +667,33 @@ class DBHelper
         }
         $set_string = implode(',', $sets);
         $query = 'UPDATE `'.$this->getTable()."` SET $set_string WHERE `$column`='$uval'";
-        mysqli_query($l, 'BEGIN');
-        $r = mysqli_query($l, $query);
+        mysqli_query($this->getLink(), 'BEGIN');
+        $r = mysqli_query($this->getLink(), $query);
         if ($r !== false) {
-            mysqli_query($l, 'COMMIT');
+            mysqli_query($this->getLink(), 'COMMIT');
 
             return true;
         } else {
             $error = mysqli_error($l)." - for $query";
-            mysqli_query($l, 'ROLLBACK');
+            mysqli_query($this->getLink(), 'ROLLBACK');
 
             return $error;
         }
     }
-    
-    
+
+
     public function columnExists($columnName) {
         /***
          * Check if the specified column exists
          *
          * @returns bool
          ***/
+
         
-        $l = $this->openDB();
-        $result = mysqli_query($l, "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
+        $result = mysqli_query($this->getLink(), "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
         return (mysqli_num_rows($result)) ? TRUE : FALSE;
     }
-    
+
     protected function addColumn($columnName, $columnType = null) {
         /***
          * Add a new column. DATA MUST BE SANITIZED BEFORE CALLING!
@@ -700,12 +720,12 @@ class DBHelper
         }
         # Create it!
         $query = "ALTER TABLE `" . $this->getTable() . "` ADD " . $columnName . " " . $columnType;
-        $l = $this->openDB();
-        $r = mysqli_query($l, $query);
+        
+        $r = mysqli_query($this->getLink(), $query);
         if($r === false) {
             return array(
                 "status" => $r,
-                "error" => mysqli_error($l, $r),
+                "error" => mysqli_error($this->getLink(), $r),
             );
         }
         return array(
