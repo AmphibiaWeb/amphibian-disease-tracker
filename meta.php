@@ -61,7 +61,11 @@ function getUserFileModTime($get = array())
     else {
         $file = "js/c.min.js";
     }    
-    return filemtime($file);
+    $a = array(
+        "last_mod" => filemtime($file),
+        "file" => $file,
+    );    
+    return $a;
 }
 
 function doUploadImage()
@@ -86,7 +90,7 @@ $do = isset($_REQUEST['do']) ? strtolower($_REQUEST['do']) : null;
 
 switch ($do) {
 case 'get_last_mod':
-    returnAjax(array('last_mod' => getUserFileModTime()));
+    returnAjax(getUserFileModTime());
     break;
 case 'upload_image':
     returnAjax(doUploadImage());
