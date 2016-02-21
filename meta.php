@@ -63,10 +63,8 @@ function getUserFileModTime($get = array())
         $file = "js/c.min.js";
         $a["defaulted"] = true;
     }    
-    $a = array(
-        "last_mod" => filemtime($file),
-        "file" => $file,
-    );    
+    $a["last_mod"] = filemtime($file);
+    $a["file"] = $file;
     return $a;
 }
 
