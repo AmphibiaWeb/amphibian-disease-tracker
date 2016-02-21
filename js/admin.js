@@ -1725,12 +1725,12 @@ getProjectCartoData = function(cartoObj) {
     $("#transect-viewport").attr("zoom", zoom);
   } catch (_error) {}
   toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
+  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var error, geoJson, k, lat, lng, marker, ref, row, rows, truncateLength, workingMap;
+    var error, geoJson, k, lat, lng, marker, note, ref, row, rows, taxa, truncateLength, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
@@ -1758,7 +1758,13 @@ getProjectCartoData = function(cartoObj) {
             return row.diseasedetected.toString();
         }
       })();
-      marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em>\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
+      taxa = row.genus + " " + row.specificepithet;
+      note = "";
+      if (taxa !== row.originaltaxa) {
+        console.warn(taxa + " was changed from " + row.originaltaxa);
+        note = "(<em>" + row.originalTaxa + "</em>)";
+      }
+      marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       workingMap += marker;
     }
     workingMap += "</google-map>";
