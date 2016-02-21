@@ -83,86 +83,75 @@ $result = $db->sanitize($test, $dirty);
 $response["data"] = "Sanitize 2";
 
 
-// $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+// $db2 = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
 
-// $reponse["data"] = "Duplicate DBHelper setup"; # 5000 ms exec
+// $response["data"] = "Duplicate DBHelper setup"; # 5000 ms exec
 
-/*****************************************************************
-
-  In the class DBHelper, the following is slowing it down:
-
-  public function __construct($database, $user, $pw, $url = 'localhost', $table = null, $cols = null)
-  {
-  /***
-  * @param string $database the database to connect to
-  * @param string $user the username for the SQL database
-  * @param string $pw the password for $user in $database
-  * @param string $url the URL of the SQL server
-  * @param string $table the default table
-  * @param array $cols the column information. Note that it must be
-  * specified here in the constructor!!
-  ***
-  $this->db = $database;
-  $this->SQLuser = $user;
-  $this->pw = $pw;
-  $this->url = $url;
-  $this->table = $table;
-  if (is_array($cols)) {
-    $this->setCols($cols);
-  }
-}
-
-
-protected function setCols($cols, $dirty_columns = true)
+$cols = array();
+function setCols($cols, $dirty_columns = true)
 {
+    global $db;
     if (!is_array($cols)) {
         if (empty($cols)) {
-            throw(new Exception('No column data provided'));
+            returnAjax('No column data provided');
         } else {
-            throw(new Exception('Invalid column data type (needs array)'));
+            returnAjax('Invalid column data type (needs array)');
         }
     }
     $shadow = array();
     foreach ($cols as $col => $type) {
-        $col = $this->sanitize($col, $dirty_columns);
+        # $col = DBHelper::cleanInput($col); # 32 ms
+        $col = reducedSanitize($col, $dirty_columns); # 5000 ms
         $shadow[$col] = $type;
     }
-    $this->cols = $shadow;
+    $cols = $shadow;
+    return $cols;
 }
 
-
-public static function cleanInput($input, $strip_html = true)
+function openDB()
 {
-    $search = array(
-        '@<script[^>]*?>.*?</script>@si',   // Strip out javascript
-        '@<style[^>]*?>.*?</style>@siU',    // Strip style tags properly
-        '@<![\s\S]*?--[ \t\n\r]*>@',         // Strip multi-line comments
-    );
-    if ($strip_html) {
-        $search[] = '@<[\/\!]*?[^<>]*?>@si'; // Strip out HTML tags
+    /***
+     * @return mysqli_resource
+     ***/
+    global $default_database,$default_sql_user,$default_sql_password, $sql_url;
+    if ($l = mysqli_connect($sql_url, $default_sql_user, $default_sql_password)) {
+        if (mysqli_select_db($l, $default_database)) {
+            return $l;
+        } 
+        returnAjax("Could not select DB");
     }
-    $output = preg_replace($search, '', $input);
-    # Replace HTML brackets for anything that slipped through
-    $output = str_replace("<", "&#60;", $output);
-    $output = str_replace(">", "&#62;", $output);
+    returnAjax('Could not connect to database.');
+}
+
+function reducedSanitize($input) {
+    global $db;
+    $l = openDB();
+    $output = mysqli_real_escape_string($l, $input);
+    mysqli_close($l);
     return $output;
 }
 
+$response["data"] = "Fn Setcols"; # 33 ms
 
-public function sanitize($input, $dirty_entities = false)
+$ret = setCols($db_cols);
+$response["data"] = "Setcols x1"; # 5000 ms
+$response["cols"] = $ret;
+
+// setCols($db_cols);
+// $response["data"] = "Setcols x2";
+
+/*****************************************************************
+
+  In the class DBHelper, the following is slowing it down:
+*/
+
+function sanitize($input, $dirty_entities = false)
 {
-    # Emails get mutilated here -- let's check that first
-    $preg = "/[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/";
-    if (preg_match($preg, $input) === 1) {
-        # It's an email, let's escape it and be done with it
-        $l = $this->openDB();
-        $output = mysqli_real_escape_string($l, $input);
-
-        return $output;
-    }
+    global $db;
     if (is_array($input)) {
+        # IGNORE FOR DEBUG PURPOSES
         foreach ($input as $var => $val) {
-            $output[$var] = $this->sanitize($val, $dirty_entities);
+            $output[$var] = $db->sanitize($val, $dirty_entities);
         }
     } else {
         if (get_magic_quotes_gpc()) {
@@ -170,19 +159,21 @@ public function sanitize($input, $dirty_entities = false)
         }
         # We want JSON to pass through unscathed, just be escaped
         if (!$dirty_entities && json_encode(json_decode($input,true)) != $input) {
-            $input = htmlentities(self::cleanInput($input));
+            $input = htmlentities(DBHelper::cleanInput($input));
             $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
             $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
             $input = str_replace("'", '&#39;', $input);
             $input = str_replace('"', '&#34;', $input);
         }
-        $l = $this->openDB();
-        $output = mysqli_real_escape_string($l, $input);
+        // $l = $db->openDB();
+        // $output = mysqli_real_escape_string($l, $input);
+        // mysqli_close($l);
+        $output = $input;
     }
 
     return $output;
 }
-
+/*
 public function openDB()
 {
     /***
@@ -200,7 +191,7 @@ public function openDB()
 
 // $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
 
-// $reponse["data"] = "UDB setup"; # 10000 ms exec
+// $response["data"] = "UDB setup"; # 10000 ms exec
 
 // $p = new Stronghash();
 
