@@ -1748,13 +1748,13 @@ getProjectCartoData = function(cartoObj) {
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
       row.diseaseDetected = (function() {
-        switch (row.diseaseDetected) {
+        switch (row.diseaseDetected.toString().toLowerCase()) {
           case "true":
             return "positive";
           case "false":
             return "negative";
           default:
-            return row.diseaseDetected;
+            return row.diseaseDetected.toString();
         }
       })();
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em>\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
