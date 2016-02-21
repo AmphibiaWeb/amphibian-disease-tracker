@@ -38,21 +38,44 @@ if (!function_exists('elapsed')) {
     }
         }
 
-
+if(!function_exists("returnAjax")) {
+    function returnAjax($data)
+    {
+        if (!is_array($data)) {
+            $data = array($data);
+        }
+        $data['execution_time'] = elapsed();
+        $data['completed'] = microtime_float();
+        global $do;
+        $data['requested_action'] = $do;
+        $data['args_provided'] = $_REQUEST;
+        if (!isset($data['status'])) {
+            $data['status'] = false;
+            $data['error'] = 'Server returned null or otherwise no status.';
+            $data['human_error'] = "Server didn't respond correctly. Please try again.";
+            $data['app_error_code'] = -10;
+        }
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Content-type: application/json');
+        global $billingTokens;
+        if (is_array($billingTokens)) {
+            $data['billing_meta'] = $billingTokens;
+        }
+        print @json_encode($data, JSON_FORCE_OBJECT);
+        exit();
+    }
+        }
 
 $response = array(
     "status" => true,
     "data" => "Simple test",
 );
 
-# Base functions and simple returnr
-# Status: Fast
-
 # Assuming living on /usr/local/web/aldo-dev
 require_once(dirname(__FILE__)."/../amphibiaweb_disease/DB_CONFIG.php");
 $print_login_state = false;
 
-require_once(dirname(__FILE__)."/../amphibiaweb_disease/admin/async_login_handler.php");
 
 $response["data"] = "DB config & Import";
 
@@ -61,31 +84,6 @@ require_once(dirname(__FILE__)."/../amphibiaweb_disease/core/core.php");
 $response["data"] = "Core import"; # 0.015 exec
 
 $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
-
-$response["data"] = "DB setup"; # 30 exec
-
-$test = "Here is a test sentence with CHARACTERS";
-$dirty = true;
-
-$response["data"] = "Vars";
-
-try {
-$result = $db->sanitize($test, $dirty);
-
-$response["data"] = "Sanitize 1";
-} catch(Exception $e) {
-$response["data"] = "Sanitize 1, error " . $e->getMessage();
-}
-
-
-$result = $db->sanitize($test, $dirty);
-
-$response["data"] = "Sanitize 2";
-
-
-// $db2 = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
-
-// $response["data"] = "Duplicate DBHelper setup"; # 5000 ms exec
 
 $cols = array();
 function setCols($cols, $dirty_columns = true)
@@ -137,70 +135,9 @@ $ret = setCols($db_cols);
 $response["data"] = "Setcols x1"; # 5000 ms
 $response["cols"] = $ret;
 
-// setCols($db_cols);
-// $response["data"] = "Setcols x2";
-
-/*****************************************************************
-
-  In the class DBHelper, the following is slowing it down:
-*/
-
-function sanitize($input, $dirty_entities = false)
-{
-    global $db;
-    if (is_array($input)) {
-        # IGNORE FOR DEBUG PURPOSES
-        foreach ($input as $var => $val) {
-            $output[$var] = $db->sanitize($val, $dirty_entities);
-        }
-    } else {
-        if (get_magic_quotes_gpc()) {
-            $input = stripslashes($input);
-        }
-        # We want JSON to pass through unscathed, just be escaped
-        if (!$dirty_entities && json_encode(json_decode($input,true)) != $input) {
-            $input = htmlentities(DBHelper::cleanInput($input));
-            $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
-            $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
-            $input = str_replace("'", '&#39;', $input);
-            $input = str_replace('"', '&#34;', $input);
-        }
-        // $l = $db->openDB();
-        // $output = mysqli_real_escape_string($l, $input);
-        // mysqli_close($l);
-        $output = $input;
-    }
-
-    return $output;
-}
-/*
-public function openDB()
-{
-    /***
-     * @return mysqli_resource
-     ***
-    if ($l = mysqli_connect($this->getSQLURL(), $this->getSQLUser(), $this->getSQLPW())) {
-        if (mysqli_select_db($l, $this->getDB())) {
-            return $l;
-        }
-    }
-    throw(new Exception('Could not connect to database.'));
-}
-
-*****************************************************************/
-
-// $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
-
-// $response["data"] = "UDB setup"; # 10000 ms exec
-
-// $p = new Stronghash();
-
-// $response["data"] = "First stronghash"; # 26 ms
-
-// $q = new Stronghash();
-
-// $response["data"] = "Second stronghash"; # 40 ms
-
+// $ret = setCols($db_cols);
+// $response["data"] = "Setcols x2"; # 5000 ms
+// $response["cols"] = $ret;
 
 returnAjax($response);
 
