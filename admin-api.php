@@ -511,6 +511,7 @@ function mintBcid($projectLink, $projectTitle) {
     return array(
         "fgc" => $parsed_response,
         "dp" => $dopost,
+        "server" => "annie",
     );
     # Post the args
     $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintArgs), true);
