@@ -93,7 +93,25 @@ class DBHelper
 
         return $this->url;
     }
-
+    
+    private function setLink($link) {
+        $this->link = $link;
+    }
+    
+    private function getLink() {
+        if(empty($this->link)) {
+            $this->openDB();
+        }
+        return $this->link;
+    }
+    
+    private function invalidateLink() {
+        $this->setLink(null);
+        return $this->openDB();
+    }
+    private function closeLink() {
+        return mysqli_close($this->getLink());
+    }
     protected function setSQLURL($url)
     {
         $this->url = $url;
@@ -202,9 +220,7 @@ class DBHelper
     $preg = "/[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/";
         if (preg_match($preg, $input) === 1) {
             # It's an email, let's escape it and be done with it
-            $l = $this->openDB();
-            $output = mysqli_real_escape_string($l, $input);
-            mysqli_close($l);
+            $output = mysqli_real_escape_string($this->getLink(), $input);
             return $output;
         }
         if (is_array($input)) {
@@ -223,9 +239,7 @@ class DBHelper
             $input = str_replace("'", '&#39;', $input);
                 $input = str_replace('"', '&#34;', $input);
             }
-            $l = $this->openDB();
-            $output = mysqli_real_escape_string($l, $input);
-            mysqli_close($l);
+            $output = mysqli_real_escape_string($this->getLink(), $input);
         }
 
         return $output;
@@ -267,6 +281,7 @@ class DBHelper
      ***/
     if ($l = mysqli_connect($this->getSQLURL(), $this->getSQLUser(), $this->getSQLPW())) {
         if (mysqli_select_db($l, $this->getDB())) {
+            $this->setLink($l);
             return $l;
         }
     }
