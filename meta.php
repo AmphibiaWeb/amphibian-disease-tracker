@@ -90,7 +90,7 @@ $do = isset($_REQUEST['do']) ? strtolower($_REQUEST['do']) : null;
 
 switch ($do) {
 case 'get_last_mod':
-    returnAjax(getUserFileModTime());
+    returnAjax(getUserFileModTime($_REQUEST));
     break;
 case 'upload_image':
     returnAjax(doUploadImage());
