@@ -98,7 +98,7 @@ class DBHelper
         $this->link = $link;
     }
     
-    private function getLink() {
+    public function getLink() {
         if(empty($this->link)) {
             $this->openDB();
         }
