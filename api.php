@@ -360,7 +360,7 @@ function doAWebValidate($get) {
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
-                $aWebPretty["species"] = $providedSpecies == "nov. sp." ? "nov. sp.":"";
+                $aWebPretty["species"] = $providedSpecies == "nov. sp." ? "nov. sp.":"sp.";
                 $response["status"] = true;
                 $response["notices"][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical genus.";
                 $response["original_taxon"] = $providedGenus;
@@ -444,7 +444,7 @@ function doAWebValidate($get) {
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
-                $aWebPretty["species"] = $providedSpecies == "nov. sp." ? "nov. sp.":"";
+                $aWebPretty["species"] = $providedSpecies == "nov. sp." ? "nov. sp.":"sp.";
                 $response["status"] = true;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response["validated_taxon"] = $aWebPretty;
@@ -452,7 +452,11 @@ function doAWebValidate($get) {
             }
             # Gender? Latin sucks.
             # See: sylvaticus vs sylvatica
-            $key = array_find(substr($providedSpecies, 0, -3), $speciesListComparative);
+            if(strlen($providedSpecies) > 3) {
+                $key = array_find(substr($providedSpecies, 0, -3), $speciesListComparative);
+            } else {
+                $key = false;
+            }
             if($key !== false) {
                 $response["notices"][] = "FUZZY_SPECIES_MATCH";
                 $response["notices"][] = "This is just a probable match for your entry '$testSpecies'. We ignored the species gender ending for you. If this isn't a match, your species is invalid";
