@@ -1143,6 +1143,7 @@ newGeoDataHandler = function(dataObject) {
       tRow = new Object();
       for (column in row) {
         value = row[column];
+        column = column.trim();
         skipCol = false;
         switch (column) {
           case "ContactName":
@@ -1169,6 +1170,9 @@ newGeoDataHandler = function(dataObject) {
             break;
           case "specimenDisposition":
             column = "sampleDisposition";
+            break;
+          case "sampleType":
+            column = "sampleMethod";
             break;
           case "elevation":
             column = "alt";
