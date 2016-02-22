@@ -1403,7 +1403,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           return false
       # Ping the server
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
-      args = "action=upload&sql_query=#{apiPostSqlQuery}&blobby=true"
+      args = "action=upload&sql_query=#{apiPostSqlQuery}"
       # console.info "Would query with args", args
       console.info "Querying:"
       console.info sqlQuery
@@ -1498,6 +1498,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         bsAlert "Couldn't upload dataset. Please try again later.", "danger"
       .always ->
         try
+          duration = Date.now() - postTimeStart
+          console.info "POST and process took #{duration}ms"
           clearTimeout window._adp.initialTimeout
           clearTimeout window._adp.secondaryTimeout
           
