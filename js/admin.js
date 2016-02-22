@@ -195,128 +195,135 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dataCheck, dates, dispositions, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uDate, uTime, uniqueId, years;
+  var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dataCheck, dates, dispositions, e, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uDate, uTime, uniqueId, years;
   startLoad();
-  dataCheck = true;
-  $("[required]").each(function() {
-    var val;
-    try {
-      val = $(this).val();
-      if (isNull(val)) {
-        $(this).get(0).focus();
-        dataCheck = false;
-        return false;
-      }
-    } catch (_error) {}
-  });
-  if (!dataCheck) {
-    stopLoadError("Please fill out all required fields");
-    return false;
-  }
-  postData = new Object();
-  ref = $(".project-field");
-  for (l = 0, len = ref.length; l < len; l++) {
-    el = ref[l];
-    if ($(el).hasClass("iron-autogrow-textarea-0")) {
-      input = $($(el).get(0).textarea).val();
-    } else {
-      input = $(el).val();
+  try {
+    dataCheck = true;
+    $("[required]").each(function() {
+      var val;
+      try {
+        val = $(this).val();
+        if (isNull(val)) {
+          $(this).get(0).focus();
+          dataCheck = false;
+          return false;
+        }
+      } catch (_error) {}
+    });
+    if (!dataCheck) {
+      stopLoadError("Please fill out all required fields");
+      return false;
     }
-    key = $(el).attr("data-field");
-    if (!isNull(key)) {
-      if ($(el).attr("type") === "number") {
-        postData[key] = toInt(input);
+    postData = new Object();
+    ref = $(".project-field");
+    for (l = 0, len = ref.length; l < len; l++) {
+      el = ref[l];
+      if ($(el).hasClass("iron-autogrow-textarea-0")) {
+        input = $($(el).get(0).textarea).val();
       } else {
-        postData[key] = input;
+        input = $(el).val();
+      }
+      key = $(el).attr("data-field");
+      if (!isNull(key)) {
+        if ($(el).attr("type") === "number") {
+          postData[key] = toInt(input);
+        } else {
+          postData[key] = input;
+        }
       }
     }
-  }
-  if (uploadedData != null) {
-    dates = new Array();
-    months = new Array();
-    years = new Array();
-    methods = new Array();
-    catalogNumbers = new Array();
-    fieldNumbers = new Array();
-    dispositions = new Array();
-    ref1 = Object.toArray(uploadedData);
-    for (m = 0, len1 = ref1.length; m < len1; m++) {
-      row = ref1[m];
-      uTime = excelDateToUnixTime(row.dateIdentified);
-      dates.push(uTime);
-      uDate = new Date(uTime);
-      mString = dateMonthToString(uDate.getUTCMonth());
-      if (indexOf.call(months, mString) < 0) {
-        months.push(mString);
+    if (uploadedData != null) {
+      dates = new Array();
+      months = new Array();
+      years = new Array();
+      methods = new Array();
+      catalogNumbers = new Array();
+      fieldNumbers = new Array();
+      dispositions = new Array();
+      ref1 = Object.toArray(uploadedData);
+      for (m = 0, len1 = ref1.length; m < len1; m++) {
+        row = ref1[m];
+        uTime = excelDateToUnixTime(row.dateIdentified);
+        dates.push(uTime);
+        uDate = new Date(uTime);
+        mString = dateMonthToString(uDate.getUTCMonth());
+        if (indexOf.call(months, mString) < 0) {
+          months.push(mString);
+        }
+        if (ref2 = uDate.getFullYear(), indexOf.call(years, ref2) < 0) {
+          years.push(uDate.getFullYear());
+        }
+        if (row.catalogNumber != null) {
+          catalogNumbers.push(row.catalogNumber);
+        }
+        fieldNumbers.push(row.fieldNumber);
       }
-      if (ref2 = uDate.getFullYear(), indexOf.call(years, ref2) < 0) {
-        years.push(uDate.getFullYear());
-      }
-      if (row.catalogNumber != null) {
-        catalogNumbers.push(row.catalogNumber);
-      }
-      fieldNumbers.push(row.fieldNumber);
     }
-  }
-  console.info("Got uploaded data", uploadedData);
-  console.info("Got date ranges", dates);
-  postData.sample_collection_start = dates.min();
-  postData.sample_collection_end = dates.max();
-  postData.sample_catalog_numbers = catalogNumbers.join(",");
-  postData.sample_field_numbers = fieldNumbers.join(",");
-  postData.sampling_months = months;
-  postData.sampling_years = years;
-  center = getMapCenter(geo.boundingBox);
-  postData.lat = center.lat;
-  postData.lng = center.lng;
-  postData.author = $.cookie(adminParams.domain + "_link");
-  authorData = {
-    name: p$("#project-author"),
-    contact_email: p$("#author-email").value,
-    affiliation: p$("#project-affiliation").value,
-    lab: p$("#pi_lab").value,
-    diagnostic_lab: p$("#project-lab").value,
-    entry_date: Date.now()
-  };
-  postData.author_data = JSON.stringify(authorData);
-  cartoData = {
-    table: geo.dataTable,
-    raw_data: dataFileParams,
-    bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
-    bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
-  };
-  postData.carto_id = JSON.stringify(cartoData);
-  uniqueId = md5("" + geo.dataTable + postData.author + (Date.now()));
-  postData.project_id = uniqueId;
-  postData["public"] = p$("#data-encumbrance-toggle").checked;
-  taxonData = _adp.data.taxa.validated;
-  postData.sampled_clades = _adp.data.taxa.clades.join(",");
-  postData.sampled_species = _adp.data.taxa.list.join(",");
-  for (o = 0, len2 = taxonData.length; o < len2; o++) {
-    taxonObject = taxonData[o];
-    aweb = taxonObject.response.validated_taxon;
-    console.info("Aweb taxon result:", aweb);
-    clade = aweb.order.toLowerCase();
-    key = "includes_" + clade;
-    postData[key] = true;
-  }
-  args = "perform=new&data=" + (jsonTo64(postData));
-  console.info("Data object constructed:", postData);
-  return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    if (result.status === true) {
-      toastStatusMessage("Data successfully saved to server (Warning: Parsing incomplete! Test Mode!)");
-      bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
-      stopLoad();
-    } else {
-      console.error(result.error.error);
-      console.log(result);
-      stopLoadError(result.human_error);
+    console.info("Got uploaded data", uploadedData);
+    console.info("Got date ranges", dates);
+    postData.sample_collection_start = dates.min();
+    postData.sample_collection_end = dates.max();
+    postData.sample_catalog_numbers = catalogNumbers.join(",");
+    postData.sample_field_numbers = fieldNumbers.join(",");
+    postData.sampling_months = months;
+    postData.sampling_years = years;
+    center = getMapCenter(geo.boundingBox);
+    postData.lat = center.lat;
+    postData.lng = center.lng;
+    postData.author = $.cookie(adminParams.domain + "_link");
+    authorData = {
+      name: p$("#project-author"),
+      contact_email: p$("#author-email").value,
+      affiliation: p$("#project-affiliation").value,
+      lab: p$("#pi_lab").value,
+      diagnostic_lab: p$("#project-lab").value,
+      entry_date: Date.now()
+    };
+    postData.author_data = JSON.stringify(authorData);
+    cartoData = {
+      table: geo.dataTable,
+      raw_data: dataFileParams,
+      bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
+      bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
+    };
+    postData.carto_id = JSON.stringify(cartoData);
+    uniqueId = md5("" + geo.dataTable + postData.author + (Date.now()));
+    postData.project_id = uniqueId;
+    postData["public"] = p$("#data-encumbrance-toggle").checked;
+    taxonData = _adp.data.taxa.validated;
+    postData.sampled_clades = _adp.data.taxa.clades.join(",");
+    postData.sampled_species = _adp.data.taxa.list.join(",");
+    for (o = 0, len2 = taxonData.length; o < len2; o++) {
+      taxonObject = taxonData[o];
+      aweb = taxonObject.response.validated_taxon;
+      console.info("Aweb taxon result:", aweb);
+      clade = aweb.order.toLowerCase();
+      key = "includes_" + clade;
+      postData[key] = true;
     }
-    return false;
-  }).error(function(result, status) {
-    stopLoadError("There was a problem saving your data. Please try again");
-    return false;
-  });
+    args = "perform=new&data=" + (jsonTo64(postData));
+    console.info("Data object constructed:", postData);
+    return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+      if (result.status === true) {
+        toastStatusMessage("Data successfully saved to server (Warning: Parsing incomplete! Test Mode!)");
+        bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+        stopLoad();
+      } else {
+        console.error(result.error.error);
+        console.log(result);
+        stopLoadError(result.human_error);
+      }
+      return false;
+    }).error(function(result, status) {
+      stopLoadError("There was a problem saving your data. Please try again");
+      return false;
+    });
+  } catch (_error) {
+    e = _error;
+    stopLoadError("There was a problem with the application. Please try again later.");
+    console.error("JavaScript error in saving data! FinalizeData said: " + e.message);
+    return console.warn(e.stack);
+  }
 };
 
 resetForm = function() {
