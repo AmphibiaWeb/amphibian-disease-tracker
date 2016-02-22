@@ -318,7 +318,7 @@ function doAWebValidate($get) {
         if(!array_key_exists($testSpecies, $synonymList)) {
             # Nope, just failed
             $response["error"] = "INVALID_GENUS";
-            $response["human_error"] = "'$providedGenus' isn't a valid AmphibiaWeb genus, nor is '$testSpecies' a recognized synonym.";
+            $response["human_error"] = "'$providedGenus' isn't a valid AmphibiaWeb genus (checked ".sizeof($genusList)." genera), nor is '$testSpecies' a recognized synonym.";
             returnAjax($response);
         }
         # Ah, a synonym eh?
