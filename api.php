@@ -180,40 +180,56 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
     $responses = array();
     $parsed_responses = array();
     $urls = array();
-    foreach ($statements as $statement) {
-        $statement = trim($statement);
-        if (empty($statement)) {
-            continue;
-        }
-        $cartoArgs = 'q='.urlencode($statement).$cartoArgSuffix;
-        #
-        $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
-        $urls[] = $cartoFullUrl;
-        if (boolstr($get['alt'])) {
-            $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
-        } else {
-            # Default
-            $opts = array(
-                'http' => array(
-                    'method' => 'GET',
-                    'request_fulluri' => true,
-                    'timeout' => 3.5, # Seconds
-                ),
-            );
-            $context = stream_context_create($opts);
-            $response = file_get_contents($cartoFullUrl, false, $context);
-            $responses[] = $response;
-            $parsed_responses[] = json_decode($response, true);
+    if(!boolstr($get["blobby"])) {
+        foreach ($statements as $statement) {
+            $statement = trim($statement);
+            if (empty($statement)) {
+                continue;
+            }
+            $cartoArgs = 'q='.urlencode($statement).$cartoArgSuffix;
+            #
+            $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
+            $urls[] = $cartoFullUrl;
+            if (boolstr($get['alt'])) {
+                $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
+            } else {
+                # Default
+                $opts = array(
+                    'http' => array(
+                        'method' => 'GET',
+                        'request_fulluri' => true,
+                        'timeout' => 3.5, # Seconds
+                    ),
+                );
+                $context = stream_context_create($opts);
+                $response = file_get_contents($cartoFullUrl, false, $context);
+                $responses[] = $response;
+                $parsed_responses[] = json_decode($response, true);
+            }
         }
     }
-    $cartoArgs = 'q='.$sqlQuery.$cartoArgSuffix;
-    $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
+    else {
+        $cartoArgs = 'q='.$sqlQuery.$cartoArgSuffix;
+        $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
+        $opts = array(
+            'http' => array(
+                'method' => 'GET',
+                'request_fulluri' => true,
+                'timeout' => 3.5, # Seconds
+            ),
+        );
+        $context = stream_context_create($opts);
+        $response = file_get_contents($cartoFullUrl, false, $context);
+        $responses[] = $response;
+        $parsed_responses[] = json_decode($response, true);
+    }
     try {
         returnAjax(array(
             'status' => true,
             'sql_statements' => $statements,
             'post_response' => $responses,
             'parsed_responses' => $parsed_responses,
+            "blobby" => boolstr($get["blobby"]),
             # "urls_posted" => $urls,
         ));
     } catch (Exception $e) {
@@ -221,6 +237,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
             'status' => false,
             'error' => $e->getMessage(),
             'human_error' => 'There was a problem uploading to the CartoDB server.',
+            "blobby" => boolstr($get["blobby"]),
         ));
     }
 }

@@ -463,7 +463,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           return false
       # Ping the server
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
-      args = "action=upload&sql_query=#{apiPostSqlQuery}"
+      args = "action=upload&sql_query=#{apiPostSqlQuery}&blobby=true"
       # console.info "Would query with args", args
       console.info "Querying:"
       console.info sqlQuery

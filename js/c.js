@@ -1788,7 +1788,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           return false;
       }
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
-      args = "action=upload&sql_query=" + apiPostSqlQuery;
+      args = "action=upload&sql_query=" + apiPostSqlQuery + "&blobby=true";
       console.info("Querying:");
       console.info(sqlQuery);
       console.info("GeoJSON:", geoJson);
