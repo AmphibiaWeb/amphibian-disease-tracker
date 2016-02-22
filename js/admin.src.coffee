@@ -1084,6 +1084,7 @@ excelHandler = (path, hasHeaders = true) ->
   .done (result) ->
     console.info "Got result", result
     singleDataFileHelper path, ->
+      $("#upload-data").attr "disabled", "disabled"
       dataFileParams.hasDataFile = true
       dataFileParams.fileName = path
       dataFileParams.filePath = correctedPath
@@ -1188,6 +1189,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
+        skipCol = false
         switch column
           # Change FIMS to internal structure:
           # http://www.biscicol.org/biocode-fims/templates.jsp
@@ -1215,14 +1217,15 @@ newGeoDataHandler = (dataObject = new Object()) ->
           #  Collector: "varchar"
           #  the_geom: "varchar"
           #
-          when "ContactName", "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
-            fimsExtra[column] = value
+          # when "ContactName", "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
+          #   fimsExtra[column] = value
           when "specimenDisposition"
             column = "sampleDisposition"
           when "elevation"
             column = "alt"
           # Data handling
-          when "dateIdentified"
+          when "dateCollected", "dateIdentified"
+            column = "dateIdentified"
             # Coerce to ISO8601
             t = excelDateToUnixTime(value)
             d = new Date(t)
@@ -1261,7 +1264,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
             catch
               # Non-string
               cleanValue = value
-        tRow[column] = cleanValue
+            fimsExtra[column] = cleanValue
+            skipCol = true
+        unless skipCol
+          tRow[column] = cleanValue
       coords =
         lat: tRow.decimalLatitude
         lng: tRow.decimalLongitude

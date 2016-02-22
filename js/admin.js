@@ -1025,6 +1025,7 @@ excelHandler = function(path, hasHeaders) {
     console.info("Got result", result);
     return singleDataFileHelper(path, function() {
       var html, randomData, randomRow, rows;
+      $("#upload-data").attr("disabled", "disabled");
       dataFileParams.hasDataFile = true;
       dataFileParams.fileName = path;
       dataFileParams.filePath = correctedPath;
@@ -1090,7 +1091,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1142,35 +1143,17 @@ newGeoDataHandler = function(dataObject) {
       tRow = new Object();
       for (column in row) {
         value = row[column];
+        skipCol = false;
         switch (column) {
-          case "ContactName":
-          case "basisOfRecord":
-          case "occurrenceID":
-          case "institutionCode":
-          case "collectionCode":
-          case "labNumber":
-          case "originalsource":
-          case "datum":
-          case "georeferenceSource":
-          case "depth":
-          case "Collector2":
-          case "Collector3":
-          case "verbatimLocality":
-          case "Habitat":
-          case "Test_Method":
-          case "eventRemarks":
-          case "quantityDetected":
-          case "dilutionFactor":
-          case "cycleTimeFirstDetection":
-            fimsExtra[column] = value;
-            break;
           case "specimenDisposition":
             column = "sampleDisposition";
             break;
           case "elevation":
             column = "alt";
             break;
+          case "dateCollected":
           case "dateIdentified":
+            column = "dateIdentified";
             t = excelDateToUnixTime(value);
             d = new Date(t);
             date = d.getUTCDate();
@@ -1221,8 +1204,12 @@ newGeoDataHandler = function(dataObject) {
             } catch (_error) {
               cleanValue = value;
             }
+            fimsExtra[column] = cleanValue;
+            skipCol = true;
         }
-        tRow[column] = cleanValue;
+        if (!skipCol) {
+          tRow[column] = cleanValue;
+        }
       }
       coords = {
         lat: tRow.decimalLatitude,

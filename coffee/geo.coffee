@@ -478,14 +478,19 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       console.info "POSTing to server"
       # console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
       # Big uploads can take a while, so let's put up a notice.
-      
+
       postTimeStart = Date.now()
+      workingIter = 0
+      # http://birdisabsurd.blogspot.com/p/one-paragraph-stories.html
+      story = ["Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous <em>Tyrannosaurus rex</em> with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen \"Stayin' Alive\",","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!"]
       doStillWorking = ->
-        toastStatusMessage "Still working ..."
+        extra = if story[workingIter] then "(#{story[workingIter]})" else ""
+        toastStatusMessage "Still working ... #{extra}"
+        ++workingIter
         window._adp.secondaryTimeout = delay 15000, ->
           doStillWorking()
       window._adp.initialTimeout = delay 5000, ->
-        toastStatusMessage "This may take a few moments"
+        toastStatusMessage "This may take a few minutes. We'll give you an error if things go wrong."
         window._adp.secondaryTimeout = delay 15000, ->
           doStillWorking()
       $.post "api.php", args, "json"
@@ -499,9 +504,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         cartoResults = result.post_response
         cartoHasError = false
         for j, response of cartoResults
-          unless isNull response?.error
-            cartoHasError = response.error[0]
+          if not isNull response?.error or response is false
+            error = if response?.error? then response.error[0] else "Unspecified Error"
+            cartoHasError = error
         unless cartoHasError is false
+          bsAlert "Error uploading your data: #{cartoHasError}", "danger"
           stopLoadError "CartoDB returned an error: #{cartoHasError}"
           return false
         console.info "Carto was successful! Got results", cartoResults
@@ -567,7 +574,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           console.info "POST and process took #{duration}ms"
           clearTimeout window._adp.initialTimeout
           clearTimeout window._adp.secondaryTimeout
-          
+          $("#upload-data").removeAttr "disabled"
+
     else
       console.error "Unable to authenticate session. Please log in."
       stopLoadError "Sorry, your session has expired. Please log in and try again."
@@ -575,6 +583,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
     console.error "Couldn't communicate with server!", result, status
     console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-001)"
+    $("#upload-data").removeAttr "disabled"
   false
 
 
