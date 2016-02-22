@@ -7042,6 +7042,9 @@ html >>> .capitalize {
   left: 25%;
   z-index: 250;
 }
+#outdated-warning {
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.25);
+}
 @media (max-width: 767px) {
   #outdated-warning,
   .hanging-alert {
