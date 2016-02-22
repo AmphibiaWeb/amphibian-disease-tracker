@@ -239,7 +239,7 @@ function doAWebValidate($get) {
     $response = array(
         "status" => false,
         "args_provided" => $get,
-        "notices" => array(),
+        "notices" => array(),        
     );
     # We need, at minimum, genus and species
     if(empty($get["genus"]) or empty($get["species"])) {
@@ -258,7 +258,7 @@ function doAWebValidate($get) {
             $response["notices"][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
         }
     }
-
+    $response["aweb_list_age"] = time() - filemtime($localAWebTarget);
     //$aWebList = file_get_contents($localAWebTarget);
     $aWebListArray = array_map("tsvHelper", file($localAWebTarget));
     /*
