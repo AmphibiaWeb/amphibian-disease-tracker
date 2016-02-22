@@ -239,7 +239,7 @@ function doAWebValidate($get) {
     $response = array(
         "status" => false,
         "args_provided" => $get,
-        "notices" => array(),        
+        "notices" => array(),
     );
     # We need, at minimum, genus and species
     if(empty($get["genus"]) or empty($get["species"])) {
@@ -259,8 +259,14 @@ function doAWebValidate($get) {
         }
     }
     $response["aweb_list_age"] = time() - filemtime($localAWebTarget);
+    $resposne["aweb_list_max_age"] = $dayOffset;
     //$aWebList = file_get_contents($localAWebTarget);
     $aWebListArray = array_map("tsvHelper", file($localAWebTarget));
+
+
+    $manualMaps = array();
+
+
     /*
      * For a given row, we have this numeric key to real id mapping:
      *
@@ -268,10 +274,11 @@ function doAWebValidate($get) {
      */
     $genusList = array();
     $synonymList = array();
+    $synonymGenusList = array();
     foreach($aWebListArray as $k=>$entry) {
         if($k == 0) continue; # Prevent match on "genus"
         $genus = strtolower($entry[3]);
-        $genusList[] = $genus;
+        $genusList[$genus] = $k;
         $gaaEntry = strtolower($entry[7]);
         if(!empty($gaaEntry)) {
             if(strpos($gaaEntry, ",") !== false) {
@@ -282,6 +289,8 @@ function doAWebValidate($get) {
             foreach($synon as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
+                $oldGenus = explode(" ", $key)[0];
+                $synonymGenusList[$oldGenus] = $k;
             }
         }
         $synonEntry = strtolower($entry[8]);
@@ -294,6 +303,8 @@ function doAWebValidate($get) {
             foreach($synon as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
+                $oldGenus = explode(" ", $key)[0];
+                $synonymGenusList[$oldGenus] = $k;
             }
         }
         $itisEntry = strtolower($entry[9]);
@@ -306,16 +317,53 @@ function doAWebValidate($get) {
             foreach($itis as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
+                $oldGenus = explode(" ", $key)[0];
+                $synonymGenusList[$oldGenus] = $k;
             }
         }
     }
     # First check: Does the genus exist?
     $providedGenus = strtolower($get["genus"]);
     $providedSpecies = strtolower($get["species"]);
-    if (!in_array($providedGenus, $genusList)) {
+    if (!array_key_exists($providedGenus, $genusList)) {
         # Are they using an old name?
         $testSpecies = $providedGenus . " " . $providedSpecies;
         if(!array_key_exists($testSpecies, $synonymList)) {
+            if(array_key_exists($providedGenus, $synonymGenusList) && ($providedSpecies == "sp" || $providedSpecies == "sp.")) {
+                # OK, they were just looking for a genus anyway
+                $row = $synonymGenusList[$providedGenus];
+                $aWebMatch = $aWebListArray[$row];
+                $aWebCols = $aWebListArray[0];
+                $aWebPretty = array();
+                $skipCols = array(
+                    "species",
+                    "gaa_name",
+                    "common_name",
+                    "synonymies",
+                    "itis_names",
+                    "iucn",
+                    "isocc"
+                );
+                foreach($aWebMatch as $key=>$val) {
+                    $prettyKey = $aWebCols[$key];
+                    if(!in_array($prettyKey, $skipCols)) {
+                        $prettyKey = str_replace("/", "_or_", $prettyKey);
+                        if(strpos($val, ",") !== false) {
+                            $val = explode(",", $val);
+                            foreach($val as $k=>$v) {
+                                $val[$k] = trim($v);
+                            }
+                        }
+                        $aWebPretty[$prettyKey] = $val;
+                    }
+                }
+                $response["status"] = true;
+                $response["notices"][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
+                $response["original_taxon"] = $providedGenus;
+                # Note that Unicode characters may return escaped! eg, \u00e9.
+                $response["validated_taxon"] = $aWebPretty;
+                returnAjax($response);
+            }
             # Nope, just failed
             $response["error"] = "INVALID_GENUS";
             $response["human_error"] = "'$providedGenus' isn't a valid AmphibiaWeb genus (checked ".sizeof($genusList)." genera), nor is '$testSpecies' a recognized synonym.";
@@ -361,6 +409,39 @@ function doAWebValidate($get) {
         # Are they using an old name?
         $testSpecies = $providedGenus . " " . $providedSpecies;
         if(!array_key_exists($testSpecies, $synonymList)) {
+            if ($providedSpecies == "sp" || $providedSpecies == "sp.") {
+                # OK, they were just looking for a genus anyway
+                $row = $genusList[$providedGenus];
+                $aWebMatch = $aWebListArray[$row];
+                $aWebCols = $aWebListArray[0];
+                $aWebPretty = array();
+                $skipCols = array(
+                    "species",
+                    "gaa_name",
+                    "common_name",
+                    "synonymies",
+                    "itis_names",
+                    "iucn",
+                    "isocc"
+                );
+                foreach($aWebMatch as $key=>$val) {
+                    $prettyKey = $aWebCols[$key];
+                    if(!in_array($prettyKey, $skipCols)) {
+                        $prettyKey = str_replace("/", "_or_", $prettyKey);
+                        if(strpos($val, ",") !== false) {
+                            $val = explode(",", $val);
+                            foreach($val as $k=>$v) {
+                                $val[$k] = trim($v);
+                            }
+                        }
+                        $aWebPretty[$prettyKey] = $val;
+                    }
+                }
+                $response["status"] = true;
+                # Note that Unicode characters may return escaped! eg, \u00e9.
+                $response["validated_taxon"] = $aWebPretty;
+                returnAjax($response);
+            }
             # Nope, just failed
             $response["error"] = "INVALID_SPECIES";
             $response["human_error"] = "'$providedSpecies' isn't a valid AmphibiaWeb species in the genus '$providedGenus', nor is '$testSpecies' a recognized synonym.";
