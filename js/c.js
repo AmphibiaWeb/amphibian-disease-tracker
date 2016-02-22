@@ -1874,6 +1874,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         }
         parentCallback = function() {
           var max;
+          console.info("Initiating parent callback");
           stopLoad();
           max = p$("#data-sync").max;
           p$("#data-sync").value = max;
@@ -1884,7 +1885,9 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           }
         };
         if (!isNull(cartoMap)) {
+          console.info("Creating map");
           return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+            console.info("Map created");
             layer.setInteraction(true);
             layer.on("featureOver", defaultMapMouseOverBehaviour);
             return parentCallback();
@@ -1892,6 +1895,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         } else {
           return geo.init(function() {
             var center, options;
+            console.info("Post init");
             center = getMapCenter(geo.boundingBox);
             options = {
               cartodb_logo: false,
@@ -1903,6 +1907,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
               zoom: getMapZoom(geo.boundingBox)
             };
             createMap(dataVisUrl, void 0, options, function() {
+              console.info("createMap callback successful");
               return parentCallback();
             });
             return false;
