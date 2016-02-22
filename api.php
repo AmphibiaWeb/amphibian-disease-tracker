@@ -330,6 +330,7 @@ function doAWebValidate($get) {
         }
         $response["status"] = true;
         $response["notices"][] = "Your entry '$testSpecies' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
+        $response["original_taxon"] = $testSpecies;
         # Note that Unicode characters may return escaped! eg, \u00e9.
         $response["validated_taxon"] = $aWebPretty;
         returnAjax($response);
@@ -374,6 +375,7 @@ function doAWebValidate($get) {
         }
         $response["status"] = true;
         $response["notices"][] = "Your entry '$testSpecies' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
+        $response["original_taxon"] = $testSpecies;
         # Note that Unicode characters may return escaped! eg, \u00e9.
         $response["validated_taxon"] = $aWebPretty;
         returnAjax($response);
