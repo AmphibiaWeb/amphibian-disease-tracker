@@ -265,6 +265,7 @@ if (!function_exists('do_post_request')) {
         # If url handlers are set,t his whole next part can be file_get_contents($url,false,$ctx)
         try {
             ini_set("default_socket_timeout",3);
+            ini_set("allow_url_fopen", true);
             $response = file_get_contents($bareUrl,false,$ctx);
             if(empty($response) || $response === false) throw new Exception("No Response from file_get_contents");
         } catch (Exception $e) {
@@ -297,7 +298,7 @@ if (!function_exists('do_post_request')) {
             }
         }
         return $response;
-    }    
+    }
 }
 
 if (!function_exists('deEscape')) {
