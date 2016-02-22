@@ -1167,6 +1167,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       toastStatusMessage "Data has invalid entries for geo columns. Please be sure they're all numeric and try again."
       removeDataFile()
       return false
+    renderValidateProgress()
     rows = Object.size(dataObject)
     p$("#samplecount").value = rows
     if isNull $("#project-disease").val()
@@ -1180,6 +1181,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     fimsExtra = new Object()
     # Iterate over the data, coerce some data types
     toastStatusMessage "Please wait, parsing your data"
+    p$("#data-parsing").max = rows    
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1273,14 +1275,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
       parsedData[n] = tRow
       if n %% 500 is 0 and n > 0
         toastStatusMessage "Processed #{n} rows ..."
-    try
-      # http://marianoguerra.github.io/json.human.js/
-      prettyHtml = JsonHuman.format parsedData
-      # $("#main-body").append prettyHtml
-    catch e
-      console.warn "Couldn't pretty set!"
-      console.warn e.stack
-      console.info parsedData
+      p$("#data-parsing").value = n + 1
+
     # Create a project identifier from the user hash and project title
     projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
     # Define the transect ring
@@ -1443,6 +1439,24 @@ excelDateToUnixTime = (excelTime) ->
     t = Date.now()
   t
 
+
+renderValidateProgress = ->
+  ###
+  # Show paper-progress bars as validation goes
+  #
+  # https://elements.polymer-project.org/elements/paper-progress
+  ###
+  # Draw it
+  html = """
+  <div id="validator-progress-container" class="col-md-6 col-xs-12">
+    <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing"></paper-progress>
+    <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation"></paper-progress>
+    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation"></paper-progress>
+  </div>
+  """
+  unless $("#validator-progress-container").exists()
+    $("#file-uploader-form").after html
+  false
 
 
 $ ->

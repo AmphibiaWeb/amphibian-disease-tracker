@@ -1167,6 +1167,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       toastStatusMessage "Data has invalid entries for geo columns. Please be sure they're all numeric and try again."
       removeDataFile()
       return false
+    renderValidateProgress()
     rows = Object.size(dataObject)
     p$("#samplecount").value = rows
     if isNull $("#project-disease").val()
@@ -1180,6 +1181,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     fimsExtra = new Object()
     # Iterate over the data, coerce some data types
     toastStatusMessage "Please wait, parsing your data"
+    p$("#data-parsing").max = rows    
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1273,14 +1275,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
       parsedData[n] = tRow
       if n %% 500 is 0 and n > 0
         toastStatusMessage "Processed #{n} rows ..."
-    try
-      # http://marianoguerra.github.io/json.human.js/
-      prettyHtml = JsonHuman.format parsedData
-      # $("#main-body").append prettyHtml
-    catch e
-      console.warn "Couldn't pretty set!"
-      console.warn e.stack
-      console.info parsedData
+      p$("#data-parsing").value = n + 1
+
     # Create a project identifier from the user hash and project title
     projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
     # Define the transect ring
@@ -1443,6 +1439,24 @@ excelDateToUnixTime = (excelTime) ->
     t = Date.now()
   t
 
+
+renderValidateProgress = ->
+  ###
+  # Show paper-progress bars as validation goes
+  #
+  # https://elements.polymer-project.org/elements/paper-progress
+  ###
+  # Draw it
+  html = """
+  <div id="validator-progress-container" class="col-md-6 col-xs-12">
+    <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing"></paper-progress>
+    <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation"></paper-progress>
+    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation"></paper-progress>
+  </div>
+  """
+  unless $("#validator-progress-container").exists()
+    $("#file-uploader-form").after html
+  false
 
 
 $ ->
@@ -2255,6 +2269,7 @@ validateData = (dataObject, callback = null) ->
   ###
   console.info "Doing nested validation"
   timer = Date.now()
+  renderValidateProgress()
   validateFimsData dataObject, ->
     validateTaxonData dataObject, ->
       # When we're successful, run the dependent callback
@@ -2278,12 +2293,14 @@ validateFimsData = (dataObject, callback = null) ->
   # @param function callback -> callback function
   ###
   console.info "FIMS Validating", dataObject.data
+  p$("#data-validation").max = Object.size dataObject.data
   fimsPostTarget = ""
   # Format the JSON for FIMS
   # Post the object over to FIMS
   # Get back an ARK
   # When we're successful, run the dependent callback
   if typeof callback is "function"
+    p$("#data-validation").value = Object.size dataObject.data
     callback(dataObject)
   false
 
@@ -2318,6 +2335,7 @@ validateTaxonData = (dataObject, callback = null) ->
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
   console.info "Replacement tracker", taxaPerRow
+  p$("#taxa-validation").max = taxa.length
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
     unless isNull taxonArray[key].subspecies
@@ -2346,12 +2364,14 @@ validateTaxonData = (dataObject, callback = null) ->
         console.warn "Problem replacing rows! #{e.message}"
         console.warn e.stack
       taxonArray[key] = result
+      p$("#taxa-validation").value = key
       key++
       if key < taxonArray.length
         if key %% 50 is 0
           toastStatusMessage "Validating taxa #{key} of #{taxonArray.length} ..."
         taxonValidatorLoop(taxonArray, key)
       else
+        p$("#taxa-validation").value = key
         dataObject.validated_taxa  = taxonArray
         console.info "Calling back!", dataObject
         callback(dataObject)
