@@ -47,12 +47,14 @@ validateFimsData = (dataObject, callback = null) ->
   # @param function callback -> callback function
   ###
   console.info "FIMS Validating", dataObject.data
+  p$("#data-validation").max = Object.size dataObject.data
   fimsPostTarget = ""
   # Format the JSON for FIMS
   # Post the object over to FIMS
   # Get back an ARK
   # When we're successful, run the dependent callback
   if typeof callback is "function"
+    p$("#data-validation").value = Object.size dataObject.data
     callback(dataObject)
   false
 

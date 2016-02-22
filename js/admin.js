@@ -1087,7 +1087,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, samplesMeta, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1121,6 +1121,7 @@ newGeoDataHandler = function(dataObject) {
       removeDataFile();
       return false;
     }
+    renderValidateProgress();
     rows = Object.size(dataObject);
     p$("#samplecount").value = rows;
     if (isNull($("#project-disease").val())) {
@@ -1132,6 +1133,7 @@ newGeoDataHandler = function(dataObject) {
     dataAttrs.fimsData = new Array();
     fimsExtra = new Object();
     toastStatusMessage("Please wait, parsing your data");
+    p$("#data-parsing").max = rows;
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -1238,14 +1240,7 @@ newGeoDataHandler = function(dataObject) {
       if (modulo(n, 500) === 0 && n > 0) {
         toastStatusMessage("Processed " + n + " rows ...");
       }
-    }
-    try {
-      prettyHtml = JsonHuman.format(parsedData);
-    } catch (_error) {
-      e = _error;
-      console.warn("Couldn't pretty set!");
-      console.warn(e.stack);
-      console.info(parsedData);
+      p$("#data-parsing").value = n + 1;
     }
     projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
     getCoordsFromData = function() {
@@ -1310,7 +1305,7 @@ newGeoDataHandler = function(dataObject) {
       samples: samplesMeta
     };
     validateData(totalData, function(validatedData) {
-      var cladeList, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
+      var cladeList, e, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
       taxonList = new Array();
       cladeList = new Array();
@@ -1441,7 +1436,7 @@ renderValidateProgress = function() {
    * https://elements.polymer-project.org/elements/paper-progress
    */
   var html;
-  html = "<div id=\"validator-progress-container\">\n  <paper-progress id=\"taxa-validation\"></paper-progress>\n  <paper-progress id=\"data-validation\"></paper-progress>\n</div>";
+  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\"></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\"></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\"></paper-progress>\n</div>";
   if (!$("#validator-progress-container").exists()) {
     $("#file-uploader-form").after(html);
   }
@@ -2098,8 +2093,10 @@ validateFimsData = function(dataObject, callback) {
    * @param function callback -> callback function
    */
   console.info("FIMS Validating", dataObject.data);
+  p$("#data-validation").max = Object.size(dataObject.data);
   fimsPostTarget = "";
   if (typeof callback === "function") {
+    p$("#data-validation").value = Object.size(dataObject.data);
     callback(dataObject);
   }
   return false;
