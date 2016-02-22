@@ -1779,7 +1779,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          insertMaxLength = 25;
+          insertMaxLength = 15;
           insertPlace = 0;
           console.info("Inserting " + insertMaxLength + " at a time");
           while (valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0) {
@@ -1873,7 +1873,10 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           dataVisUrl = "";
         }
         parentCallback = function() {
+          var max;
           stopLoad();
+          max = p$("#data-sync").max;
+          p$("#data-sync").value = max;
           if (typeof callback === "function") {
             return callback(geo.dataTable);
           } else {
