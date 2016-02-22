@@ -29,6 +29,8 @@ dataFileParams.filePath = null
 
 dataAttrs = new Object()
 
+uploadedData = null;
+
 helperDir = "helpers/"
 user =  $.cookie "#{adminParams.domain}_link"
 userEmail =  $.cookie "#{adminParams.domain}_user"
@@ -319,6 +321,14 @@ finalizeData = ->
   # sample_dispositions_used
   # sample_catalog_numbers
   # sample_field_numbers
+  # Have some fun times with uploadedData
+  if uploadedData?
+    # Loop through it
+    dates = new Array()
+    for row in Object.toArray uploadedData
+      dates.push excelDateToUnixTime row.dateIdentified
+  console.info "Got uploaded data", uploadedData
+  console.info "Got date ranges", dates
   center = getMapCenter(geo.boundingBox)
   postData.lat = center.lat
   postData.lng = center.lng
@@ -1059,6 +1069,7 @@ excelHandler = (path, hasHeaders = true) ->
       </pre>
       """
       # $("#main-body").append html
+      uploadedData = result.data
       newGeoDataHandler(result.data)
       stopLoad()
   .fail (result, error) ->
@@ -1181,40 +1192,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
           # Data handling
           when "dateIdentified"
             # Coerce to ISO8601
-            try
-              if 0 < value < 10e5
-                ###
-                # Excel is INSANE, and marks time as DAYS since 1900-01-01
-                # on Windows, and 1904-01-01 on OSX. Because reasons.
-                #
-                # Therefore, 2015-11-07 is "42315"
-                #
-                # The bounds of this check represent true Unix dates
-                # of
-                # Wed Dec 31 1969 16:16:40 GMT-0800 (Pacific Standard Time)
-                # to
-                # Wed Dec 31 1969 16:00:00 GMT-0800 (Pacific Standard Time)
-                #
-                # I hope you weren't collecting between 4 & 4:17 PM
-                # New Years Eve in 1969.
-                #
-                #
-                # This check will correct Excel dates until
-                # Sat Nov 25 4637 16:00:00 GMT-0800 (Pacific Standard Time)
-                #
-                # TODO: Fix before Thanksgiving 4637. Devs, you have
-                # 2,622 years. Don't say I didn't warn you.
-                ###
-                # See http://stackoverflow.com/a/6154953/1877527
-                daysFrom1900to1970 = 25569 # Windows + Mac Excel 2011+
-                daysFrom1904to1970 = 24107 # Mac Excel 2007 and before
-                secondsPerDay = 86400
-                t = ((value - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
-              else
-                # Standard date parsing
-                t = Date.parse(value)
-            catch
-              t = Date.now()
+            t = excelDateToUnixTime(value)
             d = new Date(t)
             date = d.getUTCDate()
             if date < 10
@@ -1368,6 +1346,44 @@ newGeoDataHandler = (dataObject = new Object()) ->
     toastStatusMessage "There was a problem parsing your data"
   false
 
+
+
+excelDateToUnixTime = (excelTime) ->
+  try
+    if 0 < excelTime < 10e5
+      ###
+      # Excel is INSANE, and marks time as DAYS since 1900-01-01
+      # on Windows, and 1904-01-01 on OSX. Because reasons.
+      #
+      # Therefore, 2015-11-07 is "42315"
+      #
+      # The bounds of this check represent true Unix dates
+      # of
+      # Wed Dec 31 1969 16:16:40 GMT-0800 (Pacific Standard Time)
+      # to
+      # Wed Dec 31 1969 16:00:00 GMT-0800 (Pacific Standard Time)
+      #
+      # I hope you weren't collecting between 4 & 4:17 PM
+      # New Years Eve in 1969.
+      #
+      #
+      # This check will correct Excel dates until
+      # Sat Nov 25 4637 16:00:00 GMT-0800 (Pacific Standard Time)
+      #
+      # TODO: Fix before Thanksgiving 4637. Devs, you have
+      # 2,622 years. Don't say I didn't warn you.
+      ###
+      # See http://stackoverflow.com/a/6154953/1877527
+      daysFrom1900to1970 = 25569 # Windows + Mac Excel 2011+
+      daysFrom1904to1970 = 24107 # Mac Excel 2007 and before
+      secondsPerDay = 86400
+      t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
+    else
+      # Standard date parsing
+      t = Date.parse(excelTime)
+  catch
+    t = Date.now()
+  t
 
 
 

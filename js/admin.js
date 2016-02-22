@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -39,6 +39,8 @@ dataFileParams.fileName = null;
 dataFileParams.filePath = null;
 
 dataAttrs = new Object();
+
+uploadedData = null;
 
 helperDir = "helpers/";
 
@@ -193,7 +195,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, aweb, cartoData, center, clade, dataCheck, el, input, key, l, len, len1, m, postData, ref, taxonData, taxonObject, uniqueId;
+  var args, authorData, aweb, cartoData, center, clade, dataCheck, dates, el, input, key, l, len, len1, len2, m, o, postData, ref, ref1, row, taxonData, taxonObject, uniqueId;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -229,6 +231,16 @@ finalizeData = function() {
       }
     }
   }
+  if (uploadedData != null) {
+    dates = new Array();
+    ref1 = Object.toArray(uploadedData);
+    for (m = 0, len1 = ref1.length; m < len1; m++) {
+      row = ref1[m];
+      dates.push(excelDateToUnixTime(row.dateIdentified));
+    }
+  }
+  console.info("Got uploaded data", uploadedData);
+  console.info("Got date ranges", dates);
   center = getMapCenter(geo.boundingBox);
   postData.lat = center.lat;
   postData.lng = center.lng;
@@ -255,8 +267,8 @@ finalizeData = function() {
   taxonData = _adp.data.taxa.validated;
   postData.sampled_clades = _adp.data.taxa.clades.join(",");
   postData.sampled_species = _adp.data.taxa.list.join(",");
-  for (m = 0, len1 = taxonData.length; m < len1; m++) {
-    taxonObject = taxonData[m];
+  for (o = 0, len2 = taxonData.length; o < len2; o++) {
+    taxonObject = taxonData[o];
     aweb = taxonObject.response.validated_taxon;
     console.info("Aweb taxon result:", aweb);
     clade = aweb.order.toLowerCase();
@@ -989,6 +1001,7 @@ excelHandler = function(path, hasHeaders) {
         randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
       }
       html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
+      uploadedData = result.data;
       newGeoDataHandler(result.data);
       return stopLoad();
     });
@@ -1042,7 +1055,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, data, date, daysFrom1900to1970, daysFrom1904to1970, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, samplesMeta, secondsPerDay, t, tRow, totalData, value;
+  var cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, prettyHtml, projectIdentifier, row, rows, sampleRow, samplesMeta, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1121,41 +1134,7 @@ newGeoDataHandler = function(dataObject) {
             column = "alt";
             break;
           case "dateIdentified":
-            try {
-              if ((0 < value && value < 10e5)) {
-
-                /*
-                 * Excel is INSANE, and marks time as DAYS since 1900-01-01
-                 * on Windows, and 1904-01-01 on OSX. Because reasons.
-                 *
-                 * Therefore, 2015-11-07 is "42315"
-                 *
-                 * The bounds of this check represent true Unix dates
-                 * of
-                 * Wed Dec 31 1969 16:16:40 GMT-0800 (Pacific Standard Time)
-                 * to
-                 * Wed Dec 31 1969 16:00:00 GMT-0800 (Pacific Standard Time)
-                 *
-                 * I hope you weren't collecting between 4 & 4:17 PM
-                 * New Years Eve in 1969.
-                 *
-                 *
-                 * This check will correct Excel dates until
-                 * Sat Nov 25 4637 16:00:00 GMT-0800 (Pacific Standard Time)
-                 *
-                 * TODO: Fix before Thanksgiving 4637. Devs, you have
-                 * 2,622 years. Don't say I didn't warn you.
-                 */
-                daysFrom1900to1970 = 25569;
-                daysFrom1904to1970 = 24107;
-                secondsPerDay = 86400;
-                t = ((value - daysFrom1900to1970) * secondsPerDay) * 1000;
-              } else {
-                t = Date.parse(value);
-              }
-            } catch (_error) {
-              t = Date.now();
-            }
+            t = excelDateToUnixTime(value);
             d = new Date(t);
             date = d.getUTCDate();
             if (date < 10) {
@@ -1350,6 +1329,46 @@ newGeoDataHandler = function(dataObject) {
     toastStatusMessage("There was a problem parsing your data");
   }
   return false;
+};
+
+excelDateToUnixTime = function(excelTime) {
+  var daysFrom1900to1970, daysFrom1904to1970, secondsPerDay, t;
+  try {
+    if ((0 < excelTime && excelTime < 10e5)) {
+
+      /*
+       * Excel is INSANE, and marks time as DAYS since 1900-01-01
+       * on Windows, and 1904-01-01 on OSX. Because reasons.
+       *
+       * Therefore, 2015-11-07 is "42315"
+       *
+       * The bounds of this check represent true Unix dates
+       * of
+       * Wed Dec 31 1969 16:16:40 GMT-0800 (Pacific Standard Time)
+       * to
+       * Wed Dec 31 1969 16:00:00 GMT-0800 (Pacific Standard Time)
+       *
+       * I hope you weren't collecting between 4 & 4:17 PM
+       * New Years Eve in 1969.
+       *
+       *
+       * This check will correct Excel dates until
+       * Sat Nov 25 4637 16:00:00 GMT-0800 (Pacific Standard Time)
+       *
+       * TODO: Fix before Thanksgiving 4637. Devs, you have
+       * 2,622 years. Don't say I didn't warn you.
+       */
+      daysFrom1900to1970 = 25569;
+      daysFrom1904to1970 = 24107;
+      secondsPerDay = 86400;
+      t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000;
+    } else {
+      t = Date.parse(excelTime);
+    }
+  } catch (_error) {
+    t = Date.now();
+  }
+  return t;
 };
 
 $(function() {
