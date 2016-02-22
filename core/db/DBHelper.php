@@ -173,10 +173,10 @@ class DBHelper
             $query2 = 'INSERT INTO `'.$this->getTable().'` VALUES()';
             $r2 = mysqli_query($this->getLink(), $query2);
             if ($r2 === false) {
-                $error = mysqli_error($l);
+                $error = mysqli_error($this->getLink());
             }
         } else {
-            $error = mysqli_error($l);
+            $error = mysqli_error($this->getLink());
         }
         if ($detail) {
             return array('status' => $r && $r2,'create' => $query,'insert' => $query2,'error' => $error);
@@ -333,7 +333,7 @@ class DBHelper
                 return false;
             }
             $row = mysqli_fetch_row($result);
-            mysqli_close($l);
+            mysqli_close($this->getLink());
             if ($test) {
                 return array('query' => $query,'row' => $row);
             }
@@ -365,7 +365,7 @@ class DBHelper
         $query = 'SELECT * FROM `'.$this->getTable()."` WHERE `$field_name`='$item'";
         $result = mysqli_query($this->getLink(), $query);
         if ($result === false && $throw === true) {
-            throw(new Exception('MySQL error - '.mysqli_error($l)));
+            throw(new Exception('MySQL error - '.mysqli_error($this->getLink())));
         }
 
         return $result;
@@ -403,14 +403,14 @@ class DBHelper
         if (mysqli_query($this->getLink(), $query)) {
             mysqli_query($this->getLink(), 'COMMIT');
 
-            return array('status' => true,'rows' => mysqli_affected_rows($l));
+            return array('status' => true,'rows' => mysqli_affected_rows($this->getLink()));
         } else {
             $r = mysqli_query($this->getLink(), 'ROLLBACK');
             if ($throw === true) {
                 throw(new Exception('Failed to delete row.'));
             }
 
-            return array('status' => false,'rollback_status' => $r,'error' => mysqli_error($l));
+            return array('status' => false,'rollback_status' => $r,'error' => mysqli_error($this->getLink()));
         }
     }
 
@@ -458,7 +458,7 @@ class DBHelper
                 
                 mysqli_query($this->getLink(), 'BEGIN');
                 if (mysqli_query($this->getLink(), $querystring) === false) {
-                    $error = mysqli_error($l);
+                    $error = mysqli_error($this->getLink());
                     $r = mysqli_query($this->getLink(), 'ROLLBACK');
 
                     return array(false,'rollback_status' => $r,'error' => $error,'query' => $querystring);
@@ -481,7 +481,7 @@ class DBHelper
                 $row = $this->getLastRowNumber() + 1;
                 $querystring .= "$row'";
             } else {
-                $querystring .= mysqli_insert_id($l)."'";
+                $querystring .= mysqli_insert_id($this->getLink())."'";
             }
             if ($test) {
                 $retval .= ' !!And!! '.$querystring;
@@ -494,7 +494,7 @@ class DBHelper
 
                     return $r;
                 } else {
-                    $error = mysqli_error($l);
+                    $error = mysqli_error($this->getLink());
                     $r = mysqli_query($this->getLink(), 'ROLLBACK');
 
                     return array(false,'rollback_status' => $r,'result' => $res2,'error' => $error,'query' => $querystring);
@@ -566,7 +566,7 @@ class DBHelper
         
         $r = mysqli_query($this->getLink(), $query);
 
-        return $r === false ? mysqli_error($l) : $r;
+        return $r === false ? mysqli_error($this->getLink()) : $r;
     }
 
     public function doSoundex($search, $cols = '*', $precleaned = false, $order_by = false)
@@ -605,7 +605,7 @@ class DBHelper
         
         $r = mysqli_query($this->getLink(), $query);
 
-        return $r === false ? mysqli_error($l) : $r;
+        return $r === false ? mysqli_error($this->getLink()) : $r;
     }
 
     public function updateEntry($value, $unq_id, $field_name = null, $precleaned = false)
@@ -674,7 +674,7 @@ class DBHelper
 
             return true;
         } else {
-            $error = mysqli_error($l)." - for $query";
+            $error = mysqli_error($this->getLink())." - for $query";
             mysqli_query($this->getLink(), 'ROLLBACK');
 
             return $error;
