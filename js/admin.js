@@ -261,8 +261,8 @@ finalizeData = function() {
     }
     console.info("Got uploaded data", uploadedData);
     console.info("Got date ranges", dates);
-    postData.sample_collection_start = dates.min();
-    postData.sample_collection_end = dates.max();
+    postData.sampled_collection_start = dates.min();
+    postData.sampled_collection_end = dates.max();
     postData.sample_catalog_numbers = catalogNumbers.join(",");
     postData.sample_field_numbers = fieldNumbers.join(",");
     postData.sampling_months = months;
