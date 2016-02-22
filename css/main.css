@@ -7323,6 +7323,10 @@ section#notes marked-element {
   min-height: 5em;
   display: block;
 }
+#validator-progress-container paper-progress {
+  width: 80%;
+  margin-left: 1em;
+}
 .map {
   height: 50vh;
   display: block;

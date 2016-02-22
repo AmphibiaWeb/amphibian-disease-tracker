@@ -1181,7 +1181,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     fimsExtra = new Object()
     # Iterate over the data, coerce some data types
     toastStatusMessage "Please wait, parsing your data"
-    p$("#data-parsing").max = rows    
+    p$("#data-parsing").max = rows
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1449,9 +1449,9 @@ renderValidateProgress = ->
   # Draw it
   html = """
   <div id="validator-progress-container" class="col-md-6 col-xs-12">
-    <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing"></paper-progress>
+    <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing" class="blue"></paper-progress>
+    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation" class="teal"></paper-progress>
     <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation"></paper-progress>
-    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation"></paper-progress>
   </div>
   """
   unless $("#validator-progress-container").exists()
