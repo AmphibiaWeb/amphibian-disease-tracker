@@ -1314,8 +1314,8 @@ newGeoDataHandler = function(dataObject) {
         if (taxon.response.original_taxon != null) {
           console.info("Taxon obj", taxon);
           originalTaxon = "" + (taxon.response.original_taxon.slice(0, 1).toUpperCase()) + (taxon.response.original_taxon.slice(1));
-          noticeHtml = "<div class=\"alert alert-info alert-dismissable amended-taxon-notice\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    Your entry '<em>" + originalTaxon + "</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to <em>" + taxonString + "</em>. <a href=\"" + taxon.validated_taxon.uri_or_guid + "\" target=\"_blank\">See the AmphibiaWeb entry <span class=\"glyphicon glyphicon-new-window\"></span></a>\n</div>";
-          $("#species-list").after(noticeHtml);
+          noticeHtml = "<div class=\"alert alert-info alert-dismissable amended-taxon-notice\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    Your entry '<em>" + originalTaxon + "</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>" + taxonString + "</em>' below. <a href=\"" + taxon.response.validated_taxon.uri_or_guid + "\" target=\"_blank\">See the AmphibiaWeb entry <span class=\"glyphicon glyphicon-new-window\"></span></a>\n</div>";
+          $("#species-list").before(noticeHtml);
         }
         if (!isNull(taxon.subspecies)) {
           taxonString += " " + taxon.subspecies;

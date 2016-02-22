@@ -7285,9 +7285,14 @@ paper-button[raised].admin-action {
   display: block;
   clear: both;
 }
-iron-autogrow-textarea.project-field {
+iron-autogrow-textarea.project-field,
+.alert.project-field {
   margin-left: 1em;
   margin-bottom: 1em;
+}
+.project-field.alert-dismissable .close {
+  right: -11px;
+  top: -12px;
 }
 .submission-section {
   margin-buttom: 3rem;
