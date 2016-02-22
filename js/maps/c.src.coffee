@@ -1428,13 +1428,13 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         console.log "Estimate #{estimate} seconds"
         window._adp.uploader = true
         $("#data-sync").removeAttr "indeterminate"
-        p$("#data-sync").max = estimate
+        p$("#data-sync").max = estimate * 30 # 30fps
         do updateUploadProgress = (prog = 0) ->
           # Update a progress bar
           p$("#data-sync").value = prog
           ++prog
           if window._adp.uploader
-            delay 1000, ->
+            delay 33, ->
               updateUploadProgress(prog)
       story = ["A silly story for you, while you wait!","Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous Tyrannosaurus rex with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen \"Stayin' Alive\",","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"]
       doStillWorking = ->

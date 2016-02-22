@@ -1807,12 +1807,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         console.log("Estimate " + estimate + " seconds");
         window._adp.uploader = true;
         $("#data-sync").removeAttr("indeterminate");
-        p$("#data-sync").max = estimate;
+        p$("#data-sync").max = estimate * 30;
         (updateUploadProgress = function(prog) {
           p$("#data-sync").value = prog;
           ++prog;
           if (window._adp.uploader) {
-            return delay(1000, function() {
+            return delay(33, function() {
               return updateUploadProgress(prog);
             });
           }
