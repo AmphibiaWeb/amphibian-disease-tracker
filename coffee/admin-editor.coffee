@@ -235,18 +235,25 @@ loadEditor = (projectPreload) ->
               </div>
           """ else ""
           # The actual HTML
+          mdNotes = if isNull(project.sample_notes) then "*No notes for this project*" else project.sample_notes
           noteHtml = """
           <h3>Project Notes</h3>
           <ul class="nav nav-tabs" id="markdown-switcher">
-            <li role="presentation" class="active" data-view="md"><a href="#">Preview</a></li>
-            <li role="presentation" data-view="edit"><a href="#">Edit</a></li>
+            <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher">Preview</a></li>
+            <li role="presentation" data-view="edit"><a href="#markdown-switcher">Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes">#{project.sample_notes}</iron-autogrow-textarea>
+          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden>#{project.sample_notes}</iron-autogrow-textarea>
           <marked-element class="markdown-pair project-param" id="note-preview">
             <div class="markdown-html"></div>
-            <script type="text/markdown">#{project.sample_notes}</script>
+            <script type="text/markdown">#{mdNotes}</script>
           </marked-element>
           """
+          try
+            authorData = JSON.parse project.author_data
+            creation = new Date(authorData.entry_date)
+          catch
+            authorData = new Object()
+            creation = new Object()
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -273,14 +280,15 @@ loadEditor = (projectPreload) ->
           <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Basics</h3>
             <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
+            <paper-input readonly label="Project Creation" value="#{creation.toLocaleString()}" id="project_creation" class="project-param"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project_title" data-field="project_title"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Primary Pathogen" value="#{project.disease}" data-field="disease"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project_title" data-field="pi_lab"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Reference" value="#{project.reference_id}" id="project_reference" data-field="reference_id"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Publication DOI" value="#{project.publication}" id="doi" data-field="publication"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Project Contact" value="" id="project_contact"></paper-input>
-            <gold-email-input #{conditionalReadonly} class="project-param" label="Contact Email" value="" id="contact_email"></gold-email-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Diagnostic Lab" value="" id="project_lab"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Project Contact" value="#{authorData.name}" id="project_contact"></paper-input>
+            <gold-email-input #{conditionalReadonly} class="project-param" label="Contact Email" value="#{authorData.contact_email}" id="contact_email"></gold-email-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project_lab"></paper-input>
           </section>
           <section id="notes" class="col-xs-12 col-md-8 clearfix">
             #{noteHtml}
@@ -321,20 +329,20 @@ loadEditor = (projectPreload) ->
                 <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").join(", ")}"></paper-input>
                 <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").join(", ")}"></paper-input>
               <h4>Sample Metrics</h4>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
               <h4>Locality &amp; Transect Data</h4>
                 #{googleMap}
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
             <h3>Project Meta Parameters</h3>
               <h4>Project funding status</h4>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id="" class="project-param"></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
           </section>
           """
           $("#main-body").html html
@@ -342,7 +350,6 @@ loadEditor = (projectPreload) ->
           # Events
           ta = p$("#project-notes").textarea
           $(ta).keyup ->
-            console.info "Keyup change! ", $(this).val()
             p$("#note-preview").markdown = $(this).val()
           $("#markdown-switcher li").click ->
             $("#markdown-switcher li").removeClass "active"
@@ -353,7 +360,7 @@ loadEditor = (projectPreload) ->
                 $("#project-notes").attr "hidden", "hidden"
               when "edit"
                 $("#note-preview").attr "hidden", "hidden"
-            
+
           $("#delete-project").click ->
             confirmButton = """
             <paper-button id="confirm-delete-project" class="materialred">

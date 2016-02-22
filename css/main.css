@@ -7308,6 +7308,13 @@ iron-autogrow-textarea.project-field {
   margin-left: 0;
   padding-left: 0;
 }
+section#notes .markdown-pair {
+  margin: 1rem;
+}
+section#notes marked-element {
+  min-height: 5em;
+  display: block;
+}
 .map {
   height: 50vh;
   display: block;
