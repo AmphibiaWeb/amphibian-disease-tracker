@@ -289,7 +289,8 @@ function doAWebValidate($get) {
             foreach($synon as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
-                $oldGenus = explode(" ", $key)[0];
+                $oldGenus = explode(" ", $key);
+                $oldGenus = $oldGenus[0];
                 $synonymGenusList[$oldGenus] = $k;
             }
         }
@@ -303,7 +304,8 @@ function doAWebValidate($get) {
             foreach($synon as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
-                $oldGenus = explode(" ", $key)[0];
+                $oldGenus = explode(" ", $key);
+                $oldGenus = $oldGenus[0];
                 $synonymGenusList[$oldGenus] = $k;
             }
         }
@@ -317,7 +319,8 @@ function doAWebValidate($get) {
             foreach($itis as $oldName) {
                 $key = trim($oldName);
                 $synonymList[$key] = $k;
-                $oldGenus = explode(" ", $key)[0];
+                $oldGenus = explode(" ", $key);
+                $oldGenus = $oldGenus[0];
                 $synonymGenusList[$oldGenus] = $k;
             }
         }
@@ -342,7 +345,8 @@ function doAWebValidate($get) {
                     "synonymies",
                     "itis_names",
                     "iucn",
-                    "isocc"
+                    "isocc",
+                    "intro_isocc",
                 );
                 foreach($aWebMatch as $key=>$val) {
                     $prettyKey = $aWebCols[$key];
@@ -357,8 +361,9 @@ function doAWebValidate($get) {
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
+                $aWebPretty["species"] = "";
                 $response["status"] = true;
-                $response["notices"][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
+                $response["notices"][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical genus.";
                 $response["original_taxon"] = $providedGenus;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response["validated_taxon"] = $aWebPretty;
@@ -422,7 +427,8 @@ function doAWebValidate($get) {
                     "synonymies",
                     "itis_names",
                     "iucn",
-                    "isocc"
+                    "isocc",
+                    "intro_isocc",
                 );
                 foreach($aWebMatch as $key=>$val) {
                     $prettyKey = $aWebCols[$key];
@@ -437,6 +443,7 @@ function doAWebValidate($get) {
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
+                $aWebPretty["species"] = "";
                 $response["status"] = true;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response["validated_taxon"] = $aWebPretty;
