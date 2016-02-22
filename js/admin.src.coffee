@@ -1217,8 +1217,9 @@ newGeoDataHandler = (dataObject = new Object()) ->
           #  Collector: "varchar"
           #  the_geom: "varchar"
           #
-          # when "ContactName", "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
-          #   fimsExtra[column] = value
+          when "ContactName", "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
+            fimsExtra[column] = value
+            skipCol = true
           when "specimenDisposition"
             column = "sampleDisposition"
           when "elevation"
@@ -1264,8 +1265,6 @@ newGeoDataHandler = (dataObject = new Object()) ->
             catch
               # Non-string
               cleanValue = value
-            fimsExtra[column] = cleanValue
-            skipCol = true
         unless skipCol
           tRow[column] = cleanValue
       coords =
