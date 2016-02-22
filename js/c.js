@@ -1788,7 +1788,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           return false;
       }
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
-      args = "action=upload&sql_query=" + apiPostSqlQuery + "&blobby=true";
+      args = "action=upload&sql_query=" + apiPostSqlQuery;
       console.info("Querying:");
       console.info(sqlQuery);
       console.info("GeoJSON:", geoJson);
@@ -1881,7 +1881,10 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
         return bsAlert("Couldn't upload dataset. Please try again later.", "danger");
       }).always(function() {
+        var duration;
         try {
+          duration = Date.now() - postTimeStart;
+          console.info("POST and process took " + duration + "ms");
           clearTimeout(window._adp.initialTimeout);
           return clearTimeout(window._adp.secondaryTimeout);
         } catch (_error) {}
