@@ -191,7 +191,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
             $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
             $urls[] = $cartoFullUrl;
             if (boolstr($get['alt'])) {
-                $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs), true);
+                $responses[] = json_decode(do_post_request($cartoPostUrl, $cartoArgs, "GET"), true);
             } else {
                 # Default
                 $opts = array(
