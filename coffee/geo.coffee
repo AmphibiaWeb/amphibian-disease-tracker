@@ -455,7 +455,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          insertMaxLength = 25
+          insertMaxLength = 15
           insertPlace = 0
           console.info "Inserting #{insertMaxLength} at a time"
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
@@ -550,6 +550,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           dataVisUrl = ""
         parentCallback = ->
           stopLoad()
+          max = p$("#data-sync").max
+          p$("#data-sync").value = max
           if typeof callback is "function"
             callback(geo.dataTable)
           else
