@@ -325,10 +325,31 @@ finalizeData = ->
   if uploadedData?
     # Loop through it
     dates = new Array()
+    months = new Array()
+    years = new Array()
+    methods = new Array()
+    catalogNumbers = new Array()
+    fieldNumbers = new Array()
+    dispositions = new Array()
     for row in Object.toArray uploadedData
-      dates.push excelDateToUnixTime row.dateIdentified
+      uTime = excelDateToUnixTime row.dateIdentified
+      dates.push uTime
+      mString = dateMonthToString uTime.getUTCMonth()
+      unless mString in months
+        months.push mString
+      unless uTime.getFullYear() in years
+        years.push uTime.getFullYear()
+      if row.catalogNumber? # Not mandatory
+        catalogNumbers.push row.catalogNumber
+      fieldNumbers.push row.fieldNumber
   console.info "Got uploaded data", uploadedData
   console.info "Got date ranges", dates
+  postData.sample_collection_start = dates.min()
+  postData.sample_collection_end = dates.max()
+  postData.sample_catalog_numbers = catalogNumbers.join(",")
+  postData.sample_field_numbers = fieldNumbers.join(",")
+  postData.sampling_months = months
+  postData.sampling_years = years
   center = getMapCenter(geo.boundingBox)
   postData.lat = center.lat
   postData.lng = center.lng
@@ -1346,6 +1367,26 @@ newGeoDataHandler = (dataObject = new Object()) ->
     toastStatusMessage "There was a problem parsing your data"
   false
 
+
+dateMonthToString = (month) ->
+  conversionObj =
+    0: "January"
+    1: "February"
+    2: "March"
+    3: "April"
+    4: "May"
+    5: "June"
+    6: "July"
+    7: "August"
+    8: "September"
+    9: "October"
+    10: "November"
+    11: "December"
+  try
+    rv = conversionObj[month]
+  catch
+    rv = month
+  month
 
 
 excelDateToUnixTime = (excelTime) ->

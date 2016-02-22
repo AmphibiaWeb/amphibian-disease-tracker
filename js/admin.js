@@ -14,9 +14,9 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
-  modulo = function(a, b) { return (+a % (b = +b) + b) % b; },
-  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, dateMonthToString, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+  modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
 window.adminParams = new Object();
 
@@ -195,7 +195,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, aweb, cartoData, center, clade, dataCheck, dates, el, input, key, l, len, len1, len2, m, o, postData, ref, ref1, row, taxonData, taxonObject, uniqueId;
+  var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dataCheck, dates, dispositions, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uTime, uniqueId, years;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -233,14 +233,38 @@ finalizeData = function() {
   }
   if (uploadedData != null) {
     dates = new Array();
+    months = new Array();
+    years = new Array();
+    methods = new Array();
+    catalogNumbers = new Array();
+    fieldNumbers = new Array();
+    dispositions = new Array();
     ref1 = Object.toArray(uploadedData);
     for (m = 0, len1 = ref1.length; m < len1; m++) {
       row = ref1[m];
-      dates.push(excelDateToUnixTime(row.dateIdentified));
+      uTime = excelDateToUnixTime(row.dateIdentified);
+      dates.push(uTime);
+      mString = dateMonthToString(uTime.getUTCMonth());
+      if (indexOf.call(months, mString) < 0) {
+        months.push(mString);
+      }
+      if (ref2 = uTime.getFullYear(), indexOf.call(years, ref2) < 0) {
+        years.push(uTime.getFullYear());
+      }
+      if (row.catalogNumber != null) {
+        catalogNumbers.push(row.catalogNumber);
+      }
+      fieldNumbers.push(row.fieldNumber);
     }
   }
   console.info("Got uploaded data", uploadedData);
   console.info("Got date ranges", dates);
+  postData.sample_collection_start = dates.min();
+  postData.sample_collection_end = dates.max();
+  postData.sample_catalog_numbers = catalogNumbers.join(",");
+  postData.sample_field_numbers = fieldNumbers.join(",");
+  postData.sampling_months = months;
+  postData.sampling_years = years;
   center = getMapCenter(geo.boundingBox);
   postData.lat = center.lat;
   postData.lng = center.lng;
@@ -1329,6 +1353,30 @@ newGeoDataHandler = function(dataObject) {
     toastStatusMessage("There was a problem parsing your data");
   }
   return false;
+};
+
+dateMonthToString = function(month) {
+  var conversionObj, rv;
+  conversionObj = {
+    0: "January",
+    1: "February",
+    2: "March",
+    3: "April",
+    4: "May",
+    5: "June",
+    6: "July",
+    7: "August",
+    8: "September",
+    9: "October",
+    10: "November",
+    11: "December"
+  };
+  try {
+    rv = conversionObj[month];
+  } catch (_error) {
+    rv = month;
+  }
+  return month;
 };
 
 excelDateToUnixTime = function(excelTime) {
