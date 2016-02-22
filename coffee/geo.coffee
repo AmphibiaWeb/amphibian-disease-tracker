@@ -455,7 +455,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          insertMaxLength = 50
+          insertMaxLength = 25
           insertPlace = 0
           console.info "Inserting #{insertMaxLength} at a time"
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
@@ -484,7 +484,18 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       workingIter = 0
       # http://birdisabsurd.blogspot.com/p/one-paragraph-stories.html
       try
-        estimate = .7 * valuesList.length
+        estimate = toInt(.7 * valuesList.length)
+        console.log "Estimate #{estimate} seconds"
+        window._adp.uploader = true
+        $("#data-sync").removeAttr "indeterminate"
+        p$("#data-sync").max = estimate
+        do updateUploadProgress = (prog = 0) ->
+          # Update a progress bar
+          p$("#data-sync").value = prog
+          ++prog
+          if window._adp.uploader
+            delay 1000, ->
+              updateUploadProgress(prog)
       story = ["A silly story for you, while you wait!","Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous Tyrannosaurus rex with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen \"Stayin' Alive\",","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"]
       doStillWorking = ->
         extra = if story[workingIter]? then "(#{story[workingIter]})" else ""
@@ -577,6 +588,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           console.info "POST and process took #{duration}ms"
           clearTimeout window._adp.initialTimeout
           clearTimeout window._adp.secondaryTimeout
+          window._adp.uploader = false
           $("#upload-data").removeAttr "disabled"
 
     else

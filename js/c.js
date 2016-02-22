@@ -1607,7 +1607,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList, workingIter;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
     if (result.status) {
 
       /*
@@ -1779,7 +1779,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          insertMaxLength = 50;
+          insertMaxLength = 25;
           insertPlace = 0;
           console.info("Inserting " + insertMaxLength + " at a time");
           while (valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0) {
@@ -1803,7 +1803,20 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       postTimeStart = Date.now();
       workingIter = 0;
       try {
-        estimate = .7 * valuesList.length;
+        estimate = toInt(.7 * valuesList.length);
+        console.log("Estimate " + estimate + " seconds");
+        window._adp.uploader = true;
+        $("#data-sync").removeAttr("indeterminate");
+        p$("#data-sync").max = estimate;
+        (updateUploadProgress = function(prog) {
+          p$("#data-sync").value = prog;
+          ++prog;
+          if (window._adp.uploader) {
+            return delay(1000, function() {
+              return updateUploadProgress(prog);
+            });
+          }
+        })(0);
       } catch (_error) {}
       story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen \"Stayin' Alive\",", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
       doStillWorking = function() {
@@ -1904,6 +1917,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           console.info("POST and process took " + duration + "ms");
           clearTimeout(window._adp.initialTimeout);
           clearTimeout(window._adp.secondaryTimeout);
+          window._adp.uploader = false;
           return $("#upload-data").removeAttr("disabled");
         } catch (_error) {}
       });
