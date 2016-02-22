@@ -235,6 +235,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   #
   # Among other things, this approach secures the cartoDB API on the server.
   ###
+  startLoad()
   try
     data = totalData.data
   # How's the data?
@@ -476,7 +477,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         if result.status isnt true
           console.error "Got an error from the server!"
           console.warn result
-          toastStatusMessage "There was a problem uploading your data. Please try again."
+          stopLoadError "There was a problem uploading your data. Please try again."
           return false
         cartoResults = result.post_response
         cartoHasError = false
@@ -510,6 +511,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         else
           dataVisUrl = ""
         parentCallback = ->
+          stopLoad()
           if typeof callback is "function"
             callback(geo.dataTable)
           else
@@ -540,14 +542,14 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       .error (result, status) ->
         console.error "Couldn't communicate with server!", result, status
         #console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-        toastStatusMessage "There was a problem communicating with the server"
+        stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
     else
       console.error "Unable to authenticate session. Please log in."
-      toastStatusMessage "Sorry, your session has expired. Please log in and try again."
+      stopLoadError "Sorry, your session has expired. Please log in and try again."
   .error (result, status) ->
     console.error "Couldn't communicate with server!", result, status
     #console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-    toastStatusMessage "There was a problem communicating with the server. Please try again in a bit. (E-001)"
+    stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-001)"
   false
 
 
