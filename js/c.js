@@ -1779,7 +1779,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          insertMaxLength = 75;
+          insertMaxLength = 50;
           insertPlace = 0;
           console.info("Inserting " + insertMaxLength + " at a time");
           while (valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0) {
