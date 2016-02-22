@@ -1342,10 +1342,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
           noticeHtml = """
           <div class="alert alert-info alert-dismissable amended-taxon-notice" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              Your entry '<em>#{originalTaxon}</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to <em>#{taxonString}</em>. <a href="#{taxon.validated_taxon.uri_or_guid}" target="_blank">See the AmphibiaWeb entry <span class="glyphicon glyphicon-new-window"></span></a>
+              Your entry '<em>#{originalTaxon}</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>#{taxonString}</em>' below. <a href="#{taxon.response.validated_taxon.uri_or_guid}" target="_blank">See the AmphibiaWeb entry <span class="glyphicon glyphicon-new-window"></span></a>
           </div>
           """
-          $("#species-list").after noticeHtml
+          $("#species-list").before noticeHtml
         unless isNull taxon.subspecies
           taxonString += " #{taxon.subspecies}"
         if i > 0
