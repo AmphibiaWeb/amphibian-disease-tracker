@@ -1145,6 +1145,28 @@ newGeoDataHandler = function(dataObject) {
         value = row[column];
         skipCol = false;
         switch (column) {
+          case "ContactName":
+          case "basisOfRecord":
+          case "occurrenceID":
+          case "institutionCode":
+          case "collectionCode":
+          case "labNumber":
+          case "originalsource":
+          case "datum":
+          case "georeferenceSource":
+          case "depth":
+          case "Collector2":
+          case "Collector3":
+          case "verbatimLocality":
+          case "Habitat":
+          case "Test_Method":
+          case "eventRemarks":
+          case "quantityDetected":
+          case "dilutionFactor":
+          case "cycleTimeFirstDetection":
+            fimsExtra[column] = value;
+            skipCol = true;
+            break;
           case "specimenDisposition":
             column = "sampleDisposition";
             break;
@@ -1204,8 +1226,6 @@ newGeoDataHandler = function(dataObject) {
             } catch (_error) {
               cleanValue = value;
             }
-            fimsExtra[column] = cleanValue;
-            skipCol = true;
         }
         if (!skipCol) {
           tRow[column] = cleanValue;
