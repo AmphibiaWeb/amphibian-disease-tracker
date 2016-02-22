@@ -254,6 +254,8 @@ loadEditor = (projectPreload) ->
           catch
             authorData = new Object()
             creation = new Object()
+            creation.toLocaleString = ->
+              return "Error retrieving creation time"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
