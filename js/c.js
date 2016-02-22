@@ -1792,7 +1792,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       console.info(sqlQuery);
       console.info("GeoJSON:", geoJson);
       console.info("GeoJSON String:", dataGeometry);
-      console.warn("Want to post:", uri.urlString + "api.php?" + args);
       return $.post("api.php", args, "json").done(function(result) {
         var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, parentCallback, prettyHtml, response;
         console.log("Got back", result);
@@ -1861,6 +1860,9 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             return false;
           });
         }
+      }).error(function(result, status) {
+        console.error("Couldn't communicate with server!", result, status);
+        return toastStatusMessage("There was a problem communicating with the server");
       });
     } else {
       console.error("Unable to authenticate session. Please log in.");
@@ -1868,7 +1870,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     }
   }).error(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
-    console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit. (E-001)");
   });
   return false;
