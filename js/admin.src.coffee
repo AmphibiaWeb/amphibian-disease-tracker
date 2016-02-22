@@ -1335,6 +1335,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
       i = 0
       for taxon in validatedData.validated_taxa
         taxonString = "#{taxon.genus} #{taxon.species}"
+        console.info "Taxon obj", taxon # STOPPED HERE NEED TO COMPARE
+        # TO ORIGINAL TAXON AND APPEND NOTICE FOR CHANGES
         unless isNull taxon.subspecies
           taxonString += " #{taxon.subspecies}"
         if i > 0
