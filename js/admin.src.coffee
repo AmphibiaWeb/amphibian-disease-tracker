@@ -185,7 +185,7 @@ loadCreateNewProject = ->
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
       <h2 class="new-title col-xs-12">Project Notes</h2>
-      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract")}
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
       <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
         <div class="markdown-html"></div>
       </marked-element>
@@ -1618,8 +1618,12 @@ loadEditor = (projectPreload) ->
           # The actual HTML
           noteHtml = """
           <h2 class="new-title col-xs-12">Project Notes</h2>
-          <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-12" rows="3" data-field="sample_notes">#{project.sample_notes}</iron-autogrow-textarea>
-          <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
+          <ul class="nav nav-tabs" id="markdown-switcher">
+            <li role="presentation" class="active" data-view="md"><a href="#">Preview</a></li>
+            <li role="presentation" data-view="edit"><a href="#">Edit</a></li>
+          </ul>
+          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param col-md-6 col-xs-12" rows="3" data-field="sample_notes">#{project.sample_notes}</iron-autogrow-textarea>
+          <marked-element class="markdown-pair project-param col-md-6 col-xs-12" id="note-preview">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{project.sample_notes}</script>
           </marked-element>
@@ -1714,6 +1718,20 @@ loadEditor = (projectPreload) ->
           $("#main-body").html html
           # Watch for changes and toggle save watcher state
           # Events
+          ta = p$("#project-notes").textarea
+          $(ta).keyup ->
+            console.info "Keyup change! ", $(this).val()
+            p$("#note-preview").markdown = $(this).val()
+          $("#markdown-switcher li").click ->
+            $("#markdown-switcher li").removeClass "active"
+            $(".markdown-pair").removeAttr "hidden"
+            $(this).addClass "active"
+            switch $(this).attr "data-view"
+              when "md"
+                $("#project-notes").attr "hidden", "hidden"
+              when "edit"
+                $("#note-preview").attr "hidden", "hidden"
+            
           $("#delete-project").click ->
             confirmButton = """
             <paper-button id="confirm-delete-project" class="materialred">
