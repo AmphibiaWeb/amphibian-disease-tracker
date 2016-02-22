@@ -1409,7 +1409,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       # $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
       console.info "GeoJSON:", geoJson
       console.info "GeoJSON String:", dataGeometry
-      console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
+      # console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
       $.post "api.php", args, "json"
       .done (result) ->
         console.log "Got back", result
@@ -1477,12 +1477,16 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             createMap dataVisUrl, undefined, options, ->
               parentCallback()
             false
+      .error (result, status) ->
+        console.error "Couldn't communicate with server!", result, status
+        #console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+        toastStatusMessage "There was a problem communicating with the server"
     else
       console.error "Unable to authenticate session. Please log in."
       toastStatusMessage "Sorry, your session has expired. Please log in and try again."
   .error (result, status) ->
     console.error "Couldn't communicate with server!", result, status
-    console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+    #console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     toastStatusMessage "There was a problem communicating with the server. Please try again in a bit. (E-001)"
   false
 
