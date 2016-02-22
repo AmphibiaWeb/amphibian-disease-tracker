@@ -1884,6 +1884,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         }
       }).error(function(result, status) {
         console.error("Couldn't communicate with server!", result, status);
+        console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
         stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
         return bsAlert("Couldn't upload dataset. Please try again later.", "danger");
       }).always(function() {
@@ -1901,6 +1902,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     }
   }).error(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
+    console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-001)");
   });
   return false;
