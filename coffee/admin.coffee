@@ -31,6 +31,8 @@ dataAttrs = new Object()
 
 helperDir = "helpers/"
 user =  $.cookie "#{adminParams.domain}_link"
+userEmail =  $.cookie "#{adminParams.domain}_user"
+userFullname =  $.cookie "#{adminParams.domain}_fullname"
 
 window.loadAdminUi = ->
   ###
@@ -181,9 +183,10 @@ loadCreateNewProject = ->
       <paper-input label="Publication DOI" id="pub-doi" class="project-field col-md-6 col-xs-11" data-field="publication"></paper-input>
       <h2 class="new-title col-xs-12">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate data-field="pi_lab"></paper-input>
-      <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
-      <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12"  required auto-validate></gold-email-input>
+      <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
+      <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
+      <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("e.g., UC Berkeley")}
       <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
       <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
@@ -260,7 +263,6 @@ loadCreateNewProject = ->
   $("main #main-body").append html
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
-    console.info "Keyup change! ", $(this).val()
     p$("#note-preview").markdown = $(this).val()
   bootstrapUploader()
   bootstrapTransect()
@@ -323,10 +325,12 @@ finalizeData = ->
   # Bounding box coords
   postData.author = $.cookie("#{adminParams.domain}_link")
   authorData =
-    name: ""
-    affiliation: ""
-    lab: ""
-    entry_date: ""
+    name: p$("#project-author")
+    contact_email: p$("#author-email").value
+    affiliation: p$("#project-affiliation").value
+    lab: p$("#pi_lab").value
+    diagnostic_lab: p$("#project-lab").value
+    entry_date: Date.now()
   postData.author_data = JSON.stringify authorData
   cartoData =
     table: geo.dataTable
