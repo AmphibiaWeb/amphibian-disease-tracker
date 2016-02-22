@@ -236,13 +236,13 @@ loadEditor = (projectPreload) ->
           """ else ""
           # The actual HTML
           noteHtml = """
-          <h2 class="new-title col-xs-12">Project Notes</h2>
+          <h3>Project Notes</h3>
           <ul class="nav nav-tabs" id="markdown-switcher">
             <li role="presentation" class="active" data-view="md"><a href="#">Preview</a></li>
             <li role="presentation" data-view="edit"><a href="#">Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param col-md-6 col-xs-12" rows="3" data-field="sample_notes">#{project.sample_notes}</iron-autogrow-textarea>
-          <marked-element class="markdown-pair project-param col-md-6 col-xs-12" id="note-preview">
+          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes">#{project.sample_notes}</iron-autogrow-textarea>
+          <marked-element class="markdown-pair project-param" id="note-preview">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{project.sample_notes}</script>
           </marked-element>
@@ -281,6 +281,9 @@ loadEditor = (projectPreload) ->
             <paper-input #{conditionalReadonly} class="project-param" label="Project Contact" value="" id="project_contact"></paper-input>
             <gold-email-input #{conditionalReadonly} class="project-param" label="Contact Email" value="" id="contact_email"></gold-email-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Diagnostic Lab" value="" id="project_lab"></paper-input>
+          </section>
+          <section id="notes" class="col-xs-12 col-md-8 clearfix">
+            #{noteHtml}
           </section>
           <section id="data-management" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Data" elevation="2" id="data-card">
