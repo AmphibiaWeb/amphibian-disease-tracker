@@ -272,7 +272,7 @@ finalizeData = function() {
     postData.lng = center.lng;
     postData.author = $.cookie(adminParams.domain + "_link");
     authorData = {
-      name: p$("#project-author"),
+      name: p$("#project-author").value,
       contact_email: p$("#author-email").value,
       affiliation: p$("#project-affiliation").value,
       lab: p$("#project-pi").value,
