@@ -1489,6 +1489,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         else
           dataVisUrl = ""
         parentCallback = ->
+          console.info "Initiating parent callback"
           stopLoad()
           max = p$("#data-sync").max
           p$("#data-sync").value = max
@@ -1497,8 +1498,10 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           else
             console.info "requestCartoUpload recieved no callback"
         unless isNull cartoMap
+          console.info "Creating map"
           cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
           .done (layer) ->
+            console.info "Map created"
             # The actual interaction infowindow popup is decided on the data
             # page in Carto
             layer.setInteraction true
@@ -1507,6 +1510,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         else
           geo.init ->
             # Callback
+            console.info "Post init"
             center = getMapCenter(geo.boundingBox)
             options =
               cartodb_logo: false
@@ -1517,6 +1521,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
               center_lon: center.lng
               zoom: getMapZoom(geo.boundingBox)
             createMap dataVisUrl, undefined, options, ->
+              console.info "createMap callback successful"
               parentCallback()
             false
       .error (result, status) ->
