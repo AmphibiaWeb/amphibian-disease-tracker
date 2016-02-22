@@ -47,6 +47,7 @@ validateFimsData = (dataObject, callback = null) ->
   # @param function callback -> callback function
   ###
   console.info "FIMS Validating", dataObject.data
+  $("#data-validation").removeAttr "indeterminate"
   p$("#data-validation").max = Object.size dataObject.data
   fimsPostTarget = ""
   # Format the JSON for FIMS
@@ -89,6 +90,7 @@ validateTaxonData = (dataObject, callback = null) ->
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
   console.info "Replacement tracker", taxaPerRow
+  $("#taxa-validation").removeAttr "indeterminate"
   p$("#taxa-validation").max = taxa.length
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
