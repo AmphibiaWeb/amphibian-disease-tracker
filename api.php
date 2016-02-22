@@ -272,6 +272,18 @@ function doAWebValidate($get) {
         if($k == 0) continue; # Prevent match on "genus"
         $genus = strtolower($entry[3]);
         $genusList[] = $genus;
+        $gaaEntry = strtolower($entry[8]);
+        if(!empty($gaaEntry)) {
+            if(strpos($gaaEntry, ",") !== false) {
+                $synon = explode(",", $gaaEntry);
+            } else {
+                $synon = array($gaaEntry);
+            }
+            foreach($synon as $oldName) {
+                $key = trim($oldName);
+                $synonymList[$key] = $k;
+            }
+        }
         $synonEntry = strtolower($entry[8]);
         if(!empty($synonEntry)) {
             if(strpos($synonEntry, ",") !== false) {
