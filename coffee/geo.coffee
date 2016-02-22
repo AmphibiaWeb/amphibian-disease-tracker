@@ -455,7 +455,12 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          sqlQuery = "#{sqlQuery}INSERT INTO #{dataTable} VALUES #{valuesList.join(", ")};"
+          insertMaxLength = 200
+          insertPlace = 0
+          while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
+            tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength)
+            insertPlace += insertMaxLength
+            sqlQuery += "INSERT INTO #{dataTable} VALUES #{tempList.join(", ")};"
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
