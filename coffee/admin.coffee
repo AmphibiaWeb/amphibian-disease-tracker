@@ -1189,6 +1189,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
+        column = column.trim()
         skipCol = false
         switch column
           # Change FIMS to internal structure:
@@ -1222,6 +1223,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
             skipCol = true
           when "specimenDisposition"
             column = "sampleDisposition"
+          when "sampleType"
+            column = "sampleMethod"
           when "elevation"
             column = "alt"
           # Data handling
