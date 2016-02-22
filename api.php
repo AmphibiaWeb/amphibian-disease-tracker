@@ -261,12 +261,9 @@ function doAWebValidate($get) {
         }
     }
     $response["aweb_list_age"] = time() - filemtime($localAWebTarget);
-    $resposne["aweb_list_max_age"] = $dayOffset;
+    $response["aweb_list_max_age"] = $dayOffset;
     //$aWebList = file_get_contents($localAWebTarget);
     $aWebListArray = array_map("tsvHelper", file($localAWebTarget));
-
-
-    $manualMaps = array();
 
 
     /*
