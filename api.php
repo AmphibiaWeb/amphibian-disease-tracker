@@ -180,6 +180,7 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
     $responses = array();
     $parsed_responses = array();
     $urls = array();
+    ini_set("allow_url_fopen", true);
     if(!boolstr($get["blobby"])) {
         foreach ($statements as $statement) {
             $statement = trim($statement);
