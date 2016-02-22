@@ -275,7 +275,7 @@ finalizeData = function() {
       name: p$("#project-author"),
       contact_email: p$("#author-email").value,
       affiliation: p$("#project-affiliation").value,
-      lab: p$("#pi_lab").value,
+      lab: p$("#project-pi").value,
       diagnostic_lab: p$("#project-lab").value,
       entry_date: Date.now()
     };
