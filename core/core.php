@@ -242,7 +242,7 @@ if (!function_exists('displayDebug')) {
 }
 
 if (!function_exists('do_post_request')) {
-    function do_post_request($url, $data, $optional_headers = null)
+    function do_post_request($url, $data, $method = "POST", $optional_headers = null)
     {
         /***
          * Do a POST request
@@ -254,7 +254,7 @@ if (!function_exists('do_post_request')) {
         $bareUrl = $url;
         $url = urlencode($url);
         $params = array('http' => array(
-            'method' => 'POST',
+            'method' => $method,
             'content' => http_build_query($data),
             'header'  => 'Content-type: application/x-www-form-urlencoded',
         ));

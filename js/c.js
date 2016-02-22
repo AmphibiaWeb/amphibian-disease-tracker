@@ -1608,7 +1608,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList, workingIter;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList, workingIter;
     if (result.status) {
 
       /*
@@ -1802,6 +1802,9 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       console.info("POSTing to server");
       postTimeStart = Date.now();
       workingIter = 0;
+      try {
+        estimate = .7 * valuesList.length;
+      } catch (_error) {}
       story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen \"Stayin' Alive\",", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
       doStillWorking = function() {
         var extra;
@@ -1831,7 +1834,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         cartoHasError = false;
         for (j in cartoResults) {
           response = cartoResults[j];
-          if (!isNull((response != null ? response.error : void 0) || response === false)) {
+          if (!isNull(response != null ? response.error : void 0)) {
             error = (response != null ? response.error : void 0) != null ? response.error[0] : "Unspecified Error";
             cartoHasError = error;
           }
