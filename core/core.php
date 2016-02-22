@@ -279,7 +279,7 @@ if (!function_exists('do_post_request')) {
                 else if (function_exists("curl_init")) {
                     # Last-ditch: CURL
                     $ch = curl_init( $bareUrl );
-                    curl_setopt( $ch, CURLOPT_POST, 1);
+                    if($method == "POST") curl_setopt( $ch, CURLOPT_POST, 1);
                     curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($data));
                     curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
                     curl_setopt( $ch, CURLOPT_HEADER, 0);
