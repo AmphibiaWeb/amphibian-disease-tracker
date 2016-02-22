@@ -229,6 +229,8 @@ function tsvHelper($tsv) {
     return str_getcsv($tsv, "\t");
 }
 
+
+
 function doAWebValidate($get) {
     /***
      *
@@ -402,12 +404,14 @@ function doAWebValidate($get) {
     }
     # Cool, so the genus exists.
     $speciesList = array();
+    $speciesListComparative = array();
     foreach($aWebListArray as $row=>$entry) {
         if($row == 0) continue; # Prevent match on "species"
         $genus = strtolower($entry[3]);
         if($genus == $providedGenus) {
             $species = $entry[5];
             $speciesList[$species] = $row;
+            $speciesListComparative[] = $species;
         }
     }
     if(!array_key_exists($providedSpecies, $speciesList)) {
@@ -445,6 +449,37 @@ function doAWebValidate($get) {
                 }
                 $aWebPretty["species"] = "";
                 $response["status"] = true;
+                # Note that Unicode characters may return escaped! eg, \u00e9.
+                $response["validated_taxon"] = $aWebPretty;
+                returnAjax($response);
+            }
+            # Gender? Latin sucks.
+            # See: sylvaticus vs sylvatica
+            $key = array_find(substr($providedSpecies, 0, -3), $speciesListComparative);
+            if($key !== false) {
+                $response["notices"][] = "FUZZY_SPECIES_MATCH";
+                $response["notices"][] = "This is just a probable match for your entry '$testSpecies'. We ignored the species gender ending for you. If this isn't a match, your species is invalid";
+                $trueSpecies = $speciesListComparative[$key];
+                $aWebRow = $speciesList[$trueSpecies];
+                $aWebMatch = $aWebListArray[$aWebRow];
+                $aWebCols = $aWebListArray[0];
+                $aWebPretty = array();
+                foreach($aWebMatch as $key=>$val) {
+                    $prettyKey = $aWebCols[$key];
+                    $prettyKey = str_replace("/", "_or_", $prettyKey);
+                    if(strpos($val, ",") !== false) {
+                        $val = explode(",", $val);
+                        foreach($val as $k=>$v) {
+                            $val[$k] = trim($v);
+                        }
+                    }
+                    $aWebPretty[$prettyKey] = $val;
+                }
+                if(empty($aWebPretty["subspecies"]) && !empty($get["subspecies"])) {
+                    $aWebPretty["subspecies"] = $get["subspecies"];
+                }
+                $response["status"] = true;
+                $response["original_taxon"] = $testSpecies;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response["validated_taxon"] = $aWebPretty;
                 returnAjax($response);
