@@ -1357,7 +1357,6 @@ getMapCenter = function(bb) {
       coords = bb[k];
       ++i;
       totalLat += coords[0];
-      console.info(coords, i, totalLat);
     }
     centerLat = toFloat(totalLat) / toFloat(i);
     i = 0;
@@ -1780,8 +1779,9 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          insertMaxLength = 100;
+          insertMaxLength = 75;
           insertPlace = 0;
+          console.info("Inserting " + insertMaxLength + " at a time");
           while (valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0) {
             tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength);
             insertPlace += insertMaxLength;

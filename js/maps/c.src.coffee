@@ -995,7 +995,7 @@ getMapCenter = (bb) ->
     for k, coords of bb
       ++i
       totalLat += coords[0]
-      console.info coords, i, totalLat
+      # console.info coords, i, totalLat
     centerLat = toFloat(totalLat) / toFloat(i)
     i = 0
     totalLng = 0.0
@@ -1395,8 +1395,9 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          insertMaxLength = 100
+          insertMaxLength = 75
           insertPlace = 0
+          console.info "Inserting #{insertMaxLength} at a time"
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
             tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength)
             insertPlace += insertMaxLength
