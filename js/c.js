@@ -1878,7 +1878,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         }
       }).error(function(result, status) {
         console.error("Couldn't communicate with server!", result, status);
-        return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+        stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+        return bsAlert("Couldn't upload dataset. Please try again later.", "danger");
       }).always(function() {
         try {
           clearTimeout(window._adp.initialTimeout);
