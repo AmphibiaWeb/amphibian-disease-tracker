@@ -1007,6 +1007,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
           # Append the preview HTML
           $(window.dropperParams.dropTargetSelector).before previewHtml
           # Finally, execute handlers for different file types
+          $("#validator-progress-container").remove()
           switch mediaType
             when "application"
               # Another switch!
@@ -1071,7 +1072,8 @@ singleDataFileHelper = (newFile, callback) ->
 
 excelHandler = (path, hasHeaders = true) ->
   startLoad()
-  toastStatusMessage "Processing ..."
+  $("#validator-progress-container").remove()
+  renderValidateProgress()
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
   if path.search helperDir isnt -1
@@ -1130,6 +1132,7 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   if unsetHDF
     dataFileParams.hasDataFile = false
   $(".uploaded-media[data-system-file='#{removeFile}']").remove()
+  $("#validator-progress-container paper-progress").removeAttr "indeterminate"
   # Now, actually delete the file remotely
   serverPath = "#{helperDir}/js-dragdrop/uploaded/#{user}/#{removeFile}"
   # Server will validate the user, and only a user can remove their
@@ -1167,7 +1170,6 @@ newGeoDataHandler = (dataObject = new Object()) ->
       toastStatusMessage "Data has invalid entries for geo columns. Please be sure they're all numeric and try again."
       removeDataFile()
       return false
-    renderValidateProgress()
     rows = Object.size(dataObject)
     p$("#samplecount").value = rows
     if isNull $("#project-disease").val()
@@ -1181,7 +1183,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
     fimsExtra = new Object()
     # Iterate over the data, coerce some data types
     toastStatusMessage "Please wait, parsing your data"
-    p$("#data-parsing").max = rows    
+    $("#data-parsing").removeAttr "indeterminate"
+    p$("#data-parsing").max = rows
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1449,9 +1452,9 @@ renderValidateProgress = ->
   # Draw it
   html = """
   <div id="validator-progress-container" class="col-md-6 col-xs-12">
-    <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing"></paper-progress>
-    <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation"></paper-progress>
-    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation"></paper-progress>
+    <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing" class="blue" indeterminate></paper-progress>
+    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation" class="teal" indeterminate></paper-progress>
+    <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation" indeterminate></paper-progress>
   </div>
   """
   unless $("#validator-progress-container").exists()

@@ -943,6 +943,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
             }
           })();
           $(window.dropperParams.dropTargetSelector).before(previewHtml);
+          $("#validator-progress-container").remove();
           switch (mediaType) {
             case "application":
               console.info("Checking " + longType + " in application");
@@ -1011,7 +1012,8 @@ excelHandler = function(path, hasHeaders) {
     hasHeaders = true;
   }
   startLoad();
-  toastStatusMessage("Processing ...");
+  $("#validator-progress-container").remove();
+  renderValidateProgress();
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
   if (path.search(helperDir !== -1)) {
@@ -1081,6 +1083,7 @@ removeDataFile = function(removeFile, unsetHDF) {
     dataFileParams.hasDataFile = false;
   }
   $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
+  $("#validator-progress-container paper-progress").removeAttr("indeterminate");
   serverPath = helperDir + "/js-dragdrop/uploaded/" + user + "/" + removeFile;
   args = "action=removefile&path=" + (encode64(removeFile)) + "&user=" + user;
   return false;
@@ -1121,7 +1124,6 @@ newGeoDataHandler = function(dataObject) {
       removeDataFile();
       return false;
     }
-    renderValidateProgress();
     rows = Object.size(dataObject);
     p$("#samplecount").value = rows;
     if (isNull($("#project-disease").val())) {
@@ -1133,6 +1135,7 @@ newGeoDataHandler = function(dataObject) {
     dataAttrs.fimsData = new Array();
     fimsExtra = new Object();
     toastStatusMessage("Please wait, parsing your data");
+    $("#data-parsing").removeAttr("indeterminate");
     p$("#data-parsing").max = rows;
     for (n in dataObject) {
       row = dataObject[n];
@@ -1436,7 +1439,7 @@ renderValidateProgress = function() {
    * https://elements.polymer-project.org/elements/paper-progress
    */
   var html;
-  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\"></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\"></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\"></paper-progress>\n</div>";
+  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\" class=\"blue\" indeterminate></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\" class=\"teal\" indeterminate></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\" indeterminate></paper-progress>\n</div>";
   if (!$("#validator-progress-container").exists()) {
     $("#file-uploader-form").after(html);
   }
@@ -2093,6 +2096,7 @@ validateFimsData = function(dataObject, callback) {
    * @param function callback -> callback function
    */
   console.info("FIMS Validating", dataObject.data);
+  $("#data-validation").removeAttr("indeterminate");
   p$("#data-validation").max = Object.size(dataObject.data);
   fimsPostTarget = "";
   if (typeof callback === "function") {
@@ -2145,6 +2149,7 @@ validateTaxonData = function(dataObject, callback) {
   grammar = taxa.length > 1 ? "taxa" : "taxon";
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   console.info("Replacement tracker", taxaPerRow);
+  $("#taxa-validation").removeAttr("indeterminate");
   p$("#taxa-validation").max = taxa.length;
   (taxonValidatorLoop = function(taxonArray, key) {
     taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
