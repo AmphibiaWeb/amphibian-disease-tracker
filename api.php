@@ -198,7 +198,8 @@ global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
                 $opts = array(
                     'http' => array(
                         'method' => 'GET',
-                        'request_fulluri' => true,
+                        #'request_fulluri' => true,
+                        'ignore_errors' => true,
                         'timeout' => 3.5, # Seconds
                     ),
                 );
