@@ -272,7 +272,7 @@ function doAWebValidate($get) {
         if($k == 0) continue; # Prevent match on "genus"
         $genus = strtolower($entry[3]);
         $genusList[] = $genus;
-        $gaaEntry = strtolower($entry[8]);
+        $gaaEntry = strtolower($entry[7]);
         if(!empty($gaaEntry)) {
             if(strpos($gaaEntry, ",") !== false) {
                 $synon = explode(",", $gaaEntry);
