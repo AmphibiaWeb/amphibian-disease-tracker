@@ -1157,13 +1157,13 @@ newGeoDataHandler = (dataObject = new Object()) ->
       removeDataFile()
       return false
 
-    unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters? and sampleRow.alt?
+    unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters?
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
-      console.info "Missing: ", sampleRow.decimalLatitude?, sampleRow.decimalLongitude?, sampleRow.coordinateUncertaintyInMeters?, sampleRow.alt?
+      console.info "Missing: ", sampleRow.decimalLatitude?, sampleRow.decimalLongitude?, sampleRow.coordinateUncertaintyInMeters?
       # Remove the uploaded file
       removeDataFile()
       return false
-    unless isNumber(sampleRow.decimalLatitude) and isNumber(sampleRow.decimalLongitude) and isNumber(sampleRow.coordinateUncertaintyInMeters) and isNumber(sampleRow.alt)
+    unless isNumber(sampleRow.decimalLatitude) and isNumber(sampleRow.decimalLongitude) and isNumber(sampleRow.coordinateUncertaintyInMeters)
       toastStatusMessage "Data has invalid entries for geo columns. Please be sure they're all numeric and try again."
       removeDataFile()
       return false
