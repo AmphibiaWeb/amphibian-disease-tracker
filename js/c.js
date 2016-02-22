@@ -1571,6 +1571,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
    * Among other things, this approach secures the cartoDB API on the server.
    */
   var allowedOperations, args, data, hash, link, secret;
+  startLoad();
   try {
     data = totalData.data;
   } catch (_error) {}
@@ -1798,7 +1799,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         if (result.status !== true) {
           console.error("Got an error from the server!");
           console.warn(result);
-          toastStatusMessage("There was a problem uploading your data. Please try again.");
+          stopLoadError("There was a problem uploading your data. Please try again.");
           return false;
         }
         cartoResults = result.post_response;
@@ -1829,6 +1830,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           dataVisUrl = "";
         }
         parentCallback = function() {
+          stopLoad();
           if (typeof callback === "function") {
             return callback(geo.dataTable);
           } else {
@@ -1862,15 +1864,15 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         }
       }).error(function(result, status) {
         console.error("Couldn't communicate with server!", result, status);
-        return toastStatusMessage("There was a problem communicating with the server");
+        return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
       });
     } else {
       console.error("Unable to authenticate session. Please log in.");
-      return toastStatusMessage("Sorry, your session has expired. Please log in and try again.");
+      return stopLoadError("Sorry, your session has expired. Please log in and try again.");
     }
   }).error(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
-    return toastStatusMessage("There was a problem communicating with the server. Please try again in a bit. (E-001)");
+    return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-001)");
   });
   return false;
 };
