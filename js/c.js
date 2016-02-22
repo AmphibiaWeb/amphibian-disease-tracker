@@ -1608,7 +1608,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1780,7 +1780,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          sqlQuery = sqlQuery + "INSERT INTO " + dataTable + " VALUES " + (valuesList.join(", ")) + ";";
+          insertMaxLength = 200;
+          insertPlace = 0;
+          while (valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0) {
+            tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength);
+            insertPlace += insertMaxLength;
+            sqlQuery += "INSERT INTO " + dataTable + " VALUES " + (tempList.join(", ")) + ";";
+          }
           break;
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
