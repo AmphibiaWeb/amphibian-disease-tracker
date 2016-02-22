@@ -1608,7 +1608,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -1793,6 +1793,20 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       console.info(sqlQuery);
       console.info("GeoJSON:", geoJson);
       console.info("GeoJSON String:", dataGeometry);
+      console.info("POSTing to server");
+      postTimeStart = Date.now();
+      doStillWorking = function() {
+        toastStatusMessage("Still working ...");
+        return window._adp.secondaryTimeout = delay(15000, function() {
+          return doStillWorking();
+        });
+      };
+      window._adp.initialTimeout = delay(5000, function() {
+        toastStatusMessage("This may take a few moments");
+        return window._adp.secondaryTimeout = delay(15000, function() {
+          return doStillWorking();
+        });
+      });
       return $.post("api.php", args, "json").done(function(result) {
         var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, j, parentCallback, prettyHtml, response;
         console.log("Got back", result);
@@ -1864,7 +1878,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         }
       }).error(function(result, status) {
         console.error("Couldn't communicate with server!", result, status);
-        return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+        stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+        return bsAlert("Couldn't upload dataset. Please try again later.", "danger");
+      }).always(function() {
+        try {
+          clearTimeout(window._adp.initialTimeout);
+          return clearTimeout(window._adp.secondaryTimeout);
+        } catch (_error) {}
       });
     } else {
       console.error("Unable to authenticate session. Please log in.");

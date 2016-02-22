@@ -1410,7 +1410,19 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       # $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
       console.info "GeoJSON:", geoJson
       console.info "GeoJSON String:", dataGeometry
+      console.info "POSTing to server"
       # console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
+      # Big uploads can take a while, so let's put up a notice.
+      
+      postTimeStart = Date.now()
+      doStillWorking = ->
+        toastStatusMessage "Still working ..."
+        window._adp.secondaryTimeout = delay 15000, ->
+          doStillWorking()
+      window._adp.initialTimeout = delay 5000, ->
+        toastStatusMessage "This may take a few moments"
+        window._adp.secondaryTimeout = delay 15000, ->
+          doStillWorking()
       $.post "api.php", args, "json"
       .done (result) ->
         console.log "Got back", result
@@ -1483,6 +1495,12 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         console.error "Couldn't communicate with server!", result, status
         #console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
         stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
+        bsAlert "Couldn't upload dataset. Please try again later.", "danger"
+      .always ->
+        try
+          clearTimeout window._adp.initialTimeout
+          clearTimeout window._adp.secondaryTimeout
+          
     else
       console.error "Unable to authenticate session. Please log in."
       stopLoadError "Sorry, your session has expired. Please log in and try again."
