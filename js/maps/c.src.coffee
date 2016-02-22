@@ -1351,7 +1351,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           columnNamesList.push "id int"
           for i, row of data
             i = toInt(i)
-            console.log "Iter ##{i}", i is 0, `i == 0`
+            ##console.log "Iter ##{i}", i is 0, `i == 0`
             # Each row ...
             valuesArr = new Array()
             lat = 0

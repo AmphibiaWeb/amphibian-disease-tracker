@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, dateMonthToString, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, csvHandler, dataAttrs, dataFileParams, dateMonthToString, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -1433,6 +1433,21 @@ excelDateToUnixTime = function(excelTime) {
   return t;
 };
 
+renderValidateProgress = function() {
+
+  /*
+   * Show paper-progress bars as validation goes
+   *
+   * https://elements.polymer-project.org/elements/paper-progress
+   */
+  var html;
+  html = "<div id=\"validator-progress-container\">\n  <paper-progress id=\"taxa-validation\"></paper-progress>\n  <paper-progress id=\"data-validation\"></paper-progress>\n</div>";
+  if (!$("#validator-progress-container").exists()) {
+    $("#file-uploader-form").after(html);
+  }
+  return false;
+};
+
 $(function() {
   if ($("#next").exists()) {
     $("#next").unbind().click(function() {
@@ -2050,6 +2065,7 @@ validateData = function(dataObject, callback) {
    */
   console.info("Doing nested validation");
   timer = Date.now();
+  renderValidateProgress();
   validateFimsData(dataObject, function() {
     return validateTaxonData(dataObject, function() {
       var elapsed;
@@ -2132,6 +2148,7 @@ validateTaxonData = function(dataObject, callback) {
   grammar = taxa.length > 1 ? "taxa" : "taxon";
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   console.info("Replacement tracker", taxaPerRow);
+  p$("#taxa-validation").max = taxa.length;
   (taxonValidatorLoop = function(taxonArray, key) {
     taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
     if (!isNull(taxonArray[key].subspecies)) {
@@ -2167,6 +2184,7 @@ validateTaxonData = function(dataObject, callback) {
         console.warn(e.stack);
       }
       taxonArray[key] = result;
+      p$("#taxa-validation").value = key;
       key++;
       if (key < taxonArray.length) {
         if (modulo(key, 50) === 0) {
@@ -2174,6 +2192,7 @@ validateTaxonData = function(dataObject, callback) {
         }
         return taxonValidatorLoop(taxonArray, key);
       } else {
+        p$("#taxa-validation").value = key;
         dataObject.validated_taxa = taxonArray;
         console.info("Calling back!", dataObject);
         return callback(dataObject);

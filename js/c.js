@@ -1734,7 +1734,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           for (i in data) {
             row = data[i];
             i = toInt(i);
-            console.log("Iter #" + i, i === 0, i == 0);
             valuesArr = new Array();
             lat = 0;
             lng = 0;

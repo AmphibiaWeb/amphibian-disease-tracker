@@ -1444,6 +1444,23 @@ excelDateToUnixTime = (excelTime) ->
   t
 
 
+renderValidateProgress = ->
+  ###
+  # Show paper-progress bars as validation goes
+  #
+  # https://elements.polymer-project.org/elements/paper-progress
+  ###
+  # Draw it
+  html = """
+  <div id="validator-progress-container">
+    <paper-progress id="taxa-validation"></paper-progress>
+    <paper-progress id="data-validation"></paper-progress>
+  </div>
+  """
+  unless $("#validator-progress-container").exists()
+    $("#file-uploader-form").after html
+  false
+
 
 $ ->
   if $("#next").exists()
@@ -2255,6 +2272,7 @@ validateData = (dataObject, callback = null) ->
   ###
   console.info "Doing nested validation"
   timer = Date.now()
+  renderValidateProgress()
   validateFimsData dataObject, ->
     validateTaxonData dataObject, ->
       # When we're successful, run the dependent callback
@@ -2318,6 +2336,7 @@ validateTaxonData = (dataObject, callback = null) ->
   grammar = if taxa.length > 1 then "taxa" else "taxon"
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
   console.info "Replacement tracker", taxaPerRow
+  p$("#taxa-validation").max = taxa.length
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
     unless isNull taxonArray[key].subspecies
@@ -2346,12 +2365,14 @@ validateTaxonData = (dataObject, callback = null) ->
         console.warn "Problem replacing rows! #{e.message}"
         console.warn e.stack
       taxonArray[key] = result
+      p$("#taxa-validation").value = key
       key++
       if key < taxonArray.length
         if key %% 50 is 0
           toastStatusMessage "Validating taxa #{key} of #{taxonArray.length} ..."
         taxonValidatorLoop(taxonArray, key)
       else
+        p$("#taxa-validation").value = key
         dataObject.validated_taxa  = taxonArray
         console.info "Calling back!", dataObject
         callback(dataObject)

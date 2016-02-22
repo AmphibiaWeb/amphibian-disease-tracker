@@ -1444,6 +1444,23 @@ excelDateToUnixTime = (excelTime) ->
   t
 
 
+renderValidateProgress = ->
+  ###
+  # Show paper-progress bars as validation goes
+  #
+  # https://elements.polymer-project.org/elements/paper-progress
+  ###
+  # Draw it
+  html = """
+  <div id="validator-progress-container">
+    <paper-progress id="taxa-validation"></paper-progress>
+    <paper-progress id="data-validation"></paper-progress>
+  </div>
+  """
+  unless $("#validator-progress-container").exists()
+    $("#file-uploader-form").after html
+  false
+
 
 $ ->
   if $("#next").exists()
