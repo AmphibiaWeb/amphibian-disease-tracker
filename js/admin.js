@@ -1311,6 +1311,7 @@ newGeoDataHandler = function(dataObject) {
       for (l = 0, len = ref.length; l < len; l++) {
         taxon = ref[l];
         taxonString = taxon.genus + " " + taxon.species;
+        console.info("Taxon obj", taxon);
         if (!isNull(taxon.subspecies)) {
           taxonString += " " + taxon.subspecies;
         }
