@@ -1395,7 +1395,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          insertMaxLength = 75
+          insertMaxLength = 50
           insertPlace = 0
           console.info "Inserting #{insertMaxLength} at a time"
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
