@@ -334,11 +334,12 @@ finalizeData = ->
     for row in Object.toArray uploadedData
       uTime = excelDateToUnixTime row.dateIdentified
       dates.push uTime
-      mString = dateMonthToString uTime.getUTCMonth()
+      uDate = new Date(uTime)
+      mString = dateMonthToString uDate.getUTCMonth()
       unless mString in months
         months.push mString
-      unless uTime.getFullYear() in years
-        years.push uTime.getFullYear()
+      unless uDate.getFullYear() in years
+        years.push uDate.getFullYear()
       if row.catalogNumber? # Not mandatory
         catalogNumbers.push row.catalogNumber
       fieldNumbers.push row.fieldNumber

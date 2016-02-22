@@ -195,7 +195,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dataCheck, dates, dispositions, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uTime, uniqueId, years;
+  var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dataCheck, dates, dispositions, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uDate, uTime, uniqueId, years;
   startLoad();
   dataCheck = true;
   $("[required]").each(function() {
@@ -244,12 +244,13 @@ finalizeData = function() {
       row = ref1[m];
       uTime = excelDateToUnixTime(row.dateIdentified);
       dates.push(uTime);
-      mString = dateMonthToString(uTime.getUTCMonth());
+      uDate = new Date(uTime);
+      mString = dateMonthToString(uDate.getUTCMonth());
       if (indexOf.call(months, mString) < 0) {
         months.push(mString);
       }
-      if (ref2 = uTime.getFullYear(), indexOf.call(years, ref2) < 0) {
-        years.push(uTime.getFullYear());
+      if (ref2 = uDate.getFullYear(), indexOf.call(years, ref2) < 0) {
+        years.push(uDate.getFullYear());
       }
       if (row.catalogNumber != null) {
         catalogNumbers.push(row.catalogNumber);
