@@ -83,7 +83,16 @@ switch($admin_req)
       returnAjax(readProjectData($_REQUEST));
       break;
   case "test":
-      returnAjax(mintBcid());
+      $link = $_REQUEST["link"];
+      $title64 = $_REQUEST["title"];
+      $title = decode64($title64);
+      if(empty($link) || empty($title)) {
+          returnAjax(array(
+              "status" => false,
+              "error" => "BAD_PARAMETERS",
+          ));
+      }
+      returnAjax(mintBcid($link, $title));
        break;
   default:
     returnAjax(getLoginState($_REQUEST,true));
@@ -508,12 +517,12 @@ function mintBcid($projectLink, $projectTitle) {
     );    
     # Post the login
     $dopost = json_decode(do_post_request($fimsAuthUrl, $fimsAuthData), true);
-    return array(
-        "dp" => $dopost,
-    );
     # Post the args
-    $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintArgs), true);
+    $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintData), true);
     # Get the ID in the result
+    return array(
+        "dp" => $resp
+    );
 
 }
 
