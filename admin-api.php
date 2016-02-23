@@ -495,6 +495,9 @@ function mintBcid($projectLink, $projectTitle) {
     /***
      *
      *
+     *
+     *{"projectCode":"AMPHIB","validationXml":"https:\/\/raw.githubusercontent.com\/biocodellc\/biocode-fims\/master\/Documents\/AmphibianDisease\/amphibiandisease.xml","projectId":"26","projectTitle":"Amphibian Disease"},
+     *
      * See
      * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
      ***/
@@ -516,12 +519,13 @@ function mintBcid($projectLink, $projectTitle) {
         "resourceType" => "http://purl.org/dc/dcmitype/Dataset",
     );    
     # Post the login
-    $dopost = json_decode(do_post_request($fimsAuthUrl, $fimsAuthData), true);
+    $loginResponse = json_decode(do_post_request($fimsAuthUrl, $fimsAuthData), true);
     # Post the args
     $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintData), true);
     # Get the ID in the result
     return array(
-        "dp" => $resp
+        "mint_response" => $resp
+        "login_response" => $loginResopnse
     );
 
 }
