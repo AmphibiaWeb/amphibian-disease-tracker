@@ -524,8 +524,8 @@ function mintBcid($projectLink, $projectTitle) {
     $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintData), true);
     # Get the ID in the result
     return array(
-        "mint_response" => $resp
-        "login_response" => $loginResopnse
+        "mint_response" => $resp,
+        "login_response" => $loginResopnse,
     );
 
 }
