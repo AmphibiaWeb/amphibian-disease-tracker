@@ -20,7 +20,7 @@ $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $s
 require_once(dirname(__FILE__)."/admin/async_login_handler.php");
 
 # Declaring this makes Aldo slow
-# $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols); 
+# $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
 
 $start_script_timer = microtime_float();
 
@@ -502,13 +502,14 @@ function mintBcid($projectLink, $projectTitle) {
     $opts = array(
         'http' => array(
             'method' => 'POST',
-            'request_fulluri' => true,
+            #'request_fulluri' => true,
+            'ignore_errors' => true,
             'timeout' => 3.5, # Seconds
         ),
     );
     $context = stream_context_create($opts);
     $response = file_get_contents($cartoFullUrl, false, $context);
-    $parsed_response = json_decode($response, true);    
+    $parsed_response = json_decode($response, true);
     return array(
         "fgc" => $parsed_response,
         "dp" => $dopost,
