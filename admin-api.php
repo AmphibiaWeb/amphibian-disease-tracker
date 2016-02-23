@@ -525,7 +525,7 @@ function mintBcid($projectLink, $projectTitle) {
     # Get the ID in the result
     return array(
         "mint_response" => $resp,
-        "login_response" => $loginResopnse,
+        "login_response" => $loginResponse,
     );
 
 }
