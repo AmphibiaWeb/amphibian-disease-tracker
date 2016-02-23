@@ -1461,9 +1461,9 @@ renderValidateProgress = ->
   html = """
   <div id="validator-progress-container" class="col-md-6 col-xs-12">
     <label for="data-parsing">Data Parsing:</label><paper-progress id="data-parsing" class="blue" indeterminate></paper-progress>
-    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation" class="teal" indeterminate></paper-progress>
-    <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation" indeterminate></paper-progress>
-    <label for="data-sync">Estimated Data Sync:</label><paper-progress id="data-sync" class="blue" indeterminate></paper-progress>
+    <label for="data-validation">Data Validation:</label><paper-progress id="data-validation" class="cyan" indeterminate></paper-progress>
+    <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation" class="teal" indeterminate></paper-progress>
+    <label for="data-sync">Estimated Data Sync Progress:</label><paper-progress id="data-sync" indeterminate></paper-progress>
   </div>
   """
   unless $("#validator-progress-container").exists()

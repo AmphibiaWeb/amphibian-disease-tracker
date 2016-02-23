@@ -483,6 +483,13 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       postTimeStart = Date.now()
       workingIter = 0
       # http://birdisabsurd.blogspot.com/p/one-paragraph-stories.html
+      story = ["A silly story for you, while you wait!","Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous Tyrannosaurus rex with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen \"Stayin' Alive\",","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"]
+      doStillWorking = ->
+        extra = if story[workingIter]? then "(#{story[workingIter]})" else ""
+        toastStatusMessage "Still working ... #{extra}"
+        ++workingIter
+        window._adp.secondaryTimeout = delay 15000, ->
+          doStillWorking()
       try
         estimate = toInt(.7 * valuesList.length)
         console.log "Estimate #{estimate} seconds"
@@ -493,20 +500,13 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           # Update a progress bar
           p$("#data-sync").value = prog
           ++prog
-          if window._adp.uploader
+          if window._adp.uploader and prog <= max
             delay 33, ->
               updateUploadProgress(prog)
-      story = ["A silly story for you, while you wait!","Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous Tyrannosaurus rex with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen \"Stayin' Alive\",","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"]
-      doStillWorking = ->
-        extra = if story[workingIter]? then "(#{story[workingIter]})" else ""
-        toastStatusMessage "Still working ... #{extra}"
-        ++workingIter
-        window._adp.secondaryTimeout = delay 15000, ->
-          doStillWorking()
-      window._adp.initialTimeout = delay 5000, ->
-        toastStatusMessage "This may take a few minutes. We'll give you an error if things go wrong."
-        window._adp.secondaryTimeout = delay 15000, ->
-          doStillWorking()
+          else if prog > max
+            toastStatusMessage "This may take a few minutes. We'll give you an error if things go wrong."
+            window._adp.secondaryTimeout = delay 15000, ->
+              doStillWorking()
       $.post "api.php", args, "json"
       .done (result) ->
         console.log "Got back", result
