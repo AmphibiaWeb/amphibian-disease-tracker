@@ -496,24 +496,20 @@ function mintBcid($projectLink, $projectTitle) {
     $fimsAuthUrl = "http://www.biscicol.org/biocode-fims/rest/authenticationService/login";
     $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
     $fimsAuthArgs = "username=" . $fimsUserCredential . "&password=" . $fimsPassCredential;
-    $fimsMintArgs = "webAddress=" . $projectUri . "&title=" . $projectTitle . "resourceType=http://purl.org/dc/dcmitype/Dataset";
-    # Post the login
-    $dopost = json_decode(do_post_request($fimsAuthUrl, $fimsAuthArgs), true);
-    $opts = array(
-        'http' => array(
-            'method' => 'POST',
-            #'request_fulluri' => true,
-            'ignore_errors' => true,
-            'timeout' => 3.5, # Seconds
-        ),
+    $fimsAuthData = array(
+        "username" => $fimsUserCredential,
+        "password" => $fimsPassCredential,
     );
-    $context = stream_context_create($opts);
-    $response = file_get_contents($cartoFullUrl, false, $context);
-    $parsed_response = json_decode($response, true);
+    $fimsMintArgs = "webAddress=" . $projectUri . "&title=" . $projectTitle . "resourceType=http://purl.org/dc/dcmitype/Dataset";
+    $fimsMintData = array(
+        "webAddress" => $projectUri,
+        "title" => $projectTitle,
+        "resourceType" => "http://purl.org/dc/dcmitype/Dataset",
+    );    
+    # Post the login
+    $dopost = json_decode(do_post_request($fimsAuthUrl, $fimsAuthData), true);
     return array(
-        "fgc" => $parsed_response,
         "dp" => $dopost,
-        "server" => "annie",
     );
     # Post the args
     $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintArgs), true);
