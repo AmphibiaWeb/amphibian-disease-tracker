@@ -61,7 +61,13 @@ validateFimsData = (dataObject, callback = null) ->
 
 
 mintBcid = (callback = null) ->
-  # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+  ####
+  #
+  #https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+  #
+  # Resolve the ARK with
+  # https://n2t.net/
+  ###
   false
 
 
