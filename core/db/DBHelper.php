@@ -322,7 +322,7 @@ class DBHelper
         if (false) {
             #is_numeric($item))
 
-      $item_string = $item;
+            $item_string = $item;
         } else {
             $item_string = "'$item'";
         }
