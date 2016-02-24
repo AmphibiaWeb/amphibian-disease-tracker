@@ -345,7 +345,8 @@ finalizeData = ->
           fieldNumbers = new Array()
           dispositions = new Array()
           for row in Object.toArray uploadedData
-            uTime = excelDateToUnixTime row.dateIdentified
+            date = row.dateCollected ? row.dateIdentified
+            uTime = excelDateToUnixTime date
             dates.push uTime
             uDate = new Date(uTime)
             mString = dateMonthToString uDate.getUTCMonth()
@@ -1735,6 +1736,7 @@ loadEditor = (projectPreload) ->
                 <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
                   #{mapHtml}
                 </google-map>
+                <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are #{usedPoints.length} sample points in this dataset</p>
           """
           geo.googleMapWebComponent = googleMap
           deleteCardAction = if result.user.is_author then """
@@ -1840,7 +1842,7 @@ loadEditor = (projectPreload) ->
                 <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
                 <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").join(", ")}"></paper-input>
                 <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").join(", ")}"></paper-input>
-                <p>
+                <p class="text-muted">
                   <span class="glyphicon glyphicon-info-sign"></span> There are #{project.sampled_species.split(",").length} species in this dataset, across #{project.sampled_clades.split(",").length} clades
                 </p>
               <h4>Sample Metrics</h4>
