@@ -10,6 +10,10 @@ reference_id:
   # Could be initial, GUID, etc.
   type: "varchar(255)"
   logical: "string"
+project_obj_id:
+  # ARK
+  type: "varchar(255)"
+  logical: "string"
 disease:
   # Project-wide
   type: "varchar(255)"
