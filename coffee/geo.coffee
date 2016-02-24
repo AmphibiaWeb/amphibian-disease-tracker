@@ -509,8 +509,20 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
               doStillWorking()
           else
             console.log "Not running upload progress indicator", prog, window._adp.uploader, max
-      catch
-        console.warn "Can't show upload status"
+      catch e
+        console.warn "Can't show upload status - #{e.message}"
+        console.warn e.stack
+        # Alternate notices
+        try
+          window._adp.initialTimeout = delay 5000, ->
+            estMin = toInt(estimate / 60) + 1
+            minWord = if estMin > 1 then "minutes" else "minute"
+            toastStatusMessage "Please be patient, it may take a few minutes (we guess #{estMin} #{minWord})"
+            window._adp.secondaryTimeout = delay 15000, ->
+              doStillWorking()
+        catch e2
+          console.error "Can't show backup upload notices! #{e2.message}"
+          console.warn e2.stack
       $.post "api.php", args, "json"
       .done (result) ->
         console.log "Got back", result
