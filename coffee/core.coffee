@@ -155,6 +155,11 @@ decode64 = (string) ->
     console.warn("Bad decode string provided")
     string
 
+post64 = (string) ->
+  s64 = encode64 string
+  p64 = encodeURIComponent s64
+  p64
+
 jQuery.fn.polymerSelected = (setSelected = undefined, attrLookup = "attrForSelected") ->
   ###
   # See

@@ -60,14 +60,33 @@ validateFimsData = (dataObject, callback = null) ->
   false
 
 
-mintBcid = (callback = null) ->
-  ####
+mintBcid = (projectId, title, callback) ->
+  ###
   #
-  #https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+  # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
   #
   # Resolve the ARK with
   # https://n2t.net/
   ###
+  if typeof callback isnt "function"
+    console.warn "mintBcid() requires a callback function"
+    return false
+  resultObj = new Object()
+  args = "link=#{projectId}&title=#{post64(title)}"
+  $.post adminParams.apiTarget, args, "json"
+  .done (result) ->
+    console.log "Got", result
+    unless result.status
+      stopLoadError result.human_error
+      console.error result.error      
+      return false
+    resultObj = result
+  .error (result, status) ->
+    resultObj.ark = null
+    false
+  .always ->
+    console.info "mintBcid is calling back", resultObj
+    callback(resultObj)
   false
 
 

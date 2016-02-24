@@ -195,7 +195,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dataCheck, dates, dispositions, e, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uDate, uTime, uniqueId, years;
+  var author, dataCheck, e, title;
   startLoad();
   try {
     dataCheck = true;
@@ -214,114 +214,138 @@ finalizeData = function() {
       stopLoadError("Please fill out all required fields");
       return false;
     }
-    postData = new Object();
-    ref = $(".project-field");
-    for (l = 0, len = ref.length; l < len; l++) {
-      el = ref[l];
-      if ($(el).hasClass("iron-autogrow-textarea-0")) {
-        input = $($(el).get(0).textarea).val();
-      } else {
-        input = $(el).val();
-      }
-      key = $(el).attr("data-field");
-      if (!isNull(key)) {
-        if ($(el).attr("type") === "number") {
-          postData[key] = toInt(input);
-        } else {
-          postData[key] = input;
-        }
-      }
+    author = $.cookie(adminParams.domain + "_link");
+    if (isNull(_adp.projectId)) {
+      _adp.projectId = md5("" + geo.dataTable + author + (Date.now()));
     }
-    if (uploadedData != null) {
-      dates = new Array();
-      months = new Array();
-      years = new Array();
-      methods = new Array();
-      catalogNumbers = new Array();
-      fieldNumbers = new Array();
-      dispositions = new Array();
-      ref1 = Object.toArray(uploadedData);
-      for (m = 0, len1 = ref1.length; m < len1; m++) {
-        row = ref1[m];
-        uTime = excelDateToUnixTime(row.dateIdentified);
-        dates.push(uTime);
-        uDate = new Date(uTime);
-        mString = dateMonthToString(uDate.getUTCMonth());
-        if (indexOf.call(months, mString) < 0) {
-          months.push(mString);
+    title = p$("#project-title").value;
+    return mintBcid(_adp.projectId, title, function(result) {
+      var args, authorData, aweb, cartoData, catalogNumbers, center, clade, dates, dispositions, e, el, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, row, taxonData, taxonObject, uDate, uTime, years;
+      try {
+        if (!result.status) {
+          console.error(result.error);
+          stopLoadError(result.human_error);
+          return false;
         }
-        if (ref2 = uDate.getFullYear(), indexOf.call(years, ref2) < 0) {
-          years.push(uDate.getFullYear());
+        dataAttrs.ark = result.ark;
+        postData = new Object();
+        ref = $(".project-field");
+        for (l = 0, len = ref.length; l < len; l++) {
+          el = ref[l];
+          if ($(el).hasClass("iron-autogrow-textarea-0")) {
+            input = $($(el).get(0).textarea).val();
+          } else {
+            input = $(el).val();
+          }
+          key = $(el).attr("data-field");
+          if (!isNull(key)) {
+            if ($(el).attr("type") === "number") {
+              postData[key] = toInt(input);
+            } else {
+              postData[key] = input;
+            }
+          }
         }
-        if (row.catalogNumber != null) {
-          catalogNumbers.push(row.catalogNumber);
+        if (uploadedData != null) {
+          dates = new Array();
+          months = new Array();
+          years = new Array();
+          methods = new Array();
+          catalogNumbers = new Array();
+          fieldNumbers = new Array();
+          dispositions = new Array();
+          ref1 = Object.toArray(uploadedData);
+          for (m = 0, len1 = ref1.length; m < len1; m++) {
+            row = ref1[m];
+            uTime = excelDateToUnixTime(row.dateIdentified);
+            dates.push(uTime);
+            uDate = new Date(uTime);
+            mString = dateMonthToString(uDate.getUTCMonth());
+            if (indexOf.call(months, mString) < 0) {
+              months.push(mString);
+            }
+            if (ref2 = uDate.getFullYear(), indexOf.call(years, ref2) < 0) {
+              years.push(uDate.getFullYear());
+            }
+            if (row.catalogNumber != null) {
+              catalogNumbers.push(row.catalogNumber);
+            }
+            fieldNumbers.push(row.fieldNumber);
+          }
         }
-        fieldNumbers.push(row.fieldNumber);
+        console.info("Got uploaded data", uploadedData);
+        console.info("Got date ranges", dates);
+        postData.sampled_collection_start = dates.min();
+        postData.sampled_collection_end = dates.max();
+        postData.sample_catalog_numbers = catalogNumbers.join(",");
+        postData.sample_field_numbers = fieldNumbers.join(",");
+        postData.sampling_months = months;
+        postData.sampling_years = years;
+        center = getMapCenter(geo.boundingBox);
+        postData.lat = center.lat;
+        postData.lng = center.lng;
+        postData.author = $.cookie(adminParams.domain + "_link");
+        authorData = {
+          name: p$("#project-author").value,
+          contact_email: p$("#author-email").value,
+          affiliation: p$("#project-affiliation").value,
+          lab: p$("#project-pi").value,
+          diagnostic_lab: p$("#project-lab").value,
+          entry_date: Date.now()
+        };
+        postData.author_data = JSON.stringify(authorData);
+        cartoData = {
+          table: geo.dataTable,
+          raw_data: dataFileParams,
+          bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
+          bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
+        };
+        postData.carto_id = JSON.stringify(cartoData);
+        postData.project_id = _adp.projectId;
+        postData.project_obj_id = dataAttrs.ark;
+        postData["public"] = p$("#data-encumbrance-toggle").checked;
+        taxonData = _adp.data.taxa.validated;
+        postData.sampled_clades = _adp.data.taxa.clades.join(",");
+        postData.sampled_species = _adp.data.taxa.list.join(",");
+        for (o = 0, len2 = taxonData.length; o < len2; o++) {
+          taxonObject = taxonData[o];
+          aweb = taxonObject.response.validated_taxon;
+          console.info("Aweb taxon result:", aweb);
+          clade = aweb.order.toLowerCase();
+          key = "includes_" + clade;
+          postData[key] = true;
+        }
+        args = "perform=new&data=" + (jsonTo64(postData));
+        console.info("Data object constructed:", postData);
+        return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+          if (result.status === true) {
+            toastStatusMessage("Data successfully saved to server");
+            bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+            stopLoad();
+            delay(1000, function() {
+              return loadEditor(_adp.projectId);
+            });
+          } else {
+            console.error(result.error.error);
+            console.log(result);
+            stopLoadError(result.human_error);
+          }
+          return false;
+        }).error(function(result, status) {
+          stopLoadError("There was a problem saving your data. Please try again");
+          return false;
+        });
+      } catch (_error) {
+        e = _error;
+        stopLoadError("There was a problem with the application. Please try again later. (E-003)");
+        console.error("JavaScript error in saving data (E-003)! FinalizeData said: " + e.message);
+        return console.warn(e.stack);
       }
-    }
-    console.info("Got uploaded data", uploadedData);
-    console.info("Got date ranges", dates);
-    postData.sampled_collection_start = dates.min();
-    postData.sampled_collection_end = dates.max();
-    postData.sample_catalog_numbers = catalogNumbers.join(",");
-    postData.sample_field_numbers = fieldNumbers.join(",");
-    postData.sampling_months = months;
-    postData.sampling_years = years;
-    center = getMapCenter(geo.boundingBox);
-    postData.lat = center.lat;
-    postData.lng = center.lng;
-    postData.author = $.cookie(adminParams.domain + "_link");
-    authorData = {
-      name: p$("#project-author").value,
-      contact_email: p$("#author-email").value,
-      affiliation: p$("#project-affiliation").value,
-      lab: p$("#project-pi").value,
-      diagnostic_lab: p$("#project-lab").value,
-      entry_date: Date.now()
-    };
-    postData.author_data = JSON.stringify(authorData);
-    cartoData = {
-      table: geo.dataTable,
-      raw_data: dataFileParams,
-      bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
-      bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
-    };
-    postData.carto_id = JSON.stringify(cartoData);
-    uniqueId = md5("" + geo.dataTable + postData.author + (Date.now()));
-    postData.project_id = uniqueId;
-    postData["public"] = p$("#data-encumbrance-toggle").checked;
-    taxonData = _adp.data.taxa.validated;
-    postData.sampled_clades = _adp.data.taxa.clades.join(",");
-    postData.sampled_species = _adp.data.taxa.list.join(",");
-    for (o = 0, len2 = taxonData.length; o < len2; o++) {
-      taxonObject = taxonData[o];
-      aweb = taxonObject.response.validated_taxon;
-      console.info("Aweb taxon result:", aweb);
-      clade = aweb.order.toLowerCase();
-      key = "includes_" + clade;
-      postData[key] = true;
-    }
-    args = "perform=new&data=" + (jsonTo64(postData));
-    console.info("Data object constructed:", postData);
-    return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-      if (result.status === true) {
-        toastStatusMessage("Data successfully saved to server (Warning: Parsing incomplete! Test Mode!)");
-        bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
-        stopLoad();
-      } else {
-        console.error(result.error.error);
-        console.log(result);
-        stopLoadError(result.human_error);
-      }
-      return false;
-    }).error(function(result, status) {
-      stopLoadError("There was a problem saving your data. Please try again");
-      return false;
     });
   } catch (_error) {
     e = _error;
-    stopLoadError("There was a problem with the application. Please try again later.");
-    console.error("JavaScript error in saving data! FinalizeData said: " + e.message);
+    stopLoadError("There was a problem with the application. Please try again later. (E-004)");
+    console.error("JavaScript error in saving data (E-004)! FinalizeData said: " + e.message);
     return console.warn(e.stack);
   }
 };
@@ -1091,7 +1115,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
+  var author, cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1313,6 +1337,10 @@ newGeoDataHandler = function(dataObject) {
     p$("#no_confidence-samples").value = samplesMeta.no_confidence;
     p$("#morbidity-count").value = samplesMeta.morbidity;
     p$("#mortality-count").value = samplesMeta.mortality;
+    if (isNull(_adp.projectId)) {
+      author = $.cookie(adminParams.domain + "_link");
+      _adp.projectId = md5("" + projectIdentifier + author + (Date.now()));
+    }
     totalData = {
       transectRing: geo.boundingBox,
       data: parsedData,
@@ -1450,7 +1478,7 @@ renderValidateProgress = function() {
    * https://elements.polymer-project.org/elements/paper-progress
    */
   var html;
-  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\" class=\"blue\" indeterminate></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\" class=\"teal\" indeterminate></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\" indeterminate></paper-progress>\n  <label for=\"data-sync\">Estimated Data Sync:</label><paper-progress id=\"data-sync\" class=\"blue\" indeterminate></paper-progress>\n</div>";
+  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\" class=\"blue\" indeterminate></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\" class=\"cyan\" indeterminate></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\" class=\"teal\" indeterminate></paper-progress>\n  <label for=\"data-sync\">Estimated Data Sync Progress:</label><paper-progress id=\"data-sync\" indeterminate></paper-progress>\n</div>";
   if (!$("#validator-progress-container").exists()) {
     $("#file-uploader-form").after(html);
   }
@@ -2117,10 +2145,37 @@ validateFimsData = function(dataObject, callback) {
   return false;
 };
 
-mintBcid = function(callback) {
-  if (callback == null) {
-    callback = null;
+mintBcid = function(projectId, title, callback) {
+
+  /*
+   *
+   * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+   *
+   * Resolve the ARK with
+   * https://n2t.net/
+   */
+  var args, resultObj;
+  if (typeof callback !== "function") {
+    console.warn("mintBcid() requires a callback function");
+    return false;
   }
+  resultObj = new Object();
+  args = "link=" + projectId + "&title=" + (post64(title));
+  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    console.log("Got", result);
+    if (!result.status) {
+      stopLoadError(result.human_error);
+      console.error(result.error);
+      return false;
+    }
+    return resultObj = result;
+  }).error(function(result, status) {
+    resultObj.ark = null;
+    return false;
+  }).always(function() {
+    console.info("mintBcid is calling back", resultObj);
+    return callback(resultObj);
+  });
   return false;
 };
 
