@@ -503,7 +503,16 @@ function mintBcid($projectLink, $projectTitle) {
      *
      * Resolve the ark with https://n2t.net/
      ***/
-    global $fimsPassword;
+    global $fimsPassword, $db;
+    # Does the project exist?
+    if(!$db->isEntry($projectLink, "project_id")) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PROJECT",
+            "human_error" => "You tried to mint an ARK for an invalid project ID, please check your information and try again",
+            "project_id" => $projectLink,
+        );
+    }
     $projectUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
     $fimsPassCredential = $fimsPassword;
     $fimsUserCredential = "amphibiaweb"; # AmphibianDisease
@@ -558,8 +567,8 @@ function mintBcid($projectLink, $projectTitle) {
         ***/
         $identifier = $resp["identifier"];
         if(empty($identifier)) {
-            throw(new Exception("Invalid identifier in response"))
-                }
+            throw(new Exception("Invalid identifier in response"));
+        }
         return array(
             "status" => true,
             "ark" => $identifier,
