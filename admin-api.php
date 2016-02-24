@@ -500,8 +500,19 @@ function mintBcid($projectLink, $projectTitle) {
      *
      * See
      * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+     *
+     * Resolve the ark with https://n2t.net/
      ***/
-    global $fimsPassword;
+    global $fimsPassword, $db;
+    # Does the project exist?
+    if(!$db->isEntry($projectLink, "project_id")) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PROJECT",
+            "human_error" => "You tried to mint an ARK for an invalid project ID, please check your information and try again",
+            "project_id" => $projectLink,
+        );
+    }
     $projectUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
     $fimsPassCredential = $fimsPassword;
     $fimsUserCredential = "amphibiaweb"; # AmphibianDisease
@@ -517,16 +528,65 @@ function mintBcid($projectLink, $projectTitle) {
         "webAddress" => $projectUri,
         "title" => $projectTitle,
         "resourceType" => "http://purl.org/dc/dcmitype/Dataset",
-    );    
-    # Post the login
-    $loginResponse = json_decode(do_post_request($fimsAuthUrl, $fimsAuthData), true);
-    # Post the args
-    $resp = json_decode(do_post_request($fimsMintUrl, $fimsMintData), true);
-    # Get the ID in the result
-    return array(
-        "mint_response" => $resp,
-        "login_response" => $loginResponse,
     );
+    try {
+        # Post the login
+        $params = array('http' => array(
+            'method' => "POST",
+            'content' => http_build_query($fimsAuthData),
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+        ));
+        $ctx = stream_context_create($params);
+        $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+        $loginHeaders = $http_response_header;
+        $cookies = array();
+        $cookiesString = "";
+        foreach ($http_response_header as $hdr) {
+            if (preg_match('/^Set-Cookie:\s*([^;]+)/', $hdr, $matches)) {
+                $cookiesString .= $matches[1] . ";";
+                parse_str($matches[1], $tmp);
+                $cookies += $tmp;
+            }
+        }
+        $loginResponse = json_decode($rawResponse, true);
+        if(empty($loginResponse["url"])) {
+            throw(new Exception("Invalid Login Response"));
+        }
+        # Post the args
+        $headers = "Content-type: application/x-www-form-urlencoded\r\n" .
+                 "Cookie: " . $cookiesString . "\r\n";
+        $params["http"]["header"] = $headers;
+        $params["http"]["content"] = http_build_query($fimsMintData);
+        $ctx = stream_context_create($params);
+        $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
+        $resp = json_decode($rawResponse, true);
+        # Get the ID in the result
+        /***
+         * Example result:
+         {"login_response":{"url":"http:\/\/www.biscicol.org\/index.jsp"},"mint_response":{"identifier":"ark:\/21547\/AKQ2"},"response_headers":{"0":"HTTP\/1.1 200 OK","1":"X-FRAME-OPTIONS: DENY","2":"Set-Cookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;Path=\/;HttpOnly","3":"Expires: Thu, 01 Jan 1970 00:00:00 GMT","4":"Content-Type: application\/json","5":"Content-Length: 44","6":"Server: Jetty(9.2.6.v20141205)"},"cookies":{"JSESSIONID":"vvt1703eq52ub0jazasfu87h"},"post_headers":"Content-type: application\/x-www-form-urlencoded\r\nCookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;\r\n","post_params":{"http":{"method":"POST","content":"webAddress=https%3A%2F%2Famphibiandisease.org%2Fproject.php%3Fid%3Dfoobar&title=test&resourceType=http%3A%2F%2Fpurl.org%2Fdc%2Fdcmitype%2FDataset","header":"Content-type: application\/x-www-form-urlencoded\r\nCookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;\r\n"}},"execution_time":2675.9889125824}
+        ***/
+        $identifier = $resp["identifier"];
+        if(empty($identifier)) {
+            throw(new Exception("Invalid identifier in response"));
+        }
+        return array(
+            "status" => true,
+            "ark" => $identifier,
+            "project_permalink" => $projectUri,
+            "project_title" => $projectTitle,
+            "responses" => array(
+                "login_response" => $loginResponse,
+                "mint_response" => $resp,
+            ),
+        
+        );
+    } catch(Exception $e) {
+        return array (
+            "status" => false,
+            "error" => $e->getMessage(),
+            "human_error" => "There was a problem communicating with the FIMS project. Please try again later.",
+        );
+    }
 
 }
 

@@ -93,18 +93,18 @@ class DBHelper
 
         return $this->url;
     }
-    
+
     private function setLink($link) {
         $this->link = $link;
     }
-    
+
     public function getLink() {
         if(empty($this->link)) {
             $this->openDB();
         }
         return $this->link;
     }
-    
+
     private function invalidateLink() {
         $this->setLink(null);
         return $this->openDB();
@@ -145,7 +145,7 @@ class DBHelper
 
     protected function testSettings($table = null, $detail = false)
     {
-        
+
         if (!empty($table)) {
             $this->setTable($table);
         }
@@ -167,7 +167,7 @@ class DBHelper
         }
         $query .= ',PRIMARY KEY (id),UNIQUE id (id),KEY id_2 (id))';
         $error = false;
-        
+
         $r = mysqli_query($this->getLink(), $query);
         if ($r !== false) {
             $query2 = 'INSERT INTO `'.$this->getTable().'` VALUES()';
@@ -290,7 +290,7 @@ class DBHelper
 
     protected function getFirstRow($query)
     {
-        
+
         try {
             $result = mysqli_query($this->getLink(), $query);
             if ($result) {
@@ -305,6 +305,10 @@ class DBHelper
         }
     }
 
+    public function isEntry($item, $field_name = null, $precleaned = false, $test = false) {
+        return $this->is_entry($item, $field_name, $precleaned, $test);
+    }
+    
     public function is_entry($item, $field_name = null, $precleaned = false, $test = false)
     {
         if ($field_name == null) {
@@ -314,7 +318,7 @@ class DBHelper
             $item = $this->sanitize($item);
             $field_name = $this->sanitize($field_name);
         }
-        
+
         if (false) {
             #is_numeric($item))
 
@@ -361,7 +365,7 @@ class DBHelper
             $field_name = $this->sanitize($field_name);
         }
 
-        
+
         $query = 'SELECT * FROM `'.$this->getTable()."` WHERE `$field_name`='$item'";
         $result = mysqli_query($this->getLink(), $query);
         if ($result === false && $throw === true) {
@@ -378,7 +382,7 @@ class DBHelper
      *
      * @return int
      ***/
-    
+
         $query = 'SELECT * FROM `'.$this->getTable().'` ORDER BY id DESC LIMIT 1';
         $result = mysqli_query($this->getLink(), $query);
         $rows = mysqli_fetch_row($result);
@@ -397,7 +401,7 @@ class DBHelper
      ***/
     $value = $this->sanitize($value);
         $field_name = $this->sanitize($field_name);
-        
+
         mysqli_query($this->getLink(), 'BEGIN');
         $query = 'DELETE FROM `'.$this->getTable()."` WHERE `$field_name`='$value'";
         if (mysqli_query($this->getLink(), $query)) {
@@ -455,7 +459,7 @@ class DBHelper
             if ($test) {
                 $retval = $querystring;
             } else {
-                
+
                 mysqli_query($this->getLink(), 'BEGIN');
                 if (mysqli_query($this->getLink(), $querystring) === false) {
                     $error = mysqli_error($this->getLink());
@@ -563,7 +567,7 @@ class DBHelper
         if ($debug_query === true) {
             return array('status' => false,'debug' => true,'query' => $query,'col_selector' => $col_selector,'boolean_type' => $boolean_type,'ordering' => $order);
         }
-        
+
         $r = mysqli_query($this->getLink(), $query);
 
         return $r === false ? mysqli_error($this->getLink()) : $r;
@@ -602,7 +606,7 @@ class DBHelper
             $order = ' ORDER BY '.'`'.implode('`,`', $ordering).'`';
             $query .= $order;
         }
-        
+
         $r = mysqli_query($this->getLink(), $query);
 
         return $r === false ? mysqli_error($this->getLink()) : $r;
@@ -626,7 +630,7 @@ class DBHelper
         if (!$this->is_entry($uval, $column, $precleaned)) {
             throw(new Exception("No item '$uval' exists for column '$column' in ".$this->getTable()));
         }
-        
+
         if (!empty($field_name)) {
             $values = array();
             if (is_array($field_name)) {
@@ -689,7 +693,7 @@ class DBHelper
          * @returns bool
          ***/
 
-        
+
         $result = mysqli_query($this->getLink(), "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
         return (mysqli_num_rows($result)) ? TRUE : FALSE;
     }
@@ -720,7 +724,7 @@ class DBHelper
         }
         # Create it!
         $query = "ALTER TABLE `" . $this->getTable() . "` ADD " . $columnName . " " . $columnType;
-        
+
         $r = mysqli_query($this->getLink(), $query);
         if($r === false) {
             return array(
