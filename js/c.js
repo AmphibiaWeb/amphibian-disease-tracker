@@ -1614,7 +1614,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, e2, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, e2, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, max, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
     if (result.status) {
 
       /*
@@ -1824,7 +1824,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         console.log("Estimate " + estimate + " seconds");
         window._adp.uploader = true;
         $("#data-sync").removeAttr("indeterminate");
-        p$("#data-sync").max = estimate * 30;
+        max = estimate * 30;
+        p$("#data-sync").max = max;
         (updateUploadProgress = function(prog) {
           p$("#data-sync").value = prog;
           ++prog;
@@ -1900,7 +1901,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           dataVisUrl = "";
         }
         parentCallback = function() {
-          var max;
           console.info("Initiating parent callback");
           stopLoad();
           max = p$("#data-sync").max;
