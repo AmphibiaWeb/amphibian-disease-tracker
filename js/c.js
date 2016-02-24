@@ -1809,7 +1809,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       console.info("POSTing to server");
       postTimeStart = Date.now();
       workingIter = 0;
-      story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen \"Stayin' Alive\",", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
+      story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen 'Staying&#39; Alive',", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
       doStillWorking = function() {
         var extra;
         extra = story[workingIter] != null ? "(" + story[workingIter] + ")" : "";
@@ -1837,9 +1837,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             return window._adp.secondaryTimeout = delay(15000, function() {
               return doStillWorking();
             });
+          } else {
+            return console.log("Not running upload progress indicator", prog, window._adp.uploader, max);
           }
         })(0);
-      } catch (_error) {}
+      } catch (_error) {
+        console.warn("Can't show upload status");
+      }
       return $.post("api.php", args, "json").done(function(result) {
         var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, parentCallback, prettyHtml, response;
         console.log("Got back", result);

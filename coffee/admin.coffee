@@ -345,7 +345,8 @@ finalizeData = ->
           fieldNumbers = new Array()
           dispositions = new Array()
           for row in Object.toArray uploadedData
-            uTime = excelDateToUnixTime row.dateIdentified
+            date = row.dateCollected ? row.dateIdentified
+            uTime = excelDateToUnixTime date
             dates.push uTime
             uDate = new Date(uTime)
             mString = dateMonthToString uDate.getUTCMonth()
