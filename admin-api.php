@@ -506,6 +506,7 @@ function mintBcid($projectLink, $projectTitle) {
     global $fimsPassword, $db;
     # Does the project exist?
     $projectLink = $db->sanitize($projectLink);
+    /***
     $projectExists = $db->isEntry($projectLink, "project_id", true);
     if(!$projectExists) {
         return array(
@@ -515,6 +516,7 @@ function mintBcid($projectLink, $projectTitle) {
             "project_id" => $projectLink,
         );
     }
+    ***/
     $projectUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
     $fimsPassCredential = $fimsPassword;
     $fimsUserCredential = "amphibiaweb"; # AmphibianDisease

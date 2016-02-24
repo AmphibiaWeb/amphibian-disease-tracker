@@ -1614,7 +1614,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, e2, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
     if (result.status) {
 
       /*
@@ -1842,7 +1842,24 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           }
         })(0);
       } catch (_error) {
-        console.warn("Can't show upload status");
+        e = _error;
+        console.warn("Can't show upload status - " + e.message);
+        console.warn(e.stack);
+        try {
+          window._adp.initialTimeout = delay(5000, function() {
+            var estMin, minWord;
+            estMin = toInt(estimate / 60) + 1;
+            minWord = estMin > 1 ? "minutes" : "minute";
+            toastStatusMessage("Please be patient, it may take a few minutes (we guess " + estMin + " " + minWord + ")");
+            return window._adp.secondaryTimeout = delay(15000, function() {
+              return doStillWorking();
+            });
+          });
+        } catch (_error) {
+          e2 = _error;
+          console.error("Can't show backup upload notices! " + e2.message);
+          console.warn(e2.stack);
+        }
       }
       return $.post("api.php", args, "json").done(function(result) {
         var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, parentCallback, prettyHtml, response;
