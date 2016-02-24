@@ -314,6 +314,9 @@ finalizeData = function() {
           clade = aweb.order.toLowerCase();
           key = "includes_" + clade;
           postData[key] = true;
+          if ((postData.includes_anura != null) !== false && (postData.includes_caudata != null) !== false && (postData.includes_gymnophiona != null) !== false) {
+            break;
+          }
         }
         args = "perform=new&data=" + (jsonTo64(postData));
         console.info("Data object constructed:", postData);

@@ -397,7 +397,7 @@ finalizeData = ->
           key = "includes_#{clade}"
           postData[key] = true
           # If we have all three, stop checking
-          # if postData.includes_anura and postData.includes_caudata and postData.includes_gymnophiona then break
+          if postData.includes_anura? isnt false and postData.includes_caudata? isnt false and postData.includes_gymnophiona? isnt false then break
         args = "perform=new&data=#{jsonTo64(postData)}"
         console.info "Data object constructed:", postData
         $.post adminParams.apiTarget, args, "json"
