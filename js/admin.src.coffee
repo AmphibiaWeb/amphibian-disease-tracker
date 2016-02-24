@@ -1736,6 +1736,7 @@ loadEditor = (projectPreload) ->
                 <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
                   #{mapHtml}
                 </google-map>
+                <br/>
                 <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are #{usedPoints.length} sample points in this dataset</p>
           """
           geo.googleMapWebComponent = googleMap
