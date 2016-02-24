@@ -495,7 +495,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         console.log "Estimate #{estimate} seconds"
         window._adp.uploader = true
         $("#data-sync").removeAttr "indeterminate"
-        p$("#data-sync").max = estimate * 30 # 30fps
+        max = estimate * 30 # 30fps
+        p$("#data-sync").max = max
         do updateUploadProgress = (prog = 0) ->
           # Update a progress bar
           p$("#data-sync").value = prog
