@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, cleanupToasts, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, cleanupToasts, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -243,6 +243,13 @@ decode64 = function(string) {
     console.warn("Bad decode string provided");
     return string;
   }
+};
+
+post64 = function(string) {
+  var p64, s64;
+  s64 = encode64(string);
+  p64 = encodeURIComponent(s64);
+  return p64;
 };
 
 jQuery.fn.polymerSelected = function(setSelected, attrLookup) {
@@ -1802,22 +1809,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       console.info("POSTing to server");
       postTimeStart = Date.now();
       workingIter = 0;
-      try {
-        estimate = toInt(.7 * valuesList.length);
-        console.log("Estimate " + estimate + " seconds");
-        window._adp.uploader = true;
-        $("#data-sync").removeAttr("indeterminate");
-        p$("#data-sync").max = estimate * 30;
-        (updateUploadProgress = function(prog) {
-          p$("#data-sync").value = prog;
-          ++prog;
-          if (window._adp.uploader) {
-            return delay(33, function() {
-              return updateUploadProgress(prog);
-            });
-          }
-        })(0);
-      } catch (_error) {}
       story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen \"Stayin' Alive\",", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
       doStillWorking = function() {
         var extra;
@@ -1828,12 +1819,27 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           return doStillWorking();
         });
       };
-      window._adp.initialTimeout = delay(5000, function() {
-        toastStatusMessage("This may take a few minutes. We'll give you an error if things go wrong.");
-        return window._adp.secondaryTimeout = delay(15000, function() {
-          return doStillWorking();
-        });
-      });
+      try {
+        estimate = toInt(.7 * valuesList.length);
+        console.log("Estimate " + estimate + " seconds");
+        window._adp.uploader = true;
+        $("#data-sync").removeAttr("indeterminate");
+        p$("#data-sync").max = estimate * 30;
+        (updateUploadProgress = function(prog) {
+          p$("#data-sync").value = prog;
+          ++prog;
+          if (window._adp.uploader && prog <= max) {
+            return delay(33, function() {
+              return updateUploadProgress(prog);
+            });
+          } else if (prog > max) {
+            toastStatusMessage("This may take a few minutes. We'll give you an error if things go wrong.");
+            return window._adp.secondaryTimeout = delay(15000, function() {
+              return doStillWorking();
+            });
+          }
+        })(0);
+      } catch (_error) {}
       return $.post("api.php", args, "json").done(function(result) {
         var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, parentCallback, prettyHtml, response;
         console.log("Got back", result);

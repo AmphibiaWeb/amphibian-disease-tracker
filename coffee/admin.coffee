@@ -299,112 +299,132 @@ finalizeData = ->
     unless dataCheck
       stopLoadError "Please fill out all required fields"
       return false
-    postData = new Object()
-    for el in $(".project-field")
-      if $(el).hasClass("iron-autogrow-textarea-0")
-        input = $($(el).get(0).textarea).val()
-      else
-        input = $(el).val()
-      key = $(el).attr("data-field")
-      unless isNull key
-        if $(el).attr("type") is "number"
-          postData[key] = toInt input
-        else
-          postData[key] = input
-    # postData.boundingBox = geo.boundingBox
-    # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
-    # Sampled species
-    # sample_collection_start
-    # sample_collection_end
-    # sampling_months
-    # sampling_years
-    # sampling_methods_used
-    # sample_dispositions_used
-    # sample_catalog_numbers
-    # sample_field_numbers
-    # Have some fun times with uploadedData
-    if uploadedData?
-      # Loop through it
-      dates = new Array()
-      months = new Array()
-      years = new Array()
-      methods = new Array()
-      catalogNumbers = new Array()
-      fieldNumbers = new Array()
-      dispositions = new Array()
-      for row in Object.toArray uploadedData
-        uTime = excelDateToUnixTime row.dateIdentified
-        dates.push uTime
-        uDate = new Date(uTime)
-        mString = dateMonthToString uDate.getUTCMonth()
-        unless mString in months
-          months.push mString
-        unless uDate.getFullYear() in years
-          years.push uDate.getFullYear()
-        if row.catalogNumber? # Not mandatory
-          catalogNumbers.push row.catalogNumber
-        fieldNumbers.push row.fieldNumber
-    console.info "Got uploaded data", uploadedData
-    console.info "Got date ranges", dates
-    postData.sampled_collection_start = dates.min()
-    postData.sampled_collection_end = dates.max()
-    postData.sample_catalog_numbers = catalogNumbers.join(",")
-    postData.sample_field_numbers = fieldNumbers.join(",")
-    postData.sampling_months = months
-    postData.sampling_years = years
-    center = getMapCenter(geo.boundingBox)
-    postData.lat = center.lat
-    postData.lng = center.lng
-    # Bounding box coords
-    postData.author = $.cookie("#{adminParams.domain}_link")
-    authorData =
-      name: p$("#project-author").value
-      contact_email: p$("#author-email").value
-      affiliation: p$("#project-affiliation").value
-      lab: p$("#project-pi").value
-      diagnostic_lab: p$("#project-lab").value
-      entry_date: Date.now()
-    postData.author_data = JSON.stringify authorData
-    cartoData =
-      table: geo.dataTable
-      raw_data: dataFileParams
-      bounding_polygon: geo?.canonicalBoundingBox
-      bounding_polygon_geojson: geo?.geoJsonBoundingBox
-    postData.carto_id = JSON.stringify cartoData
-    uniqueId = md5("#{geo.dataTable}#{postData.author}#{Date.now()}")
-    postData.project_id = uniqueId
-    # Public or private?
-    postData.public = p$("#data-encumbrance-toggle").checked
-    taxonData = _adp.data.taxa.validated
-    postData.sampled_clades = _adp.data.taxa.clades.join ","
-    postData.sampled_species = _adp.data.taxa.list.join ","
-    for taxonObject in taxonData
-      aweb = taxonObject.response.validated_taxon
-      console.info "Aweb taxon result:", aweb
-      clade = aweb.order.toLowerCase()
-      key = "includes_#{clade}"
-      postData[key] = true
-      # If we have all three, stop checking
-      # if postData.includes_anura and postData.includes_caudata and postData.includes_gymnophiona then break
-    args = "perform=new&data=#{jsonTo64(postData)}"
-    console.info "Data object constructed:", postData
-    $.post adminParams.apiTarget, args, "json"
-    .done (result) ->
-      if result.status is true
-        toastStatusMessage "Data successfully saved to server (Warning: Parsing incomplete! Test Mode!)"
-        bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
-        stopLoad()
-      else
-        console.error result.error.error
-        console.log result
-        stopLoadError result.human_error
-      false
-    .error (result, status) ->
-      stopLoadError "There was a problem saving your data. Please try again"
-      false
+    # Mint it!
+    author = $.cookie("#{adminParams.domain}_link")
+    if isNull(_adp.projectId)
+      _adp.projectId = md5("#{geo.dataTable}#{author}#{Date.now()}")
+    title = p$("#project-title").value
+    mintBcid _adp.projectId, title, (result) ->
+      try
+        unless result.status
+          console.error result.error
+          stopLoadError result.human_error
+          return false
+        dataAttrs.ark = result.ark
+        postData = new Object()
+        for el in $(".project-field")
+          if $(el).hasClass("iron-autogrow-textarea-0")
+            input = $($(el).get(0).textarea).val()
+          else
+            input = $(el).val()
+          key = $(el).attr("data-field")
+          unless isNull key
+            if $(el).attr("type") is "number"
+              postData[key] = toInt input
+            else
+              postData[key] = input
+        # postData.boundingBox = geo.boundingBox
+        # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
+        # Sampled species
+        # sample_collection_start
+        # sample_collection_end
+        # sampling_months
+        # sampling_years
+        # sampling_methods_used
+        # sample_dispositions_used
+        # sample_catalog_numbers
+        # sample_field_numbers
+        # Have some fun times with uploadedData
+        if uploadedData?
+          # Loop through it
+          dates = new Array()
+          months = new Array()
+          years = new Array()
+          methods = new Array()
+          catalogNumbers = new Array()
+          fieldNumbers = new Array()
+          dispositions = new Array()
+          for row in Object.toArray uploadedData
+            uTime = excelDateToUnixTime row.dateIdentified
+            dates.push uTime
+            uDate = new Date(uTime)
+            mString = dateMonthToString uDate.getUTCMonth()
+            unless mString in months
+              months.push mString
+            unless uDate.getFullYear() in years
+              years.push uDate.getFullYear()
+            if row.catalogNumber? # Not mandatory
+              catalogNumbers.push row.catalogNumber
+            fieldNumbers.push row.fieldNumber
+        console.info "Got uploaded data", uploadedData
+        console.info "Got date ranges", dates
+        postData.sampled_collection_start = dates.min()
+        postData.sampled_collection_end = dates.max()
+        postData.sample_catalog_numbers = catalogNumbers.join(",")
+        postData.sample_field_numbers = fieldNumbers.join(",")
+        postData.sampling_months = months
+        postData.sampling_years = years
+        center = getMapCenter(geo.boundingBox)
+        postData.lat = center.lat
+        postData.lng = center.lng
+        # Bounding box coords
+        postData.author = $.cookie("#{adminParams.domain}_link")
+        authorData =
+          name: p$("#project-author").value
+          contact_email: p$("#author-email").value
+          affiliation: p$("#project-affiliation").value
+          lab: p$("#project-pi").value
+          diagnostic_lab: p$("#project-lab").value
+          entry_date: Date.now()
+        postData.author_data = JSON.stringify authorData
+        cartoData =
+          table: geo.dataTable
+          raw_data: dataFileParams
+          bounding_polygon: geo?.canonicalBoundingBox
+          bounding_polygon_geojson: geo?.geoJsonBoundingBox
+        postData.carto_id = JSON.stringify cartoData
+        postData.project_id = _adp.projectId
+        postData.project_obj_id = dataAttrs.ark
+        # Public or private?
+        postData.public = p$("#data-encumbrance-toggle").checked
+        taxonData = _adp.data.taxa.validated
+        postData.sampled_clades = _adp.data.taxa.clades.join ","
+        postData.sampled_species = _adp.data.taxa.list.join ","
+        for taxonObject in taxonData
+          aweb = taxonObject.response.validated_taxon
+          console.info "Aweb taxon result:", aweb
+          clade = aweb.order.toLowerCase()
+          key = "includes_#{clade}"
+          postData[key] = true
+          # If we have all three, stop checking
+          # if postData.includes_anura and postData.includes_caudata and postData.includes_gymnophiona then break
+        args = "perform=new&data=#{jsonTo64(postData)}"
+        console.info "Data object constructed:", postData
+        $.post adminParams.apiTarget, args, "json"
+        .done (result) ->
+          if result.status is true
+            toastStatusMessage "Data successfully saved to server"
+            bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+            stopLoad()
+            delay 1000, ->
+              loadEditor _adp.projectId
+          else
+            console.error result.error.error
+            console.log result
+            stopLoadError result.human_error
+          false
+        .error (result, status) ->
+          stopLoadError "There was a problem saving your data. Please try again"
+          false
+      catch e
+        # Mint try
+        stopLoadError "There was a problem with the application. Please try again later. (E-003)"
+        console.error "JavaScript error in saving data (E-003)! FinalizeData said: #{e.message}"
+        console.warn e.stack
   catch e
-    stopLoadError "There was a problem with the application. Please try again later."
-    console.error "JavaScript error in saving data! FinalizeData said: #{e.message}"
+    # Function try
+    stopLoadError "There was a problem with the application. Please try again later. (E-004)"
+    console.error "JavaScript error in saving data (E-004)! FinalizeData said: #{e.message}"
     console.warn e.stack
 
 resetForm = ->
@@ -1336,6 +1356,9 @@ newGeoDataHandler = (dataObject = new Object()) ->
     p$("#no_confidence-samples").value = samplesMeta.no_confidence
     p$("#morbidity-count").value = samplesMeta.morbidity
     p$("#mortality-count").value = samplesMeta.mortality
+    if isNull _adp.projectId
+      author = $.cookie("#{adminParams.domain}_link")
+      _adp.projectId = md5("#{projectIdentifier}#{author}#{Date.now()}")
     totalData =
       transectRing: geo.boundingBox
       data: parsedData
