@@ -1664,7 +1664,7 @@ loadEditor = function(projectPreload) {
             }
             mapHtml += "    </google-map-poly>";
           }
-          googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>\n<br/>\n<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are " + usedPoints.length + " sample points in this dataset</p>";
+          googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
           geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
           mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : project.sample_notes;
@@ -1941,7 +1941,7 @@ getProjectCartoData = function(cartoObj) {
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       workingMap += marker;
     }
-    workingMap += "</google-map>";
+    workingMap += "</google-map>\n<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + result.parsed_responses[0].total_rows + "</span> sample points in this dataset</p>";
     $("#transect-viewport").replaceWith(workingMap);
     return stopLoad();
   }).fail(function(result, status) {

@@ -1736,8 +1736,6 @@ loadEditor = (projectPreload) ->
                 <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
                   #{mapHtml}
                 </google-map>
-                <br/>
-                <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are #{usedPoints.length} sample points in this dataset</p>
           """
           geo.googleMapWebComponent = googleMap
           deleteCardAction = if result.user.is_author then """
@@ -2143,7 +2141,10 @@ getProjectCartoData = (cartoObj) ->
       # $("#transect-viewport").append marker
       workingMap += marker
     # p$("#transect-viewport").resize()
-    workingMap += "</google-map>"
+    workingMap += """
+    </google-map>
+    <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{result.parsed_responses[0].total_rows}</span> sample points in this dataset</p>
+    """
     $("#transect-viewport").replaceWith workingMap
     stopLoad()
   .fail (result, status) ->
