@@ -2163,7 +2163,7 @@ mintBcid = function(projectId, title, callback) {
     return false;
   }
   resultObj = new Object();
-  args = "link=" + projectId + "&title=" + (post64(title));
+  args = "perform=mint&link=" + projectId + "&title=" + (post64(title));
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log("Got", result);
     if (!result.status) {

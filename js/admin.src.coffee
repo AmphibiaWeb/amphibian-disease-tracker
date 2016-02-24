@@ -2357,7 +2357,7 @@ mintBcid = (projectId, title, callback) ->
     console.warn "mintBcid() requires a callback function"
     return false
   resultObj = new Object()
-  args = "link=#{projectId}&title=#{post64(title)}"
+  args = "perform=mint&link=#{projectId}&title=#{post64(title)}"
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Got", result
