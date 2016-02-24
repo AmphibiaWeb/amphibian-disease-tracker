@@ -283,6 +283,7 @@ loadEditor = (projectPreload) ->
             <h3>Project Basics</h3>
             <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
             <paper-input readonly label="Project Creation" value="#{creation.toLocaleString()}" id="project_creation" class="project-param"></paper-input>
+            <paper-input readonly label="Project ARK" value="#{project.project_obj_id}" id="project_creation" class="project-param"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project-title" data-field="project_title"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Primary Pathogen" value="#{project.disease}" data-field="disease"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project-title" data-field="pi_lab"></paper-input>
@@ -331,6 +332,9 @@ loadEditor = (projectPreload) ->
                 <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
                 <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").join(", ")}"></paper-input>
                 <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").join(", ")}"></paper-input>
+                <p>
+                  <span class="glyphicon glyphicon-info-sign"></span> There are #{project.sampled_species.split(",").length} species in this dataset, across #{project.sampled_clades.split(",").length} clades
+                </p>
               <h4>Sample Metrics</h4>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
