@@ -82,7 +82,7 @@ switch($admin_req)
   case "get":
       returnAjax(readProjectData($_REQUEST));
       break;
-  case "test":
+  case "mint":
       $link = $_REQUEST["link"];
       $title64 = $_REQUEST["title"];
       $title = decode64($title64);
@@ -505,7 +505,9 @@ function mintBcid($projectLink, $projectTitle) {
      ***/
     global $fimsPassword, $db;
     # Does the project exist?
-    if(!$db->isEntry($projectLink, "project_id")) {
+    $projectLink = $db->sanitize($projectLink);
+    $projectExists = $db->isEntry($projectLink, "project_id", true);
+    if(!$projectExists) {
         return array(
             "status" => false,
             "error" => "INVALID_PROJECT",
