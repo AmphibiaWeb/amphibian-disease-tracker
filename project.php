@@ -2,8 +2,27 @@
 <html>
   <head>
     <?php
-       $pid = $_GET["id"];
-       $suffix = empty($pid) ? "Browser" : "#" . $pid;
+$debug = false;
+
+if($debug) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+    error_log("Project Browser is running in debug mode!");
+}
+
+$print_login_state = false;
+require_once("DB_CONFIG.php");
+require_once(dirname(__FILE__)."/core/core.php");
+
+$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+
+
+$pid = $db->sanitize($_GET["id"]);
+$suffix = empty($pid) ? "Browser" : "#" . $pid;
+
+
+$validProject = $db->isEntry($pid, "project_id");
+
        ?>
     <title>Project <?php echo $suffix ?></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -103,13 +122,29 @@
   </head>
   <body class="container-fluid">
     <main>
+      <?php if(empty($pid)) { ?>
       <h1 id="title">Amphibian Disease Projects</h1>
+      <?php } else if (!$validProject){ ?>
+      <h1 id="title">Invalid Project</h1>
+      <?php } else { 
+$search = array("project_id", $pid);
+$result = $db->doQuery($search, "*", "AND", false, true);
+$row = mysqli_fetch_row($result);
+            ?>
+      Project title here
+      <?php } ?>
       <section id="main-body" class="row">
         <?php if(empty($pid)) { ?>
-        <h2 class="col-xs-12">Please wait ...</h2>        
+        <h2 class="col-xs-12 status-notice">Please wait ...</h2>
         <p>Would list 25 newest, show search bar to filter through all</p>
+        <?php } else if (!$validProject){ ?>
+        <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn't exist.</h2>
+        <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
         <?php } else { ?>
         <p>Attempt to load up project #<?php echo $pid; ?></p>
+        <code>
+          <?php print_r($row); ?>
+         </code>
         <?php } ?>
       </section>
     </main>
