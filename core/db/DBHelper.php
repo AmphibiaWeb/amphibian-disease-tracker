@@ -510,6 +510,8 @@ class DBHelper
             return false;
         }
     }
+    
+    
 
     public function getQueryResults($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false) {
         $this->invalidateLink();
@@ -525,6 +527,9 @@ class DBHelper
         }
         return $response;
     }
+    
+    
+    
     
     public function doQuery($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false)
     {
