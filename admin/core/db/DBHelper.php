@@ -308,7 +308,7 @@ class DBHelper
     public function isEntry($item, $field_name = null, $precleaned = false, $test = false) {
         return $this->is_entry($item, $field_name, $precleaned, $test);
     }
-    
+
     public function is_entry($item, $field_name = null, $precleaned = false, $test = false)
     {
         if ($field_name == null) {
@@ -322,7 +322,7 @@ class DBHelper
         if (false) {
             #is_numeric($item))
 
-      $item_string = $item;
+            $item_string = $item;
         } else {
             $item_string = "'$item'";
         }
@@ -509,6 +509,15 @@ class DBHelper
         }
     }
 
+    public function getQueryResults($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false) {
+        $result = $this->doQuery($search, $cols, $boolean_type, $loose, $precleaned, $order_by);
+        $response = array();
+        while($row = mysqli_fetch_assoc($result)) {
+            $response[] = $row;
+        }
+        return $response;
+    }
+    
     public function doQuery($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false)
     {
         /***

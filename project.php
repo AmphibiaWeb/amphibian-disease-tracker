@@ -128,8 +128,8 @@ $validProject = $db->isEntry($pid, "project_id", true);
       <h1 id="title">Invalid Project</h1>
       <?php } else { 
 $search = array("project_id", $pid);
-$result = $db->doQuery($search, "*", "AND", false, true);
-$row = mysqli_fetch_row($result);
+$result = $db->getQueryResults($search, "*", "AND", false, true);
+$row = mysqli_fetch_assoc($result);
             ?>
       Project title here
       <?php } ?>
