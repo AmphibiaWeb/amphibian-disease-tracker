@@ -334,7 +334,9 @@ finalizeData = ->
         # sample_dispositions_used
         # sample_catalog_numbers
         # sample_field_numbers
+        center = getMapCenter(geo.boundingBox)
         # Have some fun times with uploadedData
+        excursion = 0
         if uploadedData?
           # Loop through it
           dates = new Array()
@@ -345,6 +347,7 @@ finalizeData = ->
           fieldNumbers = new Array()
           dispositions = new Array()
           for row in Object.toArray uploadedData
+            # sanify the dates
             date = row.dateCollected ? row.dateIdentified
             uTime = excelDateToUnixTime date
             dates.push uTime
@@ -354,20 +357,29 @@ finalizeData = ->
               months.push mString
             unless uDate.getFullYear() in years
               years.push uDate.getFullYear()
+            # Get the catalog number list
             if row.catalogNumber? # Not mandatory
               catalogNumbers.push row.catalogNumber
             fieldNumbers.push row.fieldNumber
+            # Prepare to calculate the radius
+            rowLat = row.decimalLatitude
+            rowLng = row.decimalLongitude
+            distanceFromCenter = geo.distance rowLat, center.lat, rowLng, center.lng
+            if distanceFromCenter > excursion then excursion = distanceFromCenter
         console.info "Got uploaded data", uploadedData
         console.info "Got date ranges", dates
+        months.sort()
+        years.sort()
         postData.sampled_collection_start = dates.min()
         postData.sampled_collection_end = dates.max()
         postData.sample_catalog_numbers = catalogNumbers.join(",")
         postData.sample_field_numbers = fieldNumbers.join(",")
         postData.sampling_months = months.join(",")
         postData.sampling_years = years.join(",")
-        center = getMapCenter(geo.boundingBox)
+
         postData.lat = center.lat
         postData.lng = center.lng
+        postData.radius = toInt excursion * 1000
         # Bounding box coords
         postData.author = $.cookie("#{adminParams.domain}_link")
         authorData =
@@ -1434,7 +1446,7 @@ dateMonthToString = (month) ->
     rv = conversionObj[month]
   catch
     rv = month
-  month
+  rv
 
 
 excelDateToUnixTime = (excelTime) ->

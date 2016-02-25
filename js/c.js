@@ -2103,18 +2103,24 @@ function upperLeft(points) {
     return top;
 };
 
+Number.prototype.toRad = function() {
+  return this * Math.PI / 180;
+};
+
 geo.distance = function(lat1, lng1, lat2, lng2) {
 
   /*
    * Distance across Earth curvature
+   *
+   * Measured in km
    */
   var R, arc, curve, dLat, dLon, semiLat, semiLng;
   R = 6371;
-  dLat = (lat2 - lat2).toRad();
+  dLat = (lat2 - lat1).toRad();
   dLon = (lng2 - lng1).toRad();
   semiLat = dLat / 2;
   semiLng = dLon / 2;
-  arc = Math.pow(Math.sin(semiLat), 2) + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.pow(Math.sin(smiLng), 2);
+  arc = Math.pow(Math.sin(semiLat), 2) + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.pow(Math.sin(semiLng), 2);
   curve = 2 * Math.atan2(Math.sqrt(arc), Math.sqrt(1 - arc));
   return R * curve;
 };

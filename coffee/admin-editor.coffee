@@ -256,6 +256,37 @@ loadEditor = (projectPreload) ->
             creation = new Object()
             creation.toLocaleString = ->
               return "Error retrieving creation time"
+          monthPretty = ""
+          months = project.sampling_months.split(",")
+          i = 0
+          for month in months
+            ++i
+            if i > 1 and i is months.length
+              if months.length > 2
+                # Because "January, and February" looks silly
+                # But "January, February, and March" looks fine
+                monthPretty += ","
+              monthPretty += " and "
+            else if i > 1
+              monthPretty += ", "
+            if isNumber month
+              month = dateMonthToString month
+            monthPretty += month
+          i = 0
+          yearPretty = ""
+          years = project.sampling_years.split(",")
+          i = 0
+          for year in years
+            ++i
+            if i > 1 and i is years.length
+              if years.length > 2
+                # Because "2012, and 2013" looks silly
+                # But "2012, 2013, and 2014" looks fine
+                yearPretty += ","
+              yearPretty += " and "
+            else if i > 1
+              yearPretty += ", "
+            yearPretty += year
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -336,6 +367,9 @@ loadEditor = (projectPreload) ->
                   <span class="glyphicon glyphicon-info-sign"></span> There are #{project.sampled_species.split(",").length} species in this dataset, across #{project.sampled_clades.split(",").length} clades
                 </p>
               <h4>Sample Metrics</h4>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken in #{monthPretty}</p>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in years #{yearPretty}</p>
+                <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{project.lat}, #{project.lng}) with an effective sample radius of #{project.radius}m</p>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
