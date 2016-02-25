@@ -129,8 +129,9 @@ $validProject = $db->isEntry($pid, "project_id", true);
       <?php } else {
 $search = array("project_id" => $pid);
 $result = $db->getQueryResults($search, "*", "AND", false, true);
+$project = $result[0];
             ?>
-      <h1 id="title"><?php echo $result["project_title"]; ?></h1>
+      <h1 id="title"><?php echo $project["project_title"]; ?></h1>
       <?php } ?>
       <section id="main-body" class="row">
         <?php if(empty($pid)) { ?>
