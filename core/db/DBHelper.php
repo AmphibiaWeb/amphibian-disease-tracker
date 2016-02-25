@@ -515,6 +515,7 @@ class DBHelper
         while($row = mysqli_fetch_assoc($result)) {
             $response[] = $row;
         }
+        if(empty($response) && $debug_query) return $this->doQuery($search, $cols, $boolean_type, $loose, $precleaned, $order_by, true);
         return $response;
     }
     
