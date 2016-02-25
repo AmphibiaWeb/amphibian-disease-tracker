@@ -131,7 +131,7 @@ $search = array("project_id", $pid);
 $result = $db->getQueryResults($search, "*", "AND", false, true);
 $row = mysqli_fetch_assoc($result);
             ?>
-      Project title here
+      <h1 id="title">Project title here</h1>
       <?php } ?>
       <section id="main-body" class="row">
         <?php if(empty($pid)) { ?>
