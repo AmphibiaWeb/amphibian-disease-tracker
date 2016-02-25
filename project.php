@@ -21,7 +21,7 @@ $pid = $db->sanitize($_GET["id"]);
 $suffix = empty($pid) ? "Browser" : "#" . $pid;
 
 
-$validProject = $db->isEntry($pid, "project_id");
+$validProject = $db->isEntry($pid, "project_id", true);
 
        ?>
     <title>Project <?php echo $suffix ?></title>
