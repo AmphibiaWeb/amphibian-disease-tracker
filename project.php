@@ -128,8 +128,7 @@ $validProject = $db->isEntry($pid, "project_id", true);
       <h1 id="title">Invalid Project</h1>
       <?php } else { 
 $search = array("project_id", $pid);
-$result = $db->getQueryResults($search, "*", "AND", false, true);
-$row = mysqli_fetch_assoc($result);
+$result = $db->getQueryResults($search, "*", "AND", false, true, false, true);
             ?>
       <h1 id="title">Project title here</h1>
       <?php } ?>
@@ -143,7 +142,7 @@ $row = mysqli_fetch_assoc($result);
         <?php } else { ?>
         <p>Attempt to load up project #<?php echo $pid; ?></p>
         <code>
-          <?php print_r($row); ?>
+          <?php print_r($result); ?>
          </code>
         <?php } ?>
       </section>
