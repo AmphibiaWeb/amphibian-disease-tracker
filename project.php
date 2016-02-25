@@ -126,11 +126,11 @@ $validProject = $db->isEntry($pid, "project_id", true);
       <h1 id="title">Amphibian Disease Projects</h1>
       <?php } else if (!$validProject){ ?>
       <h1 id="title">Invalid Project</h1>
-      <?php } else { 
-$search = array("project_id", $pid);
-$result = $db->getQueryResults($search, "*", "AND", false, true, false, true);
+      <?php } else {
+$search = array("project_id" => $pid);
+$result = $db->getQueryResults($search, "*", "AND", false, true);
             ?>
-      <h1 id="title">Project title here</h1>
+      <h1 id="title"><?php echo $result["project_title"]; ?></h1>
       <?php } ?>
       <section id="main-body" class="row">
         <?php if(empty($pid)) { ?>
@@ -141,9 +141,9 @@ $result = $db->getQueryResults($search, "*", "AND", false, true, false, true);
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
         <?php } else { ?>
         <p>Attempt to load up project #<?php echo $pid; ?></p>
-        <code>
+        <pre>
           <?php print_r($result); ?>
-         </code>
+         </pre>
         <?php } ?>
       </section>
     </main>
