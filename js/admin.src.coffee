@@ -2229,7 +2229,7 @@ getProjectCartoData = (cartoObj) ->
         console.warn "#{taxa} was changed from #{row.originaltaxa}"
         note = "(<em>#{row.originaltaxa}</em>)"
       marker = """
-      <google-map-marker latitude="#{lat}" longitude="#{lng}">
+      <google-map-marker latitude="#{lat}" longitude="#{lng}" data-disease-detected="#{row.diseasedetected}">
         <p>
           <em>#{row.genus} #{row.specificepithet}</em> #{note}
           <br/>
