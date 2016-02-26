@@ -69,6 +69,9 @@ window.loadAdminUi = ->
   false
 
 populateAdminActions = ->
+  # Reset the URI
+  url = "#{uri.urlString}/admin-page.html"
+  history.pushState null, "Admin Home", url
   adminActions = """
         <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:add"></iron-icon>
