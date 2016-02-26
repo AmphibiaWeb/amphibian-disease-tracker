@@ -214,3 +214,8 @@ postAuthorizeRender = (projectData) ->
 $ ->
   _adp.projectId = uri.o.param "id"
   checkProjectAuthorization()
+  $("#project-list button")
+  .unbind()
+  .click ->
+    project = $(this).attr("data-project")
+    goTo "#{uri.urlString}project.php?id=#{project}"

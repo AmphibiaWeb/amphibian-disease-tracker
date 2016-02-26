@@ -212,7 +212,12 @@ postAuthorizeRender = function(projectData) {
 
 $(function() {
   _adp.projectId = uri.o.param("id");
-  return checkProjectAuthorization();
+  checkProjectAuthorization();
+  return $("#project-list button").unbind().click(function() {
+    var project;
+    project = $(this).attr("data-project");
+    return goTo(uri.urlString + "project.php?id=" + project);
+  });
 });
 
 //# sourceMappingURL=maps/project.js.map
