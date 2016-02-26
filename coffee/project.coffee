@@ -11,7 +11,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
     else
       # Check if the user is authorized
       dest = "#{uri.urlString}/admin-api.php"
-      args = "perfom=check_access&project=#{projectId}"
+      args = "perform=check_access&project=#{projectId}"
       $.post dest, args, "json"
       .done (result) ->
         if result.status
@@ -21,7 +21,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
             callback project
           else
             console.warn "No callback specified!"
-            console.info "Got proejct data", project
+            console.info "Got project data", project
         else
           console.info "User is unauthorized"
       .error (result, status) ->

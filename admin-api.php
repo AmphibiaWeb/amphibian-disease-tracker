@@ -389,21 +389,25 @@ function authorizedProjectAccess($get) {
     $results = array(
         "status" => $status,
         "project" => $project,
-        "detailed" => $authorizedStatus,
+        "detailed_authorization" => $authorizedStatus,
     );
     if($status === true) {
-        $results["detail"] = readProjectData(array("project"=>$project));
+        $results["detail"] = readProjectData($project, true);
     }
     return $results;
 }
 
 
-function readProjectData($get, $debug = false) {
+function readProjectData($get, $precleaned = false, $debug = false) {
     /***
      *
      ***/
     global $db, $login_status;
-    $project = $db->sanitize($get["project"]);
+    if($precleaned) {
+        $project = $get;
+    } else {
+        $project = $db->sanitize($get["project"]);
+    }
     $userdata = $login_status["detail"];
     unset($userdata["source"]);
     unset($userdata["iv"]);
@@ -517,6 +521,8 @@ function readProjectData($get, $debug = false) {
     $response["status"] = true;
     $response["error"] = "OK";
     $response["human_error"] = null;
+    $response["project_id"] = $project;
+    $response["project_id_raw"] = $get["project"];
     return $response;
 }
 
