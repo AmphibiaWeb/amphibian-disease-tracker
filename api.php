@@ -567,10 +567,10 @@ function doAWebValidate($get) {
 
 
 function validateCaptcha($get) {
-    require_once(dirname(__FILE__) . "/admin/CONFIG.php");
+    global $recaptcha_private_key;
     $params = array(
         "secret" => $recaptcha_private_key,
-        "response" => $get["recaptcha_response"]
+        "response" => $get["recaptcha_response"],
     );
     $raw_response = do_post_request("https://www.google.com/recaptcha/api/siteverify", $params);
     $response = json_decode($raw_response,true);
@@ -590,7 +590,7 @@ function validateCaptcha($get) {
             "recaptcha_response" => array(
                 "raw_response" => $raw_response,
                 "parsed_response" => $response
-            )
+            ),
         );
     }
     else {
@@ -600,9 +600,10 @@ function validateCaptcha($get) {
             "project_id" => $project
         );
         $result = $db->getQueryResults($query, "author_data", "AND", false, true);
+        $author_data = json_decode($result[0], true);
         $a = array(
             "status" => true,
-            "result" => $result,
+            "author_data" => $author_data,
         );
     }
     returnAjax($a);
