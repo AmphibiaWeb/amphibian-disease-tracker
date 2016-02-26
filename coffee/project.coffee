@@ -7,7 +7,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
   console.info "Checking authorization for #{projectId}"
   checkLoggedIn (result) ->
     unless result.status
-      console.info "Non logged-in user"
+      console.info "Non logged-in user or unauthorized user"
       stopLoad()
       return false
     else
@@ -63,21 +63,7 @@ showEmailField = (email) ->
   false
 
 
-
-postAuthorizeRender = (projectData) ->
-  if projectData.public
-    console.info "Project is already public, not rerendering"
-    false
-  startLoad()
-  console.info "Should render stuff", projectData
-  editButton = """
-  <paper-icon-button icon="icons:create" class="authorized-action" data-href="admin-page.html?id=#{projectData.project_id}"></paper-icon-button>
-  """
-  $("#title").append editButton
-  authorData = JSON.parse projectData.author_data
-  showEmailField authorData.contact_email
-  $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
-  bindClicks(".authorized-action")
+renderMapWithData = (projectData) ->
   cartoData = JSON.parse deEscape projectData.carto_id
   cartoTable = cartoData.table
   try
@@ -201,6 +187,27 @@ postAuthorizeRender = (projectData) ->
   .error (result, status) ->
     console.error result, status
     stopLoadError "Couldn't render map"
+  false
+
+
+
+
+postAuthorizeRender = (projectData) ->
+  if projectData.public
+    console.info "Project is already public, not rerendering"
+    false
+  startLoad()
+  console.info "Should render stuff", projectData
+  editButton = """
+  <paper-icon-button icon="icons:create" class="authorized-action" data-href="admin-page.html?id=#{projectData.project_id}"></paper-icon-button>
+  """
+  $("#title").append editButton
+  authorData = JSON.parse projectData.author_data
+  showEmailField authorData.contact_email
+  $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
+  bindClicks(".authorized-action")
+  cartoData = JSON.parse deEscape projectData.carto_id
+  renderMapWithData(projectData) # Stops load
   false
 
 
