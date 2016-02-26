@@ -2211,6 +2211,9 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
         view = result[l];
         validView = view;
         googleBounds = view.geometry.bounds;
+        if (googleBounds == null) {
+          continue;
+        }
         north = googleBounds.R.j;
         south = googleBounds.R.R;
         east = googleBounds.j.R;

@@ -1765,6 +1765,8 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
       for view in result
         validView = view
         googleBounds = view.geometry.bounds
+        unless googleBounds?
+          continue
         north = googleBounds.R.j
         south = googleBounds.R.R
         east = googleBounds.j.R
