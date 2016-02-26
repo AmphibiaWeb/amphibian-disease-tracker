@@ -312,6 +312,10 @@ finalizeData = function() {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postData.locality = _adp.locality;
+        postData.bounding_box_n = geo.computedBoundingRectangle.north;
+        postData.bounding_box_s = geo.computedBoundingRectangle.south;
+        postData.bounding_box_e = geo.computedBoundingRectangle.east;
+        postData.bounding_box_w = geo.computedBoundingRectangle.west;
         postData.author = $.cookie(adminParams.domain + "_link");
         authorData = {
           name: p$("#project-author").value,
