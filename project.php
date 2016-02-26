@@ -146,14 +146,24 @@ $project = $result[0];
           $cols = array(
               "project_id",
               "project_title",
+              "public",
           );
           $list = $db->getQueryResults($search, $cols, "AND", true, true);
+          $html = "";
+          $i = 0;
+          foreach($list as $k=>$project) {
+              if(empty($project["project_id"])) continue;
+              $i++;
+              if($i >= 25 ) break;
+              $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock-open"></iron-icon>';
+              $projectHtml = "<button class='click btn btn-primary' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button>";
+              $html += "<li>".$projectHtml."</li>";
+          }
           ?>
-        <h2 class="col-xs-12 status-notice">Please wait ...</h2>
-        <p>Would list 25 newest, show search bar to filter through all</p>
-        <pre>
-<?php print_r($list); ?>
-        </pre>
+        <h2 class="col-xs-12 status-notice">Showing 25 newest projects</h2>
+        <ul id="project-list" class="col-xs-12 col-md-6">
+          <?php echo $html; ?>
+        </ul>
         <?php } else if (!$validProject){ ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
