@@ -74,7 +74,7 @@ showEmailField = function(email) {
 };
 
 postAuthorizeRender = function(projectData) {
-  var apiPostSqlQuery, args, authorData, cartoData, cartoQuery, cartoTable, editButton, i, len, mapHtml, point, poly, ref, usedPoints, zoom;
+  var apiPostSqlQuery, args, authorData, cartoData, cartoQuery, cartoTable, editButton, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -99,8 +99,8 @@ postAuthorizeRender = function(projectData) {
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
   ref = poly.paths;
-  for (i = 0, len = ref.length; i < len; i++) {
-    point = ref[i];
+  for (j = 0, len = ref.length; j < len; j++) {
+    point = ref[j];
     if (indexOf.call(usedPoints, point) < 0) {
       usedPoints.push(point);
       mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
@@ -112,7 +112,7 @@ postAuthorizeRender = function(projectData) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var error, geoJson, googleMap, k, lat, lng, marker, note, ref1, row, rows, taxa;
+    var collectionRangePretty, d1, d2, error, geoJson, googleMap, i, k, l, lat, len1, len2, lng, m, mapData, marker, month, monthPretty, months, note, ref1, row, rows, taxa, year, yearPretty, years;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -146,8 +146,53 @@ postAuthorizeRender = function(projectData) {
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       mapHtml += marker;
     }
-    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\">\n  " + mapHtml + "\n</google-map>";
-    $("#auth-block").append(googleMap);
+    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6\">\n  " + mapHtml + "\n</google-map>";
+    monthPretty = "";
+    months = projectData.sampling_months.split(",");
+    i = 0;
+    for (l = 0, len1 = months.length; l < len1; l++) {
+      month = months[l];
+      ++i;
+      if (i > 1 && i === months.length) {
+        if (months.length > 2) {
+          monthPretty += ",";
+        }
+        monthPretty += " and ";
+      } else if (i > 1) {
+        monthPretty += ", ";
+      }
+      if (isNumber(month)) {
+        month = dateMonthToString(month);
+      }
+      monthPretty += month;
+    }
+    i = 0;
+    yearPretty = "";
+    years = projectData.sampling_years.split(",");
+    i = 0;
+    for (m = 0, len2 = years.length; m < len2; m++) {
+      year = years[m];
+      ++i;
+      if (i > 1 && i === years.length) {
+        if (years.length > 2) {
+          yearPretty += ",";
+        }
+        yearPretty += " and ";
+      } else if (i > 1) {
+        yearPretty += ", ";
+      }
+      yearPretty += year;
+    }
+    if (years.length === 1) {
+      yearPretty = "the year " + yearPretty;
+    } else {
+      yearPretty = "the years " + yearPretty;
+    }
+    d1 = new Date(toInt(projectData.sampled_collection_start));
+    d2 = new Date(toInt(projectData.sampled_collection_end));
+    collectionRangePretty = (dateMonthToString(d1.getMonth())) + " " + (d1.getFullYear()) + " &#8212; " + (dateMonthToString(d2.getMonth())) + " " + (d2.getFullYear());
+    mapData = "<div class=\"row\">\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n  </div>\n</div>";
+    $("#auth-block").append(mapData);
     return stopLoad();
   }).error(function(result, status) {
     console.error(result, status);

@@ -140,11 +140,61 @@ postAuthorizeRender = (projectData) ->
       mapHtml += marker
     # Looped over all of them
     googleMap = """
-          <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}">
+          <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6">
             #{mapHtml}
           </google-map>
     """
-    $("#auth-block").append googleMap
+    monthPretty = ""
+    months = projectData.sampling_months.split(",")
+    i = 0
+    for month in months
+      ++i
+      if i > 1 and i is months.length
+        if months.length > 2
+          # Because "January, and February" looks silly
+          # But "January, February, and March" looks fine
+          monthPretty += ","
+        monthPretty += " and "
+      else if i > 1
+        monthPretty += ", "
+      if isNumber month
+        month = dateMonthToString month
+      monthPretty += month
+    i = 0
+    yearPretty = ""
+    years = projectData.sampling_years.split(",")
+    i = 0
+    for year in years
+      ++i
+      if i > 1 and i is years.length
+        if years.length > 2
+          # Because "2012, and 2013" looks silly
+          # But "2012, 2013, and 2014" looks fine
+          yearPretty += ","
+        yearPretty += " and "
+      else if i > 1
+        yearPretty += ", "
+      yearPretty += year
+    if years.length is 1
+      yearPretty = "the year #{yearPretty}"
+    else
+      yearPretty = "the years #{yearPretty}"
+    d1 = new Date toInt projectData.sampled_collection_start
+    d2 = new Date toInt projectData.sampled_collection_end
+    collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
+    mapData = """
+    <div class="row">
+      #{googleMap}
+      <div class="col-xs-12 col-md-3 col-lg-6">
+        <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken from #{collectionRangePretty}</p>
+        <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken in #{monthPretty}</p>
+        <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in #{yearPretty}</p>
+        <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{roundNumberSigfig projectData.lat, 6}, #{roundNumberSigfig projectData.lng, 6}) with a sample radius of #{projectData.radius}m and a resulting locality <strong class='locality'>#{projectData.locality}</strong></p>
+        <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{projectData.disease_positive} positive samples (#{roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)}%), #{projectData.disease_negative} negative samples (#{roundNumber(projectData.disease_negative *100 / projectData.disease_samples)}%), and #{projectData.disease_no_confidence} inconclusive samples (#{roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)}%)</p>
+      </div>
+    </div>
+    """
+    $("#auth-block").append mapData
     stopLoad()
   .error (result, status) ->
     console.error result, status
