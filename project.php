@@ -166,12 +166,15 @@ $project = $result[0];
           <paper-input readonly label="Project Contact" value="<?php echo $authorData["name"]; ?>"></paper-input>
           <paper-input readonly label="Diagnostic Lab" value="<?php echo $authorData["diagnostic_lab"]; ?>"></paper-input>
           <paper-input readonly label="Affiliation" value="<?php echo $authorData["affiliation"]; ?>"></paper-input>
-          <div class="row">
+          <div class="row" id="email-fill">
             <?php 
                require_once("admin/CONFIG.php");
                ?>
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-            <div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>>
+            <p class="col-xs-6 col-md-3">
+              Contact email:
+            </p>
+            <div class="g-recaptcha col-xs-6 col-md-9" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
           </div>
         </div>
         <div class="col-xs-12">
