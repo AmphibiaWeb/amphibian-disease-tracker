@@ -7410,6 +7410,15 @@ google-map#transect-viewport {
 }
 .aweb-link-species {
   display: inline-block;
+  background: #5bc0de;
+  color: #fff;
+  margin: .25rem;
+  padding-left: 1em;
+  border-radius: 1em;
+  font-style: italic;
+}
+.aweb-link-species:hover {
+  background: #7de2ff;
 }
 #title paper-icon-button {
   font-size: initial;
