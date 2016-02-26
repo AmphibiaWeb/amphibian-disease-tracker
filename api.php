@@ -600,10 +600,11 @@ function validateCaptcha($get) {
             "project_id" => $project
         );
         $result = $db->getQueryResults($query, "author_data", "AND", false, true);
-        $author_data = json_decode($result[0], true);
+        $author_data = json_decode($result[0]["author_data"], true);
         $a = array(
             "status" => true,
             "author_data" => $author_data,
+            "raw_result" => $result[0],
         );
     }
     returnAjax($a);

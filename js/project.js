@@ -44,12 +44,19 @@ checkProjectAuthorization = function(projectId, callback) {
 
 renderEmail = function(response) {
   var args, dest;
+  stopLoad();
   dest = uri.urlString + "/api.php";
   args = "action=is_human&recaptcha_response=" + response + "&project=" + _adp.projectId;
   $.post(dest, args, "json").done(function(result) {
+    var authorData, html;
     console.info("Checked response");
-    return console.log(result);
+    console.log(result);
+    authorData = result.author_data;
+    html = "<paper-input readonly label=\"Contact Email\" value=\"" + authorData.contact_email + "\"></paper-input>";
+    $("#email-fill").replaceWith(html);
+    return stopLoad();
   }).error(function(result, status) {
+    stopLoadError("Sorry, there was a problem getting the contact email");
     return false;
   });
   return false;
