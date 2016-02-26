@@ -2,7 +2,7 @@
 # Project-specific code
 ###
 
-checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
+checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
   console.info "Checking authorization for #{projectId}"
   checkLoggedIn (result) ->
@@ -42,9 +42,9 @@ renderEmail = (response) ->
     authorData = result.author_data
     html = """
     <div class="row">
-      <paper-input readonly class="col-xs-8 col-md-10" label="Contact Email" value="#{authorData.contact_email}"></paper-input>
-      <div class="col-xs-4 col-md-2">
-        <paper-icon-button icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{authorData.contact_email}"></paper-icon-button>
+      <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{authorData.contact_email}"></paper-input>
+      <div class="col-xs-4 col-md-1">
+        <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{authorData.contact_email}"></paper-fab>
       </div>
     </div>
     """
@@ -55,6 +55,16 @@ renderEmail = (response) ->
     stopLoadError "Sorry, there was a problem getting the contact email"
     false    
   false
+
+
+postAuthorizeRender = (projectData) ->
+  if projectData.public
+    console.info "Project is already public, not rerendering"
+    false
+  console.info "Should render stuff"
+  $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
+  false
+
 
 $ ->
   _adp.projectId = uri.o.param "id"
