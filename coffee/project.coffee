@@ -106,8 +106,6 @@ postAuthorizeRender = (projectData) ->
       stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
       return false
     rows = result.parsed_responses[0].rows
-    truncateLength = 0 - "</google-map>".length
-    workingMap = geo.googleMapWebComponent.slice 0, truncateLength
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       lat = geoJson.coordinates[0]

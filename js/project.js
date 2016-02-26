@@ -106,7 +106,7 @@ postAuthorizeRender = function(projectData) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var error, geoJson, googleMap, k, lat, lng, marker, note, ref1, row, rows, taxa, truncateLength, workingMap;
+    var error, geoJson, googleMap, k, lat, lng, marker, note, ref1, row, rows, taxa;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -117,8 +117,6 @@ postAuthorizeRender = function(projectData) {
       return false;
     }
     rows = result.parsed_responses[0].rows;
-    truncateLength = 0 - "</google-map>".length;
-    workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
     for (k in rows) {
       row = rows[k];
       geoJson = JSON.parse(row.st_asgeojson);
