@@ -2036,7 +2036,6 @@ getProjectCartoData = function(cartoObj) {
     console.info("Got zoom", zoom);
     $("#transect-viewport").attr("zoom", zoom);
   } catch (_error) {}
-  toastStatusMessage("Would ping CartoDB and fetch data for table " + cartoTable);
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
