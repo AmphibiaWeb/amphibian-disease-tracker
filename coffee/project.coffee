@@ -41,9 +41,15 @@ renderEmail = (response) ->
     console.log result
     authorData = result.author_data
     html = """
-    <paper-input readonly label="Contact Email" value="#{authorData.contact_email}"></paper-input>
+    <div class="row">
+      <paper-input readonly class="col-xs-8 col-md-10" label="Contact Email" value="#{authorData.contact_email}"></paper-input>
+      <div class="col-xs-4 col-md-2">
+        <paper-icon-button icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{authorData.contact_email}"></paper-icon-button>
+      </div>
+    </div>
     """
     $("#email-fill").replaceWith html
+    bindClicks("#contact-email-send")
     stopLoad()
   .error (result, status) ->
     stopLoadError "Sorry, there was a problem getting the contact email"

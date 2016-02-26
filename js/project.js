@@ -52,8 +52,9 @@ renderEmail = function(response) {
     console.info("Checked response");
     console.log(result);
     authorData = result.author_data;
-    html = "<paper-input readonly label=\"Contact Email\" value=\"" + authorData.contact_email + "\"></paper-input>";
+    html = "<div class=\"row\">\n  <paper-input readonly class=\"col-xs-8 col-md-10\" label=\"Contact Email\" value=\"" + authorData.contact_email + "\"></paper-input>\n  <div class=\"col-xs-4 col-md-2\">\n    <paper-icon-button icon=\"communication:email\" class=\"click materialblue\" id=\"contact-email-send\" data-href=\"mailto:" + authorData.contact_email + "\"></paper-icon-button>\n  </div>\n</div>";
     $("#email-fill").replaceWith(html);
+    bindClicks("#contact-email-send");
     return stopLoad();
   }).error(function(result, status) {
     stopLoadError("Sorry, there was a problem getting the contact email");
