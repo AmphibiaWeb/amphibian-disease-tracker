@@ -79,6 +79,11 @@ postAuthorizeRender = (projectData) ->
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
   cartoTable = cartoData.table
+  try
+    zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
+    console.info "Got zoom", zoom
+  catch
+    zoom = ""
   poly = cartoData.bounding_polygon
   mapHtml = """
   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
@@ -121,7 +126,6 @@ postAuthorizeRender = (projectData) ->
       taxa = "#{row.genus} #{row.specificepithet}"
       note = ""
       if taxa isnt row.originaltaxa
-        console.warn "#{taxa} was changed from #{row.originaltaxa}"
         note = "(<em>#{row.originaltaxa}</em>)"
       marker = """
       <google-map-marker latitude="#{lat}" longitude="#{lng}">
@@ -136,7 +140,7 @@ postAuthorizeRender = (projectData) ->
       mapHtml += marker
     # Looped over all of them
     googleMap = """
-          <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
+          <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}">
             #{mapHtml}
           </google-map>
     """
