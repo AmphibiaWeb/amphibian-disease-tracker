@@ -256,6 +256,40 @@ loadEditor = (projectPreload) ->
             creation = new Object()
             creation.toLocaleString = ->
               return "Error retrieving creation time"
+          monthPretty = ""
+          months = project.sampling_months.split(",")
+          i = 0
+          for month in months
+            ++i
+            if i > 1 and i is months.length
+              if months.length > 2
+                # Because "January, and February" looks silly
+                # But "January, February, and March" looks fine
+                monthPretty += ","
+              monthPretty += " and "
+            else if i > 1
+              monthPretty += ", "
+            if isNumber month
+              month = dateMonthToString month
+            monthPretty += month
+          i = 0
+          yearPretty = ""
+          years = project.sampling_years.split(",")
+          i = 0
+          for year in years
+            ++i
+            if i > 1 and i is years.length
+              if years.length > 2
+                # Because "2012, and 2013" looks silly
+                # But "2012, 2013, and 2014" looks fine
+                yearPretty += ","
+              yearPretty += " and "
+            else if i > 1
+              yearPretty += ", "
+            yearPretty += year
+          d1 = new Date project.sampled_collection_start
+          d2 = new Date project.sampled_collection_end
+          collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -336,10 +370,11 @@ loadEditor = (projectPreload) ->
                   <span class="glyphicon glyphicon-info-sign"></span> There are #{project.sampled_species.split(",").length} species in this dataset, across #{project.sampled_clades.split(",").length} clades
                 </p>
               <h4>Sample Metrics</h4>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken from #{collectionRangePretty}</p>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken in #{monthPretty}</p>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in years #{yearPretty}</p>
+                <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{project.lat}, #{project.lng}) with an effective sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
+                <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{toInt(project.disease_positive / project.disease_samples)}%), #{project.disease_negative} negative samples (#{toInt(project.disease_negative / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{toInt(project.disease_no_confidence / project.disease_samples)}%)</p>
               <h4>Locality &amp; Transect Data</h4>
                 #{googleMap}
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>

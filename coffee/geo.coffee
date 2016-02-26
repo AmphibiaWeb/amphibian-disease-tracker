@@ -736,22 +736,121 @@ function upperLeft(points) {
     return top;
 }`
 
+Number::toRad = ->
+  this * Math.PI / 180
+
 geo.distance = (lat1, lng1, lat2, lng2) ->
   ###
   # Distance across Earth curvature
+  #
+  # Measured in km
   ###
   # Radius of Earth, const (Volumentric Mean)
   # http://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html
   R = 6371
-  dLat = (lat2 - lat2).toRad()
+  dLat = (lat2 - lat1).toRad()
   dLon = (lng2 - lng1).toRad()
   semiLat = dLat / 2
   semiLng = dLon / 2
   # Get the actual curves
-  arc = Math.sin(semiLat)**2 + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.sin(smiLng)**2
+  arc = Math.sin(semiLat)**2 + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.sin(semiLng)**2
   curve = 2 * Math.atan2 Math.sqrt(arc), Math.sqrt(1-arc)
   # Return the real distance
   R * curve
+
+
+geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
+  coordinateSet = Object.toArray coordinateSet
+  if isNull coordinateSet
+    console.warn "Need a set of coordinates for the bounding rectangle!"
+    return false
+  northMost = -90
+  southMost = 90
+  westMost = 180
+  eastMost = -180
+  for coordinates in coordinateSet
+    lat = coordinates[0]
+    lng = coordinates[1]
+    if lat > northMost
+      northMost = lat
+    if lat < southMost
+      southMost = lat
+    if lng < westMost
+      westMost = lng
+    if lng > eastMost
+      eastMost = lng
+  boundingBox =
+    nw: [northMost, westMost]
+    ne: [northMost, eastMost]
+    se: [southMost, eastMost]
+    sw: [southMost, westMost]
+    north: northMost
+    east: eastMost
+    west: westMost
+    south: southMost
+  boundingBox
+
+
+geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
+  ###
+  # https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse
+  ###
+  try
+    if geo.geocoder?
+      geocoder = geo.geocoder
+    else
+      geocoder = new google.maps.Geocoder
+      geo.geocoder = geocoder
+  catch e
+    console.error "Couldn't instance a google map geocoder - #{e.message}"
+    console.warn e.stack
+    return false
+  ll =
+    lat: toFloat lat
+    lng: toFloat lng
+  request =
+    location: ll
+  geocoder.geocode request, (result, status) ->
+    if status is google.maps.GeocoderStatus.OK
+      console.info "Google said:", result
+      mustContain = geo.getBoundingRectangle(boundingBox)
+      validView = null
+      for view in result
+        validView = view
+        googleBounds = view.geometry.bounds
+        north = googleBounds.R.j
+        south = googleBounds.R.R
+        east = googleBounds.j.R
+        west = googleBounds.j.j
+        # Check the coords
+        if north < mustContain.north then continue
+        if south > mustContain.south then continue
+        if west > mustContain.west then continue
+        if east < mustContain.east then continue
+        # We're good
+        break
+      locality = validView.formatted_address
+      # It's possible, though not likely, that the valid view doesn't
+      # actually contain everything
+      tooNorth = north < mustContain.north
+      tooSouth = south > mustContain.south
+      tooWest = west > mustContain.west
+      tooEast = east < mustContain.east
+      if tooNorth or tooSouth or tooWest or tooEast
+        console.warn "The last locality, '#{locality}', doesn't contain all coordinates!"
+        console.warn "North: #{!tooNorth}, South: #{!tooSouth}, East: #{!tooEast}, West: #{!tooWest}"
+        console.info "Using", validView, mustContain
+        # We merely want the "region" then
+        locality = "near #{locality} (nearest region)"
+        
+      console.info "Computed locality: '#{locality}'"
+      geo.computedLocality = locality
+      if typeof callback is "function"
+        callback(locality)
+      else
+        console.warn "No callback provided to geo.reverseGeocode()!"
+
+
 
 ###
 # Minimum Convex Hull

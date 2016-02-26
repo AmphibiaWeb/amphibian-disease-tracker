@@ -2103,20 +2103,149 @@ function upperLeft(points) {
     return top;
 };
 
+Number.prototype.toRad = function() {
+  return this * Math.PI / 180;
+};
+
 geo.distance = function(lat1, lng1, lat2, lng2) {
 
   /*
    * Distance across Earth curvature
+   *
+   * Measured in km
    */
   var R, arc, curve, dLat, dLon, semiLat, semiLng;
   R = 6371;
-  dLat = (lat2 - lat2).toRad();
+  dLat = (lat2 - lat1).toRad();
   dLon = (lng2 - lng1).toRad();
   semiLat = dLat / 2;
   semiLng = dLon / 2;
-  arc = Math.pow(Math.sin(semiLat), 2) + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.pow(Math.sin(smiLng), 2);
+  arc = Math.pow(Math.sin(semiLat), 2) + Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * Math.pow(Math.sin(semiLng), 2);
   curve = 2 * Math.atan2(Math.sqrt(arc), Math.sqrt(1 - arc));
   return R * curve;
+};
+
+geo.getBoundingRectangle = function(coordinateSet) {
+  var boundingBox, coordinates, eastMost, l, lat, len, lng, northMost, southMost, westMost;
+  if (coordinateSet == null) {
+    coordinateSet = geo.boundingBox;
+  }
+  coordinateSet = Object.toArray(coordinateSet);
+  if (isNull(coordinateSet)) {
+    console.warn("Need a set of coordinates for the bounding rectangle!");
+    return false;
+  }
+  northMost = -90;
+  southMost = 90;
+  westMost = 180;
+  eastMost = -180;
+  for (l = 0, len = coordinateSet.length; l < len; l++) {
+    coordinates = coordinateSet[l];
+    lat = coordinates[0];
+    lng = coordinates[1];
+    if (lat > northMost) {
+      northMost = lat;
+    }
+    if (lat < southMost) {
+      southMost = lat;
+    }
+    if (lng < westMost) {
+      westMost = lng;
+    }
+    if (lng > eastMost) {
+      eastMost = lng;
+    }
+  }
+  boundingBox = {
+    nw: [northMost, westMost],
+    ne: [northMost, eastMost],
+    se: [southMost, eastMost],
+    sw: [southMost, westMost],
+    north: northMost,
+    east: eastMost,
+    west: westMost,
+    south: southMost
+  };
+  return boundingBox;
+};
+
+geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
+  var geocoder, ll, request;
+  if (boundingBox == null) {
+    boundingBox = geo.boundingBox;
+  }
+
+  /*
+   * https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse
+   */
+  try {
+    if (geo.geocoder != null) {
+      geocoder = geo.geocoder;
+    } else {
+      geocoder = new google.maps.Geocoder;
+      geo.geocoder = geocoder;
+    }
+  } catch (_error) {
+    e = _error;
+    console.error("Couldn't instance a google map geocoder - " + e.message);
+    console.warn(e.stack);
+    return false;
+  }
+  ll = {
+    lat: toFloat(lat),
+    lng: toFloat(lng)
+  };
+  request = {
+    location: ll
+  };
+  return geocoder.geocode(request, function(result, status) {
+    var east, googleBounds, l, len, locality, mustContain, north, south, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
+    if (status === google.maps.GeocoderStatus.OK) {
+      console.info("Google said:", result);
+      mustContain = geo.getBoundingRectangle(boundingBox);
+      validView = null;
+      for (l = 0, len = result.length; l < len; l++) {
+        view = result[l];
+        validView = view;
+        googleBounds = view.geometry.bounds;
+        north = googleBounds.R.j;
+        south = googleBounds.R.R;
+        east = googleBounds.j.R;
+        west = googleBounds.j.j;
+        if (north < mustContain.north) {
+          continue;
+        }
+        if (south > mustContain.south) {
+          continue;
+        }
+        if (west > mustContain.west) {
+          continue;
+        }
+        if (east < mustContain.east) {
+          continue;
+        }
+        break;
+      }
+      locality = validView.formatted_address;
+      tooNorth = north < mustContain.north;
+      tooSouth = south > mustContain.south;
+      tooWest = west > mustContain.west;
+      tooEast = east < mustContain.east;
+      if (tooNorth || tooSouth || tooWest || tooEast) {
+        console.warn("The last locality, '" + locality + "', doesn't contain all coordinates!");
+        console.warn("North: " + (!tooNorth) + ", South: " + (!tooSouth) + ", East: " + (!tooEast) + ", West: " + (!tooWest));
+        console.info("Using", validView, mustContain);
+        locality = "near " + locality + " (nearest region)";
+      }
+      console.info("Computed locality: '" + locality + "'");
+      geo.computedLocality = locality;
+      if (typeof callback === "function") {
+        return callback(locality);
+      } else {
+        return console.warn("No callback provided to geo.reverseGeocode()!");
+      }
+    }
+  });
 };
 
 

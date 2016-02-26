@@ -141,10 +141,12 @@ $project = $result[0];
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn't exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
         <?php } else { ?>
-        <p>Attempt to load up project #<?php echo $pid; ?></p>
-        <pre>
-          <?php print_r($result); ?>
-         </pre>
+        <div class="into col-xs-12">
+          <p>Attempt to load up project #<?php echo $pid; ?></p>
+          <pre>
+            <?php print_r($result); ?>
+          </pre>
+        </div>
         <?php } ?>
       </section>
     </main>

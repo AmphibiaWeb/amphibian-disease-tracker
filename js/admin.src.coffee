@@ -334,7 +334,9 @@ finalizeData = ->
         # sample_dispositions_used
         # sample_catalog_numbers
         # sample_field_numbers
+        center = getMapCenter(geo.boundingBox)
         # Have some fun times with uploadedData
+        excursion = 0
         if uploadedData?
           # Loop through it
           dates = new Array()
@@ -344,7 +346,9 @@ finalizeData = ->
           catalogNumbers = new Array()
           fieldNumbers = new Array()
           dispositions = new Array()
+          sampleMethods = new Array()
           for row in Object.toArray uploadedData
+            # sanify the dates
             date = row.dateCollected ? row.dateIdentified
             uTime = excelDateToUnixTime date
             dates.push uTime
@@ -354,20 +358,39 @@ finalizeData = ->
               months.push mString
             unless uDate.getFullYear() in years
               years.push uDate.getFullYear()
+            # Get the catalog number list
             if row.catalogNumber? # Not mandatory
               catalogNumbers.push row.catalogNumber
             fieldNumbers.push row.fieldNumber
+            # Prepare to calculate the radius
+            rowLat = row.decimalLatitude
+            rowLng = row.decimalLongitude
+            distanceFromCenter = geo.distance rowLat, center.lat, rowLng, center.lng
+            if distanceFromCenter > excursion then excursion = distanceFromCenter
+            # Samples
+            if row.sampleType?
+              unless row.sampleType in sampleMethods
+                sampleMethods.push row.sampleType
+            if row.specimenDisposition?
+              unless row.specimenDisposition in dispositions
+                dispositions.push row.sampleDisposition
         console.info "Got uploaded data", uploadedData
         console.info "Got date ranges", dates
+        months.sort()
+        years.sort()
         postData.sampled_collection_start = dates.min()
         postData.sampled_collection_end = dates.max()
+        console.info "Collected from", dates.min(), dates.max()
         postData.sample_catalog_numbers = catalogNumbers.join(",")
         postData.sample_field_numbers = fieldNumbers.join(",")
-        postData.sampling_months = months
-        postData.sampling_years = years
-        center = getMapCenter(geo.boundingBox)
+        postData.sampling_months = months.join(",")
+        postData.sampling_years = years.join(",")
+        postData.sample_methods_used = sampleMethods.join(",")
+        if dataFileParams?.hasDataFile
+          postData.raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
         postData.lat = center.lat
         postData.lng = center.lng
+        postData.radius = toInt excursion * 1000
         # Bounding box coords
         postData.author = $.cookie("#{adminParams.domain}_link")
         authorData =
@@ -523,6 +546,10 @@ bootstrapTransect = ->
             ne: [bbEW.j, bbNS.j]
             se: [bbEW.N, bbNS.N]
             sw: [bbEW.N, bbNS.j]
+            north: bbEW.j
+            south: bbEW.N
+            east: bbNS.j
+            west: bbNS.N
         catch e
           console.warn "Danger: There was an error calculating the bounding box (#{e.message})"
           console.warn e.stack
@@ -1175,6 +1202,9 @@ newGeoDataHandler = (dataObject = new Object()) ->
   # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "alt"
   ###
   try
+    unless geo.geocoder?
+      try
+        geo.geocoder = new google.maps.Geocoder
     try
       sampleRow = dataObject[0]
     catch
@@ -1335,6 +1365,14 @@ newGeoDataHandler = (dataObject = new Object()) ->
         $(p$("#coord-input").textarea).val(textEntry)
       j
     geo.boundingBox ?= getCoordsFromData()
+    center = getMapCenter(geo.boundingBox)
+    geo.reverseGeocode center.lat, center.lng, geo.boundingBox, (locality) ->
+      _adp.locality = locality
+      dataAttrs.locality = locality
+      try
+        p$("#locality-input").value = locality
+        p$("#locality-input").readonly = true
+
     samplesMeta =
       mortality: 0
       morbidity: 0
@@ -1434,7 +1472,7 @@ dateMonthToString = (month) ->
     rv = conversionObj[month]
   catch
     rv = month
-  month
+  rv
 
 
 excelDateToUnixTime = (excelTime) ->
@@ -1765,6 +1803,40 @@ loadEditor = (projectPreload) ->
             creation = new Object()
             creation.toLocaleString = ->
               return "Error retrieving creation time"
+          monthPretty = ""
+          months = project.sampling_months.split(",")
+          i = 0
+          for month in months
+            ++i
+            if i > 1 and i is months.length
+              if months.length > 2
+                # Because "January, and February" looks silly
+                # But "January, February, and March" looks fine
+                monthPretty += ","
+              monthPretty += " and "
+            else if i > 1
+              monthPretty += ", "
+            if isNumber month
+              month = dateMonthToString month
+            monthPretty += month
+          i = 0
+          yearPretty = ""
+          years = project.sampling_years.split(",")
+          i = 0
+          for year in years
+            ++i
+            if i > 1 and i is years.length
+              if years.length > 2
+                # Because "2012, and 2013" looks silly
+                # But "2012, 2013, and 2014" looks fine
+                yearPretty += ","
+              yearPretty += " and "
+            else if i > 1
+              yearPretty += ", "
+            yearPretty += year
+          d1 = new Date project.sampled_collection_start
+          d2 = new Date project.sampled_collection_end
+          collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -1845,10 +1917,11 @@ loadEditor = (projectPreload) ->
                   <span class="glyphicon glyphicon-info-sign"></span> There are #{project.sampled_species.split(",").length} species in this dataset, across #{project.sampled_clades.split(",").length} clades
                 </p>
               <h4>Sample Metrics</h4>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken from #{collectionRangePretty}</p>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken in #{monthPretty}</p>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in years #{yearPretty}</p>
+                <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{project.lat}, #{project.lng}) with an effective sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
+                <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{toInt(project.disease_positive / project.disease_samples)}%), #{project.disease_negative} negative samples (#{toInt(project.disease_negative / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{toInt(project.disease_no_confidence / project.disease_samples)}%)</p>
               <h4>Locality &amp; Transect Data</h4>
                 #{googleMap}
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
