@@ -923,6 +923,31 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
 window.checkFileVersion = checkFileVersion
 
 
+
+checkLoggedIn = (callback) ->
+  ###
+  # Checks the login credentials against the server.
+  # This should not be used in place of sending authentication
+  # information alongside a restricted action, as a malicious party
+  # could force the local JS check to succeed.
+  # SECURE AUTHENTICATION MUST BE WHOLLY SERVER SIDE.
+  ###
+  hash = $.cookie("#{uri.domain}_auth")
+  secret = $.cookie("#{uri.domain}_secret")
+  link = $.cookie("#{uri.domain}_link")
+  args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
+  loginTarget = "#{uri.urlString}admin/async_login_handler.php"
+  $.post loginTarget, args, "json"
+  .done (result) ->
+    callback(result)
+  .fail (result,status) ->
+    response =
+      status: false
+    callback(response)
+  false
+
+
+
 $ ->
   bindClicks()
   formatScientificNames()

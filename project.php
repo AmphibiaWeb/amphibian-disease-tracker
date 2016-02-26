@@ -110,7 +110,8 @@ $validProject = $db->isEntry($pid, "project_id", true);
     <script type="text/javascript" src="bower_components/imagelightbox/dist/imagelightbox.min.js"></script>
     <script type="text/javascript" src="bower_components/JavaScript-MD5/js/md5.min.js"></script>
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
-    <script type="text/javascript" src="js/c.js"></script>
+    <script type="text/javascript" src="js/c.min.js"></script>
+    <script type="text/javascript" src="js/project.js"></script>
     <script type="text/javascript">
       // Initial script
     </script>
@@ -143,7 +144,7 @@ $project = $result[0];
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
         <?php } else { ?>
-        <h2 class="col-xs-12"><span class="text-muted small">Project #<?php echo $pid; ?></small>></h2>
+        <h2 class="col-xs-12"><span class="text-muted small">Project #<?php echo $pid; ?></small></h2>
         <h2 class="col-xs-12">
           Project Abstract
         </h2>

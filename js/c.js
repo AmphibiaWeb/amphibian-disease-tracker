@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, cleanupToasts, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, createMap, d$, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1278,6 +1278,33 @@ checkFileVersion = function(forceNow, file) {
 };
 
 window.checkFileVersion = checkFileVersion;
+
+checkLoggedIn = function(callback) {
+
+  /*
+   * Checks the login credentials against the server.
+   * This should not be used in place of sending authentication
+   * information alongside a restricted action, as a malicious party
+   * could force the local JS check to succeed.
+   * SECURE AUTHENTICATION MUST BE WHOLLY SERVER SIDE.
+   */
+  var args, hash, link, loginTarget, secret;
+  hash = $.cookie(uri.domain + "_auth");
+  secret = $.cookie(uri.domain + "_secret");
+  link = $.cookie(uri.domain + "_link");
+  args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
+  loginTarget = uri.urlString + "admin/async_login_handler.php";
+  $.post(loginTarget, args, "json").done(function(result) {
+    return callback(result);
+  }).fail(function(result, status) {
+    var response;
+    response = {
+      status: false
+    };
+    return callback(response);
+  });
+  return false;
+};
 
 $(function() {
   bindClicks();

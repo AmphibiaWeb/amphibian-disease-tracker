@@ -94,6 +94,9 @@ switch($admin_req)
       }
       returnAjax(mintBcid($link, $title));
        break;
+  case "check_access":
+      returnAjax(authorizedProjectAccess($_REQUEST));
+      break;
   default:
     returnAjax(getLoginState($_REQUEST,true));
   }
@@ -365,6 +368,16 @@ function checkProjectAuthorized($projectData, $uid) {
         ),
     );
     return $response;
+}
+
+
+function authorizedProjectAccess($get) {
+    global $db, $login_status;
+    $project = $db->sanitize($get["project"]);
+    $uid = $userdata["uid"];
+    $search = array("project_id" => $project);
+    $results = $db->getQueryResults($search, "author, access_data", "AND", false, true);
+    return $results;
 }
 
 
