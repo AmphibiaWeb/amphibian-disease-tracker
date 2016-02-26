@@ -287,8 +287,12 @@ loadEditor = (projectPreload) ->
             else if i > 1
               yearPretty += ", "
             yearPretty += year
-          d1 = new Date project.sampled_collection_start
-          d2 = new Date project.sampled_collection_end
+          if years.length is 1
+            yearPretty = "the year #{yearPretty}"
+          else
+            yearPretty = "the years #{yearPretty}"
+          d1 = new Date toInt project.sampled_collection_start
+          d2 = new Date toInt project.sampled_collection_end
           collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
@@ -372,9 +376,9 @@ loadEditor = (projectPreload) ->
               <h4>Sample Metrics</h4>
                 <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken from #{collectionRangePretty}</p>
                 <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken in #{monthPretty}</p>
-                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in years #{yearPretty}</p>
+                <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in #{yearPretty}</p>
                 <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{project.lat}, #{project.lng}) with an effective sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
-                <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{toInt(project.disease_positive / project.disease_samples)}%), #{project.disease_negative} negative samples (#{toInt(project.disease_negative / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{toInt(project.disease_no_confidence / project.disease_samples)}%)</p>
+                <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{toInt(project.disease_positive * 100 / project.disease_samples)}%), #{project.disease_negative} negative samples (#{toInt(project.disease_negative *100 / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{toInt(project.disease_no_confidence * 100 / project.disease_samples)}%)</p>
               <h4>Locality &amp; Transect Data</h4>
                 #{googleMap}
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
