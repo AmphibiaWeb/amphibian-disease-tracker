@@ -74,6 +74,7 @@ $validProject = $db->isEntry($pid, "project_id", true);
     <link rel="import" href="bower_components/iron-icons/image-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/communication-icons.html"/>
+    <link rel="import" href="bower_components/iron-icons/editor-icons.html"/>
 
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
 
@@ -202,7 +203,7 @@ $project = $result[0];
         <div class="needs-auth col-xs-12" id="auth-block">
 <?php
 if($project["public"] === true) {
-    # Public project, base renders 
+    # Public project, base renders
 ?>
           <pre>
             <?php print_r($result); ?>

@@ -7400,7 +7400,8 @@ section#notes marked-element {
 google-map#transect-viewport {
   height: 60vh;
 }
-#project-data p.text-muted .glyphicon {
+#project-data p.text-muted .glyphicon,
+#auth-block p.text-muted .glyphicon {
   margin-left: 0.25em;
 }
 .species-list {
