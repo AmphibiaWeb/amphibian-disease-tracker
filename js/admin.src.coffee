@@ -1369,6 +1369,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
     geo.reverseGeocode center.lat, center.lng, geo.boundingBox, (locality) ->
       _adp.locality = locality
       dataAttrs.locality = locality
+      try
+        p$("#locality-input").value = locality
+        p$("#locality-input").readonly = true
+
     samplesMeta =
       mortality: 0
       morbidity: 0

@@ -1350,7 +1350,11 @@ newGeoDataHandler = function(dataObject) {
     center = getMapCenter(geo.boundingBox);
     geo.reverseGeocode(center.lat, center.lng, geo.boundingBox, function(locality) {
       _adp.locality = locality;
-      return dataAttrs.locality = locality;
+      dataAttrs.locality = locality;
+      try {
+        p$("#locality-input").value = locality;
+        return p$("#locality-input").readonly = true;
+      } catch (_error) {}
     });
     samplesMeta = {
       mortality: 0,

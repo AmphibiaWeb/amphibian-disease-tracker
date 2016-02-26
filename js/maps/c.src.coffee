@@ -1740,11 +1740,16 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
   ###
   # https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse
   ###
-  if geo.geocoder?
-    geocoder = geo.geocoder
-  else
-    geocoder = new google.maps.Geocoder
-    geo.geocoder = geocoder
+  try
+    if geo.geocoder?
+      geocoder = geo.geocoder
+    else
+      geocoder = new google.maps.Geocoder
+      geo.geocoder = geocoder
+  catch e
+    console.error "Couldn't instance a google map geocoder - #{e.message}"
+    console.warn e.stack
+    return false
   ll =
     lat: toFloat lat
     lng: toFloat lng
