@@ -163,7 +163,7 @@ $project = $result[0];
               if($i >= 25 ) break;
               $authorData = json_decode($project["author_data"]);
               $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock"></iron-icon>';
-              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["affiliation"];
+              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["name"] . " at " . $authorData["affiliation"];
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
