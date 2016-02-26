@@ -1250,13 +1250,13 @@ newGeoDataHandler = (dataObject = new Object()) ->
       missingStatement = "You're missing"
       missingRequired = new Array()
       unless sampleRow.decimalLatitude?
-        missingRequired[] = "decimalLatitude"
+        missingRequired.push "decimalLatitude"
       unless sampleRow.decimalLongitude?
-        missingRequired[] = "decimalLongitude"
+        missingRequired.push "decimalLongitude"
       unless sampleRow.coordinateUncertaintyInMeters?
-        missingRequired[] = "coordinateUncertaintyInMeters"
+        missingRequired.push "coordinateUncertaintyInMeters"
       unless sampleRow.elevation? or sampleRow.alt?
-        missingRequired[] = "elevation"
+        missingRequired.push "elevation"
       missingStatement += if missingRequired.length > 1 then "some required columns: " else "a required column: "
       missingHtml = missingRequired.join "</code>, <code>"
       missingStatement += "<code>#{missingHtml}</code>"
