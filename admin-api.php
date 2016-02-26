@@ -374,9 +374,14 @@ function checkProjectAuthorized($projectData, $uid) {
 function authorizedProjectAccess($get) {
     global $db, $login_status;
     $project = $db->sanitize($get["project"]);
-    $uid = $userdata["uid"];
-    $search = array("project_id" => $project);
-    $results = $db->getQueryResults($search, "author, access_data", "AND", false, true);
+    $uid = $login_status["detail"]["uid"];
+    $authorizedStatus = checkProjectAuthorized($project, $uid);
+    $status = $authorizedStatus["can_view"];
+    $results = array(
+        "status" => $status,
+        "project" => $project,
+        "detailed" => $authorizedStatus,
+    );
     return $results;
 }
 
