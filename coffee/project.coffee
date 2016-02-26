@@ -16,8 +16,12 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
       .done (result) ->
         if result.status
           console.info "User is authorized"
+          project = result.detail.project
           if typeof callback is "function"
-            callback(result)
+            callback project
+          else
+            console.warn "No callback specified!"
+            console.info "Got proejct data", project
         else
           console.info "User is unauthorized"
       .error (result, status) ->

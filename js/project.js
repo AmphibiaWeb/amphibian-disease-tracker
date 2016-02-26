@@ -18,10 +18,15 @@ checkProjectAuthorization = function(projectId, callback) {
       dest = uri.urlString + "/admin-api.php";
       args = "perfom=check_access&project=" + projectId;
       return $.post(dest, args, "json").done(function(result) {
+        var project;
         if (result.status) {
           console.info("User is authorized");
+          project = result.detail.project;
           if (typeof callback === "function") {
-            return callback(result);
+            return callback(project);
+          } else {
+            console.warn("No callback specified!");
+            return console.info("Got proejct data", project);
           }
         } else {
           return console.info("User is unauthorized");

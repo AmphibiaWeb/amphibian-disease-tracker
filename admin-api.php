@@ -391,11 +391,14 @@ function authorizedProjectAccess($get) {
         "project" => $project,
         "detailed" => $authorizedStatus,
     );
+    if($status === true) {
+        $results["detail"] = readProjectData(array("project"=>$project));
+    }
     return $results;
 }
 
 
-function readProjectData($get, $debug = true) {
+function readProjectData($get, $debug = false) {
     /***
      *
      ***/
