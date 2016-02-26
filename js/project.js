@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, postAuthorizeRender, renderEmail, renderMapWithData, showEmailField,
+var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, renderMapWithData, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -70,7 +70,7 @@ renderEmail = function(response) {
 
 showEmailField = function(email) {
   var html;
-  html = "<div class=\"row\">\n  <paper-input readonly class=\"col-xs-8 col-md-11\" label=\"Contact Email\" value=\"" + email + "\"></paper-input>\n  <div class=\"col-xs-4 col-md-1\">\n    <paper-fab icon=\"communication:email\" class=\"click materialblue\" id=\"contact-email-send\" data-href=\"mailto:" + email + "\"></paper-fab>\n  </div>\n</div>";
+  html = "<div class=\"row\">\n  <paper-input readonly class=\"col-xs-8 col-md-11\" label=\"Contact Email\" value=\"" + email + "\"></paper-input>\n  <div class=\"col-xs-4 col-md-1\">\n    <paper-fab icon=\"communication:email\" class=\"click materialblue\" id=\"contact-email-send\" data-href=\"mailto:" + email + "\" data-toggle=\"tooltip\" title=\"Send Email\"></paper-fab>\n  </div>\n</div>";
   $("#email-fill").replaceWith(html);
   bindClicks("#contact-email-send");
   return false;
@@ -217,6 +217,25 @@ postAuthorizeRender = function(projectData) {
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   renderMapWithData(projectData);
+  return false;
+};
+
+copyLink = function(html5) {
+  var ark, clip;
+  if (html5 == null) {
+    html5 = true;
+  }
+  toastStatusMessage("Would copy full ark link to clipboard");
+  ark = p$(".ark-identifier").value;
+  if (html5) {
+    try {
+      clip = new ClipboardEvent("copy");
+      clip.clipboardData.setData("text/plain", "https://n2t.net/" + ark);
+      document.dispatchEvent(clip);
+      return false;
+    } catch (_error) {}
+    console.warn("Can't use HTML5");
+  }
   return false;
 };
 

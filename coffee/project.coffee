@@ -56,7 +56,7 @@ showEmailField = (email) ->
   <div class="row">
     <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{email}"></paper-input>
     <div class="col-xs-4 col-md-1">
-      <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}"></paper-fab>
+      <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
     </div>
   </div>
   """
@@ -214,6 +214,20 @@ postAuthorizeRender = (projectData) ->
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
   renderMapWithData(projectData) # Stops load
+  false
+
+
+copyLink = (html5 = true) ->
+  toastStatusMessage "Would copy full ark link to clipboard"
+  ark = p$(".ark-identifier").value
+  if html5    
+    # http://caniuse.com/#feat=clipboard
+    try
+      clip = new ClipboardEvent("copy")
+      clip.clipboardData.setData("text/plain", "https://n2t.net/#{ark}")
+      document.dispatchEvent(clip)
+      return false
+    console.warn "Can't use HTML5"
   false
 
 
