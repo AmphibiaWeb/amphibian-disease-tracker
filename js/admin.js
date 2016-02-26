@@ -220,7 +220,7 @@ finalizeData = function() {
     }
     title = p$("#project-title").value;
     return mintBcid(_adp.projectId, title, function(result) {
-      var args, authorData, aweb, cartoData, catalogNumbers, center, clade, date, dates, dispositions, distanceFromCenter, e, el, excursion, fieldNumbers, input, key, l, len, len1, len2, m, mString, methods, months, o, postData, ref, ref1, ref2, ref3, ref4, ref5, row, rowLat, rowLng, sampleMethods, taxonData, taxonObject, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, excursion, fieldNumbers, input, key, l, len, len1, m, mString, methods, months, postBBLocality, postData, ref, ref1, ref2, ref3, ref4, ref5, row, rowLat, rowLng, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -311,65 +311,95 @@ finalizeData = function() {
         postData.lat = center.lat;
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
-        postData.locality = _adp.locality;
-        postData.bounding_box_n = geo.computedBoundingRectangle.north;
-        postData.bounding_box_s = geo.computedBoundingRectangle.south;
-        postData.bounding_box_e = geo.computedBoundingRectangle.east;
-        postData.bounding_box_w = geo.computedBoundingRectangle.west;
-        postData.author = $.cookie(adminParams.domain + "_link");
-        authorData = {
-          name: p$("#project-author").value,
-          contact_email: p$("#author-email").value,
-          affiliation: p$("#project-affiliation").value,
-          lab: p$("#project-pi").value,
-          diagnostic_lab: p$("#project-lab").value,
-          entry_date: Date.now()
-        };
-        postData.author_data = JSON.stringify(authorData);
-        cartoData = {
-          table: geo.dataTable,
-          raw_data: dataFileParams,
-          bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
-          bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
-        };
-        postData.carto_id = JSON.stringify(cartoData);
-        postData.project_id = _adp.projectId;
-        postData.project_obj_id = dataAttrs.ark;
-        postData["public"] = p$("#data-encumbrance-toggle").checked;
-        taxonData = _adp.data.taxa.validated;
-        postData.sampled_clades = _adp.data.taxa.clades.join(",");
-        postData.sampled_species = _adp.data.taxa.list.join(",");
-        for (o = 0, len2 = taxonData.length; o < len2; o++) {
-          taxonObject = taxonData[o];
-          aweb = taxonObject.response.validated_taxon;
-          console.info("Aweb taxon result:", aweb);
-          clade = aweb.order.toLowerCase();
-          key = "includes_" + clade;
-          postData[key] = true;
-          if ((postData.includes_anura != null) !== false && (postData.includes_caudata != null) !== false && (postData.includes_gymnophiona != null) !== false) {
-            break;
+        postBBLocality = function() {
+          var args, authorData, aweb, cartoData, clade, len2, o, taxonData, taxonObject;
+          postData.locality = _adp.locality;
+          if (geo.computedBoundingRectangle != null) {
+            postData.bounding_box_n = geo.computedBoundingRectangle.north;
+            postData.bounding_box_s = geo.computedBoundingRectangle.south;
+            postData.bounding_box_e = geo.computedBoundingRectangle.east;
+            postData.bounding_box_w = geo.computedBoundingRectangle.west;
           }
-        }
-        args = "perform=new&data=" + (jsonTo64(postData));
-        console.info("Data object constructed:", postData);
-        return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-          if (result.status === true) {
-            toastStatusMessage("Data successfully saved to server");
-            bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
-            stopLoad();
-            delay(1000, function() {
-              return loadEditor(_adp.projectId);
-            });
+          postData.author = $.cookie(adminParams.domain + "_link");
+          authorData = {
+            name: p$("#project-author").value,
+            contact_email: p$("#author-email").value,
+            affiliation: p$("#project-affiliation").value,
+            lab: p$("#project-pi").value,
+            diagnostic_lab: p$("#project-lab").value,
+            entry_date: Date.now()
+          };
+          postData.author_data = JSON.stringify(authorData);
+          cartoData = {
+            table: geo.dataTable,
+            raw_data: dataFileParams,
+            bounding_polygon: typeof geo !== "undefined" && geo !== null ? geo.canonicalBoundingBox : void 0,
+            bounding_polygon_geojson: typeof geo !== "undefined" && geo !== null ? geo.geoJsonBoundingBox : void 0
+          };
+          postData.carto_id = JSON.stringify(cartoData);
+          postData.project_id = _adp.projectId;
+          postData.project_obj_id = dataAttrs.ark;
+          postData["public"] = p$("#data-encumbrance-toggle").checked;
+          taxonData = _adp.data.taxa.validated;
+          postData.sampled_clades = _adp.data.taxa.clades.join(",");
+          postData.sampled_species = _adp.data.taxa.list.join(",");
+          for (o = 0, len2 = taxonData.length; o < len2; o++) {
+            taxonObject = taxonData[o];
+            aweb = taxonObject.response.validated_taxon;
+            console.info("Aweb taxon result:", aweb);
+            clade = aweb.order.toLowerCase();
+            key = "includes_" + clade;
+            postData[key] = true;
+            if ((postData.includes_anura != null) !== false && (postData.includes_caudata != null) !== false && (postData.includes_gymnophiona != null) !== false) {
+              break;
+            }
+          }
+          args = "perform=new&data=" + (jsonTo64(postData));
+          console.info("Data object constructed:", postData);
+          return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+            if (result.status === true) {
+              toastStatusMessage("Data successfully saved to server");
+              bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+              stopLoad();
+              delay(1000, function() {
+                return loadEditor(_adp.projectId);
+              });
+            } else {
+              console.error(result.error.error);
+              console.log(result);
+              stopLoadError(result.human_error);
+            }
+            return false;
+          }).error(function(result, status) {
+            stopLoadError("There was a problem saving your data. Please try again");
+            return false;
+          });
+        };
+        if ((geo.computedLocality != null) || !dataFileParams.hasDataFile) {
+          if (geo.computedLocality != null) {
+            _adp.locality = geo.computedLocality;
           } else {
-            console.error(result.error.error);
-            console.log(result);
-            stopLoadError(result.human_error);
+            try {
+              _adp.locality = p$("#locality-input").value;
+            } catch (_error) {
+              _adp.locality = "";
+            }
           }
-          return false;
-        }).error(function(result, status) {
-          stopLoadError("There was a problem saving your data. Please try again");
-          return false;
-        });
+          return postBBLocality();
+        } else if (dataFileParams.hasDataFile) {
+          return geo.reverseGeocode(center.lat, center.lng, geo.boundingBox, function(result) {
+            _adp.locality = result;
+            return postBBLocality();
+          });
+        } else {
+          try {
+            _adp.locality = p$("#locality-input").value;
+          } catch (_error) {
+            _adp.locality = "";
+          }
+          console.warn("How did we get to this state? No locality precomputed, no data file");
+          return postBBLocality();
+        }
       } catch (_error) {
         e = _error;
         stopLoadError("There was a problem with the application. Please try again later. (E-003)");

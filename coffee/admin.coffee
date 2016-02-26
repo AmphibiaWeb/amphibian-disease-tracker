@@ -391,60 +391,87 @@ finalizeData = ->
         postData.lat = center.lat
         postData.lng = center.lng
         postData.radius = toInt excursion * 1000
-        postData.locality = _adp.locality
-        # Bounding box coords
-        postData.bounding_box_n = geo.computedBoundingRectangle.north
-        postData.bounding_box_s = geo.computedBoundingRectangle.south
-        postData.bounding_box_e = geo.computedBoundingRectangle.east
-        postData.bounding_box_w = geo.computedBoundingRectangle.west
-        postData.author = $.cookie("#{adminParams.domain}_link")
-        authorData =
-          name: p$("#project-author").value
-          contact_email: p$("#author-email").value
-          affiliation: p$("#project-affiliation").value
-          lab: p$("#project-pi").value
-          diagnostic_lab: p$("#project-lab").value
-          entry_date: Date.now()
-        postData.author_data = JSON.stringify authorData
-        cartoData =
-          table: geo.dataTable
-          raw_data: dataFileParams
-          bounding_polygon: geo?.canonicalBoundingBox
-          bounding_polygon_geojson: geo?.geoJsonBoundingBox
-        postData.carto_id = JSON.stringify cartoData
-        postData.project_id = _adp.projectId
-        postData.project_obj_id = dataAttrs.ark
-        # Public or private?
-        postData.public = p$("#data-encumbrance-toggle").checked
-        taxonData = _adp.data.taxa.validated
-        postData.sampled_clades = _adp.data.taxa.clades.join ","
-        postData.sampled_species = _adp.data.taxa.list.join ","
-        for taxonObject in taxonData
-          aweb = taxonObject.response.validated_taxon
-          console.info "Aweb taxon result:", aweb
-          clade = aweb.order.toLowerCase()
-          key = "includes_#{clade}"
-          postData[key] = true
-          # If we have all three, stop checking
-          if postData.includes_anura? isnt false and postData.includes_caudata? isnt false and postData.includes_gymnophiona? isnt false then break
-        args = "perform=new&data=#{jsonTo64(postData)}"
-        console.info "Data object constructed:", postData
-        $.post adminParams.apiTarget, args, "json"
-        .done (result) ->
-          if result.status is true
-            toastStatusMessage "Data successfully saved to server"
-            bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
-            stopLoad()
-            delay 1000, ->
-              loadEditor _adp.projectId
+        postBBLocality = ->
+          postData.locality = _adp.locality
+          if geo.computedBoundingRectangle?
+            # Bounding box coords
+            postData.bounding_box_n = geo.computedBoundingRectangle.north
+            postData.bounding_box_s = geo.computedBoundingRectangle.south
+            postData.bounding_box_e = geo.computedBoundingRectangle.east
+            postData.bounding_box_w = geo.computedBoundingRectangle.west
+          postData.author = $.cookie("#{adminParams.domain}_link")
+          authorData =
+            name: p$("#project-author").value
+            contact_email: p$("#author-email").value
+            affiliation: p$("#project-affiliation").value
+            lab: p$("#project-pi").value
+            diagnostic_lab: p$("#project-lab").value
+            entry_date: Date.now()
+          postData.author_data = JSON.stringify authorData
+          cartoData =
+            table: geo.dataTable
+            raw_data: dataFileParams
+            bounding_polygon: geo?.canonicalBoundingBox
+            bounding_polygon_geojson: geo?.geoJsonBoundingBox
+          postData.carto_id = JSON.stringify cartoData
+          postData.project_id = _adp.projectId
+          postData.project_obj_id = dataAttrs.ark
+          # Public or private?
+          postData.public = p$("#data-encumbrance-toggle").checked
+          taxonData = _adp.data.taxa.validated
+          postData.sampled_clades = _adp.data.taxa.clades.join ","
+          postData.sampled_species = _adp.data.taxa.list.join ","
+          for taxonObject in taxonData
+            aweb = taxonObject.response.validated_taxon
+            console.info "Aweb taxon result:", aweb
+            clade = aweb.order.toLowerCase()
+            key = "includes_#{clade}"
+            postData[key] = true
+            # If we have all three, stop checking
+            if postData.includes_anura? isnt false and postData.includes_caudata? isnt false and postData.includes_gymnophiona? isnt false then break
+          args = "perform=new&data=#{jsonTo64(postData)}"
+          console.info "Data object constructed:", postData
+          $.post adminParams.apiTarget, args, "json"
+          .done (result) ->
+            if result.status is true
+              toastStatusMessage "Data successfully saved to server"
+              bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+              stopLoad()
+              delay 1000, ->
+                loadEditor _adp.projectId
+            else
+              console.error result.error.error
+              console.log result
+              stopLoadError result.human_error
+            false
+          .error (result, status) ->
+            stopLoadError "There was a problem saving your data. Please try again"
+            false
+        # End postBBLocality
+        if geo.computedLocality? or not dataFileParams.hasDataFile
+          # We either have a computed locality, or have no data file
+          if geo.computedLocality?
+            _adp.locality = geo.computedLocality
           else
-            console.error result.error.error
-            console.log result
-            stopLoadError result.human_error
-          false
-        .error (result, status) ->
-          stopLoadError "There was a problem saving your data. Please try again"
-          false
+            # No locality and no data file
+            try
+              _adp.locality = p$("#locality-input").value
+            catch
+              _adp.locality = ""
+          postBBLocality()
+        else if dataFileParams.hasDataFile
+          # No locality and have a data file
+          # First, get the locality
+          geo.reverseGeocode center.lat, center.lng, geo.boundingBox, (result) ->
+            _adp.locality = result
+            postBBLocality()
+        else
+            try
+              _adp.locality = p$("#locality-input").value
+            catch
+              _adp.locality = ""
+            console.warn "How did we get to this state? No locality precomputed, no data file"
+            postBBLocality()
       catch e
         # Mint try
         stopLoadError "There was a problem with the application. Please try again later. (E-003)"
