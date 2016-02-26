@@ -2324,7 +2324,7 @@ toggleGoogleMapMarkers = function(diseaseStatus, selector) {
   for (l = 0, len = markers.length; l < len; l++) {
     marker = markers[l];
     if (state == null) {
-      state = p$(marker).open;
+      state = !p$(marker).open;
       console.info("Setting " + diseaseStatus + " markers open state to " + state);
     }
     p$(marker).open = state;
@@ -2338,9 +2338,12 @@ setupMapMarkerToggles = function() {
    *
    */
   var html;
-  html = "<div class=\"row\">\n  <h3 class=\"col-xs-12\">\n    Toggle map markers\n  </h3>\n  <button class=\"btn btn-danger col-xs-4 toggle-marker\" data-disease-status=\"positive\">Positive</button>\n  <button class=\"btn btn-primary col-xs-4 toggle-marker\" data-disease-status=\"negative\">Negative</button>\n  <button class=\"btn btn-warning col-xs-4 toggle-marker\" data-disease-status=\"no_confidence\">Inconclusive</button>\n</div>";
-  $("google-map + div").append(html);
-  $(".toggle-marker").click(function() {
+  html = "<div class=\"row\">\n  <h3 class=\"col-xs-12\">\n    Toggle map markers\n  </h3>\n  <button class=\"btn btn-danger col-xs-3 toggle-marker\" data-disease-status=\"positive\">Positive</button>\n  <button class=\"btn btn-primary col-xs-3 toggle-marker\" data-disease-status=\"negative\">Negative</button>\n  <button class=\"btn btn-warning col-xs-3 toggle-marker\" data-disease-status=\"no_confidence\">Inconclusive</button>\n</div>";
+  if (!$(".toggle-marker").exists()) {
+    $("google-map + div").append(html);
+  }
+  console.log("Setting up events for map marker toggles");
+  $(".toggle-marker").unbind().click(function() {
     var status;
     status = $(this).attr("data-disease-status");
     console.log("Clicked '" + status + "' toggle");
