@@ -7428,3 +7428,6 @@ google-map#transect-viewport {
   margin-left: 0;
   margin-right: 0;
 }
+#auth-block google-map {
+  margin-left: 15px;
+}
