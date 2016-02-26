@@ -138,10 +138,35 @@ $project = $result[0];
         <h2 class="col-xs-12 status-notice">Please wait ...</h2>
         <p>Would list 25 newest, show search bar to filter through all</p>
         <?php } else if (!$validProject){ ?>
-        <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn't exist.</h2>
+        <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
         <?php } else { ?>
-        <div class="into col-xs-12">
+        <h2 class="col-xs-12">
+          Project Abstract
+        </h2>
+        <marked-element class="project-abstract col-xs-12">
+          <div class="markdown-html"></div>
+          <script type="text/markdown"><?php echo $project["sample_notes"]; ?></script>
+        </marked-element>
+        <div class="col-xs-12">
+          <ul class="species-list">
+            <?php
+          $aWebUri =  "http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;";
+          $args = array("where-genus"=>"", "where-species"=>"");
+          $speciesList = explode(",", $project["sampled_species"]);
+          foreach($speciesList as $species) {
+              $speciesParts = explode(" ", $species);
+              $args["where-genus"] = $speciesParts[0];
+              $args["where-species"] = $speciesParts[1];
+              $linkUri = $aWebUri . implode("&amp;", $args);
+              $html = "<li class=\"aweb-link-species\">" . $species . " <paper-icon-button class=\"click\" data-href=\"" . $linkUri . "\" icon=\"icons:open-in-new\" data-newwindow=\"true\"></paper-icon-button></li>";
+              echo $html;
+          }
+
+               ?>
+          </ul>
+        </div>
+        <div class="intro col-xs-12">
           <p>Attempt to load up project #<?php echo $pid; ?></p>
           <pre>
             <?php print_r($result); ?>

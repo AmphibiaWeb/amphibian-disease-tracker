@@ -368,8 +368,8 @@ loadEditor = (projectPreload) ->
                 <paper-checkbox #{anuraState}>Anura</paper-checkbox>
                 <paper-checkbox #{caudataState}>Caudata</paper-checkbox>
                 <paper-checkbox #{gymnophionaState}>Gymnophiona</paper-checkbox>
-                <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").join(", ")}"></paper-input>
-                <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").join(", ")}"></paper-input>
+                <paper-input readonly label="Sampled Species" value="#{project.sampled_species.split(",").sort().join(", ")}"></paper-input>
+                <paper-input readonly label="Sampled Clades" value="#{project.sampled_clades.split(",").sort().join(", ")}"></paper-input>
                 <p class="text-muted">
                   <span class="glyphicon glyphicon-info-sign"></span> There are #{project.sampled_species.split(",").length} species in this dataset, across #{project.sampled_clades.split(",").length} clades
                 </p>
