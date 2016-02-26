@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, postAuthorizeRender, renderEmail, showEmailField,
+var checkProjectAuthorization, postAuthorizeRender, renderEmail, renderMapWithData, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 checkProjectAuthorization = function(projectId, callback) {
@@ -17,7 +17,7 @@ checkProjectAuthorization = function(projectId, callback) {
   checkLoggedIn(function(result) {
     var args, dest;
     if (!result.status) {
-      console.info("Non logged-in user");
+      console.info("Non logged-in user or unauthorized user");
       stopLoad();
       return false;
     } else {
@@ -74,20 +74,8 @@ showEmailField = function(email) {
   return false;
 };
 
-postAuthorizeRender = function(projectData) {
-  var apiPostSqlQuery, args, authorData, cartoData, cartoQuery, cartoTable, editButton, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
-  if (projectData["public"]) {
-    console.info("Project is already public, not rerendering");
-    false;
-  }
-  startLoad();
-  console.info("Should render stuff", projectData);
-  editButton = "<paper-icon-button icon=\"icons:create\" class=\"authorized-action\" data-href=\"admin-page.html?id=" + projectData.project_id + "\"></paper-icon-button>";
-  $("#title").append(editButton);
-  authorData = JSON.parse(projectData.author_data);
-  showEmailField(authorData.contact_email);
-  $(".needs-auth").html("<p>User is authorized, should repopulate</p>");
-  bindClicks(".authorized-action");
+renderMapWithData = function(projectData) {
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   cartoTable = cartoData.table;
   try {
@@ -200,6 +188,25 @@ postAuthorizeRender = function(projectData) {
     console.error(result, status);
     return stopLoadError("Couldn't render map");
   });
+  return false;
+};
+
+postAuthorizeRender = function(projectData) {
+  var authorData, cartoData, editButton;
+  if (projectData["public"]) {
+    console.info("Project is already public, not rerendering");
+    false;
+  }
+  startLoad();
+  console.info("Should render stuff", projectData);
+  editButton = "<paper-icon-button icon=\"icons:create\" class=\"authorized-action\" data-href=\"admin-page.html?id=" + projectData.project_id + "\"></paper-icon-button>";
+  $("#title").append(editButton);
+  authorData = JSON.parse(projectData.author_data);
+  showEmailField(authorData.contact_email);
+  $(".needs-auth").html("<p>User is authorized, should repopulate</p>");
+  bindClicks(".authorized-action");
+  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  renderMapWithData(projectData);
   return false;
 };
 

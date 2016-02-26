@@ -202,9 +202,13 @@ $project = $result[0];
         </div>
         <div class="needs-auth col-xs-12" id="auth-block">
 <?php
-if($project["public"] === true) {
+if(boolstr($project["public"]) === true) {
     # Public project, base renders
+   $jsonData = json_encode($project);
 ?>
+          <script type="text/javascript">
+            renderMapWithData(<?php echo $jsonData; ?>);
+          </script>
           <pre>
             <?php print_r($result); ?>
           </pre>
