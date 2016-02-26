@@ -60,8 +60,9 @@ window.loadAdminUi = ->
       </section>
       """
       $("main #main-body").before(articleHtml)
-      populateAdminActions()
-      bindClicks()
+      checkInitLoad = ->
+        populateAdminActions()
+        bindClicks()
       false
   catch e
     $("main #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>")
@@ -1564,6 +1565,15 @@ renderValidateProgress = ->
     $("#file-uploader-form").after html
   false
 
+
+checkInitLoad = (callback) ->
+  projectId = uri.o.param "id"
+  unless isNull projectId
+    loadEditor projectId
+  else
+    if typeof callback is "function"
+      callback()
+  false
 
 $ ->
   if $("#next").exists()
