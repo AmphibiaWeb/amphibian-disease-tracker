@@ -123,6 +123,11 @@ $validProject = $db->isEntry($pid, "project_id", true);
       --paper-toggle-button-checked-button-color:  var(--paper-red-500);
       --paper-toggle-button-checked-ink-color: var(--paper-red-500);
       }
+      paper-input[disabled], paper-input[readonly] {
+      --paper-input-container-focus-color: var(--paper-orange-500);
+      --paper-input-container-underline: var(--paper-grey-300);
+      --paper-input-container-underline-disabled: var(--paper-grey-300);
+      }
     </style>
   </head>
   <body class="container-fluid">
@@ -147,6 +152,7 @@ $project = $result[0];
               "project_id",
               "project_title",
               "public",
+              "author_data",
           );
           $list = $db->getQueryResults($search, $cols, "AND", true, true);
           $html = "";
@@ -155,8 +161,9 @@ $project = $result[0];
               if(empty($project["project_id"])) continue;
               $i++;
               if($i >= 25 ) break;
+              $authorData = json_decode($project["author_data"]);
               $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock"></iron-icon>';
-              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button>";
+              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["affiliation"];
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
@@ -165,7 +172,7 @@ $project = $result[0];
           <?php echo $html; ?>
         </ul>
         <div class="col-xs-12 col-md-6">
-          
+
         </div>
         <?php } else if (!$validProject){ ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>

@@ -221,7 +221,7 @@ postAuthorizeRender = function(projectData) {
 };
 
 copyLink = function(html5) {
-  var ark, clip;
+  var ark, clip, clipboardData, e;
   if (html5 == null) {
     html5 = true;
   }
@@ -229,13 +229,20 @@ copyLink = function(html5) {
   ark = p$(".ark-identifier").value;
   if (html5) {
     try {
-      clip = new ClipboardEvent("copy");
-      clip.clipboardData.setData("text/plain", "https://n2t.net/" + ark);
+      clipboardData = {
+        dataType: "text/plain",
+        data: "https://n2t.net/" + ark
+      };
+      clip = new ClipboardEvent("copy", clipboardData);
       document.dispatchEvent(clip);
       return false;
-    } catch (_error) {}
-    console.warn("Can't use HTML5");
+    } catch (_error) {
+      e = _error;
+      console.error("Error creating copy: " + e.message);
+      console.warn(e.stack);
+    }
   }
+  console.warn("Can't use HTML5");
   return false;
 };
 

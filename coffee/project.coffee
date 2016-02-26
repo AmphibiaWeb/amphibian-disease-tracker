@@ -223,11 +223,17 @@ copyLink = (html5 = true) ->
   if html5    
     # http://caniuse.com/#feat=clipboard
     try
-      clip = new ClipboardEvent("copy")
-      clip.clipboardData.setData("text/plain", "https://n2t.net/#{ark}")
+      clipboardData =
+        dataType: "text/plain"
+        data: "https://n2t.net/#{ark}"
+      clip = new ClipboardEvent("copy", clipboardData)
       document.dispatchEvent(clip)
       return false
-    console.warn "Can't use HTML5"
+    catch e
+      console.error "Error creating copy: #{e.message}"
+      console.warn e.stack
+  console.warn "Can't use HTML5"
+  # http://zeroclipboard.org/
   false
 
 

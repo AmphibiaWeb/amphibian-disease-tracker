@@ -1250,7 +1250,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
 
     unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters?
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
-      missingStatement = "You're missing"
+      missingStatement = "You're missing "
       missingRequired = new Array()
       unless sampleRow.decimalLatitude?
         missingRequired.push "decimalLatitude"

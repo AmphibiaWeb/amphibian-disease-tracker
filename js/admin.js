@@ -1218,7 +1218,7 @@ newGeoDataHandler = function(dataObject) {
     }
     if (!((sampleRow.decimalLatitude != null) && (sampleRow.decimalLongitude != null) && (sampleRow.coordinateUncertaintyInMeters != null))) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
-      missingStatement = "You're missing";
+      missingStatement = "You're missing ";
       missingRequired = new Array();
       if (sampleRow.decimalLatitude == null) {
         missingRequired.push("decimalLatitude");
