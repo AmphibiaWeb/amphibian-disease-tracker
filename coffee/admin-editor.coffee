@@ -235,7 +235,7 @@ loadEditor = (projectPreload) ->
               </div>
           """ else ""
           # The actual HTML
-          mdNotes = if isNull(project.sample_notes) then "*No notes for this project*" else project.sample_notes
+          mdNotes = if isNull(project.sample_notes) then "*No notes for this project*" else deEscape project.sample_notes
           noteHtml = """
           <h3>Project Notes</h3>
           <ul class="nav nav-tabs" id="markdown-switcher">

@@ -305,12 +305,14 @@ if (!function_exists('deEscape')) {
     function deEscape($input)
     {
         $find = array(
+            "&amp;#",
             "&#39;",
             "&#34;",
             "&#95;",
             "&#37;"
         );
         $replace = array(
+            "&#",
             "'",
             "\"",
             "_",

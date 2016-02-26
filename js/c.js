@@ -210,6 +210,7 @@ roundNumberSigfig = function(number, digits) {
 };
 
 deEscape = function(string) {
+  string = string.replace(/\&amp;#/mg, '&#');
   string = string.replace(/\&quot;/mg, '"');
   string = string.replace(/\&quote;/mg, '"');
   string = string.replace(/\&#95;/mg, '_');
