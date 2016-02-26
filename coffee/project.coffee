@@ -184,7 +184,7 @@ postAuthorizeRender = (projectData) ->
     d2 = new Date toInt projectData.sampled_collection_end
     collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
     mapData = """
-    <div class="row no-margin-change">
+    <div class="row">
       #{googleMap}
       <div class="col-xs-12 col-md-3 col-lg-6">
         <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken from #{collectionRangePretty}</p>
