@@ -374,6 +374,15 @@ function checkProjectAuthorized($projectData, $uid) {
 function authorizedProjectAccess($get) {
     global $db, $login_status;
     $project = $db->sanitize($get["project"]);
+    $projectExists = $db->isEntry($project, "project_id", true);
+    if(!$projectExists) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PROJECT",
+            "human_error" => "This project doesn't exist. Please check your project ID.",
+            "project_id" => $project,
+        );
+    }
     $uid = $login_status["detail"]["uid"];
     $authorizedStatus = checkProjectAuthorized($project, $uid);
     $status = $authorizedStatus["can_view"];
@@ -600,7 +609,7 @@ function mintBcid($projectLink, $projectTitle) {
                 "login_response" => $loginResponse,
                 "mint_response" => $resp,
             ),
-        
+
         );
     } catch(Exception $e) {
         return array (
