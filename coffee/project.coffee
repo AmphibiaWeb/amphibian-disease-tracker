@@ -40,29 +40,107 @@ renderEmail = (response) ->
     console.info "Checked response"
     console.log result
     authorData = result.author_data
-    html = """
-    <div class="row">
-      <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{authorData.contact_email}"></paper-input>
-      <div class="col-xs-4 col-md-1">
-        <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{authorData.contact_email}"></paper-fab>
-      </div>
-    </div>
-    """
-    $("#email-fill").replaceWith html
-    bindClicks("#contact-email-send")
+    showEmailField authorData.contact_email
     stopLoad()
   .error (result, status) ->
     stopLoadError "Sorry, there was a problem getting the contact email"
-    false    
+    false
   false
+
+
+showEmailField = (email) ->
+  html = """
+  <div class="row">
+    <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{email}"></paper-input>
+    <div class="col-xs-4 col-md-1">
+      <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}"></paper-fab>
+    </div>
+  </div>
+  """
+  $("#email-fill").replaceWith html
+  bindClicks("#contact-email-send")
+  false
+
 
 
 postAuthorizeRender = (projectData) ->
   if projectData.public
     console.info "Project is already public, not rerendering"
     false
-  console.info "Should render stuff"
+  console.info "Should render stuff", projectData
+  editButton = """
+  <paper-icon-button icon="icons:create" class="authorized-action" data-href="admin-page.html?id=#{projectData.project_id}"></paper-icon-button>
+  """
+  $("#title").append editButton
+  authorData = JSON.parse projectData.author_data
+  showEmailField authorData.contact_email
   $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
+  bindClicks(".authorized-action")
+  return false
+  poly = cartoParsed.bounding_polygon
+  mapHtml = """
+  <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
+  """
+  usedPoints = new Array()
+  for point in poly.paths
+    unless point in usedPoints
+      usedPoints.push point
+      mapHtml += """
+      <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+      """
+  mapHtml += "    </google-map-poly>"
+  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  console.info "Would ping cartodb with", cartoQuery
+  apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
+  args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  $.post "api.php", args, "json"
+  .done (result) ->
+    console.info "Carto query got result:", result
+    unless result.status
+      error = result.human_error ? result.error
+      unless error?
+        error = "Unknown error"
+      stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
+      return false
+    rows = result.parsed_responses[0].rows
+    truncateLength = 0 - "</google-map>".length
+    workingMap = geo.googleMapWebComponent.slice 0, truncateLength
+    for k, row of rows
+      geoJson = JSON.parse row.st_asgeojson
+      lat = geoJson.coordinates[0]
+      lng = geoJson.coordinates[1]
+      # Fill the points as markers
+      row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
+        when "true"
+          "positive"
+        when "false"
+          "negative"
+        else
+          row.diseasedetected.toString()
+      taxa = "#{row.genus} #{row.specificepithet}"
+      note = ""
+      if taxa isnt row.originaltaxa
+        console.warn "#{taxa} was changed from #{row.originaltaxa}"
+        note = "(<em>#{row.originaltaxa}</em>)"
+      marker = """
+      <google-map-marker latitude="#{lat}" longitude="#{lng}">
+        <p>
+          <em>#{row.genus} #{row.specificepithet}</em> #{note}
+          <br/>
+          Tested <strong>#{row.diseasedetected}</strong> for #{row.diseasetested}
+        </p>
+      </google-map-marker>
+      """
+      # $("#transect-viewport").append marker
+      mapHtml += marker
+    
+    googleMap = """
+          <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
+            #{mapHtml}
+          </google-map>
+    """
+  .error (result, status) ->
+    console.error result, status
   false
 
 
