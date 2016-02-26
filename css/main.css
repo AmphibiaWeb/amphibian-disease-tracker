@@ -7435,3 +7435,6 @@ google-map#transect-viewport {
   margin-left: -15px;
   padding-left: 30px;
 }
+.toggle-marker {
+  margin: 0 3.125;
+}
