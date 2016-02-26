@@ -67,6 +67,7 @@ postAuthorizeRender = (projectData) ->
   if projectData.public
     console.info "Project is already public, not rerendering"
     false
+  startLoad()
   console.info "Should render stuff", projectData
   editButton = """
   <paper-icon-button icon="icons:create" class="authorized-action" data-href="admin-page.html?id=#{projectData.project_id}"></paper-icon-button>
@@ -95,7 +96,6 @@ postAuthorizeRender = (projectData) ->
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
-  return false
   $.post "api.php", args, "json"
   .done (result) ->
     console.info "Carto query got result:", result
@@ -142,8 +142,11 @@ postAuthorizeRender = (projectData) ->
             #{mapHtml}
           </google-map>
     """
+    $("#auth-block").append googleMap
+    stopLoad()
   .error (result, status) ->
     console.error result, status
+    stopLoadError "Couldn't render map"
   false
 
 
