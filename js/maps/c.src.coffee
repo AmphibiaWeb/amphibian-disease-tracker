@@ -1860,7 +1860,7 @@ toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewpo
   state = undefined
   for marker in markers
     unless state?
-      state = p$(marker).open
+      state = not p$(marker).open
       console.info "Setting #{diseaseStatus} markers open state to #{state}"
     p$(marker).open = state
   false
@@ -1874,13 +1874,17 @@ setupMapMarkerToggles = ->
     <h3 class="col-xs-12">
       Toggle map markers
     </h3>
-    <button class="btn btn-danger col-xs-4 toggle-marker" data-disease-status="positive">Positive</button>
-    <button class="btn btn-primary col-xs-4 toggle-marker" data-disease-status="negative">Negative</button>
-    <button class="btn btn-warning col-xs-4 toggle-marker" data-disease-status="no_confidence">Inconclusive</button>
+    <button class="btn btn-danger col-xs-3 toggle-marker" data-disease-status="positive">Positive</button>
+    <button class="btn btn-primary col-xs-3 toggle-marker" data-disease-status="negative">Negative</button>
+    <button class="btn btn-warning col-xs-3 toggle-marker" data-disease-status="no_confidence">Inconclusive</button>
   </div>
   """
-  $("google-map + div").append html
-  $(".toggle-marker").click ->
+  unless $(".toggle-marker").exists()
+    $("google-map + div").append html
+  console.log "Setting up events for map marker toggles"
+  $(".toggle-marker")
+  .unbind()
+  .click ->
     status = $(this).attr "data-disease-status"
     console.log "Clicked '#{status}' toggle"
     toggleGoogleMapMarkers status
