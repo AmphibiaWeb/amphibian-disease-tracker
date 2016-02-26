@@ -152,6 +152,28 @@ $project = $result[0];
           <div class="markdown-html"></div>
           <script type="text/markdown"><?php echo $project["sample_notes"]; ?></script>
         </marked-element>
+
+        <div class="col-xs-12">
+          <h2>Project Basics</h2>
+          <?php
+          $authorData = json_decode($project["author_data"], true);
+          
+             ?>
+          <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>"></paper-input>
+          <paper-input readonly label="Project pathogen" value="<?php echo $project["disease"]; ?>"></paper-input>
+          <paper-input readonly label="Project PI" value="<?php echo $project["pi_lab"]; ?>"></paper-input>
+          <paper-input readonly label="DOI" value="<?php echo $project["publication"]; ?>"></paper-input>
+          <paper-input readonly label="Project Contact" value="<?php echo $authorData["name"]; ?>"></paper-input>
+          <paper-input readonly label="Diagnostic Lab" value="<?php echo $authorData["diagnostic_lab"]; ?>"></paper-input>
+          <paper-input readonly label="Affiliation" value="<?php echo $authorData["affiliation"]; ?>"></paper-input>
+          <div class="row">
+            <?php 
+               require_once("admin/CONFIG.php");
+               ?>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>>
+          </div>
+        </div>
         <div class="col-xs-12">
           <h2>Species List</h2>
           <ul class="species-list">

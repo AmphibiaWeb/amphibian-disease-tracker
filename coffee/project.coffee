@@ -3,6 +3,7 @@
 ###
 
 checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
+  startLoad()
   console.info "Checking authorization for #{projectId}"
   checkLoggedIn (result) ->
     unless result.status
@@ -26,9 +27,20 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
           console.info "User is unauthorized"
       .error (result, status) ->
         console.log "Error checking server", result, status
+      .always ->
+        stopLoad()
   false
 
-
+renderEmail = (response) ->
+  dest = "#{uri.urlString}/api.php"
+  args = "action=is_human&recaptcha_response=#{response}&project=#{_adp.projectId}"
+  $.post dest, args, "json"
+  .done (result) ->
+    console.info "Checked response"
+    console.log result
+  .error (result, status) ->
+    false    
+  false
 
 $ ->
   _adp.projectId = uri.o.param "id"

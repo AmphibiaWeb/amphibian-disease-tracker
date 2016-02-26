@@ -87,6 +87,9 @@ switch ($do) {
   case "validate":
       doAWebValidate($_REQUEST);
       break;
+  case "is_human":
+      validateCaptcha($_REQUEST);
+      break;
   default:
     returnAjax(array(
         'status' => false,
@@ -560,4 +563,47 @@ function doAWebValidate($get) {
     $response["validated_taxon"] = $aWebPretty;
     returnAjax($response);
 
+}
+
+
+function validateCaptcha($get) {
+    require_once(dirname(__FILE__) . "/admin/CONFIG.php");
+    $params = array(
+        "secret" => $recaptcha_private_key,
+        "response" => $get["recaptcha_response"]
+    );
+    $raw_response = do_post_request("https://www.google.com/recaptcha/api/siteverify", $params);
+    $response = json_decode($raw_response,true);
+    if($response["success"] === false) {
+        switch($response["error-codes"][0]) {
+        case "invalid-input-response":
+            $parsed_error = "Invalid CAPTCHA. Please retry it.";
+        case "missing-input-response":
+            $parsed_error = "Please be sure to solve the CAPTCHA.";
+        default:
+            $parsed_error = "There was a problem with your CAPTCHA. Please try again.";
+        }
+        $a = array(
+            "status" => false,
+            "error" => "Bad CAPTCHA",
+            "human_error" => $parsed_error,
+            "recaptcha_response" => array(
+                "raw_response" => $raw_response,
+                "parsed_response" => $response
+            )
+        );
+    }
+    else {
+        global $db;
+        $project = $db->sanitize($get["project"]);
+        $query = array(
+            "project_id" => $project
+        );
+        $result = $db->getQueryResults($query, "author_data", "AND", false, true);
+        $a = array(
+            "status" => true,
+            "result" => $result,
+        );
+    }
+    returnAjax($a);
 }
