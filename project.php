@@ -73,6 +73,7 @@ $validProject = $db->isEntry($pid, "project_id", true);
     <link rel="import" href="bower_components/iron-icons/iron-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/image-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
+    <link rel="import" href="bower_components/iron-icons/communication-icons.html"/>
 
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
 
@@ -157,7 +158,7 @@ $project = $result[0];
           <h2>Project Basics</h2>
           <?php
           $authorData = json_decode($project["author_data"], true);
-          
+
              ?>
           <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>"></paper-input>
           <paper-input readonly label="Project pathogen" value="<?php echo $project["disease"]; ?>"></paper-input>
@@ -167,16 +168,16 @@ $project = $result[0];
           <paper-input readonly label="Diagnostic Lab" value="<?php echo $authorData["diagnostic_lab"]; ?>"></paper-input>
           <paper-input readonly label="Affiliation" value="<?php echo $authorData["affiliation"]; ?>"></paper-input>
           <div class="row" id="email-fill">
-            <?php 
+            <?php
                require_once("admin/CONFIG.php");
                ?>
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-            <p class="col-xs-6 col-md-3 col-lg-1">
+            <p class="col-xs-6 col-md-3 col-lg-2 col-xl-1">
               Contact email:
               <br/>
-              <span class="text-muted">Please solve the CAPTCHA to see the contact email</span>
+              <span class="text-muted small">Please solve the CAPTCHA to see the contact email</span>
             </p>
-            <div class="g-recaptcha col-xs-6 col-md-9 col-lg-11" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
+            <div class="g-recaptcha col-xs-6 col-md-9 col-lg-10 col-xl-11" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
           </div>
         </div>
         <div class="col-xs-12">
