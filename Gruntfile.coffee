@@ -69,8 +69,8 @@ module.exports = (grunt) ->
           sourceMapIncludeSources:true
           sourceMapIn:"js/maps/c.js.map"
         files:
-          "js/combined.min.js":["js/c.js","js/admin.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
-          "js/app.min.js":["js/c.js","js/admin.js"]
+          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
+          "js/app.min.js":["js/c.js","js/admin.js","js/project.js"]
       dist:
         options:
           sourceMap:true
@@ -93,6 +93,7 @@ module.exports = (grunt) ->
         files:
           "js/c.min.js":["js/c.js"]
           "js/admin.min.js":["js/admin.js"]
+          "js/project.min.js":["js/project.js"]
       minpurl:
         options:
           sourceMap:true
@@ -137,6 +138,7 @@ module.exports = (grunt) ->
         files:
           "js/c.js":["coffee/core.coffee", "coffee/geo.coffee"]
           "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee"]
+          "js/project.js":["coffee/project.coffee"]
     phpcsfixer:
       app:
         dir: ["api.php", "meta.php", "admin-login.php"]
