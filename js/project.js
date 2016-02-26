@@ -5,6 +5,8 @@
 var checkProjectAuthorization, postAuthorizeRender, renderEmail, renderMapWithData, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
+_adp.mapRendered = false;
+
 checkProjectAuthorization = function(projectId, callback) {
   if (projectId == null) {
     projectId = _adp.projectId;
@@ -74,8 +76,15 @@ showEmailField = function(email) {
   return false;
 };
 
-renderMapWithData = function(projectData) {
+renderMapWithData = function(projectData, force) {
   var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
+  if (force == null) {
+    force = false;
+  }
+  if (_adp.mapRendered === true && force !== true) {
+    console.warn("The map was asked to be rendered again, but it has already been rendered!");
+    return false;
+  }
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   cartoTable = cartoData.table;
   try {
@@ -183,6 +192,7 @@ renderMapWithData = function(projectData) {
     mapData = "<div class=\"row\">\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n  </div>\n</div>";
     $("#auth-block").append(mapData);
     setupMapMarkerToggles();
+    _adp.mapRendered = true;
     return stopLoad();
   }).error(function(result, status) {
     console.error(result, status);

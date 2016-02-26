@@ -1186,7 +1186,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1216,6 +1216,24 @@ newGeoDataHandler = function(dataObject) {
     }
     if (!((sampleRow.decimalLatitude != null) && (sampleRow.decimalLongitude != null) && (sampleRow.coordinateUncertaintyInMeters != null))) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
+      missingStatement = "You're missing";
+      missingRequired = new Array();
+      if (sampleRow.decimalLatitude == null) {
+        missingRequired.push("decimalLatitude");
+      }
+      if (sampleRow.decimalLongitude == null) {
+        missingRequired.push("decimalLongitude");
+      }
+      if (sampleRow.coordinateUncertaintyInMeters == null) {
+        missingRequired.push("coordinateUncertaintyInMeters");
+      }
+      if (!((sampleRow.elevation != null) || (sampleRow.alt != null))) {
+        missingRequired.push("elevation");
+      }
+      missingStatement += missingRequired.length > 1 ? "some required columns: " : "a required column: ";
+      missingHtml = missingRequired.join("</code>, <code>");
+      missingStatement += "<code>" + missingHtml + "</code>";
+      bsAlert(missingStatement, "danger");
       console.info("Missing: ", sampleRow.decimalLatitude != null, sampleRow.decimalLongitude != null, sampleRow.coordinateUncertaintyInMeters != null);
       removeDataFile();
       return false;

@@ -2,6 +2,8 @@
 # Project-specific code
 ###
 
+_adp.mapRendered = false
+
 checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
   console.info "Checking authorization for #{projectId}"
@@ -63,7 +65,10 @@ showEmailField = (email) ->
   false
 
 
-renderMapWithData = (projectData) ->
+renderMapWithData = (projectData, force = false) ->
+  if _adp.mapRendered is true and force isnt true
+    console.warn "The map was asked to be rendered again, but it has already been rendered!"
+    return false
   cartoData = JSON.parse deEscape projectData.carto_id
   cartoTable = cartoData.table
   try
@@ -183,6 +188,7 @@ renderMapWithData = (projectData) ->
     """
     $("#auth-block").append mapData
     setupMapMarkerToggles()
+    _adp.mapRendered = true
     stopLoad()
   .error (result, status) ->
     console.error result, status

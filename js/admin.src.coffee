@@ -1247,6 +1247,20 @@ newGeoDataHandler = (dataObject = new Object()) ->
 
     unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters?
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
+      missingStatement = "You're missing"
+      missingRequired = new Array()
+      unless sampleRow.decimalLatitude?
+        missingRequired.push "decimalLatitude"
+      unless sampleRow.decimalLongitude?
+        missingRequired.push "decimalLongitude"
+      unless sampleRow.coordinateUncertaintyInMeters?
+        missingRequired.push "coordinateUncertaintyInMeters"
+      unless sampleRow.elevation? or sampleRow.alt?
+        missingRequired.push "elevation"
+      missingStatement += if missingRequired.length > 1 then "some required columns: " else "a required column: "
+      missingHtml = missingRequired.join "</code>, <code>"
+      missingStatement += "<code>#{missingHtml}</code>"
+      bsAlert missingStatement, "danger"
       console.info "Missing: ", sampleRow.decimalLatitude?, sampleRow.decimalLongitude?, sampleRow.coordinateUncertaintyInMeters?
       # Remove the uploaded file
       removeDataFile()
