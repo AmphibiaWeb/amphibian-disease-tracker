@@ -139,9 +139,21 @@ $project = $result[0];
       <h1 id="title"><?php echo $project["project_title"]; ?></h1>
       <?php } ?>
       <section id="main-body" class="row">
-        <?php if(empty($pid)) { ?>
+        <?php if(empty($pid)) { 
+          $search = array(
+              "public" => ""
+          );
+          $cols = array(
+              "project_id",
+              "project_title",
+          );
+          $list = $db->getQueryResults($search, $cols, "AND", true, true);
+          ?>
         <h2 class="col-xs-12 status-notice">Please wait ...</h2>
         <p>Would list 25 newest, show search bar to filter through all</p>
+        <pre>
+<?php print_r($list); ?>
+        </pre>
         <?php } else if (!$validProject){ ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
