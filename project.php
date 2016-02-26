@@ -143,6 +143,7 @@ $project = $result[0];
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
         <?php } else { ?>
+        <h2 class="col-xs-12 small">Project #<?php echo $pid; ?></h2>
         <h2 class="col-xs-12">
           Project Abstract
         </h2>
@@ -151,6 +152,7 @@ $project = $result[0];
           <script type="text/markdown"><?php echo $project["sample_notes"]; ?></script>
         </marked-element>
         <div class="col-xs-12">
+          <h2>Species List</h2>>
           <ul class="species-list">
             <?php
           $aWebUri =  "http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;";
@@ -169,7 +171,7 @@ $project = $result[0];
           </ul>
         </div>
         <div class="intro col-xs-12">
-          <p>Attempt to load up project #<?php echo $pid; ?></p>
+          <p>Project basics here, then under it details based on access status</p>
           <pre>
             <?php print_r($result); ?>
           </pre>
