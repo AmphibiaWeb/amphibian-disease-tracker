@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2303,6 +2303,46 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
       }
     }
   });
+};
+
+toggleGoogleMapMarkers = function(diseaseStatus, selector) {
+  var l, len, marker, markers, state;
+  if (diseaseStatus == null) {
+    diseaseStatus = "positive";
+  }
+  if (selector == null) {
+    selector = "#transect-viewport";
+  }
+
+  /*
+   *
+   */
+  markers = $(selector + " google-map-marker[data-disease-detected='" + diseaseStatus + "']");
+  state = void 0;
+  for (l = 0, len = markers.length; l < len; l++) {
+    marker = markers[l];
+    if (state == null) {
+      state = p$(marker).open;
+    }
+    p$(marker).open = state;
+  }
+  return false;
+};
+
+setupMapMarkerToggles = function() {
+
+  /*
+   *
+   */
+  var html;
+  html = "<div class=\"row\">\n  <h3 class=\"col-xs-12\">\n    Toggle map markers\n  </h3>\n  <button class=\"btn btn-danger col-xs-4 toggle-marker\" data-disease-status=\"positive\">Positive</button>\n  <button class=\"btn btn-primary col-xs-4 toggle-marker\" data-disease-status=\"negative\">Negative</button>\n  <button class=\"btn btn-warning col-xs-4 toggle-marker\" data-disease-status=\"no_confidence\">Inconclusive</button>\n</div>";
+  $("google-map + div").append(html);
+  $(".toggle-marker").click(function() {
+    var status;
+    status = $(this).attr("data-disease-status");
+    return toggleGoogleMapMarkers(status);
+  });
+  return false;
 };
 
 

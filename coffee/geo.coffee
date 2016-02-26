@@ -845,13 +845,48 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
         console.info "Using", validView, mustContain
         # We merely want the "region" then
         locality = "near #{locality} (nearest region)"
-        
+
       console.info "Computed locality: '#{locality}'"
       geo.computedLocality = locality
       if typeof callback is "function"
         callback(locality)
       else
         console.warn "No callback provided to geo.reverseGeocode()!"
+
+
+
+toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewport") ->
+  ###
+  #
+  ###
+  markers = $("#{selector} google-map-marker[data-disease-detected='#{diseaseStatus}']")
+  state = undefined
+  for marker in markers
+    unless state?
+      state = p$(marker).open
+    p$(marker).open = state
+  false
+
+setupMapMarkerToggles = ->
+  ###
+  #
+  ###
+  html = """
+  <div class="row">
+    <h3 class="col-xs-12">
+      Toggle map markers
+    </h3>
+    <button class="btn btn-danger col-xs-4 toggle-marker" data-disease-status="positive">Positive</button>
+    <button class="btn btn-primary col-xs-4 toggle-marker" data-disease-status="negative">Negative</button>
+    <button class="btn btn-warning col-xs-4 toggle-marker" data-disease-status="no_confidence">Inconclusive</button>
+  </div>
+  """
+  $("google-map + div").append html
+  $(".toggle-marker").click ->
+    status = $(this).attr "data-disease-status"
+    toggleGoogleMapMarkers status
+  false
+
 
 
 
