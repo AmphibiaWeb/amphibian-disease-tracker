@@ -42,9 +42,9 @@ renderEmail = (response) ->
     authorData = result.author_data
     html = """
     <div class="row">
-      <paper-input readonly class="col-xs-8 col-md-10" label="Contact Email" value="#{authorData.contact_email}"></paper-input>
-      <div class="col-xs-4 col-md-2">
-        <paper-icon-button icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{authorData.contact_email}"></paper-icon-button>
+      <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{authorData.contact_email}"></paper-input>
+      <div class="col-xs-4 col-md-1">
+        <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{authorData.contact_email}"></paper-fab>
       </div>
     </div>
     """
