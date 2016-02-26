@@ -76,6 +76,8 @@ $validProject = $db->isEntry($pid, "project_id", true);
 
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
 
+    <link rel="import" href="bower_components/marked-element/marked-element.html"/>
+
     <link rel="import" href="bower_components/google-map/google-map.html"/>
     <link rel="import" href="bower_components/google-map/google-map-marker.html"/>
     <link rel="import" href="bower_components/google-map/google-map-poly.html"/>
@@ -158,8 +160,8 @@ $project = $result[0];
               $speciesParts = explode(" ", $species);
               $args["where-genus"] = $speciesParts[0];
               $args["where-species"] = $speciesParts[1];
-              $linkUri = $aWebUri . implode("&amp;", $args);
-              $html = "<li class=\"aweb-link-species\">" . $species . " <paper-icon-button class=\"click\" data-href=\"" . $linkUri . "\" icon=\"icons:open-in-new\" data-newwindow=\"true\"></paper-icon-button></li>";
+              $linkUri = $aWebUri . "where-genus=" . $speciesParts[0] . "&amp;where-species=" . $speciesParts[1];
+              $html = "<li class=\"aweb-link-species\">" . $species . " <paper-icon-button class=\"click\" data-href=\"" . $linkUri . "\" icon=\"icons:open-in-new\" data-newtab=\"true\"></paper-icon-button></li>";
               echo $html;
           }
 
