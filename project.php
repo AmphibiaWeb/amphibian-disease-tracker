@@ -199,11 +199,17 @@ $project = $result[0];
                ?>
           </ul>
         </div>
-        <div class="intro col-xs-12">
-          <p>Project basics here, then under it details based on access status</p>
+        <div class="needs-auth col-xs-12">
+<?php
+if($project["public"] === true) {
+    # Public project, base renders 
+?>
           <pre>
             <?php print_r($result); ?>
           </pre>
+<?php
+}
+?>
         </div>
         <?php } ?>
       </section>

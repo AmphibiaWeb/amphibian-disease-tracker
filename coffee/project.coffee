@@ -2,7 +2,7 @@
 # Project-specific code
 ###
 
-checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
+checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
   console.info "Checking authorization for #{projectId}"
   checkLoggedIn (result) ->
@@ -55,6 +55,16 @@ renderEmail = (response) ->
     stopLoadError "Sorry, there was a problem getting the contact email"
     false    
   false
+
+
+postAuthorizeRender = (projectData) ->
+  if projectData.public
+    console.info "Project is already public, not rerendering"
+    false
+  console.info "Should render stuff"
+  $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
+  false
+
 
 $ ->
   _adp.projectId = uri.o.param "id"

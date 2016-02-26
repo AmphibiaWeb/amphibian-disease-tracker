@@ -2,11 +2,14 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, renderEmail;
+var checkProjectAuthorization, postAuthorizeRender, renderEmail;
 
 checkProjectAuthorization = function(projectId, callback) {
   if (projectId == null) {
     projectId = _adp.projectId;
+  }
+  if (callback == null) {
+    callback = postAuthorizeRender;
   }
   startLoad();
   console.info("Checking authorization for " + projectId);
@@ -60,6 +63,16 @@ renderEmail = function(response) {
     stopLoadError("Sorry, there was a problem getting the contact email");
     return false;
   });
+  return false;
+};
+
+postAuthorizeRender = function(projectData) {
+  if (projectData["public"]) {
+    console.info("Project is already public, not rerendering");
+    false;
+  }
+  console.info("Should render stuff");
+  $(".needs-auth").html("<p>User is authorized, should repopulate</p>");
   return false;
 };
 
