@@ -7410,7 +7410,7 @@ google-map#transect-viewport {
 }
 .aweb-link-species {
   display: inline-block;
-  background: #5bc0de;
+  background: #5677fc;
   color: #fff;
   margin: .25rem;
   padding-left: 1em;
@@ -7419,7 +7419,7 @@ google-map#transect-viewport {
   transition: 0.2s ease-in;
 }
 .aweb-link-species:hover {
-  background: #399ebc;
+  background: #3455da;
 }
 #title paper-icon-button {
   font-size: initial;
