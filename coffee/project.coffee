@@ -32,13 +32,21 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback) ->
   false
 
 renderEmail = (response) ->
+  stopLoad()
   dest = "#{uri.urlString}/api.php"
   args = "action=is_human&recaptcha_response=#{response}&project=#{_adp.projectId}"
   $.post dest, args, "json"
   .done (result) ->
     console.info "Checked response"
     console.log result
+    authorData = result.author_data
+    html = """
+    <paper-input readonly label="Contact Email" value="#{authorData.contact_email}"></paper-input>
+    """
+    $("#email-fill").replaceWith html
+    stopLoad()
   .error (result, status) ->
+    stopLoadError "Sorry, there was a problem getting the contact email"
     false    
   false
 
