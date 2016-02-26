@@ -74,7 +74,7 @@ showEmailField = function(email) {
 };
 
 postAuthorizeRender = function(projectData) {
-  var apiPostSqlQuery, args, authorData, cartoQuery, editButton, i, len, mapHtml, point, poly, ref, usedPoints;
+  var apiPostSqlQuery, args, authorData, cartoData, cartoQuery, cartoTable, editButton, i, len, mapHtml, point, poly, ref, usedPoints;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -86,8 +86,9 @@ postAuthorizeRender = function(projectData) {
   showEmailField(authorData.contact_email);
   $(".needs-auth").html("<p>User is authorized, should repopulate</p>");
   bindClicks(".authorized-action");
-  return false;
-  poly = cartoParsed.bounding_polygon;
+  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoTable = cartoData.table;
+  poly = cartoData.bounding_polygon;
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
   ref = poly.paths;
@@ -103,6 +104,7 @@ postAuthorizeRender = function(projectData) {
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
+  return false;
   $.post("api.php", args, "json").done(function(result) {
     var error, geoJson, googleMap, k, lat, lng, marker, note, ref1, row, rows, taxa, truncateLength, workingMap;
     console.info("Carto query got result:", result);

@@ -76,8 +76,9 @@ postAuthorizeRender = (projectData) ->
   showEmailField authorData.contact_email
   $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
   bindClicks(".authorized-action")
-  return false
-  poly = cartoParsed.bounding_polygon
+  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoTable = cartoData.table
+  poly = cartoData.bounding_polygon
   mapHtml = """
   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
   """
@@ -89,10 +90,12 @@ postAuthorizeRender = (projectData) ->
       <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
       """
   mapHtml += "    </google-map-poly>"
+
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  return false
   $.post "api.php", args, "json"
   .done (result) ->
     console.info "Carto query got result:", result
@@ -133,7 +136,7 @@ postAuthorizeRender = (projectData) ->
       """
       # $("#transect-viewport").append marker
       mapHtml += marker
-    
+    # Looped over all of them
     googleMap = """
           <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
             #{mapHtml}
