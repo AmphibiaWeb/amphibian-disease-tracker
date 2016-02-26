@@ -60,7 +60,7 @@ window.loadAdminUi = ->
       </section>
       """
       $("main #main-body").before(articleHtml)
-      checkInitLoad = ->
+      checkInitLoad ->
         populateAdminActions()
         bindClicks()
       false
