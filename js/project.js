@@ -74,7 +74,7 @@ showEmailField = function(email) {
 };
 
 postAuthorizeRender = function(projectData) {
-  var apiPostSqlQuery, args, authorData, cartoData, cartoQuery, cartoTable, editButton, i, len, mapHtml, point, poly, ref, usedPoints;
+  var apiPostSqlQuery, args, authorData, cartoData, cartoQuery, cartoTable, editButton, i, len, mapHtml, point, poly, ref, usedPoints, zoom;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -89,6 +89,12 @@ postAuthorizeRender = function(projectData) {
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   cartoTable = cartoData.table;
+  try {
+    zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
+    console.info("Got zoom", zoom);
+  } catch (_error) {
+    zoom = "";
+  }
   poly = cartoData.bounding_polygon;
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
@@ -135,13 +141,12 @@ postAuthorizeRender = function(projectData) {
       taxa = row.genus + " " + row.specificepithet;
       note = "";
       if (taxa !== row.originaltaxa) {
-        console.warn(taxa + " was changed from " + row.originaltaxa);
         note = "(<em>" + row.originaltaxa + "</em>)";
       }
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       mapHtml += marker;
     }
-    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
+    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\">\n  " + mapHtml + "\n</google-map>";
     $("#auth-block").append(googleMap);
     return stopLoad();
   }).error(function(result, status) {
