@@ -77,7 +77,9 @@ window.loadAdminUi = function() {
 };
 
 populateAdminActions = function() {
-  var adminActions;
+  var adminActions, url;
+  url = uri.urlString + "/admin-page.html";
+  history.pushState(null, "Admin Home", url);
   adminActions = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All My Projects\n</paper-button>";
   $("#admin-actions-block").html(adminActions);
   $("#show-actions").remove();
