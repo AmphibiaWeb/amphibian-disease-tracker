@@ -18,6 +18,7 @@ checkProjectAuthorization = function(projectId, callback) {
     var args, dest;
     if (!result.status) {
       console.info("Non logged-in user");
+      stopLoad();
       return false;
     } else {
       dest = uri.urlString + "/admin-api.php";
