@@ -102,10 +102,12 @@ toFloat = function(str) {
 };
 
 toInt = function(str) {
+  var f;
   if (!isNumber(str) || isNull(str)) {
     return 0;
   }
-  return parseInt(str);
+  f = parseFloat(str);
+  return parseInt(f);
 };
 
 String.prototype.toBool = function() {

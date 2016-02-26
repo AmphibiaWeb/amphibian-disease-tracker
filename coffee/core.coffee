@@ -63,7 +63,8 @@ toFloat = (str) ->
 
 toInt = (str) ->
   if not isNumber(str) or isNull(str) then return 0
-  parseInt(str)
+  f = parseFloat(str) # For stuff like 1.2e12
+  parseInt(f)
 
 String::toBool = -> @toString().toLowerCase() is 'true' or @toString() is "1"
 
