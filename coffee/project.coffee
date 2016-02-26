@@ -8,6 +8,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
   checkLoggedIn (result) ->
     unless result.status
       console.info "Non logged-in user"
+      stopLoad()
       return false
     else
       # Check if the user is authorized
