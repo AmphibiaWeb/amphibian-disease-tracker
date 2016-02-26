@@ -2166,6 +2166,7 @@ geo.getBoundingRectangle = function(coordinateSet) {
     west: westMost,
     south: southMost
   };
+  geo.computedBoundingRectangle = boundingBox;
   return boundingBox;
 };
 

@@ -1733,6 +1733,7 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
     east: eastMost
     west: westMost
     south: southMost
+  geo.computedBoundingRectangle = boundingBox
   boundingBox
 
 
