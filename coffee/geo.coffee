@@ -859,11 +859,14 @@ toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewpo
   ###
   #
   ###
-  markers = $("#{selector} google-map-marker[data-disease-detected='#{diseaseStatus}']")
+  selector = "#{selector} google-map-marker[data-disease-detected='#{diseaseStatus}']"
+  markers = $(selector)
+  console.info "Got #{markers.length} markers"
   state = undefined
   for marker in markers
     unless state?
       state = p$(marker).open
+      console.info "Setting #{diseaseStatus} markers open state to #{state}"
     p$(marker).open = state
   false
 
@@ -884,6 +887,7 @@ setupMapMarkerToggles = ->
   $("google-map + div").append html
   $(".toggle-marker").click ->
     status = $(this).attr "data-disease-status"
+    console.log "Clicked '#{status}' toggle"
     toggleGoogleMapMarkers status
   false
 

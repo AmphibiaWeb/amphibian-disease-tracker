@@ -2317,12 +2317,15 @@ toggleGoogleMapMarkers = function(diseaseStatus, selector) {
   /*
    *
    */
-  markers = $(selector + " google-map-marker[data-disease-detected='" + diseaseStatus + "']");
+  selector = selector + " google-map-marker[data-disease-detected='" + diseaseStatus + "']";
+  markers = $(selector);
+  console.info("Got " + markers.length + " markers");
   state = void 0;
   for (l = 0, len = markers.length; l < len; l++) {
     marker = markers[l];
     if (state == null) {
       state = p$(marker).open;
+      console.info("Setting " + diseaseStatus + " markers open state to " + state);
     }
     p$(marker).open = state;
   }
@@ -2340,6 +2343,7 @@ setupMapMarkerToggles = function() {
   $(".toggle-marker").click(function() {
     var status;
     status = $(this).attr("data-disease-status");
+    console.log("Clicked '" + status + "' toggle");
     return toggleGoogleMapMarkers(status);
   });
   return false;
