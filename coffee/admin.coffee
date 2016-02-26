@@ -387,10 +387,11 @@ finalizeData = ->
         postData.sampling_years = years.join(",")
         postData.sample_methods_used = sampleMethods.join(",")
         if dataFileParams?.hasDataFile
-          postData.raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
+          postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
         postData.lat = center.lat
         postData.lng = center.lng
         postData.radius = toInt excursion * 1000
+        postData.locality = _adp.locality
         # Bounding box coords
         postData.author = $.cookie("#{adminParams.domain}_link")
         authorData =
