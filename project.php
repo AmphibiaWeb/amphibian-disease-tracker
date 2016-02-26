@@ -186,7 +186,10 @@ $project = $result[0];
           $authorData = json_decode($project["author_data"], true);
 
              ?>
-          <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>"></paper-input>
+          <div class="row">
+            <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
+            <paper-fab icon="icons:content-copy" class="materialblue click" data-function="copyLink" data-ark="<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
+          </div>
           <paper-input readonly label="Project pathogen" value="<?php echo $project["disease"]; ?>"></paper-input>
           <paper-input readonly label="Project PI" value="<?php echo $project["pi_lab"]; ?>"></paper-input>
           <paper-input readonly label="DOI" value="<?php echo $project["publication"]; ?>"></paper-input>
