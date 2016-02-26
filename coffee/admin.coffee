@@ -346,6 +346,7 @@ finalizeData = ->
           catalogNumbers = new Array()
           fieldNumbers = new Array()
           dispositions = new Array()
+          sampleMethods = new Array()
           for row in Object.toArray uploadedData
             # sanify the dates
             date = row.dateCollected ? row.dateIdentified
@@ -366,17 +367,27 @@ finalizeData = ->
             rowLng = row.decimalLongitude
             distanceFromCenter = geo.distance rowLat, center.lat, rowLng, center.lng
             if distanceFromCenter > excursion then excursion = distanceFromCenter
+            # Samples
+            if row.sampleType?
+              unless row.sampleType in sampleMethods
+                sampleMethods.push row.sampleType
+            if row.specimenDisposition?
+              unless row.specimenDisposition in dispositions
+                dispositions.push row.sampleDisposition
         console.info "Got uploaded data", uploadedData
         console.info "Got date ranges", dates
         months.sort()
         years.sort()
         postData.sampled_collection_start = dates.min()
         postData.sampled_collection_end = dates.max()
+        console.info "Collected from", dates.min(), dates.max()
         postData.sample_catalog_numbers = catalogNumbers.join(",")
         postData.sample_field_numbers = fieldNumbers.join(",")
         postData.sampling_months = months.join(",")
         postData.sampling_years = years.join(",")
-
+        postData.sample_methods_used = sampleMethods.join(",")
+        if dataFileParams?.hasDataFile
+          postData.raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
         postData.lat = center.lat
         postData.lng = center.lng
         postData.radius = toInt excursion * 1000
@@ -535,6 +546,10 @@ bootstrapTransect = ->
             ne: [bbEW.j, bbNS.j]
             se: [bbEW.N, bbNS.N]
             sw: [bbEW.N, bbNS.j]
+            north: bbEW.j
+            south: bbEW.N
+            east: bbNS.j
+            west: bbNS.N
         catch e
           console.warn "Danger: There was an error calculating the bounding box (#{e.message})"
           console.warn e.stack
@@ -1187,6 +1202,9 @@ newGeoDataHandler = (dataObject = new Object()) ->
   # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "alt"
   ###
   try
+    unless geo.geocoder?
+      try
+        geo.geocoder = new google.maps.Geocoder
     try
       sampleRow = dataObject[0]
     catch
@@ -1347,6 +1365,10 @@ newGeoDataHandler = (dataObject = new Object()) ->
         $(p$("#coord-input").textarea).val(textEntry)
       j
     geo.boundingBox ?= getCoordsFromData()
+    center = getMapCenter(geo.boundingBox)
+    geo.reverseGeocode center.lat, center.lng, geo.boundingBox, (locality) ->
+      _adp.locality = locality
+      dataAttrs.locality = locality
     samplesMeta =
       mortality: 0
       morbidity: 0
