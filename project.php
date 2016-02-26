@@ -199,7 +199,7 @@ $project = $result[0];
                ?>
           </ul>
         </div>
-        <div class="needs-auth col-xs-12">
+        <div class="needs-auth col-xs-12" id="auth-block">
 <?php
 if($project["public"] === true) {
     # Public project, base renders 

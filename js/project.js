@@ -79,6 +79,7 @@ postAuthorizeRender = function(projectData) {
     console.info("Project is already public, not rerendering");
     false;
   }
+  startLoad();
   console.info("Should render stuff", projectData);
   editButton = "<paper-icon-button icon=\"icons:create\" class=\"authorized-action\" data-href=\"admin-page.html?id=" + projectData.project_id + "\"></paper-icon-button>";
   $("#title").append(editButton);
@@ -104,7 +105,6 @@ postAuthorizeRender = function(projectData) {
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
-  return false;
   $.post("api.php", args, "json").done(function(result) {
     var error, geoJson, googleMap, k, lat, lng, marker, note, ref1, row, rows, taxa, truncateLength, workingMap;
     console.info("Carto query got result:", result);
@@ -143,9 +143,12 @@ postAuthorizeRender = function(projectData) {
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       mapHtml += marker;
     }
-    return googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
+    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
+    $("#auth-block").append(googleMap);
+    return stopLoad();
   }).error(function(result, status) {
-    return console.error(result, status);
+    console.error(result, status);
+    return stopLoadError("Couldn't render map");
   });
   return false;
 };
