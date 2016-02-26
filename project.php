@@ -152,7 +152,7 @@ $project = $result[0];
         </h2>
         <marked-element class="project-abstract col-xs-12">
           <div class="markdown-html"></div>
-          <script type="text/markdown"><?php echo $project["sample_notes"]; ?></script>
+          <script type="text/markdown"><?php echo deEscape($project["sample_notes"]); ?></script>
         </marked-element>
 
         <div class="col-xs-12">

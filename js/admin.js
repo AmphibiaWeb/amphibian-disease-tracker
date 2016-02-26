@@ -1737,7 +1737,7 @@ loadEditor = function(projectPreload) {
           googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
           geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
-          mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : project.sample_notes;
+          mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : deEscape(project.sample_notes);
           noteHtml = "<h3>Project Notes</h3>\n<ul class=\"nav nav-tabs\" id=\"markdown-switcher\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a href=\"#markdown-switcher\">Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a href=\"#markdown-switcher\">Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-notes\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"sample_notes\" hidden>" + project.sample_notes + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair project-param\" id=\"note-preview\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdNotes + "</script>\n</marked-element>";
           try {
             authorData = JSON.parse(project.author_data);
