@@ -1957,7 +1957,7 @@ loadEditor = (projectPreload) ->
                 <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken in #{monthPretty}</p>
                 <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in #{yearPretty}</p>
                 <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{roundNumberSigfig project.lat, 6}, #{roundNumberSigfig project.lng, 6}) with a sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
-                <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{toInt(project.disease_positive * 100 / project.disease_samples)}%), #{project.disease_negative} negative samples (#{toInt(project.disease_negative *100 / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{toInt(project.disease_no_confidence * 100 / project.disease_samples)}%)</p>
+                <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{roundNumber(project.disease_positive * 100 / project.disease_samples)}%), #{project.disease_negative} negative samples (#{roundNumber(project.disease_negative *100 / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{roundNumber(project.disease_no_confidence * 100 / project.disease_samples)}%)</p>
               <h4>Locality &amp; Transect Data</h4>
                 #{googleMap}
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
@@ -2345,7 +2345,9 @@ loadProjectBrowser = ->
 
 
 loadProject = (projectId, message = "") ->
-  toastStatusMessage "Would load project #{projectId} to view"
+  # We'll ultimately have some slightly better integrated admin viewer
+  # for projects, but for now we'll just run with the redirect
+  goTo "#{uri.urlString}project.php?id=#{projectId}"
   false
 
 

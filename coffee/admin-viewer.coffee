@@ -49,7 +49,9 @@ loadProjectBrowser = ->
 
 
 loadProject = (projectId, message = "") ->
-  toastStatusMessage "Would load project #{projectId} to view"
+  # We'll ultimately have some slightly better integrated admin viewer
+  # for projects, but for now we'll just run with the redirect
+  goTo "#{uri.urlString}project.php?id=#{projectId}"
   false
 
 
