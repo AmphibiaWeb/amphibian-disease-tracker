@@ -248,11 +248,25 @@ copyLink = function(html5) {
 
 searchProjects = function() {
   var args, search;
-  search = $("#project-search").value();
+  search = $("#project-search").val();
   console.info("Searching on " + search + " ...");
   args = "action=search_project&q=" + search;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    return console.info(reult);
+    var button, html, icon, j, len, project, projects, publicState;
+    console.info(result);
+    projects = Object.toArray(result.result);
+    if (projects.length > 0) {
+      html = "";
+      for (j = 0, len = projects.length; j < len; j++) {
+        project = projects[j];
+        publicState = project["public"].toBool();
+        icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+        button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "/project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+        html += button;
+      }
+      $("#project-result-container").html(html);
+      return bindClicks(".search-proj-link");
+    }
   }).error(function(result, status) {
     return console.error(result, status);
   });
@@ -267,7 +281,7 @@ $(function() {
     project = $(this).attr("data-project");
     return goTo(uri.urlString + "project.php?id=" + project);
   });
-  $("#project-search").keyup(function() {
+  $("#project-search").unbind().keyup(function() {
     return searchProjects.debounce();
   });
   return $("#copy-ark").click(function() {
