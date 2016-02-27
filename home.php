@@ -223,7 +223,7 @@ $loginStatus = getLoginState();
         <br/><br/>
       </section>
     </main>
-    <footer class="row hidden-xs">
+    <footer class="row">
       <div class="col-md-8 col-xs-12">
         <copyright-statement copyrightStart="2015">AmphibiaWeb &amp; AmphibianDisease.org</copyright-statement>
       </div>
