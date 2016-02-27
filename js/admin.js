@@ -1951,18 +1951,16 @@ showAddUserDialog = function(refAccessList) {
         return $("#user-search-result-container").prop("hidden", "hidden");
       } else {
         return $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
-          var html, l, len, results, users;
+          var html, l, len, users;
           console.info(result);
           users = Object.toArray(result.result);
           if (users.length > 0) {
             $("#user-search-result-container").removeAttr("hidden");
-            results = [];
             for (l = 0, len = users.length; l < len; l++) {
               user = users[l];
               html = "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\">\n  <span class=\"email\">" + user.email + "</span>\n    |\n  <span class=\"name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\">" + user.handle + "</span></div>";
-              results.push(false);
             }
-            return results;
+            return $("#user-search-result-container").html(html);
           } else {
             return $("#user-search-result-container").prop("hidden", "hidden");
           }
