@@ -247,9 +247,11 @@ copyLink = function(html5) {
 };
 
 searchProjects = function() {
-  var args, search;
+  var args, cols, item, search;
   search = $("#project-search").val();
-  console.info("Searching on " + search + " ...");
+  item = p$("#search-filter").selectedItem;
+  cols = $(item).attr("data-cols");
+  console.info("Searching on " + search + " ... with " + cols);
   args = "action=search_project&q=" + search;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
     var button, html, icon, j, len, project, projects, publicState;
@@ -262,7 +264,7 @@ searchProjects = function() {
         publicState = project["public"].toBool();
         icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
         button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "/project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
-        html += button;
+        html += "<li class='project-search-result'>" + button + "</li>";
       }
       $("#project-result-container").html(html);
       return bindClicks(".search-proj-link");
