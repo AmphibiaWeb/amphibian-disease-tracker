@@ -217,15 +217,17 @@ postAuthorizeRender = (projectData) ->
   false
 
 
-copyLink = (html5 = true) ->
+copyLink = (zeroClipObj, zeroClipEvent, html5 = true) ->
   toastStatusMessage "Would copy full ark link to clipboard"
   ark = p$(".ark-identifier").value
   if html5
     # http://caniuse.com/#feat=clipboard
     try
+      url = "https://n2t.net/#{ark}"
       clipboardData =
         dataType: "text/plain"
-        data: "https://n2t.net/#{ark}"
+        data: url
+        "text/plain": url
       clip = new ClipboardEvent("copy", clipboardData)
       document.dispatchEvent(clip)
       return false
@@ -235,6 +237,17 @@ copyLink = (html5 = true) ->
   console.warn "Can't use HTML5"
   # http://zeroclipboard.org/
   # https://github.com/zeroclipboard/zeroclipboard
+  zeroClipObj.setData clipboardData
+  zeroClipEvent.setData clipboardData
+  zeroClipObj.on "aftercopy", (e) ->
+    if e.data["text/plain"]
+      toastStatusMessage "ARK resolver path copied to clipboard"
+    else
+      toastStatusMessage "Error copying to clipboard"
+  zeroClipObj.on "error", (e) ->
+    console.error "Error copying to clipboard"
+    console.warn "Got", e
+    toastStatusMessage e.message
   false
 
 
@@ -289,5 +302,8 @@ $ ->
     cue = $(this).attr "data-cue"
     $("#project-search").attr "placeholder", cue
     searchProjects.debounce()
+  client = new ZeroClipboard $("#copy-ark").get 0
+  client.on "copy", (e) =>
+    copyLink(this, e)
   $("#copy-ark").click ->
     copyLink()

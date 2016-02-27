@@ -220,8 +220,8 @@ postAuthorizeRender = function(projectData) {
   return false;
 };
 
-copyLink = function(html5) {
-  var ark, clip, clipboardData, e;
+copyLink = function(zeroClipObj, zeroClipEvent, html5) {
+  var ark, clip, clipboardData, e, url;
   if (html5 == null) {
     html5 = true;
   }
@@ -229,9 +229,11 @@ copyLink = function(html5) {
   ark = p$(".ark-identifier").value;
   if (html5) {
     try {
+      url = "https://n2t.net/" + ark;
       clipboardData = {
         dataType: "text/plain",
-        data: "https://n2t.net/" + ark
+        data: url,
+        "text/plain": url
       };
       clip = new ClipboardEvent("copy", clipboardData);
       document.dispatchEvent(clip);
@@ -243,6 +245,20 @@ copyLink = function(html5) {
     }
   }
   console.warn("Can't use HTML5");
+  zeroClipObj.setData(clipboardData);
+  zeroClipEvent.setData(clipboardData);
+  zeroClipObj.on("aftercopy", function(e) {
+    if (e.data["text/plain"]) {
+      return toastStatusMessage("ARK resolver path copied to clipboard");
+    } else {
+      return toastStatusMessage("Error copying to clipboard");
+    }
+  });
+  zeroClipObj.on("error", function(e) {
+    console.error("Error copying to clipboard");
+    console.warn("Got", e);
+    return toastStatusMessage(e.message);
+  });
   return false;
 };
 
@@ -282,6 +298,7 @@ searchProjects = function() {
 };
 
 $(function() {
+  var client;
   _adp.projectId = uri.o.param("id");
   checkProjectAuthorization();
   $("#project-list button").unbind().click(function() {
@@ -298,6 +315,12 @@ $(function() {
     $("#project-search").attr("placeholder", cue);
     return searchProjects.debounce();
   });
+  client = new ZeroClipboard($("#copy-ark").get(0));
+  client.on("copy", (function(_this) {
+    return function(e) {
+      return copyLink(_this, e);
+    };
+  })(this));
   return $("#copy-ark").click(function() {
     return copyLink();
   });
