@@ -2156,7 +2156,7 @@ showAddUserDialog = (refAccessList) ->
                   |
                 <span class="user">#{user.handle}</span></div>
               """
-              false
+            $("#user-search-result-container").html html
           else
             $("#user-search-result-container").prop "hidden", "hidden"
         .error (result, status) ->
