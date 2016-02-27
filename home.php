@@ -99,14 +99,13 @@ $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $s
     <header id="header-bar" class="fixed-bar clearfix row">
       <?php
          $test = $loginStatus["status"];
-         if($test) {
+         if($test) { ?>
          <p class="col-xs-12 text-right">
            Logged in as <?php echo $user; ?>
            <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
            <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
            <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
          </p>
-         ?>
       <?php } else { ?>
       <button class="btn btn-success btn-xs pull-right click login-button" data-href="https://amphibiandisease.org/admin">Log In</button>
       <button class="btn btn-default btn-xs pull-right click login-button" data-href="https://amphibiandisease.org/admin-login.php?q=create">Sign Up</button>
