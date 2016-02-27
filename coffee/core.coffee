@@ -1024,6 +1024,7 @@ checkLoggedIn = (callback) ->
   loginTarget = "#{uri.urlString}admin/async_login_handler.php"
   $.post loginTarget, args, "json"
   .done (result) ->
+    console.info "Got", result
     callback(result)
   .fail (result,status) ->
     response =

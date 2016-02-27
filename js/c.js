@@ -1403,6 +1403,7 @@ checkLoggedIn = function(callback) {
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   loginTarget = uri.urlString + "admin/async_login_handler.php";
   $.post(loginTarget, args, "json").done(function(result) {
+    console.info("Got", result);
     return callback(result);
   }).fail(function(result, status) {
     var response;
