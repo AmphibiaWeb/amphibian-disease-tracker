@@ -251,7 +251,7 @@ searchProjects = function() {
   search = $("#project-search").val();
   item = p$("#search-filter").selectedItem;
   cols = $(item).attr("data-cols");
-  console.info("Searching on " + search + " ... with " + cols);
+  console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
     var button, html, icon, j, len, project, projects, publicState;
