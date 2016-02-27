@@ -18,7 +18,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
       return false
     else
       # Check if the user is authorized
-      dest = "#{uri.urlString}/admin-api.php"
+      dest = "#{uri.urlString}admin-api.php"
       args = "perform=check_access&project=#{projectId}"
       $.post dest, args, "json"
       .done (result) ->
@@ -26,7 +26,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
           console.info "User is authorized"
           project = result.detail.project
           if typeof callback is "function"
-            callback project
+            callback project, result.detailed_authorization
           else
             console.warn "No callback specified!"
             console.info "Got project data", project
@@ -40,7 +40,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
 
 renderEmail = (response) ->
   stopLoad()
-  dest = "#{uri.urlString}/api.php"
+  dest = "#{uri.urlString}api.php"
   args = "action=is_human&recaptcha_response=#{response}&project=#{_adp.projectId}"
   $.post dest, args, "json"
   .done (result) ->
@@ -183,6 +183,7 @@ renderMapWithData = (projectData, force = false) ->
     collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
     mapData = """
     <div class="row">
+      <h2 class="col-xs-12">Mapping Data</h2>
       #{googleMap}
       <div class="col-xs-12 col-md-3 col-lg-6">
         <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were taken from #{collectionRangePretty}</p>
@@ -206,7 +207,7 @@ renderMapWithData = (projectData, force = false) ->
 
 
 
-postAuthorizeRender = (projectData) ->
+postAuthorizeRender = (projectData, authorizationDetails) ->
   ###
   # Takes in project data, then renders the appropriate bits
   ###
@@ -215,13 +216,17 @@ postAuthorizeRender = (projectData) ->
     false
   startLoad()
   console.info "Should render stuff", projectData
-  editButton = """
-  <paper-icon-button icon="icons:create" class="authorized-action" data-href="admin-page.html?id=#{projectData.project_id}"></paper-icon-button>
-  """
-  $("#title").append editButton
+  editButton = adminButton = ""
+  if authorizationDetails.can_edit
+    editButton = """
+    <paper-icon-button icon="icons:create" class="authorized-action" data-href="#{uri.urlString}admin-page.html?id=#{projectData.project_id}" data-toggle="tooltip" title="Edit Project"></paper-icon-button>
+    """
+  adminButton = """
+  <paper-icon-button icon="icons:dashboard" class="authorized-action" id="show-actions" data-href="#{uri.urlString}admin-page.html" data-toggle="tooltip" title=""> </paper-icon-button>
+  """  
+  $("#title").append editButton + adminButton
   authorData = JSON.parse projectData.author_data
   showEmailField authorData.contact_email
-  $(".needs-auth").html "<p>User is authorized, should repopulate</p>"
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
   renderMapWithData(projectData) # Stops load
@@ -296,7 +301,7 @@ searchProjects = ->
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
         button = """
-        <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}/project.php?id=#{project.project_id}" data-toggle="tooltip" title="Project ##{project.project_id.slice(0,8)}...">
+        <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" title="Project ##{project.project_id.slice(0,8)}...">
           #{icon} #{project.project_title}
         </button>
         """
