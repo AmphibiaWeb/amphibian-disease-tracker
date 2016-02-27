@@ -216,13 +216,13 @@ $project = $result[0];
           <script type="text/markdown"><?php echo deEscape($project["sample_notes"]); ?></script>
         </marked-element>
 
-        <div class="col-xs-12">
+        <div class="col-xs-12 basics-list">
           <h2>Project Basics</h2>
           <?php
           $authorData = json_decode($project["author_data"], true);
 
              ?>
-          <div class="row basics-list">
+          <div class="row">
             <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
             <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-clipboard-text="https://n2t.net/<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
           </div>
