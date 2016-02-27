@@ -521,8 +521,6 @@ showAddUserDialog = (refAccessList) ->
       </div>
       <paper-material id="user-search-result-container" class="pop-result" hidden>
         <div class="result-list">
-          <div class="user-search-result" data-uid="456"><span class="email">foo@bar.com</span> | <span class="name">Jane Smith</span> | <span class="user">FooBar</span></div>
-          <div class="user-search-result" data-uid="123"><span class="email">foo2@bar.com</span> | <span class="name">John Smith</span> | <span class="user">FooBar2</span></div>
         </div>
       </paper-material>
     </div>
@@ -560,7 +558,7 @@ showAddUserDialog = (refAccessList) ->
           if users.length > 0
             $("#user-search-result-container").removeAttr "hidden"
             for user in users
-              # <div class="user-search-result" data-uid="456"><span class="email">foo@bar.com</span> | <span class="name">Jane Smith</span> | <span class="user">FooBar</span></div>
+              # TODO check if user already has access
               html = """
               <div class="user-search-result" data-uid="#{user.uid}">
                 <span class="email">#{user.email}</span>
