@@ -249,6 +249,9 @@ copyLink = function(html5) {
 searchProjects = function() {
   var args, cols, item, search;
   search = $("#project-search").val();
+  if (isNull(search)) {
+    return false;
+  }
   item = p$("#search-filter").selectedItem;
   cols = $(item).attr("data-cols");
   console.info("Searching on " + search + " ... in " + cols);
