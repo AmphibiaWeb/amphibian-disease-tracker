@@ -1942,18 +1942,36 @@ showAddUserDialog = function(refAccessList) {
   }
   safariDialogHelper("#add-new-user");
   $("#search-user").keyup(function() {
-    var debugHtml;
+    var searchHelper;
     console.log("Should search", $(this).val());
-    if (!$("#debug-alert").exists()) {
-      debugHtml = "<div class=\"alert alert-warning\" id=\"debug-alert\">\n  Would search against \"<span id=\"debug-placeholder\"></span>\". Incomplete. Sample result shown.\n</div>";
-      $(this).before(debugHtml);
-    }
-    $("#debug-placeholder").text($(this).val());
-    if (isNull($(this).val())) {
-      return $("#user-search-result-container").prop("hidden", "hidden");
-    } else {
-      return $("#user-search-result-container").removeAttr("hidden");
-    }
+    searchHelper = function() {
+      var search;
+      search = $("#search-user").val();
+      if (isNull(search)) {
+        return $("#user-search-result-container").prop("hidden", "hidden");
+      } else {
+        return $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
+          var html, l, len, results, users;
+          console.info(result);
+          users = Object.toArray(result.result);
+          if (users.length > 0) {
+            $("#user-search-result-container").removeAttr("hidden");
+            results = [];
+            for (l = 0, len = users.length; l < len; l++) {
+              user = users[l];
+              html = "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\">\n  <span class=\"email\">" + user.email + "</span>\n    |\n  <span class=\"name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\">" + user.handle + "</span></div>";
+              results.push(false);
+            }
+            return results;
+          } else {
+            return $("#user-search-result-container").prop("hidden", "hidden");
+          }
+        }).error(function(result, status) {
+          return console.error(result, status);
+        });
+      }
+    };
+    return searchHelper.debounce();
   });
   $("body .user-search-result").click(function() {
     var currentQueueUids, email, l, len, listHtml, ref, uid;

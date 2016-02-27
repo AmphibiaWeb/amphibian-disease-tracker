@@ -94,7 +94,7 @@ switch ($do) {
       searchProject($_REQUEST);
       break;
   case "search_users":
-    searchProject($_REQUEST);
+    searchUsers($_REQUEST);
     break;
   default:
     returnAjax(array(
@@ -150,17 +150,33 @@ function searchUsers($get) {
      ***/
     global $udb;
     $q = $udb->sanitize($get["q"]);
+    $response = array(
+        "search" => $q,
+    );
     $search = array(
         "username" => $q,
         "name" => $q,
         "dblink" => $q, #?
     );
-    $cols = array("username", "name");
-    $cols[] = "public";
-    $response = array(
-        "status" => true,
-        "result" => $udb->getQueryResults($search, $cols, "OR", true, true),
-    );
+    $cols = array("username", "name", "dblink");
+    $response["status"] = true;
+    $response["cols"] = $cols;
+    $result = $udb->getQueryResults($search, $cols, "OR", true, true);
+    foreach($result as $k=>$entry) {
+        $clean = array(
+            "email" => $entry["username"],
+            "uid" => $entry["dblink"],
+        );
+        $nameXml = $entry["name"];
+        $xml = new Xml();
+        $xml->setXml($nameXml);
+        $clean["first_name"] = $xml->getTagContents("fname");
+        $clean["last_name"] = $xml->getTagContents("lname");
+        $clean["full_name"] = $xml->getTagContents("name");
+        $clean["handle"] = $xml->getTagContents("dname");
+        $result[$k] = $clean;
+    }
+    $response["result"] = $result;
     returnAjax($response);
 }
 
