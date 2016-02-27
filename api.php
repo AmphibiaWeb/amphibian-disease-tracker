@@ -90,6 +90,9 @@ switch ($do) {
   case "is_human":
       validateCaptcha($_REQUEST);
       break;
+  case "search_project":
+      searchProject($_REQUEST);
+      break;
   default:
     returnAjax(array(
         'status' => false,
@@ -102,6 +105,26 @@ switch ($do) {
     ));
 
 }
+
+
+function searchProject($get) {
+    /***
+     *
+     ***/
+    global $db;
+    $q = $db->sanitize($get["q"]);
+    $search = array(
+        "project_id" => $q,
+        "project_title" => $q
+    );
+    $cols = array("project_id", "project_title");
+    $response = array(
+        "status" => true,
+        "result" => $db->getQueryResults($search, $cols, "OR", true, true),
+    );
+    returnAjax($response);
+}
+
 
 function checkColumnExists($column_list)
 {

@@ -234,7 +234,22 @@ copyLink = (html5 = true) ->
       console.warn e.stack
   console.warn "Can't use HTML5"
   # http://zeroclipboard.org/
+  # https://github.com/zeroclipboard/zeroclipboard
   false
+
+
+searchProjects = ->
+  search = $("#project-search").value()
+  console.info "Searching on #{search} ..."
+  # POST a request to the server for projects matching this
+  args = "action=search_project&q=#{search}"
+  $.post "#{uri.urlString}api.php", args, "json"
+  .done (result) ->
+    console.info reult
+  .error (result, status) ->
+    console.error result, status
+  false
+
 
 
 $ ->
@@ -245,3 +260,7 @@ $ ->
   .click ->
     project = $(this).attr("data-project")
     goTo "#{uri.urlString}project.php?id=#{project}"
+  $("#project-search").keyup ->
+    searchProjects.debounce()
+  $("#copy-ark").click ->
+    copyLink()
