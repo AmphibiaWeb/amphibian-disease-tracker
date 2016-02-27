@@ -246,13 +246,13 @@ searchProjects = ->
   cols = $(item).attr "data-cols"
   console.info "Searching on #{search} ... in #{cols}"
   # POST a request to the server for projects matching this
-  args = "action=search_project&q=#{search}"
+  args = "action=search_project&q=#{search}&cols=#{cols}"
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
     console.info result
+    html = ""
     projects = Object.toArray result.result
     if projects.length > 0
-      html = ""
       for project in projects
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
@@ -265,7 +265,7 @@ searchProjects = ->
       bindClicks(".search-proj-link")
     else
       html = "<p><em>No results found for \"<strong>#{search}</strong>\""
-  $("#project-result-container").html html
+    $("#project-result-container").html html
   .error (result, status) ->
     console.error result, status
   false
