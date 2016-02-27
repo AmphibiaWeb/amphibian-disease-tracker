@@ -7438,3 +7438,6 @@ google-map#transect-viewport {
 .toggle-marker {
   margin: 0 3.125%;
 }
+#project-result-container {
+  list-style-type: none;
+}

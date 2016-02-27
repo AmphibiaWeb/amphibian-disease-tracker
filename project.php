@@ -55,7 +55,11 @@ $validProject = $db->isEntry($pid, "project_id", true);
     <link rel="import" href="bower_components/paper-slider/paper-slider.html"/>
     <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
     <link rel="import" href="bower_components/paper-card/paper-card.html"/>
+
     <link rel="import" href="bower_components/paper-dialog/paper-dialog.html"/>
+    <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html"/>
+    <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html"/>
+
     <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"/>
     <link rel="import" href="bower_components/paper-button/paper-button.html"/>
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
