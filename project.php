@@ -13,6 +13,7 @@ if($debug) {
 $print_login_state = false;
 require_once("DB_CONFIG.php");
 require_once(dirname(__FILE__)."/core/core.php");
+require_once(dirname(__FILE__)."/admin/async_login_handler.php");
 
 $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
 
@@ -22,6 +23,7 @@ $suffix = empty($pid) ? "Browser" : "#" . $pid;
 
 
 $validProject = $db->isEntry($pid, "project_id", true);
+$loginStatus = getLoginState();
 
        ?>
     <title>Project <?php echo $suffix ?></title>
@@ -139,8 +141,8 @@ $validProject = $db->isEntry($pid, "project_id", true);
     <main>
       <p class="col-xs-12 hidden-xs login-status-bar text-right">
       <?php
-         $user = $_COOKIE["amphibiandisease_fullname"];
-         if(!empty($user)) {
+         $test = $loginStatus["status"];
+         if($test) {
          ?>
         Logged in as <?php echo $user; ?>
         <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
@@ -151,7 +153,7 @@ $validProject = $db->isEntry($pid, "project_id", true);
          ?>
         <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
       <?php } ?>
-        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.html" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
+        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.php" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
       <?php
          if(empty($pid)) {
