@@ -707,13 +707,16 @@ google-map.public-fuzzy-map {
     .center-block;
 }
 
-#auth-block google-map:not(.center-block) {
-    margin-left: 15px;
-}
+@media(min-device-width: @screen-sm-min) {
 
-#auth-block google-map + div {
-    margin-left: -15px;
-    padding-left: 30px;
+    #auth-block google-map:not(.center-block) {
+        margin-left: 15px;
+    }
+
+    #auth-block google-map + div {
+        margin-left: -15px;
+        padding-left: 30px;
+    }
 }
 
 .toggle-marker {
