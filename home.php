@@ -98,20 +98,29 @@ $loginStatus = getLoginState();
   </head>
   <body class="container-fluid">
     <header id="header-bar" class="fixed-bar clearfix row">
+     <p class="col-xs-12 text-right">
       <?php
          $user = $_COOKIE["amphibiandisease_fullname"];
          $test = $loginStatus["status"];
          if($test) { ?>
-         <p class="col-xs-12 text-right">
            Logged in as <?php echo $user; ?>
            <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
            <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
-           <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
-         </p>
-      <?php } else { ?>
-      <button class="btn btn-success btn-xs pull-right click login-button" data-href="https://amphibiandisease.org/admin">Log In</button>
-      <button class="btn btn-default btn-xs pull-right click login-button" data-href="https://amphibiandisease.org/admin-login.php?q=create">Sign Up</button>
+      <?php } else {
+          # TODO replace login icon with glyphicon login icon
+          ?>
+          <paper-button class="click materialgreen" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin">
+              <iron-icon icon="icons:exit-to-app"></iron-icon>
+              Log In
+          </paper-button>
+          <paper-button class="click materialgreen" data-toggle="tooltip" title="Sign Up" data-href="https://amphibiandisease.org/admin-login.php?q=create">
+              <iron-icon icon="icons:lightbulb-outline"></iron-icon>
+              Sign Up
+          </paper-button>
+
       <?php } ?>
+            <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
+        </p>
     </header>
     <main>
       <h1 id="title" class="main-title">The Amphibian Disease Project</h1>
