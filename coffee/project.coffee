@@ -436,3 +436,4 @@ $ ->
   #   copyLink(this, e)
   $("#copy-ark").click ->
     copyLink _adp.zcClient
+  checkFileVersion(true, "js/project.js")

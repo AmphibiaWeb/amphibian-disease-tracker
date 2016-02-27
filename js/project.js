@@ -449,9 +449,10 @@ $(function() {
   };
   ZeroClipboard.config(zcConfig);
   _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
-  return $("#copy-ark").click(function() {
+  $("#copy-ark").click(function() {
     return copyLink(_adp.zcClient);
   });
+  return checkFileVersion(true, "js/project.js");
 });
 
 //# sourceMappingURL=maps/project.js.map
