@@ -7445,6 +7445,19 @@ google-map.public-fuzzy-map {
 .toggle-marker {
   margin: 0 3.125%;
 }
+.search-project {
+  width: 100%;
+}
+@media (min-width: 992px) {
+  .search-project #project-search {
+    width: 58.33333333%;
+  }
+}
+@media (min-width: 992px) {
+  .search-project #project-search {
+    width: 75%;
+  }
+}
 #project-result-container {
   list-style-type: none;
 }

@@ -690,8 +690,8 @@ google-map.public-fuzzy-map {
     clear: both;
     .center-block;
 }
-                                     
-#auth-block google-map:not(.center-block) { 
+
+#auth-block google-map:not(.center-block) {
     margin-left: 15px;
 }
 
@@ -703,6 +703,19 @@ google-map.public-fuzzy-map {
 .toggle-marker {
     @margin: 25/8%;
     margin: 0 @margin;
+}
+
+.search-project {
+    width: 100%;
+}
+
+.search-project #project-search {
+    @media(min-width: @screen-md) {
+        width: 700/12%;
+    }
+    @media(min-width: @screen-md) {
+        width: 900/12%;
+    }
 }
 
 #project-result-container {
