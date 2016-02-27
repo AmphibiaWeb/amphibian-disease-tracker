@@ -63,7 +63,7 @@ window.loadAdminUi = function() {
       var articleHtml;
       articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span class=\"pib-wrapper\">\n    <paper-icon-button icon=\"icons:list\" class=\"click\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"List All Projects\" data-href=\"" + uri.urlString + "project.php\"> </paper-icon-button>\n  </span>\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
-      $(".fill-user-fullname").text($.cookie(adminParams.domain + "_fullname}"));
+      $(".fill-user-fullname").text($.cookie(adminParams.domain + "_fullname"));
       checkInitLoad(function() {
         populateAdminActions();
         return bindClicks();
