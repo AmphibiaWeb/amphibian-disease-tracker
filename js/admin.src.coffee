@@ -51,7 +51,9 @@ window.loadAdminUi = ->
         <span id="pib-wrapper-settings" class="pib-wrapper" data-toggle="tooltip" title="User Settings" data-placement="bottom">
           <paper-icon-button icon='icons:settings-applications' class='click' data-href='#{data.login_url}'></paper-icon-button>
         </span>
-
+        <span class="pib-wrapper">
+          <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
+        </span>
       </h3>
       <section id='admin-actions-block' class="row center-block text-center">
         <div class='bs-callout bs-callout-info'>
