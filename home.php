@@ -109,12 +109,12 @@ $loginStatus = getLoginState();
       <?php } else {
           # TODO replace login icon with glyphicon login icon
           ?>
-          <paper-button class="click materialgreen" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin">
+          <paper-button class="click materialgreen" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom">
               <iron-icon icon="icons:exit-to-app"></iron-icon>
               Log In
           </paper-button>
           <paper-button class="click materialgreen" data-toggle="tooltip" title="Sign Up" data-href="https://amphibiandisease.org/admin-login.php?q=create">
-              <iron-icon icon="icons:lightbulb-outline"></iron-icon>
+              <iron-icon icon="icons:lightbulb-outline" data-placement="bottom"></iron-icon>
               Sign Up
           </paper-button>
 
