@@ -17,10 +17,10 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
         adminButton = """
         <paper-icon-button icon="icons:dashboard" class="authorized-action" id="show-actions" data-href="#{uri.urlString}admin-page.html" data-toggle="tooltip" title="Administration Dashboard"> </paper-icon-button>
         """
-        $("#title").append adminButton
-        bindClicks ".authorized-action"
+        # $("#title").append adminButton
+        # bindClicks ".authorized-action"
       else
-        console.info "No longer logged in"
+        console.info "Not logged in"
       stopLoad()
       return false
     unless result.status

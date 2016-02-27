@@ -26,10 +26,8 @@ checkProjectAuthorization = function(projectId, callback) {
       if (result.status) {
         console.info("Logged in user, no project");
         adminButton = "<paper-icon-button icon=\"icons:dashboard\" class=\"authorized-action\" id=\"show-actions\" data-href=\"" + uri.urlString + "admin-page.html\" data-toggle=\"tooltip\" title=\"Administration Dashboard\"> </paper-icon-button>";
-        $("#title").append(adminButton);
-        bindClicks(".authorized-action");
       } else {
-        console.info("No longer logged in");
+        console.info("Not logged in");
       }
       stopLoad();
       return false;

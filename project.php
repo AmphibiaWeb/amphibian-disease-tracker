@@ -142,12 +142,16 @@ $validProject = $db->isEntry($pid, "project_id", true);
          $user = $_COOKIE["amphibiandisease_fullname"];
          if(!empty($user)) {
          ?>
-      Logged in as <?php echo $user; ?>
-      <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin"></paper-icon-button>
+        Logged in as <?php echo $user; ?>
+        <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard"> </paper-icon-button>
+        <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings"></paper-icon-button>
       <?php
          }
+         if(!empty($pid)) {
          ?>
-        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.html"></paper-icon-button>
+        <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
+      <?php } ?>
+        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.html" data-toggle="tooltip" title="Home"></paper-icon-button>
       </p>
       <?php
          if(empty($pid)) {
@@ -162,7 +166,6 @@ $project = $result[0];
             ?>
       <h1 id="title">
         <?php echo $project["project_title"]; ?>
-        <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
       </h1>
       <?php } ?>
       <section id="main-body" class="row">
