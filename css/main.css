@@ -7421,7 +7421,7 @@ google-map#transect-viewport {
 .aweb-link-species:hover {
   background: #3455da;
 }
-#title paper-icon-button {
+h1 paper-icon-button {
   font-size: initial;
 }
 .row.no-margin-change {
