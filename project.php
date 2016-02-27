@@ -188,7 +188,7 @@ $project = $result[0];
               Project Names &amp; IDs
             </paper-radio-button>
             <paper-radio-button name="users" data-cols="author_data" data-cue="Name or email...">
-              Project PIs and Creators
+              PIs, Labs, Creators, Affiliation
             </paper-radio-button>
             <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
               Project Taxa

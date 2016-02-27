@@ -7441,3 +7441,6 @@ google-map#transect-viewport {
 #project-result-container {
   list-style-type: none;
 }
+.project-search-result {
+  margin: .25rem;
+}

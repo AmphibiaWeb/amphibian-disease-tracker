@@ -93,6 +93,9 @@ switch ($do) {
   case "search_project":
       searchProject($_REQUEST);
       break;
+  case "search_users":
+    searchProject($_REQUEST);
+    break;
   default:
     returnAjax(array(
         'status' => false,
@@ -137,7 +140,6 @@ function searchProject($get) {
     $response["status"] = true;
     $response["cols"] = $cols;
     $response["result"] = $db->getQueryResults($search, $cols, "OR", true, true);
-    $response["debug"] = $db->getQueryResults($search, $cols, "OR", true, true, false, true);
     returnAjax($response);
 }
 
@@ -146,17 +148,18 @@ function searchUsers($get) {
     /***
      *
      ***/
-    global $db;
-    $q = $db->sanitize($get["q"]);
+    global $udb;
+    $q = $udb->sanitize($get["q"]);
     $search = array(
-        "project_id" => $q,
-        "project_title" => $q
+        "username" => $q,
+        "name" => $q,
+        "dblink" => $q, #?
     );
-    $cols = array("project_id", "project_title");
+    $cols = array("username", "name");
     $cols[] = "public";
     $response = array(
         "status" => true,
-        "result" => $db->getQueryResults($search, $cols, "OR", true, true),
+        "result" => $udb->getQueryResults($search, $cols, "OR", true, true),
     );
     returnAjax($response);
 }

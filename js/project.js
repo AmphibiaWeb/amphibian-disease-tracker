@@ -257,7 +257,7 @@ searchProjects = function() {
   console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var button, html, icon, j, len, project, projects, publicState;
+    var button, html, icon, j, len, project, projects, publicState, ref, s;
     console.info(result);
     html = "";
     projects = Object.toArray(result.result);
@@ -271,7 +271,8 @@ searchProjects = function() {
       }
       bindClicks(".search-proj-link");
     } else {
-      html = "<p><em>No results found for \"<strong>" + search + "</strong>\"";
+      s = (ref = result.search) != null ? ref : search;
+      html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
     }
     return $("#project-result-container").html(html);
   }).error(function(result, status) {

@@ -264,7 +264,8 @@ searchProjects = ->
         html += "<li class='project-search-result'>#{button}</li>"
       bindClicks(".search-proj-link")
     else
-      html = "<p><em>No results found for \"<strong>#{search}</strong>\""
+      s = result.search ? search
+      html = "<p><em>No results found for \"<strong>#{s}</strong>\""
     $("#project-result-container").html html
   .error (result, status) ->
     console.error result, status
