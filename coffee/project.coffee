@@ -218,7 +218,6 @@ postAuthorizeRender = (projectData) ->
 
 
 copyLink = (zeroClipObj, zeroClipEvent, html5 = true) ->
-  toastStatusMessage "Would copy full ark link to clipboard"
   ark = p$(".ark-identifier").value
   if html5
     # http://caniuse.com/#feat=clipboard
@@ -302,6 +301,9 @@ $ ->
     cue = $(this).attr "data-cue"
     $("#project-search").attr "placeholder", cue
     searchProjects.debounce()
+  zcConfig =
+    swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+  ZeroClipboard.config zcConfig
   client = new ZeroClipboard $("#copy-ark").get 0
   client.on "copy", (e) =>
     copyLink(this, e)

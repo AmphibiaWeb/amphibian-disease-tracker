@@ -225,7 +225,6 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
   if (html5 == null) {
     html5 = true;
   }
-  toastStatusMessage("Would copy full ark link to clipboard");
   ark = p$(".ark-identifier").value;
   if (html5) {
     try {
@@ -298,7 +297,7 @@ searchProjects = function() {
 };
 
 $(function() {
-  var client;
+  var client, zcConfig;
   _adp.projectId = uri.o.param("id");
   checkProjectAuthorization();
   $("#project-list button").unbind().click(function() {
@@ -315,6 +314,10 @@ $(function() {
     $("#project-search").attr("placeholder", cue);
     return searchProjects.debounce();
   });
+  zcConfig = {
+    swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+  };
+  ZeroClipboard.config(zcConfig);
   client = new ZeroClipboard($("#copy-ark").get(0));
   client.on("copy", (function(_this) {
     return function(e) {
