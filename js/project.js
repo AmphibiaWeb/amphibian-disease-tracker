@@ -7,6 +7,8 @@ var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, rende
 
 _adp.mapRendered = false;
 
+_adp.zcClient = null;
+
 checkProjectAuthorization = function(projectId, callback) {
   if (projectId == null) {
     projectId = _adp.projectId;
@@ -222,6 +224,9 @@ postAuthorizeRender = function(projectData) {
 
 copyLink = function(zeroClipObj, zeroClipEvent, html5) {
   var ark, clip, clipboardData, e, url;
+  if (zeroClipObj == null) {
+    zeroClipObj = _adp.zcClient;
+  }
   if (html5 == null) {
     html5 = true;
   }
@@ -259,7 +264,17 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
     zeroClipObj.on("error", function(e) {
       console.error("Error copying to clipboard");
       console.warn("Got", e);
-      return toastStatusMessage(e.message);
+      if (e.name === "flash-overdue") {
+        if (_adp.resetClipboard === true) {
+          console.error("Resetting ZeroClipboard didn't work!");
+          return false;
+        }
+        ZeroClipboard.on("ready", function() {
+          _adp.resetClipboard = true;
+          return copyLink();
+        });
+        return _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
+      }
     });
   } else {
     console.error("Can't use HTML, and ZeroClipboard wasn't passed");
@@ -303,7 +318,7 @@ searchProjects = function() {
 };
 
 $(function() {
-  var client, zcConfig;
+  var zcConfig;
   _adp.projectId = uri.o.param("id");
   checkProjectAuthorization();
   $("#project-list button").unbind().click(function() {
@@ -324,14 +339,9 @@ $(function() {
     swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
   };
   ZeroClipboard.config(zcConfig);
-  client = new ZeroClipboard($("#copy-ark").get(0));
-  client.on("copy", (function(_this) {
-    return function(e) {
-      return copyLink(_this, e);
-    };
-  })(this));
+  _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
   return $("#copy-ark").click(function() {
-    return copyLink(client);
+    return copyLink(_adp.zcClient);
   });
 });
 

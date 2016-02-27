@@ -3,6 +3,7 @@
 ###
 
 _adp.mapRendered = false
+_adp.zcClient = null
 
 checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
@@ -217,7 +218,7 @@ postAuthorizeRender = (projectData) ->
   false
 
 
-copyLink = (zeroClipObj, zeroClipEvent, html5 = true) ->
+copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
   ark = p$(".ark-identifier").value
   if html5
     # http://caniuse.com/#feat=clipboard
@@ -248,7 +249,16 @@ copyLink = (zeroClipObj, zeroClipEvent, html5 = true) ->
     zeroClipObj.on "error", (e) ->
       console.error "Error copying to clipboard"
       console.warn "Got", e
-      toastStatusMessage e.message
+      if e.name is "flash-overdue"
+        # ZeroClipboard.destroy()
+        if _adp.resetClipboard is true
+          console.error "Resetting ZeroClipboard didn't work!"
+          return false
+        ZeroClipboard.on "ready", ->
+          # Re-call
+          _adp.resetClipboard = true
+          copyLink()
+        _adp.zcClient = new ZeroClipboard $("#copy-ark").get 0
   else
     console.error "Can't use HTML, and ZeroClipboard wasn't passed"
   false
@@ -308,8 +318,8 @@ $ ->
   zcConfig =
     swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
   ZeroClipboard.config zcConfig
-  client = new ZeroClipboard $("#copy-ark").get 0
-  client.on "copy", (e) =>
-    copyLink(this, e)
+  _adp.zcClient = new ZeroClipboard $("#copy-ark").get 0
+  # client.on "copy", (e) =>
+  #   copyLink(this, e)
   $("#copy-ark").click ->
-    copyLink(client)
+    copyLink _adp.zcClient
