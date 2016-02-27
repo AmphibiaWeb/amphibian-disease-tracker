@@ -236,17 +236,21 @@ copyLink = (zeroClipObj, zeroClipEvent, html5 = true) ->
   console.warn "Can't use HTML5"
   # http://zeroclipboard.org/
   # https://github.com/zeroclipboard/zeroclipboard
-  zeroClipObj.setData clipboardData
-  zeroClipEvent.setData clipboardData
-  zeroClipObj.on "aftercopy", (e) ->
-    if e.data["text/plain"]
-      toastStatusMessage "ARK resolver path copied to clipboard"
-    else
-      toastStatusMessage "Error copying to clipboard"
-  zeroClipObj.on "error", (e) ->
-    console.error "Error copying to clipboard"
-    console.warn "Got", e
-    toastStatusMessage e.message
+  if zeroClipObj?
+    zeroClipObj.setData clipboardData
+    if zeroClipEvent?
+      zeroClipEvent.setData clipboardData
+    zeroClipObj.on "aftercopy", (e) ->
+      if e.data["text/plain"]
+        toastStatusMessage "ARK resolver path copied to clipboard"
+      else
+        toastStatusMessage "Error copying to clipboard"
+    zeroClipObj.on "error", (e) ->
+      console.error "Error copying to clipboard"
+      console.warn "Got", e
+      toastStatusMessage e.message
+  else
+    console.error "Can't use HTML, and ZeroClipboard wasn't passed"
   false
 
 
@@ -308,4 +312,4 @@ $ ->
   client.on "copy", (e) =>
     copyLink(this, e)
   $("#copy-ark").click ->
-    copyLink()
+    copyLink(client)

@@ -244,20 +244,26 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
     }
   }
   console.warn("Can't use HTML5");
-  zeroClipObj.setData(clipboardData);
-  zeroClipEvent.setData(clipboardData);
-  zeroClipObj.on("aftercopy", function(e) {
-    if (e.data["text/plain"]) {
-      return toastStatusMessage("ARK resolver path copied to clipboard");
-    } else {
-      return toastStatusMessage("Error copying to clipboard");
+  if (zeroClipObj != null) {
+    zeroClipObj.setData(clipboardData);
+    if (zeroClipEvent != null) {
+      zeroClipEvent.setData(clipboardData);
     }
-  });
-  zeroClipObj.on("error", function(e) {
-    console.error("Error copying to clipboard");
-    console.warn("Got", e);
-    return toastStatusMessage(e.message);
-  });
+    zeroClipObj.on("aftercopy", function(e) {
+      if (e.data["text/plain"]) {
+        return toastStatusMessage("ARK resolver path copied to clipboard");
+      } else {
+        return toastStatusMessage("Error copying to clipboard");
+      }
+    });
+    zeroClipObj.on("error", function(e) {
+      console.error("Error copying to clipboard");
+      console.warn("Got", e);
+      return toastStatusMessage(e.message);
+    });
+  } else {
+    console.error("Can't use HTML, and ZeroClipboard wasn't passed");
+  }
   return false;
 };
 
@@ -325,7 +331,7 @@ $(function() {
     };
   })(this));
   return $("#copy-ark").click(function() {
-    return copyLink();
+    return copyLink(client);
   });
 });
 
