@@ -122,7 +122,7 @@ function searchProject($get) {
         "search" => $q,
     );
     if(!empty($get["cols"])) {
-        if(checkColumnExists($get["cols"])) {
+        if(checkColumnExists($get["cols"], false)) {
             # Replace the defaults
             $cols = explode(",", $get["cols"]);
         } else {
