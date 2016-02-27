@@ -61,7 +61,7 @@ window.loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span class=\"pib-wrapper\">\n    <paper-icon-button icon=\"icons:list\" class=\"click\" data-toggle=\"tooltip\" title=\"List All Projects\" data-href=\"https://amphibiandisease.org/project.php\"> </paper-icon-button>\n  </span>\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n  <span id=\"pib-wrapper-settings\" class=\"pib-wrapper\" data-toggle=\"tooltip\" title=\"User Settings\" data-placement=\"bottom\">\n    <paper-icon-button icon='icons:settings-applications' class='click' data-href='" + data.login_url + "'></paper-icon-button>\n  </span>\n  <span class=\"pib-wrapper\">\n    <paper-icon-button icon=\"icons:list\" class=\"click\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"List All Projects\" data-href=\"" + uri.urlString + "project.php\"> </paper-icon-button>\n  </span>\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
       checkInitLoad(function() {
         populateAdminActions();
@@ -78,7 +78,7 @@ window.loadAdminUi = function() {
 
 populateAdminActions = function() {
   var adminActions, url;
-  url = uri.urlString + "/admin-page.html";
+  url = uri.urlString + "admin-page.html";
   history.pushState(null, "Admin Home", url);
   adminActions = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All My Projects\n</paper-button>";
   $("#admin-actions-block").html(adminActions);

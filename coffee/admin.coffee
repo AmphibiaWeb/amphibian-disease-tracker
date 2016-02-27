@@ -52,7 +52,7 @@ window.loadAdminUi = ->
           <paper-icon-button icon='icons:settings-applications' class='click' data-href='#{data.login_url}'></paper-icon-button>
         </span>
         <span class="pib-wrapper">
-          <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
+          <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" data-placement="bottom" title="List All Projects" data-href="#{uri.urlString}project.php"> </paper-icon-button>
         </span>
       </h3>
       <section id='admin-actions-block' class="row center-block text-center">
@@ -72,7 +72,7 @@ window.loadAdminUi = ->
 
 populateAdminActions = ->
   # Reset the URI
-  url = "#{uri.urlString}/admin-page.html"
+  url = "#{uri.urlString}admin-page.html"
   history.pushState null, "Admin Home", url
   adminActions = """
         <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
