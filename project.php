@@ -261,13 +261,30 @@ $project = $result[0];
           </ul>
         </div>
         <div class="needs-auth col-xs-12" id="auth-block">
-          <script type="text/javascript">
-            renderPublicMap(<?php echo $jsonData; ?>);
-          </script>
 <?php
+   $limitedProject = array();
+   $carto = json_decode($project["carto_id"], true);
+   $cartoLimited = array(
+       "bounding_polygon" => $carto["bounding_polygon"],
+   );
+   $limitedProjectCols = array(
+       "public",
+       "bounding_box_n",
+       "bounding_box_e",
+       "bounding_box_w",
+       "bounding_box_s",
+       "lat",
+       "lng",
+   );
+   foreach($limitedProjectCols as $col) {
+       $limitedProject[$col] = $project[$col];
+   }
+   $limitedProject["carto_id"] = $cartoLimited;
+   $jsonDataLimited = json_encode($limitedProject);
+   $jsonData = json_encode($project);
+
 if(boolstr($project["public"]) === true) {
     # Public project, base renders
-   $jsonData = json_encode($project);
 ?>
           <script type="text/javascript">
             renderMapWithData(<?php echo $jsonData; ?>);
@@ -276,8 +293,16 @@ if(boolstr($project["public"]) === true) {
             <?php print_r($result); ?>
           </pre>
 <?php
-}
+} else {
+    # Set the most limited public data possible. After correct user
+    # validation, it'll render a simple map
 ?>
+          <script type="text/javascript">
+            setPublicData(<?php echo $jsonDataLimited; ?>);
+          </script>
+<?php
+   }
+   ?>
         </div>
         <?php } ?>
       </section>

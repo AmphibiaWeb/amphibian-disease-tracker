@@ -5,12 +5,15 @@
 _adp.mapRendered = false
 _adp.zcClient = null
 
+publicData = null
+
 checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
   console.info "Checking authorization for #{projectId}"
   checkLoggedIn (result) ->
     unless result.status
       console.info "Non logged-in user or unauthorized user"
+      renderPublicMap()
       stopLoad()
       return false
     else
@@ -308,17 +311,25 @@ searchProjects = ->
   false
 
 
+setPublicData = (projectData) ->
+  publicData = projectData
+  false
 
-renderPublicMap = (projectData) ->
+
+renderPublicMap = (projectData = publicData) ->
   ###
   #
   ###
-  if projectData.public.toBool()
-    # We're going to already be rendered more fully
-    console.info "Not rendering low-data public map for public project"
+  try
+    if projectData.public.toBool()
+      # We're going to already be rendered more fully
+      console.info "Not rendering low-data public map for public project"
+      return false
+  catch
+    console.error "Invalid project data passed!"
+    console.warn projectData
     return false
   cartoData = JSON.parse deEscape projectData.carto_id
-  cartoTable = cartoData.table
   try
     zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
     console.info "Got zoom", zoom

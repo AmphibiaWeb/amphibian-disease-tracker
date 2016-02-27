@@ -2,12 +2,14 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, renderMapWithData, renderPublicMap, searchProjects, showEmailField,
+var checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
 
 _adp.zcClient = null;
+
+publicData = null;
 
 checkProjectAuthorization = function(projectId, callback) {
   if (projectId == null) {
@@ -22,6 +24,7 @@ checkProjectAuthorization = function(projectId, callback) {
     var args, dest;
     if (!result.status) {
       console.info("Non logged-in user or unauthorized user");
+      renderPublicMap();
       stopLoad();
       return false;
     } else {
@@ -331,18 +334,31 @@ searchProjects = function() {
   return false;
 };
 
+setPublicData = function(projectData) {
+  publicData = projectData;
+  return false;
+};
+
 renderPublicMap = function(projectData) {
+  var cartoData, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  if (projectData == null) {
+    projectData = publicData;
+  }
 
   /*
    *
    */
-  var cartoData, cartoTable, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
-  if (projectData["public"].toBool()) {
-    console.info("Not rendering low-data public map for public project");
+  try {
+    if (projectData["public"].toBool()) {
+      console.info("Not rendering low-data public map for public project");
+      return false;
+    }
+  } catch (_error) {
+    console.error("Invalid project data passed!");
+    console.warn(projectData);
     return false;
   }
   cartoData = JSON.parse(deEscape(projectData.carto_id));
-  cartoTable = cartoData.table;
   try {
     zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
     console.info("Got zoom", zoom);
