@@ -143,15 +143,15 @@ $validProject = $db->isEntry($pid, "project_id", true);
          if(!empty($user)) {
          ?>
         Logged in as <?php echo $user; ?>
-        <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard"> </paper-icon-button>
-        <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings"></paper-icon-button>
+        <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
+          <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
       <?php
          }
          if(!empty($pid)) {
          ?>
-        <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
+        <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
       <?php } ?>
-        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.html" data-toggle="tooltip" title="Home"></paper-icon-button>
+        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.html" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
       <?php
          if(empty($pid)) {
