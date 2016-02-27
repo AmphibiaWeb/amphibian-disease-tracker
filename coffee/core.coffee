@@ -139,6 +139,64 @@ deEscape = (string) ->
   string
 
 
+copyText = (text, zcObj, zcElement) ->
+  ###
+  #
+  ###
+  try
+    clipboardData =
+      dataType: "text/plain"
+      data: text
+    clip = new ClipboardEvent "copy", clipboardData
+    document.dispatchEvent clip
+    return false
+  if zcObj?
+    clipboardData =
+      "text/plain": text
+    zcObj.setData clipboardData
+    zcObj.on "aftercopy", (e) ->
+      if e.data["text/plain"]
+        toastStatusMessage "Copied to clipboard"
+      else
+        toastStatusMessage "Error copying to clipboard"
+      window.resetClipboard = false
+    zcObj.on "error", (e) ->
+      console.error "Error copying to clipboard"
+      console.warn "Got", e
+      if e.name is "flash-overdue"
+        # ZeroClipboard.destroy()
+        if window.resetClipboard is true
+          console.error "Resetting ZeroClipboard didn't work!"
+          return false
+        ZeroClipboard.on "ready", ->
+          # Re-call
+          window.resetClipboard = true
+          copyLink window.tempZC, text
+        window.tempZC = new ZeroClipboard zcElement
+
+  false
+
+
+bindCopyEvents = (selector = ".click-copy") ->
+  loadJS "bower_components/zeroclipboard/dist/ZeroClipboard.min.js", ->
+    zcConfig =
+      swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+    ZeroClipboard.config zcConfig
+    $(selector).each ->
+      zcObj = new ZeroClipboard this
+      $(this).click ->
+        text = $(this).attr "data-clipboard-text"
+        if isNull text
+          copySelector = $(this).attr "data-copy-selector"
+          text = $(copySelector).val()
+          if isNull text
+            try
+              text = p$(copySelector).value
+          console.info "Copying text", text
+        copyText text, zcObj, this
+        false
+  false
+
 
 jsonTo64 = (obj) ->
   if typeof obj is "array"
