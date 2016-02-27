@@ -183,8 +183,8 @@ $project = $result[0];
         <div class="col-xs-12 col-md-4 col-lg-6 form-inline">
           <h3>Search Projects</h3>
           <div class="search-project form-group row">
-            <label for="project-search" class="col-xs-4 col-md-2">Search Projects</label>
-            <input type="text" class="form-control col-md-10 col-xs-8" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+            <label for="project-search" class="col-xs-12 col-md-5 col-lg-3">Search Projects</label>
+            <input type="text" class="form-control col-md-7 col-xs-12" placeholder="Project ID or name..." name="project-search" id="project-search"/>
             <br/>
           </div>
           <br/>
