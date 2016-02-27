@@ -137,7 +137,21 @@ $validProject = $db->isEntry($pid, "project_id", true);
   </head>
   <body class="container-fluid">
     <main>
-      <?php if(empty($pid)) { ?>
+      <p class="col-xs-12 hidden-xs login-status-bar text-right">
+      <?php
+         $user = $_COOKIE["amphibiandisease_fullname"];
+         if(!empty($user)) {
+         ?>
+      Logged in as <?php echo $user; ?>
+      <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin"></paper-icon-button>
+      <?php
+         }
+         ?>
+        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.html"></paper-icon-button>
+      </p>
+      <?php
+         if(empty($pid)) {
+         ?>
       <h1 id="title">Amphibian Disease Projects</h1>
       <?php } else if (!$validProject){ ?>
       <h1 id="title">Invalid Project</h1>
@@ -146,7 +160,7 @@ $search = array("project_id" => $pid);
 $result = $db->getQueryResults($search, "*", "AND", false, true);
 $project = $result[0];
             ?>
-      <h1 id="title">        
+      <h1 id="title">
         <?php echo $project["project_title"]; ?>
         <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
       </h1>
