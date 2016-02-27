@@ -305,7 +305,7 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
       if (e.name === "flash-disabled") {
         console.info("No flash on this system");
         ZeroClipboard.destroy();
-        $("#copy-ark").remove();
+        $("#copy-ark").tooltip("destroy").remove();
         $(".ark-identifier").removeClass("col-xs-9 col-md-11").addClass("col-xs-12");
         return toastStatusMessage("Clipboard copying isn't available on your system");
       }
