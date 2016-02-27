@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -210,6 +210,7 @@ roundNumberSigfig = function(number, digits) {
 };
 
 deEscape = function(string) {
+  string = string.replace(/\&amp;#/mg, '&#');
   string = string.replace(/\&quot;/mg, '"');
   string = string.replace(/\&quote;/mg, '"');
   string = string.replace(/\&#95;/mg, '_');
@@ -217,8 +218,88 @@ deEscape = function(string) {
   string = string.replace(/\&#34;/mg, '"');
   string = string.replace(/\&#62;/mg, '>');
   string = string.replace(/\&#60;/mg, '<');
-  string = string.replace(/\&amp;#/mg, '&#');
   return string;
+};
+
+copyText = function(text, zcObj, zcElement) {
+
+  /*
+   *
+   */
+  var clip, clipboardData;
+  try {
+    clipboardData = {
+      dataType: "text/plain",
+      data: text
+    };
+    clip = new ClipboardEvent("copy", clipboardData);
+    document.dispatchEvent(clip);
+    return false;
+  } catch (_error) {}
+  if (zcObj != null) {
+    clipboardData = {
+      "text/plain": text
+    };
+    zcObj.setData(clipboardData);
+    zcObj.on("aftercopy", function(e) {
+      if (e.data["text/plain"]) {
+        toastStatusMessage("Copied to clipboard");
+      } else {
+        toastStatusMessage("Error copying to clipboard");
+      }
+      return window.resetClipboard = false;
+    });
+    zcObj.on("error", function(e) {
+      console.error("Error copying to clipboard");
+      console.warn("Got", e);
+      if (e.name === "flash-overdue") {
+        if (window.resetClipboard === true) {
+          console.error("Resetting ZeroClipboard didn't work!");
+          return false;
+        }
+        ZeroClipboard.on("ready", function() {
+          window.resetClipboard = true;
+          return copyLink(window.tempZC, text);
+        });
+        return window.tempZC = new ZeroClipboard(zcElement);
+      }
+    });
+  }
+  return false;
+};
+
+bindCopyEvents = function(selector) {
+  if (selector == null) {
+    selector = ".click-copy";
+  }
+  loadJS("bower_components/zeroclipboard/dist/ZeroClipboard.min.js", function() {
+    var zcConfig;
+    zcConfig = {
+      swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+    };
+    ZeroClipboard.config(zcConfig);
+    return $(selector).each(function() {
+      var zcObj;
+      zcObj = new ZeroClipboard(this);
+      return $(this).click(function() {
+        var copySelector, text;
+        text = $(this).attr("data-clipboard-text");
+        if (isNull(text)) {
+          copySelector = $(this).attr("data-copy-selector");
+          text = $(copySelector).val();
+          if (isNull(text)) {
+            try {
+              text = p$(copySelector).value;
+            } catch (_error) {}
+          }
+          console.info("Copying text", text);
+        }
+        copyText(text, zcObj, this);
+        return false;
+      });
+    });
+  });
+  return false;
 };
 
 jsonTo64 = function(obj) {

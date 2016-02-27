@@ -1650,7 +1650,6 @@ loadEditor = function(projectPreload) {
             alertBadProject(opid);
             return false;
           }
-          toastStatusMessage("Good user, would load editor for project");
           project = result.project;
           project.access_data.total = Object.toArray(project.access_data.total);
           project.access_data.total.sort();

@@ -261,6 +261,9 @@ $project = $result[0];
           </ul>
         </div>
         <div class="needs-auth col-xs-12" id="auth-block">
+          <script type="text/javascript">
+            renderPublicMap(<?php echo $jsonData; ?>);
+          </script>
 <?php
 if(boolstr($project["public"]) === true) {
     # Public project, base renders

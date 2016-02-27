@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, renderMapWithData, searchProjects, showEmailField,
+var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, renderMapWithData, renderPublicMap, searchProjects, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -113,6 +113,10 @@ renderMapWithData = function(projectData, force) {
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
     var collectionRangePretty, d1, d2, error, geoJson, googleMap, i, k, l, lat, len1, len2, lng, m, mapData, marker, month, monthPretty, months, note, ref1, row, rows, taxa, year, yearPretty, years;
+    if (_adp.mapRendered === true) {
+      console.warn("Duplicate map render! Skipping thread");
+      return false;
+    }
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -192,9 +196,11 @@ renderMapWithData = function(projectData, force) {
     d2 = new Date(toInt(projectData.sampled_collection_end));
     collectionRangePretty = (dateMonthToString(d1.getMonth())) + " " + (d1.getFullYear()) + " &#8212; " + (dateMonthToString(d2.getMonth())) + " " + (d2.getFullYear());
     mapData = "<div class=\"row\">\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n  </div>\n</div>";
-    $("#auth-block").append(mapData);
-    setupMapMarkerToggles();
-    _adp.mapRendered = true;
+    if (_adp.mapRendered !== true) {
+      $("#auth-block").append(mapData);
+      setupMapMarkerToggles();
+      _adp.mapRendered = true;
+    }
     return stopLoad();
   }).error(function(result, status) {
     console.error(result, status);
@@ -204,6 +210,10 @@ renderMapWithData = function(projectData, force) {
 };
 
 postAuthorizeRender = function(projectData) {
+
+  /*
+   * Takes in project data, then renders the appropriate bits
+   */
   var authorData, cartoData, editButton;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
@@ -283,6 +293,10 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
 };
 
 searchProjects = function() {
+
+  /*
+   * Handler to search projects
+   */
   var args, cols, item, search;
   search = $("#project-search").val();
   if (isNull(search)) {
@@ -315,6 +329,56 @@ searchProjects = function() {
     return console.error(result, status);
   });
   return false;
+};
+
+renderPublicMap = function(projectData) {
+
+  /*
+   *
+   */
+  var cartoData, cartoTable, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  if (projectData["public"].toBool()) {
+    console.info("Not rendering low-data public map for public project");
+    return false;
+  }
+  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoTable = cartoData.table;
+  try {
+    zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
+    console.info("Got zoom", zoom);
+  } catch (_error) {
+    zoom = "";
+  }
+  poly = cartoData.bounding_polygon;
+  mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
+  usedPoints = new Array();
+  nw = {
+    lat: projectData.bounding_box_n,
+    lng: projectData.bounding_box_w
+  };
+  ne = {
+    lat: projectData.bounding_box_n,
+    lng: projectData.bounding_box_e
+  };
+  se = {
+    lat: projectData.bounding_box_s,
+    lng: projectData.bounding_box_e
+  };
+  sw = {
+    lat: projectData.bounding_box_s,
+    lng: projectData.bounding_box_w
+  };
+  paths = [nw, ne, se, sw];
+  for (j = 0, len = paths.length; j < len; j++) {
+    point = paths[j];
+    if (indexOf.call(usedPoints, point) < 0) {
+      usedPoints.push(point);
+      mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
+    }
+  }
+  mapHtml += "    </google-map-poly>";
+  googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6\">\n  " + mapHtml + "\n</google-map>";
+  return $("#auth-block").append(googleMap);
 };
 
 $(function() {
