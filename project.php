@@ -283,7 +283,7 @@ $project = $result[0];
    foreach($limitedProjectCols as $col) {
        $limitedProject[$col] = $project[$col];
    }
-   $limitedProject["carto_id"] = $carto;
+   $limitedProject["carto_id"] = $cartoLimited;
    $jsonDataLimited = json_encode($limitedProject);
    $jsonData = json_encode($project);
 
