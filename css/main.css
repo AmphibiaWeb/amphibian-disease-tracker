@@ -7070,7 +7070,7 @@ header#header-bar {
   margin-bottom: 0;
 }
 #header-bar paper-button {
-  font-size: 87%;
+  font-size: 60%;
 }
 header#header-bar + main {
   margin-top: 5rem;
