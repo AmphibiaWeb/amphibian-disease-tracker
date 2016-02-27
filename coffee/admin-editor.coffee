@@ -548,18 +548,33 @@ showAddUserDialog = (refAccessList) ->
   # Bind type-to-search
   $("#search-user").keyup ->
     console.log "Should search", $(this).val()
-    unless $("#debug-alert").exists()
-      debugHtml = """
-      <div class="alert alert-warning" id="debug-alert">
-        Would search against "<span id="debug-placeholder"></span>". Incomplete. Sample result shown.
-      </div>
-      """
-      $(this).before debugHtml
-    $("#debug-placeholder").text $(this).val()
-    if isNull $(this).val()
-      $("#user-search-result-container").prop "hidden", "hidden"
-    else
-      $("#user-search-result-container").removeAttr "hidden"
+    searchHelper = ->
+      search = $("#search-user").val()
+      if isNull search
+        $("#user-search-result-container").prop "hidden", "hidden"
+      else
+        $.post "#{uri.urlString}/api.php", "action=search_users&q=#{search}", "json"
+        .done (result) ->
+          console.info result
+          users = Object.toArray result.result
+          if users.length > 0
+            $("#user-search-result-container").removeAttr "hidden"
+            for user in users
+              # <div class="user-search-result" data-uid="456"><span class="email">foo@bar.com</span> | <span class="name">Jane Smith</span> | <span class="user">FooBar</span></div>
+              html = """
+              <div class="user-search-result" data-uid="#{user.uid}">
+                <span class="email">#{user.email}</span>
+                  |
+                <span class="name">#{user.full_name}</span>
+                  |
+                <span class="user">#{user.handle}</span></div>
+              """
+              false
+          else
+            $("#user-search-result-container").prop "hidden", "hidden"
+        .error (result, status) ->
+          console.error result, status
+    searchHelper.debounce()
 
   $("body .user-search-result").click ->
     uid = $(this).attr "data-uid"
