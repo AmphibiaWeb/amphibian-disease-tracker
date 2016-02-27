@@ -116,6 +116,7 @@ $validProject = $db->isEntry($pid, "project_id", true);
     <script type="text/javascript" src="bower_components/imagelightbox/dist/imagelightbox.min.js"></script>
     <script type="text/javascript" src="bower_components/JavaScript-MD5/js/md5.min.js"></script>
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
+    <script type="text/javascript" src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="js/c.min.js"></script>
     <script type="text/javascript" src="js/project.js"></script>
     <script type="text/javascript">
@@ -219,7 +220,7 @@ $project = $result[0];
              ?>
           <div class="row">
             <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
-            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-clipboard-text="https://amphibiandisease.org/project.php?id=<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
+            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-clipboard-text="https://n2t.net/<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
           </div>
           <paper-input readonly label="Project pathogen" value="<?php echo $project["disease"]; ?>"></paper-input>
           <paper-input readonly label="Project PI" value="<?php echo $project["pi_lab"]; ?>"></paper-input>
