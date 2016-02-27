@@ -503,7 +503,7 @@ Function.prototype.debounce = function() {
     func.apply(obj, args);
     console.log("Executed immediately");
   }
-  return setTimeout(delayed, threshold);
+  return timeout = setTimeout(delayed, threshold);
 };
 
 randomInt = function(lower, upper) {

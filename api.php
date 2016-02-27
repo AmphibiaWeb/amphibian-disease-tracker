@@ -118,6 +118,7 @@ function searchProject($get) {
         "project_title" => $q
     );
     $cols = array("project_id", "project_title");
+    $cols[] = "public";
     $response = array(
         "status" => true,
         "result" => $db->getQueryResults($search, $cols, "OR", true, true),

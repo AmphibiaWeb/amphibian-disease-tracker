@@ -367,7 +367,7 @@ Function::debounce = (threshold = 300, execAsap = false, timeout = debounce_time
   else if execAsap
     func.apply(obj, args)
     console.log("Executed immediately")
-  setTimeout(delayed, threshold)
+  timeout = setTimeout(delayed, threshold)
 
 randomInt = (lower = 0, upper = 1) ->
   start = Math.random()

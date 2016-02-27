@@ -177,6 +177,9 @@ $project = $result[0];
             <label for="project-search">Search Projects</label>
             <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
           </div>
+          <ul id="project-result-container">
+            
+          </ul>
         </div>
         <?php } else if (!$validProject){ ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>

@@ -1882,7 +1882,7 @@ loadEditor = (projectPreload) ->
           d2 = new Date toInt project.sampled_collection_end
           collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
           html = """
-          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon}<br/><small>Project ##{opid}</small></h2>
+          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Collaborators" elevation="2">
