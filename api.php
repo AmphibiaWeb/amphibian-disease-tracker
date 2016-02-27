@@ -137,7 +137,6 @@ function searchProject($get) {
     $response["status"] = true;
     $response["cols"] = $cols;
     $response["result"] = $db->getQueryResults($search, $cols, "OR", true, true);
-    $response["debug"] = $db->getQueryResults($search, $cols, "OR", true, true, false, true);
     returnAjax($response);
 }
 
