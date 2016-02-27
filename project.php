@@ -138,24 +138,26 @@ $loginStatus = getLoginState();
     </style>
   </head>
   <body class="container-fluid">
-    <main>
+    <header id="header-bar" class="fixed-bar clearfix row">
       <p class="col-xs-12 hidden-xs login-status-bar text-right">
-      <?php
-         $user = $_COOKIE["amphibiandisease_fullname"];
-         $test = $loginStatus["status"];
-         if($test) {
-         ?>
+        <?php
+           $user = $_COOKIE["amphibiandisease_fullname"];
+           $test = $loginStatus["status"];
+           if($test) {
+           ?>
         Logged in as <?php echo $user; ?>
         <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
-          <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
-      <?php
-         }
-         if(!empty($pid)) {
-         ?>
+        <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
+        <?php
+           }
+           if(!empty($pid)) {
+           ?>
         <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
-      <?php } ?>
+        <?php } ?>
         <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.php" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
+    </header>
+    <main>      
       <?php
          if(empty($pid)) {
          ?>
