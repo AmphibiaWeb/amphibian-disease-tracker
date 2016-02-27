@@ -234,7 +234,7 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   adminButton = """
   <paper-icon-button icon="icons:dashboard" class="authorized-action" id="show-actions" data-href="#{uri.urlString}admin-page.html" data-toggle="tooltip" title="Administration Dashboard"> </paper-icon-button>
   """
-  $("#title").append editButton + adminButton
+  $("#title").append editButton # + adminButton
   authorData = JSON.parse projectData.author_data
   showEmailField authorData.contact_email
   bindClicks(".authorized-action")
