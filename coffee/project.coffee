@@ -59,9 +59,7 @@ showEmailField = (email) ->
   html = """
   <div class="row">
     <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{email}"></paper-input>
-    <div class="col-xs-4 col-md-1">
-      <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
-    </div>
+    <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
   </div>
   """
   $("#email-fill").replaceWith html
