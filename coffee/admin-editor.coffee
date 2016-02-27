@@ -57,7 +57,6 @@ loadEditor = (projectPreload) ->
             return false
           # Populate the UI, prefilling the data
           ## DO THE THING
-          toastStatusMessage "Good user, would load editor for project"
           project = result.project
           # Listify some stuff for easier functions
           project.access_data.total = Object.toArray project.access_data.total
