@@ -30,7 +30,7 @@ $loginStatus = getLoginState();
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
     <meta name="theme-color" content="#445e14"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/json-human/css/json.human.css" />
@@ -139,7 +139,7 @@ $loginStatus = getLoginState();
   </head>
   <body class="container-fluid">
     <header id="header-bar" class="fixed-bar clearfix row">
-      <p class="col-xs-12 hidden-xs login-status-bar text-right">
+      <p class="col-xs-12 login-status-bar text-right">
         <?php
            $user = $_COOKIE["amphibiandisease_fullname"];
            $test = $loginStatus["status"];
@@ -157,7 +157,7 @@ $loginStatus = getLoginState();
         <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.php" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
     </header>
-    <main>      
+    <main>
       <?php
          if(empty($pid)) {
          ?>
@@ -165,9 +165,9 @@ $loginStatus = getLoginState();
       <?php } else if (!$validProject){ ?>
       <h1 id="title">Invalid Project</h1>
       <?php } else {
-$search = array("project_id" => $pid);
-$result = $db->getQueryResults($search, "*", "AND", false, true);
-$project = $result[0];
+          $search = array("project_id" => $pid);
+          $result = $db->getQueryResults($search, "*", "AND", false, true);
+          $project = $result[0];
             ?>
       <h1 id="title">
         <?php echo $project["project_title"]; ?>
@@ -261,12 +261,12 @@ $project = $result[0];
                require_once("admin/CONFIG.php");
                ?>
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-            <p class="col-xs-6 col-md-3 col-lg-2 col-xl-1">
+            <p class="col-xs-12 col-md-3 col-lg-2 col-xl-1">
               Contact email:
               <br/>
               <span class="text-muted small">Please solve the CAPTCHA to see the contact email</span>
             </p>
-            <div class="g-recaptcha col-xs-6 col-md-9 col-lg-10 col-xl-11" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
+            <div class="g-recaptcha col-xs-12 col-md-9 col-lg-10 col-xl-11" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
           </div>
         </div>
         <div class="col-xs-12">

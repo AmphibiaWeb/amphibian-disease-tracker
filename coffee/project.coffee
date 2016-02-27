@@ -291,7 +291,9 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
         # stuff
         console.info "No flash on this system"
         ZeroClipboard.destroy()
-        $("#copy-ark").remove()
+        $("#copy-ark")
+        .tooltip("destroy") # Otherwise stays on click: http://getbootstrap.com/javascript/#tooltipdestroy
+        .remove()
         $(".ark-identifier")
         .removeClass "col-xs-9 col-md-11"
         .addClass "col-xs-12"
