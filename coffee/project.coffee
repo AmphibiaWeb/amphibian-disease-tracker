@@ -299,7 +299,7 @@ searchProjects = ->
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
         button = """
-        <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" title="Project ##{project.project_id.slice(0,8)}...">
+        <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
           #{icon} #{project.project_title}
         </button>
         """
