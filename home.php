@@ -99,6 +99,7 @@ $loginStatus = getLoginState();
   <body class="container-fluid">
     <header id="header-bar" class="fixed-bar clearfix row">
       <?php
+         $user = $_COOKIE["amphibiandisease_fullname"];
          $test = $loginStatus["status"];
          if($test) { ?>
          <p class="col-xs-12 text-right">
