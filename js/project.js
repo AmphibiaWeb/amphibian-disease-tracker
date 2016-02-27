@@ -28,7 +28,7 @@ checkProjectAuthorization = function(projectId, callback) {
       stopLoad();
       return false;
     } else {
-      dest = uri.urlString + "/admin-api.php";
+      dest = uri.urlString + "admin-api.php";
       args = "perform=check_access&project=" + projectId;
       return $.post(dest, args, "json").done(function(result) {
         var project;
@@ -36,7 +36,7 @@ checkProjectAuthorization = function(projectId, callback) {
           console.info("User is authorized");
           project = result.detail.project;
           if (typeof callback === "function") {
-            return callback(project);
+            return callback(project, result.detailed_authorization);
           } else {
             console.warn("No callback specified!");
             return console.info("Got project data", project);
@@ -57,7 +57,7 @@ checkProjectAuthorization = function(projectId, callback) {
 renderEmail = function(response) {
   var args, dest;
   stopLoad();
-  dest = uri.urlString + "/api.php";
+  dest = uri.urlString + "api.php";
   args = "action=is_human&recaptcha_response=" + response + "&project=" + _adp.projectId;
   $.post(dest, args, "json").done(function(result) {
     var authorData;
@@ -198,7 +198,7 @@ renderMapWithData = function(projectData, force) {
     d1 = new Date(toInt(projectData.sampled_collection_start));
     d2 = new Date(toInt(projectData.sampled_collection_end));
     collectionRangePretty = (dateMonthToString(d1.getMonth())) + " " + (d1.getFullYear()) + " &#8212; " + (dateMonthToString(d2.getMonth())) + " " + (d2.getFullYear());
-    mapData = "<div class=\"row\">\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n  </div>\n</div>";
+    mapData = "<div class=\"row\">\n  <h2 class=\"col-xs-12\">Mapping Data</h2>\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n  </div>\n</div>";
     if (_adp.mapRendered !== true) {
       $("#auth-block").append(mapData);
       setupMapMarkerToggles();
@@ -212,23 +212,26 @@ renderMapWithData = function(projectData, force) {
   return false;
 };
 
-postAuthorizeRender = function(projectData) {
+postAuthorizeRender = function(projectData, authorizationDetails) {
 
   /*
    * Takes in project data, then renders the appropriate bits
    */
-  var authorData, cartoData, editButton;
+  var adminButton, authorData, cartoData, editButton;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
   }
   startLoad();
   console.info("Should render stuff", projectData);
-  editButton = "<paper-icon-button icon=\"icons:create\" class=\"authorized-action\" data-href=\"admin-page.html?id=" + projectData.project_id + "\"></paper-icon-button>";
-  $("#title").append(editButton);
+  editButton = adminButton = "";
+  if (authorizationDetails.can_edit) {
+    editButton = "<paper-icon-button icon=\"icons:create\" class=\"authorized-action\" data-href=\"" + uri.urlString + "admin-page.html?id=" + projectData.project_id + "\" data-toggle=\"tooltip\" title=\"Edit Project\"></paper-icon-button>";
+  }
+  adminButton = "<paper-icon-button icon=\"icons:dashboard\" class=\"authorized-action\" id=\"show-actions\" data-href=\"" + uri.urlString + "admin-page.html\" data-toggle=\"tooltip\" title=\"\"> </paper-icon-button>";
+  $("#title").append(editButton + adminButton);
   authorData = JSON.parse(projectData.author_data);
   showEmailField(authorData.contact_email);
-  $(".needs-auth").html("<p>User is authorized, should repopulate</p>");
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   renderMapWithData(projectData);
@@ -319,7 +322,7 @@ searchProjects = function() {
         project = projects[j];
         publicState = project["public"].toBool();
         icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-        button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "/project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+        button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
       bindClicks(".search-proj-link");
