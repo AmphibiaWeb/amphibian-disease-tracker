@@ -141,6 +141,7 @@ $loginStatus = getLoginState();
     <main>
       <p class="col-xs-12 hidden-xs login-status-bar text-right">
       <?php
+         $user = $_COOKIE["amphibiandisease_fullname"];
          $test = $loginStatus["status"];
          if($test) {
          ?>
