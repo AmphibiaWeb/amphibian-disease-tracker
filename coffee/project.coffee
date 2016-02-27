@@ -240,7 +240,9 @@ copyLink = (html5 = true) ->
 
 searchProjects = ->
   search = $("#project-search").val()
-  console.info "Searching on #{search} ..."
+  item = p$("#search-filter").selectedItem
+  cols = $(item).attr "data-cols"
+  console.info "Searching on #{search} ... with #{cols}"
   # POST a request to the server for projects matching this
   args = "action=search_project&q=#{search}"
   $.post "#{uri.urlString}api.php", args, "json"
@@ -257,7 +259,7 @@ searchProjects = ->
           #{icon} #{project.project_title}
         </button>
         """
-        html += button
+        html += "<li class='project-search-result'>#{button}</li>"
       $("#project-result-container").html html
       bindClicks(".search-proj-link")
   .error (result, status) ->

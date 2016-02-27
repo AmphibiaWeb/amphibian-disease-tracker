@@ -176,9 +176,22 @@ $project = $result[0];
           <div class="search-project form-group">
             <label for="project-search">Search Projects</label>
             <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+            <br/>
           </div>
+          <br/>
+          <paper-radio-group selected="names" id="search-filter">
+            <paper-radio-button name="names" data-cols="project_id,project_title">
+              Project Names &amp; IDs
+            </paper-radio-button>
+            <paper-radio-button name="users" data-cols="author_data">
+              Project PIs and Creators
+            </paper-radio-button>
+            <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades">
+              Project Taxa
+            </paper-radio-button>
+          </paper-radio-group>
           <ul id="project-result-container">
-            
+
           </ul>
         </div>
         <?php } else if (!$validProject){ ?>

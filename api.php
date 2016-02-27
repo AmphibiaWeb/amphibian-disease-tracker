@@ -118,6 +118,33 @@ function searchProject($get) {
         "project_title" => $q
     );
     $cols = array("project_id", "project_title");
+    $response = array();
+    if(!empty($get["cols"])) {
+        if(checkColumnExists($get["cols"])) {
+            # Replace the defaults
+            $cols = explode(",", $get["cols"]);
+        } else {
+            $response["notice"] = "Invalid columns; defaults used";
+        }
+    }
+    $cols[] = "public";
+    $response["status"] = true;
+    $response["result"] = $db->getQueryResults($search, $cols, "OR", true, true);
+    returnAjax($response);
+}
+
+
+function searchUsers($get) {
+    /***
+     *
+     ***/
+    global $db;
+    $q = $db->sanitize($get["q"]);
+    $search = array(
+        "project_id" => $q,
+        "project_title" => $q
+    );
+    $cols = array("project_id", "project_title");
     $cols[] = "public";
     $response = array(
         "status" => true,
@@ -126,8 +153,7 @@ function searchProject($get) {
     returnAjax($response);
 }
 
-
-function checkColumnExists($column_list)
+function checkColumnExists($column_list, $userReturn = true)
 {
     /***
      * Check if a comma-seperated list of columns exists in the
@@ -142,11 +168,16 @@ function checkColumnExists($column_list)
     $cols = $db->getCols();
     foreach (explode(',', $column_list) as $column) {
         if (!array_key_exists($column, $cols)) {
-            returnAjax(array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column));
+            if($userReturn) {
+                returnAjax(array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column));
+            } else {
+                return false;
+            }
         }
     }
-
-    return true;
+    if($userReturn) {
+        returnAjax(array("status"=>true));
+    } else return true;
 }
 
 function doCartoSqlApiPush($get)
