@@ -124,7 +124,11 @@ function searchProject($get) {
     if(!empty($get["cols"])) {
         if(checkColumnExists($get["cols"], false)) {
             # Replace the defaults
-            $cols = explode(",", $get["cols"]);
+            $colList = explode(",", $get["cols"]);
+            $search = array();
+            foreach($colList as $col) {
+                $search[$col] = $q;
+            }
         } else {
             $response["notice"] = "Invalid columns; defaults used";
         }
