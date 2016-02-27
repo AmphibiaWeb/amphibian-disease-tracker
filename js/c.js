@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -7,8 +7,8 @@ try {
   uri.o = $.url();
   uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host') + uri.o.attr("directory");
   uri.query = uri.o.attr("fragment");
-} catch (_error) {
-  e = _error;
+} catch (error1) {
+  e = error1;
   console.warn("PURL not installed!");
 }
 
@@ -31,6 +31,7 @@ if (window._adp == null) {
 }
 
 isBool = function(str, strict) {
+  var error2;
   if (strict == null) {
     strict = false;
   }
@@ -48,8 +49,8 @@ isBool = function(str, strict) {
       return str === 1 || str === 0;
     }
     return false;
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return false;
   }
 };
@@ -63,28 +64,30 @@ isBlank = function(str) {
 };
 
 isNull = function(str) {
+  var error2;
   try {
     if (isEmpty(str) || isBlank(str) || (str == null)) {
       if (!(str === false || str === 0)) {
         return true;
       }
     }
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return false;
   }
   return false;
 };
 
 isJson = function(str) {
+  var error2;
   if (typeof str === 'object') {
     return true;
   }
   try {
     JSON.parse(str);
     return true;
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return false;
   }
   return false;
@@ -135,14 +138,14 @@ Array.prototype.min = function() {
 };
 
 Array.prototype.containsObject = function(obj) {
-  var res;
+  var error2, res;
   try {
     res = _.find(this, function(val) {
       return _.isEqual(obj, val);
     });
     return typeof res === "object";
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     console.error("Please load underscore.js before using this.");
     return console.info("https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js");
   }
@@ -157,12 +160,12 @@ Object.toArray = function(obj) {
 };
 
 Object.size = function(obj) {
-  var key, size;
+  var error2, key, size;
   if (typeof obj !== "object") {
     try {
       return obj.length;
-    } catch (_error) {
-      e = _error;
+    } catch (error2) {
+      e = error2;
       console.error("Passed argument isn't an object and doesn't have a .length parameter");
       console.warn(e.message);
     }
@@ -235,7 +238,7 @@ copyText = function(text, zcObj, zcElement) {
     clip = new ClipboardEvent("copy", clipboardData);
     document.dispatchEvent(clip);
     return false;
-  } catch (_error) {}
+  } catch (undefined) {}
   if (zcObj != null) {
     clipboardData = {
       "text/plain": text
@@ -290,7 +293,7 @@ bindCopyEvents = function(selector) {
           if (isNull(text)) {
             try {
               text = p$(copySelector).value;
-            } catch (_error) {}
+            } catch (undefined) {}
           }
           console.info("Copying text", text);
         }
@@ -312,20 +315,22 @@ jsonTo64 = function(obj) {
 };
 
 encode64 = function(string) {
+  var error2;
   try {
     return Base64.encode(string);
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     console.warn("Bad encode string provided");
     return string;
   }
 };
 
 decode64 = function(string) {
+  var error2;
   try {
     return Base64.decode(string);
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     console.warn("Bad decode string provided");
     return string;
   }
@@ -339,7 +344,7 @@ post64 = function(string) {
 };
 
 jQuery.fn.polymerSelected = function(setSelected, attrLookup) {
-  var attr, itemSelector, val;
+  var attr, error2, error3, itemSelector, val;
   if (setSelected == null) {
     setSelected = void 0;
   }
@@ -360,8 +365,8 @@ jQuery.fn.polymerSelected = function(setSelected, attrLookup) {
     if (!isBool(setSelected)) {
       try {
         return $(this).get(0).select(setSelected);
-      } catch (_error) {
-        e = _error;
+      } catch (error2) {
+        e = error2;
         return false;
       }
     } else {
@@ -383,8 +388,8 @@ jQuery.fn.polymerSelected = function(setSelected, attrLookup) {
         itemSelector = $(this).find("paper-item")[toInt(val)];
         val = $(itemSelector).attr(attr);
       }
-    } catch (_error) {
-      e = _error;
+    } catch (error3) {
+      e = error3;
       return false;
     }
     if (val === "null" || (val == null)) {
@@ -450,7 +455,7 @@ toObject = function(array) {
 };
 
 loadJS = function(src, callback, doCallbackOnError) {
-  var errorFunction, onLoadFunction, s;
+  var error2, errorFunction, onLoadFunction, s;
   if (callback == null) {
     callback = new Object();
   }
@@ -473,8 +478,8 @@ loadJS = function(src, callback, doCallbackOnError) {
     if (typeof callback === "function") {
       try {
         callback();
-      } catch (_error) {
-        e = _error;
+      } catch (error2) {
+        e = error2;
         console.error("Script is already loaded, but there was an error executing the callback function - " + e.message);
       }
     }
@@ -487,7 +492,7 @@ loadJS = function(src, callback, doCallbackOnError) {
   s.src = src;
   s.async = true;
   onLoadFunction = function() {
-    var state;
+    var error3, error4, state;
     state = s.readyState;
     try {
       if (!callback.done && (!state || /loaded|complete/.test(state))) {
@@ -495,19 +500,20 @@ loadJS = function(src, callback, doCallbackOnError) {
         if (typeof callback === "function") {
           try {
             return callback();
-          } catch (_error) {
-            e = _error;
+          } catch (error3) {
+            e = error3;
             console.error("Postload callback error for " + src + " - " + e.message);
             return console.warn(e.stack);
           }
         }
       }
-    } catch (_error) {
-      e = _error;
+    } catch (error4) {
+      e = error4;
       return console.error("Onload error - " + e.message);
     }
   };
   errorFunction = function() {
+    var error3, error4;
     console.warn("There may have been a problem loading " + src);
     try {
       if (!callback.done) {
@@ -515,14 +521,14 @@ loadJS = function(src, callback, doCallbackOnError) {
         if (typeof callback === "function" && doCallbackOnError) {
           try {
             return callback();
-          } catch (_error) {
-            e = _error;
+          } catch (error3) {
+            e = error3;
             return console.error("Post error callback error - " + e.message);
           }
         }
       }
-    } catch (_error) {
-      e = _error;
+    } catch (error4) {
+      e = error4;
       return console.error("There was an error in the error handler! " + e.message);
     }
   };
@@ -558,7 +564,7 @@ String.prototype.toTitleCase = function() {
 };
 
 Function.prototype.debounce = function() {
-  var args, delayed, execAsap, func, threshold, timeout;
+  var args, delayed, error2, execAsap, func, threshold, timeout;
   threshold = arguments[0], execAsap = arguments[1], timeout = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
   if (threshold == null) {
     threshold = 300;
@@ -579,8 +585,8 @@ Function.prototype.debounce = function() {
   if (timeout != null) {
     try {
       clearTimeout(timeout);
-    } catch (_error) {
-      e = _error;
+    } catch (error2) {
+      e = error2;
     }
   } else if (execAsap) {
     func.apply(obj, args);
@@ -608,7 +614,7 @@ randomInt = function(lower, upper) {
 };
 
 animateLoad = function(elId) {
-  var selector;
+  var error2, selector;
   if (elId == null) {
     elId = "loader";
   }
@@ -646,8 +652,8 @@ animateLoad = function(elId) {
       $(selector).attr("active", true);
     }
     return false;
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return console.log('Could not animate loader', e.message);
   }
 };
@@ -655,7 +661,7 @@ animateLoad = function(elId) {
 startLoad = animateLoad;
 
 stopLoad = function(elId, fadeOut) {
-  var selector;
+  var error2, selector;
   if (elId == null) {
     elId = "loader";
   }
@@ -676,14 +682,14 @@ stopLoad = function(elId, fadeOut) {
         return $(selector).removeAttr("active");
       });
     }
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return console.log('Could not stop load animation', e.message);
   }
 };
 
 stopLoadError = function(message, elId, fadeOut) {
-  var selector;
+  var error2, selector;
   if (elId == null) {
     elId = "loader";
   }
@@ -707,8 +713,8 @@ stopLoadError = function(message, elId, fadeOut) {
         return $(selector).removeAttr("active");
       });
     }
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return console.log('Could not stop load error animation', e.message);
   }
 };
@@ -771,7 +777,7 @@ cleanupToasts = function() {
     timeout = ref[l];
     try {
       results.push(clearTimeout(timeout));
-    } catch (_error) {}
+    } catch (undefined) {}
   }
   return results;
 };
@@ -827,20 +833,21 @@ deepJQuery = function(selector) {
    * Cross-browser, works with Chrome, Firefox, Opera, Safari, and IE
    * Falls back to standard jQuery selector when everything fails.
    */
+  var error2, error3;
   try {
     if (!$("html /deep/ " + selector).exists()) {
       throw "Bad /deep/ selector";
     }
     return $("html /deep/ " + selector);
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     try {
       if (!$("html >>> " + selector).exists()) {
         throw "Bad >>> selector";
       }
       return $("html >>> " + selector);
-    } catch (_error) {
-      e = _error;
+    } catch (error3) {
+      e = error3;
       return $(selector);
     }
   }
@@ -861,7 +868,7 @@ bindClicks = function(selector) {
    * URL data-href.
    */
   $(selector).each(function() {
-    var callable, url;
+    var callable, error2, error3, url;
     try {
       url = $(this).attr("data-href");
       if (!isNull(url)) {
@@ -870,19 +877,19 @@ bindClicks = function(selector) {
           if (url === uri.o.attr("path") && $(this).prop("tagName").toLowerCase() === "paper-tab") {
             $(this).parent().prop("selected", $(this).index());
           }
-        } catch (_error) {
-          e = _error;
+        } catch (error2) {
+          e = error2;
           console.warn("tagname lower case error");
         }
         $(this).click(function() {
-          var ref, ref1, ref2;
+          var error3, ref, ref1, ref2;
           try {
             if (((ref = $(this).attr("newTab")) != null ? ref.toBool() : void 0) || ((ref1 = $(this).attr("newtab")) != null ? ref1.toBool() : void 0) || ((ref2 = $(this).attr("data-newtab")) != null ? ref2.toBool() : void 0)) {
               return openTab(url);
             } else {
               return goTo(url);
             }
-          } catch (_error) {
+          } catch (error3) {
             return goTo(url);
           }
         });
@@ -892,18 +899,19 @@ bindClicks = function(selector) {
         if (callable != null) {
           $(this).unbind();
           return $(this).click(function() {
+            var error3;
             try {
               console.log("Executing bound function " + callable + "()");
               return window[callable]();
-            } catch (_error) {
-              e = _error;
+            } catch (error3) {
+              e = error3;
               return console.error("'" + callable + "()' is a bad function - " + e.message);
             }
           });
         }
       }
-    } catch (_error) {
-      e = _error;
+    } catch (error3) {
+      e = error3;
       return console.error("There was a problem binding to #" + ($(this).attr("id")) + " - " + e.message);
     }
   });
@@ -911,7 +919,7 @@ bindClicks = function(selector) {
 };
 
 dateMonthToString = function(month) {
-  var conversionObj, rv;
+  var conversionObj, error2, rv;
   conversionObj = {
     0: "January",
     1: "February",
@@ -928,7 +936,7 @@ dateMonthToString = function(month) {
   };
   try {
     rv = conversionObj[month];
-  } catch (_error) {
+  } catch (error2) {
     rv = month;
   }
   return rv;
@@ -940,20 +948,20 @@ getPosterFromSrc = function(srcString) {
    * Take the "src" attribute of a video and get the
    * "png" screencap from it, and return the value.
    */
-  var dummy, split;
+  var dummy, error2, split;
   try {
     split = srcString.split(".");
     dummy = split.pop();
     split.push("png");
     return split.join(".");
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     return "";
   }
 };
 
 doCORSget = function(url, args, callback, callbackFail) {
-  var corsFail, createCORSRequest, settings, xhr;
+  var corsFail, createCORSRequest, error2, settings, xhr;
   if (callback == null) {
     callback = void 0;
   }
@@ -983,8 +991,8 @@ doCORSget = function(url, args, callback, callbackFail) {
     }).fail(function(result, status) {
       return console.warn("Couldn't perform jQuery AJAX CORS. Attempting manually.");
     });
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     console.warn("There was an error using jQuery to perform the CORS request. Attemping manually.");
   }
   url = url + "?" + args;
@@ -1064,17 +1072,18 @@ lightboxImages = function(selector, lookDeeply) {
   jqo = lookDeeply ? d$(selector) : $(selector);
   return loadJS("bower_components/imagelightbox/dist/imagelightbox.min.js", function() {
     jqo.click(function(e) {
+      var error2;
       try {
         e.preventDefault();
         e.stopPropagation();
         $(this).imageLightbox(options).startImageLightbox();
         return console.warn("Event propagation was stopped when clicking on this.");
-      } catch (_error) {
-        e = _error;
+      } catch (error2) {
+        e = error2;
         return console.error("Unable to lightbox this image!");
       }
     }).each(function() {
-      var imgUrl, tagHtml;
+      var error2, imgUrl, tagHtml;
       console.log("Using selectors '" + selector + "' / '" + this + "' for lightboximages");
       try {
         if ($(this).prop("tagName").toLowerCase() === "img" && $(this).parent().prop("tagName").toLowerCase() !== "a") {
@@ -1094,8 +1103,8 @@ lightboxImages = function(selector, lookDeeply) {
           $(this).replaceWith("<a href='" + imgUrl + "' class='lightboximage'>" + tagHtml + "</a>");
           return $("a[href='" + imgUrl + "']").imageLightbox(options);
         }
-      } catch (_error) {
-        e = _error;
+      } catch (error2) {
+        e = error2;
         return console.log("Couldn't parse through the elements");
       }
     });
@@ -1210,7 +1219,7 @@ foo = function() {
 };
 
 safariDialogHelper = function(selector, counter, callback) {
-  var delayTimer, newCount;
+  var delayTimer, error2, newCount;
   if (selector == null) {
     selector = "#download-chooser";
   }
@@ -1236,8 +1245,8 @@ safariDialogHelper = function(selector, counter, callback) {
         callback();
       }
       return stopLoad();
-    } catch (_error) {
-      e = _error;
+    } catch (error2) {
+      e = error2;
       newCount = counter + 1;
       delayTimer = 250;
       return delay(delayTimer, function() {
@@ -1257,9 +1266,10 @@ bindDismissalRemoval = function() {
 };
 
 p$ = function(selector) {
+  var error2;
   try {
     return $$(selector)[0];
-  } catch (_error) {
+  } catch (error2) {
     return $(selector).get(0);
   }
 };
@@ -1317,7 +1327,7 @@ animateHoverShadows = function(selector, defaultElevation, raisedElevation) {
 };
 
 checkFileVersion = function(forceNow, file) {
-  var checkVersion, key, keyExists;
+  var checkVersion, error2, key, keyExists;
   if (forceNow == null) {
     forceNow = false;
   }
@@ -1375,7 +1385,7 @@ checkFileVersion = function(forceNow, file) {
   };
   try {
     keyExists = window._adp.lastMod[key];
-  } catch (_error) {
+  } catch (error2) {
     keyExists = false;
   }
   if (forceNow || (window._adp.lastMod == null) || !keyExists) {
@@ -1416,6 +1426,7 @@ checkLoggedIn = function(callback) {
 };
 
 $(function() {
+  var error2;
   bindClicks();
   formatScientificNames();
   lightboxImages();
@@ -1425,8 +1436,8 @@ $(function() {
     $("body").tooltip({
       selector: "[data-toggle='tooltip']"
     });
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     console.warn("Tooltips were attempted to be set up, but do not exist");
   }
   try {
@@ -1439,7 +1450,7 @@ $(function() {
     } else {
       return console.info("No admin setup requested");
     }
-  } catch (_error) {}
+  } catch (undefined) {}
 });
 
 
@@ -1478,7 +1489,7 @@ geo.init = function(doCallback) {
     window.locationData.lat = 37.871527;
     window.locationData.lng = -122.262113;
     getLocation();
-  } catch (_error) {}
+  } catch (undefined) {}
   cartoDBCSS = "<link rel=\"stylesheet\" href=\"https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
   if (doCallback == null) {
@@ -1599,7 +1610,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   geo.mapId = targetId;
   geo.mapSelector = "#" + targetId;
   postConfig = function() {
-    var fakeDiv, forceCallback, gMapCallback, googleMapOptions;
+    var error2, fakeDiv, forceCallback, gMapCallback, googleMapOptions;
     if (options == null) {
       options = {
         cartodb_logo: false,
@@ -1619,11 +1630,12 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     if (typeof callback !== "function") {
       callback = function(layer, cartoMap) {
         return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
+          var error2;
           geo.mapLayer = layer;
           try {
             layer.setInteraction(true);
             return layer.on("featureOver", defaultMapMouseOverBehaviour);
-          } catch (_error) {
+          } catch (error2) {
             return console.warn("Can't set carto map interaction");
           }
         });
@@ -1660,7 +1672,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
           return callback(null, geo.cartoMap);
         }
       });
-    } catch (_error) {
+    } catch (error2) {
       console.warn("The map threw an error! " + e.message);
       console.wan(e.stack);
       clearTimeout(forceCallback);
@@ -1718,7 +1730,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
   startLoad();
   try {
     data = totalData.data;
-  } catch (_error) {}
+  } catch (undefined) {}
   if (typeof data !== "object") {
     console.info("This function requires the base data to be a JSON object.");
     toastStatusMessage("Your data is malformed. Please double check your data and try again.");
@@ -1752,7 +1764,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, e2, err, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, max, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
+    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, e2, err, error2, error3, error4, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, max, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
     if (result.status) {
 
       /*
@@ -1813,8 +1825,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             }
           }
         }
-      } catch (_error) {
-        e = _error;
+      } catch (error2) {
+        e = error2;
         console.warn("Error parsing the user transect ring - " + e.message);
         userTransectRing = void 0;
       }
@@ -1897,7 +1909,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
               }
               try {
                 value = value.replace("'", "&#95;");
-              } catch (_error) {}
+              } catch (undefined) {}
               switch (column) {
                 case "decimalLongitude":
                   geoJsonGeom.coordinates[1] = value;
@@ -1980,8 +1992,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             return console.log("Not running upload progress indicator", prog, window._adp.uploader, max);
           }
         })(0);
-      } catch (_error) {
-        e = _error;
+      } catch (error3) {
+        e = error3;
         console.warn("Can't show upload status - " + e.message);
         console.warn(e.stack);
         try {
@@ -1994,8 +2006,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
               return doStillWorking();
             });
           });
-        } catch (_error) {
-          e2 = _error;
+        } catch (error4) {
+          e2 = error4;
           console.error("Can't show backup upload notices! " + e2.message);
           console.warn(e2.stack);
         }
@@ -2026,7 +2038,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         console.info("Carto was successful! Got results", cartoResults);
         try {
           prettyHtml = JsonHuman.format(cartoResults);
-        } catch (_error) {}
+        } catch (undefined) {}
         bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
         toastStatusMessage("Data parse and upload successful");
         geo.dataTable = dataTable;
@@ -2092,7 +2104,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           clearTimeout(window._adp.secondaryTimeout);
           window._adp.uploader = false;
           return $("#upload-data").removeAttr("disabled");
-        } catch (_error) {}
+        } catch (undefined) {}
       });
     } else {
       console.error("Unable to authenticate session. Please log in.");
@@ -2309,7 +2321,7 @@ geo.getBoundingRectangle = function(coordinateSet) {
 };
 
 geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
-  var geocoder, ll, request;
+  var error2, geocoder, ll, request;
   if (boundingBox == null) {
     boundingBox = geo.boundingBox;
   }
@@ -2324,8 +2336,8 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
       geocoder = new google.maps.Geocoder;
       geo.geocoder = geocoder;
     }
-  } catch (_error) {
-    e = _error;
+  } catch (error2) {
+    e = error2;
     console.error("Couldn't instance a google map geocoder - " + e.message);
     console.warn(e.stack);
     return false;
