@@ -62,6 +62,7 @@ window.loadAdminUi = ->
       </section>
       """
       $("main #main-body").before(articleHtml)
+      $(".fill-user-fullname").text $.cookie("#{adminParams.domain}_fullname}")
       checkInitLoad ->
         populateAdminActions()
         bindClicks()
