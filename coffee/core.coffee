@@ -128,12 +128,14 @@ roundNumberSigfig = (number, digits = 0) ->
 
 
 deEscape = (string) ->
-  string = string.replace(/\&amp;#/mg, '&#')
   string = string.replace(/\&quot;/mg, '"')
   string = string.replace(/\&quote;/mg, '"')
   string = string.replace(/\&#95;/mg, '_')
   string = string.replace(/\&#39;/mg, "'")
   string = string.replace(/\&#34;/mg, '"')
+  string = string.replace(/\&#62;/mg, '>')
+  string = string.replace(/\&#60;/mg, '<')
+  string = string.replace(/\&amp;#/mg, '&#') # The rest
   string
 
 
