@@ -267,6 +267,7 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
       };
       clip = new ClipboardEvent("copy", clipboardData);
       document.dispatchEvent(clip);
+      toastStatusMessage("ARK resolver path copied to clipboard");
       return false;
     } catch (error1) {
       e = error1;
@@ -299,7 +300,14 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
           _adp.resetClipboard = true;
           return copyLink();
         });
-        return _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
+        _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
+      }
+      if (e.name === "flash-disabled") {
+        console.info("No flash on this system");
+        ZeroClipboard.destroy();
+        $("#copy-ark").remove();
+        $(".ark-identifier").removeClass("col-xs-9 col-md-11").addClass("col-xs-12");
+        return toastStatusMessage("Clipboard copying isn't available on your system");
       }
     });
   } else {

@@ -255,6 +255,7 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
         "text/plain": url
       clip = new ClipboardEvent("copy", clipboardData)
       document.dispatchEvent(clip)
+      toastStatusMessage "ARK resolver path copied to clipboard"
       return false
     catch e
       console.error "Error creating copy: #{e.message}"
@@ -272,6 +273,7 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
       else
         toastStatusMessage "Error copying to clipboard"
     zeroClipObj.on "error", (e) ->
+      #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
       console.error "Error copying to clipboard"
       console.warn "Got", e
       if e.name is "flash-overdue"
@@ -284,6 +286,16 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
           _adp.resetClipboard = true
           copyLink()
         _adp.zcClient = new ZeroClipboard $("#copy-ark").get 0
+      # Case for no flash at all
+      if e.name is "flash-disabled"
+        # stuff
+        console.info "No flash on this system"
+        ZeroClipboard.destroy()
+        $("#copy-ark").remove()
+        $(".ark-identifier")
+        .removeClass "col-xs-9 col-md-11"
+        .addClass "col-xs-12"
+        toastStatusMessage "Clipboard copying isn't available on your system"
   else
     console.error "Can't use HTML, and ZeroClipboard wasn't passed"
   false
