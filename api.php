@@ -118,7 +118,9 @@ function searchProject($get) {
         "project_title" => $q
     );
     $cols = array("project_id", "project_title");
-    $response = array();
+    $response = array(
+        "search" => $q,
+    );
     if(!empty($get["cols"])) {
         if(checkColumnExists($get["cols"])) {
             # Replace the defaults
@@ -129,7 +131,9 @@ function searchProject($get) {
     }
     $cols[] = "public";
     $response["status"] = true;
+    $response["cols"] = $cols;
     $response["result"] = $db->getQueryResults($search, $cols, "OR", true, true);
+    $response["debug"] = $db->getQueryResults($search, $cols, "OR", true, true, false, true);
     returnAjax($response);
 }
 
