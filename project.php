@@ -263,9 +263,13 @@ $project = $result[0];
         <div class="needs-auth col-xs-12" id="auth-block">
 <?php
    $limitedProject = array();
-   $carto = json_decode($project["carto_id"], true);
+   $cleanCarto = deEscape($project["carto_id"]);
+   $carto = json_decode($cleanCarto, true);
    $cartoLimited = array(
-       "bounding_polygon" => $carto["bounding_polygon"],
+       "bounding_polygon" => array(
+           "fillColor" => $carto["bounding_polygon"]["fillColor"],
+           "fillOpacity" => $carto["bounding_polygon"]["fillOpacity"],
+       ),
    );
    $limitedProjectCols = array(
        "public",
@@ -279,7 +283,7 @@ $project = $result[0];
    foreach($limitedProjectCols as $col) {
        $limitedProject[$col] = $project[$col];
    }
-   $limitedProject["carto_id"] = json_encode($cartoLimited);
+   $limitedProject["carto_id"] = $carto;
    $jsonDataLimited = json_encode($limitedProject);
    $jsonData = json_encode($project);
 
@@ -300,6 +304,7 @@ if(boolstr($project["public"]) === true) {
           <script type="text/javascript">
             setPublicData(<?php echo $jsonDataLimited; ?>);
           </script>
+
 <?php
    }
    ?>
