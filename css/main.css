@@ -7428,6 +7428,10 @@ h1 paper-icon-button {
   margin-left: 0;
   margin-right: 0;
 }
+#auth-block google-map.center-block {
+  float: none;
+  margin-left: auto !important;
+}
 #auth-block google-map:not(.center-block) {
   margin-left: 15px;
 }
