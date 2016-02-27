@@ -11,6 +11,18 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
   startLoad()
   console.info "Checking authorization for #{projectId}"
   checkLoggedIn (result) ->
+    unless projectId?
+      if result.status
+        console.info "Logged in user, no project"
+        adminButton = """
+        <paper-icon-button icon="icons:dashboard" class="authorized-action" id="show-actions" data-href="#{uri.urlString}admin-page.html" data-toggle="tooltip" title="Administration Dashboard"> </paper-icon-button>
+        """
+        $("#title").append adminButton
+        bindClicks ".authorized-action"
+      else
+        console.info "No longer logged in"
+      stopLoad()
+      return false
     unless result.status
       console.info "Non logged-in user or unauthorized user"
       renderPublicMap()
@@ -221,7 +233,7 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
     """
   adminButton = """
   <paper-icon-button icon="icons:dashboard" class="authorized-action" id="show-actions" data-href="#{uri.urlString}admin-page.html" data-toggle="tooltip" title="Administration Dashboard"> </paper-icon-button>
-  """  
+  """
   $("#title").append editButton + adminButton
   authorData = JSON.parse projectData.author_data
   showEmailField authorData.contact_email

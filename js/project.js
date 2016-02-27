@@ -21,7 +21,19 @@ checkProjectAuthorization = function(projectId, callback) {
   startLoad();
   console.info("Checking authorization for " + projectId);
   checkLoggedIn(function(result) {
-    var args, dest;
+    var adminButton, args, dest;
+    if (projectId == null) {
+      if (result.status) {
+        console.info("Logged in user, no project");
+        adminButton = "<paper-icon-button icon=\"icons:dashboard\" class=\"authorized-action\" id=\"show-actions\" data-href=\"" + uri.urlString + "admin-page.html\" data-toggle=\"tooltip\" title=\"Administration Dashboard\"> </paper-icon-button>";
+        $("#title").append(adminButton);
+        bindClicks(".authorized-action");
+      } else {
+        console.info("No longer logged in");
+      }
+      stopLoad();
+      return false;
+    }
     if (!result.status) {
       console.info("Non logged-in user or unauthorized user");
       renderPublicMap();
