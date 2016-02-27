@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, renderMapWithData, showEmailField,
+var checkProjectAuthorization, copyLink, postAuthorizeRender, renderEmail, renderMapWithData, searchProjects, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -246,13 +246,32 @@ copyLink = function(html5) {
   return false;
 };
 
+searchProjects = function() {
+  var args, search;
+  search = $("#project-search").value();
+  console.info("Searching on " + search + " ...");
+  args = "action=search_project&q=" + search;
+  $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+    return console.info(reult);
+  }).error(function(result, status) {
+    return console.error(result, status);
+  });
+  return false;
+};
+
 $(function() {
   _adp.projectId = uri.o.param("id");
   checkProjectAuthorization();
-  return $("#project-list button").unbind().click(function() {
+  $("#project-list button").unbind().click(function() {
     var project;
     project = $(this).attr("data-project");
     return goTo(uri.urlString + "project.php?id=" + project);
+  });
+  $("#project-search").keyup(function() {
+    return searchProjects.debounce();
+  });
+  return $("#copy-ark").click(function() {
+    return copyLink();
   });
 });
 

@@ -161,18 +161,22 @@ $project = $result[0];
               if(empty($project["project_id"])) continue;
               $i++;
               if($i >= 25 ) break;
-              $authorData = json_decode($project["author_data"]);
+              $authorData = json_decode($project["author_data"], true);
               $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock"></iron-icon>';
-              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["affiliation"];
+              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["name"] . " at " . $authorData["affiliation"];
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
         <h2 class="col-xs-12 status-notice">Showing 25 newest projects</h2>
-        <ul id="project-list" class="col-xs-12 col-md-6">
+        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6">
           <?php echo $html; ?>
         </ul>
-        <div class="col-xs-12 col-md-6">
-
+        <div class="col-xs-12 col-md-4 col-lg-6 form-inline">
+          <h3>Search Projects</h3>
+          <div class="search-project form-group">
+            <label for="project-search">Search Projects</label>
+            <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+          </div>
         </div>
         <?php } else if (!$validProject){ ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
@@ -195,7 +199,7 @@ $project = $result[0];
              ?>
           <div class="row">
             <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
-            <paper-fab icon="icons:content-copy" class="materialblue click" data-function="copyLink" data-ark="<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
+            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
           </div>
           <paper-input readonly label="Project pathogen" value="<?php echo $project["disease"]; ?>"></paper-input>
           <paper-input readonly label="Project PI" value="<?php echo $project["pi_lab"]; ?>"></paper-input>
