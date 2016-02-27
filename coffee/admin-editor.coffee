@@ -392,6 +392,7 @@ loadEditor = (projectPreload) ->
           </section>
           """
           $("#main-body").html html
+          p$("#project-notes").bindValue = deEscape project.sample_notes
           # Watch for changes and toggle save watcher state
           # Events
           ta = p$("#project-notes").textarea
