@@ -211,7 +211,7 @@ $project = $result[0];
         <h2 class="col-xs-12">
           Project Abstract
         </h2>
-        <marked-element class="project-abstract col-xs-12">
+        <marked-element class="project-abstract col-xs-12 indent">
           <div class="markdown-html"></div>
           <script type="text/markdown"><?php echo deEscape($project["sample_notes"]); ?></script>
         </marked-element>
