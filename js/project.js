@@ -361,12 +361,6 @@ renderPublicMap = function(projectData) {
   try {
     console.info("Working with limited data", projectData);
     cartoData = projectData.carto_id;
-    try {
-      zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
-      console.info("Got zoom", zoom);
-    } catch (_error) {
-      zoom = "";
-    }
     poly = cartoData.bounding_polygon;
     mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
     usedPoints = new Array();
@@ -387,6 +381,12 @@ renderPublicMap = function(projectData) {
       lng: projectData.bounding_box_w
     };
     paths = [nw, ne, se, sw];
+    try {
+      zoom = getMapZoom(paths, "#transect-viewport");
+      console.info("Got zoom", zoom);
+    } catch (_error) {
+      zoom = "";
+    }
     for (j = 0, len = paths.length; j < len; j++) {
       point = paths[j];
       if (indexOf.call(usedPoints, point) < 0) {
@@ -395,7 +395,7 @@ renderPublicMap = function(projectData) {
       }
     }
     mapHtml += "    </google-map-poly>";
-    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block\">\n  " + mapHtml + "\n</google-map>";
+    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Approximate Mapping Data</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block\">\n        " + mapHtml + "\n  </google-map>\n</div>";
     return $("#auth-block").append(googleMap);
   } catch (_error) {
     e = _error;
