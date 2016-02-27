@@ -255,13 +255,13 @@ searchProjects = function() {
   item = p$("#search-filter").selectedItem;
   cols = $(item).attr("data-cols");
   console.info("Searching on " + search + " ... in " + cols);
-  args = "action=search_project&q=" + search;
+  args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
     var button, html, icon, j, len, project, projects, publicState;
     console.info(result);
+    html = "";
     projects = Object.toArray(result.result);
     if (projects.length > 0) {
-      html = "";
       for (j = 0, len = projects.length; j < len; j++) {
         project = projects[j];
         publicState = project["public"].toBool();
@@ -269,12 +269,12 @@ searchProjects = function() {
         button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "/project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
-      return bindClicks(".search-proj-link");
+      bindClicks(".search-proj-link");
     } else {
-      return html = "<p><em>No results found for \"<strong>" + search + "</strong>\"";
+      html = "<p><em>No results found for \"<strong>" + search + "</strong>\"";
     }
-  });
-  $("#project-result-container").html(html).error(function(result, status) {
+    return $("#project-result-container").html(html);
+  }).error(function(result, status) {
     return console.error(result, status);
   });
   return false;
