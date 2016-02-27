@@ -293,9 +293,7 @@ if(boolstr($project["public"]) === true) {
           <script type="text/javascript">
             renderMapWithData(<?php echo $jsonData; ?>);
           </script>
-          <pre>
-            <?php print_r($result); ?>
-          </pre>
+
 <?php
 } else {
     # Set the most limited public data possible. After correct user
