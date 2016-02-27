@@ -180,11 +180,15 @@ $project = $result[0];
         <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6">
           <?php echo $html; ?>
         </ul>
-        <div class="col-xs-12 col-md-4 col-lg-6 form-inline">
+        <div class="col-xs-12 col-md-4 col-lg-6">
           <h3>Search Projects</h3>
-          <div class="search-project form-group row">
-            <label for="project-search" class="col-xs-12 col-md-5 col-lg-3">Search Projects</label>
-            <input type="text" class="form-control col-md-7 col-xs-12" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+          <div class="form-horizontal">
+            <div class="search-project form-group">
+              <label for="project-search" class="col-xs-12 col-md-5 col-lg-3">Search Projects</label>
+              <div class="col-xs-12 col-md-7 col-lg-9">
+                <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+              </div>
+            </div>
             <br/>
           </div>
           <br/>
