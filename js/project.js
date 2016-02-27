@@ -335,12 +335,12 @@ searchProjects = function() {
         button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
-      bindClicks(".search-proj-link");
     } else {
       s = (ref = result.search) != null ? ref : search;
       html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
     }
-    return $("#project-result-container").html(html);
+    $("#project-result-container").html(html);
+    return bindClicks(".search-proj-link");
   }).error(function(result, status) {
     return console.error(result, status);
   });
