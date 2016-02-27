@@ -222,7 +222,7 @@ $project = $result[0];
           $authorData = json_decode($project["author_data"], true);
 
              ?>
-          <div class="row">
+          <div class="row basics-list">
             <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
             <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-clipboard-text="https://n2t.net/<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
           </div>
