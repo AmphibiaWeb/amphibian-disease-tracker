@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, error1, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -105,7 +105,7 @@ renderMapWithData = function(projectData, force) {
   try {
     zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
     console.info("Got zoom", zoom);
-  } catch (_error) {
+  } catch (error1) {
     zoom = "";
   }
   poly = cartoData.bounding_polygon;
@@ -249,7 +249,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
 };
 
 copyLink = function(zeroClipObj, zeroClipEvent, html5) {
-  var ark, clip, clipboardData, e, url;
+  var ark, clip, clipboardData, e, error1, url;
   if (zeroClipObj == null) {
     zeroClipObj = _adp.zcClient;
   }
@@ -268,8 +268,8 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
       clip = new ClipboardEvent("copy", clipboardData);
       document.dispatchEvent(clip);
       return false;
-    } catch (_error) {
-      e = _error;
+    } catch (error1) {
+      e = error1;
       console.error("Error creating copy: " + e.message);
       console.warn(e.stack);
     }
@@ -353,7 +353,7 @@ setPublicData = function(projectData) {
 };
 
 renderPublicMap = function(projectData) {
-  var cartoData, e, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  var cartoData, e, error1, error2, error3, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
   if (projectData == null) {
     projectData = publicData;
   }
@@ -366,7 +366,7 @@ renderPublicMap = function(projectData) {
       console.info("Not rendering low-data public map for public project");
       return false;
     }
-  } catch (_error) {
+  } catch (error1) {
     console.error("Invalid project data passed!");
     console.warn(projectData);
     return false;
@@ -397,7 +397,7 @@ renderPublicMap = function(projectData) {
     try {
       zoom = getMapZoom(paths, "#transect-viewport");
       console.info("Got zoom", zoom);
-    } catch (_error) {
+    } catch (error2) {
       zoom = "";
     }
     for (j = 0, len = paths.length; j < len; j++) {
@@ -410,8 +410,8 @@ renderPublicMap = function(projectData) {
     mapHtml += "    </google-map-poly>";
     googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Approximate Mapping Data</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\">\n        " + mapHtml + "\n  </google-map>\n</div>";
     return $("#auth-block").append(googleMap);
-  } catch (_error) {
-    e = _error;
+  } catch (error3) {
+    e = error3;
     stopLoadError("Couldn't render map");
     console.error("Map rendering error - " + e.message);
     return console.warn(e.stack);

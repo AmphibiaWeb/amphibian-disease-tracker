@@ -57,7 +57,7 @@ window.loadAdminUi = function() {
    * fetches/draws the page contents if it's OK. Otherwise, boots the
    * user back to the login page.
    */
-  var e;
+  var e, error1;
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
@@ -69,8 +69,8 @@ window.loadAdminUi = function() {
       });
       return false;
     });
-  } catch (_error) {
-    e = _error;
+  } catch (error1) {
+    e = error1;
     $("main #main-body").html("<div class='bs-callout bs-callout-danger'><h4>Application Error</h4><p>There was an error in the application. Please refresh and try again. If this persists, please contact administration.</p></div>");
   }
   return false;
@@ -199,7 +199,7 @@ finalizeData = function() {
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var author, dataCheck, e, title;
+  var author, dataCheck, e, error1, title;
   startLoad();
   try {
     dataCheck = true;
@@ -212,7 +212,7 @@ finalizeData = function() {
           dataCheck = false;
           return false;
         }
-      } catch (_error) {}
+      } catch (undefined) {}
     });
     if (!dataCheck) {
       stopLoadError("Please fill out all required fields");
@@ -224,7 +224,7 @@ finalizeData = function() {
     }
     title = p$("#project-title").value;
     return mintBcid(_adp.projectId, title, function(result) {
-      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, excursion, fieldNumbers, input, key, l, len, len1, m, mString, methods, months, postBBLocality, postData, ref, ref1, ref2, ref3, ref4, ref5, row, rowLat, rowLng, sampleMethods, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, fieldNumbers, input, key, l, len, len1, m, mString, methods, months, postBBLocality, postData, ref, ref1, ref2, ref3, ref4, ref5, row, rowLat, rowLng, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -385,7 +385,7 @@ finalizeData = function() {
           } else {
             try {
               _adp.locality = p$("#locality-input").value;
-            } catch (_error) {
+            } catch (error1) {
               _adp.locality = "";
             }
           }
@@ -398,21 +398,21 @@ finalizeData = function() {
         } else {
           try {
             _adp.locality = p$("#locality-input").value;
-          } catch (_error) {
+          } catch (error2) {
             _adp.locality = "";
           }
           console.warn("How did we get to this state? No locality precomputed, no data file");
           return postBBLocality();
         }
-      } catch (_error) {
-        e = _error;
+      } catch (error3) {
+        e = error3;
         stopLoadError("There was a problem with the application. Please try again later. (E-003)");
         console.error("JavaScript error in saving data (E-003)! FinalizeData said: " + e.message);
         return console.warn(e.stack);
       }
     });
-  } catch (_error) {
-    e = _error;
+  } catch (error1) {
+    e = error1;
     stopLoadError("There was a problem with the application. Please try again later. (E-004)");
     console.error("JavaScript error in saving data (E-004)! FinalizeData said: " + e.message);
     return console.warn(e.stack);
@@ -505,7 +505,7 @@ bootstrapTransect = function() {
       address: locality
     };
     return geocoder.geocode(request, function(result, status) {
-      var bbEW, bbNS, boundingBox, bounds, doCallback, e, lat, lng, loc;
+      var bbEW, bbNS, boundingBox, bounds, doCallback, e, error1, lat, lng, loc;
       if (status === google.maps.GeocoderStatus.OK) {
         console.info("Google said:", result);
         if (!$("#locality-lookup-result").exists()) {
@@ -529,8 +529,8 @@ bootstrapTransect = function() {
             east: bbNS.j,
             west: bbNS.N
           };
-        } catch (_error) {
-          e = _error;
+        } catch (error1) {
+          e = error1;
           console.warn("Danger: There was an error calculating the bounding box (" + e.message + ")");
           console.warn(e.stack);
           console.info("Got bounds", bounds);
@@ -548,7 +548,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var coords, e, i, k, options, totalLat, totalLng;
+    var coords, e, error1, i, k, options, totalLat, totalLng;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -606,19 +606,19 @@ bootstrapTransect = function() {
       geo.mapParams = options;
       $("#carto-map-container").empty();
       return createMap(null, "carto-map-container", options, function(layer, map) {
-        var e;
+        var e, error1;
         try {
           mapOverlayPolygon(overlayBoundingBox);
           stopLoad();
-        } catch (_error) {
-          e = _error;
+        } catch (error1) {
+          e = error1;
           console.error("There was an error drawing your bounding box - " + e.emssage);
           stopLoadError("There was an error drawing your bounding box - " + e.emssage);
         }
         return false;
       });
-    } catch (_error) {
-      e = _error;
+    } catch (error1) {
+      e = error1;
       console.error("There was an error rendering the map - " + e.message);
       return stopLoadError("There was an error rendering the map - " + e.message);
     }
@@ -714,7 +714,7 @@ bootstrapTransect = function() {
 };
 
 mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptions, map) {
-  var chAltPoints, chPoints, chSortedPoints, coordinateArray, cpHull, e, eastCoord, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
+  var chAltPoints, chPoints, chSortedPoints, coordinateArray, cpHull, e, eastCoord, error1, gMapPaths, gMapPathsAlt, gMapPoly, gPolygon, geoJSON, geoMultiPoly, k, mpArr, northCoord, points, southCoord, temp, westCoord;
   if (regionProperties == null) {
     regionProperties = null;
   }
@@ -776,8 +776,8 @@ mapOverlayPolygon = function(polygonObjectParams, regionProperties, overlayOptio
     coordinateArray.push(mpArr);
     try {
       cpHull = getConvexHullPoints(chSortedPoints);
-    } catch (_error) {
-      e = _error;
+    } catch (error1) {
+      e = error1;
       console.error("Convex hull points CHP failed! - " + e.message);
       console.warn(e.stack);
       console.info(chSortedPoints);
@@ -875,12 +875,12 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
       marker.iw = markerContainer.infoWindow;
       marker.iwk = k;
       marker.addListener("click", function() {
-        var e;
+        var e, error1;
         try {
           this.iw.open(map, this);
           return console.info("Opening infoWindow #" + this.iwk);
-        } catch (_error) {
-          e = _error;
+        } catch (error1) {
+          e = error1;
           return console.error("Invalid infowindow @ " + this.iwk + "!", infoWindows, markerContainer, this.iw);
         }
       });
@@ -978,12 +978,13 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
     window.dropperParams.uploadPath = "uploaded/" + user + "/";
     needsInit = window.dropperParams.hasInitialized === true;
     loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
+      var error1;
       console.info("Loaded drag drop helper");
       if (needsInit) {
         console.info("Reinitialized dropper");
         try {
           window.dropperParams.initialize();
-        } catch (_error) {
+        } catch (error1) {
           console.warn("Couldn't reinitialize dropper!");
         }
       }
@@ -1003,7 +1004,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
          * When invoked, it calls the "self" helper methods to actually do
          * the file sending.
          */
-        var e, linkPath, longType, mediaType, pathPrefix, previewHtml;
+        var e, error2, linkPath, longType, mediaType, pathPrefix, previewHtml;
         window.dropperParams.dropzone.removeAllFiles();
         if (typeof result !== "object") {
           console.error("Dropzone returned an error - " + result);
@@ -1065,8 +1066,8 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
             case "image":
               return imageHandler();
           }
-        } catch (_error) {
-          e = _error;
+        } catch (error2) {
+          e = error2;
           return toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
         }
       };
@@ -1188,7 +1189,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1207,11 +1208,11 @@ newGeoDataHandler = function(dataObject) {
     if (geo.geocoder == null) {
       try {
         geo.geocoder = new google.maps.Geocoder;
-      } catch (_error) {}
+      } catch (undefined) {}
     }
     try {
       sampleRow = dataObject[0];
-    } catch (_error) {
+    } catch (error1) {
       toastStatusMessage("Your data file was malformed, and could not be parsed. Please try again.");
       removeDataFile();
       return false;
@@ -1347,7 +1348,7 @@ newGeoDataHandler = function(dataObject) {
           default:
             try {
               cleanValue = value.trim();
-            } catch (_error) {
+            } catch (error2) {
               cleanValue = value;
             }
         }
@@ -1367,7 +1368,7 @@ newGeoDataHandler = function(dataObject) {
       dataAttrs.fimsData.push(fimsExtra);
       try {
         tRow.fimsExtra = JSON.stringify(fimsExtra);
-      } catch (_error) {
+      } catch (error3) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
@@ -1398,7 +1399,7 @@ newGeoDataHandler = function(dataObject) {
         p$("#transect-input-toggle").checked = true;
         textEntry += "\n";
         $(p$("#coord-input").textarea).val(textEntry);
-      } catch (_error) {}
+      } catch (undefined) {}
       return j;
     };
     if (geo.boundingBox == null) {
@@ -1411,7 +1412,7 @@ newGeoDataHandler = function(dataObject) {
       try {
         p$("#locality-input").value = locality;
         return p$("#locality-input").readonly = true;
-      } catch (_error) {}
+      } catch (undefined) {}
     });
     samplesMeta = {
       mortality: 0,
@@ -1452,7 +1453,7 @@ newGeoDataHandler = function(dataObject) {
       samples: samplesMeta
     };
     validateData(totalData, function(validatedData) {
-      var cladeList, e, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
+      var cladeList, e, error4, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
       taxonList = new Array();
       cladeList = new Array();
@@ -1479,8 +1480,8 @@ newGeoDataHandler = function(dataObject) {
           if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
             cladeList.push(taxon.response.validated_taxon.family);
           }
-        } catch (_error) {
-          e = _error;
+        } catch (error4) {
+          e = error4;
           console.warn("Couldn't get the family! " + e.message, taxon.response);
           console.warn(e.stack);
         }
@@ -1503,8 +1504,8 @@ newGeoDataHandler = function(dataObject) {
         return mapOverlayPolygon(validatedData.transectRing);
       });
     });
-  } catch (_error) {
-    e = _error;
+  } catch (error4) {
+    e = error4;
     console.error(e.message);
     toastStatusMessage("There was a problem parsing your data");
   }
@@ -1512,7 +1513,7 @@ newGeoDataHandler = function(dataObject) {
 };
 
 excelDateToUnixTime = function(excelTime) {
-  var daysFrom1900to1970, daysFrom1904to1970, secondsPerDay, t;
+  var daysFrom1900to1970, daysFrom1904to1970, error1, secondsPerDay, t;
   try {
     if ((0 < excelTime && excelTime < 10e5)) {
 
@@ -1545,7 +1546,7 @@ excelDateToUnixTime = function(excelTime) {
     } else {
       t = Date.parse(excelTime);
     }
-  } catch (_error) {
+  } catch (error1) {
     t = Date.now();
   }
   return t;
@@ -1629,7 +1630,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, len3, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, p, point, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ta, topPosition, usedPoints, userHtml, year, yearPretty, years;
+        var affixOptions, anuraState, authorData, cartoParsed, caudataState, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, len3, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, p, point, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ta, topPosition, usedPoints, userHtml, year, yearPretty, years;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1733,7 +1734,7 @@ loadEditor = function(projectPreload) {
           gymnophionaState = project.includes_gymnophiona.toBool() ? "checked disabled" : "disabled";
           try {
             cartoParsed = JSON.parse(deEscape(project.carto_id));
-          } catch (_error) {
+          } catch (error1) {
             console.error("Couldn't parse the carto JSON!", project.carto_id);
             stopLoadError("We couldn't parse your data. Please try again later.");
             cartoParsed = new Object();
@@ -1761,7 +1762,7 @@ loadEditor = function(projectPreload) {
           try {
             authorData = JSON.parse(project.author_data);
             creation = new Date(authorData.entry_date);
-          } catch (_error) {
+          } catch (error2) {
             authorData = new Object();
             creation = new Object();
             creation.toLocaleString = function() {
@@ -1870,8 +1871,8 @@ loadEditor = function(projectPreload) {
             }
           });
           return getProjectCartoData(project.carto_id);
-        } catch (_error) {
-          e = _error;
+        } catch (error3) {
+          e = error3;
           stopLoadError("There was an error loading your project");
           console.error("Unhandled exception loading project! " + e.message);
           console.warn(e.stack);
@@ -2028,11 +2029,11 @@ getProjectCartoData = function(cartoObj) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, html, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, error1, html, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
-    } catch (_error) {
+    } catch (error1) {
       console.error("cartoObj must be JSON string or obj, given", cartoObj);
       console.warn("Cleaned obj:", deEscape(cartoObj));
       stopLoadError("Couldn't parse data");
@@ -2047,7 +2048,7 @@ getProjectCartoData = function(cartoObj) {
     zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
     console.info("Got zoom", zoom);
     $("#transect-viewport").attr("zoom", zoom);
-  } catch (_error) {}
+  } catch (undefined) {}
   cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
@@ -2376,7 +2377,7 @@ validateTaxonData = function(dataObject, callback) {
       taxaString += " " + taxonArray[key].subspecies;
     }
     return validateAWebTaxon(taxonArray[key], function(result) {
-      var e, l, len, message, replaceRows;
+      var e, error1, l, len, message, replaceRows;
       if (result.invalid === true) {
         cleanupToasts();
         stopLoadError(result.response.human_error);
@@ -2399,8 +2400,8 @@ validateTaxonData = function(dataObject, callback) {
           dataObject.data[row].infraspecificEpithet = result.subspecies;
           dataObject.data[row].originalTaxa = taxaString;
         }
-      } catch (_error) {
-        e = _error;
+      } catch (error1) {
+        e = error1;
         console.warn("Problem replacing rows! " + e.message);
         console.warn(e.stack);
       }
