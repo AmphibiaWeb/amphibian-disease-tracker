@@ -266,10 +266,12 @@ searchProjects = function() {
         button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "/project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
-      $("#project-result-container").html(html);
       return bindClicks(".search-proj-link");
+    } else {
+      return html = "<p><em>No results found for \"<strong>" + search + "</strong>\"";
     }
-  }).error(function(result, status) {
+  });
+  $("#project-result-container").html(html).error(function(result, status) {
     return console.error(result, status);
   });
   return false;
@@ -284,6 +286,12 @@ $(function() {
     return goTo(uri.urlString + "project.php?id=" + project);
   });
   $("#project-search").unbind().keyup(function() {
+    return searchProjects.debounce();
+  });
+  $("paper-radio-button").click(function() {
+    var cue;
+    cue = $(this).attr("data-cue");
+    $("#project-search").attr("placeholder", cue);
     return searchProjects.debounce();
   });
   return $("#copy-ark").click(function() {

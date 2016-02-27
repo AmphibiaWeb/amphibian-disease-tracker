@@ -184,13 +184,13 @@ $project = $result[0];
           </div>
           <br/>
           <paper-radio-group selected="names" id="search-filter">
-            <paper-radio-button name="names" data-cols="project_id,project_title">
+            <paper-radio-button name="names" data-cols="project_id,project_title" data-cue="Project ID or name...">
               Project Names &amp; IDs
             </paper-radio-button>
-            <paper-radio-button name="users" data-cols="author_data">
+            <paper-radio-button name="users" data-cols="author_data" data-cue="Name or email...">
               Project PIs and Creators
             </paper-radio-button>
-            <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades">
+            <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
               Project Taxa
             </paper-radio-button>
           </paper-radio-group>
@@ -219,7 +219,7 @@ $project = $result[0];
              ?>
           <div class="row">
             <paper-input readonly label="ARK identifier" value="<?php echo $project["project_obj_id"]; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
-            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
+            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project["project_obj_id"]; ?>" data-clipboard-text="https://amphibiandisease.org/project.php?id=<?php echo $project["project_obj_id"]; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
           </div>
           <paper-input readonly label="Project pathogen" value="<?php echo $project["disease"]; ?>"></paper-input>
           <paper-input readonly label="Project PI" value="<?php echo $project["pi_lab"]; ?>"></paper-input>

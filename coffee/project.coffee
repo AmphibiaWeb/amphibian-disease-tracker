@@ -260,8 +260,10 @@ searchProjects = ->
         </button>
         """
         html += "<li class='project-search-result'>#{button}</li>"
-      $("#project-result-container").html html
       bindClicks(".search-proj-link")
+    else
+      html = "<p><em>No results found for \"<strong>#{search}</strong>\""
+  $("#project-result-container").html html
   .error (result, status) ->
     console.error result, status
   false
@@ -279,6 +281,10 @@ $ ->
   $("#project-search")
   .unbind()
   .keyup ->
+    searchProjects.debounce()
+  $("paper-radio-button").click ->
+    cue = $(this).attr "data-cue"
+    $("#project-search").attr "placeholder", cue
     searchProjects.debounce()
   $("#copy-ark").click ->
     copyLink()
