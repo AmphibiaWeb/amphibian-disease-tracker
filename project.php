@@ -198,8 +198,8 @@ $loginStatus = getLoginState();
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
-        <h2 class="col-xs-12 status-notice">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
-        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6">
+        <h2 class="col-xs-12 status-notice hidden-xs">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
+        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs">
           <?php echo $html; ?>
         </ul>
         <div class="col-xs-12 col-md-4 col-lg-6">
