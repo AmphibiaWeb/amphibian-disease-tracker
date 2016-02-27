@@ -239,7 +239,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
     editButton = "<paper-icon-button icon=\"icons:create\" class=\"authorized-action\" data-href=\"" + uri.urlString + "admin-page.html?id=" + projectData.project_id + "\" data-toggle=\"tooltip\" title=\"Edit Project\"></paper-icon-button>";
   }
   adminButton = "<paper-icon-button icon=\"icons:dashboard\" class=\"authorized-action\" id=\"show-actions\" data-href=\"" + uri.urlString + "admin-page.html\" data-toggle=\"tooltip\" title=\"Administration Dashboard\"> </paper-icon-button>";
-  $("#title").append(editButton + adminButton);
+  $("#title").append(editButton);
   authorData = JSON.parse(projectData.author_data);
   showEmailField(authorData.contact_email);
   bindClicks(".authorized-action");
