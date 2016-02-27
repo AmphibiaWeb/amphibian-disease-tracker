@@ -16,6 +16,7 @@ require_once(dirname(__FILE__)."/core/core.php");
 require_once(dirname(__FILE__)."/admin/async_login_handler.php");
 
 $db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+$loginStatus = getLoginState();
 ?>
     <title>Amphibian Disease Portal</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
