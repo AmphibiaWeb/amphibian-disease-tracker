@@ -331,12 +331,7 @@ renderPublicMap = (projectData = publicData) ->
     return false
   try
     console.info "Working with limited data", projectData
-    cartoData = JSON.parse deEscape projectData.carto_id
-    try
-      zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
-      console.info "Got zoom", zoom
-    catch
-      zoom = ""
+    cartoData = projectData.carto_id
     poly = cartoData.bounding_polygon
     mapHtml = """
     <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
@@ -360,6 +355,11 @@ renderPublicMap = (projectData = publicData) ->
       se
       sw
       ]
+    try
+      zoom = getMapZoom paths, "#transect-viewport"
+      console.info "Got zoom", zoom
+    catch
+      zoom = ""
     for point in paths
       unless point in usedPoints
         usedPoints.push point

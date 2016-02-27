@@ -360,7 +360,7 @@ renderPublicMap = function(projectData) {
   }
   try {
     console.info("Working with limited data", projectData);
-    cartoData = JSON.parse(deEscape(projectData.carto_id));
+    cartoData = projectData.carto_id;
     try {
       zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
       console.info("Got zoom", zoom);
