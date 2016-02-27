@@ -7040,7 +7040,7 @@ html >>> .capitalize {
   width: 50%;
   margin: 0;
   left: 25%;
-  z-index: 250;
+  z-index: 5999;
 }
 #outdated-warning {
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.25);
