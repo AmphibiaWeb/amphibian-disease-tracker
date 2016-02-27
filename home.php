@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
+<?php
+$debug = false;
+
+if($debug) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+    error_log("Home page is running in debug mode!");
+}
+
+$print_login_state = false;
+require_once("DB_CONFIG.php");
+require_once(dirname(__FILE__)."/core/core.php");
+require_once(dirname(__FILE__)."/admin/async_login_handler.php");
+
+$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+?>
     <title>Amphibian Disease Portal</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
@@ -81,8 +97,20 @@
   </head>
   <body class="container-fluid">
     <header id="header-bar" class="fixed-bar clearfix row">
+      <?php
+         $test = $loginStatus["status"];
+         if($test) {
+         <p class="col-xs-12 text-right">
+           Logged in as <?php echo $user; ?>
+           <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
+           <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
+           <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
+         </p>
+         ?>
+      <?php } else { ?>
       <button class="btn btn-success btn-xs pull-right click login-button" data-href="https://amphibiandisease.org/admin">Log In</button>
       <button class="btn btn-default btn-xs pull-right click login-button" data-href="https://amphibiandisease.org/admin-login.php?q=create">Sign Up</button>
+      <?php } ?>
     </header>
     <main>
       <h1 id="title" class="main-title">The Amphibian Disease Project</h1>
