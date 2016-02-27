@@ -113,8 +113,8 @@ $loginStatus = getLoginState();
               <iron-icon icon="icons:exit-to-app"></iron-icon>
               Log In
           </paper-button>
-          <paper-button class="click materialgreen" data-toggle="tooltip" title="Sign Up" data-href="https://amphibiandisease.org/admin-login.php?q=create">
-              <iron-icon icon="icons:lightbulb-outline" data-placement="bottom"></iron-icon>
+          <paper-button class="click materialgreen" data-toggle="tooltip" title="Sign Up" data-href="https://amphibiandisease.org/admin-login.php?q=create" data-placement="bottom">
+              <iron-icon icon="icons:lightbulb-outline"></iron-icon>
               Sign Up
           </paper-button>
 
