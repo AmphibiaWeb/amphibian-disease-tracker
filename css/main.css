@@ -7069,6 +7069,9 @@ header#header-bar {
 #header-bar > p {
   margin-bottom: 0;
 }
+#header-bar > paper-button {
+  font-size: 87%;
+}
 header#header-bar + main {
   margin-top: 5rem;
 }
