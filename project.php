@@ -146,7 +146,10 @@ $search = array("project_id" => $pid);
 $result = $db->getQueryResults($search, "*", "AND", false, true);
 $project = $result[0];
             ?>
-      <h1 id="title"><?php echo $project["project_title"]; ?></h1>
+      <h1 id="title">        
+        <?php echo $project["project_title"]; ?>
+        <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php"> </paper-icon-button>
+      </h1>
       <?php } ?>
       <section id="main-body" class="row">
         <?php if(empty($pid)) {
@@ -162,6 +165,7 @@ $project = $result[0];
           $list = $db->getQueryResults($search, $cols, "AND", true, true);
           $html = "";
           $i = 0;
+          $count = sizeof($list);
           foreach($list as $k=>$project) {
               if(empty($project["project_id"])) continue;
               $i++;
@@ -172,7 +176,7 @@ $project = $result[0];
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
-        <h2 class="col-xs-12 status-notice">Showing 25 newest projects</h2>
+        <h2 class="col-xs-12 status-notice">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
         <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6">
           <?php echo $html; ?>
         </ul>
@@ -293,9 +297,7 @@ if(boolstr($project["public"]) === true) {
           <script type="text/javascript">
             renderMapWithData(<?php echo $jsonData; ?>);
           </script>
-          <pre>
-            <?php print_r($result); ?>
-          </pre>
+
 <?php
 } else {
     # Set the most limited public data possible. After correct user
