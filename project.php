@@ -149,7 +149,11 @@ $loginStatus = getLoginState();
         <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
-           }
+    } else {
+        ?>
+        <paper-icon-button icon="icons:exit-to-app" class="click" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom"></paper-icon-button>
+        <?php
+    }
            if(!empty($pid)) {
            ?>
         <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
@@ -198,8 +202,8 @@ $loginStatus = getLoginState();
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
-        <h2 class="col-xs-12 status-notice">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
-        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6">
+        <h2 class="col-xs-12 status-notice hidden-xs">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
+        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs">
           <?php echo $html; ?>
         </ul>
         <div class="col-xs-12 col-md-4 col-lg-6">
