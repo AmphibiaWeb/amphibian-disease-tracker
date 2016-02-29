@@ -7405,7 +7405,7 @@ section#notes marked-element {
 .user-search-result:hover {
   background: #eee;
 }
-google-map#transect-viewport {
+google-map {
   height: 60vh;
 }
 #project-data p.text-muted .glyphicon,
