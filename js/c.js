@@ -1610,17 +1610,16 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
 };
 
-createMap2 = function(pointsObj, targetId, options, callback) {
-  var center, error2, error3, googleMap, hull, id, idSuffix, l, len, mapHtml, mapObjAttr, mapSelector, point, points, poly, ref, ref1, selector, zoom;
-  if (targetId == null) {
-    targetId = "carto-map-container";
+createMap2 = function(pointsObj, selector, options, callback) {
+  var center, error2, error3, googleMap, hull, id, idSuffix, l, len, mapHtml, mapObjAttr, mapSelector, point, points, poly, ref, ref1, zoom;
+  if (selector == null) {
+    selector = "#carto-map-container";
   }
 
   /*
    * Essentially a copy of CreateMap
    * Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
    */
-  selector = "#" + targetId;
   try {
     if (((options != null ? (ref = options.polyParams) != null ? ref.fillColor : void 0 : void 0) != null) && ((options != null ? (ref1 = options.polyParams) != null ? ref1.fillOpacity : void 0 : void 0) != null)) {
       poly = options.polyParams;
@@ -1649,9 +1648,10 @@ createMap2 = function(pointsObj, targetId, options, callback) {
     idSuffix = $("google-map").length;
     id = "transect-viewport-" + idSuffix;
     mapSelector = "#" + id;
-    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
     console.log("Appending map to selector " + selector);
     $(selector).addClass("map-container has-map").append(googleMap);
+    console.log("Attaching events to " + mapSelector);
     $("" + mapSelector).on("google-map-click", function(ll) {
       point = canonicalizePoint(ll);
       console.info("Clicked point " + point.toString, point);
