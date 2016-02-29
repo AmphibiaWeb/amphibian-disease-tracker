@@ -282,7 +282,7 @@ finalizeData = function() {
             fieldNumbers.push(row.fieldNumber);
             rowLat = row.decimalLatitude;
             rowLng = row.decimalLongitude;
-            distanceFromCenter = geo.distance(rowLat, center.lat, rowLng, center.lng);
+            distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
             if (distanceFromCenter > excursion) {
               excursion = distanceFromCenter;
             }

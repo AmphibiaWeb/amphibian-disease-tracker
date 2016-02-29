@@ -366,7 +366,7 @@ finalizeData = ->
             # Prepare to calculate the radius
             rowLat = row.decimalLatitude
             rowLng = row.decimalLongitude
-            distanceFromCenter = geo.distance rowLat, center.lat, rowLng, center.lng
+            distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
             if distanceFromCenter > excursion then excursion = distanceFromCenter
             # Samples
             if row.sampleType?

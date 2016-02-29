@@ -113,6 +113,14 @@ toInt = function(str) {
   return parseInt(f);
 };
 
+String.prototype.toAscii = function() {
+
+  /*
+   * Remove MS Word bullshit
+   */
+  return this.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'").replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"').replace(/[\u2013\u2014]/g, '-').replace(/[\u2026]/g, '...').replace(/\u02C6/g, "^").replace(/\u2039/g, "").replace(/[\u02DC|\u00A0]/g, " ");
+};
+
 String.prototype.toBool = function() {
   return this.toString().toLowerCase() === 'true' || this.toString() === "1";
 };
@@ -305,13 +313,22 @@ bindCopyEvents = function(selector) {
   return false;
 };
 
-jsonTo64 = function(obj) {
-  var objString;
-  if (typeof obj === "array") {
-    obj = toObject(arr);
+jsonTo64 = function(obj, encode) {
+  var encoded, objString, shadowObj;
+  if (encode == null) {
+    encode = true;
   }
+  try {
+    shadowObj = obj.slice(0);
+    shadowObj.push("foo");
+    obj = toObject(obj);
+  } catch (undefined) {}
   objString = JSON.stringify(obj);
-  return encodeURIComponent(encode64(objString));
+  encoded = encode64(objString);
+  if (encode === true) {
+    encoded = encodeURIComponent(encoded);
+  }
+  return encoded;
 };
 
 encode64 = function(string) {

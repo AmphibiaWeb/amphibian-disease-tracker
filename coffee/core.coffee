@@ -66,6 +66,19 @@ toInt = (str) ->
   f = parseFloat(str) # For stuff like 1.2e12
   parseInt(f)
 
+String::toAscii = ->
+  ###
+  # Remove MS Word bullshit
+  ###
+  @replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/[\u2026]/g, '...')
+    .replace(/\u02C6/g, "^")
+    .replace(/\u2039/g, "")
+    .replace(/[\u02DC|\u00A0]/g, " ")
+
+
 String::toBool = -> @toString().toLowerCase() is 'true' or @toString() is "1"
 
 Boolean::toBool = -> @toString() is 'true'
@@ -198,11 +211,17 @@ bindCopyEvents = (selector = ".click-copy") ->
   false
 
 
-jsonTo64 = (obj) ->
-  if typeof obj is "array"
-    obj = toObject(arr)
-  objString = JSON.stringify(obj)
-  encodeURIComponent(encode64(objString))
+jsonTo64 = (obj, encode = true) ->
+  try
+    shadowObj = obj.slice 0
+    shadowObj.push "foo" # Throws error on obj
+    obj = toObject obj
+  objString = JSON.stringify obj
+  encoded = encode64 objString
+  if encode is true
+    encoded = encodeURIComponent encoded
+  encoded
+
 
 encode64 = (string) ->
   try
