@@ -1145,7 +1145,7 @@ getMapCenter = (bb) ->
       # console.info coords, i, totalLat
     centerLat = toFloat(totalLat) / toFloat(i)
     centerLng = toFloat(totalLng) / toFloat(i)
-    
+
     centerLat = toFloat(centerLat)
     centerLng = toFloat(centerLng)
     center =
@@ -1198,12 +1198,11 @@ defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
 
 
 
-createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
+createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) ->
   ###
   # Essentially a copy of CreateMap
   # Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
   ###
-  selector = "##{targetId}"
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
       poly = options.polyParams
@@ -1227,14 +1226,15 @@ createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
       """
     mapHtml += "    </google-map-poly>"
     # Points
-    center = getMapCenter points
+    
     # Make the whole map
+    center = getMapCenter points
     mapObjAttr = if geo.googleMap? then "map=\"geo.googleMap\"" else ""
     idSuffix = $("google-map").length
     id = "transect-viewport-#{idSuffix}"
     mapSelector = "##{id}"
     googleMap = """
-      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport" api-key="#{gMapsApiKey}" #{mapObjAttr}>
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport" api-key="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
     """
@@ -1244,7 +1244,9 @@ createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
     .addClass "map-container has-map"
     .append googleMap
     # Events
-    # See https://elements.polymer-project.org/elements/google-map#events
+    # See
+      # https://elements.polymer-project.org/elements/google-map#events
+    console.log "Attaching events to #{mapSelector}"
     $("#{mapSelector}")
     .on "google-map-click", (ll) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
