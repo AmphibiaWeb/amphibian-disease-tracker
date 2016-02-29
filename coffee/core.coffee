@@ -104,6 +104,10 @@ Array::containsObject = (obj) ->
     console.info  "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"
 
 Object.toArray = (obj) ->
+  try
+    shadowObj = obj.slice 0
+    shadowObj.push "foo" # Throws error on obj
+    return obj
   Object.keys(obj).map (key) =>
     obj[key]
 
