@@ -18,6 +18,9 @@ gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"
 cartoMap = null
 cartoVis = null
 
+defaultFillColor = "#ff7800"
+defaultFillOpacity = 0.35
+
 adData = new Object()
 window.geo = new Object()
 geo.GLOBE_WIDTH_GOOGLE = 256 # Constant
@@ -115,46 +118,33 @@ defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
 
 
 
-createMap2 = ->
+createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
   ###
   # Essentially a copy of CreateMap
   # Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
   ###
+  selector = "##{targetId}"
   try
-    poly = cartoData.bounding_polygon
+    if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
+      poly = options.polyParams
+    else
+      poly =
+        fillColor: defaultFillColor
+        fillOpacity: defaultFillOpacity
     mapHtml = """
     <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
     """
-    usedPoints = new Array()
-    nw =
-      lat: projectData.bounding_box_n
-      lng: projectData.bounding_box_w
-    ne =
-      lat: projectData.bounding_box_n
-      lng: projectData.bounding_box_e
-    se =
-      lat: projectData.bounding_box_s
-      lng: projectData.bounding_box_e
-    sw =
-      lat: projectData.bounding_box_s
-      lng: projectData.bounding_box_w
-    paths = [
-      nw
-      ne
-      se
-      sw
-      ]
+    points = Object.toArray pointsObj
+    hull = createConvexHull points
     try
-      zoom = getMapZoom paths, "#carto-map-container"
+      zoom = getMapZoom points, selector
       console.info "Got zoom", zoom
     catch
       zoom = ""
-    for point in paths
-      unless point in usedPoints
-        usedPoints.push point
-        mapHtml += """
-        <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
-        """
+    for point in hull
+      mapHtml += """
+      <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+      """
     mapHtml += "    </google-map-poly>"
     # Points
     # Make the whole map
@@ -696,17 +686,65 @@ sortPoints = (pointArray, asObj = true) ->
   pointArray.sort pointSort
   sortedPoints = new Array()
   for coordPoint in pointArray
-    if asObj
+    if asObj      
       sortedPoints.push coordPoint.getObj()
     else
-      pointFunc = new Object()
-      pointFunc.lat = ->
-        return coordPoint.lat
-      pointFunc.lng = ->
-        return coordPoint.lng
+      pointFunc = new fPoint coordPoint.lat, coordPoint.lng
       sortedPoints.push pointFunc
   delete window.upper
   sortedPoints
+
+
+createConvexHull = (pointsArray) ->
+  ###
+  # Take an array of points of multiple types and get a minimum convex
+  # hull back
+  #
+  # @param obj|array pointsArray -> An array of points or simple
+  #   object of points
+  #
+  # @return array -> an array of Point objects
+  ###
+  realArray = new Array()
+  pointsArray = Object.toArray pointsArray
+  for point in pointsArray
+    pointObj =
+      lat: null
+      lng: null
+    if typeof point.lat is "number"
+      pointObj = point
+    else
+      try
+        # Test fPoint or Google LatLng
+        if typeof point.lat() is "number"
+          pointsObj.lat = point.lat()
+          pointsObj.lng = point.lng()
+        else
+          throw "Not fPoint"
+      catch
+        # Test Point
+        try
+          if typeof point.getLat() is "number"
+            pointsObj = point.getObj()
+          else
+            throw "Not Point"
+        catch
+          # Test Google Map markers
+          if google?.map?
+            try
+              gLatLng = point.getPosition()
+              pointsObj.lat = gLatLng.lat()
+              pointsObj.lng = gLatLng.lng()
+            catch
+              throw "Unable to determine point type"
+    # Now we have a point object to canonicalize
+    realArray.push new fPoint pointsObj.lat, pointsObj.lng
+  try
+    cpHull = getConvexHullPoints realArray    
+  catch e
+    console.error "Unable to get convex hull - #{e.message}"
+    console.warn e.stack
+  cpHull
 
 
 fPoint = (lat, lng) ->
@@ -724,10 +762,10 @@ fPoint = (lat, lng) ->
 Point = (lat, lng) ->
   # From
   # http://stackoverflow.com/a/2863378
-  @x = (lng + 180) * 360
-  @y = (lat + 90) * 180
-  @lat = lat
-  @lng = lng
+  @lat = toFloat lat
+  @lng = toFloat lng
+  @x = (@lng + 180) * 360
+  @y = (@lat + 90) * 180
   @distance = (that) ->
     dx = that.x - @x
     dy = that.y - @y
@@ -745,13 +783,18 @@ Point = (lat, lng) ->
     o
   @getLatLng = ->
     if google?.maps?
-      return new google.maps.LatLng(@lat,@lng)
+      # https://developers.google.com/maps/documentation/javascript/3.exp/reference#LatLng
+      obj = @getObj()
+      return new google.maps.LatLng(obj)
     else
       return @getObj()
   @getLat = ->
     @lat
   @getLng = ->
     @lng
+  @toSimplePoint = ->
+    p = new fPoint @lat, @lng
+    p
   this.toString()
 
 geo.Point = Point
@@ -964,6 +1007,29 @@ setupMapMarkerToggles = ->
 # view-source:http://www.geocodezip.com/v3_map-markers_ConvexHull.asp
 ###
 getConvexHull = (googleMapsMarkersArray) ->
+  try
+    test = googleMapsMarkersArray[0]
+    ll = test.getPosition()
+  catch
+    # Not a Google Maps Marker array
+    # https://developers.google.com/maps/documentation/javascript/3.exp/reference#Marker
+    gmmReal = new Array()
+    for point in googleMapsMarkersArray
+      gmm = new google.maps.Marker
+      try
+        # Point object
+        ll = point.getLatLng()
+      catch
+        # Just an object
+        # Construct new LatLng
+        # https://developers.google.com/maps/documentation/javascript/3.exp/reference#LatLng
+        llObj =
+          lat: point.lat
+          lng: point.lng
+        ll = new google.maps.LatLng llObj
+      gmm.setPosition ll
+      gmmReal.push gmm
+    googleMapsMarkersArray = gmmReal
   points = new Array()
   for marker in googleMapsMarkersArray
     points.push marker.getPosition()
@@ -983,10 +1049,8 @@ getConvexHullPoints = (points) ->
   chainHull_2D points, points.length, hullPoints
   realHull = new Array()
   for point in hullPoints
-    temp =
-      lat: point.lat()
-      lng: point.lng()
-    realHull.push temp
+    pObj = new Point point.lat(), point.lng()
+    realHull.push pOjb
   console.info "Got hull from #{points.length} points:", realHull
   realHull
 
@@ -995,8 +1059,8 @@ getConvexHullConfig = (points, map = geo.googleMap) ->
   polygonConfig =
     map: map
     paths: hullPoints
-    fillColor: "#ff7800"
-    fillOpacity: 0.35
+    fillColor: defaultFillColor
+    fillOpacity: defaultFillOpacity
     strokeWidth: 2
     strokeColor: "#0000FF"
     strokeOpacity: 0.5
