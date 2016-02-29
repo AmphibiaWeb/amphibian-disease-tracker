@@ -518,17 +518,17 @@ bootstrapTransect = function() {
         lng = loc.lng();
         bounds = result[0].geometry.viewport;
         try {
-          bbEW = bounds.N;
+          bbEW = bounds.R;
           bbNS = bounds.j;
           boundingBox = {
-            nw: [bbEW.j, bbNS.N],
+            nw: [bbEW.j, bbNS.R],
             ne: [bbEW.j, bbNS.j],
-            se: [bbEW.N, bbNS.N],
-            sw: [bbEW.N, bbNS.j],
+            se: [bbEW.R, bbNS.R],
+            sw: [bbEW.R, bbNS.j],
             north: bbEW.j,
-            south: bbEW.N,
+            south: bbEW.R,
             east: bbNS.j,
-            west: bbNS.N
+            west: bbNS.R
           };
         } catch (error1) {
           e = error1;
@@ -1755,7 +1755,7 @@ loadEditor = function(projectPreload) {
             }
             mapHtml += "    </google-map-poly>";
           }
-          googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui>\n  " + mapHtml + "\n</google-map>";
+          googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui  apiKey=\"" + gMapsApiKey + "\">\n  " + mapHtml + "\n</google-map>";
           geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
           mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : deEscape(project.sample_notes);

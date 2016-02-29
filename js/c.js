@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, byteCount, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -160,6 +160,12 @@ Array.prototype.containsObject = function(obj) {
 };
 
 Object.toArray = function(obj) {
+  var shadowObj;
+  try {
+    shadowObj = obj.slice(0);
+    shadowObj.push("foo");
+    return obj;
+  } catch (undefined) {}
   return Object.keys(obj).map((function(_this) {
     return function(key) {
       return obj[key];
@@ -1488,6 +1494,10 @@ cartoMap = null;
 
 cartoVis = null;
 
+defaultFillColor = "#ff7800";
+
+defaultFillOpacity = 0.35;
+
 adData = new Object();
 
 window.geo = new Object();
@@ -1522,23 +1532,20 @@ geo.init = function(doCallback) {
 };
 
 getMapCenter = function(bb) {
-  var center, centerLat, centerLng, coords, i, k, totalLat, totalLng;
+  var bbArray, center, centerLat, centerLng, coords, i, l, len, point, totalLat, totalLng;
   if (bb != null) {
     i = 0;
     totalLat = 0.0;
-    for (k in bb) {
-      coords = bb[k];
+    totalLng = 0.0;
+    bbArray = Object.toArray(bb);
+    for (l = 0, len = bb.length; l < len; l++) {
+      coords = bb[l];
       ++i;
-      totalLat += coords[0];
+      point = canonicalizePoint(coords);
+      totalLat += point.lat;
+      totalLng += point.lng;
     }
     centerLat = toFloat(totalLat) / toFloat(i);
-    i = 0;
-    totalLng = 0.0;
-    for (k in bb) {
-      coords = bb[k];
-      ++i;
-      totalLng += coords[1];
-    }
     centerLng = toFloat(totalLng) / toFloat(i);
     centerLat = toFloat(centerLat);
     centerLng = toFloat(centerLng);
@@ -1603,6 +1610,62 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
 };
 
+createMap2 = function(pointsObj, targetId, options, callback) {
+  var center, error2, error3, googleMap, hull, id, idSuffix, l, len, mapHtml, mapObjAttr, mapSelector, point, points, poly, ref, ref1, selector, zoom;
+  if (targetId == null) {
+    targetId = "carto-map-container";
+  }
+
+  /*
+   * Essentially a copy of CreateMap
+   * Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
+   */
+  selector = "#" + targetId;
+  try {
+    if (((options != null ? (ref = options.polyParams) != null ? ref.fillColor : void 0 : void 0) != null) && ((options != null ? (ref1 = options.polyParams) != null ? ref1.fillOpacity : void 0 : void 0) != null)) {
+      poly = options.polyParams;
+    } else {
+      poly = {
+        fillColor: defaultFillColor,
+        fillOpacity: defaultFillOpacity
+      };
+    }
+    mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
+    points = Object.toArray(pointsObj);
+    hull = createConvexHull(points);
+    try {
+      zoom = getMapZoom(points, selector);
+      console.info("Got zoom", zoom);
+    } catch (error2) {
+      zoom = "";
+    }
+    for (l = 0, len = hull.length; l < len; l++) {
+      point = hull[l];
+      mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
+    }
+    mapHtml += "    </google-map-poly>";
+    center = getMapCenter(points);
+    mapObjAttr = geo.googleMap != null ? "map=\"geo.googleMap\"" : "";
+    idSuffix = $("google-map").length;
+    id = "transect-viewport-" + idSuffix;
+    mapSelector = "#" + id;
+    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport\" apiKey=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    $(selector).addClass("map-container has-map").append(googleMap);
+    $("" + mapSelector).on("google-map-click", function(ll) {
+      point = canonicalizePoint(ll);
+      console.info("Clicked point " + point.toString, point);
+      return false;
+    });
+    if (typeof callback === "function") {
+      callback(points, center, hull);
+    }
+  } catch (error3) {
+    e = error3;
+    console.error("Couldn't do map! " + e.message);
+  }
+  return false;
+};
+
 createMap = function(dataVisIdentifier, targetId, options, callback) {
   var dataVisJson, dataVisUrl, postConfig, sampleUrl;
   if (dataVisIdentifier == null) {
@@ -1620,6 +1683,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
    *
    * See:
    * http://docs.cartodb.com/cartodb-platform/cartodb-js.html#api-methods
+   *
    */
   if (dataVisIdentifier == null) {
     console.info("Can't create map without a data visualization identifier");
@@ -1641,7 +1705,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
     }
     geo.mapParams = options;
     if (!$("#" + targetId).exists()) {
-      fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
+      fakeDiv = "<div id=\"" + targetId + "\" class=\"carto-map wide-map map-container\">\n  <!-- Dynamically inserted from unavailable target -->\n</div>";
       $("main #main-body").append(fakeDiv);
     }
     if (typeof callback !== "function") {
@@ -2154,18 +2218,90 @@ sortPoints = function(pointArray, asObj) {
     if (asObj) {
       sortedPoints.push(coordPoint.getObj());
     } else {
-      pointFunc = new Object();
-      pointFunc.lat = function() {
-        return coordPoint.lat;
-      };
-      pointFunc.lng = function() {
-        return coordPoint.lng;
-      };
+      pointFunc = new fPoint(coordPoint.lat, coordPoint.lng);
       sortedPoints.push(pointFunc);
     }
   }
   delete window.upper;
   return sortedPoints;
+};
+
+canonicalizePoint = function(point) {
+
+  /*
+   * Take really any type of point, and return a Point
+   */
+  var error2, error3, error4, gLatLng, pReal, pointObj, pointsObj;
+  pointObj = {
+    lat: null,
+    lng: null
+  };
+  if (typeof point.lat === "number") {
+    pointObj = point;
+  } else if (typeof point[0] === "number") {
+    pointObj = {
+      lat: point[0],
+      lng: point[1]
+    };
+  } else {
+    try {
+      if (typeof point.lat() === "number") {
+        pointsObj.lat = point.lat();
+        pointsObj.lng = point.lng();
+      } else {
+        throw "Not fPoint";
+      }
+    } catch (error2) {
+      try {
+        if (typeof point.getLat() === "number") {
+          pointsObj = point.getObj();
+        } else {
+          throw "Not Point";
+        }
+      } catch (error3) {
+        if ((typeof google !== "undefined" && google !== null ? google.map : void 0) != null) {
+          try {
+            gLatLng = point.getPosition();
+            pointsObj.lat = gLatLng.lat();
+            pointsObj.lng = gLatLng.lng();
+          } catch (error4) {
+            throw "Unable to determine point type";
+          }
+        }
+      }
+    }
+  }
+  pReal = new Point(pointsObj.lat, pointsObj.lng);
+  return pReal;
+};
+
+createConvexHull = function(pointsArray) {
+
+  /*
+   * Take an array of points of multiple types and get a minimum convex
+   * hull back
+   *
+   * @param obj|array pointsArray -> An array of points or simple
+   *   object of points
+   *
+   * @return array -> an array of Point objects
+   */
+  var canonicalPoint, cpHull, error2, l, len, point, realArray;
+  realArray = new Array();
+  pointsArray = Object.toArray(pointsArray);
+  for (l = 0, len = pointsArray.length; l < len; l++) {
+    point = pointsArray[l];
+    canonicalPoint = canonicalizePoint(point);
+    realArray.push(canonicalPoint.toSimplePoint());
+  }
+  try {
+    cpHull = getConvexHullPoints(realArray);
+  } catch (error2) {
+    e = error2;
+    console.error("Unable to get convex hull - " + e.message);
+    console.warn(e.stack);
+  }
+  return cpHull;
 };
 
 fPoint = function(lat, lng) {
@@ -2184,10 +2320,10 @@ fPoint = function(lat, lng) {
 };
 
 Point = function(lat, lng) {
-  this.x = (lng + 180) * 360;
-  this.y = (lat + 90) * 180;
-  this.lat = lat;
-  this.lng = lng;
+  this.lat = toFloat(lat);
+  this.lng = toFloat(lng);
+  this.x = (this.lng + 180) * 360;
+  this.y = (this.lat + 90) * 180;
   this.distance = function(that) {
     var dx, dy;
     dx = that.x - this.x;
@@ -2212,8 +2348,10 @@ Point = function(lat, lng) {
     return o;
   };
   this.getLatLng = function() {
+    var obj;
     if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) != null) {
-      return new google.maps.LatLng(this.lat, this.lng);
+      obj = this.getObj();
+      return new google.maps.LatLng(obj);
     } else {
       return this.getObj();
     }
@@ -2223,6 +2361,11 @@ Point = function(lat, lng) {
   };
   this.getLng = function() {
     return this.lng;
+  };
+  this.toSimplePoint = function() {
+    var p;
+    p = new fPoint(this.lat, this.lng);
+    return p;
   };
   return this.toString();
 };
@@ -2473,10 +2616,32 @@ setupMapMarkerToggles = function() {
  */
 
 getConvexHull = function(googleMapsMarkersArray) {
-  var l, len, marker, points;
+  var error2, error3, gmm, gmmReal, l, len, len1, ll, llObj, m, marker, point, points, test;
+  try {
+    test = googleMapsMarkersArray[0];
+    ll = test.getPosition();
+  } catch (error2) {
+    gmmReal = new Array();
+    for (l = 0, len = googleMapsMarkersArray.length; l < len; l++) {
+      point = googleMapsMarkersArray[l];
+      gmm = new google.maps.Marker;
+      try {
+        ll = point.getLatLng();
+      } catch (error3) {
+        llObj = {
+          lat: point.lat,
+          lng: point.lng
+        };
+        ll = new google.maps.LatLng(llObj);
+      }
+      gmm.setPosition(ll);
+      gmmReal.push(gmm);
+    }
+    googleMapsMarkersArray = gmmReal;
+  }
   points = new Array();
-  for (l = 0, len = googleMapsMarkersArray.length; l < len; l++) {
-    marker = googleMapsMarkersArray[l];
+  for (m = 0, len1 = googleMapsMarkersArray.length; m < len1; m++) {
+    marker = googleMapsMarkersArray[m];
     points.push(marker.getPosition());
   }
   points.sort(sortPointY);
@@ -2493,17 +2658,14 @@ sortPointY = function(a, b) {
 };
 
 getConvexHullPoints = function(points) {
-  var hullPoints, l, len, point, realHull, temp;
+  var hullPoints, l, len, pObj, point, realHull;
   hullPoints = new Array();
   chainHull_2D(points, points.length, hullPoints);
   realHull = new Array();
   for (l = 0, len = hullPoints.length; l < len; l++) {
     point = hullPoints[l];
-    temp = {
-      lat: point.lat(),
-      lng: point.lng()
-    };
-    realHull.push(temp);
+    pObj = new Point(point.lat(), point.lng());
+    realHull.push(pOjb);
   }
   console.info("Got hull from " + points.length + " points:", realHull);
   return realHull;
@@ -2518,8 +2680,8 @@ getConvexHullConfig = function(points, map) {
   return polygonConfig = {
     map: map,
     paths: hullPoints,
-    fillColor: "#ff7800",
-    fillOpacity: 0.35,
+    fillColor: defaultFillColor,
+    fillOpacity: defaultFillOpacity,
     strokeWidth: 2,
     strokeColor: "#0000FF",
     strokeOpacity: 0.5

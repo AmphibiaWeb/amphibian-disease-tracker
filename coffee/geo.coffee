@@ -55,17 +55,17 @@ getMapCenter = (bb) ->
   if bb?
     i = 0
     totalLat = 0.0
-    for k, coords of bb
+    totalLng = 0.0
+    bbArray = Object.toArray bb
+    for coords in bb
       ++i
-      totalLat += coords[0]
+      point = canonicalizePoint coords
+      totalLat += point.lat
+      totalLng += point.lng
       # console.info coords, i, totalLat
     centerLat = toFloat(totalLat) / toFloat(i)
-    i = 0
-    totalLng = 0.0
-    for k, coords of bb
-      ++i
-      totalLng += coords[1]
     centerLng = toFloat(totalLng) / toFloat(i)
+    
     centerLat = toFloat(centerLat)
     centerLng = toFloat(centerLng)
     center =
@@ -147,16 +147,32 @@ createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
       """
     mapHtml += "    </google-map-poly>"
     # Points
+    center = getMapCenter points
     # Make the whole map
+    mapObjAttr = if geo.googleMap? then "map=\"geo.googleMap\"" else ""
+    idSuffix = $("google-map").length
+    id = "transect-viewport-#{idSuffix}"
+    mapSelector = "##{id}"
     googleMap = """
-    <div class="row" id="public-map">
-      <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  apiKey="#{gMapsApiKey}">
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport" apiKey="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
-    </div>
     """
     # Append it
+    $(selector)
+    .addClass "map-container has-map"
+    .append googleMap
     # Events
+    # See https://elements.polymer-project.org/elements/google-map#events
+    $("#{mapSelector}")
+    .on "google-map-click", (ll) ->
+      # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
+      point = canonicalizePoint ll
+      console.info "Clicked point #{point.toString}", point
+      false
+    # Callback
+    if typeof callback is "function"
+      callback points, center, hull
   catch e
     console.error "Couldn't do map! #{e.message}"
   false
@@ -686,13 +702,55 @@ sortPoints = (pointArray, asObj = true) ->
   pointArray.sort pointSort
   sortedPoints = new Array()
   for coordPoint in pointArray
-    if asObj      
+    if asObj
       sortedPoints.push coordPoint.getObj()
     else
       pointFunc = new fPoint coordPoint.lat, coordPoint.lng
       sortedPoints.push pointFunc
   delete window.upper
   sortedPoints
+
+
+canonicalizePoint = (point) ->
+  ###
+  # Take really any type of point, and return a Point
+  ###
+  pointObj =
+    lat: null
+    lng: null
+  if typeof point.lat is "number"
+    pointObj = point
+  else if typeof point[0] is "number"
+    pointObj =
+      lat: point[0]
+      lng: point[1]
+  else
+    try
+      # Test fPoint or Google LatLng
+      if typeof point.lat() is "number"
+        pointsObj.lat = point.lat()
+        pointsObj.lng = point.lng()
+      else
+        throw "Not fPoint"
+    catch
+      # Test Point
+      try
+        if typeof point.getLat() is "number"
+          pointsObj = point.getObj()
+        else
+          throw "Not Point"
+      catch
+        # Test Google Map markers
+        if google?.map?
+          try
+            gLatLng = point.getPosition()
+            pointsObj.lat = gLatLng.lat()
+            pointsObj.lng = gLatLng.lng()
+          catch
+            throw "Unable to determine point type"
+  pReal = new Point pointsObj.lat, pointsObj.lng
+  pReal
+
 
 
 createConvexHull = (pointsArray) ->
@@ -708,39 +766,10 @@ createConvexHull = (pointsArray) ->
   realArray = new Array()
   pointsArray = Object.toArray pointsArray
   for point in pointsArray
-    pointObj =
-      lat: null
-      lng: null
-    if typeof point.lat is "number"
-      pointObj = point
-    else
-      try
-        # Test fPoint or Google LatLng
-        if typeof point.lat() is "number"
-          pointsObj.lat = point.lat()
-          pointsObj.lng = point.lng()
-        else
-          throw "Not fPoint"
-      catch
-        # Test Point
-        try
-          if typeof point.getLat() is "number"
-            pointsObj = point.getObj()
-          else
-            throw "Not Point"
-        catch
-          # Test Google Map markers
-          if google?.map?
-            try
-              gLatLng = point.getPosition()
-              pointsObj.lat = gLatLng.lat()
-              pointsObj.lng = gLatLng.lng()
-            catch
-              throw "Unable to determine point type"
-    # Now we have a point object to canonicalize
-    realArray.push new fPoint pointsObj.lat, pointsObj.lng
+    canonicalPoint = canonicalizePoint point
+    realArray.push canonicalPoint.toSimplePoint()
   try
-    cpHull = getConvexHullPoints realArray    
+    cpHull = getConvexHullPoints realArray
   catch e
     console.error "Unable to get convex hull - #{e.message}"
     console.warn e.stack

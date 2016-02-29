@@ -572,17 +572,17 @@ bootstrapTransect = ->
         lng = loc.lng()
         bounds = result[0].geometry.viewport
         try
-          bbEW = bounds.N
+          bbEW = bounds.R
           bbNS = bounds.j
           boundingBox =
-            nw: [bbEW.j, bbNS.N]
+            nw: [bbEW.j, bbNS.R]
             ne: [bbEW.j, bbNS.j]
-            se: [bbEW.N, bbNS.N]
-            sw: [bbEW.N, bbNS.j]
+            se: [bbEW.R, bbNS.R]
+            sw: [bbEW.R, bbNS.j]
             north: bbEW.j
-            south: bbEW.N
+            south: bbEW.R
             east: bbNS.j
-            west: bbNS.N
+            west: bbNS.R
         catch e
           console.warn "Danger: There was an error calculating the bounding box (#{e.message})"
           console.warn e.stack
@@ -1807,7 +1807,7 @@ loadEditor = (projectPreload) ->
                 """
             mapHtml += "    </google-map-poly>"
           googleMap = """
-                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
+                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
                   #{mapHtml}
                 </google-map>
           """
