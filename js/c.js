@@ -1611,7 +1611,7 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
 };
 
 createMap2 = function(pointsObj, selector, options, callback) {
-  var a, center, classes, error2, error3, googleMap, hull, id, idSuffix, l, len, mapHtml, mapObjAttr, mapSelector, point, points, poly, ref, ref1, zoom;
+  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, ref, ref1, species, tested, zoom;
   if (selector == null) {
     selector = "#carto-map-container";
   }
@@ -1633,8 +1633,9 @@ createMap2 = function(pointsObj, selector, options, callback) {
       };
     }
     mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-    points = Object.toArray(pointsObj);
-    hull = createConvexHull(points);
+    data = createConvexHull(pointsObj, true);
+    hull = data.hull;
+    points = data.points;
     try {
       zoom = getMapZoom(points, selector);
       console.info("Got zoom", zoom);
@@ -1646,6 +1647,34 @@ createMap2 = function(pointsObj, selector, options, callback) {
       mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
     }
     mapHtml += "    </google-map-poly>";
+    i = 0;
+    for (m = 0, len1 = points.length; m < len1; m++) {
+      point = points[m];
+      try {
+        pointData = pointsObj[i].data;
+        genus = pointData.genus;
+        species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificeEpithet;
+        note = pointData.originaltaxa != null ? pointData.originaltaxa : pointData.originaleTaxa;
+        detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseeDetected;
+        tested = pointData.diseasetested != null ? pointData.diseasetested : pointData.diseaseeTested;
+      } catch (undefined) {}
+      if (genus == null) {
+        genus = "";
+      }
+      if (species == null) {
+        species = "";
+      }
+      if (note == null) {
+        note = "";
+      }
+      if (detected == null) {
+        detected = "";
+      }
+      if (tested == null) {
+        tested = "";
+      }
+      marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\">\n  <p>\n    <em>" + genus + " " + species + "</em> " + note + "\n    <br/>\n    Tested <strong>" + detected + "</strong> for " + tested + "\n  </p>\n</google-map-marker>";
+    }
     center = getMapCenter(points);
     mapObjAttr = geo.googleMap != null ? "map=\"geo.googleMap\"" : "";
     idSuffix = $("google-map").length;
@@ -1679,6 +1708,7 @@ createMap2 = function(pointsObj, selector, options, callback) {
     if (typeof callback === "function") {
       callback(points, center, hull);
     }
+    mapSelector;
   } catch (error3) {
     e = error3;
     console.error("Couldn't create map! " + e.message);
@@ -2296,7 +2326,11 @@ canonicalizePoint = function(point) {
   return pReal;
 };
 
-createConvexHull = function(pointsArray) {
+createConvexHull = function(pointsArray, returnObj) {
+  var canonicalPoint, cpHull, error2, l, len, obj, point, realArray;
+  if (returnObj == null) {
+    returnObj = false;
+  }
 
   /*
    * Take an array of points of multiple types and get a minimum convex
@@ -2307,7 +2341,6 @@ createConvexHull = function(pointsArray) {
    *
    * @return array -> an array of Point objects
    */
-  var canonicalPoint, cpHull, error2, l, len, point, realArray;
   realArray = new Array();
   pointsArray = Object.toArray(pointsArray);
   for (l = 0, len = pointsArray.length; l < len; l++) {
@@ -2321,6 +2354,13 @@ createConvexHull = function(pointsArray) {
     e = error2;
     console.error("Unable to get convex hull - " + e.message);
     console.warn(e.stack);
+  }
+  if (returnObj === true) {
+    obj = {
+      hull: cpHull,
+      points: realArray
+    };
+    return obj;
   }
   return cpHull;
 };

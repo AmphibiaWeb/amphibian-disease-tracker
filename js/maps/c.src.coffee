@@ -1216,8 +1216,9 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
     mapHtml = """
     <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
     """
-    points = Object.toArray pointsObj
-    hull = createConvexHull points
+    data = createConvexHull pointsObj, true
+    hull = data.hull
+    points = data.points
     try
       zoom = getMapZoom points, selector
       console.info "Got zoom", zoom
@@ -1229,7 +1230,29 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
       """
     mapHtml += "    </google-map-poly>"
     # Points
-    
+    i = 0
+    for point in points
+      try
+        pointData = pointsObj[i].data
+        genus = pointData.genus
+        species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificeEpithet
+        note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originaleTaxa
+        detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseeDetected
+        tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseeTested
+      genus ?= ""
+      species ?= ""
+      note ?= ""
+      detected ?= ""
+      tested ?= ""
+      marker = """
+      <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}">
+        <p>
+          <em>#{genus} #{species}</em> #{note}
+          <br/>
+          Tested <strong>#{detected}</strong> for #{tested}
+        </p>
+      </google-map-marker>
+      """
     # Make the whole map
     center = getMapCenter points
     mapObjAttr = if geo.googleMap? then "map=\"geo.googleMap\"" else ""
@@ -1271,6 +1294,7 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
     # Callback
     if typeof callback is "function"
       callback points, center, hull
+    mapSelector
   catch e
     console.error "Couldn't create map! #{e.message}"
     console.warn e.stack
@@ -1852,7 +1876,7 @@ canonicalizePoint = (point) ->
 
 
 
-createConvexHull = (pointsArray) ->
+createConvexHull = (pointsArray, returnObj = false) ->
   ###
   # Take an array of points of multiple types and get a minimum convex
   # hull back
@@ -1872,6 +1896,11 @@ createConvexHull = (pointsArray) ->
   catch e
     console.error "Unable to get convex hull - #{e.message}"
     console.warn e.stack
+  if returnObj is true
+    obj =
+      hull: cpHull
+      points: realArray
+    return obj
   cpHull
 
 
