@@ -1201,7 +1201,10 @@ defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
 createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) ->
   ###
   # Essentially a copy of CreateMap
-  # Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
+  # Redo with
+  # https://elements.polymer-project.org/elements/google-map#event-google-map-click
+  #
+  # @param object options -> {onClickCallback:function(), classes:[]}
   ###
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
@@ -1233,8 +1236,17 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
     idSuffix = $("google-map").length
     id = "transect-viewport-#{idSuffix}"
     mapSelector = "##{id}"
+    if options?.classes?
+      if typeof options.classes is "object"
+        a = Object.toArray options.classes
+        classes = a.join " "
+      else
+        classes = options.classes
+      classes = escape classes
+    else
+      classes = ""
     googleMap = """
-      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport" api-key="#{gMapsApiKey}" #{mapObjAttr}>
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
     """
@@ -1251,7 +1263,10 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
     .on "google-map-click", (ll) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
       point = canonicalizePoint ll
-      console.info "Clicked point #{point.toString}", point
+      console.info "Clicked point #{point.toString()}", point
+      if options?.onClickCallback?
+        if typeof options.onClickCallback is "function"
+          options.onClickCallback()
       false
     # Callback
     if typeof callback is "function"
