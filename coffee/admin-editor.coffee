@@ -223,7 +223,7 @@ loadEditor = (projectPreload) ->
                 """
             mapHtml += "    </google-map-poly>"
           googleMap = """
-                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui>
+                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
                   #{mapHtml}
                 </google-map>
           """

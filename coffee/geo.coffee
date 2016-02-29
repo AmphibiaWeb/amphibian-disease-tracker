@@ -113,6 +113,66 @@ geo.getMapZoom = getMapZoom
 defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
   console.log(e, latlng, pos, data, layerNumber);
 
+
+
+createMap2 = ->
+  ###
+  # Essentially a copy of CreateMap
+  # Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
+  ###
+  try
+    poly = cartoData.bounding_polygon
+    mapHtml = """
+    <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
+    """
+    usedPoints = new Array()
+    nw =
+      lat: projectData.bounding_box_n
+      lng: projectData.bounding_box_w
+    ne =
+      lat: projectData.bounding_box_n
+      lng: projectData.bounding_box_e
+    se =
+      lat: projectData.bounding_box_s
+      lng: projectData.bounding_box_e
+    sw =
+      lat: projectData.bounding_box_s
+      lng: projectData.bounding_box_w
+    paths = [
+      nw
+      ne
+      se
+      sw
+      ]
+    try
+      zoom = getMapZoom paths, "#carto-map-container"
+      console.info "Got zoom", zoom
+    catch
+      zoom = ""
+    for point in paths
+      unless point in usedPoints
+        usedPoints.push point
+        mapHtml += """
+        <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+        """
+    mapHtml += "    </google-map-poly>"
+    # Points
+    # Make the whole map
+    googleMap = """
+    <div class="row" id="public-map">
+      <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  apiKey="#{gMapsApiKey}">
+            #{mapHtml}
+      </google-map>
+    </div>
+    """
+    # Append it
+    # Events
+  catch e
+    console.error "Couldn't do map! #{e.message}"
+  false
+
+
+
 createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "carto-map-container", options, callback) ->
   ###
   # Creates a map and does some simple bindings.
@@ -122,6 +182,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
   #
   # See:
   # http://docs.cartodb.com/cartodb-platform/cartodb-js.html#api-methods
+  #
   ###
   unless dataVisIdentifier?
     console.info "Can't create map without a data visualization identifier"
@@ -140,7 +201,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     geo.mapParams = options
     unless $("##{targetId}").exists()
       fakeDiv = """
-      <div id="#{targetId}" class="carto-map wide-map">
+      <div id="#{targetId}" class="carto-map wide-map map-container">
         <!-- Dynamically inserted from unavailable target -->
       </div>
       """
