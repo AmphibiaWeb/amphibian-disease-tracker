@@ -154,11 +154,12 @@ createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
     id = "transect-viewport-#{idSuffix}"
     mapSelector = "##{id}"
     googleMap = """
-      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport" apiKey="#{gMapsApiKey}" #{mapObjAttr}>
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport" api-key="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
     """
     # Append it
+    console.log "Appending map to selector #{selector}"
     $(selector)
     .addClass "map-container has-map"
     .append googleMap
@@ -174,7 +175,8 @@ createMap2 = (pointsObj, targetId = "carto-map-container", options, callback) ->
     if typeof callback is "function"
       callback points, center, hull
   catch e
-    console.error "Couldn't do map! #{e.message}"
+    console.error "Couldn't create map! #{e.message}"
+    console.warn e.stack
   false
 
 
@@ -728,15 +730,15 @@ canonicalizePoint = (point) ->
     try
       # Test fPoint or Google LatLng
       if typeof point.lat() is "number"
-        pointsObj.lat = point.lat()
-        pointsObj.lng = point.lng()
+        pointObj.lat = point.lat()
+        pointObj.lng = point.lng()
       else
         throw "Not fPoint"
     catch
       # Test Point
       try
         if typeof point.getLat() is "number"
-          pointsObj = point.getObj()
+          pointObj = point.getObj()
         else
           throw "Not Point"
       catch
@@ -744,11 +746,11 @@ canonicalizePoint = (point) ->
         if google?.map?
           try
             gLatLng = point.getPosition()
-            pointsObj.lat = gLatLng.lat()
-            pointsObj.lng = gLatLng.lng()
+            pointObj.lat = gLatLng.lat()
+            pointObj.lng = gLatLng.lng()
           catch
             throw "Unable to determine point type"
-  pReal = new Point pointsObj.lat, pointsObj.lng
+  pReal = new Point pointObj.lat, pointObj.lng
   pReal
 
 
@@ -1079,7 +1081,7 @@ getConvexHullPoints = (points) ->
   realHull = new Array()
   for point in hullPoints
     pObj = new Point point.lat(), point.lng()
-    realHull.push pOjb
+    realHull.push pObj
   console.info "Got hull from #{points.length} points:", realHull
   realHull
 

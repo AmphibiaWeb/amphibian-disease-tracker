@@ -1649,7 +1649,8 @@ createMap2 = function(pointsObj, targetId, options, callback) {
     idSuffix = $("google-map").length;
     id = "transect-viewport-" + idSuffix;
     mapSelector = "#" + id;
-    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport\" apiKey=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    console.log("Appending map to selector " + selector);
     $(selector).addClass("map-container has-map").append(googleMap);
     $("" + mapSelector).on("google-map-click", function(ll) {
       point = canonicalizePoint(ll);
@@ -1661,7 +1662,8 @@ createMap2 = function(pointsObj, targetId, options, callback) {
     }
   } catch (error3) {
     e = error3;
-    console.error("Couldn't do map! " + e.message);
+    console.error("Couldn't create map! " + e.message);
+    console.warn(e.stack);
   }
   return false;
 };
@@ -2231,7 +2233,7 @@ canonicalizePoint = function(point) {
   /*
    * Take really any type of point, and return a Point
    */
-  var error2, error3, error4, gLatLng, pReal, pointObj, pointsObj;
+  var error2, error3, error4, gLatLng, pReal, pointObj;
   pointObj = {
     lat: null,
     lng: null
@@ -2246,15 +2248,15 @@ canonicalizePoint = function(point) {
   } else {
     try {
       if (typeof point.lat() === "number") {
-        pointsObj.lat = point.lat();
-        pointsObj.lng = point.lng();
+        pointObj.lat = point.lat();
+        pointObj.lng = point.lng();
       } else {
         throw "Not fPoint";
       }
     } catch (error2) {
       try {
         if (typeof point.getLat() === "number") {
-          pointsObj = point.getObj();
+          pointObj = point.getObj();
         } else {
           throw "Not Point";
         }
@@ -2262,8 +2264,8 @@ canonicalizePoint = function(point) {
         if ((typeof google !== "undefined" && google !== null ? google.map : void 0) != null) {
           try {
             gLatLng = point.getPosition();
-            pointsObj.lat = gLatLng.lat();
-            pointsObj.lng = gLatLng.lng();
+            pointObj.lat = gLatLng.lat();
+            pointObj.lng = gLatLng.lng();
           } catch (error4) {
             throw "Unable to determine point type";
           }
@@ -2271,7 +2273,7 @@ canonicalizePoint = function(point) {
       }
     }
   }
-  pReal = new Point(pointsObj.lat, pointsObj.lng);
+  pReal = new Point(pointObj.lat, pointObj.lng);
   return pReal;
 };
 
@@ -2665,7 +2667,7 @@ getConvexHullPoints = function(points) {
   for (l = 0, len = hullPoints.length; l < len; l++) {
     point = hullPoints[l];
     pObj = new Point(point.lat(), point.lng());
-    realHull.push(pOjb);
+    realHull.push(pObj);
   }
   console.info("Got hull from " + points.length + " points:", realHull);
   return realHull;
