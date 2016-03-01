@@ -1611,7 +1611,7 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
 };
 
 createMap2 = function(pointsObj, selector, options, callback) {
-  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, ref, ref1, species, testString, tested, zoom;
+  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, r, ref, ref1, species, testString, tested, zoom;
   if (selector == null) {
     selector = "#carto-map-container";
   }
@@ -1702,7 +1702,12 @@ createMap2 = function(pointsObj, selector, options, callback) {
     if (typeof callback === "function") {
       callback(points, center, hull);
     }
-    mapSelector;
+    r = {
+      selector: mapSelector,
+      html: googleMap
+    };
+    console.info("Map", r);
+    r;
   } catch (error3) {
     e = error3;
     console.error("Couldn't create map! " + e.message);
