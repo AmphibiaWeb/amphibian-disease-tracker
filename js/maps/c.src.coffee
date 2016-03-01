@@ -1241,8 +1241,9 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
         tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseeTested
       genus ?= "No Data"
       species ?= ""
-      note = if note? then "(#{note})" else ""      
+      note = unless isNull note then "(#{note})" else ""      
       testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
+      point = canonicalizePoint point
       marker = """
       <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}">
         <p>
