@@ -1611,14 +1611,17 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
 };
 
 createMap2 = function(pointsObj, selector, options, callback) {
-  var center, error2, error3, googleMap, hull, id, idSuffix, l, len, mapHtml, mapObjAttr, mapSelector, point, points, poly, ref, ref1, zoom;
+  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, ref, ref1, species, testString, tested, zoom;
   if (selector == null) {
     selector = "#carto-map-container";
   }
 
   /*
    * Essentially a copy of CreateMap
-   * Redo with https://elements.polymer-project.org/elements/google-map#event-google-map-click
+   * Redo with
+   * https://elements.polymer-project.org/elements/google-map#event-google-map-click
+   *
+   * @param object options -> {onClickCallback:function(), classes:[]}
    */
   try {
     if (((options != null ? (ref = options.polyParams) != null ? ref.fillColor : void 0 : void 0) != null) && ((options != null ? (ref1 = options.polyParams) != null ? ref1.fillOpacity : void 0 : void 0) != null)) {
@@ -1630,8 +1633,9 @@ createMap2 = function(pointsObj, selector, options, callback) {
       };
     }
     mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-    points = Object.toArray(pointsObj);
-    hull = createConvexHull(points);
+    data = createConvexHull(pointsObj, true);
+    hull = data.hull;
+    points = data.points;
     try {
       zoom = getMapZoom(points, selector);
       console.info("Got zoom", zoom);
@@ -1643,23 +1647,62 @@ createMap2 = function(pointsObj, selector, options, callback) {
       mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
     }
     mapHtml += "    </google-map-poly>";
+    i = 0;
+    for (m = 0, len1 = points.length; m < len1; m++) {
+      point = points[m];
+      try {
+        pointData = pointsObj[i].data;
+        genus = pointData.genus;
+        species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificeEpithet;
+        note = pointData.originaltaxa != null ? pointData.originaltaxa : pointData.originaleTaxa;
+        detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseeDetected;
+        tested = pointData.diseasetested != null ? pointData.diseasetested : pointData.diseaseeTested;
+      } catch (undefined) {}
+      if (genus == null) {
+        genus = "No Data";
+      }
+      if (species == null) {
+        species = "";
+      }
+      note = note != null ? "(" + note + ")" : "";
+      testString = (detected != null) && (tested != null) ? "<br/> Tested <strong>" + detected + "</strong> for " + tested : "";
+      marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\">\n  <p>\n    <em>" + genus + " " + species + "</em> " + note + "\n    " + testString + "\n  </p>\n</google-map-marker>";
+      mapHtml += marker;
+    }
     center = getMapCenter(points);
     mapObjAttr = geo.googleMap != null ? "map=\"geo.googleMap\"" : "";
     idSuffix = $("google-map").length;
     id = "transect-viewport-" + idSuffix;
     mapSelector = "#" + id;
-    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    if ((options != null ? options.classes : void 0) != null) {
+      if (typeof options.classes === "object") {
+        a = Object.toArray(options.classes);
+        classes = a.join(" ");
+      } else {
+        classes = options.classes;
+      }
+      classes = escape(classes);
+    } else {
+      classes = "";
+    }
+    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
     console.log("Appending map to selector " + selector);
     $(selector).addClass("map-container has-map").append(googleMap);
     console.log("Attaching events to " + mapSelector);
     $("" + mapSelector).on("google-map-click", function(ll) {
       point = canonicalizePoint(ll);
-      console.info("Clicked point " + point.toString, point);
+      console.info("Clicked point " + (point.toString()), point);
+      if ((options != null ? options.onClickCallback : void 0) != null) {
+        if (typeof options.onClickCallback === "function") {
+          options.onClickCallback();
+        }
+      }
       return false;
     });
     if (typeof callback === "function") {
       callback(points, center, hull);
     }
+    mapSelector;
   } catch (error3) {
     e = error3;
     console.error("Couldn't create map! " + e.message);
@@ -2277,7 +2320,11 @@ canonicalizePoint = function(point) {
   return pReal;
 };
 
-createConvexHull = function(pointsArray) {
+createConvexHull = function(pointsArray, returnObj) {
+  var canonicalPoint, cpHull, error2, l, len, obj, point, realArray;
+  if (returnObj == null) {
+    returnObj = false;
+  }
 
   /*
    * Take an array of points of multiple types and get a minimum convex
@@ -2288,7 +2335,6 @@ createConvexHull = function(pointsArray) {
    *
    * @return array -> an array of Point objects
    */
-  var canonicalPoint, cpHull, error2, l, len, point, realArray;
   realArray = new Array();
   pointsArray = Object.toArray(pointsArray);
   for (l = 0, len = pointsArray.length; l < len; l++) {
@@ -2302,6 +2348,13 @@ createConvexHull = function(pointsArray) {
     e = error2;
     console.error("Unable to get convex hull - " + e.message);
     console.warn(e.stack);
+  }
+  if (returnObj === true) {
+    obj = {
+      hull: cpHull,
+      points: realArray
+    };
+    return obj;
   }
   return cpHull;
 };
