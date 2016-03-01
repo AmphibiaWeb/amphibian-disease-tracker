@@ -1293,7 +1293,11 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
     # Callback
     if typeof callback is "function"
       callback points, center, hull
-    mapSelector
+    r =
+      selector: mapSelector
+      html: googleMap
+    console.info "Map", r
+    r
   catch e
     console.error "Couldn't create map! #{e.message}"
     console.warn e.stack
