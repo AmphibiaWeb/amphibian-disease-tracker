@@ -1611,7 +1611,7 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
 };
 
 createMap2 = function(pointsObj, selector, options, callback) {
-  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, ref, ref1, species, tested, zoom;
+  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, ref, ref1, species, testString, tested, zoom;
   if (selector == null) {
     selector = "#carto-map-container";
   }
@@ -1659,21 +1659,15 @@ createMap2 = function(pointsObj, selector, options, callback) {
         tested = pointData.diseasetested != null ? pointData.diseasetested : pointData.diseaseeTested;
       } catch (undefined) {}
       if (genus == null) {
-        genus = "";
+        genus = "No Data";
       }
       if (species == null) {
         species = "";
       }
-      if (note == null) {
-        note = "";
-      }
-      if (detected == null) {
-        detected = "";
-      }
-      if (tested == null) {
-        tested = "";
-      }
-      marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\">\n  <p>\n    <em>" + genus + " " + species + "</em> " + note + "\n    <br/>\n    Tested <strong>" + detected + "</strong> for " + tested + "\n  </p>\n</google-map-marker>";
+      note = note != null ? "(" + note + ")" : "";
+      testString = (detected != null) && (tested != null) ? "<br/> Tested <strong>" + detected + "</strong> for " + tested : "";
+      marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\">\n  <p>\n    <em>" + genus + " " + species + "</em> " + note + "\n    " + testString + "\n  </p>\n</google-map-marker>";
+      mapHtml += marker;
     }
     center = getMapCenter(points);
     mapObjAttr = geo.googleMap != null ? "map=\"geo.googleMap\"" : "";

@@ -159,20 +159,19 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
         note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originaleTaxa
         detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseeDetected
         tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseeTested
-      genus ?= ""
+      genus ?= "No Data"
       species ?= ""
-      note ?= ""
-      detected ?= ""
-      tested ?= ""
+      note = if note? then "(#{note})" else ""      
+      testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
       marker = """
       <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}">
         <p>
           <em>#{genus} #{species}</em> #{note}
-          <br/>
-          Tested <strong>#{detected}</strong> for #{tested}
+          #{testString}
         </p>
       </google-map-marker>
       """
+      mapHtml += marker
     # Make the whole map
     center = getMapCenter points
     mapObjAttr = if geo.googleMap? then "map=\"geo.googleMap\"" else ""
