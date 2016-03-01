@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1687,15 +1687,34 @@ createMap2 = function(pointsObj, selector, options, callback) {
       classes = "";
     }
     googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
-    console.log("Appending map to selector " + selector);
-    $(selector).addClass("map-container has-map").append(googleMap);
+    if ($(selector).get(0).tagName.toLowerCase() !== "google-map") {
+      console.log("Appending map to selector " + selector);
+      $(selector).addClass("map-container has-map").append(googleMap);
+    } else {
+      console.log("Replacing map at selector " + selector);
+      $(selector).replaceWith(googleMap);
+    }
     console.log("Attaching events to " + mapSelector);
+    delete window.mapBuilder;
+    if ((options != null ? options.onClickCallback : void 0) == null) {
+      if (options == null) {
+        options = new Object();
+      }
+      options.onClickCallback = function(point, mapElement) {
+        if (window.mapBuilder == null) {
+          window.mapBuilder = new Object();
+          window.mapBuilder.selector = "#" + $(mapElement).attr("id");
+          window.mapBuilder.points = new Array();
+        }
+        return window.mapBuilder.points.push(point);
+      };
+    }
     $("" + mapSelector).on("google-map-click", function(ll) {
       point = canonicalizePoint(ll);
       console.info("Clicked point " + (point.toString()), point);
       if ((options != null ? options.onClickCallback : void 0) != null) {
         if (typeof options.onClickCallback === "function") {
-          options.onClickCallback();
+          options.onClickCallback(point, this);
         }
       }
       return false;
@@ -1714,6 +1733,11 @@ createMap2 = function(pointsObj, selector, options, callback) {
     console.error("Couldn't create map! " + e.message);
     console.warn(e.stack);
   }
+  return false;
+};
+
+buildMap = function(mapBuilderObj) {
+  createMap2(mapBuilderObj.points, mapBuilderObj.selector);
   return false;
 };
 

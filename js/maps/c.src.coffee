@@ -1241,7 +1241,7 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
         tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseeTested
       genus ?= "No Data"
       species ?= ""
-      note = unless isNull note then "(#{note})" else ""      
+      note = unless isNull note then "(#{note})" else ""
       testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
       point = canonicalizePoint point
       marker = """
@@ -1274,14 +1274,28 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
       </google-map>
     """
     # Append it
-    console.log "Appending map to selector #{selector}"
-    $(selector)
-    .addClass "map-container has-map"
-    .append googleMap
+    unless $(selector).get(0).tagName.toLowerCase() is "google-map"
+      console.log "Appending map to selector #{selector}"
+      $(selector)
+      .addClass "map-container has-map"
+      .append googleMap
+    else
+      console.log "Replacing map at selector #{selector}"
+      $(selector).replaceWith googleMap
     # Events
     # See
       # https://elements.polymer-project.org/elements/google-map#events
     console.log "Attaching events to #{mapSelector}"
+    delete window.mapBuilder
+    unless options?.onClickCallback?
+      unless options?
+        options = new Object()
+      options.onClickCallback = (point, mapElement) ->
+        unless window.mapBuilder?
+          window.mapBuilder = new Object()
+          window.mapBuilder.selector = "#" + $(mapElement).attr "id"
+          window.mapBuilder.points = new Array()
+        window.mapBuilder.points.push point
     $("#{mapSelector}")
     .on "google-map-click", (ll) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
@@ -1289,7 +1303,7 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
       console.info "Clicked point #{point.toString()}", point
       if options?.onClickCallback?
         if typeof options.onClickCallback is "function"
-          options.onClickCallback()
+          options.onClickCallback(point, this)
       false
     # Callback
     if typeof callback is "function"
@@ -1302,6 +1316,11 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
   catch e
     console.error "Couldn't create map! #{e.message}"
     console.warn e.stack
+  false
+
+
+buildMap = (mapBuilderObj) ->
+  createMap2 mapBuilderObj.points, mapBuilderObj.selector
   false
 
 
