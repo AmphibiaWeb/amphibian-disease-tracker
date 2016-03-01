@@ -1664,8 +1664,9 @@ createMap2 = function(pointsObj, selector, options, callback) {
       if (species == null) {
         species = "";
       }
-      note = note != null ? "(" + note + ")" : "";
+      note = !isNull(note) ? "(" + note + ")" : "";
       testString = (detected != null) && (tested != null) ? "<br/> Tested <strong>" + detected + "</strong> for " + tested : "";
+      point = canonicalizePoint(point);
       marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\">\n  <p>\n    <em>" + genus + " " + species + "</em> " + note + "\n    " + testString + "\n  </p>\n</google-map-marker>";
       mapHtml += marker;
     }
