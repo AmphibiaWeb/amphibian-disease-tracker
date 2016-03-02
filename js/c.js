@@ -1644,6 +1644,8 @@ createMap2 = function(pointsObj, options, callback) {
   }
   if (options.selector != null) {
     selector = options.selector;
+  } else {
+    selector = "#carto-map-container";
   }
   try {
     if (((options != null ? (ref = options.polyParams) != null ? ref.fillColor : void 0 : void 0) != null) && ((options != null ? (ref1 = options.polyParams) != null ? ref1.fillOpacity : void 0 : void 0) != null)) {
@@ -1744,6 +1746,7 @@ createMap2 = function(pointsObj, options, callback) {
         } catch (undefined) {}
       }
       center = new Point(window.locationData.lat, window.locationData.lng);
+      zoom = 14;
     }
     mapObjAttr = geo.googleMap != null ? "map=\"geo.googleMap\"" : "";
     idSuffix = $("google-map").length;

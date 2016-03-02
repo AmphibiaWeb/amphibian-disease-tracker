@@ -147,6 +147,8 @@ createMap2 = (pointsObj, options, callback) ->
       resetMapBuilder: true
   if options.selector?
     selector = options.selector
+  else
+    selector = "#carto-map-container"
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
       poly = options.polyParams
@@ -241,6 +243,7 @@ createMap2 = (pointsObj, options, callback) ->
           getLocation ->
             _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
       center = new Point window.locationData.lat, window.locationData.lng
+      zoom = 14
     # Make the whole map
     mapObjAttr = if geo.googleMap? then "map=\"geo.googleMap\"" else ""
     idSuffix = $("google-map").length

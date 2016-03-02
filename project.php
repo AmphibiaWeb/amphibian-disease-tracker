@@ -187,13 +187,14 @@ $loginStatus = getLoginState();
               "project_title",
               "public",
               "author_data",
+              "locality",
           );
           $list = $db->getQueryResults($search, $cols, "AND", true, true);
           $html = "";
           $i = 0;
           $count = sizeof($list);
           foreach($list as $k=>$project) {
-              if( empty($project["project_id"]) || empty($project["author_data"]) ) continue;
+              if( empty($project["project_id"]) || empty($project["locality"]) ) continue;
               $i++;
               if($i >= 25 ) break;
               $authorData = json_decode($project["author_data"], true);
