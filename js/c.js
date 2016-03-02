@@ -2344,6 +2344,11 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             boundingBox: geo.boundingBox,
             bsGrid: ""
           };
+          if (window.mapBuilder != null) {
+            options.selector = mapBuilder.selector;
+          } else {
+            options.selector = "#carto-map-container";
+          }
           getCanonicalDataCoords(geo.dataTable, options, function() {
             console.info("createMap callback successful");
             return parentCallback();
@@ -2692,8 +2697,8 @@ localityFromMapBuilder = function(builder, callback) {
   if (builder == null) {
     builder = window.mapBuilder;
   }
-  center = getMapCenter(builder);
-  geo.reverseGeocode(center.lat, center.lng, builder, function(locality) {
+  center = getMapCenter(builder.points);
+  geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality) {
     console.info("Got locality '" + locality + "'");
     if (typeof callback === "function") {
       return callback(locality);
@@ -2721,7 +2726,6 @@ doMapBuilder = function(builder, createMapOptions, callback) {
   }
   return buildMap(builder, createMapOptions, function(map) {
     geo.boundingBox = map.hull;
-    console.log("executing locality calc");
     return localityFromMapBuilder(map, function(locality) {
       map.locality = locality;
       console.info("Map results:", map);

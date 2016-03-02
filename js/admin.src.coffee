@@ -199,14 +199,14 @@ loadCreateNewProject = ->
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
         <paper-toggle-button id="data-encumbrance-toggle" class="red">Public Dataset</paper-toggle-button>
-        <p><strong>Smart selector here for registered users</strong>, only show when "private" toggle set</p>
       </div>
       <h2 class="new-title col-xs-12">Project Area of Interest</h2>
       <div class="col-xs-12">
         <p>
           This represents the approximate collection region for your samples.
+          <br/>
           <strong>
-            Leave blank for a bounding box to be calculated from your sample sites
+            The last thing you do (search, build a locality, or upload data) will be your dataset's canonical locality.
           </strong>.
         </p>
         <span class="toggle-off-label iron-label">Locality Name</span>
@@ -599,6 +599,7 @@ bootstrapTransect = ->
           </div>
           """
         $("#locality-lookup-result .lookup-name").text result[0].formatted_address
+        _adp.locality = result[0].formatted_address
         # Render the carto map
         loc = result[0].geometry.location
         lat = loc.lat()
@@ -947,7 +948,7 @@ getCanonicalDataCoords = (table, options, callback = createMap2) ->
       # Push the coordinates and the formatted infowindows
       dataAttrs.coords = coords
       dataAttrs.markerInfo = info
-      callback coords
+      callback coords, options
       # callback coords, info
     .error (result, status) ->
       # On error, return direct from file upload
