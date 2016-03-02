@@ -1404,9 +1404,6 @@ createMap2 = (pointsObj, options, callback) ->
       else
         console.warn "google-map-click wasn't provided a callback"
       false
-    # Callback
-    if typeof callback is "function"
-      callback points, center, hull
     r =
       # Compatible with mapBuilder objects
       selector: mapSelector
@@ -1415,6 +1412,9 @@ createMap2 = (pointsObj, options, callback) ->
       hull: hull
       center: center
     console.info "Map", r
+    # Callback
+    if typeof callback is "function"
+      callback r
     r
   catch e
     console.error "Couldn't create map! #{e.message}"
@@ -1428,7 +1428,6 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
       selector: mapBuilderObj.selector
       resetMapBuilder: false
   createMap2 mapBuilderObj.points, options, callback
-  false
 
 
 
@@ -2204,6 +2203,7 @@ doMapBuilder = (builder = window.mapBuilder, createMapOptions, callback)->
     console.error "Invalid builder", builder
     return false
   buildMap builder, createMapOptions, (map) ->
+    geo.boundingBox = map.hull
     localityFromMapBuilder map, (locality)  ->
       map.locality = locality
       console.info "Map results:", map

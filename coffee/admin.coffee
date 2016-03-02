@@ -216,6 +216,9 @@ loadCreateNewProject = ->
       <div id="transect-input" class="col-md-6 col-xs-12">
         <div id="transect-input-container" class="clearfix">
         </div>
+        <p>
+          You may also click on the map to outline a region of interest, then click "Build Map" below to calculate a locality.
+        </p>
         <br/><br/>
         <button class="btn btn-primary" disabled id="init-map-build">
           <iron-icon icon="maps:map"></iron-icon>
