@@ -163,7 +163,10 @@ createMap2 = (pointsObj, options, callback) ->
       points = data.points # canonicalized
     else
       # Insufficient points
-      pointList = Object.toArray pointsObj
+      try
+        pointList = Object.toArray pointsObj
+      catch
+        pointList = new Array()
       points = new Array()
       options.skipHull = true
       if pointList.length is 0

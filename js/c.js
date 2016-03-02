@@ -1638,7 +1638,7 @@ createMap2 = function(pointsObj, options, callback) {
    *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
-  var a, cat, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
+  var a, cat, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
   if (options == null) {
     options = new Object();
     options = {
@@ -1676,7 +1676,11 @@ createMap2 = function(pointsObj, options, callback) {
       hull = data.hull;
       points = data.points;
     } else {
-      pointList = Object.toArray(pointsObj);
+      try {
+        pointList = Object.toArray(pointsObj);
+      } catch (error2) {
+        pointList = new Array();
+      }
       points = new Array();
       options.skipHull = true;
       if (pointList.length === 0) {
@@ -1701,7 +1705,7 @@ createMap2 = function(pointsObj, options, callback) {
     try {
       zoom = getMapZoom(points, selector);
       console.info("Got zoom", zoom);
-    } catch (error2) {
+    } catch (error3) {
       zoom = "";
     }
     if (options.skipHull !== true) {
@@ -1832,8 +1836,8 @@ createMap2 = function(pointsObj, options, callback) {
     };
     console.info("Map", r);
     r;
-  } catch (error3) {
-    e = error3;
+  } catch (error4) {
+    e = error4;
     console.error("Couldn't create map! " + e.message);
     console.warn(e.stack);
   }
