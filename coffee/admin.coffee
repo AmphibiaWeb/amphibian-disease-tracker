@@ -214,6 +214,15 @@ loadCreateNewProject = ->
       </div>
       <p id="transect-instructions" class="col-xs-12"></p>
       <div id="transect-input" class="col-md-6 col-xs-12">
+        <div id="transect-input-container">
+        </div>
+        <button class="btn btn-primary" disabled id="init-map-build">
+          <iron-icon icon="maps:map"></iron-icon>
+          Build Map
+          <small>
+            (<span class="points-count">0</span> points)
+          </small>
+        </button>
       </div>
       <div id="carto-rendered-map" class="col-md-6">
         <div id="carto-map-container" class="carto-map map">
@@ -676,7 +685,7 @@ bootstrapTransect = ->
       <paper-input id="locality-input" label="Locality" class="pull-left"></paper-input> <paper-icon-button class="pull-left" id="do-search-locality" icon="icons:search"></paper-icon-button>
       """
     $("#transect-instructions").html instructions
-    $("#transect-input").html transectInput
+    $("#transect-input-container").html transectInput
     ## Conditionals based on the checked state of the toggle
     if p$("#transect-input-toggle").checked
       # Toggle is on = coordinate list
