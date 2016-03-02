@@ -2290,35 +2290,18 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             return console.info("requestCartoUpload recieved no callback");
           }
         };
-        if (!isNull(cartoMap)) {
-          console.info("Creating map");
-          return cartodb.createLayer(cartoMap, dataVisUrl).addTo(cartoMap).done(function(layer) {
-            console.info("Map created");
-            layer.setInteraction(true);
-            layer.on("featureOver", defaultMapMouseOverBehaviour);
+        return geo.init(function() {
+          var options;
+          console.info("Post init");
+          options = {
+            boundingBox: geo.boundingBox
+          };
+          getCanonicalDataCoords(geo.dataTable, options, function() {
+            console.info("createMap callback successful");
             return parentCallback();
           });
-        } else {
-          return geo.init(function() {
-            var center, options;
-            console.info("Post init");
-            center = getMapCenter(geo.boundingBox);
-            options = {
-              cartodb_logo: false,
-              https: true,
-              mobile_layout: true,
-              gmaps_base_type: "hybrid",
-              center_lat: center.lat,
-              center_lon: center.lng,
-              zoom: getMapZoom(geo.boundingBox)
-            };
-            createMap(dataVisUrl, void 0, options, function() {
-              console.info("createMap callback successful");
-              return parentCallback();
-            });
-            return false;
-          });
-        }
+          return false;
+        });
       }).error(function(result, status) {
         console.error("Couldn't communicate with server!", result, status);
         console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
