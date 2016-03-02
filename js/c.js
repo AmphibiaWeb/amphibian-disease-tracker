@@ -2335,9 +2335,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         } else {
           dataVisUrl = "";
         }
-        parentCallback = function() {
-          var args, options, ref4;
-          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        parentCallback = function(coords) {
+          var options, ref4;
           console.info("Initiating parent callback");
           stopLoad();
           max = p$("#data-sync").max;
@@ -2355,16 +2354,16 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           }
           _adp.defaultMapOptions = options;
           if (typeof callback === "function") {
-            return callback(geo.dataTable, options);
+            return callback(geo.dataTable, coords, options);
           } else {
             return console.info("requestCartoUpload recieved no callback");
           }
         };
         return geo.init(function() {
           console.info("Post init");
-          getCanonicalDataCoords(geo.dataTable, null, function() {
+          getCanonicalDataCoords(geo.dataTable, null, function(coords, options) {
             console.info("gcdc callback successful");
-            return parentCallback();
+            return parentCallback(coords);
           });
           return false;
         });
