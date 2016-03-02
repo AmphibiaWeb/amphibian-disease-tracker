@@ -1179,16 +1179,23 @@ locationData.params = {
 locationData.last = void 0;
 
 getLocation = function(callback) {
-  var geoFail, geoSuccess;
+  var geoFail, geoSuccess, retryTimeout;
   if (callback == null) {
     callback = void 0;
   }
+  retryTimeout = 1500;
   geoSuccess = function(pos, callback) {
+    var elapsed, last;
     clearTimeout(window.geoTimeout);
     window.locationData.lat = pos.coords.latitude;
     window.locationData.lng = pos.coords.longitude;
     window.locationData.acc = pos.coords.accuracy;
+    last = window.locationData.last;
     window.locationData.last = Date.now();
+    elapsed = window.locationData.last - last;
+    if (elapsed < retryTimeout) {
+      return false;
+    }
     console.info("Successfully set location");
     if (typeof callback === "function") {
       callback(window.locationData);

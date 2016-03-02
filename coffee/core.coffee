@@ -864,12 +864,18 @@ locationData.params =
 locationData.last = undefined
 
 getLocation = (callback = undefined) ->
+  retryTimeout = 1500
   geoSuccess = (pos,callback) ->
     clearTimeout window.geoTimeout
     window.locationData.lat = pos.coords.latitude
     window.locationData.lng = pos.coords.longitude
     window.locationData.acc = pos.coords.accuracy
+    last = window.locationData.last
     window.locationData.last = Date.now() # ms, unix time
+    elapsed = window.locationData.last - last
+    if elapsed < retryTimeout
+      # Don't run too many times
+      return false
     console.info "Successfully set location"
     if typeof callback is "function"
       callback(window.locationData)
