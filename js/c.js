@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapbuilder, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1803,7 +1803,9 @@ createMap2 = function(pointsObj, options, callback) {
           window.mapBuilder.selector = "#" + $(mapElement).attr("id");
           window.mapBuilder.points = new Array();
         }
-        return window.mapBuilder.points.push(point);
+        window.mapBuilder.points.push(point);
+        $("#init-map-build").removeAttr("disabled");
+        return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
       };
     }
     $("" + mapSelector).on("google-map-click", function(e) {
@@ -1823,7 +1825,10 @@ createMap2 = function(pointsObj, options, callback) {
     }
     r = {
       selector: mapSelector,
-      html: googleMap
+      html: googleMap,
+      points: points,
+      hull: hull,
+      center: center
     };
     console.info("Map", r);
     r;
@@ -2630,7 +2635,7 @@ geo.distance = function(lat1, lng1, lat2, lng2) {
 };
 
 geo.getBoundingRectangle = function(coordinateSet) {
-  var boundingBox, coordinates, eastMost, l, lat, len, lng, northMost, southMost, westMost;
+  var boundingBox, coordinates, coords, eastMost, l, lat, len, lng, northMost, southMost, westMost;
   if (coordinateSet == null) {
     coordinateSet = geo.boundingBox;
   }
@@ -2645,8 +2650,9 @@ geo.getBoundingRectangle = function(coordinateSet) {
   eastMost = -180;
   for (l = 0, len = coordinateSet.length; l < len; l++) {
     coordinates = coordinateSet[l];
-    lat = coordinates[0];
-    lng = coordinates[1];
+    coords = canonicalizePoint(coordinates);
+    lat = coords.lat;
+    lng = coords.lng;
     if (lat > northMost) {
       northMost = lat;
     }
@@ -2672,6 +2678,46 @@ geo.getBoundingRectangle = function(coordinateSet) {
   };
   geo.computedBoundingRectangle = boundingBox;
   return boundingBox;
+};
+
+localityFromMapBuilder = function(builder, callback) {
+  var center;
+  if (builder == null) {
+    builder = window.mapBuilder;
+  }
+  center = getMapCenter(builder);
+  geo.reverseGeocode(center.lat, center.lng, builder, function(locality) {
+    console.info("Got locality '" + locality + "'");
+    if (typeof callback === "function") {
+      return callback(locality);
+    }
+  });
+  return false;
+};
+
+doMapbuilder = function(builder, createMapOptions, callback) {
+  if (builder == null) {
+    builder = window.mapBuilder;
+  }
+  if (createMapOptions == null) {
+    createMapOptions = {
+      selector: builder.selector,
+      resetMapBuilder: true
+    };
+  }
+  if (createMapOptions.resetMapBuilder == null) {
+    createMapOptions.resetMapBuilder = true;
+  }
+  return buildMap(builder, createMapOptions, function(map) {
+    return localityFromMapBuilder(map, function(locality) {
+      map.locality = locality;
+      console.info("Map results:", map);
+      if (typeof callback === "function") {
+        callback(map);
+      }
+      return false;
+    });
+  });
 };
 
 geo.reverseGeocode = function(lat, lng, boundingBox, callback) {

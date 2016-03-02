@@ -1371,19 +1371,23 @@ createMap2 = (pointsObj, options, callback) ->
       $(selector).replaceWith googleMap
     # Events
     # See
-      # https://elements.polymer-project.org/elements/google-map#events
+    # https://elements.polymer-project.org/elements/google-map#events
     console.log "Attaching events to #{mapSelector}"
     unless options?.resetMapBuilder is false
       delete window.mapBuilder
     unless options?.onClickCallback?
       unless options?
         options = new Object()
+      # Default click callback
       options.onClickCallback = (point, mapElement) ->
         unless window.mapBuilder?
           window.mapBuilder = new Object()
           window.mapBuilder.selector = "#" + $(mapElement).attr "id"
           window.mapBuilder.points = new Array()
         window.mapBuilder.points.push point
+        $("#init-map-build").removeAttr "disabled"
+        $("#init-map-build .points-count").text window.mapBuilder.points.length
+    # Bind the event
     $("#{mapSelector}")
     .on "google-map-click", (e) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
@@ -1399,8 +1403,12 @@ createMap2 = (pointsObj, options, callback) ->
     if typeof callback is "function"
       callback points, center, hull
     r =
+      # Compatible with mapBuilder objects
       selector: mapSelector
       html: googleMap
+      points: points
+      hull: hull
+      center: center
     console.info "Map", r
     r
   catch e
@@ -2146,8 +2154,9 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
   westMost = 180
   eastMost = -180
   for coordinates in coordinateSet
-    lat = coordinates[0]
-    lng = coordinates[1]
+    coords = canonicalizePoint coordinates
+    lat = coords.lat
+    lng = coords.lng
     if lat > northMost
       northMost = lat
     if lat < southMost
@@ -2167,6 +2176,32 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
     south: southMost
   geo.computedBoundingRectangle = boundingBox
   boundingBox
+
+
+localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
+  center = getMapCenter builder
+  geo.reverseGeocode center.lat, center.lng, builder, (locality) ->
+    console.info "Got locality '#{locality}'"
+    if typeof callback is "function"
+      callback locality
+  false
+
+
+doMapbuilder = (builder = window.mapBuilder, createMapOptions, callback)->
+  unless createMapOptions?
+    createMapOptions =
+      selector: builder.selector
+      resetMapBuilder: true
+  # By default, reset the map builder obj
+  unless createMapOptions.resetMapBuilder?
+    createMapOptions.resetMapBuilder = true
+  buildMap builder, createMapOptions, (map) ->    
+    localityFromMapBuilder map, (locality)  ->
+      map.locality = locality
+      console.info "Map results:", map
+      if typeof callback is "function"        
+        callback map
+      false
 
 
 geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
