@@ -1421,6 +1421,7 @@ createMap2 = (pointsObj, options, callback) ->
       hull: hull
       center: center
     console.info "Map", r
+    geo.googleMapWebComponent = r
     # Callback
     if typeof callback is "function"
       console.log "createMap2 calling back"
@@ -2041,6 +2042,9 @@ createConvexHull = (pointsArray, returnObj = false) ->
   catch e
     console.error "Unable to get convex hull - #{e.message}"
     console.warn e.stack
+  geo.canonicalBoundingBox = new Array()
+  for point in cpHull
+    geo.canonicalBoundingBox.push point.getObj()
   if returnObj is true
     obj =
       hull: cpHull
