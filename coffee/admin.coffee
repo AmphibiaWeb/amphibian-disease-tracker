@@ -599,6 +599,7 @@ bootstrapTransect = ->
           </div>
           """
         $("#locality-lookup-result .lookup-name").text result[0].formatted_address
+        _adp.locality = result[0].formatted_address
         # Render the carto map
         loc = result[0].geometry.location
         lat = loc.lat()
@@ -947,7 +948,7 @@ getCanonicalDataCoords = (table, options, callback = createMap2) ->
       # Push the coordinates and the formatted infowindows
       dataAttrs.coords = coords
       dataAttrs.markerInfo = info
-      callback coords
+      callback coords, options
       # callback coords, info
     .error (result, status) ->
       # On error, return direct from file upload

@@ -536,6 +536,7 @@ bootstrapTransect = function() {
           $("#carto-rendered-map").prepend("<div class=\"alert alert-info alert-dismissable\" role=\"alert\" id=\"locality-lookup-result\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Location Found</strong>: <span class=\"lookup-name\"></span>\n</div>");
         }
         $("#locality-lookup-result .lookup-name").text(result[0].formatted_address);
+        _adp.locality = result[0].formatted_address;
         loc = result[0].geometry.location;
         lat = loc.lat();
         lng = loc.lng();
@@ -932,7 +933,7 @@ getCanonicalDataCoords = function(table, options, callback) {
       }
       dataAttrs.coords = coords;
       dataAttrs.markerInfo = info;
-      return callback(coords);
+      return callback(coords, options);
     }).error(function(result, status) {
       if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
         return callback(dataAttrs.coords, options);

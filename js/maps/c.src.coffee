@@ -1900,6 +1900,10 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           options =
             boundingBox: geo.boundingBox
             bsGrid: ""
+          if window.mapBuilder?
+            options.selector = mapBuilder.selector
+          else
+            options.selector = "#carto-map-container"
           getCanonicalDataCoords geo.dataTable, options, ->
             console.info "createMap callback successful"
             parentCallback()
@@ -2184,8 +2188,8 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
 
 
 localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
-  center = getMapCenter builder
-  geo.reverseGeocode center.lat, center.lng, builder, (locality) ->
+  center = getMapCenter builder.points
+  geo.reverseGeocode center.lat, center.lng, builder.points, (locality) ->
     console.info "Got locality '#{locality}'"
     if typeof callback is "function"
       callback locality
@@ -2205,7 +2209,6 @@ doMapBuilder = (builder = window.mapBuilder, createMapOptions, callback)->
     return false
   buildMap builder, createMapOptions, (map) ->
     geo.boundingBox = map.hull
-    console.log "executing locality calc"
     localityFromMapBuilder map, (locality)  ->
       map.locality = locality
       console.info "Map results:", map
