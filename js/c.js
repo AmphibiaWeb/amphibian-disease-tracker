@@ -1523,7 +1523,7 @@ geo.init = function(doCallback) {
   $("head").append(cartoDBCSS);
   if (doCallback == null) {
     doCallback = function() {
-      createMap(adData.cartoRef);
+      getCanonicalDataCoords(geo.dataTable);
       return false;
     };
   }
@@ -1637,7 +1637,8 @@ createMap2 = function(pointsObj, options, callback) {
       skipHull: false,
       skipPoints: false,
       boundingBox: null,
-      selector: "#carto-map-container"
+      selector: "#carto-map-container",
+      bsGrid: "col-md-9 col-lg-6"
     };
   }
   if (options.selector != null) {
@@ -1652,6 +1653,7 @@ createMap2 = function(pointsObj, options, callback) {
         fillOpacity: defaultFillOpacity
       };
     }
+    console.info("createMap2 working with data", pointsObj);
     if (!(Object.size(pointsObj) < 3)) {
       data = createConvexHull(pointsObj, true);
       hull = data.hull;
@@ -1674,6 +1676,7 @@ createMap2 = function(pointsObj, options, callback) {
         points.push(canonicalizePoint(options.boundingBox.se));
       }
     }
+    console.info("createMap2 working with", points);
     try {
       zoom = getMapZoom(points, selector);
       console.info("Got zoom", zoom);
@@ -1725,7 +1728,7 @@ createMap2 = function(pointsObj, options, callback) {
           }
         } catch (undefined) {}
         point = canonicalizePoint(point);
-        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\" title=\"" + markerTitle + "\" animation=\"drop\">\n  " + markerHtml + "\n</google-map-marker>";
+        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\" title=\"" + markerTitle + "\" animation=\"DROP\">\n  " + markerHtml + "\n</google-map-marker>";
         mapHtml += marker;
       }
       center = getMapCenter(points);
@@ -1756,7 +1759,7 @@ createMap2 = function(pointsObj, options, callback) {
     } else {
       classes = "";
     }
-    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 " + options.bsGrid + " center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
     if ($(selector).get(0).tagName.toLowerCase() !== "google-map") {
       console.log("Appending map to selector " + selector);
       $(selector).addClass("map-container has-map").append(googleMap);
@@ -1779,9 +1782,11 @@ createMap2 = function(pointsObj, options, callback) {
         return window.mapBuilder.points.push(point);
       };
     }
-    $("" + mapSelector).on("google-map-click", function(ll) {
+    $("" + mapSelector).on("google-map-click", function(e) {
+      var ll;
+      ll = e.originalEvent.detail.latLng;
+      console.info("Clicked point " + (point.toString()), point, ll);
       point = canonicalizePoint(ll);
-      console.info("Clicked point " + (point.toString()), point);
       if ((options != null ? options.onClickCallback : void 0) != null) {
         if (typeof options.onClickCallback === "function") {
           options.onClickCallback(point, this);
@@ -2332,13 +2337,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
 };
 
 sortPoints = function(pointArray, asObj) {
-  var coordPoint, l, len, pointFunc, sortedPoints;
+  var coordPoint, l, len, point, sortedPoints;
   if (asObj == null) {
     asObj = true;
   }
 
   /*
-   * Take an array of points and return a Google Maps compatible array
+   * Take an array of Points and return a Google Maps compatible array
    * of coordinate objects
    */
   window.upper = upperLeft(pointArray);
@@ -2349,8 +2354,8 @@ sortPoints = function(pointArray, asObj) {
     if (asObj) {
       sortedPoints.push(coordPoint.getObj());
     } else {
-      pointFunc = new fPoint(coordPoint.lat, coordPoint.lng);
-      sortedPoints.push(pointFunc);
+      point = coordPoint.toSimplePoint();
+      sortedPoints.push(point);
     }
   }
   delete window.upper;
@@ -2362,11 +2367,24 @@ canonicalizePoint = function(point) {
   /*
    * Take really any type of point, and return a Point
    */
-  var error2, error3, error4, gLatLng, pReal, pointObj;
+  var error2, error3, error4, gLatLng, pReal, pointObj, tempLat;
   pointObj = {
     lat: null,
     lng: null
   };
+  try {
+    tempLat = toFloat(point.lat);
+    if (tempLat.toString() === point.lat) {
+      point.lat = toFloat(point.lat);
+      point.lng = toFloat(point.lng);
+    } else {
+      tempLat = toFloat(point[0]);
+      if (tempLat.toString() === point[0]) {
+        point[0] = toFloat(point[0]);
+        point[0] = toFloat(point[1]);
+      }
+    }
+  } catch (undefined) {}
   if (typeof point.lat === "number") {
     pointObj = point;
   } else if (typeof point[0] === "number") {
@@ -2407,7 +2425,7 @@ canonicalizePoint = function(point) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, cpHull, error2, l, len, obj, point, realArray;
+  var canonicalPoint, cpHull, error2, l, len, obj, point, realPointArray, simplePointArray;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -2421,15 +2439,19 @@ createConvexHull = function(pointsArray, returnObj) {
    *
    * @return array -> an array of Point objects
    */
-  realArray = new Array();
+  simplePointArray = new Array();
+  realPointArray = new Array();
+  console.log("createConvexHull called with " + (Object.size(pointsArray)) + " points");
   pointsArray = Object.toArray(pointsArray);
   for (l = 0, len = pointsArray.length; l < len; l++) {
     point = pointsArray[l];
     canonicalPoint = canonicalizePoint(point);
-    realArray.push(canonicalPoint.toSimplePoint());
+    realPointArray.push(canonicalPoint);
   }
   try {
-    cpHull = getConvexHullPoints(realArray);
+    console.info("Getting convex hull (original: " + pointsArray.length + "; canonical: " + realPointArray.length + ")", realPointArray);
+    simplePointArray = sortPoints(realPointArray, false);
+    cpHull = getConvexHullPoints(simplePointArray);
   } catch (error2) {
     e = error2;
     console.error("Unable to get convex hull - " + e.message);
@@ -2438,7 +2460,7 @@ createConvexHull = function(pointsArray, returnObj) {
   if (returnObj === true) {
     obj = {
       hull: cpHull,
-      points: realArray
+      points: realPointArray
     };
     return obj;
   }

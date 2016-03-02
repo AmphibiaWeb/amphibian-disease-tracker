@@ -43,7 +43,7 @@ geo.init = (doCallback) ->
   """
   $("head").append cartoDBCSS
   doCallback ?= ->
-    createMap adData.cartoRef
+    getCanonicalDataCoords geo.dataTable
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
@@ -143,6 +143,7 @@ createMap2 = (pointsObj, options, callback) ->
       skipPoints: false
       boundingBox: null
       selector: "#carto-map-container"
+      bsGrid: "col-md-9 col-lg-6"
   if options.selector?
     selector = options.selector
   try
@@ -152,6 +153,7 @@ createMap2 = (pointsObj, options, callback) ->
       poly =
         fillColor: defaultFillColor
         fillOpacity: defaultFillOpacity
+    console.info "createMap2 working with data", pointsObj
     unless Object.size(pointsObj) < 3
       data = createConvexHull pointsObj, true
       hull = data.hull
@@ -170,6 +172,7 @@ createMap2 = (pointsObj, options, callback) ->
         points.push canonicalizePoint options.boundingBox.ne
         points.push canonicalizePoint options.boundingBox.sw
         points.push canonicalizePoint options.boundingBox.se
+    console.info "createMap2 working with", points
     try
       zoom = getMapZoom points, selector
       console.info "Got zoom", zoom
@@ -221,7 +224,7 @@ createMap2 = (pointsObj, options, callback) ->
               markerTitle = "#{cat}: #{genus} #{species}"
         point = canonicalizePoint point
         marker = """
-        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}" animation="drop">
+        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}" animation="DROP">
           #{markerHtml}
         </google-map-marker>
         """
@@ -252,7 +255,7 @@ createMap2 = (pointsObj, options, callback) ->
     else
       classes = ""
     googleMap = """
-      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 #{options.bsGrid} center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
     """
@@ -280,10 +283,11 @@ createMap2 = (pointsObj, options, callback) ->
           window.mapBuilder.points = new Array()
         window.mapBuilder.points.push point
     $("#{mapSelector}")
-    .on "google-map-click", (ll) ->
+    .on "google-map-click", (e) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
+      ll = e.originalEvent.detail.latLng
+      console.info "Clicked point #{point.toString()}", point, ll
       point = canonicalizePoint ll
-      console.info "Clicked point #{point.toString()}", point
       if options?.onClickCallback?
         if typeof options.onClickCallback is "function"
           options.onClickCallback(point, this)
@@ -806,7 +810,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
 
 sortPoints = (pointArray, asObj = true) ->
   ###
-  # Take an array of points and return a Google Maps compatible array
+  # Take an array of Points and return a Google Maps compatible array
   # of coordinate objects
   ###
   window.upper = upperLeft pointArray
@@ -816,8 +820,8 @@ sortPoints = (pointArray, asObj = true) ->
     if asObj
       sortedPoints.push coordPoint.getObj()
     else
-      pointFunc = new fPoint coordPoint.lat, coordPoint.lng
-      sortedPoints.push pointFunc
+      point = coordPoint.toSimplePoint()
+      sortedPoints.push point
   delete window.upper
   sortedPoints
 
@@ -829,6 +833,18 @@ canonicalizePoint = (point) ->
   pointObj =
     lat: null
     lng: null
+  # Type conversions
+  try
+    tempLat = toFloat point.lat
+    if tempLat.toString() is point.lat
+      point.lat = toFloat point.lat
+      point.lng = toFloat point.lng
+    else
+      tempLat = toFloat point[0]
+      if tempLat.toString() is point[0]
+        point[0] = toFloat point[0]
+        point[0] = toFloat point[1]
+  # Tests
   if typeof point.lat is "number"
     pointObj = point
   else if typeof point[0] is "number"
@@ -874,20 +890,24 @@ createConvexHull = (pointsArray, returnObj = false) ->
   #
   # @return array -> an array of Point objects
   ###
-  realArray = new Array()
+  simplePointArray = new Array()
+  realPointArray = new Array()
+  console.log "createConvexHull called with #{Object.size(pointsArray)} points"
   pointsArray = Object.toArray pointsArray
   for point in pointsArray
     canonicalPoint = canonicalizePoint point
-    realArray.push canonicalPoint.toSimplePoint()
+    realPointArray.push canonicalPoint
   try
-    cpHull = getConvexHullPoints realArray
+    console.info "Getting convex hull (original: #{pointsArray.length}; canonical: #{realPointArray.length})", realPointArray
+    simplePointArray = sortPoints realPointArray, false
+    cpHull = getConvexHullPoints simplePointArray
   catch e
     console.error "Unable to get convex hull - #{e.message}"
     console.warn e.stack
   if returnObj is true
     obj =
       hull: cpHull
-      points: realArray
+      points: realPointArray
     return obj
   cpHull
 

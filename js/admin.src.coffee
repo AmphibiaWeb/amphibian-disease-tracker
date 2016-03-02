@@ -654,6 +654,8 @@ bootstrapTransect = ->
       #     ]
       mapOptions =
         selector: "#carto-map-container"
+        bsGrid: ""
+      $(mapOptions.selector).empty()
       getCanonicalDataCoords geo.dataTable, mapOptions, ->
         stopLoad()
         false
