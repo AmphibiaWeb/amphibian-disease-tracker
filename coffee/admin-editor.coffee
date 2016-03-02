@@ -213,7 +213,14 @@ loadEditor = (projectPreload) ->
             options =
               boundingBox: cartoParsed.bounding_polygon
             centerPoint = new Point project.lat, project.lng
-            createMap2 [centerPoint], options
+            createMap2 [centerPoint], options, (map) ->
+              if not $(map.selector).exists()
+                do tryReload = ->
+                  if $("#map-header").exists()
+                    $("#map-header").after map.html
+                  else
+                    delay 250, ->
+                      tryReload()
             poly = cartoParsed.bounding_polygon
           #   mapHtml = """
           #   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
@@ -232,6 +239,7 @@ loadEditor = (projectPreload) ->
           #       </google-map>
           # """
           # geo.googleMapWebComponent = googleMap
+          googleMap = geo.googleMapWebComponent
           deleteCardAction = if result.user.is_author then """
           <div class="card-actions">
                 <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
@@ -382,7 +390,7 @@ loadEditor = (projectPreload) ->
                 <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in #{yearPretty}</p>
                 <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{roundNumberSigfig project.lat, 6}, #{roundNumberSigfig project.lng, 6}) with a sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
                 <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{roundNumber(project.disease_positive * 100 / project.disease_samples)}%), #{project.disease_negative} negative samples (#{roundNumber(project.disease_negative *100 / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{roundNumber(project.disease_no_confidence * 100 / project.disease_samples)}%)</p>
-              <h4>Locality &amp; Transect Data</h4>
+              <h4 id="map-header">Locality &amp; Transect Data</h4>
                 #{googleMap}
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
