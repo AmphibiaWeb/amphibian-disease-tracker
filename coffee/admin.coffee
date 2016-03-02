@@ -189,7 +189,7 @@ loadCreateNewProject = ->
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
-      <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("e.g., UC Berkeley")}
+      <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
       <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
       <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
@@ -277,6 +277,11 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  try
+    for input in $("paper-input[required]")
+      p$(input).validate()
+  catch
+    console.warn "Couldn't pre-validate fields"
   $("#init-map-build").click ->
     doMapBuilder window.mapBuilder, null, (map) ->
       html = """
