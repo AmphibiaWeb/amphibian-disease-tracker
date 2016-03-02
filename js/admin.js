@@ -257,7 +257,7 @@ finalizeData = function() {
     }
     title = p$("#project-title").value;
     return mintBcid(_adp.projectId, title, function(result) {
-      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, fieldNumbers, input, key, l, len, len1, m, mString, methods, months, postBBLocality, postData, ref, ref1, ref2, ref3, ref4, ref5, row, rowLat, rowLng, sampleMethods, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, fieldNumbers, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref, ref1, ref2, ref3, ref4, ref5, row, rowLat, rowLng, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -341,6 +341,17 @@ finalizeData = function() {
           postData.sample_catalog_numbers = catalogNumbers.join(",");
           postData.sample_field_numbers = fieldNumbers.join(",");
           postData.sample_methods_used = sampleMethods.join(",");
+        } else {
+          if (geo.canonicalHullObject != null) {
+            hull = geo.canonicalHullObject.hull;
+            for (o = 0, len2 = hull.length; o < len2; o++) {
+              point = hull[o];
+              distanceFromCenter = geo.distance(point.lat, point.lng, center.lat, center.lng);
+              if (distanceFromCenter > excursion) {
+                excursion = distanceFromCenter;
+              }
+            }
+          }
         }
         if (dataFileParams != null ? dataFileParams.hasDataFile : void 0) {
           postData.sample_raw_data = "https://amphibiandisease.org/" + dataFileParams.fileName;
@@ -349,7 +360,7 @@ finalizeData = function() {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, len2, o, ref6, ref7, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, len3, q, ref6, ref7, taxonData, taxonObject;
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
             postData.bounding_box_n = geo.computedBoundingRectangle.north;
@@ -381,8 +392,8 @@ finalizeData = function() {
             taxonData = _adp.data.taxa.validated;
             postData.sampled_clades = _adp.data.taxa.clades.join(",");
             postData.sampled_species = _adp.data.taxa.list.join(",");
-            for (o = 0, len2 = taxonData.length; o < len2; o++) {
-              taxonObject = taxonData[o];
+            for (q = 0, len3 = taxonData.length; q < len3; q++) {
+              taxonObject = taxonData[q];
               aweb = taxonObject.response.validated_taxon;
               console.info("Aweb taxon result:", aweb);
               clade = aweb.order.toLowerCase();
@@ -1841,9 +1852,19 @@ loadEditor = function(projectPreload) {
           } else {
             yearPretty = "the years " + yearPretty;
           }
-          d1 = new Date(toInt(project.sampled_collection_start));
-          d2 = new Date(toInt(project.sampled_collection_end));
-          collectionRangePretty = (dateMonthToString(d1.getMonth())) + " " + (d1.getFullYear()) + " &#8212; " + (dateMonthToString(d2.getMonth())) + " " + (d2.getFullYear());
+          if (toInt(project.sampled_collection_start) > 0) {
+            d1 = new Date(toInt(project.sampled_collection_start));
+            d2 = new Date(toInt(project.sampled_collection_end));
+            collectionRangePretty = (dateMonthToString(d1.getMonth())) + " " + (d1.getFullYear()) + " &#8212; " + (dateMonthToString(d2.getMonth())) + " " + (d2.getFullYear());
+          } else {
+            collectionRangePretty = "<em>(no data)</em>";
+          }
+          if (monthPretty == null) {
+            monthPretty = "<em>(no data)</em>";
+          }
+          if (yearPretty == null) {
+            yearPretty = "<em>(no data)</em>";
+          }
           html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + " " + icon + " <paper-icon-button icon=\"icons:visibility\" class=\"click\" data-href=\"" + uri.urlString + "/project.php?id=" + opid + "\"></paper-icon-button><br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project Creation\" value=\"" + (creation.toLocaleString()) + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project ARK\" value=\"" + project.project_obj_id + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project-title\" data-field=\"project_title\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Pathogen\" value=\"" + project.disease + "\" data-field=\"disease\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project-title\" data-field=\"pi_lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Reference\" value=\"" + project.reference_id + "\" id=\"project-reference\" data-field=\"reference_id\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Publication DOI\" value=\"" + project.publication + "\" id=\"doi\" data-field=\"publication\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Contact\" value=\"" + authorData.name + "\" id=\"project-contact\"></paper-input>\n  <gold-email-input " + conditionalReadonly + " class=\"project-param\" label=\"Contact Email\" value=\"" + authorData.contact_email + "\" id=\"contact-email\"></gold-email-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Diagnostic Lab\" value=\"" + authorData.diagnostic_lab + "\" id=\"project-lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Affiliation\" value=\"" + authorData.affiliation + "\" id=\"project-affiliation\"></paper-input>\n</section>\n<section id=\"notes\" class=\"col-xs-12 col-md-8 clearfix\">\n  " + noteHtml + "\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append Data</span>\n        <paper-toggle-button id=\"replace-data-toggle\" checked>Replace Data</paper-toggle-button>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n      <paper-input readonly label=\"Sampled Species\" value=\"" + (project.sampled_species.split(",").sort().join(", ")) + "\"></paper-input>\n      <paper-input readonly label=\"Sampled Clades\" value=\"" + (project.sampled_clades.split(",").sort().join(", ")) + "\"></paper-input>\n      <p class=\"text-muted\">\n        <span class=\"glyphicon glyphicon-info-sign\"></span> There are " + (project.sampled_species.split(",").length) + " species in this dataset, across " + (project.sampled_clades.split(",").length) + " clades\n      </p>\n    <h4>Sample Metrics</h4>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n      <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(project.lat, 6)) + ", " + (roundNumberSigfig(project.lng, 6)) + ") with a sample radius of " + project.radius + "m and a resulting locality <strong class='locality'>" + project.locality + "</strong></p>\n      <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + project.disease_positive + " positive samples (" + (roundNumber(project.disease_positive * 100 / project.disease_samples)) + "%), " + project.disease_negative + " negative samples (" + (roundNumber(project.disease_negative * 100 / project.disease_samples)) + "%), and " + project.disease_no_confidence + " inconclusive samples (" + (roundNumber(project.disease_no_confidence * 100 / project.disease_samples)) + "%)</p>\n    <h4 id=\"map-header\">Locality &amp; Transect Data</h4>\n      " + googleMap + "\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n</section>";
           $("#main-body").html(html);
           p$("#project-notes").bindValue = deEscape(project.sample_notes);
@@ -2085,7 +2106,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, row, rows, taxa, totalRows, truncateLength, workingMap;
+    var error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, row, rows, taxa, totalRows, truncateLength, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
@@ -2133,7 +2154,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       pointArr.push(point);
     }
     totalRows = (ref1 = result.parsed_responses[0].total_rows) != null ? ref1 : 0;
-    if (pointArr.length > 0) {
+    if (pointArr.length > 0 || (mapOptions != null ? (ref2 = mapOptions.boundingBox) != null ? ref2.length : void 0 : void 0) > 0) {
       return createMap2(pointArr, mapOptions, function(map) {
         var after;
         after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
