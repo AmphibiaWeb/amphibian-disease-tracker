@@ -175,7 +175,7 @@ createMap2 = (pointsObj, options, callback) ->
       console.info "Got zoom", zoom
     catch
       zoom = ""
-    unless skipHull is true
+    unless options.skipHull is true
       mapHtml = """
       <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
       """

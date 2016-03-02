@@ -1680,7 +1680,7 @@ createMap2 = function(pointsObj, options, callback) {
     } catch (error2) {
       zoom = "";
     }
-    if (skipHull !== true) {
+    if (options.skipHull !== true) {
       mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
       for (l = 0, len = hull.length; l < len; l++) {
         point = hull[l];
