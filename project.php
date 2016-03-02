@@ -194,34 +194,49 @@ $loginStatus = getLoginState();
           $i = 0;
           $count = sizeof($list);
           $max = 25;
-          if(isset($_REQUEST["page"])) {
-              $skip = intval($_REQUEST["page"]) * $max;
+          $page = isset($_REQUEST["page"]) ? intval($_REQUEST["page"]): 1;
+          if($page > 1) {
+              $multiplier = $page - 1;
+              $skip = $multiplier * $max;
           } else {
               $skip = 0;
           }
-          foreach($list as $k=>$project) {
-              if( empty($project["project_id"]) || empty($project["locality"]) ) continue;
-              if ($i < $skip) continue;
-              $i++;
-              if($i >= $max + $skip ) break;
-              $authorData = json_decode($project["author_data"], true);
-              $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock"></iron-icon>';
-              $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["name"] . " at " . $authorData["affiliation"];
-              $html .= "<li>".$projectHtml."</li>\n";
-          }
-          if ($i < $max) {
-              $count = $i;
-              $max = i;
+          if ( $skip > $count ) {
+              $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
+          } else {
+              foreach($list as $k=>$project) {
+                  if( empty($project["project_id"]) || empty($project["locality"]) ) continue;
+                  if ($i < $skip) continue;
+                  $i++;
+                  if($i >= $max + $skip ) break;
+                  $authorData = json_decode($project["author_data"], true);
+                  $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock"></iron-icon>';
+                  $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["name"] . " at " . $authorData["affiliation"];
+                  $html .= "<li>".$projectHtml."</li>\n";
+              }
+              if ($i < $max) {
+                  $count = $i;
+                  $max = $i;
+              }
+              if ($skip > 0) {
+                  $max = $skip . " &$8212; " . $max;
+              }
+              $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">' . $html . '        </ul>';
           }
           # Build the paginator
+          $pages = intdiv($count, $max);
+          $pages += $count % $max > 0 ? 1:0;
+          # https://getbootstrap.com/components/#pagination
+          $olderDisabled = $page > 1 ? "":"disabled";
+          $newerDisabled = $page * $max <= $count ? "":"disabled";
           ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
         </div>
         <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max;?> newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
-        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">
+
           <?php echo $html; ?>
-        </ul>
+
         <div class="col-xs-12 col-md-4 col-lg-6 project-search project-list-page">
           <h3>Search Projects</h3>
           <div class="form-horizontal">
@@ -247,6 +262,23 @@ $loginStatus = getLoginState();
 
           </ul>
         </div>
+        <nav class="col-xs-12 project-pagination" id="project-pagination">
+          <ul class="pagination">
+            <li class="<?php echo $olderDisabled; ?>">
+              <a href="#"><span aria-hidden="true">&larr;</span> Older</a>
+            </li>
+            <?php
+          $k = 1;
+          while ( $k <= $pages ) {
+              echo "<li><a href='?page=".$k."'>".$k."</a></li>\n";
+              $k++;
+          }
+               ?>
+            <li class="<?php echo $newerDisabled; ?>">
+              <a href="#">Newer <span aria-hidden="true">&rarr;</span></a>
+            </li>
+          </ul>
+        </nav>
         <?php } else if (!$validProject){ ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
