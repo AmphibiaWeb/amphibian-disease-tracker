@@ -224,8 +224,9 @@ $loginStatus = getLoginState();
               $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">' . $html . '        </ul>';
           }
           # Build the paginator
-          $pages = intdiv($count, $max);
-          $pages += $count % $max > 0 ? 1:0;
+          //$pages = intdiv($count, $max);
+          //$pages += $count % $max > 0 ? 1:0;
+          $pages = 1;
           # https://getbootstrap.com/components/#pagination
           $olderDisabled = $page > 1 ? "":"disabled";
           $newerDisabled = $page * $max <= $count ? "":"disabled";
