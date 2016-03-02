@@ -559,7 +559,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var e, error1, mapOptions;
+    var e, error1, mapOptions, p, postRunCallback;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -587,10 +587,21 @@ bootstrapTransect = function() {
         bsGrid: ""
       };
       $(mapOptions.selector).empty();
-      return getCanonicalDataCoords(geo.dataTable, mapOptions, function() {
+      postRunCallback = function() {
         stopLoad();
         return false;
-      });
+      };
+      if (geo.dataTable != null) {
+        return getCanonicalDataCoords(geo.dataTable, mapOptions, function() {
+          return postRunCallback();
+        });
+      } else {
+        mapOptions.boundingBox = overlayBoundingBox;
+        p = new Point(centerLat, centerLng);
+        return createMap2([p], mapOptions, function() {
+          return postRunCallback();
+        });
+      }
     } catch (error1) {
       e = error1;
       console.error("There was an error rendering the map - " + e.message);
@@ -1605,7 +1616,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, len3, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, p, point, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ta, topPosition, usedPoints, userHtml, year, yearPretty, years;
+        var affixOptions, anuraState, authorData, cartoParsed, caudataState, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, len3, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, point, poly, popManageUserAccess, project, publicToggle, q, ref, ref1, ref2, ref3, ta, topPosition, usedPoints, userHtml, year, yearPretty, years;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1767,8 +1778,8 @@ loadEditor = function(projectPreload) {
           yearPretty = "";
           years = project.sampling_years.split(",");
           i = 0;
-          for (p = 0, len3 = years.length; p < len3; p++) {
-            year = years[p];
+          for (q = 0, len3 = years.length; q < len3; q++) {
+            year = years[q];
             ++i;
             if (i > 1 && i === years.length) {
               if (years.length > 2) {

@@ -621,50 +621,24 @@ bootstrapTransect = ->
       loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=recallMapHelper"
       return false
     try
-      # geo.boundingBox = overlayBoundingBox
-      # unless typeof centerLat is "number"
-      #   i = 0
-      #   totalLat = 0.0
-      #   for k, coords of overlayBoundingBox
-      #     ++i
-      #     totalLat += coords[0]
-      #     console.info coords, i, totalLat
-      #   centerLat = toFloat(totalLat) / toFloat(i)
-      # unless typeof centerLng is "number"
-      #   i = 0
-      #   totalLng = 0.0
-      #   for k, coords of overlayBoundingBox
-      #     ++i
-      #     totalLng += coords[1]
-      #   centerLng = toFloat(totalLng) / toFloat(i)
-      # centerLat = toFloat(centerLat)
-      # centerLng = toFloat(centerLng)
-      # options =
-      #   cartodb_logo: false
-      #   https: true # Secure forcing is leading to resource errors
-      #   mobile_layout: true
-      #   gmaps_base_type: "hybrid"
-      #   center_lat: centerLat
-      #   center_lon: centerLng
-      #   zoom: getMapZoom(overlayBoundingBox)
-      # geo.mapParams = options
       $("#carto-map-container").empty()
-      # Ref:
-      # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
-      # http://documentation.cartodb.com/api/v2/viz/23f2abd6-481b-11e4-8fb1-0e4fddd5de28/viz.json
-      # geo?.dataTable ?= "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
-      # vizJsonElements =
-      #   layers: [
-      #     options:
-      #       sql: "SELECT * FROM #{geo.dataTable}"
-      #     ]
       mapOptions =
         selector: "#carto-map-container"
         bsGrid: ""
       $(mapOptions.selector).empty()
-      getCanonicalDataCoords geo.dataTable, mapOptions, ->
+
+      postRunCallback = ->
         stopLoad()
         false
+      
+      if geo.dataTable?
+        getCanonicalDataCoords geo.dataTable, mapOptions, ->
+          postRunCallback()
+      else
+        mapOptions.boundingBox = overlayBoundingBox
+        p = new Point centerLat, centerLng
+        createMap2 [p], mapOptions, ->
+          postRunCallback()
     catch e
       console.error "There was an error rendering the map - #{e.message}"
       stopLoadError "There was an error rendering the map - #{e.message}"
