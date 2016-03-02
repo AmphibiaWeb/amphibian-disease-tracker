@@ -1184,17 +1184,20 @@ getLocation = function(callback) {
     callback = void 0;
   }
   geoSuccess = function(pos, callback) {
+    clearTimeout(window.geoTimeout);
     window.locationData.lat = pos.coords.latitude;
     window.locationData.lng = pos.coords.longitude;
     window.locationData.acc = pos.coords.accuracy;
     window.locationData.last = Date.now();
-    if (callback != null) {
+    console.info("Successfully set location");
+    if (typeof callback === "function") {
       callback(window.locationData);
     }
     return false;
   };
   geoFail = function(error, callback) {
     var locationError;
+    clearTimeout(window.geoTimeout);
     locationError = (function() {
       switch (error.code) {
         case 0:
@@ -1208,13 +1211,17 @@ getLocation = function(callback) {
       }
     })();
     console.error(locationError);
-    if (callback != null) {
+    if (typeof callback === "function") {
       callback(false);
     }
     return false;
   };
   if (navigator.geolocation) {
-    return navigator.geolocation.getCurrentPosition(geoSuccess, geoFail, window.locationData.params);
+    console.log("Querying location");
+    navigator.geolocation.getCurrentPosition(geoSuccess, geoFail, window.locationData.params);
+    return window.geoTimeout = delay(1500, function() {
+      return getLocation(callback);
+    });
   } else {
     console.warn("This browser doesn't support geolocation!");
     if (callback != null) {
