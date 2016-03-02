@@ -1382,6 +1382,7 @@ createMap2 = (pointsObj, options, callback) ->
       window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
     unless window.mapBuilder?
       window.mapBuilder = new Object()
+      window.mapBuilder.points = new Array()
       window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
     unless options?.onClickCallback?
       unless options?

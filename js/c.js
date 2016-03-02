@@ -1801,6 +1801,7 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (window.mapBuilder == null) {
       window.mapBuilder = new Object();
+      window.mapBuilder.points = new Array();
       window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
     }
     if ((options != null ? options.onClickCallback : void 0) == null) {
