@@ -1639,6 +1639,7 @@ createMap2 = function(pointsObj, options, callback) {
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
   var a, cat, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
+  console.log("createMap2 was provided options:", options);
   if (options == null) {
     options = new Object();
     options = {
@@ -1795,12 +1796,13 @@ createMap2 = function(pointsObj, options, callback) {
     }
     console.log("Attaching events to " + mapSelector);
     if ((options != null ? options.resetMapBuilder : void 0) !== false) {
-      delete window.mapBuilder;
+      window.mapBuilder.points = new Array();
     } else {
       window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
     }
     if (window.mapBuilder == null) {
       window.mapBuilder = new Object();
+      window.mapBuilder.points = new Array();
       window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
     }
     if ((options != null ? options.onClickCallback : void 0) == null) {
@@ -2346,15 +2348,11 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           console.info("Post init");
           options = {
             boundingBox: geo.boundingBox,
-            bsGrid: ""
+            bsGrid: "",
+            selector: $("google-map").attr("id")
           };
-          if (window.mapBuilder != null) {
-            options.selector = window.mapBuilder.selector;
-          } else {
-            options.selector = "#carto-map-container";
-          }
           getCanonicalDataCoords(geo.dataTable, options, function() {
-            console.info("createMap callback successful", options);
+            console.info("gcdc callback successful", options);
             return parentCallback();
           });
           return false;
