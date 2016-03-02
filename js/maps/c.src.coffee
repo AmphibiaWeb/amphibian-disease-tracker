@@ -1379,7 +1379,7 @@ createMap2 = (pointsObj, options, callback) ->
     unless options?.resetMapBuilder is false
       delete window.mapBuilder
     else
-      window.mapBuilder.selector = "#" + $(mapElement).attr "id"
+      window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
     unless options?.onClickCallback?
       unless options?
         options = new Object()

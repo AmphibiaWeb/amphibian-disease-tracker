@@ -224,6 +224,7 @@ loadCreateNewProject = ->
             (<span class="points-count">0</span> points)
           </small>
         </button>
+        <paper-icon-button icon="icons:restore" id="reset-map-builder" data-toggle="tooltip" title="Reset Points"></paper-icon-button>
       </div>
       <div id="carto-rendered-map" class="col-md-6">
         <div id="carto-map-container" class="carto-map map">
@@ -274,15 +275,19 @@ loadCreateNewProject = ->
   """
   $("main #main-body").append html
   $("#init-map-build").click ->
-    doMapBuilder (map) ->
+    doMapBuilder window.mapBuilder, null, (map) ->
       html = """
       <p class="text-muted" id="computed-locality">
         Computed locality: <strong>#{map.locality}</strong>
       </p>
       """
       $("#computed-locality").remove()
-      $(this).after html
+      $("#transect-input-container").after html
       false
+  $("#reset-map-builder").click ->
+    window.mapBuilder.points = new Array()
+    $("#init-map-build").attr "disabled", "disabled"
+    $("#init-map-build .points-count").text window.mapBuilder.points.length
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()
@@ -649,7 +654,7 @@ bootstrapTransect = ->
       postRunCallback = ->
         stopLoad()
         false
-      
+
       if geo.dataTable?
         getCanonicalDataCoords geo.dataTable, mapOptions, ->
           postRunCallback()

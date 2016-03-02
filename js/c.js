@@ -1797,7 +1797,7 @@ createMap2 = function(pointsObj, options, callback) {
     if ((options != null ? options.resetMapBuilder : void 0) !== false) {
       delete window.mapBuilder;
     } else {
-      window.mapBuilder.selector = "#" + $(mapElement).attr("id");
+      window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
     }
     if ((options != null ? options.onClickCallback : void 0) == null) {
       if (options == null) {
