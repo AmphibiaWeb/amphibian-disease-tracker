@@ -2335,13 +2335,13 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
 };
 
 sortPoints = function(pointArray, asObj) {
-  var coordPoint, l, len, pointFunc, sortedPoints;
+  var coordPoint, l, len, point, sortedPoints;
   if (asObj == null) {
     asObj = true;
   }
 
   /*
-   * Take an array of points and return a Google Maps compatible array
+   * Take an array of Points and return a Google Maps compatible array
    * of coordinate objects
    */
   window.upper = upperLeft(pointArray);
@@ -2352,8 +2352,8 @@ sortPoints = function(pointArray, asObj) {
     if (asObj) {
       sortedPoints.push(coordPoint.getObj());
     } else {
-      pointFunc = new fPoint(coordPoint.lat, coordPoint.lng);
-      sortedPoints.push(pointFunc);
+      point = coordPoint.toSimplePoint();
+      sortedPoints.push(point);
     }
   }
   delete window.upper;
@@ -2437,15 +2437,16 @@ createConvexHull = function(pointsArray, returnObj) {
    */
   simplePointArray = new Array();
   realPointArray = new Array();
+  console.log("createConvexHull called with " + (Object.size(pointsArray)) + " points");
   pointsArray = Object.toArray(pointsArray);
   for (l = 0, len = pointsArray.length; l < len; l++) {
     point = pointsArray[l];
     canonicalPoint = canonicalizePoint(point);
     realPointArray.push(canonicalPoint);
-    simplePointArray.push(canonicalPoint.toSimplePoint());
   }
   try {
-    console.info("Getting convex hull with " + simplePointArray.length + " points (original: " + pointsArray.length + "; canonical: " + realPointArray.length + ")");
+    console.info("Getting convex hull (original: " + pointsArray.length + "; canonical: " + realPointArray.length + ")", realPointArray);
+    simplePointArray = sortPoints(realPointArray, false);
     cpHull = getConvexHullPoints(simplePointArray);
   } catch (error2) {
     e = error2;

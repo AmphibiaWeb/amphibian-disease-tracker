@@ -1889,7 +1889,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
 
 sortPoints = (pointArray, asObj = true) ->
   ###
-  # Take an array of points and return a Google Maps compatible array
+  # Take an array of Points and return a Google Maps compatible array
   # of coordinate objects
   ###
   window.upper = upperLeft pointArray
@@ -1899,8 +1899,8 @@ sortPoints = (pointArray, asObj = true) ->
     if asObj
       sortedPoints.push coordPoint.getObj()
     else
-      pointFunc = new fPoint coordPoint.lat, coordPoint.lng
-      sortedPoints.push pointFunc
+      point = coordPoint.toSimplePoint()
+      sortedPoints.push point
   delete window.upper
   sortedPoints
 
@@ -1970,13 +1970,14 @@ createConvexHull = (pointsArray, returnObj = false) ->
   ###
   simplePointArray = new Array()
   realPointArray = new Array()
+  console.log "createConvexHull called with #{Object.size(pointsArray)} points"
   pointsArray = Object.toArray pointsArray
   for point in pointsArray
     canonicalPoint = canonicalizePoint point
     realPointArray.push canonicalPoint
-    simplePointArray.push canonicalPoint.toSimplePoint()
   try
-    console.info "Getting convex hull with #{simplePointArray.length} points (original: #{pointsArray.length}; canonical: #{realPointArray.length})"
+    console.info "Getting convex hull (original: #{pointsArray.length}; canonical: #{realPointArray.length})", realPointArray
+    simplePointArray = sortPoints realPointArray, false
     cpHull = getConvexHullPoints simplePointArray
   catch e
     console.error "Unable to get convex hull - #{e.message}"
