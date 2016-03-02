@@ -216,6 +216,7 @@ loadCreateNewProject = ->
       <div id="transect-input" class="col-md-6 col-xs-12">
         <div id="transect-input-container">
         </div>
+        <br/><br/>
         <button class="btn btn-primary" disabled id="init-map-build">
           <iron-icon icon="maps:map"></iron-icon>
           Build Map
