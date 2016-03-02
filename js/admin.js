@@ -492,6 +492,7 @@ bootstrapTransect = function() {
    * events, and set up helper functions.
    */
   var geocodeEvent, setupTransectUi;
+  getLocation();
   window.geocodeLookupCallback = function() {
 
     /*
@@ -549,7 +550,7 @@ bootstrapTransect = function() {
     });
   };
   geo.renderMapHelper = function(overlayBoundingBox, centerLat, centerLng) {
-    var coords, e, error1, i, k, options, totalLat, totalLng;
+    var e, error1, mapOptions;
     if (overlayBoundingBox == null) {
       overlayBoundingBox = geo.boundingBox;
     }
@@ -571,51 +572,12 @@ bootstrapTransect = function() {
       return false;
     }
     try {
-      geo.boundingBox = overlayBoundingBox;
-      if (typeof centerLat !== "number") {
-        i = 0;
-        totalLat = 0.0;
-        for (k in overlayBoundingBox) {
-          coords = overlayBoundingBox[k];
-          ++i;
-          totalLat += coords[0];
-          console.info(coords, i, totalLat);
-        }
-        centerLat = toFloat(totalLat) / toFloat(i);
-      }
-      if (typeof centerLng !== "number") {
-        i = 0;
-        totalLng = 0.0;
-        for (k in overlayBoundingBox) {
-          coords = overlayBoundingBox[k];
-          ++i;
-          totalLng += coords[1];
-        }
-        centerLng = toFloat(totalLng) / toFloat(i);
-      }
-      centerLat = toFloat(centerLat);
-      centerLng = toFloat(centerLng);
-      options = {
-        cartodb_logo: false,
-        https: true,
-        mobile_layout: true,
-        gmaps_base_type: "hybrid",
-        center_lat: centerLat,
-        center_lon: centerLng,
-        zoom: getMapZoom(overlayBoundingBox)
-      };
-      geo.mapParams = options;
       $("#carto-map-container").empty();
-      return createMap(null, "carto-map-container", options, function(layer, map) {
-        var e, error1;
-        try {
-          mapOverlayPolygon(overlayBoundingBox);
-          stopLoad();
-        } catch (error1) {
-          e = error1;
-          console.error("There was an error drawing your bounding box - " + e.emssage);
-          stopLoadError("There was an error drawing your bounding box - " + e.emssage);
-        }
+      mapOptions = {
+        selector: "#carto-map-container"
+      };
+      return getCanonicalDataCoords(geo.dataTable, mapOptions, function() {
+        stopLoad();
         return false;
       });
     } catch (error1) {
@@ -891,9 +853,9 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
   return markers;
 };
 
-getCanonicalDataCoords = function(table, callback) {
+getCanonicalDataCoords = function(table, options, callback) {
   if (callback == null) {
-    callback = mapAddPoints;
+    callback = createMap2;
   }
 
   /*
@@ -924,20 +886,21 @@ getCanonicalDataCoords = function(table, callback) {
         if (isNull(row.infraspecificepithet)) {
           row.infraspecificepithet = "";
         }
-        point = pointStringToPoint(textPoint);
+        point = pointStringToLatLng(textPoint);
         data = {
           title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
           html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
         };
+        point.infoWindow = data;
         coords.push(point);
         info.push(data);
       }
       dataAttrs.coords = coords;
       dataAttrs.markerInfo = info;
-      return callback(coords, info);
+      return callback(coords);
     }).error(function(result, status) {
       if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
-        return callback(dataAttrs.coords, dataAttrs.markerInfo);
+        return callback(dataAttrs.coords, options);
       } else {
         stopLoadError("Couldn't get bounding coordinates from data");
         return console.error("No valid coordinates accessible!");
@@ -1502,7 +1465,7 @@ newGeoDataHandler = function(dataObject) {
       _adp.data.taxa.clades = cladeList;
       _adp.data.taxa.validated = validatedData.validated_taxa;
       return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table) {
-        return mapOverlayPolygon(validatedData.transectRing);
+        return getCanonicalDataCoords(table);
       });
     });
   } catch (error4) {

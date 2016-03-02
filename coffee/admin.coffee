@@ -542,7 +542,7 @@ bootstrapTransect = ->
   # Load up the region of interest UI into the DOM, and bind all the
   # events, and set up helper functions.
   ###
-
+  getLocation()
   # Helper function: Do the geocoding
   window.geocodeLookupCallback = ->
     ###
@@ -615,33 +615,33 @@ bootstrapTransect = ->
       loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=recallMapHelper"
       return false
     try
-      geo.boundingBox = overlayBoundingBox
-      unless typeof centerLat is "number"
-        i = 0
-        totalLat = 0.0
-        for k, coords of overlayBoundingBox
-          ++i
-          totalLat += coords[0]
-          console.info coords, i, totalLat
-        centerLat = toFloat(totalLat) / toFloat(i)
-      unless typeof centerLng is "number"
-        i = 0
-        totalLng = 0.0
-        for k, coords of overlayBoundingBox
-          ++i
-          totalLng += coords[1]
-        centerLng = toFloat(totalLng) / toFloat(i)
-      centerLat = toFloat(centerLat)
-      centerLng = toFloat(centerLng)
-      options =
-        cartodb_logo: false
-        https: true # Secure forcing is leading to resource errors
-        mobile_layout: true
-        gmaps_base_type: "hybrid"
-        center_lat: centerLat
-        center_lon: centerLng
-        zoom: getMapZoom(overlayBoundingBox)
-      geo.mapParams = options
+      # geo.boundingBox = overlayBoundingBox
+      # unless typeof centerLat is "number"
+      #   i = 0
+      #   totalLat = 0.0
+      #   for k, coords of overlayBoundingBox
+      #     ++i
+      #     totalLat += coords[0]
+      #     console.info coords, i, totalLat
+      #   centerLat = toFloat(totalLat) / toFloat(i)
+      # unless typeof centerLng is "number"
+      #   i = 0
+      #   totalLng = 0.0
+      #   for k, coords of overlayBoundingBox
+      #     ++i
+      #     totalLng += coords[1]
+      #   centerLng = toFloat(totalLng) / toFloat(i)
+      # centerLat = toFloat(centerLat)
+      # centerLng = toFloat(centerLng)
+      # options =
+      #   cartodb_logo: false
+      #   https: true # Secure forcing is leading to resource errors
+      #   mobile_layout: true
+      #   gmaps_base_type: "hybrid"
+      #   center_lat: centerLat
+      #   center_lon: centerLng
+      #   zoom: getMapZoom(overlayBoundingBox)
+      # geo.mapParams = options
       $("#carto-map-container").empty()
       # Ref:
       # http://academy.cartodb.com/courses/cartodbjs-ground-up/createvis-vs-createlayer/#vizjson-nice-to-meet-you
@@ -652,14 +652,10 @@ bootstrapTransect = ->
       #     options:
       #       sql: "SELECT * FROM #{geo.dataTable}"
       #     ]
-      createMap null, "carto-map-container", options, (layer, map) ->
-        # Map has been created, play with the data!
-        try
-          mapOverlayPolygon(overlayBoundingBox)
-          stopLoad()
-        catch e
-          console.error "There was an error drawing your bounding box - #{e.emssage}"
-          stopLoadError "There was an error drawing your bounding box - #{e.emssage}"
+      mapOptions =
+        selector: "#carto-map-container"
+      getCanonicalDataCoords geo.dataTable, mapOptions, ->
+        stopLoad()
         false
     catch e
       console.error "There was an error rendering the map - #{e.message}"
@@ -898,7 +894,7 @@ mapAddPoints = (pointArray, pointInfoArray, map = geo.googleMap) ->
   markers
 
 
-getCanonicalDataCoords = (table, callback = mapAddPoints) ->
+getCanonicalDataCoords = (table, options, callback = createMap2) ->
   ###
   # Fetch data coordinate points
   ###
@@ -923,7 +919,8 @@ getCanonicalDataCoords = (table, callback = mapAddPoints) ->
         textPoint = row.st_astext
         if isNull row.infraspecificepithet
           row.infraspecificepithet = ""
-        point = pointStringToPoint textPoint
+        #point = pointStringToPoint textPoint
+        point = pointStringToLatLng textPoint
         data =
           title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
           html: """
@@ -935,16 +932,19 @@ getCanonicalDataCoords = (table, callback = mapAddPoints) ->
             Sampled by #{row.samplemethod}, disease status #{row.diseasedetected} for #{row.diseasetested}
           </p>
           """
+        point.infoWindow = data
         coords.push point
         info.push data
       # Push the coordinates and the formatted infowindows
       dataAttrs.coords = coords
       dataAttrs.markerInfo = info
-      callback coords, info
+      callback coords
+      # callback coords, info
     .error (result, status) ->
       # On error, return direct from file upload
       if dataAttrs?.coords?
-        callback dataAttrs.coords, dataAttrs.markerInfo
+        callback dataAttrs.coords, options
+        # callback dataAttrs.coords, dataAttrs.markerInfo
       else
         stopLoadError "Couldn't get bounding coordinates from data"
         console.error "No valid coordinates accessible!"
@@ -1493,8 +1493,8 @@ newGeoDataHandler = (dataObject = new Object()) ->
       _adp.data.taxa.clades = cladeList
       _adp.data.taxa.validated = validatedData.validated_taxa
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table) ->
-        mapOverlayPolygon validatedData.transectRing
-        # getCanonicalDataCoords(table)
+        #mapOverlayPolygon validatedData.transectRing
+        getCanonicalDataCoords(table)
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"

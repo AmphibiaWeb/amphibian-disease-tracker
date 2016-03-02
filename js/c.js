@@ -1515,7 +1515,9 @@ geo.init = function(doCallback) {
   try {
     window.locationData.lat = 37.871527;
     window.locationData.lng = -122.262113;
-    getLocation();
+    getLocation(function() {
+      return _adp.currentLocation = new Point(window.locationData.lat, window.locationData.lng);
+    });
   } catch (undefined) {}
   cartoDBCSS = "<link rel=\"stylesheet\" href=\"https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css\" />";
   $("head").append(cartoDBCSS);
@@ -1610,19 +1612,37 @@ defaultMapMouseOverBehaviour = function(e, latlng, pos, data, layerNumber) {
   return console.log(e, latlng, pos, data, layerNumber);
 };
 
-createMap2 = function(pointsObj, selector, options, callback) {
-  var a, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, note, point, pointData, points, poly, r, ref, ref1, species, testString, tested, zoom;
-  if (selector == null) {
-    selector = "#carto-map-container";
-  }
+createMap2 = function(pointsObj, options, callback) {
 
   /*
    * Essentially a copy of CreateMap
    * Redo with
    * https://elements.polymer-project.org/elements/google-map#event-google-map-click
    *
+   * @param array|object pointsObj -> an array or object of points
+   *  (many types supported). For infowindow, the key "data" should be
+   *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
+  var a, cat, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, iw, k, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, points, poly, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
+  if (options == null) {
+    options = new Object();
+    options = {
+      polyParams: {
+        fillColor: defaultFillColor,
+        fillOpacity: defaultFillOpacity
+      },
+      classes: "",
+      onClickCallback: false,
+      skipHull: false,
+      skipPoints: false,
+      boundingBox: null,
+      selector: "#carto-map-container"
+    };
+  }
+  if (options.selector != null) {
+    selector = options.selector;
+  }
   try {
     if (((options != null ? (ref = options.polyParams) != null ? ref.fillColor : void 0 : void 0) != null) && ((options != null ? (ref1 = options.polyParams) != null ? ref1.fillOpacity : void 0 : void 0) != null)) {
       poly = options.polyParams;
@@ -1632,45 +1652,95 @@ createMap2 = function(pointsObj, selector, options, callback) {
         fillOpacity: defaultFillOpacity
       };
     }
-    mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-    data = createConvexHull(pointsObj, true);
-    hull = data.hull;
-    points = data.points;
+    if (!(Object.size(pointsObj) < 3)) {
+      data = createConvexHull(pointsObj, true);
+      hull = data.hull;
+      points = data.points;
+    } else {
+      points = new Array();
+      options.skipHull = true;
+      if (Object.size(pointsObj) === 0) {
+        options.skipPoints = true;
+      } else {
+        for (k in pointsObj) {
+          point = pointsObj[k];
+          points.push(canonicalizePoint(point));
+        }
+      }
+      if (options.boundingBox != null) {
+        points.push(canonicalizePoint(options.boundingBox.nw));
+        points.push(canonicalizePoint(options.boundingBox.ne));
+        points.push(canonicalizePoint(options.boundingBox.sw));
+        points.push(canonicalizePoint(options.boundingBox.se));
+      }
+    }
     try {
       zoom = getMapZoom(points, selector);
       console.info("Got zoom", zoom);
     } catch (error2) {
       zoom = "";
     }
-    for (l = 0, len = hull.length; l < len; l++) {
-      point = hull[l];
-      mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
-    }
-    mapHtml += "    </google-map-poly>";
-    i = 0;
-    for (m = 0, len1 = points.length; m < len1; m++) {
-      point = points[m];
-      try {
-        pointData = pointsObj[i].data;
-        genus = pointData.genus;
-        species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificeEpithet;
-        note = pointData.originaltaxa != null ? pointData.originaltaxa : pointData.originaleTaxa;
-        detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseeDetected;
-        tested = pointData.diseasetested != null ? pointData.diseasetested : pointData.diseaseeTested;
-      } catch (undefined) {}
-      if (genus == null) {
-        genus = "No Data";
+    if (skipHull !== true) {
+      mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
+      for (l = 0, len = hull.length; l < len; l++) {
+        point = hull[l];
+        mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
       }
-      if (species == null) {
-        species = "";
-      }
-      note = !isNull(note) ? "(" + note + ")" : "";
-      testString = (detected != null) && (tested != null) ? "<br/> Tested <strong>" + detected + "</strong> for " + tested : "";
-      point = canonicalizePoint(point);
-      marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\">\n  <p>\n    <em>" + genus + " " + species + "</em> " + note + "\n    " + testString + "\n  </p>\n</google-map-marker>";
-      mapHtml += marker;
+      mapHtml += "    </google-map-poly>";
+    } else {
+      mapHtml = "";
     }
-    center = getMapCenter(points);
+    if (options.skipPoints !== true) {
+      i = 0;
+      for (m = 0, len1 = points.length; m < len1; m++) {
+        point = points[m];
+        markerHtml = "";
+        markerTitle = "";
+        try {
+          if (pointsObj[i].infoWindow != null) {
+            iw = pointsObj[i].infoWindow;
+            markerTitle = escape(iw.title);
+            markerHtml = iw.html;
+          } else if (pointsObj[i].data != null) {
+            pointData = pointsObj[i].data;
+            genus = pointData.genus;
+            species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificeEpithet;
+            note = pointData.originaltaxa != null ? pointData.originaltaxa : pointData.originalTaxa;
+            detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseDetected;
+            tested = pointData.diseasetested != null ? pointData.diseasetested : pointData.diseaseTested;
+            if (genus == null) {
+              genus = "No Data";
+            }
+            if (species == null) {
+              species = "";
+            }
+            note = !isNull(note) ? "(" + note + ")" : "";
+            testString = (detected != null) && (tested != null) ? "<br/> Tested <strong>" + detected + "</strong> for " + tested : "";
+            markerHtml = "<p>\n  <em>" + genus + " " + species + "</em> " + note + "\n  " + testString + "\n</p>";
+            if ((pointData.catalogNumber != null) || (pointData.catalognumber != null)) {
+              cat = pointData.catalognumber != null ? pointData.catalognumber : pointData.catalogNumber;
+              ssp = pointData.infraspecificepithet != null ? pointData.infraspecificepithet : pointData.infraspecificEpithet;
+              markerTitle = cat + ": " + genus + " " + species;
+            }
+          }
+        } catch (undefined) {}
+        point = canonicalizePoint(point);
+        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\" title=\"" + markerTitle + "\" animation=\"drop\">\n  " + markerHtml + "\n</google-map-marker>";
+        mapHtml += marker;
+      }
+      center = getMapCenter(points);
+    } else {
+      if (window.locationData == null) {
+        try {
+          window.locationData.lat = 37.871527;
+          window.locationData.lng = -122.262113;
+          getLocation(function() {
+            return _adp.currentLocation = new Point(window.locationData.lat, window.locationData.lng);
+          });
+        } catch (undefined) {}
+      }
+      center = new Point(window.locationData.lat, window.locationData.lng);
+    }
     mapObjAttr = geo.googleMap != null ? "map=\"geo.googleMap\"" : "";
     idSuffix = $("google-map").length;
     id = "transect-viewport-" + idSuffix;
@@ -1737,6 +1807,9 @@ createMap2 = function(pointsObj, selector, options, callback) {
 };
 
 buildMap = function(mapBuilderObj) {
+  if (mapBuilderObj == null) {
+    mapBuilderObj = window.mapBuilder;
+  }
   createMap2(mapBuilderObj.points, mapBuilderObj.selector);
   return false;
 };

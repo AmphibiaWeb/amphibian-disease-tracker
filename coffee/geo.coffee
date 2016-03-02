@@ -36,7 +36,8 @@ geo.init = (doCallback) ->
     window.locationData.lat = 37.871527
     window.locationData.lng = -122.262113
     # Now get the real location
-    getLocation()
+    getLocation ->
+      _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
   cartoDBCSS = """
   <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
   """
@@ -118,14 +119,32 @@ defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
 
 
 
-createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) ->
+createMap2 = (pointsObj, options, callback) ->
   ###
   # Essentially a copy of CreateMap
   # Redo with
   # https://elements.polymer-project.org/elements/google-map#event-google-map-click
   #
+  # @param array|object pointsObj -> an array or object of points
+  #  (many types supported). For infowindow, the key "data" should be
+  #  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
   # @param object options -> {onClickCallback:function(), classes:[]}
   ###
+  unless options?
+    options = new Object()
+    # Create defaults
+    options =
+      polyParams:
+        fillColor: defaultFillColor
+        fillOpacity: defaultFillOpacity
+      classes: ""
+      onClickCallback: false
+      skipHull: false
+      skipPoints: false
+      boundingBox: null
+      selector: "#carto-map-container"
+  if options.selector?
+    selector = options.selector
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
       poly = options.polyParams
@@ -133,48 +152,92 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
       poly =
         fillColor: defaultFillColor
         fillOpacity: defaultFillOpacity
-    mapHtml = """
-    <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
-    """
-    data = createConvexHull pointsObj, true
-    hull = data.hull
-    points = data.points
+    unless Object.size(pointsObj) < 3
+      data = createConvexHull pointsObj, true
+      hull = data.hull
+      points = data.points # canonicalized
+    else
+      # Insufficient points
+      points = new Array()
+      options.skipHull = true
+      if Object.size(pointsObj) is 0
+        options.skipPoints = true
+      else
+        for k, point of pointsObj
+          points.push canonicalizePoint point
+      if options.boundingBox?
+        points.push canonicalizePoint options.boundingBox.nw
+        points.push canonicalizePoint options.boundingBox.ne
+        points.push canonicalizePoint options.boundingBox.sw
+        points.push canonicalizePoint options.boundingBox.se
     try
       zoom = getMapZoom points, selector
       console.info "Got zoom", zoom
     catch
       zoom = ""
-    for point in hull
-      mapHtml += """
-      <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+    unless skipHull is true
+      mapHtml = """
+      <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
       """
-    mapHtml += "    </google-map-poly>"
+      for point in hull
+        mapHtml += """
+        <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+        """
+      mapHtml += "    </google-map-poly>"
+    else
+      mapHtml = ""
     # Points
-    i = 0
-    for point in points
-      try
-        pointData = pointsObj[i].data
-        genus = pointData.genus
-        species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificeEpithet
-        note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originaleTaxa
-        detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseeDetected
-        tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseeTested
-      genus ?= "No Data"
-      species ?= ""
-      note = unless isNull note then "(#{note})" else ""
-      testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
-      point = canonicalizePoint point
-      marker = """
-      <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}">
-        <p>
-          <em>#{genus} #{species}</em> #{note}
-          #{testString}
-        </p>
-      </google-map-marker>
-      """
-      mapHtml += marker
+    unless options.skipPoints is true
+      i = 0
+      for point in points
+        markerHtml = ""
+        markerTitle = ""
+        try
+          if pointsObj[i].infoWindow?
+            # Direct infowindow
+            iw = pointsObj[i].infoWindow
+            markerTitle = escape iw.title
+            markerHtml = iw.html
+          else if pointsObj[i].data?
+            pointData = pointsObj[i].data
+            genus = pointData.genus
+            species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificeEpithet
+            note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originalTaxa
+            detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseDetected
+            tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseTested
+            genus ?= "No Data"
+            species ?= ""
+            note = unless isNull note then "(#{note})" else ""
+            testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
+            markerHtml = """
+              <p>
+                <em>#{genus} #{species}</em> #{note}
+                #{testString}
+              </p>
+            """
+            if pointData.catalogNumber? or pointData.catalognumber?
+              cat = if pointData.catalognumber? then pointData.catalognumber else pointData.catalogNumber
+              ssp = if pointData.infraspecificepithet? then pointData.infraspecificepithet else pointData.infraspecificEpithet
+              markerTitle = "#{cat}: #{genus} #{species}"
+        point = canonicalizePoint point
+        marker = """
+        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}" animation="drop">
+          #{markerHtml}
+        </google-map-marker>
+        """
+        mapHtml += marker
+      center = getMapCenter points
+    else
+      unless window.locationData?
+        try
+          # Center on Berkeley
+          window.locationData.lat = 37.871527
+          window.locationData.lng = -122.262113
+          # Now get the real location
+          getLocation ->
+            _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
+      center = new Point window.locationData.lat, window.locationData.lng
     # Make the whole map
-    center = getMapCenter points
     mapObjAttr = if geo.googleMap? then "map=\"geo.googleMap\"" else ""
     idSuffix = $("google-map").length
     id = "transect-viewport-#{idSuffix}"
@@ -239,7 +302,7 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
   false
 
 
-buildMap = (mapBuilderObj) ->
+buildMap = (mapBuilderObj = window.mapBuilder) ->
   createMap2 mapBuilderObj.points, mapBuilderObj.selector
   false
 
