@@ -1649,7 +1649,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, options, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ta, topPosition, userHtml, year, yearPretty, years;
+        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ta, topPosition, userHtml, year, yearPretty, years;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1759,17 +1759,20 @@ loadEditor = function(projectPreload) {
             cartoParsed = new Object();
           }
           mapHtml = "";
+          createMapOptions = {
+            boundingBox: cartoParsed.bounding_polygon,
+            classes: ""
+          };
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
-            options = {
-              boundingBox: cartoParsed.bounding_polygon
-            };
             centerPoint = new Point(project.lat, project.lng);
             createMap2([centerPoint], options, function(map) {
               var tryReload;
               if (!$(map.selector).exists()) {
                 return (tryReload = function() {
+                  var googleMap;
                   if ($("#map-header").exists()) {
-                    return $("#map-header").after(map.html);
+                    $("#map-header").after(map.html);
+                    return googleMap = map.html;
                   } else {
                     return delay(250, function() {
                       return tryReload();
@@ -1779,8 +1782,11 @@ loadEditor = function(projectPreload) {
               }
             });
             poly = cartoParsed.bounding_polygon;
+            googleMap = geo.googleMapWebComponent;
+          } else {
+            googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui  apiKey=\"" + gMapsApiKey + "\">\n</google-map>";
           }
-          googleMap = geo.googleMapWebComponent;
+          geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
           mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : deEscape(project.sample_notes);
           noteHtml = "<h3>Project Notes</h3>\n<ul class=\"nav nav-tabs\" id=\"markdown-switcher\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a href=\"#markdown-switcher\">Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a href=\"#markdown-switcher\">Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-notes\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"sample_notes\" hidden>" + project.sample_notes + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair project-param\" id=\"note-preview\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdNotes + "</script>\n</marked-element>";
@@ -1895,7 +1901,7 @@ loadEditor = function(projectPreload) {
               return $(this).find("iron-icon").removeClass("material-red");
             }
           });
-          return getProjectCartoData(project.carto_id);
+          return getProjectCartoData(project.carto_id, createMapOptions);
         } catch (error3) {
           e = error3;
           stopLoadError("There was an error loading your project");
@@ -2047,7 +2053,7 @@ showAddUserDialog = function(refAccessList) {
   return false;
 };
 
-getProjectCartoData = function(cartoObj) {
+getProjectCartoData = function(cartoObj, mapOptions) {
 
   /*
    * Get the data from CartoDB, map it out, show summaries, etc.
@@ -2079,7 +2085,7 @@ getProjectCartoData = function(cartoObj) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var error, geoJson, k, lat, lng, marker, note, ref, row, rows, taxa, truncateLength, workingMap;
+    var error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, row, rows, taxa, totalRows, truncateLength, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
@@ -2091,12 +2097,19 @@ getProjectCartoData = function(cartoObj) {
     }
     rows = result.parsed_responses[0].rows;
     truncateLength = 0 - "</google-map>".length;
-    workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
+    try {
+      workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
+    } catch (error2) {
+      workingMap = "<google-map>";
+    }
+    pointArr = new Array();
     for (k in rows) {
       row = rows[k];
       geoJson = JSON.parse(row.st_asgeojson);
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
+      point = new Point(geoJson.coordinates);
+      point.infoWindow = new Object();
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
@@ -2113,12 +2126,25 @@ getProjectCartoData = function(cartoObj) {
         console.warn(taxa + " was changed from " + row.originaltaxa);
         note = "(<em>" + row.originaltaxa + "</em>)";
       }
-      marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\" data-disease-detected=\"" + row.diseasedetected + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
+      infoWindow = "<p>\n  <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n  <br/>\n  Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n</p>";
+      point.infoWindow.html = infoWindow;
+      marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\" data-disease-detected=\"" + row.diseasedetected + "\">\n" + infoWindow + "\n</google-map-marker>";
       workingMap += marker;
+      pointArr.push(point);
     }
-    workingMap += "</google-map>\n<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + result.parsed_responses[0].total_rows + "</span> sample points in this dataset</p>";
-    $("#transect-viewport").replaceWith(workingMap);
-    return stopLoad();
+    totalRows = (ref1 = result.parsed_responses[0].total_rows) != null ? ref1 : 0;
+    if (pointArr.length > 0) {
+      return createMap2(pointArr, mapOptions, function(map) {
+        var after;
+        after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
+        $(map.selector).after;
+        return stopLoad();
+      });
+    } else {
+      workingMap += "</google-map>\n<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
+      $("#transect-viewport").replaceWith(workingMap);
+      return stopLoad();
+    }
   }).fail(function(result, status) {
     console.error("Couldn't talk to back end server to ping carto!");
     return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");

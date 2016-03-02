@@ -205,41 +205,32 @@ loadEditor = (projectPreload) ->
             stopLoadError "We couldn't parse your data. Please try again later."
             cartoParsed = new Object()
           mapHtml = ""
+          createMapOptions =
+            boundingBox: cartoParsed.bounding_polygon
+            classes: ""
           if cartoParsed.bounding_polygon?.paths?
             # Draw a map web component
             # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
             # https://elements.polymer-project.org/elements/google-map
             # Poly is cartoParsed.bounding_polygon.paths
-            options =
-              boundingBox: cartoParsed.bounding_polygon
             centerPoint = new Point project.lat, project.lng
             createMap2 [centerPoint], options, (map) ->
               if not $(map.selector).exists()
                 do tryReload = ->
                   if $("#map-header").exists()
                     $("#map-header").after map.html
+                    googleMap = map.html
                   else
                     delay 250, ->
                       tryReload()
             poly = cartoParsed.bounding_polygon
-          #   mapHtml = """
-          #   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
-          #   """
-          #   usedPoints = new Array()
-          #   for point in poly.paths
-          #     unless point in usedPoints
-          #       usedPoints.push point
-          #       mapHtml += """
-          #       <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
-          #       """
-          #   mapHtml += "    </google-map-poly>"
-          # googleMap = """
-          #       <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
-          #         #{mapHtml}
-          #       </google-map>
-          # """
-          # geo.googleMapWebComponent = googleMap
-          googleMap = geo.googleMapWebComponent
+            googleMap = geo.googleMapWebComponent
+          else
+            googleMap = """
+                  <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
+                  </google-map>
+            """
+          geo.googleMapWebComponent = googleMap
           deleteCardAction = if result.user.is_author then """
           <div class="card-actions">
                 <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
@@ -460,7 +451,7 @@ loadEditor = (projectPreload) ->
             else
               $(this).find("iron-icon").removeClass("material-red")
           # Load more detailed data from CartoDB
-          getProjectCartoData project.carto_id
+          getProjectCartoData project.carto_id, createMapOptions
         catch e
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"
@@ -627,7 +618,7 @@ showAddUserDialog = (refAccessList) ->
 
 
 
-getProjectCartoData = (cartoObj) ->
+getProjectCartoData = (cartoObj, mapOptions) ->
   ###
   # Get the data from CartoDB, map it out, show summaries, etc.
   #
@@ -665,11 +656,17 @@ getProjectCartoData = (cartoObj) ->
       return false
     rows = result.parsed_responses[0].rows
     truncateLength = 0 - "</google-map>".length
-    workingMap = geo.googleMapWebComponent.slice 0, truncateLength
+    try
+      workingMap = geo.googleMapWebComponent.slice 0, truncateLength
+    catch
+      workingMap = "<google-map>"
+    pointArr = new Array()
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       lat = geoJson.coordinates[0]
       lng = geoJson.coordinates[1]
+      point = new Point geoJson.coordinates
+      point.infoWindow = new Object()
       # Fill the points as markers
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
@@ -683,24 +680,38 @@ getProjectCartoData = (cartoObj) ->
       if taxa isnt row.originaltaxa
         console.warn "#{taxa} was changed from #{row.originaltaxa}"
         note = "(<em>#{row.originaltaxa}</em>)"
-      marker = """
-      <google-map-marker latitude="#{lat}" longitude="#{lng}" data-disease-detected="#{row.diseasedetected}">
+      infoWindow = """
         <p>
           <em>#{row.genus} #{row.specificepithet}</em> #{note}
           <br/>
           Tested <strong>#{row.diseasedetected}</strong> for #{row.diseasetested}
         </p>
+      """
+      point.infoWindow.html = infoWindow
+      marker = """
+      <google-map-marker latitude="#{lat}" longitude="#{lng}" data-disease-detected="#{row.diseasedetected}">
+      #{infoWindow}
       </google-map-marker>
       """
       # $("#transect-viewport").append marker
       workingMap += marker
+      pointArr.push point
     # p$("#transect-viewport").resize()
-    workingMap += """
-    </google-map>
-    <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{result.parsed_responses[0].total_rows}</span> sample points in this dataset</p>
-    """
-    $("#transect-viewport").replaceWith workingMap
-    stopLoad()
+    totalRows = result.parsed_responses[0].total_rows ? 0
+    if pointArr.length > 0
+      createMap2 pointArr, mapOptions, (map) ->
+        after = """
+        <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
+        """
+        $(map.selector).after
+        stopLoad()
+    else
+      workingMap += """
+      </google-map>
+      <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
+      """
+      $("#transect-viewport").replaceWith workingMap
+      stopLoad()
   .fail (result, status) ->
     console.error "Couldn't talk to back end server to ping carto!"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
