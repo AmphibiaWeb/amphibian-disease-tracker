@@ -1649,7 +1649,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, len3, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, point, poly, popManageUserAccess, project, publicToggle, q, ref, ref1, ref2, ref3, ta, topPosition, usedPoints, userHtml, year, yearPretty, years;
+        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, options, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ta, topPosition, userHtml, year, yearPretty, years;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1760,21 +1760,13 @@ loadEditor = function(projectPreload) {
           }
           mapHtml = "";
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
+            options = {
+              boundingBox: cartoParsed.bounding_polygon
+            };
+            centerPoint = new Point(project.lat, project.lng);
+            createMap2([centerPoint], options);
             poly = cartoParsed.bounding_polygon;
-            mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-            usedPoints = new Array();
-            ref3 = poly.paths;
-            for (m = 0, len1 = ref3.length; m < len1; m++) {
-              point = ref3[m];
-              if (indexOf.call(usedPoints, point) < 0) {
-                usedPoints.push(point);
-                mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
-              }
-            }
-            mapHtml += "    </google-map-poly>";
           }
-          googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui  apiKey=\"" + gMapsApiKey + "\">\n  " + mapHtml + "\n</google-map>";
-          geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
           mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : deEscape(project.sample_notes);
           noteHtml = "<h3>Project Notes</h3>\n<ul class=\"nav nav-tabs\" id=\"markdown-switcher\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a href=\"#markdown-switcher\">Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a href=\"#markdown-switcher\">Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-notes\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"sample_notes\" hidden>" + project.sample_notes + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair project-param\" id=\"note-preview\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdNotes + "</script>\n</marked-element>";
@@ -1791,8 +1783,8 @@ loadEditor = function(projectPreload) {
           monthPretty = "";
           months = project.sampling_months.split(",");
           i = 0;
-          for (o = 0, len2 = months.length; o < len2; o++) {
-            month = months[o];
+          for (m = 0, len1 = months.length; m < len1; m++) {
+            month = months[m];
             ++i;
             if (i > 1 && i === months.length) {
               if (months.length > 2) {
@@ -1811,8 +1803,8 @@ loadEditor = function(projectPreload) {
           yearPretty = "";
           years = project.sampling_years.split(",");
           i = 0;
-          for (q = 0, len3 = years.length; q < len3; q++) {
-            year = years[q];
+          for (o = 0, len2 = years.length; o < len2; o++) {
+            year = years[o];
             ++i;
             if (i > 1 && i === years.length) {
               if (years.length > 2) {

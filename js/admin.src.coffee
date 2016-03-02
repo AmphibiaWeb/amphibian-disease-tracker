@@ -1815,24 +1815,28 @@ loadEditor = (projectPreload) ->
             # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
             # https://elements.polymer-project.org/elements/google-map
             # Poly is cartoParsed.bounding_polygon.paths
+            options =
+              boundingBox: cartoParsed.bounding_polygon
+            centerPoint = new Point project.lat, project.lng
+            createMap2 [centerPoint], options
             poly = cartoParsed.bounding_polygon
-            mapHtml = """
-            <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
-            """
-            usedPoints = new Array()
-            for point in poly.paths
-              unless point in usedPoints
-                usedPoints.push point
-                mapHtml += """
-                <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
-                """
-            mapHtml += "    </google-map-poly>"
-          googleMap = """
-                <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
-                  #{mapHtml}
-                </google-map>
-          """
-          geo.googleMapWebComponent = googleMap
+          #   mapHtml = """
+          #   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
+          #   """
+          #   usedPoints = new Array()
+          #   for point in poly.paths
+          #     unless point in usedPoints
+          #       usedPoints.push point
+          #       mapHtml += """
+          #       <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
+          #       """
+          #   mapHtml += "    </google-map-poly>"
+          # googleMap = """
+          #       <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
+          #         #{mapHtml}
+          #       </google-map>
+          # """
+          # geo.googleMapWebComponent = googleMap
           deleteCardAction = if result.user.is_author then """
           <div class="card-actions">
                 <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>

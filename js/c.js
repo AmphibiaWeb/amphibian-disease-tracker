@@ -1843,6 +1843,7 @@ createMap2 = function(pointsObj, options, callback) {
       center: center
     };
     console.info("Map", r);
+    geo.googleMapWebComponent = r;
     if (typeof callback === "function") {
       console.log("createMap2 calling back");
       callback(r);
@@ -2485,7 +2486,7 @@ canonicalizePoint = function(point) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, cpHull, error2, l, len, obj, point, realPointArray, simplePointArray;
+  var canonicalPoint, cpHull, error2, l, len, len1, m, obj, point, realPointArray, simplePointArray;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -2516,6 +2517,11 @@ createConvexHull = function(pointsArray, returnObj) {
     e = error2;
     console.error("Unable to get convex hull - " + e.message);
     console.warn(e.stack);
+  }
+  geo.canonicalBoundingBox = new Array();
+  for (m = 0, len1 = cpHull.length; m < len1; m++) {
+    point = cpHull[m];
+    geo.canonicalBoundingBox.push(point.getObj());
   }
   if (returnObj === true) {
     obj = {

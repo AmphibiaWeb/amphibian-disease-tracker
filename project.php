@@ -330,6 +330,7 @@ $loginStatus = getLoginState();
           $aWebUri =  "http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;";
           $args = array("where-genus"=>"", "where-species"=>"");
           $speciesList = explode(",", $project["sampled_species"]);
+          sort($speciesList);
           foreach($speciesList as $species) {
               $speciesParts = explode(" ", $species);
               $args["where-genus"] = $speciesParts[0];
