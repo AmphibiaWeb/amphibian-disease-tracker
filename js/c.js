@@ -1826,9 +1826,6 @@ createMap2 = function(pointsObj, options, callback) {
       }
       return false;
     });
-    if (typeof callback === "function") {
-      callback(points, center, hull);
-    }
     r = {
       selector: mapSelector,
       html: googleMap,
@@ -1837,6 +1834,9 @@ createMap2 = function(pointsObj, options, callback) {
       center: center
     };
     console.info("Map", r);
+    if (typeof callback === "function") {
+      callback(r);
+    }
     r;
   } catch (error4) {
     e = error4;
@@ -1856,8 +1856,7 @@ buildMap = function(mapBuilderObj, options, callback) {
       resetMapBuilder: false
     };
   }
-  createMap2(mapBuilderObj.points, options, callback);
-  return false;
+  return createMap2(mapBuilderObj.points, options, callback);
 };
 
 createMap = function(dataVisIdentifier, targetId, options, callback) {
@@ -2719,6 +2718,7 @@ doMapBuilder = function(builder, createMapOptions, callback) {
     return false;
   }
   return buildMap(builder, createMapOptions, function(map) {
+    geo.boundingBox = map.hull;
     return localityFromMapBuilder(map, function(locality) {
       map.locality = locality;
       console.info("Map results:", map);
