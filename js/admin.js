@@ -337,11 +337,11 @@ finalizeData = function() {
           console.info("Collected from", dates.min(), dates.max());
           postData.sampling_months = months.join(",");
           postData.sampling_years = years.join(",");
+          console.info("Got uploaded data", uploadedData);
+          postData.sample_catalog_numbers = catalogNumbers.join(",");
+          postData.sample_field_numbers = fieldNumbers.join(",");
+          postData.sample_methods_used = sampleMethods.join(",");
         }
-        console.info("Got uploaded data", uploadedData);
-        postData.sample_catalog_numbers = catalogNumbers.join(",");
-        postData.sample_field_numbers = fieldNumbers.join(",");
-        postData.sample_methods_used = sampleMethods.join(",");
         if (dataFileParams != null ? dataFileParams.hasDataFile : void 0) {
           postData.sample_raw_data = "https://amphibiandisease.org/" + dataFileParams.fileName;
         }
@@ -378,17 +378,19 @@ finalizeData = function() {
           postData.project_obj_id = dataAttrs.ark;
           postData["public"] = p$("#data-encumbrance-toggle").checked;
           taxonData = _adp.data.taxa.validated;
-          postData.sampled_clades = _adp.data.taxa.clades.join(",");
-          postData.sampled_species = _adp.data.taxa.list.join(",");
-          for (o = 0, len2 = taxonData.length; o < len2; o++) {
-            taxonObject = taxonData[o];
-            aweb = taxonObject.response.validated_taxon;
-            console.info("Aweb taxon result:", aweb);
-            clade = aweb.order.toLowerCase();
-            key = "includes_" + clade;
-            postData[key] = true;
-            if ((postData.includes_anura != null) !== false && (postData.includes_caudata != null) !== false && (postData.includes_gymnophiona != null) !== false) {
-              break;
+          if (taxonData != null) {
+            postData.sampled_clades = _adp.data.taxa.clades.join(",");
+            postData.sampled_species = _adp.data.taxa.list.join(",");
+            for (o = 0, len2 = taxonData.length; o < len2; o++) {
+              taxonObject = taxonData[o];
+              aweb = taxonObject.response.validated_taxon;
+              console.info("Aweb taxon result:", aweb);
+              clade = aweb.order.toLowerCase();
+              key = "includes_" + clade;
+              postData[key] = true;
+              if ((postData.includes_anura != null) !== false && (postData.includes_caudata != null) !== false && (postData.includes_gymnophiona != null) !== false) {
+                break;
+              }
             }
           }
           args = "perform=new&data=" + (jsonTo64(postData));
