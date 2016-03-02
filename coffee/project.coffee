@@ -437,3 +437,10 @@ $ ->
   $("#copy-ark").click ->
     copyLink _adp.zcClient
   checkFileVersion(true, "js/project.js")
+  # Mobile project viewer toggle
+  $("#toggle-project-viewport").click ->
+    $(".project-list-page").toggleClass "hidden-xs"
+    if $(".project-search").hasClass "hidden-xs"
+      $(this).text "Show Project Search"
+    else
+      $(this).text "Show Project List"
