@@ -273,6 +273,16 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  $("#init-map-build").click ->
+    doMapBuilder (map) ->
+      html = """
+      <p class="text-muted" id="computed-locality">
+        Computed locality: <strong>#{map.locality}</strong>
+      </p>
+      """
+      $("#computed-locality").remove()
+      $(this).after html
+      false
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()
