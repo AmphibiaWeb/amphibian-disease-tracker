@@ -2523,11 +2523,12 @@ createConvexHull = function(pointsArray, returnObj) {
     point = cpHull[m];
     geo.canonicalBoundingBox.push(point.getObj());
   }
+  obj = {
+    hull: cpHull,
+    points: realPointArray
+  };
+  geo.canonicalHullObject = obj;
   if (returnObj === true) {
-    obj = {
-      hull: cpHull,
-      points: realPointArray
-    };
     return obj;
   }
   return cpHull;

@@ -952,10 +952,11 @@ createConvexHull = (pointsArray, returnObj = false) ->
   geo.canonicalBoundingBox = new Array()
   for point in cpHull
     geo.canonicalBoundingBox.push point.getObj()
+  obj =
+    hull: cpHull
+    points: realPointArray
+  geo.canonicalHullObject = obj
   if returnObj is true
-    obj =
-      hull: cpHull
-      points: realPointArray
     return obj
   cpHull
 

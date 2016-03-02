@@ -426,6 +426,13 @@ finalizeData = ->
           postData.sample_catalog_numbers = catalogNumbers.join(",")
           postData.sample_field_numbers = fieldNumbers.join(",")
           postData.sample_methods_used = sampleMethods.join(",")
+        else
+          # No data, check bounding box
+          if geo.canonicalHullObject?
+            hull = geo.canonicalHullObject.hull
+            for point in hull
+              distanceFromCenter = geo.distance point.lat, point.lng, center.lat, center.lng
+              if distanceFromCenter > excursion then excursion = distanceFromCenter
         if dataFileParams?.hasDataFile
           postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
         postData.lat = center.lat
@@ -1819,7 +1826,7 @@ loadEditor = (projectPreload) ->
             # https://elements.polymer-project.org/elements/google-map
             # Poly is cartoParsed.bounding_polygon.paths
             centerPoint = new Point project.lat, project.lng
-            createMap2 [centerPoint], options, (map) ->
+            createMap2 [centerPoint], createMapOptions, (map) ->
               if not $(map.selector).exists()
                 do tryReload = ->
                   if $("#map-header").exists()
@@ -1898,9 +1905,14 @@ loadEditor = (projectPreload) ->
             yearPretty = "the year #{yearPretty}"
           else
             yearPretty = "the years #{yearPretty}"
-          d1 = new Date toInt project.sampled_collection_start
-          d2 = new Date toInt project.sampled_collection_end
-          collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
+          if toInt(project.sampled_collection_start) > 0
+            d1 = new Date toInt project.sampled_collection_start
+            d2 = new Date toInt project.sampled_collection_end
+            collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
+          else
+            collectionRangePretty = "<em>(no data)</em>"
+          monthPretty ?= "<em>(no data)</em>"
+          yearPretty ?= "<em>(no data)</em>"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -2303,7 +2315,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       pointArr.push point
     # p$("#transect-viewport").resize()
     totalRows = result.parsed_responses[0].total_rows ? 0
-    if pointArr.length > 0
+    if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
       createMap2 pointArr, mapOptions, (map) ->
         after = """
         <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>

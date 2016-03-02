@@ -426,6 +426,13 @@ finalizeData = ->
           postData.sample_catalog_numbers = catalogNumbers.join(",")
           postData.sample_field_numbers = fieldNumbers.join(",")
           postData.sample_methods_used = sampleMethods.join(",")
+        else
+          # No data, check bounding box
+          if geo.canonicalHullObject?
+            hull = geo.canonicalHullObject.hull
+            for point in hull
+              distanceFromCenter = geo.distance point.lat, point.lng, center.lat, center.lng
+              if distanceFromCenter > excursion then excursion = distanceFromCenter
         if dataFileParams?.hasDataFile
           postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
         postData.lat = center.lat
