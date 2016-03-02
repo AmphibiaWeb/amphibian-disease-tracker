@@ -163,18 +163,22 @@ createMap2 = (pointsObj, options, callback) ->
       points = data.points # canonicalized
     else
       # Insufficient points
+      pointList = Object.toArray pointsObj
       points = new Array()
       options.skipHull = true
-      if Object.size(pointsObj) is 0
+      if pointList.length is 0
         options.skipPoints = true
       else
-        for k, point of pointsObj
+        for point in pointList
+          console.log "Checking", point, "in", pointList
           points.push canonicalizePoint point
       if options.boundingBox?
         points.push canonicalizePoint options.boundingBox.nw
         points.push canonicalizePoint options.boundingBox.ne
         points.push canonicalizePoint options.boundingBox.sw
         points.push canonicalizePoint options.boundingBox.se
+        hull = createConvexHull points
+        options.skipHull = false
     console.info "createMap2 working with", points
     try
       zoom = getMapZoom points, selector
