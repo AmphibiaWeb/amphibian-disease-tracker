@@ -119,7 +119,7 @@ defaultMapMouseOverBehaviour = (e, latlng, pos, data, layerNumber) ->
 
 
 
-createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) ->
+createMap2 = (pointsObj, options, callback) ->
   ###
   # Essentially a copy of CreateMap
   # Redo with
@@ -142,6 +142,9 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
       skipHull: false
       skipPoints: false
       boundingBox: null
+      selector: "#carto-map-container"
+  if options.selector?
+    selector = options.selector
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
       poly = options.polyParams
@@ -218,7 +221,7 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
               markerTitle = "#{cat}: #{genus} #{species}"
         point = canonicalizePoint point
         marker = """
-        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}">
+        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}" animation="drop">
           #{markerHtml}
         </google-map-marker>
         """
