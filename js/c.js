@@ -1787,10 +1787,10 @@ createMap2 = function(pointsObj, options, callback) {
       classes = "";
     }
     googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 " + options.bsGrid + " center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    if (!$(selector).exists()) {
+      selector = "body";
+    }
     if ($(selector).get(0).tagName.toLowerCase() !== "google-map") {
-      if (!$(selector).exists()) {
-        selector = "body";
-      }
       console.log("Appending map to selector " + selector, $(selector));
       $(selector).addClass("map-container has-map").append(googleMap);
     } else {
