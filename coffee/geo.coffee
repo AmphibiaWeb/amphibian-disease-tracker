@@ -272,9 +272,9 @@ createMap2 = (pointsObj, options, callback) ->
       </google-map>
     """
     # Append it
+    unless $(selector).exists()
+      selector = "body"
     unless $(selector).get(0).tagName.toLowerCase() is "google-map"
-      unless $(selector).exists()
-        selector = "body"
       console.log "Appending map to selector #{selector}", $(selector)
       $(selector)
       .addClass "map-container has-map"

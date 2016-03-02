@@ -215,6 +215,8 @@ loadEditor = (projectPreload) ->
             # Poly is cartoParsed.bounding_polygon.paths
             centerPoint = new Point project.lat, project.lng
             createMap2 [centerPoint], createMapOptions, (map) ->
+              createMapOptions.selector = map.selector
+              geo.mapOptions = createMapOptions
               if not $(map.selector).exists()
                 do tryReload = ->
                   if $("#map-header").exists()
@@ -299,8 +301,8 @@ loadEditor = (projectPreload) ->
             collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
           else
             collectionRangePretty = "<em>(no data)</em>"
-          monthPretty ?= "<em>(no data)</em>"
-          yearPretty ?= "<em>(no data)</em>"
+          if months.length is 0 then monthPretty = "<em>(no data)</em>"
+          if years.length is 0 then yearPretty = "<em>(no data)</em>"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -387,7 +389,9 @@ loadEditor = (projectPreload) ->
                 <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{roundNumberSigfig project.lat, 6}, #{roundNumberSigfig project.lng, 6}) with a sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
                 <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{roundNumber(project.disease_positive * 100 / project.disease_samples)}%), #{project.disease_negative} negative samples (#{roundNumber(project.disease_negative *100 / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{roundNumber(project.disease_no_confidence * 100 / project.disease_samples)}%)</p>
               <h4 id="map-header">Locality &amp; Transect Data</h4>
+                <div id="carto-map-container">
                 #{googleMap}
+                </div>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
@@ -711,6 +715,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
         $(map.selector).after
         stopLoad()
     else
+      console.info "Classic render.", mapOptions, pointArr.length
       workingMap += """
       </google-map>
       <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
