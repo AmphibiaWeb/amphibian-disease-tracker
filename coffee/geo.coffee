@@ -278,7 +278,7 @@ createMap2 = (pointsObj, options, callback) ->
       console.log "Appending map to selector #{selector}", $(selector)
       $(selector)
       .addClass "map-container has-map"
-      .append googleMap      
+      .append googleMap
     else
       console.log "Replacing map at selector #{selector}"
       $(selector).replaceWith googleMap
@@ -801,17 +801,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           dataVisUrl = dataBlobUrl
         else
           dataVisUrl = ""
-        parentCallback = ->
+        parentCallback = (args...) ->
           console.info "Initiating parent callback"
           stopLoad()
           max = p$("#data-sync").max
           p$("#data-sync").value = max
-          if typeof callback is "function"
-            callback(geo.dataTable)
-          else
-            console.info "requestCartoUpload recieved no callback"
-        geo.init ->
-          # Callback
           options =
             boundingBox: geo.boundingBox
             bsGrid: ""
@@ -821,9 +815,14 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             options.selector = $($("google-map").get(0)).attr "id"
           else
             options.selector = "#carto-map-container"
-          console.info "Post init", options
-          dataAttrs.options = options
           _adp.defaultMapOptions = options
+          if typeof callback is "function"
+            callback geo.dataTable, args...
+          else
+            console.info "requestCartoUpload recieved no callback"
+        geo.init ->
+          # Callback
+          console.info "Post init"
           getCanonicalDataCoords geo.dataTable, options, ->
             console.info "gcdc callback successful", options
             parentCallback()

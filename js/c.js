@@ -2336,18 +2336,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           dataVisUrl = "";
         }
         parentCallback = function() {
+          var args, options, ref4;
+          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
           console.info("Initiating parent callback");
           stopLoad();
           max = p$("#data-sync").max;
           p$("#data-sync").value = max;
-          if (typeof callback === "function") {
-            return callback(geo.dataTable);
-          } else {
-            return console.info("requestCartoUpload recieved no callback");
-          }
-        };
-        return geo.init(function() {
-          var options, ref4;
           options = {
             boundingBox: geo.boundingBox,
             bsGrid: ""
@@ -2359,9 +2353,15 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           } else {
             options.selector = "#carto-map-container";
           }
-          console.info("Post init", options);
-          dataAttrs.options = options;
           _adp.defaultMapOptions = options;
+          if (typeof callback === "function") {
+            return callback.apply(null, [geo.dataTable].concat(slice.call(args)));
+          } else {
+            return console.info("requestCartoUpload recieved no callback");
+          }
+        };
+        return geo.init(function() {
+          console.info("Post init");
           getCanonicalDataCoords(geo.dataTable, options, function() {
             console.info("gcdc callback successful", options);
             return parentCallback();
