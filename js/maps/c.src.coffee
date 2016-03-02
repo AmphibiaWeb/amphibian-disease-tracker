@@ -1224,6 +1224,7 @@ createMap2 = (pointsObj, options, callback) ->
       boundingBox: null
       selector: "#carto-map-container"
       bsGrid: "col-md-9 col-lg-6"
+      resetMapBuilder: true
   if options.selector?
     selector = options.selector
   try
@@ -1352,7 +1353,8 @@ createMap2 = (pointsObj, options, callback) ->
     # See
       # https://elements.polymer-project.org/elements/google-map#events
     console.log "Attaching events to #{mapSelector}"
-    delete window.mapBuilder
+    unless options?.resetMapBuilder is false
+      delete window.mapBuilder
     unless options?.onClickCallback?
       unless options?
         options = new Object()
@@ -1387,8 +1389,12 @@ createMap2 = (pointsObj, options, callback) ->
   false
 
 
-buildMap = (mapBuilderObj = window.mapBuilder) ->
-  createMap2 mapBuilderObj.points, mapBuilderObj.selector
+buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
+  unless options?
+    options =
+      selector: mapBuilderObj.selector
+      resetMapBuilder: false
+  createMap2 mapBuilderObj.points, options, callback
   false
 
 

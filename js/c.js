@@ -1638,7 +1638,8 @@ createMap2 = function(pointsObj, options, callback) {
       skipPoints: false,
       boundingBox: null,
       selector: "#carto-map-container",
-      bsGrid: "col-md-9 col-lg-6"
+      bsGrid: "col-md-9 col-lg-6",
+      resetMapBuilder: true
     };
   }
   if (options.selector != null) {
@@ -1768,7 +1769,9 @@ createMap2 = function(pointsObj, options, callback) {
       $(selector).replaceWith(googleMap);
     }
     console.log("Attaching events to " + mapSelector);
-    delete window.mapBuilder;
+    if ((options != null ? options.resetMapBuilder : void 0) !== false) {
+      delete window.mapBuilder;
+    }
     if ((options != null ? options.onClickCallback : void 0) == null) {
       if (options == null) {
         options = new Object();
@@ -1811,11 +1814,17 @@ createMap2 = function(pointsObj, options, callback) {
   return false;
 };
 
-buildMap = function(mapBuilderObj) {
+buildMap = function(mapBuilderObj, options, callback) {
   if (mapBuilderObj == null) {
     mapBuilderObj = window.mapBuilder;
   }
-  createMap2(mapBuilderObj.points, mapBuilderObj.selector);
+  if (options == null) {
+    options = {
+      selector: mapBuilderObj.selector,
+      resetMapBuilder: false
+    };
+  }
+  createMap2(mapBuilderObj.points, options, callback);
   return false;
 };
 
