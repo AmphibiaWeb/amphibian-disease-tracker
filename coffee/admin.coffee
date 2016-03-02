@@ -458,8 +458,8 @@ finalizeData = ->
           postData.project_obj_id = dataAttrs.ark
           # Public or private?
           postData.public = p$("#data-encumbrance-toggle").checked
-          taxonData = _adp.data.taxa.validated
-          if taxonData?
+          if _adp?.data?.taxa?.validated?
+            taxonData = _adp.data.taxa.validated
             postData.sampled_clades = _adp.data.taxa.clades.join ","
             postData.sampled_species = _adp.data.taxa.list.join ","
             for taxonObject in taxonData

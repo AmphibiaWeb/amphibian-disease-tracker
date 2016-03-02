@@ -349,7 +349,7 @@ finalizeData = function() {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, len2, o, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, len2, o, ref6, ref7, taxonData, taxonObject;
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
             postData.bounding_box_n = geo.computedBoundingRectangle.north;
@@ -377,8 +377,8 @@ finalizeData = function() {
           postData.project_id = _adp.projectId;
           postData.project_obj_id = dataAttrs.ark;
           postData["public"] = p$("#data-encumbrance-toggle").checked;
-          taxonData = _adp.data.taxa.validated;
-          if (taxonData != null) {
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref6 = _adp.data) != null ? (ref7 = ref6.taxa) != null ? ref7.validated : void 0 : void 0 : void 0) != null) {
+            taxonData = _adp.data.taxa.validated;
             postData.sampled_clades = _adp.data.taxa.clades.join(",");
             postData.sampled_species = _adp.data.taxa.list.join(",");
             for (o = 0, len2 = taxonData.length; o < len2; o++) {
