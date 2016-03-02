@@ -180,7 +180,7 @@ $loginStatus = getLoginState();
       <section id="main-body" class="row">
         <?php if(empty($pid)) {
           $search = array(
-              "public" => ""
+              "public" => "", # Loose query
           );
           $cols = array(
               "project_id",
@@ -193,20 +193,32 @@ $loginStatus = getLoginState();
           $html = "";
           $i = 0;
           $count = sizeof($list);
+          $max = 25;
+          if(isset($_REQUEST["page"])) {
+              $skip = intval($_REQUEST["page"]) * $max;
+          } else {
+              $skip = 0;
+          }
           foreach($list as $k=>$project) {
               if( empty($project["project_id"]) || empty($project["locality"]) ) continue;
+              if ($i < $skip) continue;
               $i++;
-              if($i >= 25 ) break;
+              if($i >= $max + $skip ) break;
               $authorData = json_decode($project["author_data"], true);
               $icon = boolstr($project["public"]) ? '<iron-icon icon="social:public"></iron-icon>':'<iron-icon icon="icons:lock"></iron-icon>';
               $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project["project_id"]."' data-project='".$project["project_id"]."' data-toggle='tooltip' title='Project #".substr($project["project_id"],0,8)."...'>".$icon." ".$project["project_title"]."</button> by " . $authorData["name"] . " at " . $authorData["affiliation"];
               $html .= "<li>".$projectHtml."</li>\n";
           }
+          if ($i < $max) {
+              $count = $i;
+              $max = i;
+          }
+          # Build the paginator
           ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
         </div>
-        <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
+        <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max;?> newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
         <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">
           <?php echo $html; ?>
         </ul>
