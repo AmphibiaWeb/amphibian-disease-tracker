@@ -201,6 +201,7 @@ $loginStatus = getLoginState();
           } else {
               $skip = 0;
           }
+          $originalMax = $max;
           if ( $skip > $count ) {
               $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
           } else {
@@ -224,12 +225,12 @@ $loginStatus = getLoginState();
               $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">' . $html . '        </ul>';
           }
           # Build the paginator
-          $pages = intval($count / $max);
-          $pages += $count % $max > 0 ? 1:0;
+          $pages = intval($count / $originalMax);
+          $pages += $count % $orignalMax > 0 ? 1:0;
           $pages = 1;
           # https://getbootstrap.com/components/#pagination
           $olderDisabled = $page > 1 ? "":"disabled";
-          $newerDisabled = $page * $max <= $count ? "":"disabled";
+          $newerDisabled = $page * $originalMax <= $count ? "":"disabled";
           ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
