@@ -865,25 +865,32 @@ locationData.last = undefined
 
 getLocation = (callback = undefined) ->
   geoSuccess = (pos,callback) ->
+    clearTimeout window.geoTimeout
     window.locationData.lat = pos.coords.latitude
     window.locationData.lng = pos.coords.longitude
     window.locationData.acc = pos.coords.accuracy
     window.locationData.last = Date.now() # ms, unix time
-    if callback?
+    console.info "Successfully set location"
+    if typeof callback is "function"
       callback(window.locationData)
     false
   geoFail = (error,callback) ->
+    clearTimeout window.geoTimeout
     locationError = switch error.code
       when 0 then "There was an error while retrieving your location: #{error.message}"
       when 1 then "The user prevented this page from retrieving a location"
       when 2 then "The browser was unable to determine your location: #{error.message}"
       when 3 then "The browser timed out retrieving your location."
     console.error(locationError)
-    if callback?
+    if typeof callback is "function"
       callback(false)
     false
+  # Actual location query
   if navigator.geolocation
+    console.log "Querying location"
     navigator.geolocation.getCurrentPosition(geoSuccess,geoFail,window.locationData.params)
+    window.geoTimeout = delay 1500, ->
+      getLocation callback
   else
     console.warn("This browser doesn't support geolocation!")
     if callback?
