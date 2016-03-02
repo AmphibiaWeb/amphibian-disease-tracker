@@ -1815,8 +1815,8 @@ createMap2 = function(pointsObj, options, callback) {
     $("" + mapSelector).on("google-map-click", function(e) {
       var ll;
       ll = e.originalEvent.detail.latLng;
-      console.info("Clicked point " + (point.toString()), point, ll);
       point = canonicalizePoint(ll);
+      console.info("Clicked point " + (point.toString()), point, ll);
       if (typeof options.onClickCallback === "function") {
         options.onClickCallback(point, this);
       } else {
