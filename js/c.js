@@ -1184,7 +1184,7 @@ getLocation = function(callback) {
     callback = void 0;
   }
   retryTimeout = 1500;
-  geoSuccess = function(pos, callback) {
+  geoSuccess = function(pos) {
     var elapsed, last;
     clearTimeout(window.geoTimeout);
     window.locationData.lat = pos.coords.latitude;
@@ -1202,7 +1202,7 @@ getLocation = function(callback) {
     }
     return false;
   };
-  geoFail = function(error, callback) {
+  geoFail = function(error) {
     var locationError;
     clearTimeout(window.geoTimeout);
     locationError = (function() {
@@ -1638,7 +1638,7 @@ createMap2 = function(pointsObj, options, callback) {
    *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
-  var a, cat, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, iw, k, l, len, len1, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, points, poly, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
+  var a, cat, center, classes, data, detected, error2, error3, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
   if (options == null) {
     options = new Object();
     options = {
@@ -1676,13 +1676,15 @@ createMap2 = function(pointsObj, options, callback) {
       hull = data.hull;
       points = data.points;
     } else {
+      pointList = Object.toArray(pointsObj);
       points = new Array();
       options.skipHull = true;
-      if (Object.size(pointsObj) === 0) {
+      if (pointList.length === 0) {
         options.skipPoints = true;
       } else {
-        for (k in pointsObj) {
-          point = pointsObj[k];
+        for (l = 0, len = pointList.length; l < len; l++) {
+          point = pointList[l];
+          console.log("Checking", point, "in", pointList);
           points.push(canonicalizePoint(point));
         }
       }
@@ -1691,6 +1693,8 @@ createMap2 = function(pointsObj, options, callback) {
         points.push(canonicalizePoint(options.boundingBox.ne));
         points.push(canonicalizePoint(options.boundingBox.sw));
         points.push(canonicalizePoint(options.boundingBox.se));
+        hull = createConvexHull(points);
+        options.skipHull = false;
       }
     }
     console.info("createMap2 working with", points);
@@ -1702,8 +1706,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipHull !== true) {
       mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-      for (l = 0, len = hull.length; l < len; l++) {
-        point = hull[l];
+      for (m = 0, len1 = hull.length; m < len1; m++) {
+        point = hull[m];
         mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
       }
       mapHtml += "    </google-map-poly>";
@@ -1712,8 +1716,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipPoints !== true) {
       i = 0;
-      for (m = 0, len1 = points.length; m < len1; m++) {
-        point = points[m];
+      for (q = 0, len2 = points.length; q < len2; q++) {
+        point = points[q];
         markerHtml = "";
         markerTitle = "";
         try {

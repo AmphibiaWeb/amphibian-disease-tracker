@@ -865,7 +865,7 @@ locationData.last = undefined
 
 getLocation = (callback = undefined) ->
   retryTimeout = 1500
-  geoSuccess = (pos,callback) ->
+  geoSuccess = (pos) ->
     clearTimeout window.geoTimeout
     window.locationData.lat = pos.coords.latitude
     window.locationData.lng = pos.coords.longitude
@@ -880,7 +880,7 @@ getLocation = (callback = undefined) ->
     if typeof callback is "function"
       callback(window.locationData)
     false
-  geoFail = (error,callback) ->
+  geoFail = (error) ->
     clearTimeout window.geoTimeout
     locationError = switch error.code
       when 0 then "There was an error while retrieving your location: #{error.message}"
