@@ -1633,7 +1633,7 @@ createMap2 = function(pointsObj, options, callback) {
         fillOpacity: defaultFillOpacity
       },
       classes: "",
-      onClickCallback: false,
+      onClickCallback: null,
       skipHull: false,
       skipPoints: false,
       boundingBox: null,
@@ -1787,10 +1787,10 @@ createMap2 = function(pointsObj, options, callback) {
       ll = e.originalEvent.detail.latLng;
       console.info("Clicked point " + (point.toString()), point, ll);
       point = canonicalizePoint(ll);
-      if ((options != null ? options.onClickCallback : void 0) != null) {
-        if (typeof options.onClickCallback === "function") {
-          options.onClickCallback(point, this);
-        }
+      if (typeof options.onClickCallback === "function") {
+        options.onClickCallback(point, this);
+      } else {
+        console.warn("google-map-click wasn't provided a callback");
       }
       return false;
     });
@@ -2299,7 +2299,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           var options;
           console.info("Post init");
           options = {
-            boundingBox: geo.boundingBox
+            boundingBox: geo.boundingBox,
+            bsGrid: ""
           };
           getCanonicalDataCoords(geo.dataTable, options, function() {
             console.info("createMap callback successful");
@@ -2500,7 +2501,7 @@ Point = function(lat, lng) {
     return dy / dx;
   };
   this.toString = function() {
-    return "(" + this.x + ", " + this.y + ")";
+    return "(" + this.lat + ", " + this.lng + ")";
   };
   this.getObj = function() {
     var o;

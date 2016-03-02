@@ -1218,7 +1218,7 @@ createMap2 = (pointsObj, options, callback) ->
         fillColor: defaultFillColor
         fillOpacity: defaultFillOpacity
       classes: ""
-      onClickCallback: false
+      onClickCallback: null
       skipHull: false
       skipPoints: false
       boundingBox: null
@@ -1368,9 +1368,10 @@ createMap2 = (pointsObj, options, callback) ->
       ll = e.originalEvent.detail.latLng
       console.info "Clicked point #{point.toString()}", point, ll
       point = canonicalizePoint ll
-      if options?.onClickCallback?
-        if typeof options.onClickCallback is "function"
-          options.onClickCallback(point, this)
+      if typeof options.onClickCallback is "function"
+        options.onClickCallback point, this
+      else
+        console.warn "google-map-click wasn't provided a callback"
       false
     # Callback
     if typeof callback is "function"
@@ -1859,6 +1860,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           console.info "Post init"
           options =
             boundingBox: geo.boundingBox
+            bsGrid: ""
           getCanonicalDataCoords geo.dataTable, options, ->
             console.info "createMap callback successful"
             parentCallback()
@@ -2020,7 +2022,7 @@ Point = (lat, lng) ->
     dy = that.y - @y
     dy / dx
   @toString = ->
-    "(#{@x}, #{@y})"
+    "(#{@lat}, #{@lng})"
   @getObj = ->
     o =
       lat: @lat
