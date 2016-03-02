@@ -1395,8 +1395,8 @@ createMap2 = (pointsObj, options, callback) ->
     .on "google-map-click", (e) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
       ll = e.originalEvent.detail.latLng
-      console.info "Clicked point #{point.toString()}", point, ll
       point = canonicalizePoint ll
+      console.info "Clicked point #{point.toString()}", point, ll
       if typeof options.onClickCallback is "function"
         options.onClickCallback point, this
       else
@@ -2198,11 +2198,11 @@ doMapbuilder = (builder = window.mapBuilder, createMapOptions, callback)->
   # By default, reset the map builder obj
   unless createMapOptions.resetMapBuilder?
     createMapOptions.resetMapBuilder = true
-  buildMap builder, createMapOptions, (map) ->    
+  buildMap builder, createMapOptions, (map) ->
     localityFromMapBuilder map, (locality)  ->
       map.locality = locality
       console.info "Map results:", map
-      if typeof callback is "function"        
+      if typeof callback is "function"
         callback map
       false
 
