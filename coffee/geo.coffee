@@ -810,11 +810,16 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             console.info "requestCartoUpload recieved no callback"
         geo.init ->
           # Callback
-          console.info "Post init"
           options =
             boundingBox: geo.boundingBox
             bsGrid: ""
-            selector: $("google-map").attr "id"
+          if window.mapBuilder?.selector?
+            options.selector = window.mapBuilder.selector
+          else if $("google-map").exists()
+            options.selector = $($("google-map").get(0)).attr "id"
+          else
+            options.selector = "#carto-map-container"
+          console.info "Post init", options
           getCanonicalDataCoords geo.dataTable, options, ->
             console.info "gcdc callback successful", options
             parentCallback()

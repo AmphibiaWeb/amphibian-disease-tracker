@@ -2344,13 +2344,19 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           }
         };
         return geo.init(function() {
-          var options;
-          console.info("Post init");
+          var options, ref4;
           options = {
             boundingBox: geo.boundingBox,
-            bsGrid: "",
-            selector: $("google-map").attr("id")
+            bsGrid: ""
           };
+          if (((ref4 = window.mapBuilder) != null ? ref4.selector : void 0) != null) {
+            options.selector = window.mapBuilder.selector;
+          } else if ($("google-map").exists()) {
+            options.selector = $($("google-map").get(0)).attr("id");
+          } else {
+            options.selector = "#carto-map-container";
+          }
+          console.info("Post init", options);
           getCanonicalDataCoords(geo.dataTable, options, function() {
             console.info("gcdc callback successful", options);
             return parentCallback();

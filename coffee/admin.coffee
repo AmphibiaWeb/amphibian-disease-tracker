@@ -915,8 +915,10 @@ getCanonicalDataCoords = (table, options, callback = createMap2) ->
     console.error "This function needs a callback function as the second argument"
     return false
   # Validate the user
+  dataAttrs.options = options
   verifyLoginCredentials (data) ->
     # Try to get the data straight from the CartoDB database
+    console.log "User validated, have options", options
     sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM #{table}"
     apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
     args = "action=fetch&sql_query=#{apiPostSqlQuery}"
@@ -948,7 +950,7 @@ getCanonicalDataCoords = (table, options, callback = createMap2) ->
       # Push the coordinates and the formatted infowindows
       dataAttrs.coords = coords
       dataAttrs.markerInfo = info
-      console.info "Calling back with", coords, options
+      console.info "Calling back with", coords, dataAttrs.options
       callback coords, options
       # callback coords, info
     .error (result, status) ->
