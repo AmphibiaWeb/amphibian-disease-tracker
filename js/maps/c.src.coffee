@@ -1850,33 +1850,15 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             callback(geo.dataTable)
           else
             console.info "requestCartoUpload recieved no callback"
-        unless isNull cartoMap
-          console.info "Creating map"
-          cartodb.createLayer(cartoMap, dataVisUrl).addTo cartoMap
-          .done (layer) ->
-            console.info "Map created"
-            # The actual interaction infowindow popup is decided on the data
-            # page in Carto
-            layer.setInteraction true
-            layer.on "featureOver", defaultMapMouseOverBehaviour
+        geo.init ->
+          # Callback
+          console.info "Post init"
+          options =
+            boundingBox: geo.boundingBox
+          getCanonicalDataCoords geo.dataTable, options, ->
+            console.info "createMap callback successful"
             parentCallback()
-        else
-          geo.init ->
-            # Callback
-            console.info "Post init"
-            center = getMapCenter(geo.boundingBox)
-            options =
-              cartodb_logo: false
-              https: true
-              mobile_layout: true
-              gmaps_base_type: "hybrid"
-              center_lat: center.lat
-              center_lon: center.lng
-              zoom: getMapZoom(geo.boundingBox)
-            createMap dataVisUrl, undefined, options, ->
-              console.info "createMap callback successful"
-              parentCallback()
-            false
+          false
       .error (result, status) ->
         console.error "Couldn't communicate with server!", result, status
         console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
