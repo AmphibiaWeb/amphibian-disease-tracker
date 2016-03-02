@@ -224,9 +224,9 @@ $loginStatus = getLoginState();
               $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">' . $html . '        </ul>';
           }
           # Build the paginator
-          //$pages = intdiv($count, $max);
+          $pages = intdiv($count, $max);
           //$pages += $count % $max > 0 ? 1:0;
-          $pages = 1;
+          //$pages = 1;
           # https://getbootstrap.com/components/#pagination
           $olderDisabled = $page > 1 ? "":"disabled";
           $newerDisabled = $page * $max <= $count ? "":"disabled";
@@ -263,7 +263,7 @@ $loginStatus = getLoginState();
 
           </ul>
         </div>
-        <nav class="col-xs-12 project-pagination" id="project-pagination">
+        <nav class="col-xs-12 project-pagination center-block" id="project-pagination">
           <ul class="pagination">
             <li class="<?php echo $olderDisabled; ?>">
               <a href="#"><span aria-hidden="true">&larr;</span> Older</a>
