@@ -452,7 +452,15 @@ $(function() {
   $("#copy-ark").click(function() {
     return copyLink(_adp.zcClient);
   });
-  return checkFileVersion(true, "js/project.js");
+  checkFileVersion(true, "js/project.js");
+  return $("#toggle-project-viewport").click(function() {
+    $(".project-list-page").toggleClass("hidden-xs");
+    if ($(".project-search").hasClass("hidden-xs")) {
+      return $(this).text("Show Project Search");
+    } else {
+      return $(this).text("Show Project List");
+    }
+  });
 });
 
 //# sourceMappingURL=maps/project.js.map

@@ -138,12 +138,13 @@ createMap2 = (pointsObj, options, callback) ->
         fillColor: defaultFillColor
         fillOpacity: defaultFillOpacity
       classes: ""
-      onClickCallback: false
+      onClickCallback: null
       skipHull: false
       skipPoints: false
       boundingBox: null
       selector: "#carto-map-container"
       bsGrid: "col-md-9 col-lg-6"
+      resetMapBuilder: true
   if options.selector?
     selector = options.selector
   try
@@ -272,7 +273,8 @@ createMap2 = (pointsObj, options, callback) ->
     # See
       # https://elements.polymer-project.org/elements/google-map#events
     console.log "Attaching events to #{mapSelector}"
-    delete window.mapBuilder
+    unless options?.resetMapBuilder is false
+      delete window.mapBuilder
     unless options?.onClickCallback?
       unless options?
         options = new Object()
@@ -288,9 +290,10 @@ createMap2 = (pointsObj, options, callback) ->
       ll = e.originalEvent.detail.latLng
       console.info "Clicked point #{point.toString()}", point, ll
       point = canonicalizePoint ll
-      if options?.onClickCallback?
-        if typeof options.onClickCallback is "function"
-          options.onClickCallback(point, this)
+      if typeof options.onClickCallback is "function"
+        options.onClickCallback point, this
+      else
+        console.warn "google-map-click wasn't provided a callback"
       false
     # Callback
     if typeof callback is "function"
@@ -306,8 +309,12 @@ createMap2 = (pointsObj, options, callback) ->
   false
 
 
-buildMap = (mapBuilderObj = window.mapBuilder) ->
-  createMap2 mapBuilderObj.points, mapBuilderObj.selector
+buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
+  unless options?
+    options =
+      selector: mapBuilderObj.selector
+      resetMapBuilder: false
+  createMap2 mapBuilderObj.points, options, callback
   false
 
 
@@ -779,6 +786,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           console.info "Post init"
           options =
             boundingBox: geo.boundingBox
+            bsGrid: ""
           getCanonicalDataCoords geo.dataTable, options, ->
             console.info "createMap callback successful"
             parentCallback()
@@ -940,7 +948,7 @@ Point = (lat, lng) ->
     dy = that.y - @y
     dy / dx
   @toString = ->
-    "(#{@x}, #{@y})"
+    "(#{@lat}, #{@lng})"
   @getObj = ->
     o =
       lat: @lat

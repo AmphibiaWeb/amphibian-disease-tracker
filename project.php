@@ -193,7 +193,7 @@ $loginStatus = getLoginState();
           $i = 0;
           $count = sizeof($list);
           foreach($list as $k=>$project) {
-              if(empty($project["project_id"])) continue;
+              if( empty($project["project_id"]) || empty($project["author_data"]) ) continue;
               $i++;
               if($i >= 25 ) break;
               $authorData = json_decode($project["author_data"], true);
@@ -202,11 +202,14 @@ $loginStatus = getLoginState();
               $html .= "<li>".$projectHtml."</li>\n";
           }
           ?>
-        <h2 class="col-xs-12 status-notice hidden-xs">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
-        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs">
+        <div class="col-xs-12 visible-xs-block text-right">
+          <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
+        </div>
+        <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing 25 newest projects <small class="text-muted">of <?php echo $count; ?></small></h2>
+        <ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">
           <?php echo $html; ?>
         </ul>
-        <div class="col-xs-12 col-md-4 col-lg-6">
+        <div class="col-xs-12 col-md-4 col-lg-6 project-search project-list-page">
           <h3>Search Projects</h3>
           <div class="form-horizontal">
             <div class="search-project form-group">
