@@ -933,6 +933,7 @@ getCanonicalDataCoords = function(table, options, callback) {
       }
       dataAttrs.coords = coords;
       dataAttrs.markerInfo = info;
+      console.info("Calling back with", coords, options);
       return callback(coords, options);
     }).error(function(result, status) {
       if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {

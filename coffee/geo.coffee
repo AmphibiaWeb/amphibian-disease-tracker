@@ -130,6 +130,7 @@ createMap2 = (pointsObj, options, callback) ->
   #  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
   # @param object options -> {onClickCallback:function(), classes:[]}
   ###
+  console.log "createMap2 was provided options:", options
   unless options?
     options = new Object()
     # Create defaults
@@ -811,12 +812,9 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           options =
             boundingBox: geo.boundingBox
             bsGrid: ""
-          if window.mapBuilder?
-            options.selector = window.mapBuilder.selector
-          else
-            options.selector = "#carto-map-container"
+            selector: $("google-map").attr "id"
           getCanonicalDataCoords geo.dataTable, options, ->
-            console.info "createMap callback successful", options
+            console.info "gcdc callback successful", options
             parentCallback()
           false
       .error (result, status) ->

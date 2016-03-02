@@ -948,6 +948,7 @@ getCanonicalDataCoords = (table, options, callback = createMap2) ->
       # Push the coordinates and the formatted infowindows
       dataAttrs.coords = coords
       dataAttrs.markerInfo = info
+      console.info "Calling back with", coords, options
       callback coords, options
       # callback coords, info
     .error (result, status) ->
