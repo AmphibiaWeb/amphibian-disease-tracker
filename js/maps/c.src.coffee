@@ -1414,6 +1414,7 @@ createMap2 = (pointsObj, options, callback) ->
     console.info "Map", r
     # Callback
     if typeof callback is "function"
+      console.log "createMap2 calling back"
       callback r
     r
   catch e
@@ -1428,7 +1429,7 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
       selector: mapBuilderObj.selector
       resetMapBuilder: false
   createMap2 mapBuilderObj.points, options, callback
-
+  false
 
 
 createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "carto-map-container", options, callback) ->
@@ -2204,6 +2205,7 @@ doMapBuilder = (builder = window.mapBuilder, createMapOptions, callback)->
     return false
   buildMap builder, createMapOptions, (map) ->
     geo.boundingBox = map.hull
+    console.log "executing locality calc"
     localityFromMapBuilder map, (locality)  ->
       map.locality = locality
       console.info "Map results:", map

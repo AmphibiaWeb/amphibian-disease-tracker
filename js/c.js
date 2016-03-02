@@ -1835,6 +1835,7 @@ createMap2 = function(pointsObj, options, callback) {
     };
     console.info("Map", r);
     if (typeof callback === "function") {
+      console.log("createMap2 calling back");
       callback(r);
     }
     r;
@@ -1856,7 +1857,8 @@ buildMap = function(mapBuilderObj, options, callback) {
       resetMapBuilder: false
     };
   }
-  return createMap2(mapBuilderObj.points, options, callback);
+  createMap2(mapBuilderObj.points, options, callback);
+  return false;
 };
 
 createMap = function(dataVisIdentifier, targetId, options, callback) {
@@ -2719,6 +2721,7 @@ doMapBuilder = function(builder, createMapOptions, callback) {
   }
   return buildMap(builder, createMapOptions, function(map) {
     geo.boundingBox = map.hull;
+    console.log("executing locality calc");
     return localityFromMapBuilder(map, function(locality) {
       map.locality = locality;
       console.info("Map results:", map);
