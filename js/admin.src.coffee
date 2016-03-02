@@ -409,17 +409,17 @@ finalizeData = ->
             if row.specimenDisposition?
               unless row.specimenDisposition in dispositions
                 dispositions.push row.sampleDisposition
+          console.info "Got date ranges", dates
+          months.sort()
+          years.sort()
+          postData.sampled_collection_start = dates.min()
+          postData.sampled_collection_end = dates.max()
+          console.info "Collected from", dates.min(), dates.max()
+          postData.sampling_months = months.join(",")
+          postData.sampling_years = years.join(",")
         console.info "Got uploaded data", uploadedData
-        console.info "Got date ranges", dates
-        months.sort()
-        years.sort()
-        postData.sampled_collection_start = dates.min()
-        postData.sampled_collection_end = dates.max()
-        console.info "Collected from", dates.min(), dates.max()
         postData.sample_catalog_numbers = catalogNumbers.join(",")
         postData.sample_field_numbers = fieldNumbers.join(",")
-        postData.sampling_months = months.join(",")
-        postData.sampling_years = years.join(",")
         postData.sample_methods_used = sampleMethods.join(",")
         if dataFileParams?.hasDataFile
           postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
