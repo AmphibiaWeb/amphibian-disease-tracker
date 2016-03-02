@@ -287,6 +287,9 @@ createMap2 = (pointsObj, options, callback) ->
       delete window.mapBuilder
     else
       window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
+    unless window.mapBuilder?
+      window.mapBuilder = new Object()
+      window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
     unless options?.onClickCallback?
       unless options?
         options = new Object()
@@ -808,11 +811,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             boundingBox: geo.boundingBox
             bsGrid: ""
           if window.mapBuilder?
-            options.selector = mapBuilder.selector
+            options.selector = window.mapBuilder.selector
           else
             options.selector = "#carto-map-container"
           getCanonicalDataCoords geo.dataTable, options, ->
-            console.info "createMap callback successful"
+            console.info "createMap callback successful", options
             parentCallback()
           false
       .error (result, status) ->

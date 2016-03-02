@@ -1799,6 +1799,10 @@ createMap2 = function(pointsObj, options, callback) {
     } else {
       window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
     }
+    if (window.mapBuilder == null) {
+      window.mapBuilder = new Object();
+      window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
+    }
     if ((options != null ? options.onClickCallback : void 0) == null) {
       if (options == null) {
         options = new Object();
@@ -2345,12 +2349,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             bsGrid: ""
           };
           if (window.mapBuilder != null) {
-            options.selector = mapBuilder.selector;
+            options.selector = window.mapBuilder.selector;
           } else {
             options.selector = "#carto-map-container";
           }
           getCanonicalDataCoords(geo.dataTable, options, function() {
-            console.info("createMap callback successful");
+            console.info("createMap callback successful", options);
             return parentCallback();
           });
           return false;
