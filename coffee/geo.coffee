@@ -224,7 +224,7 @@ createMap2 = (pointsObj, options, callback) ->
               markerTitle = "#{cat}: #{genus} #{species}"
         point = canonicalizePoint point
         marker = """
-        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}" animation="drop">
+        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}" animation="DROP">
           #{markerHtml}
         </google-map-marker>
         """
@@ -283,10 +283,11 @@ createMap2 = (pointsObj, options, callback) ->
           window.mapBuilder.points = new Array()
         window.mapBuilder.points.push point
     $("#{mapSelector}")
-    .on "google-map-click", (ll) ->
+    .on "google-map-click", (e) ->
       # https://developers.google.com/maps/documentation/javascript/3.exp/reference#MouseEvent
+      ll = e.originalEvent.detail.latLng
+      console.info "Clicked point #{point.toString()}", point, ll
       point = canonicalizePoint ll
-      console.info "Clicked point #{point.toString()}", point
       if options?.onClickCallback?
         if typeof options.onClickCallback is "function"
           options.onClickCallback(point, this)
@@ -833,15 +834,16 @@ canonicalizePoint = (point) ->
     lat: null
     lng: null
   # Type conversions
-  tempLat = toFloat point.lat
-  if tempLat.toString() is point.lat
-    point.lat = toFloat point.lat
-    point.lng = toFloat point.lng
-  else
-    tempLat = toFloat point[0]
-    if tempLat.toString() is point[0]
-      point[0] = toFloat point[0]
-      point[0] = toFloat point[1]
+  try
+    tempLat = toFloat point.lat
+    if tempLat.toString() is point.lat
+      point.lat = toFloat point.lat
+      point.lng = toFloat point.lng
+    else
+      tempLat = toFloat point[0]
+      if tempLat.toString() is point[0]
+        point[0] = toFloat point[0]
+        point[0] = toFloat point[1]
   # Tests
   if typeof point.lat is "number"
     pointObj = point

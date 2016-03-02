@@ -1728,7 +1728,7 @@ createMap2 = function(pointsObj, options, callback) {
           }
         } catch (undefined) {}
         point = canonicalizePoint(point);
-        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\" title=\"" + markerTitle + "\" animation=\"drop\">\n  " + markerHtml + "\n</google-map-marker>";
+        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\" data-disease-detected=\"" + detected + "\" title=\"" + markerTitle + "\" animation=\"DROP\">\n  " + markerHtml + "\n</google-map-marker>";
         mapHtml += marker;
       }
       center = getMapCenter(points);
@@ -1782,9 +1782,11 @@ createMap2 = function(pointsObj, options, callback) {
         return window.mapBuilder.points.push(point);
       };
     }
-    $("" + mapSelector).on("google-map-click", function(ll) {
+    $("" + mapSelector).on("google-map-click", function(e) {
+      var ll;
+      ll = e.originalEvent.detail.latLng;
+      console.info("Clicked point " + (point.toString()), point, ll);
       point = canonicalizePoint(ll);
-      console.info("Clicked point " + (point.toString()), point);
       if ((options != null ? options.onClickCallback : void 0) != null) {
         if (typeof options.onClickCallback === "function") {
           options.onClickCallback(point, this);
@@ -2370,17 +2372,19 @@ canonicalizePoint = function(point) {
     lat: null,
     lng: null
   };
-  tempLat = toFloat(point.lat);
-  if (tempLat.toString() === point.lat) {
-    point.lat = toFloat(point.lat);
-    point.lng = toFloat(point.lng);
-  } else {
-    tempLat = toFloat(point[0]);
-    if (tempLat.toString() === point[0]) {
-      point[0] = toFloat(point[0]);
-      point[0] = toFloat(point[1]);
+  try {
+    tempLat = toFloat(point.lat);
+    if (tempLat.toString() === point.lat) {
+      point.lat = toFloat(point.lat);
+      point.lng = toFloat(point.lng);
+    } else {
+      tempLat = toFloat(point[0]);
+      if (tempLat.toString() === point[0]) {
+        point[0] = toFloat(point[0]);
+        point[0] = toFloat(point[1]);
+      }
     }
-  }
+  } catch (undefined) {}
   if (typeof point.lat === "number") {
     pointObj = point;
   } else if (typeof point[0] === "number") {
