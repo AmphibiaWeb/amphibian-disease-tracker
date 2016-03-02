@@ -1505,7 +1505,11 @@ newGeoDataHandler = function(dataObject) {
       _adp.data.taxa.clades = cladeList;
       _adp.data.taxa.validated = validatedData.validated_taxa;
       return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table, coords, options) {
-        return createMap2(coords, options);
+        return createMap2(coords, options, function() {
+          window.mapBuilder.points = new Array();
+          $("#init-map-build").attr("disabled", "disabled");
+          return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+        });
       });
     });
   } catch (error4) {

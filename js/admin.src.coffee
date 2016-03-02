@@ -1505,7 +1505,11 @@ newGeoDataHandler = (dataObject = new Object()) ->
       _adp.data.taxa.validated = validatedData.validated_taxa
       geo.requestCartoUpload validatedData, projectIdentifier, "create", (table, coords, options) ->
         #mapOverlayPolygon validatedData.transectRing
-        createMap2 coords, options
+        createMap2 coords, options, ->
+          # Reset the biulder
+          window.mapBuilder.points = new Array()
+          $("#init-map-build").attr "disabled", "disabled"
+          $("#init-map-build .points-count").text window.mapBuilder.points.length
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"
