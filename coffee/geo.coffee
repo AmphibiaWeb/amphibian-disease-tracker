@@ -801,7 +801,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           dataVisUrl = dataBlobUrl
         else
           dataVisUrl = ""
-        parentCallback = (args...) ->
+        parentCallback = (coords) ->
           console.info "Initiating parent callback"
           stopLoad()
           max = p$("#data-sync").max
@@ -817,15 +817,15 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             options.selector = "#carto-map-container"
           _adp.defaultMapOptions = options
           if typeof callback is "function"
-            callback geo.dataTable, options
+            callback geo.dataTable, coords, options
           else
             console.info "requestCartoUpload recieved no callback"
         geo.init ->
           # Callback
           console.info "Post init"
-          getCanonicalDataCoords geo.dataTable, null, ->
+          getCanonicalDataCoords geo.dataTable, null, (coords, options) ->
             console.info "gcdc callback successful"
-            parentCallback()
+            parentCallback(coords)
           false
       .error (result, status) ->
         console.error "Couldn't communicate with server!", result, status

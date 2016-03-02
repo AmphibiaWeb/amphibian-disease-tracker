@@ -890,6 +890,9 @@ mapAddPoints = function(pointArray, pointInfoArray, map) {
 };
 
 getCanonicalDataCoords = function(table, options, callback) {
+  if (options == null) {
+    options = _adp.defaultMapOptions;
+  }
   if (callback == null) {
     callback = createMap2;
   }
@@ -905,10 +908,8 @@ getCanonicalDataCoords = function(table, options, callback) {
     console.error("This function needs a callback function as the second argument");
     return false;
   }
-  console.log("Provided options", options, dataAttrs.options, _adp.defaultMapOptions);
   verifyLoginCredentials(function(data) {
     var apiPostSqlQuery, args, sqlQuery;
-    console.log("User validated, have options", options, dataAttrs.options, _adp.defaultMapOptions);
     sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM " + table;
     apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
@@ -935,7 +936,7 @@ getCanonicalDataCoords = function(table, options, callback) {
       }
       dataAttrs.coords = coords;
       dataAttrs.markerInfo = info;
-      console.info("Calling back with", coords, options, dataAttrs.options, _adp.defaultMapOptions);
+      console.info("Calling back with", coords, options);
       return callback(coords, options);
     }).error(function(result, status) {
       if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
@@ -1503,8 +1504,8 @@ newGeoDataHandler = function(dataObject) {
       _adp.data.taxa.list = taxonList;
       _adp.data.taxa.clades = cladeList;
       _adp.data.taxa.validated = validatedData.validated_taxa;
-      return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table) {
-        return getCanonicalDataCoords(table);
+      return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table, coords, options) {
+        return createMap2(coords, options);
       });
     });
   } catch (error4) {
