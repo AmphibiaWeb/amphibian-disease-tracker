@@ -187,24 +187,39 @@ createMap2 = (pointsObj, selector = "#carto-map-container", options, callback) -
     unless options.skipPoints is true
       i = 0
       for point in points
+        markerHtml = ""
+        markerTitle = ""
         try
-          pointData = pointsObj[i].data
-          genus = pointData.genus
-          species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificeEpithet
-          note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originalTaxa
-          detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseeDetected
-          tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseeTested
-        genus ?= "No Data"
-        species ?= ""
-        note = unless isNull note then "(#{note})" else ""
-        testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
+          if pointsObj[i].infoWindow?
+            # Direct infowindow
+            iw = pointsObj[i].infoWindow
+            markerTitle = escape iw.title
+            markerHtml = iw.html
+          else if pointsObj[i].data?
+            pointData = pointsObj[i].data
+            genus = pointData.genus
+            species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificeEpithet
+            note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originalTaxa
+            detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseDetected
+            tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseTested
+            genus ?= "No Data"
+            species ?= ""
+            note = unless isNull note then "(#{note})" else ""
+            testString = if detected? and tested? then "<br/> Tested <strong>#{detected}</strong> for #{tested}" else ""
+            markerHtml = """
+              <p>
+                <em>#{genus} #{species}</em> #{note}
+                #{testString}
+              </p>
+            """
+            if pointData.catalogNumber? or pointData.catalognumber?
+              cat = if pointData.catalognumber? then pointData.catalognumber else pointData.catalogNumber
+              ssp = if pointData.infraspecificepithet? then pointData.infraspecificepithet else pointData.infraspecificEpithet
+              markerTitle = "#{cat}: #{genus} #{species}"
         point = canonicalizePoint point
         marker = """
-        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}">
-          <p>
-            <em>#{genus} #{species}</em> #{note}
-            #{testString}
-          </p>
+        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}" data-disease-detected="#{detected}" title="#{markerTitle}">
+          #{markerHtml}
         </google-map-marker>
         """
         mapHtml += marker
