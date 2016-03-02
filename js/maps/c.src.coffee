@@ -1421,7 +1421,7 @@ createMap2 = (pointsObj, options, callback) ->
       hull: hull
       center: center
     console.info "Map", r
-    geo.googleMapWebComponent = r
+    geo.googleMapWebComponent = googleMap
     # Callback
     if typeof callback is "function"
       console.log "createMap2 calling back"

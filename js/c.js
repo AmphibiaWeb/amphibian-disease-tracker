@@ -1843,7 +1843,7 @@ createMap2 = function(pointsObj, options, callback) {
       center: center
     };
     console.info("Map", r);
-    geo.googleMapWebComponent = r;
+    geo.googleMapWebComponent = googleMap;
     if (typeof callback === "function") {
       console.log("createMap2 calling back");
       callback(r);
