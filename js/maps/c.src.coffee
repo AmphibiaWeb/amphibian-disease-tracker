@@ -1377,14 +1377,16 @@ createMap2 = (pointsObj, options, callback) ->
     # See
     # https://elements.polymer-project.org/elements/google-map#events
     console.log "Attaching events to #{mapSelector}"
-    unless options?.resetMapBuilder is false
-      window.mapBuilder.points = new Array()
-    else
-      window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
     unless window.mapBuilder?
       window.mapBuilder = new Object()
       window.mapBuilder.points = new Array()
       window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
+
+    unless options?.resetMapBuilder is false
+      window.mapBuilder.points = new Array()
+    else
+      window.mapBuilder.selector = "#" + $(mapSelector).attr "id"
+
     unless options?.onClickCallback?
       unless options?
         options = new Object()

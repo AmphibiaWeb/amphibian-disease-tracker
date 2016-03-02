@@ -1795,14 +1795,14 @@ createMap2 = function(pointsObj, options, callback) {
       $(selector).replaceWith(googleMap);
     }
     console.log("Attaching events to " + mapSelector);
-    if ((options != null ? options.resetMapBuilder : void 0) !== false) {
-      window.mapBuilder.points = new Array();
-    } else {
-      window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
-    }
     if (window.mapBuilder == null) {
       window.mapBuilder = new Object();
       window.mapBuilder.points = new Array();
+      window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
+    }
+    if ((options != null ? options.resetMapBuilder : void 0) !== false) {
+      window.mapBuilder.points = new Array();
+    } else {
       window.mapBuilder.selector = "#" + $(mapSelector).attr("id");
     }
     if ((options != null ? options.onClickCallback : void 0) == null) {
