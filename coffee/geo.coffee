@@ -285,6 +285,8 @@ createMap2 = (pointsObj, options, callback) ->
     console.log "Attaching events to #{mapSelector}"
     unless options?.resetMapBuilder is false
       delete window.mapBuilder
+    else
+      window.mapBuilder.selector = "#" + $(mapElement).attr "id"
     unless options?.onClickCallback?
       unless options?
         options = new Object()
@@ -1097,14 +1099,17 @@ localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   false
 
 
-doMapbuilder = (builder = window.mapBuilder, createMapOptions, callback)->
+doMapBuilder = (builder = window.mapBuilder, createMapOptions, callback)->
   unless createMapOptions?
     createMapOptions =
       selector: builder.selector
-      resetMapBuilder: true
-  # By default, reset the map builder obj
+      resetMapBuilder: false
+  # By default, preserve the builder
   unless createMapOptions.resetMapBuilder?
-    createMapOptions.resetMapBuilder = true
+    createMapOptions.resetMapBuilder = false
+  unless typeof builder?.points is "object"
+    console.error "Invalid builder", builder
+    return false
   buildMap builder, createMapOptions, (map) ->
     localityFromMapBuilder map, (locality)  ->
       map.locality = locality

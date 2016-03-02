@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapbuilder, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1796,6 +1796,8 @@ createMap2 = function(pointsObj, options, callback) {
     console.log("Attaching events to " + mapSelector);
     if ((options != null ? options.resetMapBuilder : void 0) !== false) {
       delete window.mapBuilder;
+    } else {
+      window.mapBuilder.selector = "#" + $(mapElement).attr("id");
     }
     if ((options != null ? options.onClickCallback : void 0) == null) {
       if (options == null) {
@@ -2699,18 +2701,22 @@ localityFromMapBuilder = function(builder, callback) {
   return false;
 };
 
-doMapbuilder = function(builder, createMapOptions, callback) {
+doMapBuilder = function(builder, createMapOptions, callback) {
   if (builder == null) {
     builder = window.mapBuilder;
   }
   if (createMapOptions == null) {
     createMapOptions = {
       selector: builder.selector,
-      resetMapBuilder: true
+      resetMapBuilder: false
     };
   }
   if (createMapOptions.resetMapBuilder == null) {
-    createMapOptions.resetMapBuilder = true;
+    createMapOptions.resetMapBuilder = false;
+  }
+  if (typeof (builder != null ? builder.points : void 0) !== "object") {
+    console.error("Invalid builder", builder);
+    return false;
   }
   return buildMap(builder, createMapOptions, function(map) {
     return localityFromMapBuilder(map, function(locality) {
