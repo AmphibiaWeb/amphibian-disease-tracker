@@ -2355,15 +2355,15 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           }
           _adp.defaultMapOptions = options;
           if (typeof callback === "function") {
-            return callback.apply(null, [geo.dataTable].concat(slice.call(args)));
+            return callback(geo.dataTable, options);
           } else {
             return console.info("requestCartoUpload recieved no callback");
           }
         };
         return geo.init(function() {
           console.info("Post init");
-          getCanonicalDataCoords(geo.dataTable, options, function() {
-            console.info("gcdc callback successful", options);
+          getCanonicalDataCoords(geo.dataTable, null, function() {
+            console.info("gcdc callback successful");
             return parentCallback();
           });
           return false;

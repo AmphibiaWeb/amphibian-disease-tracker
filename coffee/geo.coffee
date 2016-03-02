@@ -817,14 +817,14 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             options.selector = "#carto-map-container"
           _adp.defaultMapOptions = options
           if typeof callback is "function"
-            callback geo.dataTable, args...
+            callback geo.dataTable, options
           else
             console.info "requestCartoUpload recieved no callback"
         geo.init ->
           # Callback
           console.info "Post init"
-          getCanonicalDataCoords geo.dataTable, options, ->
-            console.info "gcdc callback successful", options
+          getCanonicalDataCoords geo.dataTable, null, ->
+            console.info "gcdc callback successful"
             parentCallback()
           false
       .error (result, status) ->
