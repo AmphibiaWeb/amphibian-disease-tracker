@@ -230,15 +230,14 @@ loadCreateNewProject = ->
     <h2 class="new-title">Uploading your project data</h2>
     <p>Drag and drop as many files as you need below. </p>
     <p>
-      To save your project, we need at least one file with structured data containing coordinates.
       Please note that the data <strong>must</strong> have a header row,
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>elevation</code>, and <code>coordinateUncertaintyInMeters</code>.
     </p>
     <div class="alert alert-info" role="alert">
-      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Your data will be validated with the same service.
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
     </div>
     <div class="alert alert-warning" role="alert">
-      <strong>If the data is in Excel</strong>, ensure that it is in a single-sheet workbook. Data across multiple sheets in one workbook may be improperly processed.
+      <strong>If the data is in Excel</strong>, ensure that it is the first sheet in the workbook. Data across multiple sheets in one workbook may be improperly processed.
     </div>
   </section>
   <section class="project-inputs clearfix data-section col-xs-12">
