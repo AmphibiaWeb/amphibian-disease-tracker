@@ -1123,7 +1123,7 @@ geo.init = (doCallback) ->
   """
   $("head").append cartoDBCSS
   doCallback ?= ->
-    createMap adData.cartoRef
+    getCanonicalDataCoords geo.dataTable
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
@@ -1223,6 +1223,7 @@ createMap2 = (pointsObj, options, callback) ->
       skipPoints: false
       boundingBox: null
       selector: "#carto-map-container"
+      bsGrid: "col-md-9 col-lg-6"
   if options.selector?
     selector = options.selector
   try
@@ -1232,6 +1233,7 @@ createMap2 = (pointsObj, options, callback) ->
       poly =
         fillColor: defaultFillColor
         fillOpacity: defaultFillOpacity
+    console.info "createMap2 working with data", pointsObj
     unless Object.size(pointsObj) < 3
       data = createConvexHull pointsObj, true
       hull = data.hull
@@ -1250,6 +1252,7 @@ createMap2 = (pointsObj, options, callback) ->
         points.push canonicalizePoint options.boundingBox.ne
         points.push canonicalizePoint options.boundingBox.sw
         points.push canonicalizePoint options.boundingBox.se
+    console.info "createMap2 working with", points
     try
       zoom = getMapZoom points, selector
       console.info "Got zoom", zoom
@@ -1332,7 +1335,7 @@ createMap2 = (pointsObj, options, callback) ->
     else
       classes = ""
     googleMap = """
-      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 #{options.bsGrid} center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
     """
@@ -1909,6 +1912,17 @@ canonicalizePoint = (point) ->
   pointObj =
     lat: null
     lng: null
+  # Type conversions
+  tempLat = toFloat point.lat
+  if tempLat.toString() is point.lat
+    point.lat = toFloat point.lat
+    point.lng = toFloat point.lng
+  else
+    tempLat = toFloat point[0]
+    if tempLat.toString() is point[0]
+      point[0] = toFloat point[0]
+      point[0] = toFloat point[1]
+  # Tests
   if typeof point.lat is "number"
     pointObj = point
   else if typeof point[0] is "number"
@@ -1954,20 +1968,23 @@ createConvexHull = (pointsArray, returnObj = false) ->
   #
   # @return array -> an array of Point objects
   ###
-  realArray = new Array()
+  simplePointArray = new Array()
+  realPointArray = new Array()
   pointsArray = Object.toArray pointsArray
   for point in pointsArray
     canonicalPoint = canonicalizePoint point
-    realArray.push canonicalPoint.toSimplePoint()
+    realPointArray.push canonicalPoint
+    simplePointArray.push canonicalPoint.toSimplePoint()
   try
-    cpHull = getConvexHullPoints realArray
+    console.info "Getting convex hull with #{simplePointArray.length} points (original: #{pointsArray.length}; canonical: #{realPointArray.length})"
+    cpHull = getConvexHullPoints simplePointArray
   catch e
     console.error "Unable to get convex hull - #{e.message}"
     console.warn e.stack
   if returnObj is true
     obj =
       hull: cpHull
-      points: realArray
+      points: realPointArray
     return obj
   cpHull
 

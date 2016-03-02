@@ -574,8 +574,10 @@ bootstrapTransect = function() {
     try {
       $("#carto-map-container").empty();
       mapOptions = {
-        selector: "#carto-map-container"
+        selector: "#carto-map-container",
+        bsGrid: ""
       };
+      $(mapOptions.selector).empty();
       return getCanonicalDataCoords(geo.dataTable, mapOptions, function() {
         stopLoad();
         return false;
