@@ -905,10 +905,10 @@ getCanonicalDataCoords = function(table, options, callback) {
     console.error("This function needs a callback function as the second argument");
     return false;
   }
-  dataAttrs.options = options;
+  console.log("Provided options", options, dataAttrs.options, _adp.defaultMapOptions);
   verifyLoginCredentials(function(data) {
     var apiPostSqlQuery, args, sqlQuery;
-    console.log("User validated, have options", options);
+    console.log("User validated, have options", options, dataAttrs.options, _adp.defaultMapOptions);
     sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM " + table;
     apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
@@ -935,7 +935,7 @@ getCanonicalDataCoords = function(table, options, callback) {
       }
       dataAttrs.coords = coords;
       dataAttrs.markerInfo = info;
-      console.info("Calling back with", coords, dataAttrs.options);
+      console.info("Calling back with", coords, options, dataAttrs.options, _adp.defaultMapOptions);
       return callback(coords, options);
     }).error(function(result, status) {
       if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {

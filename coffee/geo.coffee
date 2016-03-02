@@ -273,10 +273,12 @@ createMap2 = (pointsObj, options, callback) ->
     """
     # Append it
     unless $(selector).get(0).tagName.toLowerCase() is "google-map"
-      console.log "Appending map to selector #{selector}"
+      unless $(selector).exists()
+        selector = "body"
+      console.log "Appending map to selector #{selector}", $(selector)
       $(selector)
       .addClass "map-container has-map"
-      .append googleMap
+      .append googleMap      
     else
       console.log "Replacing map at selector #{selector}"
       $(selector).replaceWith googleMap
@@ -820,6 +822,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           else
             options.selector = "#carto-map-container"
           console.info "Post init", options
+          dataAttrs.options = options
+          _adp.defaultMapOptions = options
           getCanonicalDataCoords geo.dataTable, options, ->
             console.info "gcdc callback successful", options
             parentCallback()
