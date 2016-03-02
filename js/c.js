@@ -1788,7 +1788,10 @@ createMap2 = function(pointsObj, options, callback) {
     }
     googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 " + options.bsGrid + " center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
     if ($(selector).get(0).tagName.toLowerCase() !== "google-map") {
-      console.log("Appending map to selector " + selector);
+      if (!$(selector).exists()) {
+        selector = "body";
+      }
+      console.log("Appending map to selector " + selector, $(selector));
       $(selector).addClass("map-container has-map").append(googleMap);
     } else {
       console.log("Replacing map at selector " + selector);
@@ -2357,6 +2360,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             options.selector = "#carto-map-container";
           }
           console.info("Post init", options);
+          dataAttrs.options = options;
+          _adp.defaultMapOptions = options;
           getCanonicalDataCoords(geo.dataTable, options, function() {
             console.info("gcdc callback successful", options);
             return parentCallback();
