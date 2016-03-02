@@ -1776,7 +1776,7 @@ loadEditor = function(projectPreload) {
           };
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);
-            createMap2([centerPoint], options, function(map) {
+            createMap2([centerPoint], createMapOptions, function(map) {
               var tryReload;
               if (!$(map.selector).exists()) {
                 return (tryReload = function() {

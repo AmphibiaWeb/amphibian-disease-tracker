@@ -214,7 +214,7 @@ loadEditor = (projectPreload) ->
             # https://elements.polymer-project.org/elements/google-map
             # Poly is cartoParsed.bounding_polygon.paths
             centerPoint = new Point project.lat, project.lng
-            createMap2 [centerPoint], options, (map) ->
+            createMap2 [centerPoint], createMapOptions, (map) ->
               if not $(map.selector).exists()
                 do tryReload = ->
                   if $("#map-header").exists()
