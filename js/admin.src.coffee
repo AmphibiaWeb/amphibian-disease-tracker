@@ -264,6 +264,11 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  getLocation ->
+    _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
+    mapOptions =
+      bsGrid: ""
+    createMap2 null, mapOptions
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()
