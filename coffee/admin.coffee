@@ -264,11 +264,6 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
-  getLocation ->
-    _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
-    mapOptions =
-      bsGrid: ""
-    createMap2 null, mapOptions
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()
@@ -284,6 +279,13 @@ loadCreateNewProject = ->
   $("#data-encumbrance-toggle").on "iron-change", ->
     buttonLabel = if p$("#data-encumbrance-toggle").checked then """<iron-icon icon="social:public"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Public Project""" else """<iron-icon icon="icons:lock"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project"""
     $("#upload-data").html buttonLabel
+  console.log "Getting location, prerequisite to setting up map ..."
+  getLocation ->
+    _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
+    mapOptions =
+      bsGrid: ""
+    console.log "Location fetched, setting up map ..."
+    createMap2 null, mapOptions
   bindClicks()
   false
 
@@ -547,7 +549,6 @@ bootstrapTransect = ->
   # Load up the region of interest UI into the DOM, and bind all the
   # events, and set up helper functions.
   ###
-  getLocation()
   # Helper function: Do the geocoding
   window.geocodeLookupCallback = ->
     ###
