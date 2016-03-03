@@ -949,9 +949,12 @@ createConvexHull = (pointsArray, returnObj = false) ->
     realPointArray.push canonicalPoint
   try
     console.info "Getting convex hull (original: #{pointsArray.length}; canonical: #{realPointArray.length})", realPointArray
-    chConfig = getConvexHull realPointArray
-    # simplePointArray = sortPoints realPointArray, false
-    # cpHull = getConvexHullPoints simplePointArray
+    try
+      chConfig = getConvexHull realPointArray
+    catch
+      console.warn "Couldn't run real way!"
+      simplePointArray = sortPoints realPointArray, false
+      cpHull = getConvexHullPoints simplePointArray
     cpHull = chConfig.paths
   catch e
     console.error "Unable to get convex hull - #{e.message}"
@@ -1499,4 +1502,5 @@ function chainHull_2D(P, n, H) {
 
 
 $ ->
-  # init()
+  # First, we have to load the Google Maps library
+  loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}"
