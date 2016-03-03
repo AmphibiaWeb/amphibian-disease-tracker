@@ -211,6 +211,7 @@ loadEditor = (projectPreload) ->
             bsGrid: ""
             skipPoints: false
             skipHull: false
+            onlyOne: true
           geo.mapOptions = createMapOptions
           if cartoParsed.bounding_polygon?.paths?
             # Draw a map web component
@@ -219,9 +220,9 @@ loadEditor = (projectPreload) ->
             # Poly is cartoParsed.bounding_polygon.paths
             centerPoint = new Point project.lat, project.lng
             geo.centerPoint = centerPoint
+            geo.mapOptions = createMapOptions
             createMap2 [centerPoint], createMapOptions, (map) ->
-              createMapOptions.selector = map.selector
-              geo.mapOptions = createMapOptions
+              geo.mapOptions.selector = map.selector
               if not $(map.selector).exists()
                 do tryReload = ->
                   if $("#map-header").exists()

@@ -1239,6 +1239,7 @@ createMap2 = (pointsObj, options, callback) ->
       selector: "#carto-map-container"
       bsGrid: "col-md-9 col-lg-6"
       resetMapBuilder: true
+      onlyOne: false
   if options.selector?
     selector = options.selector
   else
@@ -1379,6 +1380,8 @@ createMap2 = (pointsObj, options, callback) ->
       </google-map>
     """
     # Append it
+    if options.onlyOne is true
+      selector = $("google-map").get(0)
     unless $(selector).exists()
       selector = "body"
     unless $(selector).get(0).tagName.toLowerCase() is "google-map"

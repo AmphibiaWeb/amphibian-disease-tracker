@@ -1775,16 +1775,17 @@ loadEditor = function(projectPreload) {
             classes: "carto-data map-editor",
             bsGrid: "",
             skipPoints: false,
-            skipHull: false
+            skipHull: false,
+            onlyOne: true
           };
           geo.mapOptions = createMapOptions;
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);
             geo.centerPoint = centerPoint;
+            geo.mapOptions = createMapOptions;
             createMap2([centerPoint], createMapOptions, function(map) {
               var tryReload;
-              createMapOptions.selector = map.selector;
-              geo.mapOptions = createMapOptions;
+              geo.mapOptions.selector = map.selector;
               if (!$(map.selector).exists()) {
                 return (tryReload = function() {
                   var googleMap;

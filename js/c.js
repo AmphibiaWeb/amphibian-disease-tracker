@@ -1654,7 +1654,8 @@ createMap2 = function(pointsObj, options, callback) {
       boundingBox: null,
       selector: "#carto-map-container",
       bsGrid: "col-md-9 col-lg-6",
-      resetMapBuilder: true
+      resetMapBuilder: true,
+      onlyOne: false
     };
   }
   if (options.selector != null) {
@@ -1810,6 +1811,9 @@ createMap2 = function(pointsObj, options, callback) {
       classes = "";
     }
     googleMap = "<google-map id=\"" + id + "\" latitude=\"" + center.lat + "\" longitude=\"" + center.lng + "\" fit-to-markers map-type=\"hybrid\" click-events disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 " + options.bsGrid + " center-block clearfix google-map transect-viewport map-viewport " + classes + "\" api-key=\"" + gMapsApiKey + "\" " + mapObjAttr + ">\n      " + mapHtml + "\n</google-map>";
+    if (options.onlyOne === true) {
+      selector = $("google-map").get(0);
+    }
     if (!$(selector).exists()) {
       selector = "body";
     }
