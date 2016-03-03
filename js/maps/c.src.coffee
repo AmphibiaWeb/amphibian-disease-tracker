@@ -1305,6 +1305,11 @@ createMap2 = (pointsObj, options, callback) ->
             iw = pointsObj[i].infoWindow
             markerTitle = escape iw.title
             markerHtml = iw.html
+            if pointsObj[i].data?
+              pointData = pointsObj[i].data
+              detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseDetected
+            else
+              detected = ""
           else if pointsObj[i].data?
             pointData = pointsObj[i].data
             genus = pointData.genus

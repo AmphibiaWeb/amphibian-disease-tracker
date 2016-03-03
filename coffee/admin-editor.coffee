@@ -677,6 +677,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       lng = geoJson.coordinates[1]
       point = new Point lat, lng
       point.infoWindow = new Object()
+      point.data = row
       # Fill the points as markers
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
