@@ -382,6 +382,7 @@ if(boolstr($project["public"]) === true) {
           $realSpecies = array();
           foreach($speciesList as $species) {
               if(empty($species)) continue;
+              $i++;
               $realSpecies[] = $species;
               $speciesParts = explode(" ", $species);
               $args["where-genus"] = $speciesParts[0];

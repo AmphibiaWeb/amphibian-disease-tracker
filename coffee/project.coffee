@@ -84,6 +84,7 @@ renderMapWithData = (projectData, force = false) ->
     console.warn "The map was asked to be rendered again, but it has already been rendered!"
     return false
   cartoData = JSON.parse deEscape projectData.carto_id
+  raw = cartoData.raw_data
   if raw.hasDataFile
     downloadButton = """
     <button class="btn btn-primary click" data-href="#{raw.filePath}" data-newtab="true">
@@ -227,7 +228,7 @@ renderMapWithData = (projectData, force = false) ->
           downloadFile: "species-list-#{projectData.project_id}-#{d.toISOString()}.csv"
           selector: ".download-buttons"
           buttonText: "Download Species List"
-          
+
     stopLoad()
   .error (result, status) ->
     console.error result, status
@@ -259,7 +260,6 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   showEmailField authorData.contact_email
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
-  raw = cartoData.raw_data
   renderMapWithData(projectData) # Stops load
   false
 
