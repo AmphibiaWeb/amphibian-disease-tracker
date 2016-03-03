@@ -179,7 +179,7 @@ loadCreateNewProject = ->
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-9" required auto-validate data-field="disease"></paper-input>
+      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-8" required auto-validate data-field="disease"></paper-input>
         #{getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")}
         <button class="btn btn-default fill-pathogen col-xs-1" data-pathogen="Batrachochytrium dendrobatidis">Bd</button>
         <button class="btn btn-default fill-pathogen col-xs-1" data-pathogen="Batrachochytrium salamandrivorans ">Bsal</button>

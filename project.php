@@ -378,13 +378,18 @@ if(boolstr($project["public"]) === true) {
           $args = array("where-genus"=>"", "where-species"=>"");
           $speciesList = explode(",", $project["sampled_species"]);
           sort($speciesList);
+          $i = 0;
           foreach($speciesList as $species) {
+              if(empty($species)) continue;
               $speciesParts = explode(" ", $species);
               $args["where-genus"] = $speciesParts[0];
               $args["where-species"] = $speciesParts[1];
               $linkUri = $aWebUri . "where-genus=" . $speciesParts[0] . "&amp;where-species=" . $speciesParts[1];
               $html = "<li class=\"aweb-link-species\">" . $species . " <paper-icon-button class=\"click\" data-href=\"" . $linkUri . "\" icon=\"icons:open-in-new\" data-newtab=\"true\"></paper-icon-button></li>";
               echo $html;
+          }
+          if($i === 0) {
+              echo "<h3>Sorry, there are no species associated with this project.</h3>";
           }
 
                ?>
