@@ -295,8 +295,8 @@ loadEditor = (projectPreload) ->
             collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
           else
             collectionRangePretty = "<em>(no data)</em>"
-          if months.length is 0 then monthPretty = "<em>(no data)</em>"
-          if years.length is 0 then yearPretty = "<em>(no data)</em>"
+          if months.length is 0 or isNull monthPretty then monthPretty = "<em>(no data)</em>"
+          if years.length is 0 or isNull yearPretty then yearPretty = "<em>(no data)</em>"
           html = """
           <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}

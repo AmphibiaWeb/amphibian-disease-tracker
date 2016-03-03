@@ -146,7 +146,7 @@ createMap2 = (pointsObj, options, callback) ->
       selector: "#carto-map-container"
       bsGrid: "col-md-9 col-lg-6"
       resetMapBuilder: true
-      onlyOne: false
+      onlyOne: true
   if options.selector?
     selector = options.selector
   else
