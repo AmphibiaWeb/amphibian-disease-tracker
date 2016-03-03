@@ -949,8 +949,10 @@ createConvexHull = (pointsArray, returnObj = false) ->
     realPointArray.push canonicalPoint
   try
     console.info "Getting convex hull (original: #{pointsArray.length}; canonical: #{realPointArray.length})", realPointArray
-    simplePointArray = sortPoints realPointArray, false
-    cpHull = getConvexHullPoints simplePointArray
+    chConfig = getConvexHull realPointArray
+    # simplePointArray = sortPoints realPointArray, false
+    # cpHull = getConvexHullPoints simplePointArray
+    cpHull = chConfig.paths
   catch e
     console.error "Unable to get convex hull - #{e.message}"
     console.warn e.stack
@@ -1334,9 +1336,6 @@ getConvexHullConfig = (points, map = geo.googleMap) ->
       points.sort(sortPointX);
       DrawHull();
 }
-
-     function sortPointX(a,b) { return a.lng() - b.lng(); }
-     function sortPointY(a,b) { return a.lat() - b.lat(); }
 
      function DrawHull() {
      hullPoints = [];
