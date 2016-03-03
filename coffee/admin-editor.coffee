@@ -209,6 +209,8 @@ loadEditor = (projectPreload) ->
             boundingBox: Object.toArray cartoParsed.bounding_polygon
             classes: "carto-data map-editor"
             bsGrid: ""
+            skipPoints: false
+            skipHull: false
           geo.mapOptions = createMapOptions
           if cartoParsed.bounding_polygon?.paths?
             # Draw a map web component
@@ -216,6 +218,7 @@ loadEditor = (projectPreload) ->
             # https://elements.polymer-project.org/elements/google-map
             # Poly is cartoParsed.bounding_polygon.paths
             centerPoint = new Point project.lat, project.lng
+            geo.centerPoint = centerPoint
             createMap2 [centerPoint], createMapOptions, (map) ->
               createMapOptions.selector = map.selector
               geo.mapOptions = createMapOptions
@@ -713,6 +716,9 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     totalRows = result.parsed_responses[0].total_rows ? 0
     if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
       mapOptions.skipHull = false
+      if pointArr.length is 0
+        center = geo.centerPoint ? [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng] ? [window.locationData.lat, window.locationData.lng]
+        pointArr.push center
       createMap2 pointArr, mapOptions, (map) ->
         after = """
         <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>

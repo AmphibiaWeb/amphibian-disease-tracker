@@ -1995,7 +1995,7 @@ canonicalizePoint = (point) ->
   # Tests
   if typeof point?.lat is "number"
     pointObj = point
-  else if typeof point[0] is "number"
+  else if typeof point?[0] is "number"
     pointObj =
       lat: point[0]
       lng: point[1]
