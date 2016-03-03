@@ -2492,7 +2492,7 @@ canonicalizePoint = function(point) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, cpHull, error2, l, len, len1, m, obj, point, realPointArray, simplePointArray;
+  var canonicalPoint, chConfig, cpHull, error2, l, len, len1, m, obj, point, realPointArray, simplePointArray;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -2517,8 +2517,8 @@ createConvexHull = function(pointsArray, returnObj) {
   }
   try {
     console.info("Getting convex hull (original: " + pointsArray.length + "; canonical: " + realPointArray.length + ")", realPointArray);
-    simplePointArray = sortPoints(realPointArray, false);
-    cpHull = getConvexHullPoints(simplePointArray);
+    chConfig = getConvexHull(realPointArray);
+    cpHull = chConfig.paths;
   } catch (error2) {
     e = error2;
     console.error("Unable to get convex hull - " + e.message);
@@ -2987,9 +2987,6 @@ getConvexHullConfig = function(points, map) {
       points.sort(sortPointX);
       DrawHull();
 }
-
-     function sortPointX(a,b) { return a.lng() - b.lng(); }
-     function sortPointY(a,b) { return a.lat() - b.lat(); }
 
      function DrawHull() {
      hullPoints = [];
