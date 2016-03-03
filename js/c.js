@@ -1730,6 +1730,12 @@ createMap2 = function(pointsObj, options, callback) {
             iw = pointsObj[i].infoWindow;
             markerTitle = escape(iw.title);
             markerHtml = iw.html;
+            if (pointsObj[i].data != null) {
+              pointData = pointsObj[i].data;
+              detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseDetected;
+            } else {
+              detected = "";
+            }
           } else if (pointsObj[i].data != null) {
             pointData = pointsObj[i].data;
             genus = pointData.genus;

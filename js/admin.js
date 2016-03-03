@@ -2134,6 +2134,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       lng = geoJson.coordinates[1];
       point = new Point(lat, lng);
       point.infoWindow = new Object();
+      point.data = row;
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
