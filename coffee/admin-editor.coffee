@@ -234,7 +234,7 @@ loadEditor = (projectPreload) ->
                   <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
                   </google-map>
             """
-          geo.googleMapWebComponent = googleMap
+          geo.googleMapWebComponent = googleMap ? ""
           deleteCardAction = if result.user.is_author then """
           <div class="card-actions">
                 <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
@@ -391,7 +391,7 @@ loadEditor = (projectPreload) ->
                 <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{roundNumberSigfig project.lat, 6}, #{roundNumberSigfig project.lng, 6}) with a sample radius of #{project.radius}m and a resulting locality <strong class='locality'>#{project.locality}</strong></p>
                 <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{project.disease_positive} positive samples (#{roundNumber(project.disease_positive * 100 / project.disease_samples)}%), #{project.disease_negative} negative samples (#{roundNumber(project.disease_negative *100 / project.disease_samples)}%), and #{project.disease_no_confidence} inconclusive samples (#{roundNumber(project.disease_no_confidence * 100 / project.disease_samples)}%)</p>
               <h4 id="map-header">Locality &amp; Transect Data</h4>
-                <div id="carto-map-container">
+                <div id="carto-map-container" class="clearfix">
                 #{googleMap}
                 </div>
                 <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
