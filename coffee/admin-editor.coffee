@@ -206,9 +206,10 @@ loadEditor = (projectPreload) ->
             cartoParsed = new Object()
           mapHtml = ""
           createMapOptions =
-            boundingBox: cartoParsed.bounding_polygon
+            boundingBox: Object.toArray cartoParsed.bounding_polygon
             classes: "carto-data map-editor"
             bsGrid: ""
+          geo.mapOptions = createMapOptions
           if cartoParsed.bounding_polygon?.paths?
             # Draw a map web component
             # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
@@ -461,6 +462,7 @@ loadEditor = (projectPreload) ->
             else
               $(this).find("iron-icon").removeClass("material-red")
           # Load more detailed data from CartoDB
+          console.info "Getting carto data with id #{project.carto_id} and options", createMapOptions
           getProjectCartoData project.carto_id, createMapOptions
         catch e
           stopLoadError "There was an error loading your project"

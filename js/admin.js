@@ -1771,10 +1771,11 @@ loadEditor = function(projectPreload) {
           }
           mapHtml = "";
           createMapOptions = {
-            boundingBox: cartoParsed.bounding_polygon,
+            boundingBox: Object.toArray(cartoParsed.bounding_polygon),
             classes: "carto-data map-editor",
             bsGrid: ""
           };
+          geo.mapOptions = createMapOptions;
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);
             createMap2([centerPoint], createMapOptions, function(map) {
@@ -1925,6 +1926,7 @@ loadEditor = function(projectPreload) {
               return $(this).find("iron-icon").removeClass("material-red");
             }
           });
+          console.info("Getting carto data with id " + project.carto_id + " and options", createMapOptions);
           return getProjectCartoData(project.carto_id, createMapOptions);
         } catch (error3) {
           e = error3;

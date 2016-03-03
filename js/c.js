@@ -2492,7 +2492,7 @@ canonicalizePoint = function(point) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, chConfig, cpHull, error2, l, len, len1, m, obj, point, realPointArray, simplePointArray;
+  var canonicalPoint, chConfig, cpHull, error2, error3, l, len, len1, m, obj, point, realPointArray, simplePointArray;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -2517,10 +2517,16 @@ createConvexHull = function(pointsArray, returnObj) {
   }
   try {
     console.info("Getting convex hull (original: " + pointsArray.length + "; canonical: " + realPointArray.length + ")", realPointArray);
-    chConfig = getConvexHull(realPointArray);
+    try {
+      chConfig = getConvexHull(realPointArray);
+    } catch (error2) {
+      console.warn("Couldn't run real way!");
+      simplePointArray = sortPoints(realPointArray, false);
+      cpHull = getConvexHullPoints(simplePointArray);
+    }
     cpHull = chConfig.paths;
-  } catch (error2) {
-    e = error2;
+  } catch (error3) {
+    e = error3;
     console.error("Unable to get convex hull - " + e.message);
     console.warn(e.stack);
   }
@@ -3147,6 +3153,8 @@ function chainHull_2D(P, n, H) {
 }
 ;
 
-$(function() {});
+$(function() {
+  return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey);
+});
 
 //# sourceMappingURL=maps/c.js.map
