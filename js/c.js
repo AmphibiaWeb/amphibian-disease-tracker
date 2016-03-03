@@ -1486,7 +1486,7 @@ downloadCSVFile = function(data, options) {
   options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
   options.selector ?= "#download-file"
    */
-  var file, html, id, jsonObject, parser, selector, textAsset;
+  var c, file, html, id, jsonObject, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     jsonObject = JSON.parse(data);
@@ -1556,7 +1556,8 @@ downloadCSVFile = function(data, options) {
   }
   selector = options.selector;
   if (options.create === true) {
-    id = (selector.slice(1)) + "-download-button";
+    c = $(selector).find("button").length;
+    id = (selector.slice(1)) + "-download-button-" + c;
     html = "<a id=\"" + id + "\" class=\"" + options.classes + "\" href=\"" + file + "\" download=\"" + options.downloadFile + "\">\n  " + options.iconHtml + " \n  " + options.buttonText + "\n</a>";
     $(selector).append(html);
   } else {

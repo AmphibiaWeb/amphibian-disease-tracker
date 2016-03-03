@@ -84,6 +84,14 @@ renderMapWithData = (projectData, force = false) ->
     console.warn "The map was asked to be rendered again, but it has already been rendered!"
     return false
   cartoData = JSON.parse deEscape projectData.carto_id
+  if raw.hasDataFile
+    downloadButton = """
+    <button class="btn btn-primary click" data-href="#{raw.filePath}" data-newtab="true">
+      <iron-icon icon="editor:insert-chart"></iron-icon>
+      Download Data File
+    </button>
+    """
+  downloadButton ?= ""
   cartoTable = cartoData.table
   try
     zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
@@ -201,6 +209,9 @@ renderMapWithData = (projectData, force = false) ->
         <p class="text-muted"><span class="glyphicon glyphicon-calendar"></span> Data were sampled in #{yearPretty}</p>
         <p class="text-muted"><iron-icon icon="icons:language"></iron-icon> The effective project center is at (#{roundNumberSigfig projectData.lat, 6}, #{roundNumberSigfig projectData.lng, 6}) with a sample radius of #{projectData.radius}m and a resulting locality <strong class='locality'>#{projectData.locality}</strong></p>
         <p class="text-muted"><iron-icon icon="editor:insert-chart"></iron-icon> The dataset contains #{projectData.disease_positive} positive samples (#{roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)}%), #{projectData.disease_negative} negative samples (#{roundNumber(projectData.disease_negative *100 / projectData.disease_samples)}%), and #{projectData.disease_no_confidence} inconclusive samples (#{roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)}%)</p>
+        <div class="download-buttons" id="data-download-buttons">
+          #{downloadButton}
+        </div>
       </div>
     </div>
     """
@@ -208,6 +219,15 @@ renderMapWithData = (projectData, force = false) ->
       $("#auth-block").append mapData
       setupMapMarkerToggles()
       _adp.mapRendered = true
+      unless isNull _adp.pageSpeciesList
+        console.log "Creating CSV downloader for species list"
+        d = new Date()
+        options =
+          create: true
+          downloadFile: "species-list-#{projectData.project_id}-#{d.toISOString()}.csv"
+          selector: ".download-buttons"
+          buttonText: "Download Species List"
+          
     stopLoad()
   .error (result, status) ->
     console.error result, status
@@ -239,6 +259,7 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   showEmailField authorData.contact_email
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
+  raw = cartoData.raw_data
   renderMapWithData(projectData) # Stops load
   false
 
