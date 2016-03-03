@@ -1660,7 +1660,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ta, topPosition, userHtml, year, yearPretty, years;
+        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ta, topPosition, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1820,6 +1820,7 @@ loadEditor = function(projectPreload) {
           }
           monthPretty = "";
           months = project.sampling_months.split(",");
+          monthsReal = new Array();
           i = 0;
           for (m = 0, len1 = months.length; m < len1; m++) {
             month = months[m];
@@ -1833,32 +1834,39 @@ loadEditor = function(projectPreload) {
               monthPretty += ", ";
             }
             if (isNumber(month)) {
+              monthsReal.push(toInt(month));
               month = dateMonthToString(month);
             }
             monthPretty += month;
           }
           i = 0;
+          months = monthsReal;
           yearPretty = "";
           years = project.sampling_years.split(",");
+          yearsReal = new Array();
           i = 0;
           for (o = 0, len2 = years.length; o < len2; o++) {
             year = years[o];
             ++i;
-            if (i > 1 && i === years.length) {
-              if (years.length > 2) {
-                yearPretty += ",";
+            if (isNumber(year)) {
+              yearsReal.push(toInt(year));
+              if (i > 1 && i === years.length) {
+                if (yearsReal.length > 2) {
+                  yearPretty += ",";
+                }
+                yearPretty += " and ";
+              } else if (i > 1) {
+                yearPretty += ", ";
               }
-              yearPretty += " and ";
-            } else if (i > 1) {
-              yearPretty += ", ";
+              yearPretty += year;
             }
-            yearPretty += year;
           }
           if (years.length === 1) {
             yearPretty = "the year " + yearPretty;
           } else {
             yearPretty = "the years " + yearPretty;
           }
+          years = yearsReal;
           if (toInt(project.sampled_collection_start) > 0) {
             d1 = new Date(toInt(project.sampled_collection_start));
             d2 = new Date(toInt(project.sampled_collection_end));

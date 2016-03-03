@@ -267,6 +267,7 @@ loadEditor = (projectPreload) ->
               return "Error retrieving creation time"
           monthPretty = ""
           months = project.sampling_months.split(",")
+          monthsReal = new Array()
           i = 0
           for month in months
             ++i
@@ -279,27 +280,33 @@ loadEditor = (projectPreload) ->
             else if i > 1
               monthPretty += ", "
             if isNumber month
+              monthsReal.push toInt month
               month = dateMonthToString month
             monthPretty += month
           i = 0
+          months = monthsReal
           yearPretty = ""
           years = project.sampling_years.split(",")
+          yearsReal = new Array()
           i = 0
           for year in years
             ++i
-            if i > 1 and i is years.length
-              if years.length > 2
-                # Because "2012, and 2013" looks silly
-                # But "2012, 2013, and 2014" looks fine
-                yearPretty += ","
-              yearPretty += " and "
-            else if i > 1
-              yearPretty += ", "
-            yearPretty += year
+            if isNumber year
+              yearsReal.push toInt year
+              if i > 1 and i is years.length
+                if yearsReal.length > 2
+                  # Because "2012, and 2013" looks silly
+                  # But "2012, 2013, and 2014" looks fine
+                  yearPretty += ","
+                yearPretty += " and "
+              else if i > 1
+                yearPretty += ", "
+              yearPretty += year
           if years.length is 1
             yearPretty = "the year #{yearPretty}"
           else
             yearPretty = "the years #{yearPretty}"
+          years = yearsReal
           if toInt(project.sampled_collection_start) > 0
             d1 = new Date toInt project.sampled_collection_start
             d2 = new Date toInt project.sampled_collection_end

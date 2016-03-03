@@ -1638,7 +1638,7 @@ createMap2 = function(pointsObj, options, callback) {
    *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
-  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, ref2, selector, species, ssp, testString, tested, zoom;
+  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, len3, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, ref2, ref3, selector, species, ssp, t, testString, tested, zoom;
   console.log("createMap2 was provided options:", options);
   if (options == null) {
     options = new Object();
@@ -1694,10 +1694,18 @@ createMap2 = function(pointsObj, options, callback) {
         }
       }
       if (options.boundingBox != null) {
-        points.push(canonicalizePoint(options.boundingBox.nw));
-        points.push(canonicalizePoint(options.boundingBox.ne));
-        points.push(canonicalizePoint(options.boundingBox.sw));
-        points.push(canonicalizePoint(options.boundingBox.se));
+        if (options.boundingBox.nw != null) {
+          points.push(canonicalizePoint(options.boundingBox.nw));
+          points.push(canonicalizePoint(options.boundingBox.ne));
+          points.push(canonicalizePoint(options.boundingBox.sw));
+          points.push(canonicalizePoint(options.boundingBox.se));
+        } else {
+          ref2 = options.boundingBox;
+          for (m = 0, len1 = ref2.length; m < len1; m++) {
+            point = ref2[m];
+            points.push(canonicalizePoint(point));
+          }
+        }
         hull = createConvexHull(points);
         options.skipHull = false;
       }
@@ -1711,8 +1719,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipHull !== true) {
       mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-      for (m = 0, len1 = hull.length; m < len1; m++) {
-        point = hull[m];
+      for (q = 0, len2 = hull.length; q < len2; q++) {
+        point = hull[q];
         mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
       }
       mapHtml += "    </google-map-poly>";
@@ -1721,14 +1729,14 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipPoints !== true) {
       i = 0;
-      for (q = 0, len2 = points.length; q < len2; q++) {
-        point = points[q];
+      for (t = 0, len3 = points.length; t < len3; t++) {
+        point = points[t];
         markerHtml = "";
         markerTitle = "";
         try {
           if (pointsObj[i].infoWindow != null) {
             iw = pointsObj[i].infoWindow;
-            markerTitle = escape((ref2 = iw.title) != null ? ref2 : "");
+            markerTitle = escape((ref3 = iw.title) != null ? ref3 : "");
             markerHtml = iw.html;
             if (pointsObj[i].data != null) {
               pointData = pointsObj[i].data;

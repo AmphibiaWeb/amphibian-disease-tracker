@@ -177,10 +177,14 @@ createMap2 = (pointsObj, options, callback) ->
           console.log "Checking", point, "in", pointList
           points.push canonicalizePoint point
       if options.boundingBox?
-        points.push canonicalizePoint options.boundingBox.nw
-        points.push canonicalizePoint options.boundingBox.ne
-        points.push canonicalizePoint options.boundingBox.sw
-        points.push canonicalizePoint options.boundingBox.se
+        if options.boundingBox.nw?
+          points.push canonicalizePoint options.boundingBox.nw
+          points.push canonicalizePoint options.boundingBox.ne
+          points.push canonicalizePoint options.boundingBox.sw
+          points.push canonicalizePoint options.boundingBox.se
+        else
+          for point in options.boundingBox
+            points.push canonicalizePoint point
         hull = createConvexHull points
         options.skipHull = false
     console.info "createMap2 working with", points
