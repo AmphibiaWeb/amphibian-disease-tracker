@@ -1825,32 +1825,13 @@ loadEditor = (projectPreload) ->
             skipHull: false
             onlyOne: true
           geo.mapOptions = createMapOptions
-          if cartoParsed.bounding_polygon?.paths?
-            # Draw a map web component
-            # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
-            # https://elements.polymer-project.org/elements/google-map
-            # Poly is cartoParsed.bounding_polygon.paths
-            centerPoint = new Point project.lat, project.lng
-            geo.centerPoint = centerPoint
-            geo.mapOptions = createMapOptions
-            createMap2 [centerPoint], createMapOptions, (map) ->
-              geo.mapOptions.selector = map.selector
-              if not $(map.selector).exists()
-                do tryReload = ->
-                  if $("#map-header").exists()
-                    $("#map-header").after map.html
-                    googleMap = map.html
-                  else
-                    delay 250, ->
-                      tryReload()
-            poly = cartoParsed.bounding_polygon
-            googleMap = geo.googleMapWebComponent ? ""
-          else
+          unless cartoParsed.bounding_polygon?.paths?
             googleMap = """
                   <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
                   </google-map>
             """
-          geo.googleMapWebComponent = googleMap ? ""
+          googleMap ?= ""
+          geo.googleMapWebComponent = googleMap
           deleteCardAction = if result.user.is_author then """
           <div class="card-actions">
                 <paper-button id="delete-project"><iron-icon icon="icons:delete" class="material-red"></iron-icon> Delete this project</paper-button>
@@ -2028,6 +2009,27 @@ loadEditor = (projectPreload) ->
           </section>
           """
           $("#main-body").html html
+          if cartoParsed.bounding_polygon?.paths?
+            # Draw a map web component
+            # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
+            # https://elements.polymer-project.org/elements/google-map
+            # Poly is cartoParsed.bounding_polygon.paths
+            centerPoint = new Point project.lat, project.lng
+            geo.centerPoint = centerPoint
+            geo.mapOptions = createMapOptions
+            createMap2 [centerPoint], createMapOptions, (map) ->
+              geo.mapOptions.selector = map.selector
+              if not $(map.selector).exists()
+                do tryReload = ->
+                  if $("#map-header").exists()
+                    $("#map-header").after map.html
+                    googleMap = map.html
+                  else
+                    delay 250, ->
+                      tryReload()
+            poly = cartoParsed.bounding_polygon
+            googleMap = geo.googleMapWebComponent ? ""
+
           p$("#project-notes").bindValue = deEscape project.sample_notes
           # Watch for changes and toggle save watcher state
           # Events
