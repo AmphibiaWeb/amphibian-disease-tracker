@@ -210,17 +210,22 @@ createMap2 = (pointsObj, options, callback) ->
           if pointsObj[i].infoWindow?
             # Direct infowindow
             iw = pointsObj[i].infoWindow
-            markerTitle = escape iw.title
+            markerTitle = escape iw.title ? ""
             markerHtml = iw.html
             if pointsObj[i].data?
               pointData = pointsObj[i].data
               detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseDetected
+              catalog = if pointData.catalognumber? then pointData.catalognumber else pointData.catalogNumber
+              species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificEpithet
+              ssp = if pointData.infraspecificepithet? then pointData.infraspecificepithet else pointData.infraspecificeEpithet
+              ssp ?= ""
+              if isNull markerTitle then "#{catalog}: #{pointData.genus} #{species} #{ssp}"
             else
               detected = ""
           else if pointsObj[i].data?
             pointData = pointsObj[i].data
             genus = pointData.genus
-            species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificeEpithet
+            species = if pointData.specificepithet? then pointData.specificepithet else pointData.specificEpithet
             note = if pointData.originaltaxa? then pointData.originaltaxa else pointData.originalTaxa
             detected = if pointData.diseasedetected? then pointData.diseasedetected else pointData.diseaseDetected
             tested = if pointData.diseasetested? then pointData.diseasetested else pointData.diseaseTested
@@ -895,7 +900,7 @@ canonicalizePoint = (point) ->
         point[0] = toFloat point[0]
         point[0] = toFloat point[1]
   # Tests
-  if typeof point.lat is "number"
+  if typeof point?.lat is "number"
     pointObj = point
   else if typeof point[0] is "number"
     pointObj =

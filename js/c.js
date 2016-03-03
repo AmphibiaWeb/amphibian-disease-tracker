@@ -1638,7 +1638,7 @@ createMap2 = function(pointsObj, options, callback) {
    *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
-  var a, cat, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, selector, species, ssp, testString, tested, zoom;
+  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, ref2, selector, species, ssp, testString, tested, zoom;
   console.log("createMap2 was provided options:", options);
   if (options == null) {
     options = new Object();
@@ -1728,18 +1728,27 @@ createMap2 = function(pointsObj, options, callback) {
         try {
           if (pointsObj[i].infoWindow != null) {
             iw = pointsObj[i].infoWindow;
-            markerTitle = escape(iw.title);
+            markerTitle = escape((ref2 = iw.title) != null ? ref2 : "");
             markerHtml = iw.html;
             if (pointsObj[i].data != null) {
               pointData = pointsObj[i].data;
               detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseDetected;
+              catalog = pointData.catalognumber != null ? pointData.catalognumber : pointData.catalogNumber;
+              species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificEpithet;
+              ssp = pointData.infraspecificepithet != null ? pointData.infraspecificepithet : pointData.infraspecificeEpithet;
+              if (ssp == null) {
+                ssp = "";
+              }
+              if (isNull(markerTitle)) {
+                catalog + ": " + pointData.genus + " " + species + " " + ssp;
+              }
             } else {
               detected = "";
             }
           } else if (pointsObj[i].data != null) {
             pointData = pointsObj[i].data;
             genus = pointData.genus;
-            species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificeEpithet;
+            species = pointData.specificepithet != null ? pointData.specificepithet : pointData.specificEpithet;
             note = pointData.originaltaxa != null ? pointData.originaltaxa : pointData.originalTaxa;
             detected = pointData.diseasedetected != null ? pointData.diseasedetected : pointData.diseaseDetected;
             tested = pointData.diseasetested != null ? pointData.diseasetested : pointData.diseaseTested;
@@ -2452,7 +2461,7 @@ canonicalizePoint = function(point) {
       }
     }
   } catch (undefined) {}
-  if (typeof point.lat === "number") {
+  if (typeof (point != null ? point.lat : void 0) === "number") {
     pointObj = point;
   } else if (typeof point[0] === "number") {
     pointObj = {
