@@ -1772,7 +1772,8 @@ loadEditor = function(projectPreload) {
           mapHtml = "";
           createMapOptions = {
             boundingBox: cartoParsed.bounding_polygon,
-            classes: ""
+            classes: "carto-data map-editor",
+            bsGrid: ""
           };
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);
@@ -2131,7 +2132,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       geoJson = JSON.parse(row.st_asgeojson);
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
-      point = new Point(geoJson.coordinates);
+      point = new Point(lat, lng);
       point.infoWindow = new Object();
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
@@ -2157,6 +2158,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     }
     totalRows = (ref1 = result.parsed_responses[0].total_rows) != null ? ref1 : 0;
     if (pointArr.length > 0 || (mapOptions != null ? (ref2 = mapOptions.boundingBox) != null ? ref2.length : void 0 : void 0) > 0) {
+      mapOptions.skipHull = false;
       return createMap2(pointArr, mapOptions, function(map) {
         var after;
         after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";

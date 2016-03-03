@@ -207,7 +207,8 @@ loadEditor = (projectPreload) ->
           mapHtml = ""
           createMapOptions =
             boundingBox: cartoParsed.bounding_polygon
-            classes: ""
+            classes: "carto-data map-editor"
+            bsGrid: ""
           if cartoParsed.bounding_polygon?.paths?
             # Draw a map web component
             # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
@@ -674,7 +675,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       geoJson = JSON.parse row.st_asgeojson
       lat = geoJson.coordinates[0]
       lng = geoJson.coordinates[1]
-      point = new Point geoJson.coordinates
+      point = new Point lat, lng
       point.infoWindow = new Object()
       # Fill the points as markers
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
@@ -708,6 +709,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     # p$("#transect-viewport").resize()
     totalRows = result.parsed_responses[0].total_rows ? 0
     if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
+      mapOptions.skipHull = false
       createMap2 pointArr, mapOptions, (map) ->
         after = """
         <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
