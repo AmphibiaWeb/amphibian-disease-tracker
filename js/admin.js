@@ -1660,7 +1660,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ta, topPosition, userHtml, year, yearPretty, years;
+        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ta, topPosition, userHtml, year, yearPretty, years;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1800,7 +1800,7 @@ loadEditor = function(projectPreload) {
               }
             });
             poly = cartoParsed.bounding_polygon;
-            googleMap = geo.googleMapWebComponent;
+            googleMap = (ref3 = geo.googleMapWebComponent) != null ? ref3 : "";
           } else {
             googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui  apiKey=\"" + gMapsApiKey + "\">\n</google-map>";
           }

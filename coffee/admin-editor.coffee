@@ -231,7 +231,7 @@ loadEditor = (projectPreload) ->
                     delay 250, ->
                       tryReload()
             poly = cartoParsed.bounding_polygon
-            googleMap = geo.googleMapWebComponent
+            googleMap = geo.googleMapWebComponent ? ""
           else
             googleMap = """
                   <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
