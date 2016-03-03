@@ -1815,7 +1815,10 @@ createMap2 = function(pointsObj, options, callback) {
       selector = $("google-map").get(0);
     }
     if (!$(selector).exists()) {
-      selector = "body";
+      selector = "#carto-map-container";
+      if (!$(selector).exists()) {
+        selector = "body";
+      }
     }
     if ($(selector).get(0).tagName.toLowerCase() !== "google-map") {
       console.log("Appending map to selector " + selector, $(selector));

@@ -1383,7 +1383,9 @@ createMap2 = (pointsObj, options, callback) ->
     if options.onlyOne is true
       selector = $("google-map").get(0)
     unless $(selector).exists()
-      selector = "body"
+      selector = "#carto-map-container"
+      unless $(selector).exists()
+        selector = "body"
     unless $(selector).get(0).tagName.toLowerCase() is "google-map"
       console.log "Appending map to selector #{selector}", $(selector)
       $(selector)
