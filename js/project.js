@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, j, len, mapHtml, point, poly, raw, ref, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -101,6 +101,7 @@ renderMapWithData = function(projectData, force) {
     return false;
   }
   cartoData = JSON.parse(deEscape(projectData.carto_id));
+  raw = cartoData.raw_data;
   if (raw.hasDataFile) {
     downloadButton = "<button class=\"btn btn-primary click\" data-href=\"" + raw.filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Data File\n</button>";
   }
@@ -243,7 +244,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   /*
    * Takes in project data, then renders the appropriate bits
    */
-  var adminButton, authorData, cartoData, editButton, raw;
+  var adminButton, authorData, cartoData, editButton;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -260,7 +261,6 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   showEmailField(authorData.contact_email);
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
-  raw = cartoData.raw_data;
   renderMapWithData(projectData);
   return false;
 };
