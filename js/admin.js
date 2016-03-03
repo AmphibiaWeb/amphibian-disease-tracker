@@ -1835,13 +1835,12 @@ loadEditor = function(projectPreload) {
               monthPretty += ", ";
             }
             if (isNumber(month)) {
-              monthsReal.push(toInt(month));
+              monthsReal.push(month);
               month = dateMonthToString(month);
             }
             monthPretty += month;
           }
           i = 0;
-          months = monthsReal;
           yearPretty = "";
           years = project.sampling_years.split(",");
           yearsReal = new Array();

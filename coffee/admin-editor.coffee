@@ -281,11 +281,11 @@ loadEditor = (projectPreload) ->
             else if i > 1
               monthPretty += ", "
             if isNumber month
-              monthsReal.push toInt month
+              monthsReal.push month
               month = dateMonthToString month
             monthPretty += month
           i = 0
-          months = monthsReal
+          # months = monthsReal
           yearPretty = ""
           years = project.sampling_years.split(",")
           yearsReal = new Array()
