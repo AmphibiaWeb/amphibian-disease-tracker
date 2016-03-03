@@ -323,26 +323,6 @@ $loginStatus = getLoginState();
             <div class="g-recaptcha col-xs-12 col-md-9 col-lg-10 col-xl-11" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
           </div>
         </div>
-        <div class="col-xs-12">
-          <h2>Species List</h2>
-          <ul class="species-list">
-            <?php
-          $aWebUri =  "http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;";
-          $args = array("where-genus"=>"", "where-species"=>"");
-          $speciesList = explode(",", $project["sampled_species"]);
-          sort($speciesList);
-          foreach($speciesList as $species) {
-              $speciesParts = explode(" ", $species);
-              $args["where-genus"] = $speciesParts[0];
-              $args["where-species"] = $speciesParts[1];
-              $linkUri = $aWebUri . "where-genus=" . $speciesParts[0] . "&amp;where-species=" . $speciesParts[1];
-              $html = "<li class=\"aweb-link-species\">" . $species . " <paper-icon-button class=\"click\" data-href=\"" . $linkUri . "\" icon=\"icons:open-in-new\" data-newtab=\"true\"></paper-icon-button></li>";
-              echo $html;
-          }
-
-               ?>
-          </ul>
-        </div>
         <div class="needs-auth col-xs-12" id="auth-block">
 <?php
    $limitedProject = array();
@@ -389,6 +369,26 @@ if(boolstr($project["public"]) === true) {
 <?php
    }
    ?>
+        </div>
+        <div class="col-xs-12">
+          <h2>Species List</h2>
+          <ul class="species-list">
+            <?php
+          $aWebUri =  "http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;";
+          $args = array("where-genus"=>"", "where-species"=>"");
+          $speciesList = explode(",", $project["sampled_species"]);
+          sort($speciesList);
+          foreach($speciesList as $species) {
+              $speciesParts = explode(" ", $species);
+              $args["where-genus"] = $speciesParts[0];
+              $args["where-species"] = $speciesParts[1];
+              $linkUri = $aWebUri . "where-genus=" . $speciesParts[0] . "&amp;where-species=" . $speciesParts[1];
+              $html = "<li class=\"aweb-link-species\">" . $species . " <paper-icon-button class=\"click\" data-href=\"" . $linkUri . "\" icon=\"icons:open-in-new\" data-newtab=\"true\"></paper-icon-button></li>";
+              echo $html;
+          }
+
+               ?>
+          </ul>
         </div>
         <?php } ?>
       </section>

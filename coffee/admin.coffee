@@ -179,7 +179,10 @@ loadCreateNewProject = ->
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-11" required auto-validate data-field="disease"></paper-input>#{getInfoTooltip("Bd, Bsal, or other")}
+      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-9" required auto-validate data-field="disease"></paper-input>
+        #{getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")}
+        <button class="btn btn-default fill-pathogen col-xs-1" data-pathogen="Batrachochytrium dendrobatidis">Bd</button>
+        <button class="btn btn-default fill-pathogen col-xs-1" data-pathogen="Batrachochytrium salamandrivorans ">Bsal</button>
       <paper-input label="Pathogen Strain" id="project-disease-strain" class="project-field col-md-6 col-xs-11" data-field="disease_strain"></paper-input>#{getInfoTooltip("For example, Hepatitus A, B, C would enter the appropriate letter here")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11" data-field="reference_id"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
@@ -282,6 +285,11 @@ loadCreateNewProject = ->
       p$(input).validate()
   catch
     console.warn "Couldn't pre-validate fields"
+  # Events
+  $(".fill-pathogen").click ->
+    pathogen = $(this).attr "data-pathogen"
+    p$("#project-disease").value = pathogen
+    false
   $("#init-map-build").click ->
     doMapBuilder window.mapBuilder, null, (map) ->
       html = """
