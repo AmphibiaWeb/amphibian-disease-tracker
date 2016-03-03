@@ -1140,7 +1140,8 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   selector = options.selector
   if options.create is true
-    id = "#{selector.slice(1)}-download-button"
+    c = $(selector).find("button").length
+    id = "#{selector.slice(1)}-download-button-#{c}"
     html = """
     <a id="#{id}" class="#{options.classes}" href="#{file}" download="#{options.downloadFile}">
       #{options.iconHtml} 

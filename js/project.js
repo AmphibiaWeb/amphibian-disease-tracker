@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, error1, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, j, len, mapHtml, point, poly, ref, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -101,6 +101,12 @@ renderMapWithData = function(projectData, force) {
     return false;
   }
   cartoData = JSON.parse(deEscape(projectData.carto_id));
+  if (raw.hasDataFile) {
+    downloadButton = "<button class=\"btn btn-primary click\" data-href=\"" + raw.filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Data File\n</button>";
+  }
+  if (downloadButton == null) {
+    downloadButton = "";
+  }
   cartoTable = cartoData.table;
   try {
     zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
@@ -125,7 +131,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d1, d2, error, geoJson, googleMap, i, k, l, lat, len1, len2, lng, m, mapData, marker, month, monthPretty, months, note, ref1, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, i, k, l, lat, len1, len2, lng, m, mapData, marker, month, monthPretty, months, note, options, ref1, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -208,11 +214,21 @@ renderMapWithData = function(projectData, force) {
     d1 = new Date(toInt(projectData.sampled_collection_start));
     d2 = new Date(toInt(projectData.sampled_collection_end));
     collectionRangePretty = (dateMonthToString(d1.getMonth())) + " " + (d1.getFullYear()) + " &#8212; " + (dateMonthToString(d2.getMonth())) + " " + (d2.getFullYear());
-    mapData = "<div class=\"row\">\n  <h2 class=\"col-xs-12\">Mapping Data</h2>\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n  </div>\n</div>";
+    mapData = "<div class=\"row\">\n  <h2 class=\"col-xs-12\">Mapping Data</h2>\n  " + googleMap + "\n  <div class=\"col-xs-12 col-md-3 col-lg-6\">\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n    <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n    <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(projectData.lat, 6)) + ", " + (roundNumberSigfig(projectData.lng, 6)) + ") with a sample radius of " + projectData.radius + "m and a resulting locality <strong class='locality'>" + projectData.locality + "</strong></p>\n    <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + projectData.disease_positive + " positive samples (" + (roundNumber(projectData.disease_positive * 100 / projectData.disease_samples)) + "%), " + projectData.disease_negative + " negative samples (" + (roundNumber(projectData.disease_negative * 100 / projectData.disease_samples)) + "%), and " + projectData.disease_no_confidence + " inconclusive samples (" + (roundNumber(projectData.disease_no_confidence * 100 / projectData.disease_samples)) + "%)</p>\n    <div class=\"download-buttons\" id=\"data-download-buttons\">\n      " + downloadButton + "\n    </div>\n  </div>\n</div>";
     if (_adp.mapRendered !== true) {
       $("#auth-block").append(mapData);
       setupMapMarkerToggles();
       _adp.mapRendered = true;
+      if (!isNull(_adp.pageSpeciesList)) {
+        console.log("Creating CSV downloader for species list");
+        d = new Date();
+        options = {
+          create: true,
+          downloadFile: "species-list-" + projectData.project_id + "-" + (d.toISOString()) + ".csv",
+          selector: ".download-buttons",
+          buttonText: "Download Species List"
+        };
+      }
     }
     return stopLoad();
   }).error(function(result, status) {
@@ -227,7 +243,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   /*
    * Takes in project data, then renders the appropriate bits
    */
-  var adminButton, authorData, cartoData, editButton;
+  var adminButton, authorData, cartoData, editButton, raw;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -244,6 +260,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   showEmailField(authorData.contact_email);
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
+  raw = cartoData.raw_data;
   renderMapWithData(projectData);
   return false;
 };
