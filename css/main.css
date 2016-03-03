@@ -7433,6 +7433,14 @@ google-map {
 .aweb-link-species:hover {
   background: #3455da;
 }
+.aweb-link-species a:link,
+.aweb-link-species a:hover,
+.aweb-link-species a:visited,
+.aweb-link-species a:active,
+.aweb-link-species a {
+  text-decoration: none;
+  color: #fff;
+}
 h1 paper-icon-button,
 h2 paper-icon-button,
 h3 paper-icon-button,
