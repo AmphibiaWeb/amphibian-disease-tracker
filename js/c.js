@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, downloadCSVFile, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -91,6 +91,17 @@ isJson = function(str) {
     return false;
   }
   return false;
+};
+
+isArray = function(arr) {
+  var error2, shadow;
+  try {
+    shadow = arr.slice(0);
+    shadow.push("foo");
+    return true;
+  } catch (error2) {
+    return false;
+  }
 };
 
 isNumber = function(n) {
@@ -1459,6 +1470,98 @@ checkLoggedIn = function(callback) {
     };
     return callback(response);
   });
+  return false;
+};
+
+downloadCSVFile = function(data, options) {
+
+  /*
+   * Options:
+   *
+  options = new Object()
+  options.create ?= false
+  options.downloadFile ?= "datalist.csv"
+  options.classes ?= "btn btn-default"
+  options.buttonText ?= "Download File"
+  options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
+  options.selector ?= "#download-file"
+   */
+  var file, html, id, jsonObject, parser, selector, textAsset;
+  textAsset = "";
+  if (isJson(data)) {
+    jsonObject = JSON.parse(data);
+  } else if (isArray(data)) {
+    jsonObject = toObject(data);
+  } else if (typeof data === "object") {
+    jsonObject = data;
+  } else {
+    console.error("Unexpected data type '" + (typeof data) + "' for downloadCSVFile()", data);
+    return false;
+  }
+  (parser = function(jsonObj, cascadeObjects) {
+    var error2, escapedKey, escapedValue, key, results, tempValue, value;
+    results = [];
+    for (key in jsonObject) {
+      value = jsonObject[key];
+      try {
+        escapedKey = key.replace(/"/g, '""');
+        if (typeof value === "object" && cascadeObjects) {
+          value = parser(value, true);
+        }
+        if (isNull(value)) {
+          escapedValue = "";
+        } else {
+          tempValue = value.replace(/"/g, '""');
+          tempValue = value.replace(/<\/p><p>/g, '","');
+          escapedValue = tempValue;
+        }
+        if (isNumber(escapedKey)) {
+          results.push(textAsset += '"#{escapedValue},"');
+        } else if (!isNull(escapedKey)) {
+          results.push(textAsset += "\"" + escapedKey + "\",\"" + escapedValue + "\"\n");
+        } else {
+          results.push(void 0);
+        }
+      } catch (error2) {
+        e = error2;
+        results.push(console.warn("Unable to run key " + key));
+      }
+    }
+    return results;
+  })(jsonObject, false);
+  if (textAsset.slice(-1) === ",") {
+    textAsset = textAsset.slice(0, -1);
+  }
+  file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset);
+  if (options == null) {
+    options = new Object();
+  }
+  if (options.create == null) {
+    options.create = false;
+  }
+  if (options.downloadFile == null) {
+    options.downloadFile = "datalist.csv";
+  }
+  if (options.classes == null) {
+    options.classes = "btn btn-default";
+  }
+  if (options.buttonText == null) {
+    options.buttonText = "Download File";
+  }
+  if (options.iconHtml == null) {
+    options.iconHtml = "<iron-icon icon=\"icons:cloud-download\"></iron-icon>";
+  }
+  if (options.selector == null) {
+    options.selector = "#download-file";
+  }
+  selector = options.selector;
+  if (options.create === true) {
+    id = (selector.slice(1)) + "-download-button";
+    html = "<a id=\"" + id + "\" class=\"" + options.classes + "\" href=\"" + file + "\" download=\"" + options.downloadFile + "\">\n  " + options.iconHtml + " \n  " + options.buttonText + "\n</a>";
+    $(selector).append(html);
+  } else {
+    $(selector).attr("download", options.downloadFile).attr("href", file);
+  }
   return false;
 };
 

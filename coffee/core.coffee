@@ -55,6 +55,15 @@ isJson = (str) ->
     return false
   false
 
+isArray = (arr) ->
+  try
+    shadow = arr.slice 0
+    shadow.push "foo"
+    return true
+  catch
+    return false
+
+
 isNumber = (n) -> not isNaN(parseFloat(n)) and isFinite(n)
 
 toFloat = (str) ->
@@ -1066,6 +1075,83 @@ checkLoggedIn = (callback) ->
     response =
       status: false
     callback(response)
+  false
+
+
+
+downloadCSVFile = (data, options) ->
+  ###
+  # Options:
+  #
+  options = new Object()
+  options.create ?= false
+  options.downloadFile ?= "datalist.csv"
+  options.classes ?= "btn btn-default"
+  options.buttonText ?= "Download File"
+  options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
+  options.selector ?= "#download-file"
+  ###
+  textAsset = ""
+  if isJson data
+    jsonObject = JSON.parse data
+  else if isArray data
+    jsonObject = toObject data
+  else if typeof data is "object"
+    jsonObject = data
+  else
+    console.error "Unexpected data type '#{typeof data}' for downloadCSVFile()", data
+    return false
+  # Parse it
+  do parser = (jsonObj = jsonObject, cascadeObjects = false) ->
+    for key, value of jsonObject
+      # Escape as per RFC4180
+      # https://tools.ietf.org/html/rfc4180#page-2
+      try
+        escapedKey = key.replace(/"/g,'""')
+
+        if typeof value is "object" and cascadeObjects
+          # Parse it differently
+          value = parser(value, true)
+        # Parse it all
+        if isNull value
+          escapedValue = ""
+        else
+          tempValue = value.replace(/"/g,'""')
+          tempValue = value.replace(/<\/p><p>/g,'","')
+          escapedValue = tempValue
+        if isNumber escapedKey
+          textAsset += '"#{escapedValue},"'
+        else unless isNull(escapedKey)
+          textAsset += """"#{escapedKey}","#{escapedValue}"
+
+          """
+      catch e
+        console.warn("Unable to run key #{key}")
+  if textAsset.slice(-1) is ","
+    textAsset = textAsset.slice(0, -1)
+  file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset)
+  unless options?
+    options = new Object()
+  options.create ?= false
+  options.downloadFile ?= "datalist.csv"
+  options.classes ?= "btn btn-default"
+  options.buttonText ?= "Download File"
+  options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
+  options.selector ?= "#download-file"
+  selector = options.selector
+  if options.create is true
+    id = "#{selector.slice(1)}-download-button"
+    html = """
+    <a id="#{id}" class="#{options.classes}" href="#{file}" download="#{options.downloadFile}">
+      #{options.iconHtml} 
+      #{options.buttonText}
+    </a>
+    """
+    $(selector).append html
+  else
+    $(selector)
+    .attr("download", options.downloadFile)
+    .attr("href",file)
   false
 
 
