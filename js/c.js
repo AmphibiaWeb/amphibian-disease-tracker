@@ -2463,7 +2463,7 @@ canonicalizePoint = function(point) {
   } catch (undefined) {}
   if (typeof (point != null ? point.lat : void 0) === "number") {
     pointObj = point;
-  } else if (typeof point[0] === "number") {
+  } else if (typeof (point != null ? point[0] : void 0) === "number") {
     pointObj = {
       lat: point[0],
       lng: point[1]

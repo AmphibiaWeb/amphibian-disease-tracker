@@ -1773,11 +1773,14 @@ loadEditor = function(projectPreload) {
           createMapOptions = {
             boundingBox: Object.toArray(cartoParsed.bounding_polygon),
             classes: "carto-data map-editor",
-            bsGrid: ""
+            bsGrid: "",
+            skipPoints: false,
+            skipHull: false
           };
           geo.mapOptions = createMapOptions;
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);
+            geo.centerPoint = centerPoint;
             createMap2([centerPoint], createMapOptions, function(map) {
               var tryReload;
               createMapOptions.selector = map.selector;
@@ -2111,7 +2114,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, row, rows, taxa, totalRows, truncateLength, workingMap;
+    var center, error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, ref3, ref4, row, rows, taxa, totalRows, truncateLength, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
@@ -2162,6 +2165,10 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     totalRows = (ref1 = result.parsed_responses[0].total_rows) != null ? ref1 : 0;
     if (pointArr.length > 0 || (mapOptions != null ? (ref2 = mapOptions.boundingBox) != null ? ref2.length : void 0 : void 0) > 0) {
       mapOptions.skipHull = false;
+      if (pointArr.length === 0) {
+        center = (ref3 = (ref4 = geo.centerPoint) != null ? ref4 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref3 : [window.locationData.lat, window.locationData.lng];
+        pointArr.push(center);
+      }
       return createMap2(pointArr, mapOptions, function(map) {
         var after;
         after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
