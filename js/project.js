@@ -474,13 +474,18 @@ $(function() {
     return copyLink(_adp.zcClient);
   });
   checkFileVersion(true, "js/project.js");
-  return $("#toggle-project-viewport").click(function() {
+  $("#toggle-project-viewport").click(function() {
     $(".project-list-page").toggleClass("hidden-xs");
     if ($(".project-search").hasClass("hidden-xs")) {
       return $(this).text("Show Project Search");
     } else {
       return $(this).text("Show Project List");
     }
+  });
+  return $("#community-map google-map-poly").on("google-map-poly-click", function(e) {
+    var proj;
+    proj = $(this).attr("data-project");
+    return console.log("Clicked on poly " + proj);
   });
 });
 
