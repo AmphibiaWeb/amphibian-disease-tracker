@@ -165,7 +165,62 @@ $loginStatus = getLoginState();
       <?php
          if(empty($pid)) {
          ?>
-      <h1 id="title">Amphibian Disease Projects</h1>
+      <h1 id="title">Amphibian Disease Project Browser</h1>
+      <section id="major-map" class="row">
+          <?php
+         $search = array(
+             "public" => "", # Loose query
+         );
+         $cols = array(
+             "project_id",
+             "project_title",
+             "public",
+             "carto_id",
+             "bounding_box_n",
+             "bounding_box_e",
+             "bounding_box_w",
+             "bounding_box_s",
+         );
+         $list = $db->getQueryResults($search, $cols, "AND", true, true);
+         $polyColor = "#ff7800";
+         $polyOpacity = "0.35";
+         $superCoords = array();
+         $averageLat = 0;
+         $averageLng = 0;
+         $points = 0;
+         $polyHtml = "";
+         foreach($list as $project) {
+             if(boolstr($public)) {
+                 $carto = decode64($project["carto_id"]);
+                 $coords = $carto["bounding_polygon"]["paths"];
+             } else {
+                 $coords = array();
+                 $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
+                 $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_e"]);
+                 $coords[] = array( "lat" => $project["bounding_box_s"], "lng" => $project["bounding_box_e"]);
+                 $coords[] = array( "lat" => $project["bounding_box_s"], "lng" => $project["bounding_box_w"]);
+                 $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
+             }
+             $superCoords[] = $coords;
+             $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1'>";
+             foreach($coords as $point) {
+                 $points++;
+                 $lat = $point["lat"];
+                 $lng = $point["lng"];
+                 $averageLat = $averageLat + $lat;
+                 $averageLng = $averageLng + $lng;
+                 $html .= "<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
+             }
+             $html .= "</google-map-poly>\n";
+             $polyHtml .= $html;
+         }
+         $averageLat = $averageLat / $points;
+         $averageLng = $averageLng / $points;
+         ?>
+        <google-map class="col-xs-10 col-md-8 center-block" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" fit-to-markers disable-default-ui map-type="satellite">
+          <?php echo $polyHtml; ?>
+        </google-map>
+      </section>
       <?php } else if (!$validProject){ ?>
       <h1 id="title">Invalid Project</h1>
       <?php } else {
