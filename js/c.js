@@ -3036,7 +3036,7 @@ setupMapMarkerToggles = function() {
    *
    */
   var html;
-  html = "<div class=\"row\">\n  <h3 class=\"col-xs-12\">\n    Toggle map markers\n  </h3>\n  <button class=\"btn btn-danger col-xs-3 toggle-marker\" data-disease-status=\"positive\" disabled>Positive</button>\n  <button class=\"btn btn-primary col-xs-3 toggle-marker\" data-disease-status=\"negative\" disabled>Negative</button>\n  <button class=\"btn btn-warning col-xs-3 toggle-marker\" data-disease-status=\"no_confidence\" disabled>Inconclusive</button>\n</div>";
+  html = "<div class=\"row\">\n  <h3 class=\"col-xs-12\">\n    Toggle map markers\n  </h3>\n  <button class=\"btn btn-danger col-xs-3 toggle-marker\" data-disease-status=\"positive\">Positive</button>\n  <button class=\"btn btn-primary col-xs-3 toggle-marker\" data-disease-status=\"negative\">Negative</button>\n  <button class=\"btn btn-warning col-xs-3 toggle-marker\" data-disease-status=\"no_confidence\">Inconclusive</button>\n</div>";
   if (!$(".toggle-marker").exists()) {
     $("google-map + div").append(html);
   }
