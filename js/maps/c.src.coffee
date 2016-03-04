@@ -1313,13 +1313,14 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE
     # Calculate the zoom factor
     # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
-    zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2)
+    zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2
+    zoomCalc = toInt zoomRaw
     oz = zoomCalc
-    --zoomCalc # Zoom out one point, less tight fit
+    if zoomRaw - zoomCalc < .3
+      --zoomCalc # Zoom out one point, less tight fit
     zo = zoomCalc
-    if zoomCalc < 1
-      zoomCalc = 7
-    # console.info "Calculated zoom #{zoomCalc}, from original #{oz} and loosened #{zo} from", bb, mapWidth, mapScale
+    # if zoomCalc < 1
+    #   zoomCalc = 7
   else
     zoomCalc = 7
   zoomCalc
@@ -1540,6 +1541,13 @@ createMap2 = (pointsObj, options, callback) ->
         window.mapBuilder.points.push point
         $("#init-map-build").removeAttr "disabled"
         $("#init-map-build .points-count").text window.mapBuilder.points.length
+        # https://github.com/GoogleWebComponents/google-map/issues/180
+        marker = """
+        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}">
+        </google-map-marker>
+        """
+        Polymer.dom(mapElement).appendChild(marker)
+        false
     # Bind the event
     $("#{mapSelector}")
     .on "google-map-click", (e) ->
@@ -1570,6 +1578,21 @@ createMap2 = (pointsObj, options, callback) ->
     console.error "Couldn't create map! #{e.message}"
     console.warn e.stack
   false
+
+reInitMap = (selector) ->
+  map = p$(selector)
+  map._listeners = {}
+  map._updateCenter()
+  map._loadKml()
+  map._updateMarkers()
+  map._updateObjects()
+  map._addMapListeners()
+  map.resize()
+  map
+  #o = map.objects
+  #for obj in o
+  #  obj._mapChanged()
+  #map._initGMap()
 
 
 buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
