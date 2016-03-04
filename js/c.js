@@ -1723,6 +1723,9 @@ getMapZoom = function(bb, selector) {
   if (bb != null) {
     eastMost = -180;
     westMost = 180;
+    if (isArray(bb)) {
+      bb = toObject(bb);
+    }
     for (k in bb) {
       coords = bb[k];
       lng = coords.lng != null ? coords.lng : coords[1];

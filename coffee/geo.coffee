@@ -89,6 +89,8 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
   if bb?
     eastMost = -180
     westMost = 180
+    if isArray bb
+      bb = toObject bb
     for k, coords of bb
       lng = if coords.lng? then coords.lng else coords[1]
       if lng < westMost
