@@ -11,7 +11,7 @@ reference_id:
   type: "varchar(255)"
   logical: "string"
 project_obj_id:
-  # ARK
+  # ARK "expedition" for project
   type: "varchar(255)"
   logical: "string"
 disease:
@@ -253,3 +253,14 @@ extended_funding_reach_goals:
   # https://github.com/tigerhawkvok/amphibian-disease-tracker/issues/3
   type: "text"
   logical: "csv"
+dataset_arks:
+  # After
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/55
+  type: "text"
+  logical: "csv"
+  example: "{ARK}:{FILE_NAME}"
+project_dir_identifier:
+  # Within the uploads directory, the directory that specifically
+  # identifies this project
+  type: "varchar(255)"
+  logical: "string"
