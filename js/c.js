@@ -1990,6 +1990,7 @@ createMap2 = function(pointsObj, options, callback) {
         marker = document.createElement("google-map-marker");
         marker.setAttribute("latitude", point.lat);
         marker.setAttribute("longitude", point.lng);
+        marker.setAttribute("animation", "DROP");
         Polymer.dom(mapElement).appendChild(marker);
         return false;
       };
