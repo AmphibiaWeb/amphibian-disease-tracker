@@ -997,7 +997,7 @@ getUploadIdentifier = ->
         _adp.projectIdentifierString = projectIdentifier
       _adp.projectId = md5("#{projectIdentifier}#{author}#{Date.now()}")
     _adp.uploadIdentifier = md5 "#{user}#{_adp.projectId}"
-  _adp.uploadIdentiifer
+  _adp.uploadIdentifier
 
 
 
@@ -1077,6 +1077,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
           console.info "Server returned the following result:", result
           console.info "The script returned the following file information:", file
           pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
+          # path = "helpers/js-dragdrop/#{result.full_path}"
           # Replace full_path and thumb_path with "wrote"
           fileName = result.full_path.split("/").pop()
           thumbPath = result.wrote_thumb
@@ -1132,7 +1133,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
             """
             else
               """
-              <div class="uploaded-media center-block" data-system-file="#{fileName}">
+              <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
                 <span class="glyphicon glyphicon-file"></span>
                 <p class="text-muted">#{file.name} -> #{fileName}</p>
               </div>
@@ -1210,13 +1211,14 @@ excelHandler = (path, hasHeaders = true) ->
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
   if path.search helperDir is -1
+    console.info "Prepending '#{helperDir}'"
     correctedPath = "#{helperDir}#{path}"
   console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}"
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result
-    if result.status is fale
+    if result.status is false
       bsAlert "There was a problem verifying your upload. Please try again.", "danger"
       stopLoadError "There was a problem processing your data"
       return false
