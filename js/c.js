@@ -1486,7 +1486,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, file, headerStr, html, id, jsonObject, parser, selector, textAsset;
+  var c, file, header, headerStr, html, id, jsonObject, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     jsonObject = JSON.parse(data);
@@ -1570,12 +1570,15 @@ downloadCSVFile = function(data, options) {
   if (isArray(options.header)) {
     headerStr = options.header.join("\",\"");
     textAsset = "\"" + headerStr + "\"\n" + textAsset;
-    textAsset = textAsset.slice(1);
+    textAsset = textAsset.trim();
+    header = "present";
+  } else {
+    header = "absent";
   }
   if (textAsset.slice(-1) === ",") {
     textAsset = textAsset.slice(0, -1);
   }
-  file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset);
+  file = ("data:text/csv;charset=utf-8;header=" + header + ",") + encodeURIComponent(textAsset);
   selector = options.selector;
   if (options.create === true) {
     c = $(selector).find("button").length;
