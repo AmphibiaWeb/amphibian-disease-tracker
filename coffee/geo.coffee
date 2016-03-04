@@ -334,10 +334,9 @@ createMap2 = (pointsObj, options, callback) ->
         $("#init-map-build").removeAttr "disabled"
         $("#init-map-build .points-count").text window.mapBuilder.points.length
         # https://github.com/GoogleWebComponents/google-map/issues/180
-        marker = """
-        <google-map-marker latitude="#{point.lat}" longitude="#{point.lng}">
-        </google-map-marker>
-        """
+        marker = document.createElement "google-map-marker"
+        marker.setAttribute "latitude", point.lat
+        marker.setAttribute "longitude", point.lng
         Polymer.dom(mapElement).appendChild(marker)
         false
     # Bind the event
