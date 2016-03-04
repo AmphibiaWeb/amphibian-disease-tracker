@@ -190,12 +190,8 @@ $uid = $loginStatus["detail"]["uid"];
          $polys = 0;
          $polyHtml = "";
          foreach($list as $project) {
-             try {
-                 $authorizedStats = checkProjectAuthorized($project, $uid);
-                 $authorized = boolstr($authorizedStats["can_view"]);
-             } catch (Exception $e) {
-                 echo "<!-- caught exception checking auth for ".$project["project_id"]." by  ".$uid." -- " . $e->getMessage() . " \n\nSTARTSTATS\n\n ".$authorizedStats . "\n\n ENDSTATS -->";
-             }
+             $authorizedStats = checkProjectAuthorized($project, $uid);
+             $authorized = $authorizedStats["can_view"];
              if(boolstr($public) || $authorized) {
                  $carto = decode64($project["carto_id"]);
                  $coords = $carto["bounding_polygon"]["paths"];
