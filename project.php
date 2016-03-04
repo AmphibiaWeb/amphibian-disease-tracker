@@ -183,6 +183,7 @@ $loginStatus = getLoginState();
              "bounding_box_e",
              "bounding_box_w",
              "bounding_box_s",
+             "locality",
          );
          $list = $db->getQueryResults($search, $cols, "AND", true, true);
          $polyColor = "#ff7800";
@@ -193,6 +194,7 @@ $loginStatus = getLoginState();
          $polys = 0;
          $polyHtml = "";
          foreach($list as $project) {
+             if( empty($project["project_id"]) || empty($project["locality"]) ) continue;
              if(boolstr($public)) {
                  $carto = decode64($project["carto_id"]);
                  $coords = $carto["bounding_polygon"]["paths"];
