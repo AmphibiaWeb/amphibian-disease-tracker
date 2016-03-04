@@ -152,6 +152,53 @@ roundNumberSigfig = (number, digits = 0) ->
   "#{significand}#{trailingDigits}"
 
 
+String::unescape = (strict = false) ->
+  ###
+  # Take escaped text, and return the unescaped version
+  #
+  # @param string str | String to be used
+  # @param bool strict | Stict mode will remove all HTML
+  #
+  # Test it here:
+  # https://jsfiddle.net/tigerhawkvok/t9pn1dn5/
+  #
+  # Code: https://gist.github.com/tigerhawkvok/285b8631ed6ebef4446d
+  ###
+  # Create a dummy element
+  element = document.createElement("div")
+  decodeHTMLEntities = (str) ->
+    if str? and typeof str is "string"
+      unless strict is true
+        # escape HTML tags
+        str = escape(str).replace(/%26/g,'&').replace(/%23/g,'#').replace(/%3B/g,';')
+      else
+        str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '')
+        str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '')
+      element.innerHTML = str
+      if element.innerText
+        # Do we support innerText?
+        str = element.innerText
+        element.innerText = ""
+      else
+        # Firefox
+        str = element.textContent
+        element.textContent = ""
+    unescape(str)
+  # Remove encoded or double-encoded tags
+  fixHtmlEncodings = (string) ->
+    string = string.replace(/\&amp;#/mg, '&#') # The rest, for double-encodings
+    string = string.replace(/\&quot;/mg, '"')
+    string = string.replace(/\&quote;/mg, '"')
+    string = string.replace(/\&#95;/mg, '_')
+    string = string.replace(/\&#39;/mg, "'")
+    string = string.replace(/\&#34;/mg, '"')
+    string = string.replace(/\&#62;/mg, '>')
+    string = string.replace(/\&#60;/mg, '<')
+    string
+  # Run it
+  tmp = fixHtmlEncodings(this)
+  decodeHTMLEntities(tmp)
+
 
 deEscape = (string) ->
   string = string.replace(/\&amp;#/mg, '&#') # The rest
@@ -468,6 +515,20 @@ randomInt = (lower = 0, upper = 1) ->
   if lower > upper
     [lower, upper] = [upper, lower]
   return Math.floor(start * (upper - lower + 1) + lower)
+
+
+randomString = (length = 8) ->
+  i = 0
+  charBottomSearchSpace = 65 # "A"
+  charUpperSearchSpace = 126
+  stringArray = new Array()
+  while i < length
+    ++i
+    # Search space
+    char = randomInt charBottomSearchSpace, charUpperSearchSpace
+    stringArray.push String.fromCharCode char
+  stringArray.join ""
+  
 
 # Animations
 

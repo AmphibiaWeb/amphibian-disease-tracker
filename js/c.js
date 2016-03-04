@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, downloadCSVFile, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, reInitMap, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, downloadCSVFile, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -234,6 +234,58 @@ roundNumberSigfig = function(number, digits) {
   needDigits = digits - trailingDigits.length;
   trailingDigits += Array(needDigits + 1).join("0");
   return "" + significand + trailingDigits;
+};
+
+String.prototype.unescape = function(strict) {
+  var decodeHTMLEntities, element, fixHtmlEncodings, tmp;
+  if (strict == null) {
+    strict = false;
+  }
+
+  /*
+   * Take escaped text, and return the unescaped version
+   *
+   * @param string str | String to be used
+   * @param bool strict | Stict mode will remove all HTML
+   *
+   * Test it here:
+   * https://jsfiddle.net/tigerhawkvok/t9pn1dn5/
+   *
+   * Code: https://gist.github.com/tigerhawkvok/285b8631ed6ebef4446d
+   */
+  element = document.createElement("div");
+  decodeHTMLEntities = function(str) {
+    if ((str != null) && typeof str === "string") {
+      if (strict !== true) {
+        str = escape(str).replace(/%26/g, '&').replace(/%23/g, '#').replace(/%3B/g, ';');
+      } else {
+        str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+        str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+      }
+      element.innerHTML = str;
+      if (element.innerText) {
+        str = element.innerText;
+        element.innerText = "";
+      } else {
+        str = element.textContent;
+        element.textContent = "";
+      }
+    }
+    return unescape(str);
+  };
+  fixHtmlEncodings = function(string) {
+    string = string.replace(/\&amp;#/mg, '&#');
+    string = string.replace(/\&quot;/mg, '"');
+    string = string.replace(/\&quote;/mg, '"');
+    string = string.replace(/\&#95;/mg, '_');
+    string = string.replace(/\&#39;/mg, "'");
+    string = string.replace(/\&#34;/mg, '"');
+    string = string.replace(/\&#62;/mg, '>');
+    string = string.replace(/\&#60;/mg, '<');
+    return string;
+  };
+  tmp = fixHtmlEncodings(this);
+  return decodeHTMLEntities(tmp);
 };
 
 deEscape = function(string) {
@@ -644,6 +696,23 @@ randomInt = function(lower, upper) {
     ref1 = [upper, lower], lower = ref1[0], upper = ref1[1];
   }
   return Math.floor(start * (upper - lower + 1) + lower);
+};
+
+randomString = function(length) {
+  var char, charBottomSearchSpace, charUpperSearchSpace, i, stringArray;
+  if (length == null) {
+    length = 8;
+  }
+  i = 0;
+  charBottomSearchSpace = 65;
+  charUpperSearchSpace = 126;
+  stringArray = new Array();
+  while (i < length) {
+    ++i;
+    char = randomInt(charBottomSearchSpace, charUpperSearchSpace);
+    stringArray.push(String.fromCharCode(char));
+  }
+  return stringArray.join("");
 };
 
 animateLoad = function(elId) {

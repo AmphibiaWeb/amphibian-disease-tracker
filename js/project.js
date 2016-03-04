@@ -473,7 +473,7 @@ $(function() {
   $("#copy-ark").click(function() {
     return copyLink(_adp.zcClient);
   });
-  checkFileVersion(true, "js/project.js");
+  checkFileVersion(false, "js/project.js");
   $("#toggle-project-viewport").click(function() {
     $(".project-list-page").toggleClass("hidden-xs");
     if ($(".project-search").hasClass("hidden-xs")) {
