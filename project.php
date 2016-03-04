@@ -190,23 +190,36 @@ $uid = $loginStatus["detail"]["uid"];
          $polys = 0;
          $polyHtml = "";
          foreach($list as $project) {
-             try {
-                 $authorizedStats = checkProjectAuthorized($project, $uid);
-                 $authorized = boolstr($authorizedStats["can_view"]);
-             } catch (Exception $e) {
-                 echo "<!-- caught exception checking auth for ".$project["project_id"]." by  ".$uid." -- " . $e->getMessage() . " \n\nSTARTSTATS\n\n ".$authorizedStats . "\n\n ENDSTATS -->";
-             }
-             if(boolstr($public) || $authorized) {
-                 $carto = decode64($project["carto_id"]);
-                 $coords = $carto["bounding_polygon"]["paths"];
-             } else {
-                 $coords = array();
-                 $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
-                 $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_e"]);
-                 $coords[] = array( "lat" => $project["bounding_box_s"], "lng" => $project["bounding_box_e"]);
-                 $coords[] = array( "lat" => $project["bounding_box_s"], "lng" => $project["bounding_box_w"]);
-                 $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
-             }
+             $authorized = false;
+             // try {
+             //     $authorizedStats = checkProjectAuthorized($project, $uid);
+             //     $authorized = boolstr($authorizedStats["can_view"]);
+             // } catch (Exception $e) {
+             //     try {
+             //         echo "<!-- caught exception checking auth for ".$project["project_id"]." by  ".$uid." -- " . $e->getMessage() . " \n\nSTARTSTATS\n\n ".$authorizedStats . "\n\n ENDSTATS -->";
+             //     } catch (Exception $e2) {
+             //         echo "<!-- Double exception 1:  -->";
+             //     }
+             // }
+             // try {
+                 if(boolstr($public) || $authorized) {
+                     $carto = decode64($project["carto_id"]);
+                     $coords = $carto["bounding_polygon"]["paths"];
+                 } else {
+                     $coords = array();
+                     $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
+                     $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_e"]);
+                     $coords[] = array( "lat" => $project["bounding_box_s"], "lng" => $project["bounding_box_e"]);
+                     $coords[] = array( "lat" => $project["bounding_box_s"], "lng" => $project["bounding_box_w"]);
+                     $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
+                 }
+             // } catch(Exception $e) {
+             //     try {
+             //         echo "<!-- Problem running project ".$project["project_id"]." by  ".$uid." -- " . $e->getMessage() . " -->";
+             //     }  catch (Exception $e2) {
+             //         echo "<!-- Double exception 2: ". $e2->getMessage() . " -->";
+             //     }
+             // }
              $superCoords[] = $coords;
              # If we don't do this by project first, the center is
              # weighted by boundry complication rather than number of
@@ -235,7 +248,7 @@ $uid = $loginStatus["detail"]["uid"];
          $averageLat = $averageLat / $polys;
          $averageLng = $averageLng / $polys;
          ?>
-        <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite">
+         <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
           <?php echo $polyHtml; ?>
         </google-map>
       </section>
