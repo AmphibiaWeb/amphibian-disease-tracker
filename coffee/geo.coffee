@@ -47,12 +47,13 @@ geo.init = (doCallback) ->
     false
   window.gMapsCallback = ->
     # Now that that's loaded, we can load CartoDB ...
-    loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+    # loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
+    doCallback()
   # First, we have to load the Google Maps library
   unless google?.maps?
     loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
   else
-    window.gMapscallback()
+    window.gMapsCallback()
 
 
 getMapCenter = (bb) ->

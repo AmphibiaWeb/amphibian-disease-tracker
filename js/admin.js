@@ -1175,9 +1175,9 @@ excelHandler = function(path, hasHeaders) {
   renderValidateProgress();
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
-  if (path.search(helperDir === -1)) {
-    console.info("Prepending '" + helperDir + "'");
-    correctedPath = "" + helperDir + path;
+  if (path.search(helperDir !== -1)) {
+    console.info("removing '" + helperDir + "'");
+    correctedPath = path.slice(helperDir.length);
   }
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath;
