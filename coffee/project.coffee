@@ -471,3 +471,18 @@ $ ->
   $("#community-map google-map-poly").on "google-map-poly-click", (e) ->
     proj = $(this).attr "data-project"
     console.log "Clicked on poly #{proj}"
+  $("#community-map").on "google-map-ready", ->
+    map = p$("#community-map")
+    if _adp.aggregateHulls?
+      boundaryPoints = new Array()
+      hulls = Object.toArray _adp.aggregateHulls
+      for hull in hulls
+        points = Object.toArray hull
+        for point in points
+          p = new Point point.lat, point.lng
+          boundaryPoints.push p
+      console.info "Adjusting zoom from #{map.zoom}"
+      zoom = getMapZoom boundaryPoints, "#community-map"
+      console.info "Calculated new zoom #{zoom}"
+      map.zoom = zoom
+    false

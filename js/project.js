@@ -482,10 +482,32 @@ $(function() {
       return $(this).text("Show Project List");
     }
   });
-  return $("#community-map google-map-poly").on("google-map-poly-click", function(e) {
+  $("#community-map google-map-poly").on("google-map-poly-click", function(e) {
     var proj;
     proj = $(this).attr("data-project");
     return console.log("Clicked on poly " + proj);
+  });
+  return $("#community-map").on("google-map-ready", function() {
+    var boundaryPoints, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
+    map = p$("#community-map");
+    if (_adp.aggregateHulls != null) {
+      boundaryPoints = new Array();
+      hulls = Object.toArray(_adp.aggregateHulls);
+      for (j = 0, len = hulls.length; j < len; j++) {
+        hull = hulls[j];
+        points = Object.toArray(hull);
+        for (l = 0, len1 = points.length; l < len1; l++) {
+          point = points[l];
+          p = new Point(point.lat, point.lng);
+          boundaryPoints.push(p);
+        }
+      }
+      console.info("Adjusting zoom from " + map.zoom);
+      zoom = getMapZoom(boundaryPoints, "#community-map");
+      console.info("Calculated new zoom " + zoom);
+      map.zoom = zoom;
+    }
+    return false;
   });
 });
 

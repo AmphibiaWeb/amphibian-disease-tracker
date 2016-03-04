@@ -238,6 +238,9 @@ $loginStatus = getLoginState();
           <?php echo $polyHtml; ?>
         </google-map>
         <p class="text-center text-muted">Community Project Map</p>
+        <script type="text/javascript">
+          _adp.aggregateHulls = <?php echo json_encode($superCoords); ?>;
+        </script>
       </section>
       <?php } else if (!$validProject){ ?>
       <h1 id="title">Invalid Project</h1>
