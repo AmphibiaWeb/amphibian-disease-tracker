@@ -485,7 +485,7 @@ $(function() {
   $("#community-map google-map-poly").on("google-map-poly-click", function(e) {
     var dest, proj;
     proj = $(this).attr("data-project");
-    dest = uri.urlString + "/project.php?id=" + proj;
+    dest = uri.urlString + "project.php?id=" + proj;
     goTo(dest);
     return false;
   });
