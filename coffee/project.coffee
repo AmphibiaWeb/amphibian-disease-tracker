@@ -228,7 +228,8 @@ renderMapWithData = (projectData, force = false) ->
           downloadFile: "species-list-#{projectData.project_id}-#{d.toISOString()}.csv"
           selector: ".download-buttons"
           buttonText: "Download Species List"
-
+          splitValues: " " # Split genus, species, ssp into their own cols
+        downloadCSVFile _adp.pageSpeciesList, options
     stopLoad()
   .error (result, status) ->
     console.error result, status
