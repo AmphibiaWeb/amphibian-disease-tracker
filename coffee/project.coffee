@@ -460,7 +460,7 @@ $ ->
   #   copyLink(this, e)
   $("#copy-ark").click ->
     copyLink _adp.zcClient
-  checkFileVersion(true, "js/project.js")
+  checkFileVersion(false, "js/project.js")
   # Mobile project viewer toggle
   $("#toggle-project-viewport").click ->
     $(".project-list-page").toggleClass "hidden-xs"
