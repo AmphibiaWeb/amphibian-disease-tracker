@@ -7450,12 +7450,35 @@ h4 paper-icon-button {
   margin-left: 0;
   margin-right: 0;
 }
-google-map.public-fuzzy-map {
+google-map.public-fuzzy-map,
+google-map.center-block {
   float: none;
   clear: both;
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+google-map.public-fuzzy-map:before,
+google-map.center-block:before,
+google-map.public-fuzzy-map:after,
+google-map.center-block:after {
+  content: " ";
+  display: table;
+}
+google-map.public-fuzzy-map:after,
+google-map.center-block:after {
+  clear: both;
+}
+google-map.public-fuzzy-map:before,
+google-map.center-block:before,
+google-map.public-fuzzy-map:after,
+google-map.center-block:after {
+  content: " ";
+  display: table;
+}
+google-map.public-fuzzy-map:after,
+google-map.center-block:after {
+  clear: both;
 }
 @media (min-device-width: 768px) {
   #auth-block google-map:not(.center-block) {

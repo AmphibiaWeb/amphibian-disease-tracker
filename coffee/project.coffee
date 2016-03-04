@@ -468,3 +468,6 @@ $ ->
       $(this).text "Show Project Search"
     else
       $(this).text "Show Project List"
+  $("#community-map google-map-poly").on "google-map-poly-click", (e) ->
+    proj = $(this).attr "data-project"
+    console.log "Clicked on poly #{proj}"

@@ -202,7 +202,7 @@ $loginStatus = getLoginState();
                  $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
              }
              $superCoords[] = $coords;
-             $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1'>";
+             $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events data-project='".$project["project_id"]."'>";
              foreach($coords as $point) {
                  $points++;
                  $lat = $point["lat"];
@@ -217,7 +217,7 @@ $loginStatus = getLoginState();
          $averageLat = $averageLat / $points;
          $averageLng = $averageLng / $points;
          ?>
-        <google-map class="col-xs-10 col-md-8 center-block" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" fit-to-markers disable-default-ui map-type="satellite">
+        <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite">
           <?php echo $polyHtml; ?>
         </google-map>
       </section>
