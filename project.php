@@ -22,7 +22,7 @@ $suffix = empty($pid) ? "Browser" : "#" . $pid;
 
 $validProject = $db->isEntry($pid, "project_id", true);
 $loginStatus = getLoginState();
-$uid = $loginStatus["detail"]["uid"];
+
        ?>
     <title>Project <?php echo $suffix ?></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -173,8 +173,6 @@ $uid = $loginStatus["detail"]["uid"];
              "project_id",
              "project_title",
              "public",
-             "author",
-             "access_data",
              "carto_id",
              "bounding_box_n",
              "bounding_box_e",
@@ -190,13 +188,7 @@ $uid = $loginStatus["detail"]["uid"];
          $polys = 0;
          $polyHtml = "";
          foreach($list as $project) {
-             try {
-                 $authorizedStats = checkProjectAuthorized($project, $uid);
-                 $authorized = boolstr($authorizedStats["can_view"]);
-             } catch (Exception $e) {
-                 echo "<!-- caught exception checking auth for ".$project["project_id"]." by  ".$uid." -- " . $e->getMessage() . " \n\nSTARTSTATS\n\n ".$authorizedStats . "\n\n ENDSTATS -->";
-             }
-             if(boolstr($public) || $authorized) {
+             if(boolstr($public)) {
                  $carto = decode64($project["carto_id"]);
                  $coords = $carto["bounding_polygon"]["paths"];
              } else {
