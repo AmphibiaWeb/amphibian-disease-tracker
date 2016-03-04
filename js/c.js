@@ -1987,7 +1987,9 @@ createMap2 = function(pointsObj, options, callback) {
         window.mapBuilder.points.push(point);
         $("#init-map-build").removeAttr("disabled");
         $("#init-map-build .points-count").text(window.mapBuilder.points.length);
-        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\">\n</google-map-marker>";
+        marker = document.createElement("google-map-marker");
+        marker.setAttribute("latitude", point.lat);
+        marker.setAttribute("longitude", point.lng);
         Polymer.dom(mapElement).appendChild(marker);
         return false;
       };
