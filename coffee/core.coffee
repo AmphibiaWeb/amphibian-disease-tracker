@@ -1158,10 +1158,14 @@ downloadCSVFile = (data, options) ->
     """
     # CoffeScript 1.10 has a bug with """ leading ", so we needed to
     # start on a new line above. Remove it.
-    textAsset = textAsset.slice 1
+    textAsset = textAsset.trim()
+    header = "present" # https://tools.ietf.org/html/rfc4180#page-4
+  else
+    # https://tools.ietf.org/html/rfc4180#page-4
+    header = "absent"
   if textAsset.slice(-1) is ","
     textAsset = textAsset.slice(0, -1)
-  file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset)
+  file = "data:text/csv;charset=utf-8;header=#{header}," + encodeURIComponent(textAsset)
   selector = options.selector
   if options.create is true
     c = $(selector).find("button").length
