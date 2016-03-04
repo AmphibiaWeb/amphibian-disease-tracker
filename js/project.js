@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, j, len, mapHtml, point, poly, raw, ref, usedPoints, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, filePath, helperDir, j, len, mapHtml, point, poly, raw, ref, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -103,7 +103,12 @@ renderMapWithData = function(projectData, force) {
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   raw = cartoData.raw_data;
   if (raw.hasDataFile) {
-    downloadButton = "<button class=\"btn btn-primary click download-file download-data-file\" data-href=\"" + raw.filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Data File\n</button>";
+    helperDir = "helpers/";
+    filePath = raw.filePath;
+    if (filePath.search(helperDir === -1)) {
+      filePath = "" + helperDir + filePath;
+    }
+    downloadButton = "<button class=\"btn btn-primary click download-file download-data-file\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Data File\n</button>";
   }
   if (downloadButton == null) {
     downloadButton = "";

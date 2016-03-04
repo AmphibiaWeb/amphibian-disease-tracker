@@ -1033,7 +1033,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   verifyLoginCredentials ->
     window.dropperParams ?= new Object()
     window.dropperParams.dropTargetSelector = selector
-    window.dropperParams.uploadPath = "uploaded/#{uploadIdentifier}/"
+    window.dropperParams.uploadPath = "uploaded/#{getUploadIdentifier()}/"
     # Need to make this re-initialize ...
     needsInit = window.dropperParams.hasInitialized is true
     loadJS "helpers/js-dragdrop/client-upload.min.js", ->
@@ -1076,14 +1076,13 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
         try
           console.info "Server returned the following result:", result
           console.info "The script returned the following file information:", file
-          pathPrefix = "helpers/js-dragdrop/uploaded/#{uploadIdentifier}/"
+          pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
           # Replace full_path and thumb_path with "wrote"
-          result.full_path = result.wrote_file
           fileName = result.full_path.split("/").pop()
-          result.thumb_path = result.wrote_thumb
+          thumbPath = result.wrote_thumb
           mediaType = result.mime_provided.split("/")[0]
           longType = result.mime_provided.split("/")[1]
-          linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.full_path}" else "#{pathPrefix}#{result.thumb_path}"
+          linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
           previewHtml = switch mediaType
             when "image"
               """
@@ -1117,7 +1116,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
             when "video" then """
             <div class="uploaded-media center-block" data-system-file="#{fileName}">
               <video src="#{linkPath}" controls preload="auto">
-                <img src="#{pathPrefix}#{result.thumb_path}" alt="Video Thumbnail" class="img-responsive" />
+                <img src="#{pathPrefix}#{thumbPath}" alt="Video Thumbnail" class="img-responsive" />
                 <p>
                   Your browser doesn't support the HTML5 <code>video</code> element.
                   Please download the file below.
@@ -1217,6 +1216,10 @@ excelHandler = (path, hasHeaders = true) ->
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result
+    if result.status is fale
+      bsAlert "There was a problem verifying your upload. Please try again.", "danger"
+      stopLoadError "There was a problem processing your data"
+      return false
     singleDataFileHelper path, ->
       $("#upload-data").attr "disabled", "disabled"
       nameArr = path.split "/"

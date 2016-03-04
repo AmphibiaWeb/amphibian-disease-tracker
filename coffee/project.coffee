@@ -86,8 +86,12 @@ renderMapWithData = (projectData, force = false) ->
   cartoData = JSON.parse deEscape projectData.carto_id
   raw = cartoData.raw_data
   if raw.hasDataFile
+    helperDir = "helpers/"
+    filePath = raw.filePath
+    if filePath.search helperDir is -1
+      filePath = "#{helperDir}#{filePath}"
     downloadButton = """
-    <button class="btn btn-primary click download-file download-data-file" data-href="#{raw.filePath}" data-newtab="true">
+    <button class="btn btn-primary click download-file download-data-file" data-href="#{filePath}" data-newtab="true">
       <iron-icon icon="editor:insert-chart"></iron-icon>
       Download Data File
     </button>

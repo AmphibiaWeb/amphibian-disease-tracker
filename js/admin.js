@@ -1036,7 +1036,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
       window.dropperParams = new Object();
     }
     window.dropperParams.dropTargetSelector = selector;
-    window.dropperParams.uploadPath = "uploaded/" + uploadIdentifier + "/";
+    window.dropperParams.uploadPath = "uploaded/" + (getUploadIdentifier()) + "/";
     needsInit = window.dropperParams.hasInitialized === true;
     loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
       var error1;
@@ -1065,7 +1065,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
          * When invoked, it calls the "self" helper methods to actually do
          * the file sending.
          */
-        var e, error2, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml;
+        var e, error2, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
         window.dropperParams.dropzone.removeAllFiles();
         if (typeof result !== "object") {
           console.error("Dropzone returned an error - " + result);
@@ -1083,13 +1083,12 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
         try {
           console.info("Server returned the following result:", result);
           console.info("The script returned the following file information:", file);
-          pathPrefix = "helpers/js-dragdrop/uploaded/" + uploadIdentifier + "/";
-          result.full_path = result.wrote_file;
+          pathPrefix = "helpers/js-dragdrop/uploaded/" + (getUploadIdentifier()) + "/";
           fileName = result.full_path.split("/").pop();
-          result.thumb_path = result.wrote_thumb;
+          thumbPath = result.wrote_thumb;
           mediaType = result.mime_provided.split("/")[0];
           longType = result.mime_provided.split("/")[1];
-          linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.full_path : "" + pathPrefix + result.thumb_path;
+          linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.wrote_file : "" + pathPrefix + thumbPath;
           previewHtml = (function() {
             switch (mediaType) {
               case "image":
@@ -1097,7 +1096,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
               case "audio":
                 return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
               case "video":
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + thumbPath + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
               default:
                 return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + fileName + "</p>\n</div>";
             }
@@ -1183,6 +1182,11 @@ excelHandler = function(path, hasHeaders) {
   args = "action=parse&path=" + correctedPath;
   $.get(helperApi, args, "json").done(function(result) {
     console.info("Got result", result);
+    if (result.status === fale) {
+      bsAlert("There was a problem verifying your upload. Please try again.", "danger");
+      stopLoadError("There was a problem processing your data");
+      return false;
+    }
     return singleDataFileHelper(path, function() {
       var html, nameArr, randomData, randomRow, rows;
       $("#upload-data").attr("disabled", "disabled");
