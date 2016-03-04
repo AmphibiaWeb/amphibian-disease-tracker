@@ -470,7 +470,9 @@ $ ->
       $(this).text "Show Project List"
   $("#community-map google-map-poly").on "google-map-poly-click", (e) ->
     proj = $(this).attr "data-project"
-    console.log "Clicked on poly #{proj}"
+    dest = "#{uri.urlString}/project.php?id=#{proj}"
+    goTo dest
+    false
   $("#community-map").on "google-map-ready", ->
     map = p$("#community-map")
     if _adp.aggregateHulls?

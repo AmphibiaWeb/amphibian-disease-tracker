@@ -483,9 +483,11 @@ $(function() {
     }
   });
   $("#community-map google-map-poly").on("google-map-poly-click", function(e) {
-    var proj;
+    var dest, proj;
     proj = $(this).attr("data-project");
-    return console.log("Clicked on poly " + proj);
+    dest = uri.urlString + "/project.php?id=" + proj;
+    goTo(dest);
+    return false;
   });
   return $("#community-map").on("google-map-ready", function() {
     var boundaryPoints, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
