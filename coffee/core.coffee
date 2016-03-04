@@ -1150,6 +1150,15 @@ downloadCSVFile = (data, options) ->
         console.warn "Unable to run key #{key} on row #{row}", value, jsonObj
         console.warn e.stack
   textAsset = textAsset.trim()
+  if isArray options.header
+    headerStr = options.header.join "\",\""
+    textAsset = """
+    "#{headerStr}"
+    #{textAsset}
+    """
+    # CoffeScript 1.10 has a bug with """ leading ", so we needed to
+    # start on a new line above. Remove it.
+    textAsset = textAsset.slice 1
   if textAsset.slice(-1) is ","
     textAsset = textAsset.slice(0, -1)
   file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset)

@@ -1486,7 +1486,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, file, html, id, jsonObject, parser, selector, textAsset;
+  var c, file, headerStr, html, id, jsonObject, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     jsonObject = JSON.parse(data);
@@ -1567,6 +1567,11 @@ downloadCSVFile = function(data, options) {
     return results;
   })(jsonObject, false);
   textAsset = textAsset.trim();
+  if (isArray(options.header)) {
+    headerStr = options.header.join("\",\"");
+    textAsset = "\"" + headerStr + "\"\n" + textAsset;
+    textAsset = textAsset.slice(1);
+  }
   if (textAsset.slice(-1) === ",") {
     textAsset = textAsset.slice(0, -1);
   }
