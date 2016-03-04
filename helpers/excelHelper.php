@@ -145,6 +145,10 @@ case "parse":
         returnAjax(array(
             "status" => false,
             "error" => "Non-existant file '".$validatedPath."'",
+            "path" => array(
+                "requested_path" => $_REQUEST["path"],
+                "validated_path" => $validatedPath,
+            ),
             "human_error" => "There was a problem validating your file. Please try again."
         ));
     }

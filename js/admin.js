@@ -1001,7 +1001,7 @@ getUploadIdentifier = function() {
     }
     _adp.uploadIdentifier = md5("" + user + _adp.projectId);
   }
-  return _adp.uploadIdentiifer;
+  return _adp.uploadIdentifier;
 };
 
 bootstrapUploader = function(uploadFormId, bsColWidth) {
@@ -1098,7 +1098,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
               case "video":
                 return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + thumbPath + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
               default:
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + fileName + "</p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\" data-link-path=\"" + linkPath + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + fileName + "</p>\n</div>";
             }
           })();
           $(window.dropperParams.dropTargetSelector).before(previewHtml);
@@ -1176,13 +1176,14 @@ excelHandler = function(path, hasHeaders) {
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
   if (path.search(helperDir === -1)) {
+    console.info("Prepending '" + helperDir + "'");
     correctedPath = "" + helperDir + path;
   }
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath;
   $.get(helperApi, args, "json").done(function(result) {
     console.info("Got result", result);
-    if (result.status === fale) {
+    if (result.status === false) {
       bsAlert("There was a problem verifying your upload. Please try again.", "danger");
       stopLoadError("There was a problem processing your data");
       return false;
