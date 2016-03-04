@@ -229,6 +229,7 @@ renderMapWithData = (projectData, force = false) ->
           selector: ".download-buttons"
           buttonText: "Download Species List"
           splitValues: " " # Split genus, species, ssp into their own cols
+          header: ["Genus","Species","Subspecies"]
         downloadCSVFile _adp.pageSpeciesList, options
     stopLoad()
   .error (result, status) ->

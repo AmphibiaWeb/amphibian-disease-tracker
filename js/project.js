@@ -228,7 +228,8 @@ renderMapWithData = function(projectData, force) {
           downloadFile: "species-list-" + projectData.project_id + "-" + (d.toISOString()) + ".csv",
           selector: ".download-buttons",
           buttonText: "Download Species List",
-          splitValues: " "
+          splitValues: " ",
+          header: ["Genus", "Species", "Subspecies"]
         };
         downloadCSVFile(_adp.pageSpeciesList, options);
       }
