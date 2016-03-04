@@ -202,7 +202,8 @@ $loginStatus = getLoginState();
                  $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
              }
              $superCoords[] = $coords;
-             $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events data-project='".$project["project_id"]."'>";
+             # Need to enable both click-events and clickable
+             $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project["project_id"]."'>";
              foreach($coords as $point) {
                  $points++;
                  $lat = $point["lat"];
