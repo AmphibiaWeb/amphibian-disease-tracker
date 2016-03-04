@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -271,6 +271,10 @@ finalizeData = function() {
           return false;
         }
         dataAttrs.ark = result.ark;
+        if (dataAttrs.data_ark == null) {
+          dataAttrs.data_ark = new Array();
+        }
+        dataAttrs.data_ark.push(result.ark + "::" + dataAttrs.fileName);
         postData = new Object();
         ref = $(".project-field");
         for (l = 0, len = ref.length; l < len; l++) {
@@ -360,7 +364,7 @@ finalizeData = function() {
           }
         }
         if (dataFileParams != null ? dataFileParams.hasDataFile : void 0) {
-          postData.sample_raw_data = "https://amphibiandisease.org/" + dataFileParams.fileName;
+          postData.sample_raw_data = "https://amphibiandisease.org/" + dataFileParams.filePath;
         }
         postData.lat = center.lat;
         postData.lng = center.lng;
@@ -393,6 +397,11 @@ finalizeData = function() {
           postData.carto_id = JSON.stringify(cartoData);
           postData.project_id = _adp.projectId;
           postData.project_obj_id = dataAttrs.ark;
+          if (dataAttrs.data_ark == null) {
+            dataAttrs.data_ark = new Array();
+          }
+          postData.dataset_arks = dataAttrs.data_ark.join(",");
+          postData.project_dir_identifier = getUploadIdentifier();
           postData["public"] = p$("#data-encumbrance-toggle").checked;
           if ((typeof _adp !== "undefined" && _adp !== null ? (ref6 = _adp.data) != null ? (ref7 = ref6.taxa) != null ? ref7.validated : void 0 : void 0 : void 0) != null) {
             taxonData = _adp.data.taxa.validated;
@@ -978,8 +987,25 @@ getCanonicalDataCoords = function(table, options, callback) {
   return false;
 };
 
+getUploadIdentifier = function() {
+  var author, projectIdentifier, seed;
+  if (isNull(_adp.uploadIdentifier)) {
+    if (isNull(_adp.projectId)) {
+      author = $.cookie(adminParams.domain + "_link");
+      if (isNull(_adp.projectIdentifierString)) {
+        seed = isNull(p$("#project-title").value) ? randomString(16) : p$("#project-title").value;
+        projectIdentifier = "t" + md5(seed + author);
+        _adp.projectIdentifierString = projectIdentifier;
+      }
+      _adp.projectId = md5("" + projectIdentifier + author + (Date.now()));
+    }
+    _adp.uploadIdentifier = md5("" + user + _adp.projectId);
+  }
+  return _adp.uploadIdentiifer;
+};
+
 bootstrapUploader = function(uploadFormId, bsColWidth) {
-  var html, selector;
+  var author, html, projectIdentifier, selector, uploadIdentifier;
   if (uploadFormId == null) {
     uploadFormId = "file-uploader";
   }
@@ -991,6 +1017,9 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
    * Bootstrap the file uploader into existence
    */
   selector = "#" + uploadFormId;
+  author = $.cookie(adminParams.domain + "_link");
+  uploadIdentifier = getUploadIdentifier();
+  projectIdentifier = _adp.projectIdentifierString;
   if (!$(selector).exists()) {
     html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
     $("main #uploader-container-section").append(html);
@@ -1007,7 +1036,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
       window.dropperParams = new Object();
     }
     window.dropperParams.dropTargetSelector = selector;
-    window.dropperParams.uploadPath = "uploaded/" + user + "/";
+    window.dropperParams.uploadPath = "uploaded/" + uploadIdentifier + "/";
     needsInit = window.dropperParams.hasInitialized === true;
     loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
       var error1;
@@ -1036,7 +1065,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
          * When invoked, it calls the "self" helper methods to actually do
          * the file sending.
          */
-        var e, error2, linkPath, longType, mediaType, pathPrefix, previewHtml;
+        var e, error2, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml;
         window.dropperParams.dropzone.removeAllFiles();
         if (typeof result !== "object") {
           console.error("Dropzone returned an error - " + result);
@@ -1054,8 +1083,9 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
         try {
           console.info("Server returned the following result:", result);
           console.info("The script returned the following file information:", file);
-          pathPrefix = "helpers/js-dragdrop/uploaded/" + user + "/";
+          pathPrefix = "helpers/js-dragdrop/uploaded/" + uploadIdentifier + "/";
           result.full_path = result.wrote_file;
+          fileName = result.full_path.split("/").pop();
           result.thumb_path = result.wrote_thumb;
           mediaType = result.mime_provided.split("/")[0];
           longType = result.mime_provided.split("/")[1];
@@ -1063,13 +1093,13 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
           previewHtml = (function() {
             switch (mediaType) {
               case "image":
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + result.full_path + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + fileName + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
               case "audio":
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
               case "video":
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + result.full_path + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + result.thumb_path + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
               default:
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + result.full_path + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + result.full_path + "</p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + fileName + "</p>\n</div>";
             }
           })();
           $(window.dropperParams.dropTargetSelector).before(previewHtml);
@@ -1146,18 +1176,19 @@ excelHandler = function(path, hasHeaders) {
   renderValidateProgress();
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
-  if (path.search(helperDir !== -1)) {
-    correctedPath = path.slice(helperDir.length);
+  if (path.search(helperDir === -1)) {
+    correctedPath = "" + helperDir + path;
   }
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath;
   $.get(helperApi, args, "json").done(function(result) {
     console.info("Got result", result);
     return singleDataFileHelper(path, function() {
-      var html, randomData, randomRow, rows;
+      var html, nameArr, randomData, randomRow, rows;
       $("#upload-data").attr("disabled", "disabled");
+      nameArr = path.split("/");
       dataFileParams.hasDataFile = true;
-      dataFileParams.fileName = path;
+      dataFileParams.fileName = nameArr.pop();
       dataFileParams.filePath = correctedPath;
       rows = Object.size(result.data);
       randomData = "";
@@ -1179,8 +1210,10 @@ excelHandler = function(path, hasHeaders) {
 };
 
 csvHandler = function(path) {
+  var nameArr;
+  nameArr = path.split("/");
   dataFileParams.hasDataFile = true;
-  dataFileParams.fileName = path;
+  dataFileParams.fileName = nameArr.pop();
   dataFileParams.filePath = correctedPath;
   geoDataHandler();
   return false;
@@ -1215,8 +1248,8 @@ removeDataFile = function(removeFile, unsetHDF) {
   }
   $(".uploaded-media[data-system-file='" + removeFile + "']").remove();
   $("#validator-progress-container paper-progress").removeAttr("indeterminate");
-  serverPath = helperDir + "/js-dragdrop/uploaded/" + user + "/" + removeFile;
-  args = "action=removefile&path=" + (encode64(removeFile)) + "&user=" + user;
+  serverPath = helperDir + "/js-dragdrop/uploaded/" + _adp.uploadIdentifier + "/" + removeFile;
+  args = "action=removefile&path=" + (encode64(serverPath)) + "&user=" + user;
   return false;
 };
 
@@ -1409,7 +1442,12 @@ newGeoDataHandler = function(dataObject) {
       }
       p$("#data-parsing").value = n + 1;
     }
-    projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie(uri.domain + "_link"));
+    if (isNull(_adp.projectIdentifierString)) {
+      projectIdentifier = "t" + md5(p$("#project-title").value + author);
+      _adp.projectIdentifierString = projectIdentifier;
+    } else {
+      projectIdentifier = _adp.projectIdentifierString;
+    }
     getCoordsFromData = function() {
 
       /*
@@ -2106,7 +2144,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, error1, html, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, error1, filePath, html, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
@@ -2204,9 +2242,13 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   });
   window.dataFileparams = cartoData.raw_data;
   if (cartoData.raw_data.hasDataFile) {
-    html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + cartoData.raw_data.fileName + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
+    filePath = cartoData.raw_data.filePath;
+    if (filePath.search(helperDir === -1)) {
+      filePath = "" + helperDir + filePath;
+    }
+    html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);
-    $.get("meta.php", "do=get_last_mod&file=" + cartoData.raw_data.fileName, "json").done(function(result) {
+    $.get("meta.php", "do=get_last_mod&file=" + filePath, "json").done(function(result) {
       var iso, t, time, timeString;
       time = toInt(result.last_mod) * 1000;
       console.log("Last modded", time, result);
@@ -2216,11 +2258,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         timeString = "" + (iso.slice(0, iso.search("T")));
         $("#last-modified-file").text("Last uploaded on " + timeString + ".");
       } else {
-        console.warn("Didn't get a number back to check last mod time for " + cartoData.raw_data.fileName);
+        console.warn("Didn't get a number back to check last mod time for " + filePath);
       }
       return false;
     }).fail(function(result, status) {
-      console.warn("Couldn't get last mod time for " + cartoData.raw_data.fileName);
+      console.warn("Couldn't get last mod time for " + filePath);
       return false;
     });
   } else {

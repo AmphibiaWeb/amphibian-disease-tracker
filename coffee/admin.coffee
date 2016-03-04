@@ -359,6 +359,8 @@ finalizeData = ->
           stopLoadError result.human_error
           return false
         dataAttrs.ark = result.ark
+        dataAttrs.data_ark ?= new Array()
+        dataAttrs.data_ark.push  "#{result.ark}::#{dataAttrs.fileName}"
         postData = new Object()
         for el in $(".project-field")
           if $(el).hasClass("iron-autogrow-textarea-0")
@@ -442,7 +444,7 @@ finalizeData = ->
               distanceFromCenter = geo.distance point.lat, point.lng, center.lat, center.lng
               if distanceFromCenter > excursion then excursion = distanceFromCenter
         if dataFileParams?.hasDataFile
-          postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.fileName}"
+          postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.filePath}"
         postData.lat = center.lat
         postData.lng = center.lng
         postData.radius = toInt excursion * 1000
@@ -471,6 +473,9 @@ finalizeData = ->
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
           postData.project_obj_id = dataAttrs.ark
+          dataAttrs.data_ark ?= new Array()
+          postData.dataset_arks = dataAttrs.data_ark.join ","
+          postData.project_dir_identifier = getUploadIdentifier()
           # Public or private?
           postData.public = p$("#data-encumbrance-toggle").checked
           if _adp?.data?.taxa?.validated?
@@ -982,6 +987,18 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         console.error "No valid coordinates accessible!"
   false
 
+getUploadIdentifier = ->
+  if isNull _adp.uploadIdentifier
+    if isNull _adp.projectId
+      author = $.cookie("#{adminParams.domain}_link")
+      if isNull _adp.projectIdentifierString
+        seed = if isNull p$("#project-title").value then randomString(16) else p$("#project-title").value
+        projectIdentifier = "t" + md5(seed + author)
+        _adp.projectIdentifierString = projectIdentifier
+      _adp.projectId = md5("#{projectIdentifier}#{author}#{Date.now()}")
+    _adp.uploadIdentifier = md5 "#{user}#{_adp.projectId}"
+  _adp.uploadIdentiifer
+
 
 
 bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
@@ -991,6 +1008,9 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   # Check for the existence of the uploader form; if it's not there,
   # create it
   selector = "##{uploadFormId}"
+  author = $.cookie("#{adminParams.domain}_link")
+  uploadIdentifier = getUploadIdentifier()
+  projectIdentifier = _adp.projectIdentifierString
   unless $(selector).exists()
     # Create it
     html = """
@@ -1013,7 +1033,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
   verifyLoginCredentials ->
     window.dropperParams ?= new Object()
     window.dropperParams.dropTargetSelector = selector
-    window.dropperParams.uploadPath = "uploaded/#{user}/"
+    window.dropperParams.uploadPath = "uploaded/#{uploadIdentifier}/"
     # Need to make this re-initialize ...
     needsInit = window.dropperParams.hasInitialized is true
     loadJS "helpers/js-dragdrop/client-upload.min.js", ->
@@ -1056,9 +1076,10 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
         try
           console.info "Server returned the following result:", result
           console.info "The script returned the following file information:", file
-          pathPrefix = "helpers/js-dragdrop/uploaded/#{user}/"
+          pathPrefix = "helpers/js-dragdrop/uploaded/#{uploadIdentifier}/"
           # Replace full_path and thumb_path with "wrote"
           result.full_path = result.wrote_file
+          fileName = result.full_path.split("/").pop()
           result.thumb_path = result.wrote_thumb
           mediaType = result.mime_provided.split("/")[0]
           longType = result.mime_provided.split("/")[1]
@@ -1066,10 +1087,10 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
           previewHtml = switch mediaType
             when "image"
               """
-              <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
+              <div class="uploaded-media center-block" data-system-file="#{fileName}">
                 <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
                   <p class="text-muted">
-                    #{file.name} -> #{result.full_path}
+                    #{file.name} -> #{fileName}
                 (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
                   Original Image
                 </a>)
@@ -1077,7 +1098,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
               </div>
               """
             when "audio" then """
-            <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
+            <div class="uploaded-media center-block" data-system-file="#{fileName}">
               <audio src="#{linkPath}" controls preload="auto">
                 <span class="glyphicon glyphicon-music"></span>
                 <p>
@@ -1086,7 +1107,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
                 </p>
               </audio>
               <p class="text-muted">
-                #{file.name} -> #{result.full_path}
+                #{file.name} -> #{fileName}
                 (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
                   Original Media
                 </a>)
@@ -1094,7 +1115,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
             </div>
             """
             when "video" then """
-            <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
+            <div class="uploaded-media center-block" data-system-file="#{fileName}">
               <video src="#{linkPath}" controls preload="auto">
                 <img src="#{pathPrefix}#{result.thumb_path}" alt="Video Thumbnail" class="img-responsive" />
                 <p>
@@ -1103,7 +1124,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
                 </p>
               </video>
               <p class="text-muted">
-                #{file.name} -> #{result.full_path}
+                #{file.name} -> #{fileName}
                 (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
                   Original Media
                 </a>)
@@ -1112,9 +1133,9 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
             """
             else
               """
-              <div class="uploaded-media center-block" data-system-file="#{result.full_path}">
+              <div class="uploaded-media center-block" data-system-file="#{fileName}">
                 <span class="glyphicon glyphicon-file"></span>
-                <p class="text-muted">#{file.name} -> #{result.full_path}</p>
+                <p class="text-muted">#{file.name} -> #{fileName}</p>
               </div>
               """
           # Append the preview HTML
@@ -1189,8 +1210,8 @@ excelHandler = (path, hasHeaders = true) ->
   renderValidateProgress()
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
-  if path.search helperDir isnt -1
-    correctedPath = path.slice helperDir.length
+  if path.search helperDir is -1
+    correctedPath = "#{helperDir}#{path}"
   console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}"
   $.get helperApi, args, "json"
@@ -1198,8 +1219,9 @@ excelHandler = (path, hasHeaders = true) ->
     console.info "Got result", result
     singleDataFileHelper path, ->
       $("#upload-data").attr "disabled", "disabled"
+      nameArr = path.split "/"
       dataFileParams.hasDataFile = true
-      dataFileParams.fileName = path
+      dataFileParams.fileName = nameArr.pop()
       dataFileParams.filePath = correctedPath
       rows = Object.size(result.data)
       randomData = ""
@@ -1222,8 +1244,9 @@ excelHandler = (path, hasHeaders = true) ->
   false
 
 csvHandler = (path) ->
+  nameArr = path.split "/"
   dataFileParams.hasDataFile = true
-  dataFileParams.fileName = path
+  dataFileParams.fileName = nameArr.pop()
   dataFileParams.filePath = correctedPath
   geoDataHandler()
   false
@@ -1248,10 +1271,10 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   $(".uploaded-media[data-system-file='#{removeFile}']").remove()
   $("#validator-progress-container paper-progress").removeAttr "indeterminate"
   # Now, actually delete the file remotely
-  serverPath = "#{helperDir}/js-dragdrop/uploaded/#{user}/#{removeFile}"
+  serverPath = "#{helperDir}/js-dragdrop/uploaded/#{_adp.uploadIdentifier}/#{removeFile}"
   # Server will validate the user, and only a user can remove their
   # own files
-  args = "action=removefile&path=#{encode64 removeFile}&user=#{user}"
+  args = "action=removefile&path=#{encode64 serverPath}&user=#{user}"
   # TODO FINISH THIS
   false
 
@@ -1418,8 +1441,12 @@ newGeoDataHandler = (dataObject = new Object()) ->
         toastStatusMessage "Processed #{n} rows ..."
       p$("#data-parsing").value = n + 1
 
-    # Create a project identifier from the user hash and project title
-    projectIdentifier = "t" + md5(p$("#project-title").value + $.cookie "#{uri.domain}_link")
+    if isNull _adp.projectIdentifierString
+      # Create a project identifier from the user hash and project title
+      projectIdentifier = "t" + md5(p$("#project-title").value + author)
+      _adp.projectIdentifierString = projectIdentifier
+    else
+      projectIdentifier = _adp.projectIdentifierString
     # Define the transect ring
     # If it's not already picked, let's get it from the dataset
     getCoordsFromData = ->
