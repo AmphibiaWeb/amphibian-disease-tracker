@@ -52,54 +52,57 @@ $admin_req=isset($_REQUEST['perform']) ? strtolower($_REQUEST['perform']):null;
 
 $login_status = getLoginState($get);
 
-if($login_status["status"] !== true) {
-    if($admin_req == "list") {
-        returnAjax(listProjects());
+if($as_include !== true) {
+    if($login_status["status"] !== true) {
+        if($admin_req == "list") {
+            returnAjax(listProjects());
+        }
+        $login_status["error"] = "Invalid user";
+        $login_status["human_error"] = "You're not logged in as a valid user to edit this. Please log in and try again.";
+        returnAjax($login_status);
     }
-  $login_status["error"] = "Invalid user";
-  $login_status["human_error"] = "You're not logged in as a valid user to edit this. Please log in and try again.";
-  returnAjax($login_status);
-}
 
-switch($admin_req)
-  {
-    # Stuff
-  case "save":
-    returnAjax(saveEntry($_REQUEST));
-    break;
-  case "new":
-    returnAjax(newEntry($_REQUEST));
-    break;
-  case "delete":
-    returnAjax(deleteEntry($_REQUEST));
-    break;
-  case "list":
-      returnAjax(listProjects(false));
-      break;
-  case "sulist":
-      returnAjax(suListProjects(false));
-      break;
-  case "get":
-      returnAjax(readProjectData($_REQUEST));
-      break;
-  case "mint":
-      $link = $_REQUEST["link"];
-      $title64 = $_REQUEST["title"];
-      $title = decode64($title64);
-      if(empty($link) || empty($title)) {
-          returnAjax(array(
-              "status" => false,
-              "error" => "BAD_PARAMETERS",
-          ));
-      }
-      returnAjax(mintBcid($link, $title));
-       break;
-  case "check_access":
-      returnAjax(authorizedProjectAccess($_REQUEST));
-      break;
-  default:
-    returnAjax(getLoginState($_REQUEST,true));
-  }
+    switch($admin_req)
+    {
+        # Stuff
+    case "save":
+        returnAjax(saveEntry($_REQUEST));
+        break;
+    case "new":
+        returnAjax(newEntry($_REQUEST));
+        break;
+    case "delete":
+        returnAjax(deleteEntry($_REQUEST));
+        break;
+    case "list":
+        returnAjax(listProjects(false));
+        break;
+    case "sulist":
+        returnAjax(suListProjects(false));
+        break;
+    case "get":
+        returnAjax(readProjectData($_REQUEST));
+        break;
+    case "mint":
+        $link = $_REQUEST["link"];
+        $title64 = $_REQUEST["title"];
+        $title = decode64($title64);
+        if(empty($link) || empty($title)) {
+            returnAjax(array(
+                "status" => false,
+                "error" => "BAD_PARAMETERS",
+            ));
+        }
+        returnAjax(mintBcid($link, $title));
+        break;
+    case "check_access":
+        returnAjax(authorizedProjectAccess($_REQUEST));
+        break;
+    default:
+        returnAjax(getLoginState($_REQUEST,true));
+    }
+
+}
 
 function saveEntry($get)
 {

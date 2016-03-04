@@ -10,12 +10,10 @@ if($debug) {
     error_log("Project Browser is running in debug mode!");
 }
 
-$print_login_state = false;
-require_once("DB_CONFIG.php");
-require_once(dirname(__FILE__)."/core/core.php");
-require_once(dirname(__FILE__)."/admin/async_login_handler.php");
 
-$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+$as_include = true;
+# The next include includes core, and DB_CONFIG, and sets up $db
+require_once(dirname(__FILE__)."/admin-api.php");
 
 
 $pid = $db->sanitize($_GET["id"]);
