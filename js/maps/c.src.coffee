@@ -2460,9 +2460,9 @@ setupMapMarkerToggles = ->
     <h3 class="col-xs-12">
       Toggle map markers
     </h3>
-    <button class="btn btn-danger col-xs-3 toggle-marker" data-disease-status="positive" disabled>Positive</button>
-    <button class="btn btn-primary col-xs-3 toggle-marker" data-disease-status="negative" disabled>Negative</button>
-    <button class="btn btn-warning col-xs-3 toggle-marker" data-disease-status="no_confidence" disabled>Inconclusive</button>
+    <button class="btn btn-danger col-xs-3 toggle-marker" data-disease-status="positive">Positive</button>
+    <button class="btn btn-primary col-xs-3 toggle-marker" data-disease-status="negative">Negative</button>
+    <button class="btn btn-warning col-xs-3 toggle-marker" data-disease-status="no_confidence">Inconclusive</button>
   </div>
   """
   unless $(".toggle-marker").exists()

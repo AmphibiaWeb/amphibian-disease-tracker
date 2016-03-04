@@ -87,7 +87,7 @@ renderMapWithData = (projectData, force = false) ->
   raw = cartoData.raw_data
   if raw.hasDataFile
     downloadButton = """
-    <button class="btn btn-primary click" data-href="#{raw.filePath}" data-newtab="true">
+    <button class="btn btn-primary click download-file download-data-file" data-href="#{raw.filePath}" data-newtab="true">
       <iron-icon icon="editor:insert-chart"></iron-icon>
       Download Data File
     </button>
@@ -216,6 +216,7 @@ renderMapWithData = (projectData, force = false) ->
       </div>
     </div>
     """
+    bindClicks(".download-file")
     unless _adp.mapRendered is true
       $("#auth-block").append mapData
       setupMapMarkerToggles()
