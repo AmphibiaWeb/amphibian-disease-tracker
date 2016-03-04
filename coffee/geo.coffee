@@ -49,7 +49,10 @@ geo.init = (doCallback) ->
     # Now that that's loaded, we can load CartoDB ...
     loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
   # First, we have to load the Google Maps library
-  loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
+  unless google?.maps?
+    loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
+  else
+    window.gMapscallback()
 
 
 getMapCenter = (bb) ->
@@ -1516,5 +1519,6 @@ function chainHull_2D(P, n, H) {
 
 
 $ ->
-  # First, we have to load the Google Maps library
-  loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}"
+  unless google?.maps?
+    # First, we have to load the Google Maps library
+    loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}"
