@@ -227,7 +227,7 @@ $loginStatus = getLoginState();
          $averageLat = $averageLat / $polys;
          $averageLng = $averageLng / $polys;
          ?>
-        <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite">
+        <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
           <?php echo $polyHtml; ?>
         </google-map>
       </section>

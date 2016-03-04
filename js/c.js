@@ -1673,7 +1673,11 @@ geo.init = function(doCallback) {
   window.gMapsCallback = function() {
     return loadJS("https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false);
   };
-  return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
+  if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
+    return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
+  } else {
+    return window.gMapscallback();
+  }
 };
 
 getMapCenter = function(bb) {
@@ -3307,7 +3311,9 @@ function chainHull_2D(P, n, H) {
 ;
 
 $(function() {
-  return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey);
+  if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
+    return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey);
+  }
 });
 
 //# sourceMappingURL=maps/c.js.map
