@@ -156,7 +156,7 @@ $loginStatus = getLoginState();
     }
            if(!empty($pid)) {
            ?>
-        <paper-icon-button icon="icons:list" class="click" data-toggle="tooltip" title="List All Projects" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
+        <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         <?php } ?>
         <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.php" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
