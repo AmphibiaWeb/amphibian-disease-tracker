@@ -1210,9 +1210,10 @@ excelHandler = (path, hasHeaders = true) ->
   renderValidateProgress()
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
-  if path.search helperDir is -1
-    console.info "Prepending '#{helperDir}'"
-    correctedPath = "#{helperDir}#{path}"
+  if path.search helperDir isnt -1
+    # The helper file lives in /helpers/ so we want to remove that
+    console.info "removing '#{helperDir}'"
+    correctedPath = path.slice helperDir.length
   console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}"
   $.get helperApi, args, "json"
