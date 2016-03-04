@@ -1712,7 +1712,7 @@ getMapCenter = function(bb) {
 };
 
 getMapZoom = function(bb, selector) {
-  var adjAngle, angle, coords, eastMost, k, lng, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc, zoomRaw;
+  var adjAngle, angle, coords, eastMost, k, lng, mapScale, mapWidth, ref, westMost, zoomCalc, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1744,12 +1744,11 @@ getMapZoom = function(bb, selector) {
     adjAngle = 360 / angle;
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE;
     zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2;
-    zoomCalc = toInt(zoomRaw);
-    oz = zoomCalc;
+    console.info("Calculated raw zoom", zoomRaw);
     if (zoomRaw - zoomCalc < .5) {
       --zoomCalc;
     }
-    zo = zoomCalc;
+    zoomCalc = toInt(zoomRaw);
   } else {
     zoomCalc = 7;
   }

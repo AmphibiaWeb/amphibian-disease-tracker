@@ -106,11 +106,10 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
     # Calculate the zoom factor
     # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
     zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2
-    zoomCalc = toInt zoomRaw
-    oz = zoomCalc
+    console.info "Calculated raw zoom", zoomRaw
     if zoomRaw - zoomCalc < .5
       --zoomCalc # Zoom out one point, less tight fit
-    zo = zoomCalc
+    zoomCalc = toInt zoomRaw
     # if zoomCalc < 1
     #   zoomCalc = 7
   else
