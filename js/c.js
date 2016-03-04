@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, downloadCSVFile, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, downloadCSVFile, e, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getConvexHull, getConvexHullConfig, getConvexHullPoints, getLocation, getMapCenter, getMapZoom, getMaxZ, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, reInitMap, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1712,7 +1712,7 @@ getMapCenter = function(bb) {
 };
 
 getMapZoom = function(bb, selector) {
-  var adjAngle, angle, coords, eastMost, k, lng, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc;
+  var adjAngle, angle, coords, eastMost, k, lng, mapScale, mapWidth, oz, ref, westMost, zo, zoomCalc, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1743,13 +1743,13 @@ getMapZoom = function(bb, selector) {
     mapWidth = (ref = $(selector).width()) != null ? ref : 650;
     adjAngle = 360 / angle;
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE;
-    zoomCalc = toInt(Math.log(mapWidth * mapScale) / Math.LN2);
+    zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2;
+    zoomCalc = toInt(zoomRaw);
     oz = zoomCalc;
-    --zoomCalc;
-    zo = zoomCalc;
-    if (zoomCalc < 1) {
-      zoomCalc = 7;
+    if (zoomRaw - zoomCalc < .3) {
+      --zoomCalc;
     }
+    zo = zoomCalc;
   } else {
     zoomCalc = 7;
   }
@@ -1986,7 +1986,10 @@ createMap2 = function(pointsObj, options, callback) {
         }
         window.mapBuilder.points.push(point);
         $("#init-map-build").removeAttr("disabled");
-        return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+        $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+        marker = "<google-map-marker latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\">\n</google-map-marker>";
+        Polymer.dom(mapElement).appendChild(marker);
+        return false;
       };
     }
     $("" + mapSelector).on("google-map-click", function(e) {
@@ -2021,6 +2024,19 @@ createMap2 = function(pointsObj, options, callback) {
     console.warn(e.stack);
   }
   return false;
+};
+
+reInitMap = function(selector) {
+  var map;
+  map = p$(selector);
+  map._listeners = {};
+  map._updateCenter();
+  map._loadKml();
+  map._updateMarkers();
+  map._updateObjects();
+  map._addMapListeners();
+  map.resize();
+  return map;
 };
 
 buildMap = function(mapBuilderObj, options, callback) {
