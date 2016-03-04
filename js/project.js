@@ -227,8 +227,10 @@ renderMapWithData = function(projectData, force) {
           create: true,
           downloadFile: "species-list-" + projectData.project_id + "-" + (d.toISOString()) + ".csv",
           selector: ".download-buttons",
-          buttonText: "Download Species List"
+          buttonText: "Download Species List",
+          splitValues: " "
         };
+        downloadCSVFile(_adp.pageSpeciesList, options);
       }
     }
     return stopLoad();

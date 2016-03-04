@@ -47,11 +47,11 @@ isNull = (str) ->
   false
 
 isJson = (str) ->
-  if typeof str is 'object' then return true
+  if typeof str is 'object' and not isArray str then return true
   try
     JSON.parse(str)
     return true
-  catch e
+  catch
     return false
   false
 
@@ -1090,6 +1090,7 @@ downloadCSVFile = (data, options) ->
   options.buttonText ?= "Download File"
   options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
   options.selector ?= "#download-file"
+  options.splitValues ?= false
   ###
   textAsset = ""
   if isJson data
@@ -1101,9 +1102,22 @@ downloadCSVFile = (data, options) ->
   else
     console.error "Unexpected data type '#{typeof data}' for downloadCSVFile()", data
     return false
+  # Make sure options are available the rest of the way down
+  unless options?
+    options = new Object()
+  options.create ?= false
+  options.downloadFile ?= "datalist.csv"
+  options.classes ?= "btn btn-default"
+  options.buttonText ?= "Download File"
+  options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
+  options.selector ?= "#download-file"
+  options.splitValues ?= false
   # Parse it
   do parser = (jsonObj = jsonObject, cascadeObjects = false) ->
-    for key, value of jsonObject
+    row = 0
+    for key, value of jsonObj
+      if typeof value is "function" then continue
+      ++row
       # Escape as per RFC4180
       # https://tools.ietf.org/html/rfc4180#page-2
       try
@@ -1118,33 +1132,34 @@ downloadCSVFile = (data, options) ->
         else
           tempValue = value.replace(/"/g,'""')
           tempValue = value.replace(/<\/p><p>/g,'","')
+          if typeof options.splitValues is "string"
+            tempValueArr = tempValue.split options.splitValues
+            tempValue = tempValueArr.join "\",\""
+            escapedKey = false
           escapedValue = tempValue
-        if isNumber escapedKey
-          textAsset += '"#{escapedValue},"'
-        else unless isNull(escapedKey)
+        if escapedKey is false
+          # Special case of split values
+          textAsset += "\"#{escapedValue}\"\n"
+        else if isNumber escapedKey
+          textAsset += "\"#{escapedValue}\","
+        else unless isNull escapedKey
           textAsset += """"#{escapedKey}","#{escapedValue}"
 
           """
       catch e
-        console.warn("Unable to run key #{key}")
+        console.warn "Unable to run key #{key} on row #{row}", value, jsonObj
+        console.warn e.stack
+  textAsset = textAsset.trim()
   if textAsset.slice(-1) is ","
     textAsset = textAsset.slice(0, -1)
   file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset)
-  unless options?
-    options = new Object()
-  options.create ?= false
-  options.downloadFile ?= "datalist.csv"
-  options.classes ?= "btn btn-default"
-  options.buttonText ?= "Download File"
-  options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
-  options.selector ?= "#download-file"
   selector = options.selector
   if options.create is true
     c = $(selector).find("button").length
     id = "#{selector.slice(1)}-download-button-#{c}"
     html = """
     <a id="#{id}" class="#{options.classes}" href="#{file}" download="#{options.downloadFile}">
-      #{options.iconHtml} 
+      #{options.iconHtml}
       #{options.buttonText}
     </a>
     """

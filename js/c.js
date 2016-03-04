@@ -80,14 +80,13 @@ isNull = function(str) {
 
 isJson = function(str) {
   var error2;
-  if (typeof str === 'object') {
+  if (typeof str === 'object' && !isArray(str)) {
     return true;
   }
   try {
     JSON.parse(str);
     return true;
   } catch (error2) {
-    e = error2;
     return false;
   }
   return false;
@@ -1485,6 +1484,7 @@ downloadCSVFile = function(data, options) {
   options.buttonText ?= "Download File"
   options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
   options.selector ?= "#download-file"
+  options.splitValues ?= false
    */
   var c, file, html, id, jsonObject, parser, selector, textAsset;
   textAsset = "";
@@ -1498,41 +1498,6 @@ downloadCSVFile = function(data, options) {
     console.error("Unexpected data type '" + (typeof data) + "' for downloadCSVFile()", data);
     return false;
   }
-  (parser = function(jsonObj, cascadeObjects) {
-    var error2, escapedKey, escapedValue, key, results, tempValue, value;
-    results = [];
-    for (key in jsonObject) {
-      value = jsonObject[key];
-      try {
-        escapedKey = key.replace(/"/g, '""');
-        if (typeof value === "object" && cascadeObjects) {
-          value = parser(value, true);
-        }
-        if (isNull(value)) {
-          escapedValue = "";
-        } else {
-          tempValue = value.replace(/"/g, '""');
-          tempValue = value.replace(/<\/p><p>/g, '","');
-          escapedValue = tempValue;
-        }
-        if (isNumber(escapedKey)) {
-          results.push(textAsset += '"#{escapedValue},"');
-        } else if (!isNull(escapedKey)) {
-          results.push(textAsset += "\"" + escapedKey + "\",\"" + escapedValue + "\"\n");
-        } else {
-          results.push(void 0);
-        }
-      } catch (error2) {
-        e = error2;
-        results.push(console.warn("Unable to run key " + key));
-      }
-    }
-    return results;
-  })(jsonObject, false);
-  if (textAsset.slice(-1) === ",") {
-    textAsset = textAsset.slice(0, -1);
-  }
-  file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset);
   if (options == null) {
     options = new Object();
   }
@@ -1554,11 +1519,63 @@ downloadCSVFile = function(data, options) {
   if (options.selector == null) {
     options.selector = "#download-file";
   }
+  if (options.splitValues == null) {
+    options.splitValues = false;
+  }
+  (parser = function(jsonObj, cascadeObjects) {
+    var error2, escapedKey, escapedValue, key, results, row, tempValue, tempValueArr, value;
+    row = 0;
+    results = [];
+    for (key in jsonObj) {
+      value = jsonObj[key];
+      if (typeof value === "function") {
+        continue;
+      }
+      ++row;
+      try {
+        escapedKey = key.replace(/"/g, '""');
+        if (typeof value === "object" && cascadeObjects) {
+          value = parser(value, true);
+        }
+        if (isNull(value)) {
+          escapedValue = "";
+        } else {
+          tempValue = value.replace(/"/g, '""');
+          tempValue = value.replace(/<\/p><p>/g, '","');
+          if (typeof options.splitValues === "string") {
+            tempValueArr = tempValue.split(options.splitValues);
+            tempValue = tempValueArr.join("\",\"");
+            escapedKey = false;
+          }
+          escapedValue = tempValue;
+        }
+        if (escapedKey === false) {
+          results.push(textAsset += "\"" + escapedValue + "\"\n");
+        } else if (isNumber(escapedKey)) {
+          results.push(textAsset += "\"" + escapedValue + "\",");
+        } else if (!isNull(escapedKey)) {
+          results.push(textAsset += "\"" + escapedKey + "\",\"" + escapedValue + "\"\n");
+        } else {
+          results.push(void 0);
+        }
+      } catch (error2) {
+        e = error2;
+        console.warn("Unable to run key " + key + " on row " + row, value, jsonObj);
+        results.push(console.warn(e.stack));
+      }
+    }
+    return results;
+  })(jsonObject, false);
+  textAsset = textAsset.trim();
+  if (textAsset.slice(-1) === ",") {
+    textAsset = textAsset.slice(0, -1);
+  }
+  file = "data:text/csv;charset=utf-8," + encodeURIComponent(textAsset);
   selector = options.selector;
   if (options.create === true) {
     c = $(selector).find("button").length;
     id = (selector.slice(1)) + "-download-button-" + c;
-    html = "<a id=\"" + id + "\" class=\"" + options.classes + "\" href=\"" + file + "\" download=\"" + options.downloadFile + "\">\n  " + options.iconHtml + " \n  " + options.buttonText + "\n</a>";
+    html = "<a id=\"" + id + "\" class=\"" + options.classes + "\" href=\"" + file + "\" download=\"" + options.downloadFile + "\">\n  " + options.iconHtml + "\n  " + options.buttonText + "\n</a>";
     $(selector).append(html);
   } else {
     $(selector).attr("download", options.downloadFile).attr("href", file);
