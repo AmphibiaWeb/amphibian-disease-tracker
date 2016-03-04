@@ -749,15 +749,18 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   window.dataFileparams = cartoData.raw_data
   if cartoData.raw_data.hasDataFile
     # We already have a data file
+    filePath = cartoData.raw_data.filePath
+    if filePath.search helperDir is -1
+      filePath = "#{helperDir}#{filePath}"
     html = """
     <p>
       Your project already has data associated with it. <span id="last-modified-file"></span>
     </p>
-    <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{cartoData.raw_data.fileName}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
+    <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{filePath}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
     <p>You can upload more data below, or replace this existing data.</p>
     """
     $("#data-card .card-content .variable-card-content").html html
-    $.get "meta.php", "do=get_last_mod&file=#{cartoData.raw_data.fileName}", "json"
+    $.get "meta.php", "do=get_last_mod&file=#{filePath}", "json"
     .done (result) ->
       time = toInt(result.last_mod) * 1000 # Seconds -> Milliseconds
       console.log "Last modded", time, result
@@ -768,11 +771,11 @@ getProjectCartoData = (cartoObj, mapOptions) ->
         timeString = "#{iso.slice(0, iso.search("T"))}"
         $("#last-modified-file").text "Last uploaded on #{timeString}."
       else
-        console.warn "Didn't get a number back to check last mod time for #{cartoData.raw_data.fileName}"
+        console.warn "Didn't get a number back to check last mod time for #{filePath}"
       false
     .fail (result, status) ->
       # We don't really care, actually.
-      console.warn "Couldn't get last mod time for #{cartoData.raw_data.fileName}"
+      console.warn "Couldn't get last mod time for #{filePath}"
       false
   else
     # We don't already have a data file

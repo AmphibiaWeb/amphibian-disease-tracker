@@ -258,7 +258,7 @@ dataset_arks:
   # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/55
   type: "text"
   logical: "csv"
-  example: "{ARK}:{FILE_NAME}"
+  example: "{ARK}::{FILE_NAME},{ARK}::{FILE_NAME}"
 project_dir_identifier:
   # Within the uploads directory, the directory that specifically
   # identifies this project
