@@ -187,7 +187,7 @@ $loginStatus = getLoginState();
          $superCoords = array();
          $averageLat = 0;
          $averageLng = 0;
-         $points = 0;
+         $polys = 0;
          $polyHtml = "";
          foreach($list as $project) {
              if(boolstr($public)) {
@@ -202,21 +202,32 @@ $loginStatus = getLoginState();
                  $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
              }
              $superCoords[] = $coords;
+             # If we don't do this by project first, the center is
+             # weighted by boundry complication rather than number of
+             # projects
+             $polys++;
+             $points = 0;
+             $projAverageLat = 0;
+             $projAverageLng = 0;
              # Need to enable both click-events and clickable
              $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project["project_id"]."'>";
              foreach($coords as $point) {
                  $points++;
                  $lat = $point["lat"];
                  $lng = $point["lng"];
-                 $averageLat = $averageLat + $lat;
-                 $averageLng = $averageLng + $lng;
+                 $projAverageLat = $projAverageLat + $lat;
+                 $projAverageLng = $projAverageLng + $lng;
                  $html .= "<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
              }
              $html .= "</google-map-poly>\n";
              $polyHtml .= $html;
+             $projAverageLat = $projAverageLat / $points;
+             $projAverageLng = $projAverageLng / $points;
+             $averageLat = $averageLat + $projAverageLat;
+             $averageLng = $averageLng + $projAverageLng;
          }
-         $averageLat = $averageLat / $points;
-         $averageLng = $averageLng / $points;
+         $averageLat = $averageLat / $polys;
+         $averageLng = $averageLng / $polys;
          ?>
         <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite">
           <?php echo $polyHtml; ?>
