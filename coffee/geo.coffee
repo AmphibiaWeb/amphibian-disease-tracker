@@ -108,7 +108,7 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
     zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2
     zoomCalc = toInt zoomRaw
     oz = zoomCalc
-    if zoomRaw - zoomCalc < .3
+    if zoomRaw - zoomCalc < .5
       --zoomCalc # Zoom out one point, less tight fit
     zo = zoomCalc
     # if zoomCalc < 1
@@ -373,18 +373,43 @@ createMap2 = (pointsObj, options, callback) ->
 
 reInitMap = (selector) ->
   map = p$(selector)
-  map._listeners = {}
-  map._updateCenter()
-  map._loadKml()
-  map._updateMarkers()
-  map._updateObjects()
-  map._addMapListeners()
-  map.resize()
-  map
-  #o = map.objects
-  #for obj in o
-  #  obj._mapChanged()
-  #map._initGMap()
+  map.map = null
+  o = map.objects
+  map._initGMap()
+  newObjects = new Array()
+  for obj in o
+    if obj.tagName.toLowerCase() is "google-map-poly"
+      obj._points = new Array()
+      $(obj).find("google-map-point").each ->
+        lat = $(this).attr "latitude"
+        lng = $(this).attr "longitude"
+        newPoint =
+          lat: toFloat lat
+          lng: toFloat lng
+        newLL = new google.maps.LatLng newPoint
+        obj._points.push newLL
+      obj.path = null
+      obj.map = map.map
+      polyOptions =
+        # https://github.com/GoogleWebComponents/google-map/blob/master/google-map-poly.html#L500
+        clickable: obj.clickable or obj.draggable
+        draggable: obj.draggable
+        editable: obj.editable
+        geodesic: obj.geodesic
+        map: obj.map
+        strokeColor: obj.strokeColor
+        strokeOpacity: obj.strokeOpacity
+        strokePosition: obj._convertStrokePosition()
+        strokeWeight: obj.strokeWeight
+        visible: !obj.hidden
+        zIndex: obj.zIndex
+      poly = new google.maps.Polygon polyOptions
+      poly.setPaths obj._points
+      obj._setPoly poly
+      # obj._mapChanged()
+      newObjects.push obj
+  # End loop
+  map.objects = newObjects
 
 
 buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->

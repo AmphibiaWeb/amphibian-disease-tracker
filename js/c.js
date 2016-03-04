@@ -1746,7 +1746,7 @@ getMapZoom = function(bb, selector) {
     zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2;
     zoomCalc = toInt(zoomRaw);
     oz = zoomCalc;
-    if (zoomRaw - zoomCalc < .3) {
+    if (zoomRaw - zoomCalc < .5) {
       --zoomCalc;
     }
     zo = zoomCalc;
@@ -2030,16 +2030,49 @@ createMap2 = function(pointsObj, options, callback) {
 };
 
 reInitMap = function(selector) {
-  var map;
+  var l, len, map, newObjects, o, obj, poly, polyOptions;
   map = p$(selector);
-  map._listeners = {};
-  map._updateCenter();
-  map._loadKml();
-  map._updateMarkers();
-  map._updateObjects();
-  map._addMapListeners();
-  map.resize();
-  return map;
+  map.map = null;
+  o = map.objects;
+  map._initGMap();
+  newObjects = new Array();
+  for (l = 0, len = o.length; l < len; l++) {
+    obj = o[l];
+    if (obj.tagName.toLowerCase() === "google-map-poly") {
+      obj._points = new Array();
+      $(obj).find("google-map-point").each(function() {
+        var lat, lng, newLL, newPoint;
+        lat = $(this).attr("latitude");
+        lng = $(this).attr("longitude");
+        newPoint = {
+          lat: toFloat(lat),
+          lng: toFloat(lng)
+        };
+        newLL = new google.maps.LatLng(newPoint);
+        return obj._points.push(newLL);
+      });
+      obj.path = null;
+      obj.map = map.map;
+      polyOptions = {
+        clickable: obj.clickable || obj.draggable,
+        draggable: obj.draggable,
+        editable: obj.editable,
+        geodesic: obj.geodesic,
+        map: obj.map,
+        strokeColor: obj.strokeColor,
+        strokeOpacity: obj.strokeOpacity,
+        strokePosition: obj._convertStrokePosition(),
+        strokeWeight: obj.strokeWeight,
+        visible: !obj.hidden,
+        zIndex: obj.zIndex
+      };
+      poly = new google.maps.Polygon(polyOptions);
+      poly.setPaths(obj._points);
+      obj._setPoly(poly);
+      newObjects.push(obj);
+    }
+  }
+  return map.objects = newObjects;
 };
 
 buildMap = function(mapBuilderObj, options, callback) {
