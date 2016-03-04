@@ -10,10 +10,15 @@ if($debug) {
     error_log("Project Browser is running in debug mode!");
 }
 
+$print_login_state = false;
+require_once("DB_CONFIG.php");
+require_once(dirname(__FILE__)."/core/core.php");
+require_once(dirname(__FILE__)."/admin/async_login_handler.php");
+$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
 
 $as_include = true;
 # The next include includes core, and DB_CONFIG, and sets up $db
-require_once(dirname(__FILE__)."/admin-api.php");
+# require_once(dirname(__FILE__)."/admin-api.php");
 
 
 $pid = $db->sanitize($_GET["id"]);
@@ -230,6 +235,7 @@ $loginStatus = getLoginState();
         <google-map class="col-xs-10 col-md-8 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" disable-default-ui map-type="satellite" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
           <?php echo $polyHtml; ?>
         </google-map>
+        <p class="text-center text-muted">Community Project Map</p>
       </section>
       <?php } else if (!$validProject){ ?>
       <h1 id="title">Invalid Project</h1>
@@ -329,7 +335,7 @@ $loginStatus = getLoginState();
 
           </ul>
         </div>
-        <nav class="col-xs-12 project-pagination center-block" id="project-pagination">
+        <nav class="col-xs-12 project-pagination center-block text-center" id="project-pagination">
           <ul class="pagination">
             <li class="<?php echo $olderDisabled; ?>">
               <a href="#"><span aria-hidden="true">&larr;</span> Older</a>
