@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, filePath, helperDir, j, len, mapHtml, point, poly, raw, ref, usedPoints, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, filePath, helperDir, j, len, mapHtml, paths, point, poly, raw, ref, tmp, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -121,6 +121,18 @@ renderMapWithData = function(projectData, force) {
     zoom = "";
   }
   poly = cartoData.bounding_polygon;
+  if (isArray(poly || (poly.paths == null))) {
+    paths = poly;
+    tmp = toObject(poly);
+    tmp.paths = poly;
+    poly = tmp;
+    if (poly.fillColor == null) {
+      poly.fillColor = defaultFillColor;
+    }
+    if (poly.fillOpacity == null) {
+      poly.fillOpacity = defaultFillOpacity;
+    }
+  }
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
   ref = poly.paths;
