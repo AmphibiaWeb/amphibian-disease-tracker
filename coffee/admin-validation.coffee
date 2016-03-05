@@ -48,15 +48,42 @@ validateFimsData = (dataObject, callback = null) ->
   ###
   console.info "FIMS Validating", dataObject.data
   $("#data-validation").removeAttr "indeterminate"
-  p$("#data-validation").max = Object.size dataObject.data
-  fimsPostTarget = ""
+  rowCount = Object.size dataObject.data
+  p$("#data-validation").max = rowCount
+  # Set an animation timer
+  timerPerRow = 30
+  validatorTimeout = null
+  animateProgress = ->
+    val = p$("#data-validation").value
+    if val >= rowCount
+      # Stop the animation
+      return false
+    ++val
+    p$("#data-validation").value = val
+    validatorTimeout = delay timerPerRow, ->
+      animateProgress()
   # Format the JSON for FIMS
+  data = jsonTo64 dataObject.data
+  args = "perform=validate&data=#{data}"
   # Post the object over to FIMS
-  # Get back an ARK
-  # When we're successful, run the dependent callback
-  if typeof callback is "function"
+  $.post adminParams.apiTarget, args, "json"
+  .done (result) ->
+    console.log "FIMS validate result", result
+    unless result.status is true
+      stopLoadError "There was a problem with your dataset"
+      error = result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
+      bsAlert error, "danger"
+      clearTimeout validatorTimeout
+      return false
     p$("#data-validation").value = Object.size dataObject.data
-    callback(dataObject)
+    clearTimeout validatorTimeout
+    # When we're successful, run the dependent callback
+    if typeof callback is "function"
+      callback(dataObject)
+  .error (result, status) ->
+    clearTimeout validatorTimeout
+    stopLoadError "There was a problem validating your data, please try again later"
+    false
   false
 
 
@@ -78,7 +105,7 @@ mintBcid = (projectId, title, callback) ->
     console.log "Got", result
     unless result.status
       stopLoadError result.human_error
-      console.error result.error      
+      console.error result.error
       return false
     resultObj = result
   .error (result, status) ->
@@ -197,7 +224,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     taxonObj.response = result
     doCallback(taxonObj)
     return false
-  .fail (result, status) ->
+  .error (result, status) ->
     # On fail, notify the user that the taxon wasn't actually validated
     # with a BSAlert, rather than toast
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"

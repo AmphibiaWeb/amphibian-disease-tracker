@@ -272,14 +272,20 @@ bindCopyEvents = (selector = ".click-copy") ->
 
 
 jsonTo64 = (obj, encode = true) ->
+  ###
+  #
+  # @param obj
+  # @param boolean encode -> URI encode base64 string
+  ###
   try
     shadowObj = obj.slice 0
     shadowObj.push "foo" # Throws error on obj
     obj = toObject obj
   objString = JSON.stringify obj
-  encoded = encode64 objString
   if encode is true
-    encoded = encodeURIComponent encoded
+    encoded = post64 objString
+  else
+    encoded = encode64 encoded
   encoded
 
 

@@ -911,10 +911,11 @@ function validateDataset($dataset, $fimsAuthCookiesAsString = null) {
         # See
         # http://biscicol.org/biocode-fims/rest/fims.wadl#idp1379817744
         # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html#validate-dataset
+        $data = decode64($dataset);
         $fimsValidateData = array(
-            "dataset" => $dataset,
+            "dataset" => $data,
             "projectId" => 26,
-            "expeditionCode" => $dataset["project_id"],
+            "expeditionCode" => $data["project_id"],
         );
 
         # Login
@@ -962,13 +963,18 @@ function validateDataset($dataset, $fimsAuthCookiesAsString = null) {
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsValidateUrl, false, $ctx);
         $resp = json_decode($rawResponse, true);
+        $status = true;
+        # Check the response for errors
         $response = array(
-            "status" => true,          
+            "status" => $status,
             "responses" => array(
                 "login_response" => $loginResponse,
                 "validate_response" => $resp,
             ),
-
+            "data" => array(
+                "provided_data" => $dataset,
+                "parsed_data" => $data,
+            ),
         );
 
     } catch (Exception $e) {
