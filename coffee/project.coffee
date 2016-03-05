@@ -515,6 +515,14 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
     .addClass "btn-success success-glow"
     .click ->
       $(this).removeClass "success-glow"
+    # https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
+    options =
+      behavior: "smooth"
+      block: "start"
+    # http://caniuse.com/#feat=scrollintoview
+    # All major browsers support it, but can't do much fancy yet
+    # Use options instead of true when that changes
+    $(selector).get(0).scrollIntoView(true)
   selector
 
 

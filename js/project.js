@@ -480,7 +480,7 @@ renderPublicMap = function(projectData) {
 };
 
 checkArkDataset = function(projectData, forceDownload, forceReparse) {
-  var arg, ark, arkIdentifiers, canonical, data, dataId, dataset, fragList, fragment, j, l, len, len1, match, params, ref, selector, url;
+  var arg, ark, arkIdentifiers, canonical, data, dataId, dataset, fragList, fragment, j, l, len, len1, match, options, params, ref, selector, url;
   if (forceDownload == null) {
     forceDownload = false;
   }
@@ -539,6 +539,11 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
     $(selector).removeClass("btn-xs btn-primary").addClass("btn-success success-glow").click(function() {
       return $(this).removeClass("success-glow");
     });
+    options = {
+      behavior: "smooth",
+      block: "start"
+    };
+    $(selector).get(0).scrollIntoView(true);
   }
   return selector;
 };
