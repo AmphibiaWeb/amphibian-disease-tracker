@@ -34,6 +34,8 @@ body {
 @bs-danger: #d9534f;
 @bs-warning: #f0ad4e;
 
+@success: @btn-success-bg;
+
 // Application Colors
 
 @import "theme-colors.less";
@@ -228,6 +230,31 @@ paper-dialog-scrollable {
     }
 }
 
+
+.success-glow {
+    background: @success;
+    //box-shadow: 0 0 2em .25em @success;
+    animation-name: successPulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@success-glowdown: @success - #281122;
+
+@keyframes successPulse {
+  from { 
+      background-color: @success;
+      box-shadow: 0 0 9px #333; 
+  }
+  50% { 
+      background-color: @success-glowdown; 
+      box-shadow: 0 0 18px @success-glowdown; 
+  }
+  to { 
+      background-color: @success; 
+      box-shadow: 0 0 9px #333; 
+  }
+}
 
 // Home Page
 

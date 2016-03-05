@@ -7052,6 +7052,26 @@ html >>> .capitalize {
     left: 10% !important;
   }
 }
+.success-glow {
+  background: #5cb85c;
+  animation-name: successPulse;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+@keyframes successPulse {
+  from {
+    background-color: #5cb85c;
+    box-shadow: 0 0 9px #333;
+  }
+  50% {
+    background-color: #34a73a;
+    box-shadow: 0 0 18px #34a73a;
+  }
+  to {
+    background-color: #5cb85c;
+    box-shadow: 0 0 9px #333;
+  }
+}
 .fixed-bar {
   position: fixed;
   margin-top: 0px !important;
