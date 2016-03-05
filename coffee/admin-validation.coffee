@@ -66,7 +66,7 @@ validateFimsData = (dataObject, callback = null) ->
   # Format the JSON for FIMS
   data = jsonTo64 dataObject.data
   src = post64 dataObject.dataSrc
-  args = "perform=validate&data=#{data}&datasrc=#{src}"
+  args = "perform=validate&data=#{data}&datasrc=#{src}&link=#{_adp.projectId}"
   # Post the object over to FIMS
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->

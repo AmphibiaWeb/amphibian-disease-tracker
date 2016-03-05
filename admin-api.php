@@ -123,7 +123,8 @@ if($as_include !== true) {
     case "validate":
         $data = $_REQUEST["data"];
         $datasrc = $_REQUEST["datasrc"];
-        returnAjax(validateDataset($data, $datasrc));
+        $link = $_REQUEST["link"];
+        returnAjax(validateDataset($data, $datasrc, $link));
         break;
     case "check_access":
         returnAjax(authorizedProjectAccess($_REQUEST));
@@ -644,6 +645,11 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         } else {
             $loginResponse = "NO_LOGIN_CREDENTIALS_PROVIDED";
             $cookiesString = $fimsAuthCookiesAsString;
+            $params = array(
+                "http" => array(
+                    "method" => "POST",
+                ),
+            );
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n" .
@@ -754,6 +760,11 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
         } else {
             $loginResponse = "NO_LOGIN_CREDENTIALS_PROVIDED";
             $cookiesString = $fimsAuthCookiesAsString;
+            $params = array(
+                "http" => array(
+                    "method" => "POST",
+                ),
+            );
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n" .
@@ -862,6 +873,11 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         } else {
             $loginResponse = "NO_LOGIN_CREDENTIALS_PROVIDED";
             $cookiesString = $fimsAuthCookiesAsString;
+            $params = array(
+                "http" => array(
+                    "method" => "POST",
+                ),
+            );
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n" .
@@ -906,7 +922,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
 }
 
 
-function validateDataset($dataset, $dataPath, $fimsAuthCookiesAsString = null) {
+function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsString = null) {
     try {
         $fimsValidateUrl = "http://www.biscicol.org/biocode-fims/rest/validate";
         # See
@@ -915,6 +931,23 @@ function validateDataset($dataset, $dataPath, $fimsAuthCookiesAsString = null) {
         $data = smart_decode64($dataset, false);
         $datasrc = decode64($dataPath);
         $dataUploadPath = "@" . realpath($datasrc);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, realpath($datasrc));
+        finfo_close($finfo);
+        if(empty($mime) || $mime == "application/zip") {
+            # Just the fallback that is based purely on extension
+            # Only used when finfo can't find a mime type
+            try {
+                include_once dirname(__FILE__) . "/helpers/js-dragdrop/manual_mime.php";
+                $mime = mime_type($file);
+            } catch (Exception $e) {
+                $mime_error = $e->getMessage();
+                $mime = null;
+            }
+        }
+        if(!empty($mime)) {
+            $dataUploadPath .= ";type=" . $mime;
+        }
         # Remove the invalid "fims_extra" data
         foreach($data as $k=>$row) {
             unset($row["fimsExtra"]);
@@ -923,7 +956,7 @@ function validateDataset($dataset, $dataPath, $fimsAuthCookiesAsString = null) {
         $fimsValidateData = array(
             "dataset" => $dataUploadPath,
             "projectId" => 26,
-            "expeditionCode" => $data["project_id"],
+            "expeditionCode" => $projectLink,
         );
 
         # Login
@@ -961,15 +994,31 @@ function validateDataset($dataset, $dataPath, $fimsAuthCookiesAsString = null) {
         } else {
             $loginResponse = "NO_LOGIN_CREDENTIALS_PROVIDED";
             $cookiesString = $fimsAuthCookiesAsString;
+            $params = array(
+                "http" => array(
+                    "method" => "POST",
+                ),
+            );
         }
         # Post the args
         $headers = "Content-type: multipart/form-data\r\n" .
-                 "Cookie: " . $cookiesString . "\r\n";
-        $params["http"]["header"] = $headers;
-        $params["http"]["header"] = $headers;
-        $params["http"]["content"] = http_build_query($fimsValidateData);
-        $ctx = stream_context_create($params);
-        $rawResponse = file_get_contents($fimsValidateUrl, false, $ctx);
+                 "Cookie: " . $cookiesString . "\r\n";        
+        $params = array(
+            "http" => array(
+                "method" => "POST",
+                "header" => $headers,
+                "content" => http_build_query($fimsValidateData),
+            ),
+        );
+        
+        $ch = curl_init($fimsValidateUrl);
+        curl_setopt( $ch, CURLOPT_POST, 1);
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($fimsValidateData));
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt( $ch, CURLOPT_HEADER, 1);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $params);
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+        $rawResponse = curl_exec($ch);
         $resp = json_decode($rawResponse, true);
         $status = true;
         # Check the response for errors
@@ -982,6 +1031,9 @@ function validateDataset($dataset, $dataPath, $fimsAuthCookiesAsString = null) {
             "data" => array(
                 "user_provided_data" => $dataset,
                 "fims_passed_data" => $data,
+                "file_sent" => $dataUploadPath,
+                "header_params" => $params,
+                "data_sent" => $fimsValidateData,
             ),
         );
         return $response;
