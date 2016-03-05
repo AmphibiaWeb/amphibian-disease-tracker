@@ -1525,6 +1525,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       transectRing: geo.boundingBox
       data: parsedData
       samples: samplesMeta
+      dataSrc: "#{helperDir}#{dataFileParams.filePath}"
     validateData totalData, (validatedData) ->
       # Save the upload
       taxonListString = ""
