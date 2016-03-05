@@ -1538,7 +1538,8 @@ newGeoDataHandler = function(dataObject) {
     totalData = {
       transectRing: geo.boundingBox,
       data: parsedData,
-      samples: samplesMeta
+      samples: samplesMeta,
+      dataSrc: "" + helperDir + dataFileParams.filePath
     };
     validateData(totalData, function(validatedData) {
       var cladeList, e, error4, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
@@ -2419,6 +2420,7 @@ validateData = function(dataObject, callback) {
   /*
    *
    */
+  _adp.validationDataObject = dataObject;
   console.info("Doing nested validation");
   timer = Date.now();
   renderValidateProgress();
@@ -2441,7 +2443,7 @@ validateData = function(dataObject, callback) {
 };
 
 validateFimsData = function(dataObject, callback) {
-  var animateProgress, args, data, rowCount, timerPerRow, validatorTimeout;
+  var animateProgress, args, data, rowCount, src, timerPerRow, validatorTimeout;
   if (callback == null) {
     callback = null;
   }
@@ -2472,7 +2474,8 @@ validateFimsData = function(dataObject, callback) {
     });
   };
   data = jsonTo64(dataObject.data);
-  args = "perform=validate&data=" + data;
+  src = post64(dataObject.dataSrc);
+  args = "perform=validate&data=" + data + "&datasrc=" + src;
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
     var error, ref, ref1;
     console.log("FIMS validate result", result);

@@ -1525,6 +1525,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       transectRing: geo.boundingBox
       data: parsedData
       samples: samplesMeta
+      dataSrc: "#{helperDir}#{dataFileParams.filePath}"
     validateData totalData, (validatedData) ->
       # Save the upload
       taxonListString = ""
@@ -2576,6 +2577,7 @@ validateData = (dataObject, callback = null) ->
   ###
   #
   ###
+  _adp.validationDataObject = dataObject
   console.info "Doing nested validation"
   timer = Date.now()
   renderValidateProgress()
@@ -2619,7 +2621,8 @@ validateFimsData = (dataObject, callback = null) ->
       animateProgress()
   # Format the JSON for FIMS
   data = jsonTo64 dataObject.data
-  args = "perform=validate&data=#{data}"
+  src = post64 dataObject.dataSrc
+  args = "perform=validate&data=#{data}&datasrc=#{src}"
   # Post the object over to FIMS
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->

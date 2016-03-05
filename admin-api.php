@@ -122,7 +122,8 @@ if($as_include !== true) {
         break;
     case "validate":
         $data = $_REQUEST["data"];
-        returnAjax(validateDataset($data));
+        $datasrc = $_REQUEST["datasrc"];
+        returnAjax(validateDataset($data, $datasrc));
         break;
     case "check_access":
         returnAjax(authorizedProjectAccess($_REQUEST));
@@ -905,15 +906,22 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
 }
 
 
-function validateDataset($dataset, $fimsAuthCookiesAsString = null) {
+function validateDataset($dataset, $dataPath, $fimsAuthCookiesAsString = null) {
     try {
         $fimsValidateUrl = "http://www.biscicol.org/biocode-fims/rest/validate";
         # See
         # http://biscicol.org/biocode-fims/rest/fims.wadl#idp1379817744
         # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html#validate-dataset
-        $data = decode64($dataset);
+        $data = smart_decode64($dataset, false);
+        $datasrc = decode64($dataPath);
+        $dataUploadPath = "@" . realpath($datasrc);
+        # Remove the invalid "fims_extra" data
+        foreach($data as $k=>$row) {
+            unset($row["fimsExtra"]);
+            $data[$k] = $row;
+        }
         $fimsValidateData = array(
-            "dataset" => $data,
+            "dataset" => $dataUploadPath,
             "projectId" => 26,
             "expeditionCode" => $data["project_id"],
         );
@@ -972,10 +980,11 @@ function validateDataset($dataset, $fimsAuthCookiesAsString = null) {
                 "validate_response" => $resp,
             ),
             "data" => array(
-                "provided_data" => $dataset,
-                "parsed_data" => $data,
+                "user_provided_data" => $dataset,
+                "fims_passed_data" => $data,
             ),
         );
+        return $response;
 
     } catch (Exception $e) {
         return array (
