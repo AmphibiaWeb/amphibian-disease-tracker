@@ -109,10 +109,10 @@ renderMapWithData = (projectData, force = false) ->
         html = """
           <button class="btn btn-primary btn-small click download-file download-data-file download-alt-datafile" data-href="#{filePath}" data-newtab="true">
             <iron-icon icon="editor:insert-chart"></iron-icon>
-            Download #{data[0]}
+            #{data[0]} dataset
           </button>
         """
-        downloadButton += filePath
+        downloadButton += html
   downloadButton ?= ""
   cartoTable = cartoData.table
   try
@@ -493,7 +493,8 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
       break
   data = canonical.split "::"
   dataId = data[1]
-  selector = ".download-file[data-href$='#{dataId}']"
+  # We don't necessarily know the file type, so * rather than $ suffix
+  selector = ".download-file[data-href*='#{dataId}']" 
   if forceDownload
     url = $(selector).attr "data-href"
     openTab url

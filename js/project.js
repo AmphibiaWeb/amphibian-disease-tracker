@@ -118,8 +118,8 @@ renderMapWithData = function(projectData, force) {
         ark = arkIdentifiers[j];
         data = ark.split("::");
         filePath = baseFilePath + "/" + data[1];
-        html = "<button class=\"btn btn-primary btn-small click download-file download-data-file download-alt-datafile\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download " + data[0] + "\n</button>";
-        downloadButton += filePath;
+        html = "<button class=\"btn btn-primary btn-small click download-file download-data-file download-alt-datafile\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + data[0] + " dataset\n</button>";
+        downloadButton += html;
       }
     }
   }
@@ -520,7 +520,7 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
   }
   data = canonical.split("::");
   dataId = data[1];
-  selector = ".download-file[data-href$='" + dataId + "']";
+  selector = ".download-file[data-href*='" + dataId + "']";
   if (forceDownload) {
     url = $(selector).attr("data-href");
     openTab(url);
