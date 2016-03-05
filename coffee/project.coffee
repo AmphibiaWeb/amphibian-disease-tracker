@@ -260,6 +260,8 @@ renderMapWithData = (projectData, force = false) ->
           header: ["Genus","Species","Subspecies"]
         downloadCSVFile _adp.pageSpeciesList, options
     bindClicks(".download-file")
+    checkArkDataset(projectData)
+    setPublicData(projectData)
     stopLoad()
   .error (result, status) ->
     console.error result, status
@@ -292,7 +294,6 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
   renderMapWithData(projectData) # Stops load
-  checkArkDataset(projectData)
   false
 
 
@@ -502,7 +503,8 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
   dataId = data[1]
   console.info "Got matching identifier #{canonical} -> #{dataId}"
   # We don't necessarily know the file type, so * rather than $ suffix
-  selector = ".download-file[data-href*='#{dataId}']" 
+  selector = ".download-file[data-href*='#{dataId}']"
+  selector = $(selector).get(0) # Only ever get one
   if forceDownload
     url = $(selector).attr "data-href"
     openTab url
