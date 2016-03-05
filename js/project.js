@@ -265,6 +265,8 @@ renderMapWithData = function(projectData, force) {
       }
     }
     bindClicks(".download-file");
+    checkArkDataset(projectData);
+    setPublicData(projectData);
     return stopLoad();
   }).error(function(result, status) {
     console.error(result, status);
@@ -296,7 +298,6 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   renderMapWithData(projectData);
-  checkArkDataset(projectData);
   return false;
 };
 
@@ -530,6 +531,7 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
   dataId = data[1];
   console.info("Got matching identifier " + canonical + " -> " + dataId);
   selector = ".download-file[data-href*='" + dataId + "']";
+  selector = $(selector).get(0);
   if (forceDownload) {
     url = $(selector).attr("data-href");
     openTab(url);
