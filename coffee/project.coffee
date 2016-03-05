@@ -491,7 +491,7 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
   canonical = ""
   match = false
   for ark in arkIdentifiers
-    if ark.search dataset isnt -1
+    if ark.search(dataset) isnt -1
       canonical = ark
       match = true
       break
