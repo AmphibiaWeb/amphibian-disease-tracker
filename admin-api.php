@@ -117,7 +117,7 @@ if($as_include !== true) {
         break;
     case "associate_expedition":
         $link = $_REQUEST["link"];
-        $bcid = if isset($_REQUEST["bcid"]) ? $_REQUEST["bcid"]:null;
+        $bcid = isset($_REQUEST["bcid"]) ? $_REQUEST["bcid"]:null;
         returnAjax(associateBcidsWithExpeditions($link, null, $bcid));
         break;
     case "validate":
@@ -709,7 +709,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
         $cols = array("dataset_arks");
         $results = $db->getQueryResults($search, $cols, "AND", false, true);
         $row = $results[0];
-        $data = explode("," $row);
+        $data = explode(",", $row);
         foreach($data as $arkPair) {
             $arkData = explode("::", $arkPair);
             $ark = $arkData[0];
