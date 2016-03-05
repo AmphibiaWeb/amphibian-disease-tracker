@@ -2441,7 +2441,7 @@ validateData = function(dataObject, callback) {
 };
 
 validateFimsData = function(dataObject, callback) {
-  var fimsPostTarget;
+  var animateProgress, args, data, rowCount, timerPerRow, validatorTimeout;
   if (callback == null) {
     callback = null;
   }
@@ -2455,12 +2455,44 @@ validateFimsData = function(dataObject, callback) {
    */
   console.info("FIMS Validating", dataObject.data);
   $("#data-validation").removeAttr("indeterminate");
-  p$("#data-validation").max = Object.size(dataObject.data);
-  fimsPostTarget = "";
-  if (typeof callback === "function") {
+  rowCount = Object.size(dataObject.data);
+  p$("#data-validation").max = rowCount;
+  timerPerRow = 30;
+  validatorTimeout = null;
+  animateProgress = function() {
+    var val;
+    val = p$("#data-validation").value;
+    if (val >= rowCount) {
+      return false;
+    }
+    ++val;
+    p$("#data-validation").value = val;
+    return validatorTimeout = delay(timerPerRow, function() {
+      return animateProgress();
+    });
+  };
+  data = jsonTo64(dataObject.data);
+  args = "perform=validate&data=" + data;
+  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    var error, ref, ref1;
+    console.log("FIMS validate result", result);
+    if (result.status !== true) {
+      stopLoadError("There was a problem with your dataset");
+      error = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
+      bsAlert(error, "danger");
+      clearTimeout(validatorTimeout);
+      return false;
+    }
     p$("#data-validation").value = Object.size(dataObject.data);
-    callback(dataObject);
-  }
+    clearTimeout(validatorTimeout);
+    if (typeof callback === "function") {
+      return callback(dataObject);
+    }
+  }).error(function(result, status) {
+    clearTimeout(validatorTimeout);
+    stopLoadError("There was a problem validating your data, please try again later");
+    return false;
+  });
   return false;
 };
 
@@ -2635,7 +2667,7 @@ validateAWebTaxon = function(taxonObj, callback) {
     taxonObj.response = result;
     doCallback(taxonObj);
     return false;
-  }).fail(function(result, status) {
+  }).error(function(result, status) {
     var prettyTaxon;
     prettyTaxon = taxonObj.genus + " " + taxonObj.species;
     prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
