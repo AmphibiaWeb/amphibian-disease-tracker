@@ -516,7 +516,7 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
   match = false;
   for (l = 0, len1 = arkIdentifiers.length; l < len1; l++) {
     ark = arkIdentifiers[l];
-    if (ark.search(dataset !== -1)) {
+    if (ark.search(dataset) !== -1) {
       canonical = ark;
       match = true;
       break;
