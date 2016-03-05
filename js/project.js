@@ -118,7 +118,7 @@ renderMapWithData = function(projectData, force) {
         ark = arkIdentifiers[j];
         data = ark.split("::");
         filePath = baseFilePath + "/" + data[1];
-        html = "<button class=\"btn btn-primary btn-small click download-file download-data-file download-alt-datafile\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + data[0] + " dataset\n</button>";
+        html = "<button class=\"btn btn-primary btn-xs click download-file download-data-file download-alt-datafile\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + data[0] + " dataset\n</button>";
         downloadButton += html;
       }
     }
@@ -479,7 +479,7 @@ renderPublicMap = function(projectData) {
 };
 
 checkArkDataset = function(projectData, forceDownload, forceReparse) {
-  var arg, ark, arkIdentifiers, canonical, data, dataId, dataset, fragList, fragment, j, l, len, len1, params, ref, selector, url;
+  var arg, ark, arkIdentifiers, canonical, data, dataId, dataset, fragList, fragment, j, l, len, len1, match, params, ref, selector, url;
   if (forceDownload == null) {
     forceDownload = false;
   }
@@ -496,12 +496,13 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
    */
   fragment = uri.o.attr("fragment");
   fragList = fragment.split(",");
-  if (!((_adp.fragmentData != null) || !forceReparse)) {
+  if (forceReparse || (_adp.fragmentData == null)) {
+    console.info("Examining fragment list");
     data = new Object();
     for (j = 0, len = fragList.length; j < len; j++) {
       arg = fragList[j];
       params = arg.split(":");
-      data[param[0]] = param[1];
+      data[params[0]] = params[1];
     }
     _adp.fragmentData = data;
   }
@@ -509,23 +510,31 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
   if (dataset == null) {
     return false;
   }
+  console.info("Checking  ARK identifiers for dataset " + dataset + " ...");
   arkIdentifiers = projectData.dataset_arks.split(",");
   canonical = "";
+  match = false;
   for (l = 0, len1 = arkIdentifiers.length; l < len1; l++) {
     ark = arkIdentifiers[l];
     if (ark.search(dataset !== -1)) {
       canonical = ark;
+      match = true;
       break;
     }
   }
+  if (match !== true) {
+    console.warn("Could not find matching dataset in", arkIdentifiers);
+    return false;
+  }
   data = canonical.split("::");
   dataId = data[1];
+  console.info("Got matching identifier " + canonical + " -> " + dataId);
   selector = ".download-file[data-href*='" + dataId + "']";
   if (forceDownload) {
     url = $(selector).attr("data-href");
     openTab(url);
   } else {
-    $(selector).removeClass("btn-small btn-primary").addClass("btn-success success-glow").click(function() {
+    $(selector).removeClass("btn-xs btn-primary").addClass("btn-success success-glow").click(function() {
       return $(this).removeClass("success-glow");
     });
   }
