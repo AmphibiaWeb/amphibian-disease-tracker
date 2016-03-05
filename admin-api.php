@@ -83,6 +83,7 @@ if($as_include !== true) {
     case "get":
         returnAjax(readProjectData($_REQUEST));
         break;
+    case "mint_data":
     case "mint":
         $link = $_REQUEST["link"];
         $file = $_REQUEST["file"];
@@ -95,6 +96,26 @@ if($as_include !== true) {
             ));
         }
         returnAjax(mintBcid($link, $file, $title));
+        break;
+    case "create_expedition":
+        $link = $_REQUEST["link"];
+        $title64 = $_REQUEST["title"];
+        $public = $_REQUEST["public"];
+        $title = decode64($title64);
+        if(empty($link) || empty($title)) {
+            returnAjax(array(
+                "status" => false,
+                "error" => "BAD_PARAMETERS",
+            ));
+        }
+        if(isset($_REQUEST["bind_datasets"])) {
+            $associate = boolstr($_REQUEST["bind_datasets"]);
+        } else {
+            $associate = true;
+        }
+        returnAjax(mintExpedition($link, $title, $public, $associate));
+        break;
+    case "associate_expedition":
         break;
     case "check_access":
         returnAjax(authorizedProjectAccess($_REQUEST));
