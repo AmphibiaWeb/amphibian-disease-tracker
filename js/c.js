@@ -386,15 +386,22 @@ jsonTo64 = function(obj, encode) {
   if (encode == null) {
     encode = true;
   }
+
+  /*
+   *
+   * @param obj
+   * @param boolean encode -> URI encode base64 string
+   */
   try {
     shadowObj = obj.slice(0);
     shadowObj.push("foo");
     obj = toObject(obj);
   } catch (undefined) {}
   objString = JSON.stringify(obj);
-  encoded = encode64(objString);
   if (encode === true) {
-    encoded = encodeURIComponent(encoded);
+    encoded = post64(objString);
+  } else {
+    encoded = encode64(encoded);
   }
   return encoded;
 };
