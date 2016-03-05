@@ -104,6 +104,13 @@ renderMapWithData = (projectData, force = false) ->
   catch
     zoom = ""
   poly = cartoData.bounding_polygon
+  if isArray poly or not poly.paths?
+    paths = poly
+    tmp = toObject poly
+    tmp.paths = poly
+    poly = tmp
+    poly.fillColor ?= defaultFillColor
+    poly.fillOpacity ?= defaultFillOpacity
   mapHtml = """
   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
   """
