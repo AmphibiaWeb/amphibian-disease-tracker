@@ -633,7 +633,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         if(empty($identifier)) {
             throw(new Exception("Invalid identifier in response"));
         }
-        return array(
+        $response = array(
             "status" => true,
             "ark" => $identifier,
             "project_permalink" => $datasetCanonicalUri,
@@ -644,6 +644,10 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             ),
 
         );
+        if ($addToExpedition === true) {
+            $response["responses"]["association"] = associateBcidsWithExpeditions($projectLink, $cookiesString, $identifier);
+        }
+        return $response;
     } catch(Exception $e) {
         return array (
             "status" => false,
@@ -655,10 +659,101 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
 }
 
 
-function associateBcidsWithExpeditions() {
+function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = null, $bcidToAssociate = null) {
     /***
+     * Finds the list of `dataset_arks` associated with the project,
+     * and associate each of them with this expedition
      *
+     * @param string $projectLink -> the project ID
      ***/
+    global $db;
+    $fimsAssociateUrl = "http://www.biscicol.org/biocode-fims/rest/expeditions/associate";
+    $projectLink = $db->sanitize($projectLink);
+    $associationData = array(
+        "projectId" => 26,
+        "expeditionCode" => $projectLink,
+    );
+
+    # Get all the arks
+    $arkArray = array();
+    if(!empty($bcidToAssociate)) {
+        $search = array("project_id" => $projectLink);
+        $cols = array("dataset_arks");
+        $results = $db->getQueryResults($search, $cols, "AND", false, true);
+        $row = $results[0];
+        $data = explode("," $row);
+        foreach($data as $arkPair) {
+            $arkData = explode("::", $arkPair);
+            $ark = $arkData[0];
+            $arkArray[] = $ark;
+        }
+    } else {
+        $arkArray[] = $bcidToAssociate;
+    }
+    try {
+        if(empty($fimsAuthCookiesAsString)) {
+            global $fimsPassword;
+            $fimsPassCredential = $fimsPassword;
+            $fimsUserCredential = "amphibiaweb"; # AmphibianDisease
+            $fimsAuthUrl = "http://www.biscicol.org/biocode-fims/rest/authenticationService/login";
+            $fimsAuthData = array(
+                "username" => $fimsUserCredential,
+                "password" => $fimsPassCredential,
+            );
+            # Post the login
+            $params = array('http' => array(
+                'method' => "POST",
+                'content' => http_build_query($fimsAuthData),
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+            ));
+            $ctx = stream_context_create($params);
+            $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            $loginHeaders = $http_response_header;
+            $cookies = array();
+            $cookiesString = "";
+            foreach ($http_response_header as $hdr) {
+                if (preg_match('/^Set-Cookie:\s*([^;]+)/', $hdr, $matches)) {
+                    $cookiesString .= $matches[1] . ";";
+                    parse_str($matches[1], $tmp);
+                    $cookies += $tmp;
+                }
+            }
+            $loginResponse = json_decode($rawResponse, true);
+            if(empty($loginResponse["url"])) {
+                throw(new Exception("Invalid Login Response"));
+            }
+        } else {
+            $loginResponse = "NO_LOGIN_CREDENTIALS_PROVIDED";
+            $cookiesString = $fimsAuthCookiesAsString;
+        }
+        # Post the args
+        $headers = "Content-type: application/x-www-form-urlencoded\r\n" .
+                 "Cookie: " . $cookiesString . "\r\n";
+        $params["http"]["header"] = $headers;
+
+        $associateResponses = array();
+        foreach($arkArray as $bcid) {
+            $tempAssociationData = $associationData;
+            $tempAssociationData["bcid"] = $bcid;
+            $params["http"]["content"] = http_build_query($tempAssociationData);
+            $ctx = stream_context_create($params);
+            $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
+            $resp = json_decode($rawResponse, true);
+            $associateResponses[] = $resp;
+        }
+
+        return array(
+            "status" => true,
+            "responses" => $associateResponses,
+        );
+
+    } catch (Exception $e) {
+        return array (
+            "status" => false,
+            "error" => $e->getMessage(),
+            "human_error" => "There was a problem communicating with the FIMS project. Please try again later.",
+        );
+    }
 }
 
 
@@ -756,7 +851,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         if(empty($identifier)) {
             throw(new Exception("Invalid identifier in response"));
         }
-        return array(
+        $response = array(
             "status" => true,
             "ark" => $identifier,
             "project_permalink" => $projectUri,
@@ -767,6 +862,10 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             ),
 
         );
+        if ($associateDatasets === true) {
+            $response["responses"]["association"] = associateBcidsWithExpeditions($projectLink, $cookiesString);
+        }
+        return $response;
     } catch(Exception $e) {
         return array (
             "status" => false,
