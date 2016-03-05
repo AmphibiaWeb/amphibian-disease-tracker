@@ -85,6 +85,7 @@ if($as_include !== true) {
         break;
     case "mint":
         $link = $_REQUEST["link"];
+        $file = $_REQUEST["file"];
         $title64 = $_REQUEST["title"];
         $title = decode64($title64);
         if(empty($link) || empty($title)) {
@@ -93,7 +94,7 @@ if($as_include !== true) {
                 "error" => "BAD_PARAMETERS",
             ));
         }
-        returnAjax(mintBcid($link, $title));
+        returnAjax(mintBcid($link, $file, $title));
         break;
     case "check_access":
         returnAjax(authorizedProjectAccess($_REQUEST));
@@ -530,7 +531,7 @@ function readProjectData($get, $precleaned = false, $debug = false) {
 }
 
 
-function mintBcid($datasetRelativeUri, $datasetTitle, $addToExpedition = false, $fimsAuthCookiesAsString = null) {
+function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addToExpedition = false, $fimsAuthCookiesAsString = null) {
     /***
      *
      * Mint a BCID for a dataset (originally, a BCID for a project).
@@ -556,14 +557,21 @@ function mintBcid($datasetRelativeUri, $datasetTitle, $addToExpedition = false, 
      * @return array
      ***/
     global $db;
+    # FIMS probably already does this, but let's be a good net citizen.
     $datasetRelativeUri = $db->sanitize($datasetRelativeUri);
-    $datasetCanonicalUri = "https://amphibiandisease.org/" . $datasetRelativeUri;
+    $datasetTitle = $db->sanitize($datasetTitle);
+    $projectLink = $db->sanitize($projectLink);
+    $dataFileName = array_pop(explode("/", $datasetRelativeUri));
+    $dataNameArray = explode(".", $dataFileName);
+    array_pop($dataFileName);
+    $dataFileIdentifier = implode(".", $dataFileName);
+    $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $projectLink . "#dataset:" . $dataFileIdentifier;
     # Is the dataset a file, or a project identifier?
     $filePath = dirname(__FILE__) . "/" . $datasetRelativeUri;
     if( strpos($datasetRelativeUri, ".") === false || !file_exists($filePath)) {
         # No file extension == no file
         # Prevent legacy things from breaking
-        $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $datasetRelativeUri;
+        $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
     }
     $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
     # http://biscicol.org/biocode-fims/rest/fims.wadl#idp752895712

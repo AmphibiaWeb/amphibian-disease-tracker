@@ -444,6 +444,8 @@ finalizeData = ->
               distanceFromCenter = geo.distance point.lat, point.lng, center.lat, center.lng
               if distanceFromCenter > excursion then excursion = distanceFromCenter
         if dataFileParams?.hasDataFile
+          if dataFileParams.filePath.search helperDir is -1
+            dataFileParams.filePath = "#{helperDir}#{dataFileParams.filePath}"
           postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.filePath}"
         postData.lat = center.lat
         postData.lng = center.lng
