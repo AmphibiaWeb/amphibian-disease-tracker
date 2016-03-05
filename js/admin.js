@@ -364,6 +364,9 @@ finalizeData = function() {
           }
         }
         if (dataFileParams != null ? dataFileParams.hasDataFile : void 0) {
+          if (dataFileParams.filePath.search(helperDir === -1)) {
+            dataFileParams.filePath = "" + helperDir + dataFileParams.filePath;
+          }
           postData.sample_raw_data = "https://amphibiandisease.org/" + dataFileParams.filePath;
         }
         postData.lat = center.lat;

@@ -90,12 +90,29 @@ renderMapWithData = (projectData, force = false) ->
     filePath = raw.filePath
     if filePath.search helperDir is -1
       filePath = "#{helperDir}#{filePath}"
+    # most recent download
     downloadButton = """
     <button class="btn btn-primary click download-file download-data-file" data-href="#{filePath}" data-newtab="true">
       <iron-icon icon="editor:insert-chart"></iron-icon>
-      Download Data File
+      Download Newest Data File
     </button>
     """
+    arkIdentifiers = projectData.dataset_arks.split ","
+    if arkIdentifiers.length > 1
+      baseFilePath = filePath.split "/"
+      baseFilePath.pop()
+      baseFilePath = baseFilePath.join "/"
+      # Add other small buttons
+      for ark in arkIdentifiers
+        data = ark.split "::"
+        filePath = "#{baseFilePath}/#{data[1]}"
+        html = """
+          <button class="btn btn-primary btn-small click download-file download-data-file download-alt-datafile" data-href="#{filePath}" data-newtab="true">
+            <iron-icon icon="editor:insert-chart"></iron-icon>
+            Download #{data[0]}
+          </button>
+        """
+        downloadButton += filePath
   downloadButton ?= ""
   cartoTable = cartoData.table
   try
@@ -275,6 +292,7 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
   renderMapWithData(projectData) # Stops load
+  checkArkDataset(projectData)
   false
 
 
@@ -444,6 +462,49 @@ renderPublicMap = (projectData = publicData) ->
     stopLoadError "Couldn't render map"
     console.error "Map rendering error - #{e.message}"
     console.warn e.stack
+
+
+
+checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
+  ###
+  # See if the URL tag "#dataset:" exists. If so, take the user there
+  # and "notice" it.
+  #
+  # @param projectData -> required so that an unauthorized user can't
+  #  invoke this to get data.
+  ###
+  fragment = uri.o.attr "fragment"
+  fragList = fragment.split ","
+  unless _adp.fragmentData? or not forceReparse
+    data = new Object()
+    for arg in fragList
+      params = arg.split ":"
+      data[param[0]] = param[1]
+    _adp.fragmentData = data
+  dataset = _adp.fragmentData?.dataset
+  unless dataset?
+    return false
+  # Find the dataset that matches
+  arkIdentifiers = projectData.dataset_arks.split ","
+  canonical = ""
+  for ark in arkIdentifiers
+    if ark.search dataset isnt -1
+      canonical = ark
+      break
+  data = canonical.split "::"
+  dataId = data[1]
+  selector = ".download-file[data-href$='#{dataId}']"
+  if forceDownload
+    url = $(selector).attr "data-href"
+    openTab url
+  else
+    # Mark and highlight the download button
+    $(selector)
+    .removeClass "btn-small btn-primary"
+    .addClass "btn-success success-glow"
+    .click ->
+      $(this).removeClass "success-glow"
+  selector
 
 
 

@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showEmailField,
+var checkArkDataset, checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showEmailField,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, downloadButton, error1, filePath, helperDir, j, len, mapHtml, paths, point, poly, raw, ref, tmp, usedPoints, zoom;
+  var apiPostSqlQuery, args, ark, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, filePath, helperDir, html, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, tmp, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -108,7 +108,20 @@ renderMapWithData = function(projectData, force) {
     if (filePath.search(helperDir === -1)) {
       filePath = "" + helperDir + filePath;
     }
-    downloadButton = "<button class=\"btn btn-primary click download-file download-data-file\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Data File\n</button>";
+    downloadButton = "<button class=\"btn btn-primary click download-file download-data-file\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Newest Data File\n</button>";
+    arkIdentifiers = projectData.dataset_arks.split(",");
+    if (arkIdentifiers.length > 1) {
+      baseFilePath = filePath.split("/");
+      baseFilePath.pop();
+      baseFilePath = baseFilePath.join("/");
+      for (j = 0, len = arkIdentifiers.length; j < len; j++) {
+        ark = arkIdentifiers[j];
+        data = ark.split("::");
+        filePath = baseFilePath + "/" + data[1];
+        html = "<button class=\"btn btn-primary btn-small click download-file download-data-file download-alt-datafile\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download " + data[0] + "\n</button>";
+        downloadButton += filePath;
+      }
+    }
   }
   if (downloadButton == null) {
     downloadButton = "";
@@ -136,8 +149,8 @@ renderMapWithData = function(projectData, force) {
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
   ref = poly.paths;
-  for (j = 0, len = ref.length; j < len; j++) {
-    point = ref[j];
+  for (l = 0, len1 = ref.length; l < len1; l++) {
+    point = ref[l];
     if (indexOf.call(usedPoints, point) < 0) {
       usedPoints.push(point);
       mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
@@ -149,7 +162,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, i, k, l, lat, len1, len2, lng, m, mapData, marker, month, monthPretty, months, note, options, ref1, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, i, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, ref1, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -191,8 +204,8 @@ renderMapWithData = function(projectData, force) {
     monthPretty = "";
     months = projectData.sampling_months.split(",");
     i = 0;
-    for (l = 0, len1 = months.length; l < len1; l++) {
-      month = months[l];
+    for (m = 0, len2 = months.length; m < len2; m++) {
+      month = months[m];
       ++i;
       if (i > 1 && i === months.length) {
         if (months.length > 2) {
@@ -211,8 +224,8 @@ renderMapWithData = function(projectData, force) {
     yearPretty = "";
     years = projectData.sampling_years.split(",");
     i = 0;
-    for (m = 0, len2 = years.length; m < len2; m++) {
-      year = years[m];
+    for (n = 0, len3 = years.length; n < len3; n++) {
+      year = years[n];
       ++i;
       if (i > 1 && i === years.length) {
         if (years.length > 2) {
@@ -283,6 +296,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   renderMapWithData(projectData);
+  checkArkDataset(projectData);
   return false;
 };
 
@@ -462,6 +476,60 @@ renderPublicMap = function(projectData) {
     console.error("Map rendering error - " + e.message);
     return console.warn(e.stack);
   }
+};
+
+checkArkDataset = function(projectData, forceDownload, forceReparse) {
+  var arg, ark, arkIdentifiers, canonical, data, dataId, dataset, fragList, fragment, j, l, len, len1, params, ref, selector, url;
+  if (forceDownload == null) {
+    forceDownload = false;
+  }
+  if (forceReparse == null) {
+    forceReparse = false;
+  }
+
+  /*
+   * See if the URL tag "#dataset:" exists. If so, take the user there
+   * and "notice" it.
+   *
+   * @param projectData -> required so that an unauthorized user can't
+   *  invoke this to get data.
+   */
+  fragment = uri.o.attr("fragment");
+  fragList = fragment.split(",");
+  if (!((_adp.fragmentData != null) || !forceReparse)) {
+    data = new Object();
+    for (j = 0, len = fragList.length; j < len; j++) {
+      arg = fragList[j];
+      params = arg.split(":");
+      data[param[0]] = param[1];
+    }
+    _adp.fragmentData = data;
+  }
+  dataset = (ref = _adp.fragmentData) != null ? ref.dataset : void 0;
+  if (dataset == null) {
+    return false;
+  }
+  arkIdentifiers = projectData.dataset_arks.split(",");
+  canonical = "";
+  for (l = 0, len1 = arkIdentifiers.length; l < len1; l++) {
+    ark = arkIdentifiers[l];
+    if (ark.search(dataset !== -1)) {
+      canonical = ark;
+      break;
+    }
+  }
+  data = canonical.split("::");
+  dataId = data[1];
+  selector = ".download-file[data-href$='" + dataId + "']";
+  if (forceDownload) {
+    url = $(selector).attr("data-href");
+    openTab(url);
+  } else {
+    $(selector).removeClass("btn-small btn-primary").addClass("btn-success success-glow").click(function() {
+      return $(this).removeClass("success-glow");
+    });
+  }
+  return selector;
 };
 
 $(function() {

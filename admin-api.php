@@ -561,7 +561,11 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
     $datasetRelativeUri = $db->sanitize($datasetRelativeUri);
     $datasetTitle = $db->sanitize($datasetTitle);
     $projectLink = $db->sanitize($projectLink);
-    $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $projectLink . "#dataset:" . $datasetRelativeUri;
+    $dataFileName = array_pop(explode("/", $datasetRelativeUri));
+    $dataNameArray = explode(".", $dataFileName);
+    array_pop($dataFileName);
+    $dataFileIdentifier = implode(".", $dataFileName);
+    $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $projectLink . "#dataset:" . $dataFileIdentifier;
     # Is the dataset a file, or a project identifier?
     $filePath = dirname(__FILE__) . "/" . $datasetRelativeUri;
     if( strpos($datasetRelativeUri, ".") === false || !file_exists($filePath)) {
