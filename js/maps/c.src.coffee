@@ -1325,13 +1325,13 @@ geo.init = (doCallback) ->
     window.gMapsCallback()
 
 
-getMapCenter = (bb) ->
+getMapCenter = (bb = geo.canonicalBoundingBox) ->
   if bb?
     i = 0
     totalLat = 0.0
     totalLng = 0.0
     bbArray = Object.toArray bb
-    for coords in bb
+    for coords in bbArray
       ++i
       point = canonicalizePoint coords
       totalLat += point.lat
@@ -1340,8 +1340,6 @@ getMapCenter = (bb) ->
     centerLat = toFloat(totalLat) / toFloat(i)
     centerLng = toFloat(totalLng) / toFloat(i)
 
-    centerLat = toFloat(centerLat)
-    centerLng = toFloat(centerLng)
     center =
       lat: centerLat
       lng: centerLng
@@ -1349,6 +1347,7 @@ getMapCenter = (bb) ->
     center =
       lat: window.locationData.lat
       lng: window.locationData.lng
+  center = canonicalizePoint center
   center
 
 

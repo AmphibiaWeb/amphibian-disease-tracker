@@ -1751,13 +1751,16 @@ geo.init = function(doCallback) {
 
 getMapCenter = function(bb) {
   var bbArray, center, centerLat, centerLng, coords, i, l, len, point, totalLat, totalLng;
+  if (bb == null) {
+    bb = geo.canonicalBoundingBox;
+  }
   if (bb != null) {
     i = 0;
     totalLat = 0.0;
     totalLng = 0.0;
     bbArray = Object.toArray(bb);
-    for (l = 0, len = bb.length; l < len; l++) {
-      coords = bb[l];
+    for (l = 0, len = bbArray.length; l < len; l++) {
+      coords = bbArray[l];
       ++i;
       point = canonicalizePoint(coords);
       totalLat += point.lat;
@@ -1765,8 +1768,6 @@ getMapCenter = function(bb) {
     }
     centerLat = toFloat(totalLat) / toFloat(i);
     centerLng = toFloat(totalLng) / toFloat(i);
-    centerLat = toFloat(centerLat);
-    centerLng = toFloat(centerLng);
     center = {
       lat: centerLat,
       lng: centerLng
@@ -1777,6 +1778,7 @@ getMapCenter = function(bb) {
       lng: window.locationData.lng
     };
   }
+  center = canonicalizePoint(center);
   return center;
 };
 

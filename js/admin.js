@@ -274,7 +274,7 @@ finalizeData = function() {
         if (dataAttrs.data_ark == null) {
           dataAttrs.data_ark = new Array();
         }
-        dataAttrs.data_ark.push(result.ark + "::" + dataAttrs.fileName);
+        dataAttrs.data_ark.push(result.ark + "::" + dataFileParams.fileName);
         postData = new Object();
         ref = $(".project-field");
         for (l = 0, len = ref.length; l < len; l++) {
@@ -371,6 +371,7 @@ finalizeData = function() {
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
           var args, authorData, aweb, cartoData, clade, len3, q, ref6, ref7, taxonData, taxonObject;
+          console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
             postData.bounding_box_n = geo.computedBoundingRectangle.north;
@@ -440,19 +441,28 @@ finalizeData = function() {
             return false;
           });
         };
+        console.info("Checking locality ...");
         if ((geo.computedLocality != null) || !dataFileParams.hasDataFile) {
           if (geo.computedLocality != null) {
+            console.info("Already have locality");
             _adp.locality = geo.computedLocality;
           } else {
             try {
+              console.info("Took written locality");
               _adp.locality = p$("#locality-input").value;
             } catch (error1) {
+              console.info("Can't figure out locality");
               _adp.locality = "";
             }
           }
           return postBBLocality();
         } else if (dataFileParams.hasDataFile) {
+          if (center == null) {
+            center = getMapCenter(geo.boundingBox);
+          }
+          console.info("Computing locality with reverse geocode from", center, geo.boundingBox);
           return geo.reverseGeocode(center.lat, center.lng, geo.boundingBox, function(result) {
+            console.info("Computed locality " + result);
             _adp.locality = result;
             return postBBLocality();
           });
@@ -2251,7 +2261,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     if (filePath.search(helperDir === -1)) {
       filePath = "" + helperDir + filePath;
     }
-    html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
+    html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);
     $.get("meta.php", "do=get_last_mod&file=" + filePath, "json").done(function(result) {
       var iso, t, time, timeString;
@@ -2262,6 +2272,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         iso = t.toISOString();
         timeString = "" + (iso.slice(0, iso.search("T")));
         $("#last-modified-file").text("Last uploaded on " + timeString + ".");
+        bindClicks();
       } else {
         console.warn("Didn't get a number back to check last mod time for " + filePath);
       }

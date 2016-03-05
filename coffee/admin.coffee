@@ -360,7 +360,7 @@ finalizeData = ->
           return false
         dataAttrs.ark = result.ark
         dataAttrs.data_ark ?= new Array()
-        dataAttrs.data_ark.push  "#{result.ark}::#{dataAttrs.fileName}"
+        dataAttrs.data_ark.push  "#{result.ark}::#{dataFileParams.fileName}"
         postData = new Object()
         for el in $(".project-field")
           if $(el).hasClass("iron-autogrow-textarea-0")
@@ -448,7 +448,9 @@ finalizeData = ->
         postData.lat = center.lat
         postData.lng = center.lng
         postData.radius = toInt excursion * 1000
+        # Do this after locality calcs
         postBBLocality = ->
+          console.info "Computed locality #{_adp.locality}"
           postData.locality = _adp.locality
           if geo.computedBoundingRectangle?
             # Bounding box coords
@@ -509,21 +511,28 @@ finalizeData = ->
             stopLoadError "There was a problem saving your data. Please try again"
             false
         # End postBBLocality
+        console.info "Checking locality ..."
         if geo.computedLocality? or not dataFileParams.hasDataFile
           # We either have a computed locality, or have no data file
           if geo.computedLocality?
+            console.info "Already have locality"
             _adp.locality = geo.computedLocality
           else
             # No locality and no data file
             try
+              console.info "Took written locality"
               _adp.locality = p$("#locality-input").value
             catch
+              console.info "Can't figure out locality"
               _adp.locality = ""
           postBBLocality()
         else if dataFileParams.hasDataFile
           # No locality and have a data file
           # First, get the locality
+          center ?= getMapCenter(geo.boundingBox)
+          console.info "Computing locality with reverse geocode from", center, geo.boundingBox
           geo.reverseGeocode center.lat, center.lng, geo.boundingBox, (result) ->
+            console.info "Computed locality #{result}"
             _adp.locality = result
             postBBLocality()
         else

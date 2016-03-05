@@ -756,7 +756,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     <p>
       Your project already has data associated with it. <span id="last-modified-file"></span>
     </p>
-    <button id="download-project-file" class="btn btn-primary center-block click" data-href="#{filePath}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
+    <button id="download-project-file" class="btn btn-primary center-block click download-file" data-href="#{filePath}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
     <p>You can upload more data below, or replace this existing data.</p>
     """
     $("#data-card .card-content .variable-card-content").html html
@@ -770,6 +770,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
         #  Not good enough time resolution to use t.toTimeString().split(" ")[0]
         timeString = "#{iso.slice(0, iso.search("T"))}"
         $("#last-modified-file").text "Last uploaded on #{timeString}."
+        bindClicks()
       else
         console.warn "Didn't get a number back to check last mod time for #{filePath}"
       false
