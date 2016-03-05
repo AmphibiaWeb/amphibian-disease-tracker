@@ -220,7 +220,6 @@ renderMapWithData = (projectData, force = false) ->
       </div>
     </div>
     """
-    bindClicks(".download-file")
     unless _adp.mapRendered is true
       $("#auth-block").append mapData
       setupMapMarkerToggles()
@@ -236,6 +235,7 @@ renderMapWithData = (projectData, force = false) ->
           splitValues: " " # Split genus, species, ssp into their own cols
           header: ["Genus","Species","Subspecies"]
         downloadCSVFile _adp.pageSpeciesList, options
+    bindClicks(".download-file")
     stopLoad()
   .error (result, status) ->
     console.error result, status
