@@ -107,7 +107,7 @@ renderMapWithData = (projectData, force = false) ->
         data = ark.split "::"
         filePath = "#{baseFilePath}/#{data[1]}"
         html = """
-          <button class="btn btn-primary btn-small click download-file download-data-file download-alt-datafile" data-href="#{filePath}" data-newtab="true">
+          <button class="btn btn-primary btn-xs click download-file download-data-file download-alt-datafile" data-href="#{filePath}" data-newtab="true">
             <iron-icon icon="editor:insert-chart"></iron-icon>
             #{data[0]} dataset
           </button>
@@ -475,24 +475,32 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
   ###
   fragment = uri.o.attr "fragment"
   fragList = fragment.split ","
-  unless _adp.fragmentData? or not forceReparse
+  if forceReparse or not _adp.fragmentData?
+    console.info "Examining fragment list"
     data = new Object()
     for arg in fragList
       params = arg.split ":"
-      data[param[0]] = param[1]
+      data[params[0]] = params[1]
     _adp.fragmentData = data
   dataset = _adp.fragmentData?.dataset
   unless dataset?
     return false
   # Find the dataset that matches
+  console.info "Checking  ARK identifiers for dataset #{dataset} ..."
   arkIdentifiers = projectData.dataset_arks.split ","
   canonical = ""
+  match = false
   for ark in arkIdentifiers
     if ark.search dataset isnt -1
       canonical = ark
+      match = true
       break
+  unless match is true
+    console.warn "Could not find matching dataset in", arkIdentifiers
+    return false
   data = canonical.split "::"
   dataId = data[1]
+  console.info "Got matching identifier #{canonical} -> #{dataId}"
   # We don't necessarily know the file type, so * rather than $ suffix
   selector = ".download-file[data-href*='#{dataId}']" 
   if forceDownload
@@ -501,7 +509,7 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
   else
     # Mark and highlight the download button
     $(selector)
-    .removeClass "btn-small btn-primary"
+    .removeClass "btn-xs btn-primary"
     .addClass "btn-success success-glow"
     .click ->
       $(this).removeClass "success-glow"

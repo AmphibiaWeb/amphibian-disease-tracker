@@ -7509,6 +7509,11 @@ google-map.center-block:after {
     padding-left: 30px;
   }
 }
+.download-data-file {
+  margin-left: .5rem;
+  margin-bottom: .5rem;
+  vertical-align: middle;
+}
 .toggle-marker {
   margin: 0 3.125%;
 }
