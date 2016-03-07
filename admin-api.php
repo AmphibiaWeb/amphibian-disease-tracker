@@ -922,6 +922,15 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
 }
 
 
+if (!function_exists('curl_file_create')) {
+    function curl_file_create($filename, $mimetype = '', $postname = '') {
+        return "@$filename;filename="
+            . ($postname ?: basename($filename))
+            . ($mimetype ? ";type=$mimetype" : '');
+    }
+}
+
+
 function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsString = null) {
     try {
         $fimsValidateUrl = "http://www.biscicol.org/biocode-fims/rest/validate";
@@ -930,7 +939,6 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
         # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html#validate-dataset
         $data = smart_decode64($dataset, false);
         $datasrc = decode64($dataPath);
-        $dataUploadPath = "@" . realpath($datasrc);
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_file($finfo, realpath($datasrc));
         finfo_close($finfo);
@@ -945,9 +953,8 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 $mime = null;
             }
         }
-        if(!empty($mime)) {
-            $dataUploadPath .= ";type=" . $mime;
-        }
+        # https://secure.php.net/manual/en/function.curl-file-create.php
+        $dataUploadPath = curl_file_create(realpath($datasrc), $mime);
         # Remove the invalid "fims_extra" data
         foreach($data as $k=>$row) {
             unset($row["fimsExtra"]);
@@ -1016,6 +1023,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
         curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($fimsValidateData));
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt( $ch, CURLOPT_HEADER, 1);
+        $ctx = stream_context_create($params);
         curl_setopt( $ch, CURLOPT_HTTPHEADER, $params);
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
         $rawResponse = curl_exec($ch);
@@ -1028,11 +1036,13 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "login_response" => $loginResponse,
                 "validate_response" => $resp,
             ),
+            "post_params" => array(
+                "file_sent" => $dataUploadPath,
+                "header_params" => $params,
+            ),
             "data" => array(
                 "user_provided_data" => $dataset,
                 "fims_passed_data" => $data,
-                "file_sent" => $dataUploadPath,
-                "header_params" => $params,
                 "data_sent" => $fimsValidateData,
             ),
         );
