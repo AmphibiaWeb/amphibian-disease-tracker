@@ -1300,20 +1300,20 @@ newGeoDataHandler = function(dataObject) {
       removeDataFile();
       return false;
     }
-    if (!((sampleRow.decimalLatitude != null) && (sampleRow.decimalLongitude != null) && (sampleRow.coordinateUncertaintyInMeters != null))) {
+    if (isNull(sampleRow.decimalLatitude) || isNull(sampleRow.decimalLongitude) || isNull(sampleRow.coordinateUncertaintyInMeters) || (isNull(sampleRow.alt) && isNull(sampleRow.elevation))) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
       missingStatement = "You're missing ";
       missingRequired = new Array();
-      if (sampleRow.decimalLatitude == null) {
+      if (isNull(sampleRow.decimalLatitude)) {
         missingRequired.push("decimalLatitude");
       }
-      if (sampleRow.decimalLongitude == null) {
+      if (isNull(sampleRow.decimalLongitude)) {
         missingRequired.push("decimalLongitude");
       }
-      if (sampleRow.coordinateUncertaintyInMeters == null) {
+      if (isNull(sampleRow.coordinateUncertaintyInMeters)) {
         missingRequired.push("coordinateUncertaintyInMeters");
       }
-      if (!((sampleRow.elevation != null) || (sampleRow.alt != null))) {
+      if (isNull(sampleRow.elevation) || isNull(sampleRow.alt)) {
         missingRequired.push("elevation");
       }
       missingStatement += missingRequired.length > 1 ? "some required columns: " : "a required column: ";
@@ -1541,6 +1541,13 @@ newGeoDataHandler = function(dataObject) {
       samples: samplesMeta,
       dataSrc: "" + helperDir + dataFileParams.filePath
     };
+    if ((typeof _adp !== "undefined" && _adp !== null ? _adp.data : void 0) == null) {
+      if (typeof _adp === "undefined" || _adp === null) {
+        window._adp = new Object();
+      }
+      window._adp.data = new Object();
+    }
+    _adp.data.pushDataUpload = totalData;
     validateData(totalData, function(validatedData) {
       var cladeList, e, error4, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
@@ -1578,12 +1585,6 @@ newGeoDataHandler = function(dataObject) {
       }
       p$("#species-list").bindValue = taxonListString;
       dataAttrs.dataObj = validatedData;
-      if ((typeof _adp !== "undefined" && _adp !== null ? _adp.data : void 0) == null) {
-        if (typeof _adp === "undefined" || _adp === null) {
-          window._adp = new Object();
-        }
-        window._adp.data = new Object();
-      }
       _adp.data.dataObj = validatedData;
       _adp.data.taxa = new Object();
       _adp.data.taxa.list = taxonList;
@@ -2475,7 +2476,7 @@ validateFimsData = function(dataObject, callback) {
   };
   data = jsonTo64(dataObject.data);
   src = post64(dataObject.dataSrc);
-  args = "perform=validate&data=" + data + "&datasrc=" + src;
+  args = "perform=validate&data=" + data + "&datasrc=" + src + "&link=" + _adp.projectId;
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
     var error, ref, ref1;
     console.log("FIMS validate result", result);

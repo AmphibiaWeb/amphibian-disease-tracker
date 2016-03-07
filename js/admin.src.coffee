@@ -1317,17 +1317,17 @@ newGeoDataHandler = (dataObject = new Object()) ->
       removeDataFile()
       return false
 
-    unless sampleRow.decimalLatitude? and sampleRow.decimalLongitude? and sampleRow.coordinateUncertaintyInMeters?
+    if isNull(sampleRow.decimalLatitude) or isNull(sampleRow.decimalLongitude) or isNull(sampleRow.coordinateUncertaintyInMeters)  or (isNull(sampleRow.alt) and isNull(sampleRow.elevation))
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
       missingStatement = "You're missing "
       missingRequired = new Array()
-      unless sampleRow.decimalLatitude?
+      if isNull sampleRow.decimalLatitude
         missingRequired.push "decimalLatitude"
-      unless sampleRow.decimalLongitude?
+      if isNull sampleRow.decimalLongitude
         missingRequired.push "decimalLongitude"
-      unless sampleRow.coordinateUncertaintyInMeters?
+      if isNull sampleRow.coordinateUncertaintyInMeters
         missingRequired.push "coordinateUncertaintyInMeters"
-      unless sampleRow.elevation? or sampleRow.alt?
+      if isNull(sampleRow.elevation) or isNull sampleRow.alt
         missingRequired.push "elevation"
       missingStatement += if missingRequired.length > 1 then "some required columns: " else "a required column: "
       missingHtml = missingRequired.join "</code>, <code>"
@@ -1526,6 +1526,11 @@ newGeoDataHandler = (dataObject = new Object()) ->
       data: parsedData
       samples: samplesMeta
       dataSrc: "#{helperDir}#{dataFileParams.filePath}"
+    unless _adp?.data?
+      unless _adp?
+        window._adp = new Object()
+      window._adp.data = new Object()
+    _adp.data.pushDataUpload = totalData
     validateData totalData, (validatedData) ->
       # Save the upload
       taxonListString = ""
@@ -1560,10 +1565,6 @@ newGeoDataHandler = (dataObject = new Object()) ->
         ++i
       p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData
-      unless _adp?.data?
-        unless _adp?
-          window._adp = new Object()
-        window._adp.data = new Object()
       _adp.data.dataObj = validatedData
       _adp.data.taxa = new Object()
       _adp.data.taxa.list = taxonList
@@ -2622,7 +2623,7 @@ validateFimsData = (dataObject, callback = null) ->
   # Format the JSON for FIMS
   data = jsonTo64 dataObject.data
   src = post64 dataObject.dataSrc
-  args = "perform=validate&data=#{data}&datasrc=#{src}"
+  args = "perform=validate&data=#{data}&datasrc=#{src}&link=#{_adp.projectId}"
   # Post the object over to FIMS
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->

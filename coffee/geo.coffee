@@ -643,7 +643,13 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       try
         # See if the user provided a valid JSON string of coordinates
         userTransectRing = JSON.parse totalData.transectRing
+        userTransectRing = Object.toArray userTransectRing
+        i = 0
         for coordinatePair in userTransectRing
+          if coordinatePair instanceof Point
+            # Coerce it into simple coords
+            coordinatePair = coordinatePair.toGeoJson()
+            userTransectRing[i] = coordinatePair
           # Is it just two long?
           if coordinatePair.length isnt 2
             throw
@@ -652,6 +658,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             unless isNumber coordinate
               throw
                 message: "Bad coordinate number '#{coordinate}'"
+          ++i
       catch e
         console.warn "Error parsing the user transect ring - #{e.message}"
         userTransectRing = undefined
@@ -1085,6 +1092,9 @@ Point = (lat, lng) ->
   @toSimplePoint = ->
     p = new fPoint @lat, @lng
     p
+  @toGeoJson = ->
+    gj = [@lat, @lng]
+    gj
   this.toString()
 
 geo.Point = Point

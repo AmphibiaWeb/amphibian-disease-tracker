@@ -2390,8 +2390,14 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
       try {
         userTransectRing = JSON.parse(totalData.transectRing);
+        userTransectRing = Object.toArray(userTransectRing);
+        i = 0;
         for (l = 0, len = userTransectRing.length; l < len; l++) {
           coordinatePair = userTransectRing[l];
+          if (coordinatePair instanceof Point) {
+            coordinatePair = coordinatePair.toGeoJson();
+            userTransectRing[i] = coordinatePair;
+          }
           if (coordinatePair.length !== 2) {
             throw {
               message: "Bad coordinate length for '" + coordinatePair + "'"
@@ -2405,6 +2411,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
               };
             }
           }
+          ++i;
         }
       } catch (error2) {
         e = error2;
@@ -2897,6 +2904,11 @@ Point = function(lat, lng) {
     var p;
     p = new fPoint(this.lat, this.lng);
     return p;
+  };
+  this.toGeoJson = function() {
+    var gj;
+    gj = [this.lat, this.lng];
+    return gj;
   };
   return this.toString();
 };
