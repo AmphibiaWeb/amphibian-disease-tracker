@@ -2596,6 +2596,24 @@ validateData = (dataObject, callback = null) ->
         console.info "Got back", dataObject
   false
 
+
+delayFimsRecheck = (originalResponse, callback) ->
+  cookies = encodeURIComponent originalResponse.responses.login_response.cookies
+  args = "perform=validate&auth=#{cookies}"
+  $.post adminParams.apiTarget, args, "json"
+  .done (result) ->
+    console.log "Server said", result
+    if typeof callback is "function"
+      callback()
+    else
+      console.warn "Warning: delayed recheck had no callback"
+  .error (result, status) ->
+    console.error "#{status}: Couldn't check status on FIMS server!"
+    console.warn "Server said", result.responseText
+    stopLoadError "There was a problem validating your data, please try again later"
+  false
+
+
 validateFimsData = (dataObject, callback = null) ->
   ###
   #
@@ -2641,7 +2659,8 @@ validateFimsData = (dataObject, callback = null) ->
       callback(dataObject)
   .error (result, status) ->
     clearTimeout validatorTimeout
-    console.error "Couldn't upload to FIMS server!", result, status
+    console.error "#{status}: Couldn't upload to FIMS server!"
+    console.warn "Server said", result.responseText
     stopLoadError "There was a problem validating your data, please try again later"
     false
   false

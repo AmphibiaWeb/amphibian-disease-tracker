@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -2443,6 +2443,25 @@ validateData = function(dataObject, callback) {
   return false;
 };
 
+delayFimsRecheck = function(originalResponse, callback) {
+  var args, cookies;
+  cookies = encodeURIComponent(originalResponse.responses.login_response.cookies);
+  args = "perform=validate&auth=" + cookies;
+  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    console.log("Server said", result);
+    if (typeof callback === "function") {
+      return callback();
+    } else {
+      return console.warn("Warning: delayed recheck had no callback");
+    }
+  }).error(function(result, status) {
+    console.error(status + ": Couldn't check status on FIMS server!");
+    console.warn("Server said", result.responseText);
+    return stopLoadError("There was a problem validating your data, please try again later");
+  });
+  return false;
+};
+
 validateFimsData = function(dataObject, callback) {
   var animateProgress, args, data, rowCount, src, timerPerRow, validatorTimeout;
   if (callback == null) {
@@ -2494,7 +2513,8 @@ validateFimsData = function(dataObject, callback) {
     }
   }).error(function(result, status) {
     clearTimeout(validatorTimeout);
-    console.error("Couldn't upload to FIMS server!", result, status);
+    console.error(status + ": Couldn't upload to FIMS server!");
+    console.warn("Server said", result.responseText);
     stopLoadError("There was a problem validating your data, please try again later");
     return false;
   });

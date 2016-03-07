@@ -124,7 +124,9 @@ if($as_include !== true) {
         $data = $_REQUEST["data"];
         $datasrc = $_REQUEST["datasrc"];
         $link = $_REQUEST["link"];
-        returnAjax(validateDataset($data, $datasrc, $link));
+        $cookies = $_REQUEST["auth"];
+        $continue = empty($cookies) ? false : true;
+        returnAjax(validateDataset($data, $datasrc, $link, $cookies, $continue));
         break;
     case "check_access":
         returnAjax(authorizedProjectAccess($_REQUEST));
@@ -674,7 +676,10 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             "project_permalink" => $datasetCanonicalUri,
             "project_title" => $datasetTitle,
             "responses" => array(
-                "login_response" => $loginResponse,
+                "login_response" => array(
+                    "response" => $loginResponse,
+                    "cookies" => $cookiesString
+                ),
                 "mint_response" => $resp,
             ),
 
@@ -902,7 +907,10 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             "project_permalink" => $projectUri,
             "project_title" => $projectTitle,
             "responses" => array(
-                "login_response" => $loginResponse,
+                "login_response" => array(
+                    "response" => $loginResponse,
+                    "cookies" => $cookiesString,
+                ),
                 "expedition_response" => $resp,
             ),
 
@@ -923,16 +931,49 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
 
 
 
-function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsString = null) {
+function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsString = null, $continue = false) {
     try {
         $fimsValidateUrl = "http://www.biscicol.org/biocode-fims/rest/validate";
         # See
         # http://biscicol.org/biocode-fims/rest/fims.wadl#idp1379817744
         # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html#validate-dataset
+        if($continue == true) {
+            $fimsStatusUrl = $fimsValidateUrl . "/status";
+            $fimsContinueUrl = $fimsValidateUrl . "/continue";
+            $params = array('http' => array(
+                'method' => "GET",
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+            ));
+            $params["http"]["header"] .= "\r\nCookie: " . $cookiesString . "\r\n";
+            $ctx = stream_context_create($params);
+            $rawResponse = file_get_contents($fimsStatusUrl, false, $ctx);
+            $rawResponse2 = file_get_contents($fimsContinueUrl, false, $ctx);
+            $resp = json_decode($rawResponse, true);
+            $resp2 = json_decode($rawResponse2, true);
+            return array(
+                "status" => true,
+                "responses" => array(
+                    "status" => $resp,
+                    "continue" => $resp2,
+                ),
+            );
+        }
         $data = smart_decode64($dataset, false);
         $datasrc = decode64($dataPath);
+        $file = realpath($datasrc);
+        if(!file_exists($file)) {
+            return array(
+                "status" => false,
+                "error" => "INVALID_FILE_PATH",
+                "human_error" => "Sorry, we couldn't validate your uploaded file",
+                "provided" => array(
+                    "path" => $datasrc,
+                    "computed_path" => realpath($data_src),
+                ),
+            );
+        }
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, realpath($datasrc));
+        $mime = finfo_file($finfo, $file);
         finfo_close($finfo);
         if(empty($mime) || $mime == "application/zip") {
             # Just the fallback that is based purely on extension
@@ -946,7 +987,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
             }
         }
         # https://secure.php.net/manual/en/function.curl-file-create.php
-        $dataUploadPath = curl_file_create(realpath($datasrc), $mime);
+        $dataUploadPath = curl_file_create($file, $mime);
         # Remove the invalid "fims_extra" data
         foreach($data as $k=>$row) {
             unset($row["fimsExtra"]);
@@ -1001,7 +1042,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
         }
         # Post the args
         $headers = "Content-type: multipart/form-data\r\n" .
-                 "Cookie: " . $cookiesString . "\r\n";        
+                 "Cookie: " . $cookiesString . "\r\n";
         $params = array(
             "http" => array(
                 "method" => "POST",
@@ -1009,7 +1050,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "content" => http_build_query($fimsValidateData),
             ),
         );
-        
+
         $ch = curl_init($fimsValidateUrl);
         curl_setopt( $ch, CURLOPT_POST, 1);
         curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($fimsValidateData));
@@ -1025,7 +1066,10 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
         $response = array(
             "status" => $status,
             "responses" => array(
-                "login_response" => $loginResponse,
+                "login_response" => array(
+                    "response" => $loginResponse,
+                    "cookies" => $cookiesString,
+                ),
                 "validate_response" => $resp,
             ),
             "post_params" => array(
@@ -1036,6 +1080,10 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "user_provided_data" => $dataset,
                 "fims_passed_data" => $data,
                 "data_sent" => $fimsValidateData,
+                "data_mime" => array(
+                    "mime" => $mime,
+                    "mime_error" => $mime_error,
+                ),
             ),
         );
         return $response;
