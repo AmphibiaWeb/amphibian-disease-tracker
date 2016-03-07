@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -2463,7 +2463,7 @@ delayFimsRecheck = function(originalResponse, callback) {
 };
 
 validateFimsData = function(dataObject, callback) {
-  var animateProgress, args, data, rowCount, src, timerPerRow, validatorTimeout;
+  var animateProgress, args, data, ref, ref1, rowCount, src, timerPerRow, validatorTimeout;
   if (callback == null) {
     callback = null;
   }
@@ -2475,6 +2475,21 @@ validateFimsData = function(dataObject, callback) {
    *  containing the parsed data to be validated by FIMS
    * @param function callback -> callback function
    */
+  if (typeof (typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.fims) != null ? (ref1 = ref.expedition) != null ? ref1.expeditionId : void 0 : void 0 : void 0) !== "number") {
+    if (_adp.hasRunMintCallback === true) {
+      console.error("Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. ");
+      stopLoadError("Couldn't validate your data, please try again later");
+      _adp.hasRunMintCallback = false;
+      return false;
+    }
+    _adp.hasRunMintCallback = false;
+    console.warn("Haven't minted expedition yet! Minting that first");
+    mintExpedition(_adp.projectId, p$("#project-title").value, function() {
+      _adp.hasRunMintCallback = true;
+      return validateFimsData(dataObject, callback);
+    });
+    return false;
+  }
   console.info("FIMS Validating", dataObject.data);
   $("#data-validation").removeAttr("indeterminate");
   rowCount = Object.size(dataObject.data);
@@ -2497,11 +2512,11 @@ validateFimsData = function(dataObject, callback) {
   src = post64(dataObject.dataSrc);
   args = "perform=validate&data=" + data + "&datasrc=" + src + "&link=" + _adp.projectId;
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var error, ref, ref1;
+    var error, ref2, ref3;
     console.log("FIMS validate result", result);
     if (result.status !== true) {
       stopLoadError("There was a problem with your dataset");
-      error = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
+      error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       bsAlert(error, "danger");
       clearTimeout(validatorTimeout);
       return false;
@@ -2550,6 +2565,62 @@ mintBcid = function(projectId, title, callback) {
     return false;
   }).always(function() {
     console.info("mintBcid is calling back", resultObj);
+    return callback(resultObj);
+  });
+  return false;
+};
+
+mintExpedition = function(projectId, title, callback) {
+  var args, publicProject, resultObj;
+  if (projectId == null) {
+    projectId = _adp.projectId;
+  }
+  if (title == null) {
+    title = p$("#project-title").value;
+  }
+
+  /*
+   *
+   * https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
+   *
+   * Resolve the ARK with
+   * https://n2t.net/
+   */
+  if (typeof callback !== "function") {
+    console.warn("mintExpedition() requires a callback function");
+    return false;
+  }
+  resultObj = new Object();
+  publicProject = p$("#data-encumbrance-toggle").checked;
+  if (typeof publicProject !== "boolean") {
+    publicProject = false;
+  }
+  args = "perform=create_expedition&link=" + projectId + "&title=" + (post64(title)) + "&public=" + publicProject;
+  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    console.log("Expedition got", result);
+    if (!result.status) {
+      stopLoadError(result.human_error);
+      console.error(result.error);
+      return false;
+    }
+    resultObj = result;
+    if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
+      if (typeof _adp === "undefined" || _adp === null) {
+        window._adp = new Object();
+      }
+      _adp.fims = new Object();
+    }
+    return _adp.fims.expedition = {
+      permalink: result.project_permalink,
+      ark: result.ark,
+      expeditionId: result.fims_expedition_id,
+      fimsRawResponse: result.responses.expedition_response
+    };
+  }).error(function(result, status) {
+    resultObj.ark = null;
+    return false;
+  }).always(function() {
+    console.info("mintExpedition is calling back", resultObj);
     return callback(resultObj);
   });
   return false;

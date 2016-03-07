@@ -100,7 +100,7 @@ if($as_include !== true) {
     case "create_expedition":
         $link = $_REQUEST["link"];
         $title64 = $_REQUEST["title"];
-        $public = $_REQUEST["public"];
+        $public = boolstr($_REQUEST["public"]);
         $title = decode64($title64);
         if(empty($link) || empty($title)) {
             returnAjax(array(
@@ -906,6 +906,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             "ark" => $identifier,
             "project_permalink" => $projectUri,
             "project_title" => $projectTitle,
+            "fims_expedition_id" => $resp["expeditionId"],
             "responses" => array(
                 "login_response" => array(
                     "response" => $loginResponse,
@@ -924,6 +925,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             "status" => false,
             "error" => $e->getMessage(),
             "human_error" => "There was a problem communicating with the FIMS project. Please try again later.",
+            "response" => $resp,
         );
     }
 
