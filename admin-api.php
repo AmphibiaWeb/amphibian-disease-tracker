@@ -3,7 +3,7 @@
 /***
  * Handle admin-specific requests
  ***/
-$debug = true;
+$debug = false;
 
 if($debug) {
     error_reporting(E_ALL);
