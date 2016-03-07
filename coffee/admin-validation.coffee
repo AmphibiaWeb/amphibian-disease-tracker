@@ -84,6 +84,7 @@ validateFimsData = (dataObject, callback = null) ->
       callback(dataObject)
   .error (result, status) ->
     clearTimeout validatorTimeout
+    console.error "Couldn't upload to FIMS server!", result, status
     stopLoadError "There was a problem validating your data, please try again later"
     false
   false

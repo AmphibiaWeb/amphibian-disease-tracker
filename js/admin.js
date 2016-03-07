@@ -2494,6 +2494,7 @@ validateFimsData = function(dataObject, callback) {
     }
   }).error(function(result, status) {
     clearTimeout(validatorTimeout);
+    console.error("Couldn't upload to FIMS server!", result, status);
     stopLoadError("There was a problem validating your data, please try again later");
     return false;
   });
