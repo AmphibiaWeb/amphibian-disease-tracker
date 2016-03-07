@@ -1300,20 +1300,20 @@ newGeoDataHandler = function(dataObject) {
       removeDataFile();
       return false;
     }
-    if (!((sampleRow.decimalLatitude != null) && (sampleRow.decimalLongitude != null) && (sampleRow.coordinateUncertaintyInMeters != null))) {
+    if (isNull(sampleRow.decimalLatitude) || isNull(sampleRow.decimalLongitude) || isNull(sampleRow.coordinateUncertaintyInMeters) || (isNull(sampleRow.alt) && isNull(sampleRow.elevation))) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
       missingStatement = "You're missing ";
       missingRequired = new Array();
-      if (sampleRow.decimalLatitude == null) {
+      if (isNull(sampleRow.decimalLatitude)) {
         missingRequired.push("decimalLatitude");
       }
-      if (sampleRow.decimalLongitude == null) {
+      if (isNull(sampleRow.decimalLongitude)) {
         missingRequired.push("decimalLongitude");
       }
-      if (sampleRow.coordinateUncertaintyInMeters == null) {
+      if (isNull(sampleRow.coordinateUncertaintyInMeters)) {
         missingRequired.push("coordinateUncertaintyInMeters");
       }
-      if (!((sampleRow.elevation != null) || (sampleRow.alt != null))) {
+      if (isNull(sampleRow.elevation) || isNull(sampleRow.alt)) {
         missingRequired.push("elevation");
       }
       missingStatement += missingRequired.length > 1 ? "some required columns: " : "a required column: ";
@@ -2475,7 +2475,7 @@ validateFimsData = function(dataObject, callback) {
   };
   data = jsonTo64(dataObject.data);
   src = post64(dataObject.dataSrc);
-  args = "perform=validate&data=" + data + "&datasrc=" + src;
+  args = "perform=validate&data=" + data + "&datasrc=" + src + "&link=" + _adp.projectId;
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
     var error, ref, ref1;
     console.log("FIMS validate result", result);
