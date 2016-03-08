@@ -121,7 +121,7 @@ validateFimsData = (dataObject, callback = null) ->
   false
 
 
-mintBcid = (projectId, title, callback) ->
+mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) ->
   ###
   #
   # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
@@ -133,7 +133,9 @@ mintBcid = (projectId, title, callback) ->
     console.warn "mintBcid() requires a callback function"
     return false
   resultObj = new Object()
-  args = "perform=mint&link=#{projectId}&title=#{post64(title)}"
+  addToExp = _adp?.fims?.expedition?.ark?
+  
+  args = "perform=mint&link=#{projectId}&title=#{post64(title)}&file=#{datasetUri}&expedition=#{addToExp}"
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Got", result

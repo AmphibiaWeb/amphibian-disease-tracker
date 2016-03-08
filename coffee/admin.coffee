@@ -248,7 +248,7 @@ loadCreateNewProject = ->
     <p>Drag and drop as many files as you need below. </p>
     <p>
       Please note that the data <strong>must</strong> have a header row,
-      and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, <code>elevation</code>, and <code>coordinateUncertaintyInMeters</code>.
+      and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.
     </p>
     <div class="alert alert-info" role="alert">
       We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
@@ -352,7 +352,8 @@ finalizeData = ->
     if isNull(_adp.projectId)
       _adp.projectId = md5("#{geo.dataTable}#{author}#{Date.now()}")
     title = p$("#project-title").value
-    mintBcid _adp.projectId, title, (result) ->
+    file = dataFileParams?.filePath ? null
+    mintBcid _adp.projectId, file, title, (result) ->
       try
         unless result.status
           console.error result.error
@@ -476,7 +477,7 @@ finalizeData = ->
             bounding_polygon_geojson: geo?.geoJsonBoundingBox
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
-          postData.project_obj_id = dataAttrs.ark
+          postData.project_obj_id = _adp.fims.expedition.ark
           dataAttrs.data_ark ?= new Array()
           postData.dataset_arks = dataAttrs.data_ark.join ","
           postData.project_dir_identifier = getUploadIdentifier()

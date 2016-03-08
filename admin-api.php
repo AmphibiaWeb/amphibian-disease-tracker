@@ -95,7 +95,8 @@ if($as_include !== true) {
                 "error" => "BAD_PARAMETERS",
             ));
         }
-        returnAjax(mintBcid($link, $file, $title));
+        $addToExpedition = isset($_REQUEST["expedition"]) ? boostr($_REQUEST["expedition"]) : false;
+        returnAjax(mintBcid($link, $file, $title, $addToExpedition));
         break;
     case "create_expedition":
         $link = $_REQUEST["link"];
@@ -600,6 +601,9 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         # No file extension == no file
         # Prevent legacy things from breaking
         $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $projectLink;
+        if(empty($datasetTitle)) {
+            $datasetTitle = $datasetRelativeUri;
+        }
     }
     $fimsMintUrl = "http://www.biscicol.org/biocode-fims/rest/bcids";
     # http://biscicol.org/biocode-fims/rest/fims.wadl#idp752895712
