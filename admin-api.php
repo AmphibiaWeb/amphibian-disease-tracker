@@ -461,7 +461,7 @@ function readProjectData($get, $precleaned = false, $debug = false) {
             "public" => false,
         ),
         "user" => array(
-            "user" => $login_status["detail"],
+            "user" => $login_status["detail"]["userdata"]["dblink"],
             "has_edit_permissions" => false,
             "has_view_permissions" => false,
             "is_author" => false,
