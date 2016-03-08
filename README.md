@@ -33,7 +33,7 @@ These parameters are optional for unauthenticated API access (in some cases, you
 
 If you don't already have a set of identifier tokens, you will need to acquire them.
 
-API target: `https://amphibiandisease.org/api.php`
+API target: `https://amphibiandisease.org/api.php`  
 Method: `POST`
 
 Parameters:
@@ -100,7 +100,7 @@ For any authenticated/psuedoauthenticated request, these parameters can be sent 
 
 ### Unauthenticated APIs
 
-API target: `https://amphibiandisease.org/api.php`
+API target: `https://amphibiandisease.org/api.php`  
 Method: `GET`/`POST`
 
 **Note**: The `Access-Control-Allow-Origin` header is set to `*`. This may be directly accessed by JavaScript from any origin.
@@ -149,7 +149,7 @@ Mandatory parameter: `action`
 
 ### Authenticated APIs
 
-API target: `https://amphibiandisease.org/admin-api.php`
+API target: `https://amphibiandisease.org/admin-api.php`  
 Method: `POST`
 
 **Note**: The `Access-Control-Allow-Origin` header is set to `*`. This may be directly accessed by JavaScript from any origin.
@@ -167,7 +167,7 @@ Mandatory parameter: `perform`
 - `get`:
   > TODO DOC
   >
-  > Response:__
+  > Response:  
   >
   >
   > Sample Response:  
