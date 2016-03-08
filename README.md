@@ -38,9 +38,9 @@ Method: `POST`
 
 Parameters:
 
-> `action`: `login`
-> `username`: The email of the user
-> `password`: The password of the user
+> `action`: `login`  
+> `username`: The email of the user  
+> `password`: The password of the user  
 
 
 **Aside: TOTP**
@@ -63,29 +63,29 @@ Parameters:
 >
 >When you re-reply, send
 >
->> `action`: `login`
->> `username`: The email of the user
->> `password`: The previous response `response.encrypted_password`
->> `totp`: Your TOTP value
+>> `action`: `login`  
+>> `username`: The email of the user  
+>> `password`: The previous response `response.encrypted_password`  
+>> `totp`: Your TOTP value  
 
 
 
 Response:
 
-> `status`: boolean
-> `user`: JSON string of {'COOKIE_NAME':'USER_EMAIL'}. Note this is NOT an object.
-> `auth`: JSON string of {'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}. Note this is NOT an object.
-> `secret`: JSON string of {'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}. Note this is NOT an object.
-> `link`: JSON string of {'COOKIE_NAME':'USER_DB_UNQ_ID'}. Note this is NOT an object.
-> `pic`: JSON string of {'COOKIE_NAME':'USER_PICTURE_PATH'}. Note this is NOT an object.
-> `name`: JSON string of {'COOKIE_NAME':'USER_FIRST_NAME'}. Note this is NOT an object.
-> `full_name`: JSON string of {'COOKIE_NAME':'USER_FULL_NAME'}. Note this is NOT an object.
-> `js`: A JavaScript function to evaluate using [js-cookie](https://github.com/js-cookie/js-cookie/tree/v1.5.1) to set the cookies in-browser.
-> `ip_given`: The IP from which these cookies are valid. Changing IP addresses will invalidate the cookies.
-> `raw_auth`: The data from `response.auth`
-> `raw_secret`: The data from `response.secret`
-> `raw_uid`: The data from `response.link`
-> `expires`: The expires parameter on the cookies.
+> `status`: boolean  
+> `user`: JSON string of {'COOKIE_NAME':'USER_EMAIL'}. Note this is NOT an object.  
+> `auth`: JSON string of {'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}. Note this is NOT an object.  
+> `secret`: JSON string of {'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}. Note this is NOT an object.  
+> `link`: JSON string of {'COOKIE_NAME':'USER_DB_UNQ_ID'}. Note this is NOT an object.  
+> `pic`: JSON string of {'COOKIE_NAME':'USER_PICTURE_PATH'}. Note this is NOT an object.  
+> `name`: JSON string of {'COOKIE_NAME':'USER_FIRST_NAME'}. Note this is NOT an object.  
+> `full_name`: JSON string of {'COOKIE_NAME':'USER_FULL_NAME'}. Note this is NOT an object.  
+> `js`: A JavaScript function to evaluate using [js-cookie](https://github.com/js-cookie/js-cookie/tree/v1.5.1) to set the cookies in-browser.  
+> `ip_given`: The IP from which these cookies are valid. Changing IP addresses will invalidate the cookies.  
+> `raw_auth`: The data from `response.auth`  
+> `raw_secret`: The data from `response.secret`  
+> `raw_uid`: The data from `response.link`  
+> `expires`: The expires parameter on the cookies.  
 
 #### Sending API tokens
 
@@ -109,34 +109,35 @@ Mandatory parameter: `action`
 
 - `fetch`:
   > Queries raw data from the total dataset. Psuedoauthenticated.
-  > Be aware that access may be restricted based on your login status. If you're not logged in, only public resources are queryable.
   >
-  > Parameters:
+  > Be aware that access may be restricted based on your login status. If you're not logged in, only public resources are queryable.  
+  >
+  > Parameters:  
   > `sql_query`: An SQL query against the raw data. When constructing your query, you'll want to use the `table` value from the JSON in the `carto_id` key. To obtain this the first time, you'll want to make an authenticated API hit with `perform=get` ([see below](#authenticated-apis))
   >
-  > Response:
-  > `status`: boolean
-  > `sql_statements`: Array of queried statements
-  > `post_response`: Array of raw responses from CartoDB
-  > `parsed_responses`: Formatted responses from CartoDB
+  > Response:  
+  > `status`: boolean   
+  > `sql_statements`: Array of queried statements  
+  > `post_response`: Array of raw responses from CartoDB  
+  > `parsed_responses`: Formatted responses from CartoDB  
 
 - `validate`:
   > Validates a taxon against Amphibiaweb and returns canonical information.
   >
   > The taxonomy returned may be different from the one provided if AmphibiaWeb views it as a synonym. Synonyms may also include a species gender change, which you can monitor via the notice `FUZZY_SPECIES_MATCH`.
   >
-  > Parameters:
-  > (req) `genus`: Genus to validate. Case-insensitive.
-  > (req) `species`: Species to validate. If you only want to check for a genus, the value 'sp.' may be used here.
-  > `subspecies`: Reserved for future use; currently not tracked by AmphibiaWeb.
+  > Parameters:  
+  > (req) `genus`: Genus to validate. Case-insensitive.  
+  > (req) `species`: Species to validate. If you only want to check for a genus, the value 'sp.' may be used here.  
+  > `subspecies`: Reserved for future use; currently not tracked by AmphibiaWeb.  
   >
-  > Response:
-  > `status`: boolean
-  > `aweb_list_age`: Current age of the taxonomy list being validated against
-  > `aweb_list_max_age`: Maximum age of the AmphibiaWeb taxonomy used, in seconds.
-  > `notices`: Array. List of non-fatal notices. Includes notices if taxonomy was changed.
-  > `original_taxon`: The provided taxon, if changed. If unchanged, this field is absent.
-  > `validated_taxon`: Object. The canonical taxon information
+  > Response:  
+  > `status`: boolean  
+  > `aweb_list_age`: Current age of the taxonomy list being validated against  
+  > `aweb_list_max_age`: Maximum age of the AmphibiaWeb taxonomy used, in seconds.  
+  > `notices`: Array. List of non-fatal notices. Includes notices if taxonomy was changed.  
+  > `original_taxon`: The provided taxon, if changed. If unchanged, this field is absent.  
+  > `validated_taxon`: Object. The canonical taxon information  
 
 - `search_project`:
 
@@ -156,12 +157,20 @@ Method: `POST`
 Mandatory parameter: `perform`
 
 - `list`
+
 - `new`
+
 - `save`
+
 - `delete`
-- `get`
+
+- `get`:
+  > TODO DOC
   >
-  > Sample Response:
+  > Response:__
+  >
+  >
+  > Sample Response:  
   >
   > ```json
   >{
@@ -253,10 +262,15 @@ Mandatory parameter: `perform`
   >  "status": true
   >}
   >```
+
 - `mint_data`
+
 - `create_expedition`
+
 - `associate_expedition`
+
 - `validate`
+
 - `check_access`
 
 
