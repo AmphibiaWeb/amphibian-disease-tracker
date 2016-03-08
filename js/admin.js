@@ -1300,7 +1300,7 @@ newGeoDataHandler = function(dataObject) {
       removeDataFile();
       return false;
     }
-    if (isNull(sampleRow.decimalLatitude) || isNull(sampleRow.decimalLongitude) || isNull(sampleRow.coordinateUncertaintyInMeters) || (isNull(sampleRow.alt) && isNull(sampleRow.elevation))) {
+    if (isNull(sampleRow.decimalLatitude) || isNull(sampleRow.decimalLongitude) || isNull(sampleRow.coordinateUncertaintyInMeters)) {
       toastStatusMessage("Data are missing required geo columns. Please reformat and try again.");
       missingStatement = "You're missing ";
       missingRequired = new Array();
@@ -1312,9 +1312,6 @@ newGeoDataHandler = function(dataObject) {
       }
       if (isNull(sampleRow.coordinateUncertaintyInMeters)) {
         missingRequired.push("coordinateUncertaintyInMeters");
-      }
-      if (isNull(sampleRow.elevation) || isNull(sampleRow.alt)) {
-        missingRequired.push("elevation");
       }
       missingStatement += missingRequired.length > 1 ? "some required columns: " : "a required column: ";
       missingHtml = missingRequired.join("</code>, <code>");

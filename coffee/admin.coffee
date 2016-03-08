@@ -1317,7 +1317,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
       removeDataFile()
       return false
 
-    if isNull(sampleRow.decimalLatitude) or isNull(sampleRow.decimalLongitude) or isNull(sampleRow.coordinateUncertaintyInMeters)  or (isNull(sampleRow.alt) and isNull(sampleRow.elevation))
+    if isNull(sampleRow.decimalLatitude) or isNull(sampleRow.decimalLongitude) or isNull(sampleRow.coordinateUncertaintyInMeters)
       toastStatusMessage "Data are missing required geo columns. Please reformat and try again."
       missingStatement = "You're missing "
       missingRequired = new Array()
@@ -1327,8 +1327,6 @@ newGeoDataHandler = (dataObject = new Object()) ->
         missingRequired.push "decimalLongitude"
       if isNull sampleRow.coordinateUncertaintyInMeters
         missingRequired.push "coordinateUncertaintyInMeters"
-      if isNull(sampleRow.elevation) or isNull sampleRow.alt
-        missingRequired.push "elevation"
       missingStatement += if missingRequired.length > 1 then "some required columns: " else "a required column: "
       missingHtml = missingRequired.join "</code>, <code>"
       missingStatement += "<code>#{missingHtml}</code>"
