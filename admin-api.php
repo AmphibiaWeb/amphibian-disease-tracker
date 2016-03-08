@@ -108,11 +108,7 @@ if($as_include !== true) {
                 "error" => "BAD_PARAMETERS",
             ));
         }
-        if(isset($_REQUEST["bind_datasets"])) {
-            $associate = boolstr($_REQUEST["bind_datasets"]);
-        } else {
-            $associate = true;
-        }
+        $associate = boolstr($_REQUEST["bind_datasets"]);
         returnAjax(mintExpedition($link, $title, $public, $associate));
         break;
     case "associate_expedition":
@@ -958,6 +954,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                     "status" => $resp,
                     "continue" => $resp2,
                 ),
+                "cookies" => $cookiesString,
             );
         }
         $data = smart_decode64($dataset, false);
@@ -989,14 +986,16 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
             }
         }
         # https://secure.php.net/manual/en/function.curl-file-create.php
-        $dataUploadPath = curl_file_create($file, $mime);
+        $dataUploadObj = curl_file_create($file, $mime);
         # Remove the invalid "fims_extra" data
         foreach($data as $k=>$row) {
             unset($row["fimsExtra"]);
             $data[$k] = $row;
         }
+
+        # The POST object
         $fimsValidateData = array(
-            "dataset" => $dataUploadPath,
+            "dataset" => $dataUploadObj,
             "projectId" => 26,
             "expeditionCode" => $projectLink,
         );
@@ -1043,8 +1042,8 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
             );
         }
         # Post the args
-        $headers = "Content-type: multipart/form-data\r\n" .
-                 "Cookie: " . $cookiesString . "\r\n";
+        $headers = array();
+        $header[] = "Content-type: multipart/form-data";
         $params = array(
             "http" => array(
                 "method" => "POST",
@@ -1052,16 +1051,20 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "content" => http_build_query($fimsValidateData),
             ),
         );
-
+        # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html#validate-dataset
         $ch = curl_init($fimsValidateUrl);
         curl_setopt( $ch, CURLOPT_POST, 1);
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query($fimsValidateData));
-        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt( $ch, CURLOPT_HEADER, 1);
-        $ctx = stream_context_create($params);
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, $params);
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false); // required as of PHP 5.6.0
+        # Also auto sets header to "multipart/form-data"
+        # Must be an array for file uploads
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $fimsValidateData);
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt( $ch, CURLOPT_COOKIE, $cookiesString);
+        curl_setopt( $ch, CURLOPT_HEADER, 1);
+        curl_setopt( $ch, CURLOPT_POST, 1);
         $rawResponse = curl_exec($ch);
+        curl_close($ch);
         $resp = json_decode($rawResponse, true);
         $status = true;
         # Check the response for errors
@@ -1073,9 +1076,10 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                     "cookies" => $cookiesString,
                 ),
                 "validate_response" => $resp,
+                "raw_response" => $rawResponse,
             ),
             "post_params" => array(
-                "file_sent" => $dataUploadPath,
+                "file_sent" => $dataUploadObj,
                 "header_params" => $params,
             ),
             "data" => array(
