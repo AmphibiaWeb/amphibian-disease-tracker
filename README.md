@@ -161,7 +161,8 @@ Mandatory parameter: `perform`
 - `delete`
 - `get`
   >
-  > Sample Response:  
+  > Sample Response:
+  >
   > ```json
   >{
   >  "execution_time": 6.0899257659912,
