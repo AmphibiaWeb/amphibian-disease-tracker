@@ -95,7 +95,7 @@ if($as_include !== true) {
                 "error" => "BAD_PARAMETERS",
             ));
         }
-        $addToExpedition = isset($_REQUEST["expedition"]) ? boostr($_REQUEST["expedition"]) : false;
+        $addToExpedition = isset($_REQUEST["expedition"]) ? boolstr($_REQUEST["expedition"]) : false;
         returnAjax(mintBcid($link, $file, $title, $addToExpedition));
         break;
     case "create_expedition":
@@ -592,8 +592,8 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
     $projectLink = $db->sanitize($projectLink);
     $dataFileName = array_pop(explode("/", $datasetRelativeUri));
     $dataNameArray = explode(".", $dataFileName);
-    array_pop($dataFileName);
-    $dataFileIdentifier = implode(".", $dataFileName);
+    array_pop($dataNameArray);
+    $dataFileIdentifier = implode(".", $dataNameArray);
     $datasetCanonicalUri = "https://amphibiandisease.org/project.php?id=" . $projectLink . "#dataset:" . $dataFileIdentifier;
     # Is the dataset a file, or a project identifier?
     $filePath = dirname(__FILE__) . "/" . $datasetRelativeUri;
@@ -675,6 +675,16 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             "ark" => $identifier,
             "project_permalink" => $datasetCanonicalUri,
             "project_title" => $datasetTitle,
+            "file_path" => $filePath,
+            "provided" => array(
+                "project_id" => $projectLink,
+                "data_uri" => $datasetRelativeUri,
+                "data_title" => $datasetTitle,
+                "data_parts" => array(
+                    "data_file_name" => $dataFileName,
+                    "data_file_identifier" => $dataFileIdentifier,
+                ),
+            ),
             "responses" => array(
                 "login_response" => array(
                     "response" => $loginResponse,
@@ -777,6 +787,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
         $params["http"]["header"] = $headers;
 
         $associateResponses = array();
+        $associateResponsesRaw = array();
         foreach($arkArray as $bcid) {
             $tempAssociationData = $associationData;
             $tempAssociationData["bcid"] = $bcid;
@@ -785,11 +796,13 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
             $resp = json_decode($rawResponse, true);
             $associateResponses[] = $resp;
+            $associateResponsesRaw[] = $rawResponse;
         }
 
         return array(
             "status" => true,
             "responses" => $associateResponses,
+            "raw_responses" => $associateResponsesRaw,
         );
 
     } catch (Exception $e) {

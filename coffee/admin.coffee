@@ -357,6 +357,7 @@ finalizeData = ->
       try
         unless result.status
           console.error result.error
+          bsAlert result.human_error, "danger"
           stopLoadError result.human_error
           return false
         dataAttrs.ark = result.ark

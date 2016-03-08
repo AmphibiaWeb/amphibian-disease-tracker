@@ -268,6 +268,7 @@ finalizeData = function() {
       try {
         if (!result.status) {
           console.error(result.error);
+          bsAlert(result.human_error, "danger");
           stopLoadError(result.human_error);
           return false;
         }
@@ -2563,7 +2564,12 @@ mintBcid = function(projectId, datasetUri, title, callback) {
     }
     return resultObj = result;
   }).error(function(result, status) {
-    resultObj.ark = null;
+    resultObj = {
+      ark: null,
+      error: status,
+      human_error: result.responseText,
+      status: false
+    };
     return false;
   }).always(function() {
     console.info("mintBcid is calling back", resultObj);
