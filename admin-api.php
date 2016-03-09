@@ -1086,7 +1086,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
         $resp = json_decode($rawResponse, true);
         $status = true;
         # Check the response for errors
-        $hasError = !empty($response["done"][0]["errors"]);
+        $hasError = !empty($resp["done"][0]["Samples"]["errors"]);
         # Make the response
         $response = array(
             "status" => $status,
