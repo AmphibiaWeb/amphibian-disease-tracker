@@ -2513,17 +2513,25 @@ validateFimsData = function(dataObject, callback) {
   args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
   console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
   $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, ref2, ref3;
+    var error, ref2, ref3, ref4, ref5, ref6, ref7;
     console.log("FIMS validate result", result);
+    p$("#data-validation").value = Object.size(dataObject.data);
+    clearTimeout(validatorTimeout);
     if (result.status !== true) {
-      stopLoadError("There was a problem with your dataset");
+      stopLoadError("There was a problem talking to the server");
       error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       bsAlert(error, "danger");
       clearTimeout(validatorTimeout);
       return false;
     }
-    p$("#data-validation").value = Object.size(dataObject.data);
-    clearTimeout(validatorTimeout);
+    if (result.validate_status === "FIMS_SERVER_DOWN") {
+      toastStatusMessage("Validation server is down, proceeding ...");
+      bsAlert("<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning");
+    } else if (result.validate_status !== true || ((ref4 = result.validate_status) != null ? ref4.status : void 0) !== true) {
+      stopLoadError("There was a problem with your dataset");
+      error = (ref5 = (ref6 = (ref7 = result.validate_status.error) != null ? ref7 : result.human_error) != null ? ref6 : result.error) != null ? ref5 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
+      bsAlert(error, "danger");
+    }
     if (typeof callback === "function") {
       return callback(dataObject);
     }
