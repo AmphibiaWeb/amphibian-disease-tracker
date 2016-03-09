@@ -103,14 +103,23 @@ validateFimsData = (dataObject, callback = null) ->
   $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.log "FIMS validate result", result
+    p$("#data-validation").value = Object.size dataObject.data
+    clearTimeout validatorTimeout
     unless result.status is true
-      stopLoadError "There was a problem with your dataset"
+      # Server crazieness
+      stopLoadError "There was a problem talking to the server"
       error = result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
       bsAlert error, "danger"
       clearTimeout validatorTimeout
       return false
-    p$("#data-validation").value = Object.size dataObject.data
-    clearTimeout validatorTimeout
+    if result.validate_status is "FIMS_SERVER_DOWN"
+      toastStatusMessage "Validation server is down, proceeding ..."
+      bsAlert "<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning"
+    else if result.validate_status isnt true or result.validate_status?.status isnt true
+      # Bad validation
+      stopLoadError "There was a problem with your dataset"
+      error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
+      bsAlert error, "danger"
     # When we're successful, run the dependent callback
     if typeof callback is "function"
       callback(dataObject)
@@ -136,7 +145,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
     return false
   resultObj = new Object()
   addToExp = _adp?.fims?.expedition?.ark?
-  
+
   args = "perform=mint&link=#{projectId}&title=#{post64(title)}&file=#{datasetUri}&expedition=#{addToExp}"
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->

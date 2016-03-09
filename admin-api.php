@@ -1085,11 +1085,27 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         curl_close($ch);
         $resp = json_decode($rawResponse, true);
         $status = true;
+        $validateStatus = true;
         # Check the response for errors
         $hasError = !empty($resp["done"][0]["Samples"]["errors"]);
+        $hasWarning = !empty($resp["done"][0]["Samples"]["warningss"]);
+        if(empty($resp)) {
+            $validateStatus = "FIMS_SERVER_DOWN";
+        }
+        else if($hasError) {
+            $mainError = $resp["done"][0]["Samples"]["errors"][0];
+            $errorMessage = key($mainError) . ": " . $mainError[0];
+            $validateStatus = array(
+                "status" => false,
+                "error" => $errorMessage,
+                "errors" => $resp["done"][0]["Samples"]["errors"],
+                "warningss" => $resp["done"][0]["Samples"]["warnings"],
+            );
+        }
         # Make the response
         $response = array(
             "status" => $status,
+            "validate_status" => $validateStatus,
             "responses" => array(
                 "login_response" => array(
                     "response" => $loginResponse,
@@ -1117,7 +1133,8 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
 
     } catch (Exception $e) {
         return array (
-            "status" => false,
+            "status" => true,
+            "validate_status" => "FIMS_SERVER_DOWN",
             "error" => $e->getMessage(),
             "human_error" => "There was a problem communicating with the FIMS project. Please try again later.",
         );
