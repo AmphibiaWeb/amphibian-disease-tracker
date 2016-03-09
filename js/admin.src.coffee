@@ -2641,10 +2641,11 @@ validateFimsData = (dataObject, callback = null) ->
   # Set an animation timer
   timerPerRow = 30
   validatorTimeout = null
-  animateProgress = ->
+  do animateProgress = ->
     val = p$("#data-validation").value
     if val >= rowCount
       # Stop the animation
+      clearTimeout validatorTimeout
       return false
     ++val
     p$("#data-validation").value = val
@@ -2655,6 +2656,7 @@ validateFimsData = (dataObject, callback = null) ->
   src = post64 dataObject.dataSrc
   args = "perform=validate&data=#{data}&datasrc=#{src}&link=#{_adp.projectId}"
   # Post the object over to FIMS
+  console.info "Posting ...", "#{adminParams.apiTarget}?#{args}"
   $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "FIMS validate result", result
