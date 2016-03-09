@@ -88,6 +88,7 @@ validateFimsData = (dataObject, callback = null) ->
     val = p$("#data-validation").value
     if val >= rowCount
       # Stop the animation
+      clearTimeout validatorTimeout
       return false
     ++val
     p$("#data-validation").value = val
