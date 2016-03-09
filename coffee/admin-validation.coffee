@@ -88,6 +88,7 @@ validateFimsData = (dataObject, callback = null) ->
     val = p$("#data-validation").value
     if val >= rowCount
       # Stop the animation
+      clearTimeout validatorTimeout
       return false
     ++val
     p$("#data-validation").value = val
@@ -145,7 +146,11 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
       return false
     resultObj = result
   .error (result, status) ->
-    resultObj.ark = null
+    resultObj =
+      ark: null
+      error: status
+      human_error: result.responseText
+      status: false
     false
   .always ->
     console.info "mintBcid is calling back", resultObj

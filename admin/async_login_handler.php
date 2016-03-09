@@ -84,6 +84,9 @@ if ($print_login_state === true) {
       case 'get_login_status':
         returnAjax(getLoginState($_REQUEST));
         break;
+      case "login":
+          returnAjax( doAsyncLogin($_REQUEST) );
+          break;
       case 'write':
         returnAjax(saveToUser($_REQUEST));
         break;
@@ -132,6 +135,21 @@ if ($print_login_state === true) {
       default:
         returnAjax(getLoginState($_REQUEST, true));
       }
+}
+
+function doAsyncLogin($get) {
+    $u = new UserFunctions();
+    $totp = empty($get["totp"]) ? false : $get["totp"];
+    $r = $u->lookupUser($get["username"], $get["password"], true, $totp);
+    if ($r["status"] === true) {
+        $return = $u->createCookieTokens($r["data"]);
+        unset($return["source"]);
+        unset($return["raw_cookie"]);
+        unset($return["basis"]);
+    } else {
+        $return = $r;
+    }
+    returnAjax($return);
 }
 
 function getLoginState($get, $default = false)

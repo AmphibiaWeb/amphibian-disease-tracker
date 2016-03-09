@@ -80,8 +80,10 @@ if (!function_exists('elapsed')) {
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
 
 switch ($do) {
-  case 'fetch':
   case 'upload':
+      # Set access-control header
+      header('Access-Control-Allow-Origin: amphibiandisease.org');
+  case 'fetch':
       doCartoSqlApiPush($_REQUEST);
       break;
   case "validate":
@@ -209,7 +211,7 @@ function checkColumnExists($column_list, $userReturn = true)
 
 function doCartoSqlApiPush($get)
 {
-global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
+    global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
     $sqlQuery = decode64($get['sql_query']);
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset

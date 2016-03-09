@@ -357,6 +357,7 @@ finalizeData = ->
       try
         unless result.status
           console.error result.error
+          bsAlert result.human_error, "danger"
           stopLoadError result.human_error
           return false
         dataAttrs.ark = result.ark
@@ -2701,7 +2702,11 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
       return false
     resultObj = result
   .error (result, status) ->
-    resultObj.ark = null
+    resultObj =
+      ark: null
+      error: status
+      human_error: result.responseText
+      status: false
     false
   .always ->
     console.info "mintBcid is calling back", resultObj

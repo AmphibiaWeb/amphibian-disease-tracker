@@ -1502,6 +1502,7 @@ class UserFunctions extends DBHelper
                 'source' => $value_create,
                 'ip_given' => $remote,
                 'raw_auth' => $value,
+                'raw_uid' => $dblink,
                 'raw_secret' => $cookie_secret,
                 'raw_cookie' => $raw_data,
                 'basis' => $value_create,
