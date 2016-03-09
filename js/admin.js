@@ -2510,9 +2510,9 @@ validateFimsData = function(dataObject, callback) {
   })();
   data = jsonTo64(dataObject.data);
   src = post64(dataObject.dataSrc);
-  args = "perform=validate&data=" + data + "&datasrc=" + src + "&link=" + _adp.projectId;
-  console.info("Posting ...", adminParams.apiTarget + "?" + args);
-  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+  args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
+  console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
+  $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
     var error, ref2, ref3;
     console.log("FIMS validate result", result);
     if (result.status !== true) {

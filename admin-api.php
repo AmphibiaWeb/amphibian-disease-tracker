@@ -120,12 +120,12 @@ if($as_include !== true) {
         returnAjax(associateBcidsWithExpeditions($link, null, $bcid));
         break;
     case "validate":
-        $data = $_REQUEST["data"];
+      //$data = $_REQUEST["data"];
         $datasrc = $_REQUEST["datasrc"];
         $link = $_REQUEST["link"];
         $cookies = $_REQUEST["auth"];
         $continue = empty($cookies) ? false : true;
-        returnAjax(validateDataset($data, $datasrc, $link, $cookies, $continue));
+        returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
         break;
     case "check_access":
         returnAjax(authorizedProjectAccess($_REQUEST));
@@ -948,7 +948,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
 
 
 
-function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsString = null, $continue = false) {
+function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = null, $continue = false) {
     try {
         $fimsValidateUrl = "http://www.biscicol.org/biocode-fims/rest/validate";
         # See
@@ -976,7 +976,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "cookies" => $cookiesString,
             );
         }
-        $data = smart_decode64($dataset, false);
+        # $data = smart_decode64($dataset, false);
         $datasrc = decode64($dataPath);
         $file = realpath($datasrc);
         if(!file_exists($file)) {
@@ -986,7 +986,7 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "human_error" => "Sorry, we couldn't validate your uploaded file",
                 "provided" => array(
                     "path" => $datasrc,
-                    "computed_path" => realpath($data_src),
+                    "computed_path" => $file,
                 ),
             );
         }
@@ -1007,10 +1007,10 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
         # https://secure.php.net/manual/en/function.curl-file-create.php
         $dataUploadObj = curl_file_create($file, $mime);
         # Remove the invalid "fims_extra" data
-        foreach($data as $k=>$row) {
-            unset($row["fimsExtra"]);
-            $data[$k] = $row;
-        }
+        // foreach($data as $k=>$row) {
+        //     unset($row["fimsExtra"]);
+        //     $data[$k] = $row;
+        // }
 
         # The POST object
         $fimsValidateData = array(
@@ -1104,8 +1104,8 @@ function validateDataset($dataset, $dataPath, $projectLink, $fimsAuthCookiesAsSt
                 "header_params" => $params,
             ),
             "data" => array(
-                "user_provided_data" => $dataset,
-                "fims_passed_data" => $data,
+              //"user_provided_data" => $dataset,
+                //"fims_passed_data" => $data,
                 "data_sent" => $fimsValidateData,
                 "data_mime" => array(
                     "mime" => $mime,

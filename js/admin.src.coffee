@@ -2654,10 +2654,10 @@ validateFimsData = (dataObject, callback = null) ->
   # Format the JSON for FIMS
   data = jsonTo64 dataObject.data
   src = post64 dataObject.dataSrc
-  args = "perform=validate&data=#{data}&datasrc=#{src}&link=#{_adp.projectId}"
+  args = "perform=validate&datasrc=#{src}&link=#{_adp.projectId}"
   # Post the object over to FIMS
-  console.info "Posting ...", "#{adminParams.apiTarget}?#{args}"
-  $.post adminParams.apiTarget, args, "json"
+  console.info "Posting ...", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+  $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.log "FIMS validate result", result
     unless result.status is true
