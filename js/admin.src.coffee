@@ -2597,6 +2597,19 @@ validateData = (dataObject, callback = null) ->
   false
 
 
+
+stopLoadBarsError = (currentTimeout) ->
+  try
+    clearTimeout currentTimeout
+  $("#validator-progress-container paper-progress[indeterminate]")
+  .addClass "error-progress"
+  others = $("#validator-progress-container paper-progress:not([indeterminate])")
+  for el in others
+    if p$(el).value isnt p$(el).max
+      $(el).addClass "error-progress"
+  false
+
+
 delayFimsRecheck = (originalResponse, callback) ->
   cookies = encodeURIComponent originalResponse.responses.login_response.cookies
   args = "perform=validate&auth=#{cookies}"
@@ -2637,7 +2650,7 @@ validateFimsData = (dataObject, callback = null) ->
   console.info "FIMS Validating", dataObject.data
   $("#data-validation").removeAttr "indeterminate"
   rowCount = Object.size dataObject.data
-  p$("#data-validation").max = rowCount
+  p$("#data-validation").max = rowCount * 2
   # Set an animation timer
   timerPerRow = 30
   validatorTimeout = null
@@ -2660,14 +2673,12 @@ validateFimsData = (dataObject, callback = null) ->
   $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.log "FIMS validate result", result
-    p$("#data-validation").value = Object.size dataObject.data
-    clearTimeout validatorTimeout
     unless result.status is true
       # Server crazieness
       stopLoadError "There was a problem talking to the server"
       error = result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
-      bsAlert error, "danger"
-      clearTimeout validatorTimeout
+      bsAlert "<strong>Server Error:</strong> #{error}", "danger"
+      stopLoadBarsError validatorTimeout
       return false
     if result.validate_status is "FIMS_SERVER_DOWN"
       toastStatusMessage "Validation server is down, proceeding ..."
@@ -2677,8 +2688,10 @@ validateFimsData = (dataObject, callback = null) ->
       stopLoadError "There was a problem with your dataset"
       error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
       bsAlert "<strong>Error with your data:</strong> #{error}", "danger"
-      clearTimeout validatorTimeout
+      stopLoadBarsError validatorTimeout
       return false
+    p$("#data-validation").value = Object.size dataObject.data
+    clearTimeout validatorTimeout
     # When we're successful, run the dependent callback
     if typeof callback is "function"
       callback(dataObject)
@@ -2808,6 +2821,7 @@ validateTaxonData = (dataObject, callback = null) ->
         message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{result.response.human_error} We stopped validation at that point. Please correct taxonomy issues and try uploading again."
         bsAlert(message)
         removeDataFile()
+        stopLoadBarsError()
         return false
       try
         replaceRows = taxaPerRow[taxaString]
