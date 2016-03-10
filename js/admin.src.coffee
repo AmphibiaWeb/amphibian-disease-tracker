@@ -2676,7 +2676,9 @@ validateFimsData = (dataObject, callback = null) ->
       # Bad validation
       stopLoadError "There was a problem with your dataset"
       error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
-      bsAlert error, "danger"
+      bsAlert "<strong>Error with your data:</strong> #{error}", "danger"
+      clearTimeout validatorTimeout
+      return false
     # When we're successful, run the dependent callback
     if typeof callback is "function"
       callback(dataObject)

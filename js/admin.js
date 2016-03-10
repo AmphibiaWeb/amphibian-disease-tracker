@@ -2530,7 +2530,9 @@ validateFimsData = function(dataObject, callback) {
     } else if (result.validate_status !== true || ((ref4 = result.validate_status) != null ? ref4.status : void 0) !== true) {
       stopLoadError("There was a problem with your dataset");
       error = (ref5 = (ref6 = (ref7 = result.validate_status.error) != null ? ref7 : result.human_error) != null ? ref6 : result.error) != null ? ref5 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
-      bsAlert(error, "danger");
+      bsAlert("<strong>Error with your data:</strong> " + error, "danger");
+      clearTimeout(validatorTimeout);
+      return false;
     }
     if (typeof callback === "function") {
       return callback(dataObject);
