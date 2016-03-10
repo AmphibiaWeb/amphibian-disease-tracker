@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -2442,6 +2442,22 @@ validateData = function(dataObject, callback) {
   return false;
 };
 
+stopLoadBarsError = function(currentTimeout) {
+  var el, l, len, others;
+  try {
+    clearTimeout(currentTimeout);
+  } catch (undefined) {}
+  $("#validator-progress-container paper-progress[indeterminate]").addClass("error-progress");
+  others = $("#validator-progress-container paper-progress:not([indeterminate])");
+  for (l = 0, len = others.length; l < len; l++) {
+    el = others[l];
+    if (p$(el).value !== p$(el).max) {
+      $(el).addClass("error-progress");
+    }
+  }
+  return false;
+};
+
 delayFimsRecheck = function(originalResponse, callback) {
   var args, cookies;
   cookies = encodeURIComponent(originalResponse.responses.login_response.cookies);
@@ -2492,7 +2508,7 @@ validateFimsData = function(dataObject, callback) {
   console.info("FIMS Validating", dataObject.data);
   $("#data-validation").removeAttr("indeterminate");
   rowCount = Object.size(dataObject.data);
-  p$("#data-validation").max = rowCount;
+  p$("#data-validation").max = rowCount * 2;
   timerPerRow = 30;
   validatorTimeout = null;
   (animateProgress = function() {
@@ -2515,13 +2531,11 @@ validateFimsData = function(dataObject, callback) {
   $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
     var error, ref2, ref3, ref4, ref5, ref6, ref7;
     console.log("FIMS validate result", result);
-    p$("#data-validation").value = Object.size(dataObject.data);
-    clearTimeout(validatorTimeout);
     if (result.status !== true) {
       stopLoadError("There was a problem talking to the server");
       error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
-      bsAlert(error, "danger");
-      clearTimeout(validatorTimeout);
+      bsAlert("<strong>Server Error:</strong> " + error, "danger");
+      stopLoadBarsError(validatorTimeout);
       return false;
     }
     if (result.validate_status === "FIMS_SERVER_DOWN") {
@@ -2531,9 +2545,11 @@ validateFimsData = function(dataObject, callback) {
       stopLoadError("There was a problem with your dataset");
       error = (ref5 = (ref6 = (ref7 = result.validate_status.error) != null ? ref7 : result.human_error) != null ? ref6 : result.error) != null ? ref5 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       bsAlert("<strong>Error with your data:</strong> " + error, "danger");
-      clearTimeout(validatorTimeout);
+      stopLoadBarsError(validatorTimeout);
       return false;
     }
+    p$("#data-validation").value = Object.size(dataObject.data);
+    clearTimeout(validatorTimeout);
     if (typeof callback === "function") {
       return callback(dataObject);
     }
@@ -2698,6 +2714,7 @@ validateTaxonData = function(dataObject, callback) {
         message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + result.response.human_error + " We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
         bsAlert(message);
         removeDataFile();
+        stopLoadBarsError();
         return false;
       }
       try {
