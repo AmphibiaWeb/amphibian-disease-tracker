@@ -46,10 +46,12 @@ stopLoadBarsError = (currentTimeout) ->
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
   .addClass "error-progress"
+  .removeAttr "indeterminate"
   others = $("#validator-progress-container paper-progress:not([indeterminate])")
   for el in others
     if p$(el).value isnt p$(el).max
       $(el).addClass "error-progress"
+      $(el).find("#primaryProgress").css "background", "#F44336"
   false
 
 
@@ -133,6 +135,36 @@ validateFimsData = (dataObject, callback = null) ->
       bsAlert "<strong>Error with your data:</strong> #{error}", "danger"      
       stopLoadBarsError validatorTimeout
       # Show all other errors, if there
+      errors = result.validate_status.errors
+      if Object.size errors > 1
+        html = """
+        <div class="error-block">
+          <p>Your dataset had errors. Here's a summary:</p>
+          <table class="table-responsive table-striped table-condensed table" >
+            <th>
+              <td>Error Type</td>
+              <td>Error Message</td>
+            </th>
+            <tbody>
+        """
+        for key, errorType of errors
+          for errorClass, errorMessages of errorType
+            errorList = "<ul>"
+            for k, message of errorMessages
+              errorList += "<li>#{message}</li>"
+            errorList += "</ul>"
+            html += """
+            <tr>
+              <td><strong>#{errorClass}</strong></td>
+              <td>#{errorList}</td>
+            </tr>
+            """
+        html += """
+            </tbody>
+          </table>
+        </div>
+        """
+        $("#validator-progress-container").append html
       return false
     p$("#data-validation").value = Object.size dataObject.data
     clearTimeout validatorTimeout
