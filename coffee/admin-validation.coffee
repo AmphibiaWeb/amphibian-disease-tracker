@@ -136,22 +136,24 @@ validateFimsData = (dataObject, callback = null) ->
       stopLoadBarsError validatorTimeout
       # Show all other errors, if there
       errors = result.validate_status.errors
-      if Object.size errors > 1
+      if Object.size(errors) > 1
         html = """
         <div class="error-block">
-          <p>Your dataset had errors. Here's a summary:</p>
-          <table class="table-responsive table-striped table-condensed table" >
-            <th>
-              <td>Error Type</td>
-              <td>Error Message</td>
-            </th>
+          <p><strong>Your dataset had errors</strong>. Here's a summary:</p>
+          <table class="table-responsive table-striped table-condensed table table-bordered table-hover" >
+            <thead>
+              <tr>
+                <th>Error Type</th>
+                <th>Error Message</th>
+              </tr>
+            </thhead>
             <tbody>
         """
         for key, errorType of errors
           for errorClass, errorMessages of errorType
             errorList = "<ul>"
             for k, message of errorMessages
-              errorList += "<li>#{message}</li>"
+              errorList += "<li>#{message.stripHtml(true)}</li>"
             errorList += "</ul>"
             html += """
             <tr>

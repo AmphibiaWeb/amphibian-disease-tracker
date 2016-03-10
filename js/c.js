@@ -236,6 +236,20 @@ roundNumberSigfig = function(number, digits) {
   return "" + significand + trailingDigits;
 };
 
+String.prototype.stripHtml = function(stripChildren) {
+  var str;
+  if (stripChildren == null) {
+    stripChildren = false;
+  }
+  str = this;
+  if (stripChildren) {
+    str = str.replace(/<(\w+)(?:[^"'>]|"[^"]*"|'[^']*')*>(?:((?:.)*?))<\/?\1(?:[^"'>]|"[^"]*"|'[^']*')*>/mg, "");
+  }
+  str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+  str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+  return str;
+};
+
 String.prototype.unescape = function(strict) {
   var decodeHTMLEntities, element, fixHtmlEncodings, tmp;
   if (strict == null) {

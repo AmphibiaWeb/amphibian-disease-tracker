@@ -2447,12 +2447,13 @@ stopLoadBarsError = function(currentTimeout) {
   try {
     clearTimeout(currentTimeout);
   } catch (undefined) {}
-  $("#validator-progress-container paper-progress[indeterminate]").addClass("error-progress");
+  $("#validator-progress-container paper-progress[indeterminate]").addClass("error-progress").removeAttr("indeterminate");
   others = $("#validator-progress-container paper-progress:not([indeterminate])");
   for (l = 0, len = others.length; l < len; l++) {
     el = others[l];
     if (p$(el).value !== p$(el).max) {
       $(el).addClass("error-progress");
+      $(el).find("#primaryProgress").css("background", "#F44336");
     }
   }
   return false;
@@ -2529,7 +2530,7 @@ validateFimsData = function(dataObject, callback) {
   args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
   console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
   $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, ref2, ref3, ref4, ref5, ref6, ref7;
+    var error, errorClass, errorList, errorMessages, errorType, errors, html, k, key, message, ref2, ref3, ref4, ref5, ref6, ref7;
     console.log("FIMS validate result", result);
     if (result.status !== true) {
       stopLoadError("There was a problem talking to the server");
@@ -2546,6 +2547,25 @@ validateFimsData = function(dataObject, callback) {
       error = (ref5 = (ref6 = (ref7 = result.validate_status.error) != null ? ref7 : result.human_error) != null ? ref6 : result.error) != null ? ref5 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       bsAlert("<strong>Error with your data:</strong> " + error, "danger");
       stopLoadBarsError(validatorTimeout);
+      errors = result.validate_status.errors;
+      if (Object.size(errors) > 1) {
+        html = "<div class=\"error-block\">\n  <p><strong>Your dataset had errors</strong>. Here's a summary:</p>\n  <table class=\"table-responsive table-striped table-condensed table table-bordered table-hover\" >\n    <thead>\n      <tr>\n        <th>Error Type</th>\n        <th>Error Message</th>\n      </tr>\n    </thhead>\n    <tbody>";
+        for (key in errors) {
+          errorType = errors[key];
+          for (errorClass in errorType) {
+            errorMessages = errorType[errorClass];
+            errorList = "<ul>";
+            for (k in errorMessages) {
+              message = errorMessages[k];
+              errorList += "<li>" + (message.stripHtml(true)) + "</li>";
+            }
+            errorList += "</ul>";
+            html += "<tr>\n  <td><strong>" + errorClass + "</strong></td>\n  <td>" + errorList + "</td>\n</tr>";
+          }
+        }
+        html += "    </tbody>\n  </table>\n</div>";
+        $("#validator-progress-container").append(html);
+      }
       return false;
     }
     p$("#data-validation").value = Object.size(dataObject.data);

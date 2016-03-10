@@ -152,6 +152,17 @@ roundNumberSigfig = (number, digits = 0) ->
   "#{significand}#{trailingDigits}"
 
 
+String::stripHtml = (stripChildren = false) ->
+  str = this
+  if stripChildren
+    # Pull out the children
+    str = str.replace /<(\w+)(?:[^"'>]|"[^"]*"|'[^']*')*>(?:((?:.)*?))<\/?\1(?:[^"'>]|"[^"]*"|'[^']*')*>/mg, ""
+  # Script tags
+  str = str.replace /<script[^>]*>([\S\s]*?)<\/script>/gmi, ''
+  # HTML tags
+  str = str.replace /<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, ''
+  str
+
 String::unescape = (strict = false) ->
   ###
   # Take escaped text, and return the unescaped version
@@ -534,7 +545,7 @@ randomString = (length = 8) ->
     char = randomInt charBottomSearchSpace, charUpperSearchSpace
     stringArray.push String.fromCharCode char
   stringArray.join ""
-  
+
 
 # Animations
 
