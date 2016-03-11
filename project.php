@@ -186,7 +186,6 @@ $loginStatus = getLoginState();
              "locality",
          );
          $list = $db->getQueryResults($search, $cols, "AND", true, true);
-         $polyColor = "#ff7800";
          $polyOpacity = "0.35";
          $superCoords = array();
          $averageLat = 0;
@@ -195,10 +194,16 @@ $loginStatus = getLoginState();
          $polyHtml = "";
          foreach($list as $project) {
              if( empty($project["project_id"]) || empty($project["locality"]) ) continue;
-             if(boolstr($public)) {
-                 $carto = decode64($project["carto_id"]);
-                 $coords = $carto["bounding_polygon"]["paths"];
+             if(boolstr($project["public"])) {
+                 $polyColor = "#ff7800";
+                 $carto = json_decode(deEscape($project["carto_id"]), true);
+                 # Escaped or unescaped
+                 $bpoly = empty($carto["bounding&#95;polygon"]) ? $carto["bounding_polygon"] : $carto["bounding&#95;polygon"];
+                 # Depending on the type of data stored, it could be
+                 # in paths or not
+                 $coords = empty($bpoly["paths"]) ? $bpoly : $bpoly["paths"];
              } else {
+                 $polyColor = "#9C27B0"; # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/64
                  $coords = array();
                  $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_w"]);
                  $coords[] = array( "lat" => $project["bounding_box_n"], "lng" => $project["bounding_box_e"]);
