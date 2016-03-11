@@ -80,7 +80,7 @@ loadEditor = (projectPreload) ->
                 viewerDisabled = if isViewer or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Read-Only'"
                 authorDisabled = if isAuthor then "disabled" else "data-toggle='tooltip' title='Grant Ownership'"
                 uid = project.access_data.composite[user]["user_id"]
-                currentRole = if isAuther then "author" else if isEditor then "edit" else "read"
+                currentRole = if isAuthor then "author" else if isEditor then "edit" else "read"
                 currentPermission = "data-current='#{currentRole}'"
                 theirHtml += """
                 <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
@@ -145,6 +145,14 @@ loadEditor = (projectPreload) ->
                         currentRole: current
                         uid: user
                 else
+                  # Confirm the delete
+                  try
+                    confirm = $(this).attr("data-confirm").toBool()
+                  catch
+                    confirm = false
+                  unless confirm
+                    $(this).addClass "extreme-danger"
+                    return false
                   permissionsObj =
                     delete: [user]
                 j64 = jsonTo64 permissionsObj
@@ -821,7 +829,9 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     <p>You can upload more data below, or replace this existing data.</p>
     """
     $("#data-card .card-content .variable-card-content").html html
-    $.get "meta.php", "do=get_last_mod&file=#{filePath}", "json"
+    args = "do=get_last_mod&file=#{filePath}"
+    console.info "Timestamp: ", "#{uri.urlString}meta.php?#{args}"
+    $.get "meta.php", args, "json"
     .done (result) ->
       time = toInt(result.last_mod) * 1000 # Seconds -> Milliseconds
       console.log "Last modded", time, result
