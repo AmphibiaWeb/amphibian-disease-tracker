@@ -244,20 +244,37 @@ function newEntry($get)
 
 function deleteEntry($get)
 {
-  /***
-   * Delete a project entry described by the ID parameter
-   *
-   * @param $get["id"] The DB id to delete
-   ***/
-    return false; # Disabled for now, need auth checks
-  global $db;
-  $id = $get["id"];
-  $result = $db->deleteRow($id,"id");
-  if ($result["status"] === false)
-  {
-    $result["human_error"] = "Failed to delete item '$id' from the database";
-  }
-  return $result;
+    /***
+     * Delete a project entry described by the ID parameter
+     *
+     * @param $get["id"] The DB id to delete
+     ***/
+    global $db, $login_status;
+    $uid = $login_status["detail"]["uid"];
+    $id = $get["id"];
+    if(!$db->isEntry($id)) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PROJECT",
+            "human_error" => "No project exists at database row #" . $id,
+        );
+    }
+    $search = array("id" => $id);
+    $project = $db->getQueryResults($search);
+    $authorizedStatus = checkProjectAuthorized($project, $uid);
+    if(!$authorizedStatus["can_edit"]) {
+        return array(
+            "status" => false,
+            "error" => "UNAUTHORIZED",
+            "human_error" => "You have insufficient priveleges to delete project #" . $project["project_id"],
+        );
+    }
+    $result = $db->deleteRow($id,"id");
+    if ($result["status"] === false)
+    {
+        $result["human_error"] = "Failed to delete item '$id' from the database";
+    }
+    return $result;
 }
 
 function listProjects($unauthenticated = true) {
@@ -719,7 +736,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
      * @param string $projectLink -> the project ID
      ***/
     global $db;
-    
+
     $fimsAssociateUrl = "http://www.biscicol.org/biocode-fims/rest/expeditions/associate";
     $projectLink = $db->sanitize($projectLink);
     if(empty($projectLink)) {

@@ -1969,7 +1969,20 @@ loadEditor = function(projectPreload) {
             confirmButton = "<paper-button id=\"confirm-delete-project\" class=\"materialred\">\n  <iron-icon icon=\"icons:warning\"></iron-icon> Confirm Project Deletion\n</paper-button>";
             $(this).replaceWith(confirmButton);
             $("#confirm-delete-project").click(function() {
-              toastStatusMessage("TODO Would delete this project");
+              var el;
+              el = this;
+              args = "perform=delete&id=" + project.id;
+              $.post(adminParams.apiTarget, args, "json").done(function(result) {
+                if (result.status === true) {
+                  return populateAdminActions();
+                } else {
+                  stopLoadError(result.human_error);
+                  return $(el).remove();
+                }
+              }).error(function(result, status) {
+                console.error("Server error", result, status);
+                return stopLoadError("Error deleting project");
+              });
               return false;
             });
             return false;
