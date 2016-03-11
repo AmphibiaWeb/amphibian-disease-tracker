@@ -296,14 +296,15 @@ function editAccess($link, $deltas) {
             "human_error" => "No project #".link."exists",
         );
     }
-    $search = array("project_id" => $$link);
+    $pid = $db->sanitize($link);
+    $search = array("project_id" => $pid);
     $project = $db->getQueryResults($search);
     $authorizedStatus = checkProjectAuthorized($project, $uid);
     if(!$authorizedStatus["can_edit"]) {
         return array(
             "status" => false,
             "error" => "UNAUTHORIZED",
-            "human_error" => "You have insufficient privileges to change user permissions on project #" . $link,
+            "human_error" => "You have insufficient privileges to change user permissions on project #" . $pid,
         );
     }
     if(!is_array($deltas)) {
@@ -363,10 +364,32 @@ function editAccess($link, $deltas) {
                 $notices[] = "Invalid role assignment for user " . $user["uid"];
             }
         }
+        # Write the new lists back out
+        $newList = array();
+        foreach($editList as $user) {
+            $newList[] = $user . ":EDIT";
+        }
+        foreach($viewList as $user) {
+            $newList[] = $user . ":READ";
+        }
+        $newListString = implode(",", $newList);
+        $newListString = $db->sanitize($newListString);
+        $newEntry = array(
+            "access_data" => $newListString,
+        );
+        $lookup = array(
+            "project_id" => $pid,
+        );
+        $r = $db->updateEntry($newEntry, $lookup, null, true);
+        if($r !== true) {
+            throw(new Exception($r));
+        }
         return array(
             "status" => true,
             "operations_status" => $operations,
             "notices" => $notices,
+            "new_access_list" => $newList,
+            "project_id" => $pid,
         );
     } catch (Exception $e) {
         return array(
