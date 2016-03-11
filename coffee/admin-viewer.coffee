@@ -11,6 +11,8 @@
 
 
 loadProjectBrowser = ->
+  url = "#{uri.urlString}admin-page.html#action:show-viewable"
+  history.pushState null, "Viewing Personal Project List", url
   startAdminActionHelper()
   startLoad()
   args = "perform=list"
@@ -56,6 +58,8 @@ loadProject = (projectId, message = "") ->
 
 
 loadSUProjectBrowser = ->
+  url = "#{uri.urlString}admin-page.html#action:show-su-viewable"
+  history.pushState null, "Viewing Superuser Project List", url
   startAdminActionHelper()
   startLoad()
   verifyLoginCredentials (result) ->
