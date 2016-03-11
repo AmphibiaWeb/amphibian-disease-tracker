@@ -1767,7 +1767,7 @@ loadEditor = function(projectPreload) {
                 viewerDisabled = isViewer || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Read-Only'";
                 authorDisabled = isAuthor ? "disabled" : "data-toggle='tooltip' title='Grant Ownership'";
                 uid = project.access_data.composite[user]["user_id"];
-                currentRole = isAuther ? "author" : isEditor ? "edit" : "read";
+                currentRole = isAuthor ? "author" : isEditor ? "edit" : "read";
                 currentPermission = "data-current='" + currentRole + "'";
                 theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
                 if (result.user.is_author) {
@@ -1786,7 +1786,7 @@ loadEditor = function(projectPreload) {
               $("#user-setter-dialog").remove();
               $("body").append(dialogHtml);
               $(".set-permission").unbind().click(function() {
-                var current, el, j64, permission, permissionsObj;
+                var confirm, current, el, error1, j64, permission, permissionsObj;
                 startLoad();
                 user = $(this).attr("data-user");
                 permission = $(this).attr("data-permission");
@@ -1803,6 +1803,15 @@ loadEditor = function(projectPreload) {
                     }
                   };
                 } else {
+                  try {
+                    confirm = $(this).attr("data-confirm").toBool();
+                  } catch (error1) {
+                    confirm = false;
+                  }
+                  if (!confirm) {
+                    $(this).addClass("extreme-danger");
+                    return false;
+                  }
                   permissionsObj = {
                     "delete": [user]
                   };
@@ -2340,7 +2349,9 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     }
     html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
     $("#data-card .card-content .variable-card-content").html(html);
-    $.get("meta.php", "do=get_last_mod&file=" + filePath, "json").done(function(result) {
+    args = "do=get_last_mod&file=" + filePath;
+    console.info("Timestamp: ", uri.urlString + "meta.php?" + args);
+    $.get("meta.php", args, "json").done(function(result) {
       var iso, t, time, timeString;
       time = toInt(result.last_mod) * 1000;
       console.log("Last modded", time, result);
