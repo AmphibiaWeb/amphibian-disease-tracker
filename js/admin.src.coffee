@@ -1870,6 +1870,8 @@ loadEditor = (projectPreload) ->
           # Userlist
           userHtml = ""
           for user in project.access_data.total
+            try
+              uid = project.access_data.composite[user]["user_id"]
             icon = ""
             if user is project.access_data.author
               icon = """
@@ -1884,9 +1886,9 @@ loadEditor = (projectPreload) ->
               <iron-icon icon="image:remove-red-eye"></iron-icon>
               """
             userHtml += """
-            <tr>
+            <tr class="user-permission-list-row" data-user="#{uid}">
               <td colspan="5">#{user}</td>
-              <td class="text-center">#{icon}</td>
+              <td class="text-center user-current-permission">#{icon}</td>
             </tr>
             """
           # Prepare States
