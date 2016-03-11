@@ -2530,7 +2530,7 @@ validateFimsData = function(dataObject, callback) {
   args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
   console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
   $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, errorClass, errorList, errorMessages, errorType, errors, html, k, key, message, ref2, ref3, ref4, ref5, ref6, ref7, statusTest;
+    var error, errorClass, errorList, errorMessages, errorType, errors, html, k, key, message, overrideShowErrors, ref2, ref3, ref4, ref5, ref6, ref7, statusTest;
     console.log("FIMS validate result", result);
     if (result.status !== true) {
       stopLoadError("There was a problem talking to the server");
@@ -2544,12 +2544,17 @@ validateFimsData = function(dataObject, callback) {
       toastStatusMessage("Validation server is down, proceeding ...");
       bsAlert("<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning");
     } else if (statusTest !== true) {
+      overrideShowErrors = false;
       stopLoadError("There was a problem with your dataset");
       error = (ref5 = (ref6 = (ref7 = result.validate_status.error) != null ? ref7 : result.human_error) != null ? ref6 : result.error) != null ? ref5 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
+      if (error.length > 255) {
+        overrideShowErrors = true;
+        error = error.substr(0, 255) + "[...] and more.";
+      }
       bsAlert("<strong>Error with your data:</strong> " + error, "danger");
       stopLoadBarsError(validatorTimeout);
       errors = result.validate_status.errors;
-      if (Object.size(errors) > 1) {
+      if (Object.size(errors) > 1 || overrideShowErrors) {
         html = "<div class=\"error-block\" id=\"validation-error-block\">\n  <p><strong>Your dataset had errors</strong>. Here's a summary:</p>\n  <table class=\"table-responsive table-striped table-condensed table table-bordered table-hover\" >\n    <thead>\n      <tr>\n        <th>Error Type</th>\n        <th>Error Message</th>\n      </tr>\n    </thhead>\n    <tbody>";
         for (key in errors) {
           errorType = errors[key];
