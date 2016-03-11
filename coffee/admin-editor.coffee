@@ -819,7 +819,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   if cartoData.raw_data.hasDataFile
     # We already have a data file
     filePath = cartoData.raw_data.filePath
-    if filePath.search helperDir is -1
+    if filePath.search(helperDir) is -1
       filePath = "#{helperDir}#{filePath}"
     html = """
     <p>
