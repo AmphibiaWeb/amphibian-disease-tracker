@@ -291,7 +291,7 @@ function editAccess($link, $deltas) {
     try {
         $uid = $login_status["detail"]["uid"];
         $pid = $db->sanitize($link);
-        
+
         if(!$db->isEntry($pid, "project_id", true)) {
             return array(
                 "status" => false,
@@ -349,18 +349,20 @@ function editAccess($link, $deltas) {
             # Match the roles
             $newRole = strtolower($user["newRole"]);
             $currentRole = strtolower($user["currentRole"]);
-            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "view" ? "viewList" : "authorList";
-            if($newRole == "edit" || $newRole == "view") {
+            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
+            $addToList = $currentRole == "read" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
+            if($newRole == "edit" || $newRole == "read") {
                 $key = array_find($user["uid"], $$observeList);
                 if($key === false) {
                     $notices[] = "Invalid current role for " . $user["uid"];
+                    continue;
                 }
                 if($observeList == "authorList") {
                     # Someone else must be set as the author
                 } else {
                     unset($$observeList[$key]);
                 }
-                $editList[] = $user["uid"];
+                $$addToList[] = $user["uid"];
             } else if($newRole == "author") {
                 # Need to do fanciness
             } else {
@@ -385,7 +387,7 @@ function editAccess($link, $deltas) {
         );
         $db->closeLink();
         $query = "UPDATE `".$db->getTable()."` SET `access_data`='".$newListString."' WHERE `project_id`='".$pid."'";
-        
+
         $r = mysqli_query($db->getLink(), $query);
         if($r !== true) {
             throw(new Exception(mysqli_error($db->getLink())));
@@ -397,6 +399,7 @@ function editAccess($link, $deltas) {
             "operations_status" => $operations,
             "notices" => $notices,
             "new_access_list" => $newList,
+            "changes" => $deltas,
             // "new_access_saved" => $newListString,
             // "new_access_entry" => $project["access_data"],
             // "original" => $originalAccess,
