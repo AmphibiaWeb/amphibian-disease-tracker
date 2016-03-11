@@ -2344,7 +2344,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   window.dataFileparams = cartoData.raw_data;
   if (cartoData.raw_data.hasDataFile) {
     filePath = cartoData.raw_data.filePath;
-    if (filePath.search(helperDir === -1)) {
+    if (filePath.search(helperDir) === -1) {
       filePath = "" + helperDir + filePath;
     }
     html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
