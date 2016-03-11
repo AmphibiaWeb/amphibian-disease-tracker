@@ -442,9 +442,18 @@ loadEditor = (projectPreload) ->
             """
             $(this).replaceWith confirmButton
             $("#confirm-delete-project").click ->
-              toastStatusMessage "TODO Would delete this project"
-              # Return home
-              # showEditList()
+              el = this
+              args = "perform=delete&id=#{project.id}"
+              $.post adminParams.apiTarget, args, "json"
+              .done (result) ->
+                if result.status is true
+                  populateAdminActions()
+                else
+                  stopLoadError result.human_error
+                  $(el).remove()
+              .error (result, status) ->
+                console.error "Server error", result, status
+                stopLoadError "Error deleting project"
               false
             false
           $("#save-project").click ->

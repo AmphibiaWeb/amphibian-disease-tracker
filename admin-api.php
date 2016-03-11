@@ -244,20 +244,37 @@ function newEntry($get)
 
 function deleteEntry($get)
 {
-  /***
-   * Delete a project entry described by the ID parameter
-   *
-   * @param $get["id"] The DB id to delete
-   ***/
-    return false; # Disabled for now, need auth checks
-  global $db;
-  $id = $get["id"];
-  $result = $db->deleteRow($id,"id");
-  if ($result["status"] === false)
-  {
-    $result["human_error"] = "Failed to delete item '$id' from the database";
-  }
-  return $result;
+    /***
+     * Delete a project entry described by the ID parameter
+     *
+     * @param $get["id"] The DB id to delete
+     ***/
+    global $db, $login_status;
+    $uid = $login_status["detail"]["uid"];
+    $id = $get["id"];
+    if(!$db->isEntry($id)) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PROJECT",
+            "human_error" => "No project exists at database row #" . $id,
+        );
+    }
+    $search = array("id" => $id);
+    $project = $db->getQueryResults($search);
+    $authorizedStatus = checkProjectAuthorized($project, $uid);
+    if(!$authorizedStatus["can_edit"]) {
+        return array(
+            "status" => false,
+            "error" => "UNAUTHORIZED",
+            "human_error" => "You have insufficient priveleges to delete project #" . $project["project_id"],
+        );
+    }
+    $result = $db->deleteRow($id,"id");
+    if ($result["status"] === false)
+    {
+        $result["human_error"] = "Failed to delete item '$id' from the database";
+    }
+    return $result;
 }
 
 function listProjects($unauthenticated = true) {
@@ -719,8 +736,15 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
      * @param string $projectLink -> the project ID
      ***/
     global $db;
+
     $fimsAssociateUrl = "http://www.biscicol.org/biocode-fims/rest/expeditions/associate";
     $projectLink = $db->sanitize($projectLink);
+    if(empty($projectLink)) {
+        returnAjax(array(
+            "status" => false,
+            "error" => "BAD_PARAMETERS",
+        ));
+    }
     $associationData = array(
         "projectId" => 26,
         "expeditionCode" => $projectLink,
@@ -728,12 +752,12 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
 
     # Get all the arks
     $arkArray = array();
-    if(!empty($bcidToAssociate)) {
+    if(empty($bcidToAssociate)) {
         $search = array("project_id" => $projectLink);
         $cols = array("dataset_arks");
         $results = $db->getQueryResults($search, $cols, "AND", false, true);
         $row = $results[0];
-        $data = explode(",", $row);
+        $data = explode(",", $row["dataset_arks"]);
         foreach($data as $arkPair) {
             $arkData = explode("::", $arkPair);
             $ark = $arkData[0];
@@ -798,6 +822,27 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
             $resp = json_decode($rawResponse, true);
             $associateResponses[] = $resp;
+            if(empty($resp)) {
+                # Get a header from CURL
+                $ch = curl_init($fimsAssociateUrl);
+                curl_setopt( $ch, CURLOPT_POST, 1);
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $tempAssociationData);
+                curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt( $ch, CURLOPT_COOKIE, $cookiesString);
+                $httpHeader = array(
+                    'Content-type: application/x-www-form-urlencoded',
+                );
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+                curl_setopt( $ch, CURLOPT_HEADER, 1);
+                $rawResponse = curl_exec($ch);
+                curl_close($ch);
+                $rawResponse = array("response" => $rawResponse);
+                $rawResponse["detail_params"] = array(
+                    "post_fields" => $tempAssociationData,
+                    "http_headers" => $httpHeader,
+                );
+            }
             $associateResponsesRaw[] = $rawResponse;
         }
 
@@ -805,6 +850,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             "status" => true,
             "responses" => $associateResponses,
             "raw_responses" => $associateResponsesRaw,
+            "arks_associated" => $arkArray,
         );
 
     } catch (Exception $e) {
