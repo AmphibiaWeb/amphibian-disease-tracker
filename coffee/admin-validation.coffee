@@ -131,13 +131,17 @@ validateFimsData = (dataObject, callback = null) ->
       bsAlert "<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning"
     else if statusTest isnt true
       # Bad validation
+      overrideShowErrors = false
       stopLoadError "There was a problem with your dataset"
       error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
+      if error.length > 255
+        overrideShowErrors = true
+        error = error.substr(0, 255) + "[...] and more."
       bsAlert "<strong>Error with your data:</strong> #{error}", "danger"
       stopLoadBarsError validatorTimeout
       # Show all other errors, if there
       errors = result.validate_status.errors
-      if Object.size(errors) > 1
+      if Object.size(errors) > 1 or overrideShowErrors
         html = """
         <div class="error-block" id="validation-error-block">
           <p><strong>Your dataset had errors</strong>. Here's a summary:</p>
@@ -175,7 +179,7 @@ validateFimsData = (dataObject, callback = null) ->
         $("#validator-progress-container").append html
         $("#validator-progress-container").get(0).scrollIntoView()
       return false
-    p$("#data-validation").value = Object.size dataObject.data
+    p$("#data-validation").value = p$("#data-validation").max
     clearTimeout validatorTimeout
     # When we're successful, run the dependent callback
     if typeof callback is "function"

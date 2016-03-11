@@ -2574,7 +2574,7 @@ validateFimsData = function(dataObject, callback) {
       }
       return false;
     }
-    p$("#data-validation").value = Object.size(dataObject.data);
+    p$("#data-validation").value = p$("#data-validation").max;
     clearTimeout(validatorTimeout);
     if (typeof callback === "function") {
       return callback(dataObject);
