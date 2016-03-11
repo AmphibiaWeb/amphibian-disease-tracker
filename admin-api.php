@@ -3,7 +3,7 @@
 /***
  * Handle admin-specific requests
  ***/
-$debug = true;
+$debug = false;
 
 if($debug) {
     error_reporting(E_ALL);
@@ -321,7 +321,7 @@ function editAccess($link, $deltas) {
         $changes = $deltas["changes"];
         $editList = $authorizedStatus["editors"];
         $viewList = $authorizedStatus["viewers"];
-        $authorList = [$project["author"]];
+        $authorList = array($project["author"]);
         $totalList = array_merge($editList, $viewList, $authorList);
         $notices = array();
         $operations = array();
@@ -343,7 +343,7 @@ function editAccess($link, $deltas) {
             if(empty($user["currentRole"]) || empty($user["newRole"]) || empty($user["uid"])) {
                 $notices[] = "Couldn't change permissions, missing one of newRole, uid, or currentRole for user";
             }
-            # TODO Validate the user
+            # TODO Validate the user as existing
             # Match the roles
             $newRole = strtolower($user["newRole"]);
             $currentRole = strtolower($user["currentRole"]);
