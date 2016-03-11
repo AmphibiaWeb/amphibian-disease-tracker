@@ -89,7 +89,7 @@ loadEditor = (projectPreload) ->
                   theirHtml += """
                   <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}"> </paper-icon-button>
                   """
-                if result.user.has_edit_permissions and user isnt isAuthor and user isnt result.user.user.userdata.username
+                if result.user.has_edit_permissions and user isnt isAuthor and user isnt result.user
                   # Delete button
                   theirHtml += """
                   <paper-icon-button icon="icons:delete" class="set-permission" data-permission="delete" data-user="#{uid}">
@@ -446,11 +446,13 @@ loadEditor = (projectPreload) ->
             """
             $(this).replaceWith confirmButton
             $("#confirm-delete-project").click ->
+              startLoad()
               el = this
               args = "perform=delete&id=#{project.id}"
               $.post adminParams.apiTarget, args, "json"
               .done (result) ->
                 if result.status is true
+                  stopLoad
                   toastStatusMessage "Successfully deleted Project ##{project.project_id}"
                   delay 1000, ->
                     populateAdminActions()

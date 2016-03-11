@@ -1771,7 +1771,7 @@ loadEditor = function(projectPreload) {
                 if (result.user.is_author) {
                   theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\"> </paper-icon-button>";
                 }
-                if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user.user.userdata.username) {
+                if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user) {
                   theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\">\n</paper-icon-button>";
                 }
                 userHtml += "<li>" + theirHtml + "</span></li>";
@@ -1975,10 +1975,12 @@ loadEditor = function(projectPreload) {
             $(this).replaceWith(confirmButton);
             $("#confirm-delete-project").click(function() {
               var el;
+              startLoad();
               el = this;
               args = "perform=delete&id=" + project.id;
               $.post(adminParams.apiTarget, args, "json").done(function(result) {
                 if (result.status === true) {
+                  stopLoad;
                   toastStatusMessage("Successfully deleted Project #" + project.project_id);
                   return delay(1000, function() {
                     return populateAdminActions();
