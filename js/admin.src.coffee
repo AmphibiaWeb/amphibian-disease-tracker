@@ -1824,7 +1824,6 @@ loadEditor = (projectPreload) ->
                 j64 = jsonTo64 permissionsObj
                 args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
                 # Push needs to be server authenticated, to prevent API spoofs
-                toastStatusMessage "Would grant #{user} permission '#{permission}'"
                 console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
                 $.post adminParams.apiTarget, args, "json"
                 .done (result) ->
@@ -1838,9 +1837,11 @@ loadEditor = (projectPreload) ->
                   .attr "disabled", "disabled"
                   .attr "data-current", permission
                   $(el).removeAttr "disabled"
+                  toastStatusMessage "#{user} granted #{permission} permissions"
                   stopLoad()
                 .error (result, status) ->
                   console.error "Server error", result, status
+                  stopLoadError "Problem changing permissions"
                 false
               $(".add-user")
               .unbind()

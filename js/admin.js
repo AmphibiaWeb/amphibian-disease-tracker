@@ -1818,7 +1818,6 @@ loadEditor = function(projectPreload) {
                 }
                 j64 = jsonTo64(permissionsObj);
                 args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
-                toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
                 console.log("Would push args to", adminParams.apiTarget + "?" + args);
                 $.post(adminParams.apiTarget, args, "json").done(function(result) {
                   var ref2, ref3;
@@ -1830,9 +1829,11 @@ loadEditor = function(projectPreload) {
                   }
                   $(el).parent().find("paper-icon-button:not([data-permission='delete'])").attr("disabled", "disabled").attr("data-current", permission);
                   $(el).removeAttr("disabled");
+                  toastStatusMessage(user + " granted " + permission + " permissions");
                   return stopLoad();
                 }).error(function(result, status) {
-                  return console.error("Server error", result, status);
+                  console.error("Server error", result, status);
+                  return stopLoadError("Problem changing permissions");
                 });
                 return false;
               });
