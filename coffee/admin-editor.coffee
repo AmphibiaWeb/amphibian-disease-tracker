@@ -657,8 +657,12 @@ showAddUserDialog = (refAccessList) ->
     uidArgs = jsonTo64 jsonUids
     args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{uidArgs}"
     # Push needs to be server authenticated, to prevent API spoofs
-    toastStatusMessage "Would save the list above of #{toAddUids.length} UIDs to #{window.projectParams.pid}"
     console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
+    $.post adminParams.apiTarget, args, "json"
+    .done (result) ->
+      console.log "Server permissions said", result
+    .error (result, status) ->
+      console.error "Server error", result, status
   false
 
 

@@ -2118,7 +2118,38 @@ showAddUserDialog = function(refAccessList) {
               user = users[l];
               html = "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\">\n  <span class=\"email\">" + user.email + "</span>\n    |\n  <span class=\"name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\">" + user.handle + "</span></div>";
             }
-            return $("#user-search-result-container").html(html);
+            $("#user-search-result-container").html(html);
+            return $(".user-search-result").click(function() {
+              var email, len1, listHtml, m, ref, uid;
+              uid = $(this).attr("data-uid");
+              console.info("Clicked on " + uid);
+              email = $(this).find(".email").text();
+              if ((typeof _adp !== "undefined" && _adp !== null ? _adp.currentQueueUids : void 0) == null) {
+                if (typeof _adp === "undefined" || _adp === null) {
+                  window._adp = new Object();
+                }
+                _adp.currentQueueUids = new Array();
+              }
+              ref = $("#user-add-queue .list-add-users");
+              for (m = 0, len1 = ref.length; m < len1; m++) {
+                user = ref[m];
+                _adp.currentQueueUids.push($(user).attr("data-uid"));
+              }
+              if (indexOf.call(refAccessList, email) < 0) {
+                if (indexOf.call(_adp.currentQueueUids, uid) < 0) {
+                  listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\">" + email + "</li>";
+                  $("#user-add-queue").append(listHtml);
+                  $("#search-user").val("");
+                  return $("#user-search-result-container").prop("hidden", "hidden");
+                } else {
+                  toastStatusMessage(email + " is already in the addition queue");
+                  return false;
+                }
+              } else {
+                toastStatusMessage(email + " already has access to this project");
+                return false;
+              }
+            });
           } else {
             return $("#user-search-result-container").prop("hidden", "hidden");
           }
@@ -2128,32 +2159,6 @@ showAddUserDialog = function(refAccessList) {
       }
     };
     return searchHelper.debounce();
-  });
-  $("body .user-search-result").click(function() {
-    var currentQueueUids, email, l, len, listHtml, ref, uid;
-    uid = $(this).attr("data-uid");
-    console.info("Clicked on " + uid);
-    email = $(this).find(".email").text();
-    currentQueueUids = new Array();
-    ref = $("#user-add-queue .list-add-users");
-    for (l = 0, len = ref.length; l < len; l++) {
-      user = ref[l];
-      currentQueueUids.push($(user).attr("data-uid"));
-    }
-    if (indexOf.call(refAccessList, email) < 0) {
-      if (indexOf.call(currentQueueUids, uid) < 0) {
-        listHtml = "<li class=\"list-add-users\" data-uid=\"" + uid + "\">" + email + "</li>";
-        $("#user-add-queue").append(listHtml);
-        $("#search-user").val("");
-        return $("#user-search-result-container").prop("hidden", "hidden");
-      } else {
-        toastStatusMessage(email + " is already in the addition queue");
-        return false;
-      }
-    } else {
-      toastStatusMessage(email + " already has access to this project");
-      return false;
-    }
   });
   $("#add-user").click(function() {
     var args, jsonUids, l, len, ref, toAddUids, uidArgs;
@@ -2173,8 +2178,12 @@ showAddUserDialog = function(refAccessList) {
     };
     uidArgs = jsonTo64(jsonUids);
     args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + uidArgs;
-    toastStatusMessage("Would save the list above of " + toAddUids.length + " UIDs to " + window.projectParams.pid);
-    return console.log("Would push args to", adminParams.apiTarget + "?" + args);
+    console.log("Would push args to", adminParams.apiTarget + "?" + args);
+    return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+      return console.log("Server permissions said", result);
+    }).error(function(result, status) {
+      return console.error("Server error", result, status);
+    });
   });
   return false;
 };
