@@ -436,6 +436,12 @@ renderPublicMap = function(projectData) {
     console.info("Working with limited data", projectData);
     cartoData = projectData.carto_id;
     poly = cartoData.bounding_polygon;
+    if (poly.fillColor == null) {
+      poly.fillColor = "#ff7800";
+    }
+    if (poly.fillOpacity == null) {
+      poly.fillOpacity = 0.35;
+    }
     mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
     usedPoints = new Array();
     nw = {
