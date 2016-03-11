@@ -85,6 +85,11 @@ if($as_include !== true) {
     case "get":
         returnAjax(readProjectData($_REQUEST));
         break;
+    case "editaccess":
+        $link = $_REQUEST["project"];
+        $deltas = smart_decode64($_REQUEST["deltas"]);
+        returnAjax(editAccess($link, $deltas));
+        break;
     case "mint_data":
     case "mint":
         $link = $_REQUEST["link"];
@@ -266,7 +271,7 @@ function deleteEntry($get)
         return array(
             "status" => false,
             "error" => "UNAUTHORIZED",
-            "human_error" => "You have insufficient priveleges to delete project #" . $project["project_id"],
+            "human_error" => "You have insufficient privileges to delete project #" . $project["project_id"],
         );
     }
     $result = $db->deleteRow($id,"id");
@@ -276,6 +281,96 @@ function deleteEntry($get)
     }
     return $result;
 }
+
+
+function editAccess($link, $deltas) {
+    /***
+     *
+     ***/
+    global $db, $login_status;
+    $uid = $login_status["detail"]["uid"];
+    if(!$db->isEntry($link, "project_id")) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PROJECT",
+            "human_error" => "No project #".link."exists",
+        );
+    }
+    $search = array("project_id" => $$link);
+    $project = $db->getQueryResults($search);
+    $authorizedStatus = checkProjectAuthorized($project, $uid);
+    if(!$authorizedStatus["can_edit"]) {
+        return array(
+            "status" => false,
+            "error" => "UNAUTHORIZED",
+            "human_error" => "You have insufficient privileges to change user permissions on project #" . $link,
+        );
+    }
+    if(!is_array($deltas)) {
+        return array(
+            "status" => false,
+            "error" => "BAD_DELTAS",
+            "human_error" => "Your permission changes were malformed. Please correct them and try again.",
+        );
+    }
+    $additions = $deltas["add"];
+    $removals = $deltas["delete"];
+    $changes = $deltas["changes"];
+    $editList = $authorizedStatus["editors"];
+    $viewList = $authorizedStatus["viewers"];
+    $authorList = [$project["author"]];
+    $notices = array();
+    $operations = array();
+    try {
+        foreach($additions as $newUid) {
+            $viewList[] = $newUid;
+        }
+        foreach($removals as $user) {
+            # Remove user from list after looping through each
+        }
+        foreach($changes as $user) {
+            if(!is_array($user)) {
+                $notices[] = "Couldn't change permissions, permissions object malformed";
+            }
+            if(empty($user["currentRole"]) || empty($user["newRole"]) || empty($user["uid"])) {
+                $notices[] = "Couldn't change permissions, missing one of newRole, uid, or currentRole for user";
+            }
+            # TODO Validate the user
+            # Match the roles
+            $newRole = strtolower($user["newRole"]);
+            $currentRole = strtolower($user["currentRole"]);
+            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "view" ? "viewList" : "authorList";            
+            if($newRole == "edit" || $newRole == "view") {
+                $key = array_find($user["uid"], $$observeList);
+                if($key === false) {
+                    $notices[] = "Invalid current role for " . $user["uid"];
+                }
+                if($observeList == "authorList") {
+                    # Someone else must be set as the author
+                } else {
+                    unset($$observeList[$key]);
+                }
+                $editList[] = $user["uid"];
+            } else if($newRole == "author") {
+                # Need to do fanciness
+            } else {
+                $notices[] = "Invalid role assignment for user " . $user["uid"];
+            }
+        }
+        return array(
+            "status" => true,
+            "operations_status" => $operations,
+            "notices" => $notices,
+        );
+    } catch (Exception $e) {
+        return array(
+            "status" => false,
+            "error" => $e->getMessage(),
+            "human_error" => "Server error processing access changes",
+        );
+    }
+}
+
 
 function listProjects($unauthenticated = true) {
     /***
