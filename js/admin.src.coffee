@@ -2603,10 +2603,12 @@ stopLoadBarsError = (currentTimeout) ->
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
   .addClass "error-progress"
+  .removeAttr "indeterminate"
   others = $("#validator-progress-container paper-progress:not([indeterminate])")
   for el in others
     if p$(el).value isnt p$(el).max
       $(el).addClass "error-progress"
+      $(el).find("#primaryProgress").css "background", "#F44336"
   false
 
 
@@ -2687,8 +2689,46 @@ validateFimsData = (dataObject, callback = null) ->
       # Bad validation
       stopLoadError "There was a problem with your dataset"
       error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
-      bsAlert "<strong>Error with your data:</strong> #{error}", "danger"
+      bsAlert "<strong>Error with your data:</strong> #{error}", "danger"      
       stopLoadBarsError validatorTimeout
+      # Show all other errors, if there
+      errors = result.validate_status.errors
+      if Object.size(errors) > 1
+        html = """
+        <div class="error-block">
+          <p><strong>Your dataset had errors</strong>. Here's a summary:</p>
+          <table class="table-responsive table-striped table-condensed table table-bordered table-hover" >
+            <thead>
+              <tr>
+                <th>Error Type</th>
+                <th>Error Message</th>
+              </tr>
+            </thhead>
+            <tbody>
+        """
+        for key, errorType of errors
+          for errorClass, errorMessages of errorType
+            errorList = "<ul>"
+            for k, message of errorMessages
+              # Format the message
+              message = message.stripHtml(true)
+              if /\[(?:((?:"(\w+)"((, )?))*?))\]/m.test(message)
+                # Wrap the column names
+                message = message.replace /"(\w+)"/mg, "<code>$1</code>"
+              errorList += "<li>#{message.stripHtml(true)}</li>"
+            errorList += "</ul>"
+            html += """
+            <tr>
+              <td><strong>#{errorClass.stripHtml(true)}</strong></td>
+              <td>#{errorList}</td>
+            </tr>
+            """
+        html += """
+            </tbody>
+          </table>
+        </div>
+        """
+        $("#validator-progress-container").append html
       return false
     p$("#data-validation").value = Object.size dataObject.data
     clearTimeout validatorTimeout

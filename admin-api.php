@@ -1094,13 +1094,15 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         }
         else if($hasError) {
             $mainError = $resp["done"][0]["Samples"]["errors"][0];
-            $errorMessage = key($mainError) . ": " . $mainError[0];
+            $meK = key($mainError);
+            $errorMessage = $meK . ": " . $mainError[$meK][0];
             if(!empty($mainError[0][0])) $errorMessage .= $mainError[0][0];
             $validateStatus = array(
                 "status" => false,
                 "error" => $errorMessage,
+                "main_error" => $mainError,
                 "errors" => $resp["done"][0]["Samples"]["errors"],
-                "warningss" => $resp["done"][0]["Samples"]["warnings"],
+                "warnings" => $resp["done"][0]["Samples"]["warnings"],
             );
         }
         # Make the response
