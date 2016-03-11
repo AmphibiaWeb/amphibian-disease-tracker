@@ -179,10 +179,13 @@ loadEditor = (projectPreload) ->
                     .attr "disabled", "disabled"
                     .attr "data-current", permission
                     $(".set-permission-block[data-user='#{user}'] paper-icon-button:not([data-permission='#{permission}'])").removeAttr "disabled"
+                    useIcon = $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']").attr "icon"
+                    $(".user-permission-list-row[data-user='#{{user}}'] .user-current-permission iron-icon").attr "icon", useIcon
                     toastStatusMessage "#{user} granted #{permission} permissions"
                   else
                     # Remove the row
                     $(".set-permission-block[data-user='#{user}']").parent().remove()
+                    $(".user-permission-list-row[data-user='#{{user}}']").remove()
                     toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
                   stopLoad()
                 .error (result, status) ->

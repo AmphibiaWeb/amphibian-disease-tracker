@@ -1830,7 +1830,7 @@ loadEditor = function(projectPreload) {
                 args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
                 console.log("Would push args to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
                 $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-                  var ref2, ref3;
+                  var ref2, ref3, useIcon;
                   console.log("Server permissions alter said", result);
                   if (result.status !== true) {
                     error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "We couldn't update user permissions";
@@ -1840,9 +1840,16 @@ loadEditor = function(projectPreload) {
                   if (permission !== "delete") {
                     $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("disabled", "disabled").attr("data-current", permission);
                     $(".set-permission-block[data-user='" + user + "'] paper-icon-button:not([data-permission='" + permission + "'])").removeAttr("disabled");
+                    useIcon = $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("icon");
+                    $(".user-permission-list-row[data-user='" + {
+                      user: user
+                    } + "'] .user-current-permission iron-icon").attr("icon", useIcon);
                     toastStatusMessage(user + " granted " + permission + " permissions");
                   } else {
                     $(".set-permission-block[data-user='" + user + "']").parent().remove();
+                    $(".user-permission-list-row[data-user='" + {
+                      user: user
+                    } + "']").remove();
                     toastStatusMessage("Removed " + user + " from project #" + window.projectParams.pid);
                   }
                   return stopLoad();
