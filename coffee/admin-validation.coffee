@@ -97,7 +97,7 @@ validateFimsData = (dataObject, callback = null) ->
   rowCount = Object.size dataObject.data
   p$("#data-validation").max = rowCount * 2
   # Set an animation timer
-  timerPerRow = 30
+  timerPerRow = 20
   validatorTimeout = null
   do animateProgress = ->
     val = p$("#data-validation").value
@@ -125,10 +125,11 @@ validateFimsData = (dataObject, callback = null) ->
       bsAlert "<strong>Server Error:</strong> #{error}", "danger"
       stopLoadBarsError validatorTimeout
       return false
+    statusTest = if result.validate_status?.status? then result.validate_status.status else result.validate_status
     if result.validate_status is "FIMS_SERVER_DOWN"
       toastStatusMessage "Validation server is down, proceeding ..."
       bsAlert "<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning"
-    else if result.validate_status isnt true or result.validate_status?.status isnt true
+    else if statusTest isnt true
       # Bad validation
       stopLoadError "There was a problem with your dataset"
       error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
