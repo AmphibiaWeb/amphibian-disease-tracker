@@ -80,19 +80,21 @@ loadEditor = (projectPreload) ->
                 viewerDisabled = if isViewer or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Read-Only'"
                 authorDisabled = if isAuthor then "disabled" else "data-toggle='tooltip' title='Grant Ownership'"
                 uid = project.access_data.composite[user]["user_id"]
+                currentRole = if isAuther then "author" else if isEditor then "edit" else "read"
+                currentPermission = "data-current='#{currentRole}'"
                 theirHtml += """
-                <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}"> </paper-icon-button>
-                <paper-icon-button icon="image:remove-red-eye" #{viewerDisabled} class="set-permission" data-permission="read" data-user="#{uid}"> </paper-icon-button>
+                <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
+                <paper-icon-button icon="image:remove-red-eye" #{viewerDisabled} class="set-permission" data-permission="read" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
                 """
                 # Only the current author can change authors
                 if result.user.is_author
                   theirHtml += """
-                  <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}"> </paper-icon-button>
+                  <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
                   """
                 if result.user.has_edit_permissions and user isnt isAuthor and user isnt result.user
                   # Delete button
                   theirHtml += """
-                  <paper-icon-button icon="icons:delete" class="set-permission" data-permission="delete" data-user="#{uid}">
+                  <paper-icon-button icon="icons:delete" class="set-permission" data-permission="delete" data-user="#{uid}" #{currentPermission}>
                   </paper-icon-button>
                   """
                 userHtml += """
@@ -129,18 +131,42 @@ loadEditor = (projectPreload) ->
               $(".set-permission")
               .unbind()
               .click ->
+                startLoad()
                 user = $(this).attr "data-user"
                 permission = $(this).attr "data-permission"
+                current = $(this).attr "data-current"
+                el = this
                 # Handle it
-                permissionsObj = new Object()
-                userList = new Array()
-                userList.push user
-                permissionsObj[permission] = userList
+                if permission isnt "delete"
+                  permissionsObj =
+                    changes:
+                      0:
+                        newRole: permission
+                        currentRole: current
+                        uid: user
+                else
+                  permissionsObj =
+                    delete: [user]
                 j64 = jsonTo64 permissionsObj
                 args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
                 # Push needs to be server authenticated, to prevent API spoofs
                 toastStatusMessage "Would grant #{user} permission '#{permission}'"
                 console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
+                $.post adminParams.apiTarget, args, "json"
+                .done (result) ->
+                  console.log "Server permissions alter said", result
+                  if result.status isnt true
+                    error = result.human_error ? result.error ? "We couldn't update user permissions"
+                    stopLoadError error
+                    return false
+                  # Update UI
+                  $(el).parent().find("paper-icon-button:not([data-permission='delete'])")
+                  .attr "disabled", "disabled"
+                  .attr "data-current", permission
+                  $(el).removeAttr "disabled"
+                  stopLoad()
+                .error (result, status) ->
+                  console.error "Server error", result, status
                 false
               $(".add-user")
               .unbind()
@@ -645,6 +671,7 @@ showAddUserDialog = (refAccessList) ->
 
   # bind add button
   $("#add-user").click ->
+    startLoad()
     toAddUids = new Array()
     for user in $("#user-add-queue .list-add-users")
       toAddUids.push $(user).attr "data-uid"

@@ -1754,7 +1754,7 @@ loadEditor = function(projectPreload) {
           console.info("Project access lists:", project.access_data);
           popManageUserAccess = function() {
             return verifyLoginCredentials(function(credentialResult) {
-              var authorDisabled, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, theirHtml, uid, userHtml, viewerDisabled;
+              var authorDisabled, currentPermission, currentRole, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, theirHtml, uid, userHtml, viewerDisabled;
               userHtml = "";
               ref1 = project.access_data.total;
               for (l = 0, len = ref1.length; l < len; l++) {
@@ -1767,12 +1767,14 @@ loadEditor = function(projectPreload) {
                 viewerDisabled = isViewer || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Read-Only'";
                 authorDisabled = isAuthor ? "disabled" : "data-toggle='tooltip' title='Grant Ownership'";
                 uid = project.access_data.composite[user]["user_id"];
-                theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\"> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\"> </paper-icon-button>";
+                currentRole = isAuther ? "author" : isEditor ? "edit" : "read";
+                currentPermission = "data-current='" + currentRole + "'";
+                theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
                 if (result.user.is_author) {
-                  theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\"> </paper-icon-button>";
+                  theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
                 }
                 if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user) {
-                  theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\">\n</paper-icon-button>";
+                  theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\" " + currentPermission + ">\n</paper-icon-button>";
                 }
                 userHtml += "<li>" + theirHtml + "</span></li>";
               }
@@ -1784,17 +1786,45 @@ loadEditor = function(projectPreload) {
               $("#user-setter-dialog").remove();
               $("body").append(dialogHtml);
               $(".set-permission").unbind().click(function() {
-                var j64, permission, permissionsObj, userList;
+                var current, el, j64, permission, permissionsObj;
+                startLoad();
                 user = $(this).attr("data-user");
                 permission = $(this).attr("data-permission");
-                permissionsObj = new Object();
-                userList = new Array();
-                userList.push(user);
-                permissionsObj[permission] = userList;
+                current = $(this).attr("data-current");
+                el = this;
+                if (permission !== "delete") {
+                  permissionsObj = {
+                    changes: {
+                      0: {
+                        newRole: permission,
+                        currentRole: current,
+                        uid: user
+                      }
+                    }
+                  };
+                } else {
+                  permissionsObj = {
+                    "delete": [user]
+                  };
+                }
                 j64 = jsonTo64(permissionsObj);
                 args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
                 toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
                 console.log("Would push args to", adminParams.apiTarget + "?" + args);
+                $.post(adminParams.apiTarget, args, "json").done(function(result) {
+                  var ref2, ref3;
+                  console.log("Server permissions alter said", result);
+                  if (result.status !== true) {
+                    error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "We couldn't update user permissions";
+                    stopLoadError(error);
+                    return false;
+                  }
+                  $(el).parent().find("paper-icon-button:not([data-permission='delete'])").attr("disabled", "disabled").attr("data-current", permission);
+                  $(el).removeAttr("disabled");
+                  return stopLoad();
+                }).error(function(result, status) {
+                  return console.error("Server error", result, status);
+                });
                 return false;
               });
               $(".add-user").unbind().click(function() {
@@ -2162,6 +2192,7 @@ showAddUserDialog = function(refAccessList) {
   });
   $("#add-user").click(function() {
     var args, jsonUids, l, len, ref, toAddUids, uidArgs;
+    startLoad();
     toAddUids = new Array();
     ref = $("#user-add-queue .list-add-users");
     for (l = 0, len = ref.length; l < len; l++) {
@@ -2180,7 +2211,17 @@ showAddUserDialog = function(refAccessList) {
     args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + uidArgs;
     console.log("Would push args to", adminParams.apiTarget + "?" + args);
     return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-      return console.log("Server permissions said", result);
+      var error, ref1, ref2, tense;
+      console.log("Server permissions said", result);
+      if (result.status !== true) {
+        error = (ref1 = (ref2 = result.human_error) != null ? ref2 : result.error) != null ? ref1 : "We couldn't update user permissions";
+        stopLoadError(error);
+        return false;
+      }
+      stopLoad();
+      tense = toAddUids.length === 1 ? "viewer" : "viewers";
+      toastStatusMessage("Successfully added " + toAddUids.length + " " + tense + " to the project");
+      return p$("#add-new-user").close();
     }).error(function(result, status) {
       return console.error("Server error", result, status);
     });
