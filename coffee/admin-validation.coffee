@@ -175,7 +175,7 @@ validateFimsData = (dataObject, callback = null) ->
         $("#validator-progress-container").append html
         $("#validator-progress-container").get(0).scrollIntoView()
       return false
-    p$("#data-validation").value = Object.size dataObject.data
+    p$("#data-validation").value = p$("#data-validation").max
     clearTimeout validatorTimeout
     # When we're successful, run the dependent callback
     if typeof callback is "function"
