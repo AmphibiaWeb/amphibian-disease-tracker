@@ -661,6 +661,8 @@ showAddUserDialog = (refAccessList) ->
     $.post adminParams.apiTarget, args, "json"
     .done (result) ->
       console.log "Server permissions said", result
+      # Update the UI with the new list
+      # Dismiss the dialog
     .error (result, status) ->
       console.error "Server error", result, status
   false
