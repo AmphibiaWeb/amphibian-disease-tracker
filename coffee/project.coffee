@@ -416,6 +416,8 @@ renderPublicMap = (projectData = publicData) ->
     console.info "Working with limited data", projectData
     cartoData = projectData.carto_id
     poly = cartoData.bounding_polygon
+    poly.fillColor ?= "#ff7800"
+    poly.fillOpacity ?= 0.35
     mapHtml = """
     <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
     """
