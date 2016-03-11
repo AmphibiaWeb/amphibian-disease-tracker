@@ -292,11 +292,11 @@ function editAccess($link, $deltas) {
         $uid = $login_status["detail"]["uid"];
         $pid = $db->sanitize($link);
         
-        if(!$db->isEntry($pid, "project_id")) {
+        if(!$db->isEntry($pid, "project_id", true)) {
             return array(
                 "status" => false,
                 "error" => "INVALID_PROJECT",
-                "human_error" => "No project #". $pid ."exists",
+                "human_error" => "No project #". $pid ." exists",
             );
         }
         $search = array("project_id" => $pid);
