@@ -372,8 +372,10 @@ function editAccess($link, $deltas) {
         foreach($viewList as $user) {
             $newList[] = $user . ":READ";
         }
+        $newListString = implode(",", $newList);
+        $newListString = $db->sanitize($newListString);
         $newEntry = array(
-            "access_data" => implode(",", $newList),
+            "access_data" => $newListString,
         );
         $lookup = array(
             "project_id" => $pid,
