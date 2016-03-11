@@ -1728,7 +1728,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, userHtml, year, yearPretty, years, yearsReal;
+        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1830,7 +1830,7 @@ loadEditor = function(projectPreload) {
                 args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
                 console.log("Would push args to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
                 $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-                  var ref2, ref3;
+                  var ref2, ref3, useIcon;
                   console.log("Server permissions alter said", result);
                   if (result.status !== true) {
                     error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "We couldn't update user permissions";
@@ -1840,9 +1840,16 @@ loadEditor = function(projectPreload) {
                   if (permission !== "delete") {
                     $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("disabled", "disabled").attr("data-current", permission);
                     $(".set-permission-block[data-user='" + user + "'] paper-icon-button:not([data-permission='" + permission + "'])").removeAttr("disabled");
+                    useIcon = $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("icon");
+                    $(".user-permission-list-row[data-user='" + {
+                      user: user
+                    } + "'] .user-current-permission iron-icon").attr("icon", useIcon);
                     toastStatusMessage(user + " granted " + permission + " permissions");
                   } else {
                     $(".set-permission-block[data-user='" + user + "']").parent().remove();
+                    $(".user-permission-list-row[data-user='" + {
+                      user: user
+                    } + "']").remove();
                     toastStatusMessage("Removed " + user + " from project #" + window.projectParams.pid);
                   }
                   return stopLoad();
@@ -1864,6 +1871,9 @@ loadEditor = function(projectPreload) {
           ref1 = project.access_data.total;
           for (l = 0, len = ref1.length; l < len; l++) {
             user = ref1[l];
+            try {
+              uid = project.access_data.composite[user]["user_id"];
+            } catch (undefined) {}
             icon = "";
             if (user === project.access_data.author) {
               icon = "<iron-icon icon=\"social:person\"></iron-icon>";
@@ -1872,7 +1882,7 @@ loadEditor = function(projectPreload) {
             } else if (indexOf.call(project.access_data.viewers_list, user) >= 0) {
               icon = "<iron-icon icon=\"image:remove-red-eye\"></iron-icon>";
             }
-            userHtml += "<tr>\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center\">" + icon + "</td>\n</tr>";
+            userHtml += "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
           }
           icon = project["public"].toBool() ? "<iron-icon icon=\"social:public\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Public Project\"></iron-icon>" : "<iron-icon icon=\"icons:lock\" class=\"material-red\" data-toggle=\"tooltip\" title=\"Private Project\"></iron-icon>";
           publicToggle = !project["public"].toBool() ? result.user.is_author ? "<div class=\"col-xs-12\">\n  <paper-toggle-button id=\"public\" class=\"project-params danger-toggle red\">\n    <iron-icon icon=\"icons:warning\"></iron-icon>\n    Make this project public\n  </paper-toggle-button> <span class=\"text-muted small\">Once saved, this cannot be undone</span>\n</div>" : "<!-- This user does not have permission to toggle the public state of this project -->" : "<!-- This project is already public -->";

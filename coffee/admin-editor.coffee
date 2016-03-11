@@ -69,7 +69,8 @@ loadEditor = (projectPreload) ->
           project.access_data.viewers = Object.toArray project.access_data.viewers
           console.info "Project access lists:", project.access_data
           # Helper functions to bind to upcoming buttons
-          popManageUserAccess = ->
+          _adp.projectData = project
+          popManageUserAccess = (project = _adp.projectData) ->
             verifyLoginCredentials (credentialResult) ->
               # For each user in the access list, give some toggles
               userHtml = ""
@@ -179,11 +180,15 @@ loadEditor = (projectPreload) ->
                     .attr "disabled", "disabled"
                     .attr "data-current", permission
                     $(".set-permission-block[data-user='#{user}'] paper-icon-button:not([data-permission='#{permission}'])").removeAttr "disabled"
+                    useIcon = $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']").attr "icon"
+                    $(".user-permission-list-row[data-user='#{{user}}'] .user-current-permission iron-icon").attr "icon", useIcon
                     toastStatusMessage "#{user} granted #{permission} permissions"
                   else
                     # Remove the row
                     $(".set-permission-block[data-user='#{user}']").parent().remove()
+                    $(".user-permission-list-row[data-user='#{{user}}']").remove()
                     toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
+                  # Update _adp.projectData.access_data
                   stopLoad()
                 .error (result, status) ->
                   console.error "Server error", result, status
@@ -202,6 +207,8 @@ loadEditor = (projectPreload) ->
           # Userlist
           userHtml = ""
           for user in project.access_data.total
+            try
+              uid = project.access_data.composite[user]["user_id"]
             icon = ""
             if user is project.access_data.author
               icon = """
@@ -216,9 +223,9 @@ loadEditor = (projectPreload) ->
               <iron-icon icon="image:remove-red-eye"></iron-icon>
               """
             userHtml += """
-            <tr>
+            <tr class="user-permission-list-row" data-user="#{uid}">
               <td colspan="5">#{user}</td>
-              <td class="text-center">#{icon}</td>
+              <td class="text-center user-current-permission">#{icon}</td>
             </tr>
             """
           # Prepare States
@@ -532,7 +539,7 @@ loadEditor = (projectPreload) ->
           # $("#data-management").affix affixOptions
           # console.info "Affixed at #{topPosition}px", affixOptions
           $("#manage-users").click ->
-            popManageUserAccess()
+            popManageUserAccess(_adp.projectData)
           $(".danger-toggle").on "iron-change", ->
             if $(this).get(0).checked
               $(this).find("iron-icon").addClass("material-red")
@@ -723,6 +730,9 @@ showAddUserDialog = (refAccessList) ->
       tense = if toAddUids.length is 1 then "viewer" else "viewers"
       toastStatusMessage "Successfully added #{toAddUids.length} #{tense} to the project"
       # Update the UI with the new list
+      ## Remove from to-add list
+      ## Add to manage users table
+      ## Update _adp.projectData.access_data
       # Dismiss the dialog
       p$("#add-new-user").close()
     .error (result, status) ->

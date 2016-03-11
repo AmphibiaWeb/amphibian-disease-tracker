@@ -1847,10 +1847,13 @@ loadEditor = (projectPreload) ->
                     .attr "disabled", "disabled"
                     .attr "data-current", permission
                     $(".set-permission-block[data-user='#{user}'] paper-icon-button:not([data-permission='#{permission}'])").removeAttr "disabled"
+                    useIcon = $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']").attr "icon"
+                    $(".user-permission-list-row[data-user='#{{user}}'] .user-current-permission iron-icon").attr "icon", useIcon
                     toastStatusMessage "#{user} granted #{permission} permissions"
                   else
                     # Remove the row
                     $(".set-permission-block[data-user='#{user}']").parent().remove()
+                    $(".user-permission-list-row[data-user='#{{user}}']").remove()
                     toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
                   stopLoad()
                 .error (result, status) ->
@@ -1870,6 +1873,8 @@ loadEditor = (projectPreload) ->
           # Userlist
           userHtml = ""
           for user in project.access_data.total
+            try
+              uid = project.access_data.composite[user]["user_id"]
             icon = ""
             if user is project.access_data.author
               icon = """
@@ -1884,9 +1889,9 @@ loadEditor = (projectPreload) ->
               <iron-icon icon="image:remove-red-eye"></iron-icon>
               """
             userHtml += """
-            <tr>
+            <tr class="user-permission-list-row" data-user="#{uid}">
               <td colspan="5">#{user}</td>
-              <td class="text-center">#{icon}</td>
+              <td class="text-center user-current-permission">#{icon}</td>
             </tr>
             """
           # Prepare States
