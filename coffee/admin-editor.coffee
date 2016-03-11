@@ -72,14 +72,14 @@ loadEditor = (projectPreload) ->
               # For each user in the access list, give some toggles
               userHtml = ""
               for user in project.access_data.total
-                theirHtml = "#{user} <span class='set-permission-block'>"
+                uid = project.access_data.composite[user]["user_id"]
+                theirHtml = "#{user} <span class='set-permission-block' data-user='#{uid}'>"
                 isAuthor = user is project.access_data.author
                 isEditor =  user in project.access_data.editors_list
                 isViewer = not isEditor
                 editDisabled = if isEditor or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Editor'"
                 viewerDisabled = if isViewer or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Read-Only'"
                 authorDisabled = if isAuthor then "disabled" else "data-toggle='tooltip' title='Grant Ownership'"
-                uid = project.access_data.composite[user]["user_id"]
                 currentRole = if isAuthor then "author" else if isEditor then "edit" else "read"
                 currentPermission = "data-current='#{currentRole}'"
                 theirHtml += """
@@ -131,7 +131,6 @@ loadEditor = (projectPreload) ->
               $(".set-permission")
               .unbind()
               .click ->
-                startLoad()
                 user = $(this).attr "data-user"
                 permission = $(this).attr "data-permission"
                 current = $(this).attr "data-current"
@@ -154,13 +153,16 @@ loadEditor = (projectPreload) ->
                     $(this).addClass "extreme-danger"
                     return false
                   permissionsObj =
-                    delete: [user]
+                    delete:
+                      0:
+                        currentRole: current
+                        uid: user
+                startLoad()
                 j64 = jsonTo64 permissionsObj
                 args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
                 # Push needs to be server authenticated, to prevent API spoofs
-                toastStatusMessage "Would grant #{user} permission '#{permission}'"
-                console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
-                $.post adminParams.apiTarget, args, "json"
+                console.log "Would push args to", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+                $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
                 .done (result) ->
                   console.log "Server permissions alter said", result
                   if result.status isnt true
@@ -168,13 +170,20 @@ loadEditor = (projectPreload) ->
                     stopLoadError error
                     return false
                   # Update UI
-                  $(el).parent().find("paper-icon-button:not([data-permission='delete'])")
-                  .attr "disabled", "disabled"
-                  .attr "data-current", permission
-                  $(el).removeAttr "disabled"
+                  if permission isnt "delete"
+                    $(el).parent().find("paper-icon-button:not([data-permission='delete'])")
+                    .attr "disabled", "disabled"
+                    .attr "data-current", permission
+                    $(el).removeAttr "disabled"
+                    toastStatusMessage "#{user} granted #{permission} permissions"
+                  else
+                    # Remove the row
+                    $(".set-permission-block[data-user='#{user}']").remove()
+                    toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
                   stopLoad()
                 .error (result, status) ->
                   console.error "Server error", result, status
+                  stopLoadError "Problem changing permissions"
                 false
               $(".add-user")
               .unbind()

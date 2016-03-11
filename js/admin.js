@@ -1759,14 +1759,14 @@ loadEditor = function(projectPreload) {
               ref1 = project.access_data.total;
               for (l = 0, len = ref1.length; l < len; l++) {
                 user = ref1[l];
-                theirHtml = user + " <span class='set-permission-block'>";
+                uid = project.access_data.composite[user]["user_id"];
+                theirHtml = user + " <span class='set-permission-block' data-user='" + uid + "'>";
                 isAuthor = user === project.access_data.author;
                 isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
                 isViewer = !isEditor;
                 editDisabled = isEditor || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Editor'";
                 viewerDisabled = isViewer || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Read-Only'";
                 authorDisabled = isAuthor ? "disabled" : "data-toggle='tooltip' title='Grant Ownership'";
-                uid = project.access_data.composite[user]["user_id"];
                 currentRole = isAuthor ? "author" : isEditor ? "edit" : "read";
                 currentPermission = "data-current='" + currentRole + "'";
                 theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
@@ -1787,7 +1787,6 @@ loadEditor = function(projectPreload) {
               $("body").append(dialogHtml);
               $(".set-permission").unbind().click(function() {
                 var confirm, current, el, error1, j64, permission, permissionsObj;
-                startLoad();
                 user = $(this).attr("data-user");
                 permission = $(this).attr("data-permission");
                 current = $(this).attr("data-current");
@@ -1813,14 +1812,19 @@ loadEditor = function(projectPreload) {
                     return false;
                   }
                   permissionsObj = {
-                    "delete": [user]
+                    "delete": {
+                      0: {
+                        currentRole: current,
+                        uid: user
+                      }
+                    }
                   };
                 }
+                startLoad();
                 j64 = jsonTo64(permissionsObj);
                 args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
-                toastStatusMessage("Would grant " + user + " permission '" + permission + "'");
-                console.log("Would push args to", adminParams.apiTarget + "?" + args);
-                $.post(adminParams.apiTarget, args, "json").done(function(result) {
+                console.log("Would push args to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
+                $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
                   var ref2, ref3;
                   console.log("Server permissions alter said", result);
                   if (result.status !== true) {
@@ -1828,11 +1832,18 @@ loadEditor = function(projectPreload) {
                     stopLoadError(error);
                     return false;
                   }
-                  $(el).parent().find("paper-icon-button:not([data-permission='delete'])").attr("disabled", "disabled").attr("data-current", permission);
-                  $(el).removeAttr("disabled");
+                  if (permission !== "delete") {
+                    $(el).parent().find("paper-icon-button:not([data-permission='delete'])").attr("disabled", "disabled").attr("data-current", permission);
+                    $(el).removeAttr("disabled");
+                    toastStatusMessage(user + " granted " + permission + " permissions");
+                  } else {
+                    $(".set-permission-block[data-user='" + user + "']").remove();
+                    toastStatusMessage("Removed " + user + " from project #" + window.projectParams.pid);
+                  }
                   return stopLoad();
                 }).error(function(result, status) {
-                  return console.error("Server error", result, status);
+                  console.error("Server error", result, status);
+                  return stopLoadError("Problem changing permissions");
                 });
                 return false;
               });

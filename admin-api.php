@@ -337,6 +337,15 @@ function editAccess($link, $deltas) {
         }
         foreach($removals as $user) {
             # Remove user from list after looping through each
+            $currentRole = strtolower($user["currentRole"]);
+            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
+            $key = array_find($user["uid"], $$observeList);
+            if($key === false) {
+                $notices[] = "Invalid current role for " . $user["uid"];
+                continue;
+            }
+            unset($$observeList[$key]);
+            $operations[] = "User ".$user["uid"]." removed from role '".strtoupper($currentRole)."' in " . $observeList;
         }
         foreach($changes as $user) {
             if(!is_array($user)) {
@@ -349,6 +358,10 @@ function editAccess($link, $deltas) {
             # Match the roles
             $newRole = strtolower($user["newRole"]);
             $currentRole = strtolower($user["currentRole"]);
+            if($newRole == $currentRole) {
+                $notices[] = "User ".$user["uid"]." already has permissions '".strtoupper($currentRole)."'";
+                continue;
+            }
             $observeList = $currentRole == "edit" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
             $addToList = $currentRole == "read" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
             if($newRole == "edit" || $newRole == "read") {
@@ -363,6 +376,7 @@ function editAccess($link, $deltas) {
                     unset($$observeList[$key]);
                 }
                 array_push($$addToList, $user["uid"]);
+                $operations[] = "Removed ".$user["uid"]." from $observeList and added to $addToList";
             } else if($newRole == "author") {
                 # Need to do fanciness
             } else {
@@ -399,7 +413,7 @@ function editAccess($link, $deltas) {
             "operations_status" => $operations,
             "notices" => $notices,
             "new_access_list" => $newList,
-            "changes" => $deltas,
+            "deltas" => $deltas,
             // "new_access_saved" => $newListString,
             // "new_access_entry" => $project["access_data"],
             // "original" => $originalAccess,
