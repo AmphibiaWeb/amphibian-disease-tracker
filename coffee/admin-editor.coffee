@@ -205,8 +205,12 @@ loadEditor = (projectPreload) ->
             stopLoadError "We couldn't parse your data. Please try again later."
             cartoParsed = new Object()
           mapHtml = ""
+          try
+            bb = Object.toArray cartoParsed.bounding_polygon
+          catch
+            bb = null
           createMapOptions =
-            boundingBox: Object.toArray cartoParsed.bounding_polygon
+            boundingBox: bb
             classes: "carto-data map-editor"
             bsGrid: ""
             skipPoints: false
@@ -447,7 +451,9 @@ loadEditor = (projectPreload) ->
               $.post adminParams.apiTarget, args, "json"
               .done (result) ->
                 if result.status is true
-                  populateAdminActions()
+                  toastStatusMessage "Successfully deleted Project ##{project.project_id}"
+                  delay 1000, ->
+                    populateAdminActions()
                 else
                   stopLoadError result.human_error
                   $(el).remove()
