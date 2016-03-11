@@ -613,33 +613,36 @@ showAddUserDialog = (refAccessList) ->
                 <span class="user">#{user.handle}</span></div>
               """
             $("#user-search-result-container").html html
+            $(".user-search-result").click ->
+              uid = $(this).attr "data-uid"
+              console.info "Clicked on #{uid}"
+              email = $(this).find(".email").text()
+              unless _adp?.currentQueueUids?
+                unless _adp?
+                  window._adp = new Object()
+                _adp.currentQueueUids = new Array()
+              for user in $("#user-add-queue .list-add-users")
+                _adp.currentQueueUids.push $(user).attr "data-uid"
+              unless email in refAccessList
+                unless uid in _adp.currentQueueUids
+                  listHtml = """
+                  <li class="list-add-users" data-uid="#{uid}">#{email}</li>
+                  """
+                  $("#user-add-queue").append listHtml
+                  $("#search-user").val ""
+                  $("#user-search-result-container").prop "hidden", "hidden"
+                else
+                  toastStatusMessage "#{email} is already in the addition queue"
+                  return false
+              else
+                toastStatusMessage "#{email} already has access to this project"
+                return false
           else
             $("#user-search-result-container").prop "hidden", "hidden"
         .error (result, status) ->
           console.error result, status
     searchHelper.debounce()
 
-  $("body .user-search-result").click ->
-    uid = $(this).attr "data-uid"
-    console.info "Clicked on #{uid}"
-    email = $(this).find(".email").text()
-    currentQueueUids = new Array()
-    for user in $("#user-add-queue .list-add-users")
-      currentQueueUids.push $(user).attr "data-uid"
-    unless email in refAccessList
-      unless uid in currentQueueUids
-        listHtml = """
-        <li class="list-add-users" data-uid="#{uid}">#{email}</li>
-        """
-        $("#user-add-queue").append listHtml
-        $("#search-user").val ""
-        $("#user-search-result-container").prop "hidden", "hidden"
-      else
-        toastStatusMessage "#{email} is already in the addition queue"
-        return false
-    else
-      toastStatusMessage "#{email} already has access to this project"
-      return false
   # bind add button
   $("#add-user").click ->
     toAddUids = new Array()
@@ -654,8 +657,12 @@ showAddUserDialog = (refAccessList) ->
     uidArgs = jsonTo64 jsonUids
     args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{uidArgs}"
     # Push needs to be server authenticated, to prevent API spoofs
-    toastStatusMessage "Would save the list above of #{toAddUids.length} UIDs to #{window.projectParams.pid}"
     console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
+    $.post adminParams.apiTarget, args, "json"
+    .done (result) ->
+      console.log "Server permissions said", result
+    .error (result, status) ->
+      console.error "Server error", result, status
   false
 
 
