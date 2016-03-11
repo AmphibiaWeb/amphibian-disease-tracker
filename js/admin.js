@@ -1808,7 +1808,7 @@ loadEditor = function(projectPreload) {
                     confirm = false;
                   }
                   if (!confirm) {
-                    $(this).addClass("extreme-danger");
+                    $(this).addClass("extreme-danger").attr("data-confirm", "true");
                     return false;
                   }
                   permissionsObj = {
@@ -1837,7 +1837,7 @@ loadEditor = function(projectPreload) {
                     $(el).removeAttr("disabled");
                     toastStatusMessage(user + " granted " + permission + " permissions");
                   } else {
-                    $(".set-permission-block[data-user='" + user + "']").remove();
+                    $(".set-permission-block[data-user='" + user + "']").parent().remove();
                     toastStatusMessage("Removed " + user + " from project #" + window.projectParams.pid);
                   }
                   return stopLoad();

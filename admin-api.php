@@ -289,6 +289,7 @@ function editAccess($link, $deltas) {
      ***/
     global $db, $login_status;
     try {
+        $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
         $uid = $login_status["detail"]["uid"];
         $pid = $db->sanitize($link);
 
@@ -327,7 +328,15 @@ function editAccess($link, $deltas) {
         $totalList = array_merge($editList, $viewList, $authorList);
         $notices = array();
         $operations = array();
+
+        # Add users
         foreach($additions as $newUid) {
+
+            if(!$udb->isEntry($user["uid"], "dblink")) {
+                $notices[] = "User ".$user["uid"]." doesn't exist";
+                continue;
+            }
+
             if(in_array($newUid, $totalList)) {
                 $notices[] = "$newUid is already given project permissions";
                 continue;
@@ -335,26 +344,56 @@ function editAccess($link, $deltas) {
             $viewList[] = $newUid;
             $operations[] = "Succesfully added $newUid as a viewer";
         }
+
+        # Remove users
         foreach($removals as $user) {
             # Remove user from list after looping through each
+            if(!is_array($user)) {
+                $notices[] = "Couldn't remove user, permissions object malformed";
+                continue;
+            }
+            if(!$udb->isEntry($user["uid"], "dblink")) {
+                $notices[] = "User ".$user["uid"]." doesn't exist";
+                continue;
+            }
+
             $currentRole = strtolower($user["currentRole"]);
-            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
-            $key = array_find($user["uid"], $$observeList);
+            if ($currentRole == "edit") {
+                $observeList = "editList";
+            } else if ($currentRole == "read") {
+                $observeList = "viewList";
+            } else if ($currentRole == "authorList") {
+                # Check the lists for other author thing
+                $observeList = "authorList";
+                continue;
+            } else {
+                $notices[] = "Unrecognized current role '".strotupper($currentRole)."'";
+                continue;
+            }
+            $key = array_find($user["uid"], ${$observeList});
             if($key === false) {
                 $notices[] = "Invalid current role for " . $user["uid"];
                 continue;
             }
-            unset($$observeList[$key]);
-            $operations[] = "User ".$user["uid"]." removed from role '".strtoupper($currentRole)."' in " . $observeList;
+            $orig = ${$observeList};
+            unset(${$observeList}[$key]);
+            $operations[] =  "User ".$user["uid"]." removed from role '".strtoupper($currentRole)."' in " . $observeList;
         }
+
+        # Changes to existing users
         foreach($changes as $user) {
             if(!is_array($user)) {
                 $notices[] = "Couldn't change permissions, permissions object malformed";
+                continue;
+            }
+            if(!$udb->isEntry($user["uid"], "dblink")) {
+                $notices[] = "User ".$user["uid"]." doesn't exist";
+                continue;
             }
             if(empty($user["currentRole"]) || empty($user["newRole"]) || empty($user["uid"])) {
                 $notices[] = "Couldn't change permissions, missing one of newRole, uid, or currentRole for user";
+                continue;
             }
-            # TODO Validate the user as existing
             # Match the roles
             $newRole = strtolower($user["newRole"]);
             $currentRole = strtolower($user["currentRole"]);
@@ -362,10 +401,29 @@ function editAccess($link, $deltas) {
                 $notices[] = "User ".$user["uid"]." already has permissions '".strtoupper($currentRole)."'";
                 continue;
             }
-            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
-            $addToList = $currentRole == "read" ? "editList" : $currentRole == "read" ? "viewList" : "authorList";
+            if ($currentRole == "edit") {
+                $observeList = "editList";
+            } else if ($currentRole == "read") {
+                $observeList = "viewList";
+            } else if ($currentRole == "authorList") {
+                $observeList = "authorList";
+            } else {
+                $notices[] = "Unrecognized current role '".strotupper($currentRole)."'";
+                continue;
+            }
+            if ($newRole == "edit") {
+                $addToList = "editList";
+            } else if ($newRole == "read") {
+                $addToList = "viewList";
+            } else if ($newRole == "authorList") {
+                $addToList = "authorList";
+            } else {
+                $notices[] = "Unrecognized new role '".strotupper($newRole)."'";
+                continue;
+            }
+
             if($newRole == "edit" || $newRole == "read") {
-                $key = array_find($user["uid"], $$observeList);
+                $key = array_find($user["uid"], ${$observeList});
                 if($key === false) {
                     $notices[] = "Invalid current role for " . $user["uid"];
                     continue;
@@ -373,9 +431,9 @@ function editAccess($link, $deltas) {
                 if($observeList == "authorList") {
                     # Someone else must be set as the author
                 } else {
-                    unset($$observeList[$key]);
+                    unset(${$observeList}[$key]);
                 }
-                array_push($$addToList, $user["uid"]);
+                array_push(${$addToList}, $user["uid"]);
                 $operations[] = "Removed ".$user["uid"]." from $observeList and added to $addToList";
             } else if($newRole == "author") {
                 # Need to do fanciness
@@ -414,7 +472,7 @@ function editAccess($link, $deltas) {
             "notices" => $notices,
             "new_access_list" => $newList,
             "deltas" => $deltas,
-            // "new_access_saved" => $newListString,
+            "new_access_saved" => $newListString,
             // "new_access_entry" => $project["access_data"],
             // "original" => $originalAccess,
             // "search" => $search,
