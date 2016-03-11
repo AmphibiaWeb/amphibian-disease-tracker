@@ -2549,7 +2549,7 @@ validateFimsData = function(dataObject, callback) {
       stopLoadBarsError(validatorTimeout);
       errors = result.validate_status.errors;
       if (Object.size(errors) > 1) {
-        html = "<div class=\"error-block\">\n  <p><strong>Your dataset had errors</strong>. Here's a summary:</p>\n  <table class=\"table-responsive table-striped table-condensed table table-bordered table-hover\" >\n    <thead>\n      <tr>\n        <th>Error Type</th>\n        <th>Error Message</th>\n      </tr>\n    </thhead>\n    <tbody>";
+        html = "<div class=\"error-block\" id=\"validation-error-block\">\n  <p><strong>Your dataset had errors</strong>. Here's a summary:</p>\n  <table class=\"table-responsive table-striped table-condensed table table-bordered table-hover\" >\n    <thead>\n      <tr>\n        <th>Error Type</th>\n        <th>Error Message</th>\n      </tr>\n    </thhead>\n    <tbody>";
         for (key in errors) {
           errorType = errors[key];
           for (errorClass in errorType) {
@@ -2561,7 +2561,7 @@ validateFimsData = function(dataObject, callback) {
               if (/\[(?:((?:"(\w+)"((, )?))*?))\]/m.test(message)) {
                 message = message.replace(/"(\w+)"/mg, "<code>$1</code>");
               }
-              errorList += "<li>" + (message.stripHtml(true)) + "</li>";
+              errorList += "<li>" + message + "</li>";
             }
             errorList += "</ul>";
             html += "<tr>\n  <td><strong>" + (errorClass.stripHtml(true)) + "</strong></td>\n  <td>" + errorList + "</td>\n</tr>";
@@ -2569,6 +2569,7 @@ validateFimsData = function(dataObject, callback) {
         }
         html += "    </tbody>\n  </table>\n</div>";
         $("#validator-progress-container").append(html);
+        $("#validator-progress-container").get(0).scrollIntoView();
       }
       return false;
     }
