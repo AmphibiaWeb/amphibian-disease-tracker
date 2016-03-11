@@ -362,7 +362,7 @@ function editAccess($link, $deltas) {
                 } else {
                     unset($$observeList[$key]);
                 }
-                $$addToList[] = $user["uid"];
+                array_push($$addToList, $user["uid"]);
             } else if($newRole == "author") {
                 # Need to do fanciness
             } else {
