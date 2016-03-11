@@ -150,7 +150,9 @@ loadEditor = (projectPreload) ->
                   catch
                     confirm = false
                   unless confirm
-                    $(this).addClass "extreme-danger"
+                    $(this)
+                    .addClass "extreme-danger"
+                    .attr "data-confirm", "true"
                     return false
                   permissionsObj =
                     delete:
@@ -178,7 +180,7 @@ loadEditor = (projectPreload) ->
                     toastStatusMessage "#{user} granted #{permission} permissions"
                   else
                     # Remove the row
-                    $(".set-permission-block[data-user='#{user}']").remove()
+                    $(".set-permission-block[data-user='#{user}']").parent().remove()
                     toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
                   stopLoad()
                 .error (result, status) ->
