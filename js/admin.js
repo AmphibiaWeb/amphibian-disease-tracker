@@ -167,7 +167,9 @@ alertBadProject = function(projectId) {
 };
 
 loadCreateNewProject = function() {
-  var error1, html, input, l, len, ref, ta;
+  var error1, html, input, l, len, ref, ta, url;
+  url = uri.urlString + "admin-page.html#action:create-project";
+  history.pushState(null, "Create New Project", url);
   startAdminActionHelper();
   html = "<h2 class=\"new-title col-xs-12\">Project Title</h2>\n<paper-input label=\"Project Title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-12\" required auto-validate data-field=\"project_title\"></paper-input>\n<h2 class=\"new-title col-xs-12\">Project Parameters</h2>\n<section class=\"project-inputs clearfix col-xs-12\">\n  <div class=\"row\">\n    <paper-input label=\"Primary Pathogen Studied\" id=\"project-disease\" class=\"project-field col-md-6 col-xs-8\" required auto-validate data-field=\"disease\"></paper-input>\n      " + (getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")) + "\n      <button class=\"btn btn-default fill-pathogen col-xs-1\" data-pathogen=\"Batrachochytrium dendrobatidis\">Bd</button>\n      <button class=\"btn btn-default fill-pathogen col-xs-1\" data-pathogen=\"Batrachochytrium salamandrivorans \">Bsal</button>\n    <paper-input label=\"Pathogen Strain\" id=\"project-disease-strain\" class=\"project-field col-md-6 col-xs-11\" data-field=\"disease_strain\"></paper-input>" + (getInfoTooltip("For example, Hepatitus A, B, C would enter the appropriate letter here")) + "\n    <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-11\" data-field=\"reference_id\"></paper-input>\n    " + (getInfoTooltip("E.g.  a DOI or other reference")) + "\n    <paper-input label=\"Publication DOI\" id=\"pub-doi\" class=\"project-field col-md-6 col-xs-11\" data-field=\"publication\"></paper-input>\n    <h2 class=\"new-title col-xs-12\">Lab Parameters</h2>\n    <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required auto-validate data-field=\"pi_lab\"></paper-input>\n    <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userFullname + "\"  required auto-validate></paper-input>\n    <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userEmail + "\"  required auto-validate></gold-email-input>\n    <paper-input label=\"Diagnostic Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-12\"  required auto-validate></paper-input>\n    <paper-input label=\"Affiliation\" id=\"project-affiliation\" class=\"project-field col-md-6 col-xs-11\"  required auto-validate></paper-input> " + (getInfoTooltip("Of project PI. e.g., UC Berkeley")) + "\n    <h2 class=\"new-title col-xs-12\">Project Notes</h2>\n    <iron-autogrow-textarea id=\"project-notes\" class=\"project-field col-md-6 col-xs-11\" rows=\"3\" data-field=\"sample_notes\"></iron-autogrow-textarea>" + (getInfoTooltip("Project notes or brief abstract; accepts Markdown ")) + "\n    <marked-element class=\"project-param col-md-6 col-xs-12\" id=\"note-preview\">\n      <div class=\"markdown-html\"></div>\n    </marked-element>\n    <h2 class=\"new-title col-xs-12\">Data Permissions</h2>\n    <div class=\"col-xs-12\">\n      <span class=\"toggle-off-label iron-label\">Private Dataset</span>\n      <paper-toggle-button id=\"data-encumbrance-toggle\" class=\"red\">Public Dataset</paper-toggle-button>\n    </div>\n    <h2 class=\"new-title col-xs-12\">Project Area of Interest</h2>\n    <div class=\"col-xs-12\">\n      <p>\n        This represents the approximate collection region for your samples.\n        <br/>\n        <strong>\n          The last thing you do (search, build a locality, or upload data) will be your dataset's canonical locality.\n        </strong>.\n      </p>\n      <span class=\"toggle-off-label iron-label\">Locality Name</span>\n      <paper-toggle-button id=\"transect-input-toggle\">Coordinate List</paper-toggle-button>\n    </div>\n    <p id=\"transect-instructions\" class=\"col-xs-12\"></p>\n    <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n      <div id=\"transect-input-container\" class=\"clearfix\">\n      </div>\n      <p class=\"computed-locality\" id=\"computed-locality\">\n        You may also click on the map to outline a region of interest, then click \"Build Map\" below to calculate a locality.\n      </p>\n      <br/><br/>\n      <button class=\"btn btn-primary\" disabled id=\"init-map-build\">\n        <iron-icon icon=\"maps:map\"></iron-icon>\n        Build Map\n        <small>\n          (<span class=\"points-count\">0</span> points)\n        </small>\n      </button>\n      <paper-icon-button icon=\"icons:restore\" id=\"reset-map-builder\" data-toggle=\"tooltip\" title=\"Reset Points\"></paper-icon-button>\n    </div>\n    <div id=\"carto-rendered-map\" class=\"col-md-6\">\n      <div id=\"carto-map-container\" class=\"carto-map map\">\n      </div>\n    </div>\n    <div class=\"col-xs-12\">\n      <br/>\n      <paper-checkbox checked id=\"has-data\">My project already has data</paper-checkbox>\n      <br/>\n    </div>\n  </div>\n</section>\n<section id=\"uploader-container-section\" class=\"data-section col-xs-12\">\n  <h2 class=\"new-title\">Uploading your project data</h2>\n  <p>Drag and drop as many files as you need below. </p>\n  <p>\n    Please note that the data <strong>must</strong> have a header row,\n    and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.\n  </p>\n  <div class=\"alert alert-info\" role=\"alert\">\n    We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href=\"http://biscicol.org/biocode-fims/templates.jsp\" class=\"newwindow alert-link\">biscicol.org <span class=\"glyphicon glyphicon-new-window\"></span></a>. Select \"Amphibian Disease\" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.\n  </div>\n  <div class=\"alert alert-warning\" role=\"alert\">\n    <strong>If the data is in Excel</strong>, ensure that it is the first sheet in the workbook. Data across multiple sheets in one workbook may be improperly processed.\n  </div>\n</section>\n<section class=\"project-inputs clearfix data-section col-xs-12\">\n  <div class=\"row\">\n    <h2 class=\"new-title col-xs-12\">Project Data Summary</h2>\n    <h3 class=\"new-title col-xs-12\">Calculated Data Parameters</h3>\n    <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\" data-field=\"disease_samples\"></paper-input>\n    <paper-input label=\"Positive Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"positive-samples\" readonly type=\"number\" data-field=\"disease_positive\"></paper-input>\n    <paper-input label=\"Negative Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"negative-samples\" readonly type=\"number\" data-field=\"disease_negative\"></paper-input>\n    <paper-input label=\"No Confidence Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"no_confidence-samples\" readonly type=\"number\" data-field=\"disease_no_confidence\"></paper-input>\n    <paper-input label=\"Disease Morbidity\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"morbidity-count\" readonly type=\"number\" data-field=\"disease_morbidity\"></paper-input>\n    <paper-input label=\"Disease Mortality\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"mortality-count\" readonly type=\"number\" data-field=\"disease_mortality\"></paper-input>\n    <h4 class=\"new-title col-xs-12\">Species in dataset</h4>\n    <iron-autogrow-textarea id=\"species-list\" class=\"project-field col-md-6 col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    <p class=\"col-xs-12\">Etc</p>\n  </div>\n</section>\n<section id=\"submission-section col-xs-12\">\n  <div class=\"pull-right\">\n    <button id=\"upload-data\" class=\"btn btn-success click\" data-function=\"finalizeData\"><iron-icon icon=\"icons:lock-open\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Private Project</button>\n    <button id=\"reset-data\" class=\"btn btn-danger click\" data-function=\"resetForm\">Reset Form</button>\n  </div>\n</section>";
   $("main #main-body").append(html);
@@ -1711,7 +1713,10 @@ loadEditor = function(projectPreload) {
     /*
      * Load the edit interface for a specific project
      */
+    var url;
     startAdminActionHelper();
+    url = uri.urlString + "admin-page.html#edit:" + projectId;
+    history.pushState(null, "Editing #" + projectId, url);
     startLoad();
     window.projectParams = new Object();
     window.projectParams.pid = projectId;
@@ -2098,25 +2103,34 @@ loadEditor = function(projectPreload) {
        * Show a list of icons for editable projects. Blocked on #22, it's
        * just based on authorship right now.
        */
-      var args;
+      var args, url;
+      url = uri.urlString + "admin-page.html#action:show-editable";
+      history.pushState(null, "Viewing Editable Projects", url);
       startLoad();
       args = "perform=list";
       return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-        var authoredList, html, icon, k, projectId, projectTitle, ref, ref1;
+        var accessIcon, authoredList, html, icon, k, projectId, projectTitle, publicList, ref, ref1, ref2;
         html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
         $("#main-body").html(html);
-        authoredList = new Array();
-        ref = result.authored_projects;
+        publicList = new Array();
+        ref = result.public_projects;
         for (k in ref) {
           projectId = ref[k];
+          publicList.push(projectId);
+        }
+        authoredList = new Array();
+        ref1 = result.authored_projects;
+        for (k in ref1) {
+          projectId = ref1[k];
           authoredList.push(projectId);
         }
-        ref1 = result.projects;
-        for (projectId in ref1) {
-          projectTitle = ref1[projectId];
+        ref2 = result.projects;
+        for (projectId in ref2) {
+          projectTitle = ref2[projectId];
+          accessIcon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
           icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
           if (indexOf.call(authoredList, projectId) >= 0) {
-            html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
+            html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + accessIcon + " " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
             $("#project-list").append(html);
           }
         }
@@ -2401,7 +2415,9 @@ getProjectCartoData = function(cartoObj, mapOptions) {
  */
 
 loadProjectBrowser = function() {
-  var args;
+  var args, url;
+  url = uri.urlString + "admin-page.html#action:show-viewable";
+  history.pushState(null, "Viewing Personal Project List", url);
   startAdminActionHelper();
   startLoad();
   args = "perform=list";
@@ -2443,6 +2459,9 @@ loadProject = function(projectId, message) {
 };
 
 loadSUProjectBrowser = function() {
+  var url;
+  url = uri.urlString + "admin-page.html#action:show-su-viewable";
+  history.pushState(null, "Viewing Superuser Project List", url);
   startAdminActionHelper();
   startLoad();
   verifyLoginCredentials(function(result) {

@@ -172,6 +172,8 @@ alertBadProject = (projectId) ->
 
 
 loadCreateNewProject = ->
+  url = "#{uri.urlString}admin-page.html#action:create-project"
+  history.pushState null, "Create New Project", url
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
