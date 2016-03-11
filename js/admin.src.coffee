@@ -2710,11 +2710,16 @@ validateFimsData = (dataObject, callback = null) ->
           for errorClass, errorMessages of errorType
             errorList = "<ul>"
             for k, message of errorMessages
+              # Format the message
+              message = message.stripHtml(true)
+              if /\[(?:((?:"(\w+)"((, )?))*?))\]/m.test(message)
+                # Wrap the column names
+                message = message.replace /"(\w+)"/mg, "<code>$1</code>"
               errorList += "<li>#{message.stripHtml(true)}</li>"
             errorList += "</ul>"
             html += """
             <tr>
-              <td><strong>#{errorClass}</strong></td>
+              <td><strong>#{errorClass.stripHtml(true)}</strong></td>
               <td>#{errorList}</td>
             </tr>
             """

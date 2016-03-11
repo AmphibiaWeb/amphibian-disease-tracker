@@ -2557,10 +2557,14 @@ validateFimsData = function(dataObject, callback) {
             errorList = "<ul>";
             for (k in errorMessages) {
               message = errorMessages[k];
+              message = message.stripHtml(true);
+              if (/\[(?:((?:"(\w+)"((, )?))*?))\]/m.test(message)) {
+                message = message.replace(/"(\w+)"/mg, "<code>$1</code>");
+              }
               errorList += "<li>" + (message.stripHtml(true)) + "</li>";
             }
             errorList += "</ul>";
-            html += "<tr>\n  <td><strong>" + errorClass + "</strong></td>\n  <td>" + errorList + "</td>\n</tr>";
+            html += "<tr>\n  <td><strong>" + (errorClass.stripHtml(true)) + "</strong></td>\n  <td>" + errorList + "</td>\n</tr>";
           }
         }
         html += "    </tbody>\n  </table>\n</div>";
