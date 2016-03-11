@@ -1833,8 +1833,8 @@ loadEditor = function(projectPreload) {
                     return false;
                   }
                   if (permission !== "delete") {
-                    $(el).parent().find("paper-icon-button:not([data-permission='delete'])").attr("disabled", "disabled").attr("data-current", permission);
-                    $(el).removeAttr("disabled");
+                    $(".set-permission-block[data-user='" + user + "']").attr("disabled", "disabled").attr("data-current", permission);
+                    $(".set-permission-block[data-user='" + user + "'] [data-set-permission='" + permission + "']").removeAttr("disabled");
                     toastStatusMessage(user + " granted " + permission + " permissions");
                   } else {
                     $(".set-permission-block[data-user='" + user + "']").parent().remove();
