@@ -414,7 +414,7 @@ setPublicData = function(projectData) {
 };
 
 renderPublicMap = function(projectData) {
-  var cartoData, e, error1, error2, error3, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  var cartoData, e, error, error1, error2, error3, error4, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
   if (projectData == null) {
     projectData = publicData;
   }
@@ -475,10 +475,16 @@ renderPublicMap = function(projectData) {
       }
     }
     mapHtml += "    </google-map-poly>";
-    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Approximate Mapping Data</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  apiKey=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
-    return $("#auth-block").append(googleMap);
-  } catch (error3) {
-    e = error3;
+    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Approximate Mapping Data</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  apiKey=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
+    $("#auth-block").append(googleMap);
+    try {
+      zoom = getMapZoom(paths, "#transect-viewport");
+      return p$("#transect-viewport").zoom = zoom;
+    } catch (error3) {
+      error = error3;
+    }
+  } catch (error4) {
+    e = error4;
     stopLoadError("Couldn't render map");
     console.error("Map rendering error - " + e.message);
     return console.warn(e.stack);

@@ -455,12 +455,17 @@ renderPublicMap = (projectData = publicData) ->
     googleMap = """
     <div class="row" id="public-map">
       <h2 class="col-xs-12">Approximate Mapping Data</h2>
-      <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  apiKey="#{gMapsApiKey}">
+      <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  apiKey="#{gMapsApiKey}">
             #{mapHtml}
       </google-map>
     </div>
     """
     $("#auth-block").append googleMap
+    try
+      zoom = getMapZoom paths, "#transect-viewport"
+      p$("#transect-viewport").zoom = zoom
+    catch error
+
   catch e
     stopLoadError "Couldn't render map"
     console.error "Map rendering error - #{e.message}"
