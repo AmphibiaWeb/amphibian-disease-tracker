@@ -719,8 +719,15 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
      * @param string $projectLink -> the project ID
      ***/
     global $db;
+    
     $fimsAssociateUrl = "http://www.biscicol.org/biocode-fims/rest/expeditions/associate";
     $projectLink = $db->sanitize($projectLink);
+    if(empty($projectLink)) {
+        returnAjax(array(
+            "status" => false,
+            "error" => "BAD_PARAMETERS",
+        ));
+    }
     $associationData = array(
         "projectId" => 26,
         "expeditionCode" => $projectLink,
@@ -728,12 +735,12 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
 
     # Get all the arks
     $arkArray = array();
-    if(!empty($bcidToAssociate)) {
+    if(empty($bcidToAssociate)) {
         $search = array("project_id" => $projectLink);
         $cols = array("dataset_arks");
         $results = $db->getQueryResults($search, $cols, "AND", false, true);
         $row = $results[0];
-        $data = explode(",", $row);
+        $data = explode(",", $row["dataset_arks"]);
         foreach($data as $arkPair) {
             $arkData = explode("::", $arkPair);
             $ark = $arkData[0];
@@ -798,6 +805,27 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
             $resp = json_decode($rawResponse, true);
             $associateResponses[] = $resp;
+            if(empty($resp)) {
+                # Get a header from CURL
+                $ch = curl_init($fimsAssociateUrl);
+                curl_setopt( $ch, CURLOPT_POST, 1);
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $tempAssociationData);
+                curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt( $ch, CURLOPT_COOKIE, $cookiesString);
+                $httpHeader = array(
+                    'Content-type: application/x-www-form-urlencoded',
+                );
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+                curl_setopt( $ch, CURLOPT_HEADER, 1);
+                $rawResponse = curl_exec($ch);
+                curl_close($ch);
+                $rawResponse = array("response" => $rawResponse);
+                $rawResponse["detail_params"] = array(
+                    "post_fields" => $tempAssociationData,
+                    "http_headers" => $httpHeader,
+                );
+            }
             $associateResponsesRaw[] = $rawResponse;
         }
 
@@ -805,6 +833,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             "status" => true,
             "responses" => $associateResponses,
             "raw_responses" => $associateResponsesRaw,
+            "arks_associated" => $arkArray,
         );
 
     } catch (Exception $e) {
