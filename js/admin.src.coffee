@@ -1839,10 +1839,10 @@ loadEditor = (projectPreload) ->
                     return false
                   # Update UI
                   if permission isnt "delete"
-                    $(el).parent().find("paper-icon-button:not([data-permission='delete'])")
+                    $(".set-permission-block[data-user='#{user}']")
                     .attr "disabled", "disabled"
                     .attr "data-current", permission
-                    $(el).removeAttr "disabled"
+                    $(".set-permission-block[data-user='#{user}'] [data-set-permission='#{permission}']").removeAttr "disabled"
                     toastStatusMessage "#{user} granted #{permission} permissions"
                   else
                     # Remove the row
