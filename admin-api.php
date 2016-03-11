@@ -287,7 +287,7 @@ function editAccess($link, $deltas) {
     /***
      *
      ***/
-    global $db, $login_status;
+    global $db, $login_status,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols;
     try {
         $udb = new DBHelper($default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols);
         $uid = $login_status["detail"]["uid"];
