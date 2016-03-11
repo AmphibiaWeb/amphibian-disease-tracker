@@ -132,13 +132,13 @@ validateFimsData = (dataObject, callback = null) ->
       # Bad validation
       stopLoadError "There was a problem with your dataset"
       error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
-      bsAlert "<strong>Error with your data:</strong> #{error}", "danger"      
+      bsAlert "<strong>Error with your data:</strong> #{error}", "danger"
       stopLoadBarsError validatorTimeout
       # Show all other errors, if there
       errors = result.validate_status.errors
       if Object.size(errors) > 1
         html = """
-        <div class="error-block">
+        <div class="error-block" id="validation-error-block">
           <p><strong>Your dataset had errors</strong>. Here's a summary:</p>
           <table class="table-responsive table-striped table-condensed table table-bordered table-hover" >
             <thead>
@@ -158,7 +158,7 @@ validateFimsData = (dataObject, callback = null) ->
               if /\[(?:((?:"(\w+)"((, )?))*?))\]/m.test(message)
                 # Wrap the column names
                 message = message.replace /"(\w+)"/mg, "<code>$1</code>"
-              errorList += "<li>#{message.stripHtml(true)}</li>"
+              errorList += "<li>#{message}</li>"
             errorList += "</ul>"
             html += """
             <tr>
@@ -172,6 +172,7 @@ validateFimsData = (dataObject, callback = null) ->
         </div>
         """
         $("#validator-progress-container").append html
+        $("#validator-progress-container").get(0).scrollIntoView()
       return false
     p$("#data-validation").value = Object.size dataObject.data
     clearTimeout validatorTimeout
