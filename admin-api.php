@@ -319,11 +319,17 @@ function editAccess($link, $deltas) {
     $editList = $authorizedStatus["editors"];
     $viewList = $authorizedStatus["viewers"];
     $authorList = [$project["author"]];
+    $totalList = array_merge($editList, $viewList, $authorList);
     $notices = array();
     $operations = array();
     try {
         foreach($additions as $newUid) {
+            if(in_array($newUid, $totalList)) {
+                $notices[] = "$newUid is already given project permissions";
+                continue;
+            }
             $viewList[] = $newUid;
+            $operations[] = "Succesfully added $newUid as a viewer";
         }
         foreach($removals as $user) {
             # Remove user from list after looping through each
