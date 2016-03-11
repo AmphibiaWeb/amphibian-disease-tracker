@@ -300,7 +300,9 @@ function editAccess($link, $deltas) {
             );
         }
         $search = array("project_id" => $pid);
-        $project = $db->getQueryResults($search);
+        $projectList = $db->getQueryResults($search, "*", "AND", false, true);
+        $project = $projectList[0];
+        $originalAccess = $project["access_data"];
         $authorizedStatus = checkProjectAuthorized($project, $uid);
         if(!$authorizedStatus["can_edit"]) {
             return array(
@@ -381,15 +383,25 @@ function editAccess($link, $deltas) {
         $lookup = array(
             "project_id" => $pid,
         );
-        $r = $db->updateEntry($newEntry, $lookup, null, true);
+        $db->closeLink();
+        $query = "UPDATE `".$db->getTable()."` SET `access_data`='".$newListString."' WHERE `project_id`='".$pid."'";
+        
+        $r = mysqli_query($db->getLink(), $query);
         if($r !== true) {
-            throw(new Exception($r));
+            throw(new Exception(mysqli_error($db->getLink())));
         }
+        $projectList = $db->getQueryResults($search, "access_data", "AND", false, true);
+        $project = $projectList[0];
         return array(
             "status" => true,
             "operations_status" => $operations,
             "notices" => $notices,
             "new_access_list" => $newList,
+            // "new_access_saved" => $newListString,
+            // "new_access_entry" => $project["access_data"],
+            // "original" => $originalAccess,
+            // "search" => $search,
+            // "query" => $query,
             "project_id" => $pid,
         );
     } catch (Exception $e) {
@@ -649,6 +661,7 @@ function readProjectData($get, $precleaned = false, $debug = false) {
         "viewers_list" => array(),
         "author" => $u->getUsername(),
         "composite" => array(),
+        "raw" => $row["access_data"],
     );
     # Add the author to the lists
     $accessData["editors_list"][] = $u->getUsername();

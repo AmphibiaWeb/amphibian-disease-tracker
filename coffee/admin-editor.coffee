@@ -661,8 +661,16 @@ showAddUserDialog = (refAccessList) ->
     $.post adminParams.apiTarget, args, "json"
     .done (result) ->
       console.log "Server permissions said", result
+      if result.status isnt true
+        error = result.human_error ? result.error ? "We couldn't update user permissions"
+        stopLoadError error
+        return false
+      stopLoad()
+      tense = if toAddUids.length is 1 then "viewer" else "viewers"
+      toastStatusMessage "Successfully added #{toAddUids.length} #{tense} to the project"
       # Update the UI with the new list
       # Dismiss the dialog
+      p$("#add-new-user").close()
     .error (result, status) ->
       console.error "Server error", result, status
   false
