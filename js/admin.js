@@ -1723,7 +1723,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, userHtml, year, yearPretty, years, yearsReal;
+        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1833,8 +1833,13 @@ loadEditor = function(projectPreload) {
             cartoParsed = new Object();
           }
           mapHtml = "";
+          try {
+            bb = Object.toArray(cartoParsed.bounding_polygon);
+          } catch (error2) {
+            bb = null;
+          }
           createMapOptions = {
-            boundingBox: Object.toArray(cartoParsed.bounding_polygon),
+            boundingBox: bb,
             classes: "carto-data map-editor",
             bsGrid: "",
             skipPoints: false,
@@ -1855,7 +1860,7 @@ loadEditor = function(projectPreload) {
           try {
             authorData = JSON.parse(project.author_data);
             creation = new Date(authorData.entry_date);
-          } catch (error2) {
+          } catch (error3) {
             authorData = new Object();
             creation = new Object();
             creation.toLocaleString = function() {
@@ -1974,7 +1979,10 @@ loadEditor = function(projectPreload) {
               args = "perform=delete&id=" + project.id;
               $.post(adminParams.apiTarget, args, "json").done(function(result) {
                 if (result.status === true) {
-                  return populateAdminActions();
+                  toastStatusMessage("Successfully deleted Project #" + project.project_id);
+                  return delay(1000, function() {
+                    return populateAdminActions();
+                  });
                 } else {
                   stopLoadError(result.human_error);
                   return $(el).remove();
@@ -2018,8 +2026,8 @@ loadEditor = function(projectPreload) {
           });
           console.info("Getting carto data with id " + project.carto_id + " and options", createMapOptions);
           return getProjectCartoData(project.carto_id, createMapOptions);
-        } catch (error3) {
-          e = error3;
+        } catch (error4) {
+          e = error4;
           stopLoadError("There was an error loading your project");
           console.error("Unhandled exception loading project! " + e.message);
           console.warn(e.stack);
