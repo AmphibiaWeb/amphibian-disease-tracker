@@ -3,7 +3,7 @@
 /***
  * Handle admin-specific requests
  ***/
-$debug = false;
+$debug = true;
 
 if($debug) {
     error_reporting(E_ALL);
@@ -288,42 +288,43 @@ function editAccess($link, $deltas) {
      *
      ***/
     global $db, $login_status;
-    $uid = $login_status["detail"]["uid"];
-    if(!$db->isEntry($link, "project_id")) {
-        return array(
-            "status" => false,
-            "error" => "INVALID_PROJECT",
-            "human_error" => "No project #".link."exists",
-        );
-    }
-    $pid = $db->sanitize($link);
-    $search = array("project_id" => $pid);
-    $project = $db->getQueryResults($search);
-    $authorizedStatus = checkProjectAuthorized($project, $uid);
-    if(!$authorizedStatus["can_edit"]) {
-        return array(
-            "status" => false,
-            "error" => "UNAUTHORIZED",
-            "human_error" => "You have insufficient privileges to change user permissions on project #" . $pid,
-        );
-    }
-    if(!is_array($deltas)) {
-        return array(
-            "status" => false,
-            "error" => "BAD_DELTAS",
-            "human_error" => "Your permission changes were malformed. Please correct them and try again.",
-        );
-    }
-    $additions = $deltas["add"];
-    $removals = $deltas["delete"];
-    $changes = $deltas["changes"];
-    $editList = $authorizedStatus["editors"];
-    $viewList = $authorizedStatus["viewers"];
-    $authorList = [$project["author"]];
-    $totalList = array_merge($editList, $viewList, $authorList);
-    $notices = array();
-    $operations = array();
     try {
+        $uid = $login_status["detail"]["uid"];
+        $pid = $db->sanitize($link);
+        
+        if(!$db->isEntry($pid, "project_id")) {
+            return array(
+                "status" => false,
+                "error" => "INVALID_PROJECT",
+                "human_error" => "No project #". $pid ."exists",
+            );
+        }
+        $search = array("project_id" => $pid);
+        $project = $db->getQueryResults($search);
+        $authorizedStatus = checkProjectAuthorized($project, $uid);
+        if(!$authorizedStatus["can_edit"]) {
+            return array(
+                "status" => false,
+                "error" => "UNAUTHORIZED",
+                "human_error" => "You have insufficient privileges to change user permissions on project #" . $pid,
+            );
+        }
+        if(!is_array($deltas)) {
+            return array(
+                "status" => false,
+                "error" => "BAD_DELTAS",
+                "human_error" => "Your permission changes were malformed. Please correct them and try again.",
+            );
+        }
+        $additions = $deltas["add"];
+        $removals = $deltas["delete"];
+        $changes = $deltas["changes"];
+        $editList = $authorizedStatus["editors"];
+        $viewList = $authorizedStatus["viewers"];
+        $authorList = [$project["author"]];
+        $totalList = array_merge($editList, $viewList, $authorList);
+        $notices = array();
+        $operations = array();
         foreach($additions as $newUid) {
             if(in_array($newUid, $totalList)) {
                 $notices[] = "$newUid is already given project permissions";
@@ -346,7 +347,7 @@ function editAccess($link, $deltas) {
             # Match the roles
             $newRole = strtolower($user["newRole"]);
             $currentRole = strtolower($user["currentRole"]);
-            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "view" ? "viewList" : "authorList";            
+            $observeList = $currentRole == "edit" ? "editList" : $currentRole == "view" ? "viewList" : "authorList";
             if($newRole == "edit" || $newRole == "view") {
                 $key = array_find($user["uid"], $$observeList);
                 if($key === false) {
