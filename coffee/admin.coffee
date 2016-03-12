@@ -1651,7 +1651,10 @@ checkInitLoad = (callback) ->
     loadEditor projectId
   else
     # Load the input state
-    fragment = uri.o.attr "fragment"
+    if typeof callback is "string"
+      fragment = callback
+    else
+      fragment = uri.o.attr "fragment"
     unless isNull fragment
       fragmentSettings = fragment.split ":"
       console.info "Looking at fragment", fragment, fragmentSettings
@@ -1671,6 +1674,14 @@ checkInitLoad = (callback) ->
     else if typeof callback is "function"
       callback()
   false
+
+
+window.onpopstate = (event) ->
+  # https://developer.mozilla.org/en-US/docs/Web/Events/popstate
+  # https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate
+  console.log "State popped", event, event.state
+  false
+
 
 $ ->
   if $("#next").exists()

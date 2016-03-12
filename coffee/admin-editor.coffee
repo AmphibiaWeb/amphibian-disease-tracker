@@ -155,7 +155,7 @@ loadEditor = (projectPreload) ->
               </div>
           """ else ""
           # The actual HTML
-          mdNotes = if isNull(project.sample_notes) then "*No notes for this project*" else deEscape project.sample_notes
+          mdNotes = if isNull(project.sample_notes) then "*No notes for this project*" else project.sample_notes.unescape()
           noteHtml = """
           <h3>Project Notes</h3>
           <ul class="nav nav-tabs" id="markdown-switcher">
@@ -163,7 +163,7 @@ loadEditor = (projectPreload) ->
             <li role="presentation" data-view="edit"><a href="#markdown-switcher">Edit</a></li>
           </ul>
           <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden>#{project.sample_notes}</iron-autogrow-textarea>
-          <marked-element class="markdown-pair project-param" id="note-preview">
+          <marked-element class="markdown-pair" id="note-preview">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{mdNotes}</script>
           </marked-element>
@@ -252,17 +252,17 @@ loadEditor = (projectPreload) ->
           <section id="project-basics" class="col-xs-12 col-md-8 clearfix">
             <h3>Project Basics</h3>
             <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
-            <paper-input readonly label="Project Creation" value="#{creation.toLocaleString()}" id="project_creation" class="project-param"></paper-input>
+            <paper-input readonly label="Project Creation" value="#{creation.toLocaleString()}" id="project_creation" class="author-param" data-key="entry_date" data-value="#{authorData.entry_date}"></paper-input>
             <paper-input readonly label="Project ARK" value="#{project.project_obj_id}" id="project_creation" class="project-param"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project-title" data-field="project_title"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Primary Pathogen" value="#{project.disease}" data-field="disease"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project-title" data-field="pi_lab"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Reference" value="#{project.reference_id}" id="project-reference" data-field="reference_id"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Publication DOI" value="#{project.publication}" id="doi" data-field="publication"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Project Contact" value="#{authorData.name}" id="project-contact"></paper-input>
-            <gold-email-input #{conditionalReadonly} class="project-param" label="Contact Email" value="#{authorData.contact_email}" id="contact-email"></gold-email-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project-lab"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Affiliation" value="#{authorData.affiliation}" id="project-affiliation"></paper-input>
+            <paper-input #{conditionalReadonly} class="author-param" data-key="name" label="Project Contact" value="#{authorData.name}" id="project-contact"></paper-input>
+            <gold-email-input #{conditionalReadonly} class="author-param" data-key="contact_email" label="Contact Email" value="#{authorData.contact_email}" id="contact-email"></gold-email-input>
+            <paper-input #{conditionalReadonly} class="author-param" data-key="diagnostic_lab" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project-lab"></paper-input>
+            <paper-input #{conditionalReadonly} class="author-param" data-key="affiliation" label="Affiliation" value="#{authorData.affiliation}" id="project-affiliation"></paper-input>
           </section>
           <section id="notes" class="col-xs-12 col-md-8 clearfix">
             #{noteHtml}
@@ -958,6 +958,23 @@ saveEditorData = ->
   postData = _adp.projectData
   postData.access_data = _adp.projectData.access_data.raw
   # Alter this based on inputs
+  for el in $(".project-param:not([readonly])")
+    key = $(el).attr "data-field"
+    if isNull key then continue
+    postData[key] = p$(el).value
+  authorObj = new Object()
+  for el in $(".author-param")
+    key = $(el).attr "data-key"
+    authorObj[key] = $(el).attr("data-value") ? p$(el).value
+  postData.author_data = JSON.stringify authorObj
   # Post it
-  foo()
-  false
+  toastStatusMessage "This is incomplete. Your data has NOT been saved"
+  args = "perform=save&data=#{jsonTo64 postData}"
+  $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+  .done (result) ->
+    console.info "Save result: server said", result
+  .error (result, status) ->
+    stopLoadError "Sorry, there was an error communicating with the server"
+    console.error result, status
+  postData
+  #false

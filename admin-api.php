@@ -144,7 +144,9 @@ if($as_include !== true) {
 function saveEntry($get)
 {
   /***
-   * Save a new taxon entry
+   * Save updates to a project
+   *
+   * @param data a base 64-encoded JSON string of the data to insert
    ***/
 
   $data64 = $get["data"];
@@ -153,67 +155,93 @@ function saveEntry($get)
   $enc = str_replace(' ','+',$enc);
   $data_string = base64_decode($enc);
   $data = json_decode($data_string,true);
-  if(!isset($data["id"]))
+  if(!isset($data["project_id"]) || !isset($data["id"]))
     {
       # The required attribute is missing
         $details = array (
                           "original_data" => $data64,
                           "decoded_data" => $data_string,
-                          "data_array" => $data
+                          "data_array" => $data,
+                          "message" => "POST data attribute \"project_id\" or \"id\" is missing",
                           );
-      return array("status"=>false,"error"=>"POST data attribute \"id\" is missing","human_error"=>"The request to the server was malformed. Please try again.","details"=>$details);
+      return array(
+        "status" => false,
+        "error" => "BAD_PARAMETERS",
+        "detail" => $details,
+        "human_error" =>"The request to the server was malformed. Please try again.",
+      );
     }
-  # Add the perform key
-  global $db;
-  $ref = array();
-  $ref["id"] = $data["id"];
-  unset($data["id"]);
+  global $db, $login_status;
+  $uid = $login_status["detail"]["uid"];
+  $project = $data["project_id"];
+  $id = $data["id"];
+  if(!$db->isEntry($id)) {
+    return array(
+      "status" => false,
+      "error" => "INVALID_PROJECT",
+      "human_error" => "No project exists at database row #" . $id,
+    );
+  }
+  $search = array("id" => $id);
+  $projectServerDataRow = $db->getQueryResults($search);
+  $projectServer = $projectServerDataRow[0];
+  if ($projectServer["project_id"] != $project) {
+    return array(
+      "status" => false,
+      "error" => "MISMATCHED_PROJECT_IDENTIFIERS",
+      "human_error" => "The project at row #".$id." doesn't match the provided project number (provided: '".$project."'; expected '".$projectServer["project_id"]."')",
+    );
+  }
+  $authorizedStatus = checkProjectAuthorized($projectServer, $uid);
+  if(!$authorizedStatus["can_edit"]) {
+    return array(
+      "status" => false,
+      "error" => "UNAUTHORIZED",
+      "human_error" => "You have insufficient privileges to edit project #" . $project,
+    );
+  }
+  # Remove some read-only attributes
+  $ref = array(
+    "project_id" => $project,
+  );
+  unset($data["project_id"]); # Obvious
+  unset($data["project_obj_id"]); # ARK
+  unset($data["dataset_arks"]); # File uploads should handle this directly
+  unset($data["id"]); # Obvious
+  unset($data["access_data"]); # Handled seperately
+
+  #DEBUG SEE WHAT'LL BE WRITTEN
+  return $data;
   try
     {
       $result = $db->updateEntry($data,$ref);
-      # Now, we want to do image processing if an image was alerted
-      $imgDetails = false;
-      if(!empty($data["image"])) {
-          $img = $data["image"];
-          $imgDetails = array("has_provided_img"=>true);
-          # Process away!
-          $file = dirname(__FILE__)."/".$img;
-          $imgDetails["file_path"] = $file;
-          $imgDetails["relative_path"] = $img;
-          if(file_exists($file))
-          {
-              $imgDetails["img_present"] = true;
-              # Resize away
-              try
-              {
-                  $i = new ImageFunctions($file);
-                  $thumbArr = explode(".",$img);
-                  $extension = array_pop($thumbArr);
-                  $outputFile = dirname(__FILE__)."/".implode(".",$thumbArr)."-thumb.".$extension;
-                  $imgDetails["resize_status"] = $i->resizeImage($outputFile,256,256);
-              }
-              catch(Exception $e)
-              {
-                  $imgDetails["resize_status"] = false;
-                  $imgDetails["resize_error"] = $e->getMessage();
-              }
 
-          }
-          else
-          {
-              $imgDetails["img_present"] = false;
-          }
-      }
     }
   catch(Exception $e)
     {
-      return array("status"=>false,"error"=>$e->getMessage(),"humman_error"=>"Database error saving","data"=>$data,"ref"=>$ref,"perform"=>"save");
+      return array(
+        "status"=>false,
+        "error"=>$e->getMessage(),
+        "humman_error"=>"Database error saving",
+        "data"=>$data,
+        "ref"=>$ref,
+      );
     }
   if($result !== true)
     {
-      return array("status"=>false,"error"=>$result,"human_error"=>"Database error saving","data"=>$data,"ref"=>$ref,"perform"=>"save");
+      return array(
+        "status" => false,
+        "error" => $result,
+        "human_error" =>"Database error saving",
+        "data" => $data,
+        "ref" => $ref,
+      );
     }
-  return array("status"=>true,"perform"=>"save","data"=>$data, "img_details"=>$imgDetails);
+  return array(
+    "status"=>true,
+    "data"=>$data,
+    "project" => readProjectData($project, true),
+  );
 }
 
 function newEntry($get)
