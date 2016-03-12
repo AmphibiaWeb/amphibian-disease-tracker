@@ -695,7 +695,7 @@ showAddUserDialog = (refAccessList) ->
                 <iron-icon icon="icons:done-all" class="materialgreen round"></iron-icon>
                 """
                 badge = """
-                <paper-badge for="#{user.uid}-email" class="materialgreen" icon="icons:done-all" label="Already Added"> </paper-badge>
+                <paper-badge for="#{user.uid}-email" icon="icons:done-all" label="Already Added"> </paper-badge>
                 """
               else
                 prefix = ""
