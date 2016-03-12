@@ -179,7 +179,7 @@ function searchUsers($get) {
         $result[$k] = $clean;
     }
     $response["result"] = $result;
-    $response["count"] => sizeof($result);
+    $response["count"] = sizeof($result);
     returnAjax($response);
 }
 
