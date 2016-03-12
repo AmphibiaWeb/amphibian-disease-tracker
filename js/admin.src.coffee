@@ -1720,6 +1720,8 @@ loadEditor = (projectPreload) ->
             if result.user.has_view_permissions or result.project.public.toBool() is true
               # Not eligible to edit. Load project viewer instead.
               loadProject opid, "Ineligible to edit #{opid}, loading as read-only"
+              delay 1000, ->
+                loadProject projectId
               return false
             # No edit or view permissions, and project isn't public.
             # Give generic error
@@ -1738,138 +1740,7 @@ loadEditor = (projectPreload) ->
           console.info "Project access lists:", project.access_data
           # Helper functions to bind to upcoming buttons
           _adp.projectData = project
-          popManageUserAccess = (project = _adp.projectData) ->
-            verifyLoginCredentials (credentialResult) ->
-              # For each user in the access list, give some toggles
-              userHtml = ""
-              for user in project.access_data.total
-                uid = project.access_data.composite[user]["user_id"]
-                theirHtml = "#{user} <span class='set-permission-block' data-user='#{uid}'>"
-                isAuthor = user is project.access_data.author
-                isEditor =  user in project.access_data.editors_list
-                isViewer = not isEditor
-                editDisabled = if isEditor or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Editor'"
-                viewerDisabled = if isViewer or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Read-Only'"
-                authorDisabled = if isAuthor then "disabled" else "data-toggle='tooltip' title='Grant Ownership'"
-                currentRole = if isAuthor then "author" else if isEditor then "edit" else "read"
-                currentPermission = "data-current='#{currentRole}'"
-                theirHtml += """
-                <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
-                <paper-icon-button icon="image:remove-red-eye" #{viewerDisabled} class="set-permission" data-permission="read" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
-                """
-                # Only the current author can change authors
-                if result.user.is_author
-                  theirHtml += """
-                  <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
-                  """
-                if result.user.has_edit_permissions and user isnt isAuthor and user isnt result.user
-                  # Delete button
-                  theirHtml += """
-                  <paper-icon-button icon="icons:delete" class="set-permission" data-permission="delete" data-user="#{uid}" #{currentPermission}>
-                  </paper-icon-button>
-                  """
-                userHtml += """
-                <li>#{theirHtml}</span></li>
-                """
-              userHtml = """
-              <ul class="simple-list">
-                #{userHtml}
-              </ul>
-              """
-              if project.access_data.total.length is 1
-                userHtml += """
-                <div id="single-user-warning">
-                  <iron-icon icon="icons:warning"></iron-icon> <strong>Head's-up</strong>: You can't change permissions when a project only has one user. Consider adding another user first.
-                </div>
-                """
-              # Put it in a dialog
-              dialogHtml = """
-              <paper-dialog modal id="user-setter-dialog">
-                <h2>Manage "#{project.project_title}" users</h2>
-                <paper-dialog-scrollable>
-                  #{userHtml}
-                </paper-dialog-scrollable>
-                <div class="buttons">
-                  <paper-button class="add-user" dialog-confirm><iron-icon icon="social:group-add"></iron-icon> Add Users</paper-button>
-                  <paper-button class="close-dialog" dialog-dismiss>Done</paper-button>
-                </div>
-              </paper-dialog>
-              """
-              # Add it to the DOM
-              $("#user-setter-dialog").remove()
-              $("body").append dialogHtml
-              # Event the buttons
-              $(".set-permission")
-              .unbind()
-              .click ->
-                user = $(this).attr "data-user"
-                permission = $(this).attr "data-permission"
-                current = $(this).attr "data-current"
-                el = this
-                # Handle it
-                if permission isnt "delete"
-                  permissionsObj =
-                    changes:
-                      0:
-                        newRole: permission
-                        currentRole: current
-                        uid: user
-                else
-                  # Confirm the delete
-                  try
-                    confirm = $(this).attr("data-confirm").toBool()
-                  catch
-                    confirm = false
-                  unless confirm
-                    $(this)
-                    .addClass "extreme-danger"
-                    .attr "data-confirm", "true"
-                    return false
-                  permissionsObj =
-                    delete:
-                      0:
-                        currentRole: current
-                        uid: user
-                startLoad()
-                j64 = jsonTo64 permissionsObj
-                args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
-                # Push needs to be server authenticated, to prevent API spoofs
-                console.log "Would push args to", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-                $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
-                .done (result) ->
-                  console.log "Server permissions alter said", result
-                  if result.status isnt true
-                    error = result.human_error ? result.error ? "We couldn't update user permissions"
-                    stopLoadError error
-                    return false
-                  # Update UI
-                  if permission isnt "delete"
-                    $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']")
-                    .attr "disabled", "disabled"
-                    .attr "data-current", permission
-                    $(".set-permission-block[data-user='#{user}'] paper-icon-button:not([data-permission='#{permission}'])").removeAttr "disabled"
-                    useIcon = $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']").attr "icon"
-                    $(".user-permission-list-row[data-user='#{{user}}'] .user-current-permission iron-icon").attr "icon", useIcon
-                    toastStatusMessage "#{user} granted #{permission} permissions"
-                  else
-                    # Remove the row
-                    $(".set-permission-block[data-user='#{user}']").parent().remove()
-                    $(".user-permission-list-row[data-user='#{{user}}']").remove()
-                    toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
-                  # Update _adp.projectData.access_data
-                  stopLoad()
-                .error (result, status) ->
-                  console.error "Server error", result, status
-                  stopLoadError "Problem changing permissions"
-                false
-              $(".add-user")
-              .unbind()
-              .click ->
-                showAddUserDialog(project.access_data.total)
-                false
-              # Open the dialog
-              safariDialogHelper "#user-setter-dialog"
-              false
+          _adp.fetchResult = result
           ## End Bindings
           ## Real DOM stuff
           # Userlist
@@ -1888,7 +1759,7 @@ loadEditor = (projectPreload) ->
               """
             else if user in project.access_data.viewers_list
               icon = """
-              <iron-icon icon="image:remove-red-eye"></iron-icon>
+              <iron-icon icon="icons:visibility"></iron-icon>
               """
             userHtml += """
             <tr class="user-permission-list-row" data-user="#{uid}">
@@ -2029,7 +1900,7 @@ loadEditor = (projectPreload) ->
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Collaborators" elevation="2">
               <div class="card-content">
-                <table class="table table-striped table-condensed table-responsive table-hover clearfix">
+                <table class="table table-striped table-condensed table-responsive table-hover clearfix" id="permissions-table">
                   <thead>
                     <tr>
                       <td colspan="5">User</td>
@@ -2194,7 +2065,7 @@ loadEditor = (projectPreload) ->
               """
               $("#confirm-delete-project").replaceWith button
             # Save it
-            toastStatusMessage "TODO Would save this project"
+            saveEditorData()
             false
           $("#discard-changes-exit").click ->
             showEditList()
@@ -2276,6 +2147,160 @@ loadEditor = (projectPreload) ->
   false
 
 
+
+
+popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
+  verifyLoginCredentials (credentialResult) ->
+    # For each user in the access list, give some toggles
+    userHtml = ""
+    for user in project.access_data.total
+      uid = project.access_data.composite[user]["user_id"]
+      theirHtml = "#{user} <span class='set-permission-block' data-user='#{uid}'>"
+      isAuthor = user is project.access_data.author
+      isEditor =  user in project.access_data.editors_list
+      isViewer = not isEditor
+      editDisabled = if isEditor or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Editor'"
+      viewerDisabled = if isViewer or isAuthor then "disabled" else "data-toggle='tooltip' title='Make Read-Only'"
+      authorDisabled = if isAuthor then "disabled" else "data-toggle='tooltip' title='Grant Ownership'"
+      currentRole = if isAuthor then "author" else if isEditor then "edit" else "read"
+      currentPermission = "data-current='#{currentRole}'"
+      theirHtml += """
+      <paper-icon-button icon="image:edit" #{editDisabled} class="set-permission" data-permission="edit" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
+      <paper-icon-button icon="icons:visibility" #{viewerDisabled} class="set-permission" data-permission="read" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
+      """
+      # Only the current author can change authors
+      if result.user.is_author
+        theirHtml += """
+        <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
+        """
+      if result.user.has_edit_permissions and user isnt isAuthor and user isnt result.user
+        # Delete button
+        theirHtml += """
+        <paper-icon-button icon="icons:delete" class="set-permission" data-permission="delete" data-user="#{uid}" #{currentPermission}>
+        </paper-icon-button>
+        """
+      userHtml += """
+      <li>#{theirHtml}</span></li>
+      """
+    userHtml = """
+    <ul class="simple-list">
+      #{userHtml}
+    </ul>
+    """
+    if project.access_data.total.length is 1
+      userHtml += """
+      <div id="single-user-warning">
+        <iron-icon icon="icons:warning"></iron-icon> <strong>Head's-up</strong>: You can't change permissions when a project only has one user. Consider adding another user first.
+      </div>
+      """
+    # Put it in a dialog
+    dialogHtml = """
+    <paper-dialog modal id="user-setter-dialog">
+      <h2>Manage "#{project.project_title}" users</h2>
+      <paper-dialog-scrollable>
+        #{userHtml}
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button class="add-user" dialog-confirm><iron-icon icon="social:group-add"></iron-icon> Add Users</paper-button>
+        <paper-button class="close-dialog" dialog-dismiss>Done</paper-button>
+      </div>
+    </paper-dialog>
+    """
+    # Add it to the DOM
+    $("#user-setter-dialog").remove()
+    $("body").append dialogHtml
+    # Event the buttons
+    userEmail = user
+    $(".set-permission")
+    .unbind()
+    .click ->
+      user = $(this).attr "data-user"
+      permission = $(this).attr "data-permission"
+      current = $(this).attr "data-current"
+      el = this
+      # Handle it
+      if permission isnt "delete"
+        permissionsObj =
+          changes:
+            0:
+              newRole: permission
+              currentRole: current
+              uid: user
+      else
+        # Confirm the delete
+        try
+          confirm = $(this).attr("data-confirm").toBool()
+        catch
+          confirm = false
+        unless confirm
+          $(this)
+          .addClass "extreme-danger"
+          .attr "data-confirm", "true"
+          return false
+        permissionsObj =
+          delete:
+            0:
+              currentRole: current
+              uid: user
+      startLoad()
+      j64 = jsonTo64 permissionsObj
+      args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
+      # Push needs to be server authenticated, to prevent API spoofs
+      console.log "Would push args to", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+      $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+      .done (result) ->
+        console.log "Server permissions alter said", result
+        if result.status isnt true
+          error = result.human_error ? result.error ? "We couldn't update user permissions"
+          stopLoadError error
+          return false
+        # Update UI
+        if permission isnt "delete"
+          $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']")
+          .attr "disabled", "disabled"
+          .attr "data-current", permission
+          $(".set-permission-block[data-user='#{user}'] paper-icon-button:not([data-permission='#{permission}'])").removeAttr "disabled"
+          useIcon = $(".set-permission-block[data-user='#{user}'] paper-icon-button[data-permission='#{permission}']").attr "icon"
+          $(".user-permission-list-row[data-user='#{{user}}'] .user-current-permission iron-icon").attr "icon", useIcon
+          toastStatusMessage "#{user} granted #{permission} permissions"
+          # TODO Change internal permissions list
+        else
+          # Remove the row
+          $(".set-permission-block[data-user='#{user}']").parent().remove()
+          $(".user-permission-list-row[data-user='#{{user}}']").remove()
+          toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
+          objPrefix = if current is "read" then "viewers" else "editors"
+          delete _adp.projectData.access_data.composite[userEmail]
+          for k, userObj of _adp.projectData.access_data["#{objPrefix}_list"]
+            try
+              if typeof userObj isnt "object" then continue
+              if userObj.user_id is user
+                delete  _adp.projectData.access_data["#{objPrefix}_list"][k]
+          for k, userObj of _adp.projectData.access_data[objPrefix]
+            try
+              if typeof userObj isnt "object" then continue
+              if userObj.user_id is user
+                delete  _adp.projectData.access_data[objPrefix][k]
+        # Update _adp.projectData.access_data for the saving
+        _adp.projectData.access_data.raw = result.new_access_saved
+        stopLoad()
+      .error (result, status) ->
+        console.error "Server error", result, status
+        stopLoadError "Problem changing permissions"
+      false
+    $(".add-user")
+    .unbind()
+    .click ->
+      showAddUserDialog(project.access_data.total)
+      false
+    # Open the dialog
+    safariDialogHelper "#user-setter-dialog"
+    false
+
+
+
+
+
 showAddUserDialog = (refAccessList) ->
   ###
   # Open up a dialog to show the "Add a user" interface
@@ -2332,13 +2357,24 @@ showAddUserDialog = (refAccessList) ->
             $("#user-search-result-container").removeAttr "hidden"
             for user in users
               # TODO check if user already has access
+              if _adp.projectData.access_data.composite[user.email]?
+                prefix = """
+                <iron-icon icon="icons:done-all" class="materialgreen round"></iron-icon>
+                """
+                badge = """
+                <paper-badge for="#{user.uid}-email" class="materialgreen" icon="icons:done-all" label="Already Added"> </paper-badge>
+                """
+              else
+                prefix = ""
+                badge = ""
               html = """
-              <div class="user-search-result" data-uid="#{user.uid}">
-                <span class="email">#{user.email}</span>
+              <div class="user-search-result" data-uid="#{user.uid}" id="#{user.uid}-result">
+                #{prefix}
+                <span class="email" id="#{user.uid}-email">#{user.email}</span>#{badge}
                   |
-                <span class="name">#{user.full_name}</span>
+                <span class="name" id="#{user.uid}-name">#{user.full_name}</span>
                   |
-                <span class="user">#{user.handle}</span></div>
+                <span class="user" id="#{user.uid}-handle">#{user.handle}</span></div>
               """
             $("#user-search-result-container").html html
             $(".user-search-result").click ->
@@ -2375,8 +2411,10 @@ showAddUserDialog = (refAccessList) ->
   $("#add-user").click ->
     startLoad()
     toAddUids = new Array()
+    toAddEmails = new Array()
     for user in $("#user-add-queue .list-add-users")
       toAddUids.push $(user).attr "data-uid"
+      toAddEmails.push user
     if toAddUids.length < 1
       toastStatusMessage "Please add at least one user to the access list."
       return false
@@ -2398,9 +2436,32 @@ showAddUserDialog = (refAccessList) ->
       tense = if toAddUids.length is 1 then "viewer" else "viewers"
       toastStatusMessage "Successfully added #{toAddUids.length} #{tense} to the project"
       # Update the UI with the new list
-      ## Remove from to-add list
+      $("#user-add-queue").empty()
       ## Add to manage users table
-      ## Update _adp.projectData.access_data
+      icon = """
+            <iron-icon icon="icons:visibility"></iron-icon>
+      """
+      i = 0
+      for uid in toAddUids
+        user = toAddEmails[i]
+        ++i
+        html = """
+            <tr class="user-permission-list-row" data-user="#{uid}">
+              <td colspan="5">#{user}</td>
+              <td class="text-center user-current-permission">#{icon}</td>
+            </tr>
+        """
+        $("#permissions-table").append html
+        ## Update _adp.projectData.access_data
+        userObj =
+          email: user
+          user_id: uid
+          permission: "READ"
+        _adp.projectData.access_data.total.push user
+        _adp.projectData.access_data.viewers_list.push user
+        _adp.projectData.access_data.viewers.push userObj
+        _adp.projectData.access_data.raw = result.new_access_saved
+        _adp.projectData.access_data.composite[user] = userObj
       # Dismiss the dialog
       p$("#add-new-user").close()
     .error (result, status) ->
@@ -2551,6 +2612,18 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
     $("#append-replace-data-toggle").attr "hidden", "hidden"
   bootstrapUploader("data-card-uploader", "")
+  false
+
+
+saveEditorData = ->
+  ###
+  # Actually do the file saving
+  ###
+  postData = _adp.projectData
+  postData.access_data = _adp.projectData.access_data.raw
+  # Alter this based on inputs
+  # Post it
+  foo()
   false
 
 ###

@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, saveEditorData, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -1728,7 +1728,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, popManageUserAccess, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
+        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -1744,6 +1744,9 @@ loadEditor = function(projectPreload) {
           if (result.user.has_edit_permissions !== true) {
             if (result.user.has_view_permissions || result.project["public"].toBool() === true) {
               loadProject(opid, "Ineligible to edit " + opid + ", loading as read-only");
+              delay(1000, function() {
+                return loadProject(projectId);
+              });
               return false;
             }
             alertBadProject(opid);
@@ -1758,119 +1761,7 @@ loadEditor = function(projectPreload) {
           project.access_data.viewers = Object.toArray(project.access_data.viewers);
           console.info("Project access lists:", project.access_data);
           _adp.projectData = project;
-          popManageUserAccess = function(project) {
-            if (project == null) {
-              project = _adp.projectData;
-            }
-            return verifyLoginCredentials(function(credentialResult) {
-              var authorDisabled, currentPermission, currentRole, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, theirHtml, uid, userHtml, viewerDisabled;
-              userHtml = "";
-              ref1 = project.access_data.total;
-              for (l = 0, len = ref1.length; l < len; l++) {
-                user = ref1[l];
-                uid = project.access_data.composite[user]["user_id"];
-                theirHtml = user + " <span class='set-permission-block' data-user='" + uid + "'>";
-                isAuthor = user === project.access_data.author;
-                isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
-                isViewer = !isEditor;
-                editDisabled = isEditor || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Editor'";
-                viewerDisabled = isViewer || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Read-Only'";
-                authorDisabled = isAuthor ? "disabled" : "data-toggle='tooltip' title='Grant Ownership'";
-                currentRole = isAuthor ? "author" : isEditor ? "edit" : "read";
-                currentPermission = "data-current='" + currentRole + "'";
-                theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>\n<paper-icon-button icon=\"image:remove-red-eye\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
-                if (result.user.is_author) {
-                  theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
-                }
-                if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user) {
-                  theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\" " + currentPermission + ">\n</paper-icon-button>";
-                }
-                userHtml += "<li>" + theirHtml + "</span></li>";
-              }
-              userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
-              if (project.access_data.total.length === 1) {
-                userHtml += "<div id=\"single-user-warning\">\n  <iron-icon icon=\"icons:warning\"></iron-icon> <strong>Head's-up</strong>: You can't change permissions when a project only has one user. Consider adding another user first.\n</div>";
-              }
-              dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <h2>Manage \"" + project.project_title + "\" users</h2>\n  <paper-dialog-scrollable>\n    " + userHtml + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\" dialog-confirm><iron-icon icon=\"social:group-add\"></iron-icon> Add Users</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
-              $("#user-setter-dialog").remove();
-              $("body").append(dialogHtml);
-              $(".set-permission").unbind().click(function() {
-                var confirm, current, el, error1, j64, permission, permissionsObj;
-                user = $(this).attr("data-user");
-                permission = $(this).attr("data-permission");
-                current = $(this).attr("data-current");
-                el = this;
-                if (permission !== "delete") {
-                  permissionsObj = {
-                    changes: {
-                      0: {
-                        newRole: permission,
-                        currentRole: current,
-                        uid: user
-                      }
-                    }
-                  };
-                } else {
-                  try {
-                    confirm = $(this).attr("data-confirm").toBool();
-                  } catch (error1) {
-                    confirm = false;
-                  }
-                  if (!confirm) {
-                    $(this).addClass("extreme-danger").attr("data-confirm", "true");
-                    return false;
-                  }
-                  permissionsObj = {
-                    "delete": {
-                      0: {
-                        currentRole: current,
-                        uid: user
-                      }
-                    }
-                  };
-                }
-                startLoad();
-                j64 = jsonTo64(permissionsObj);
-                args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
-                console.log("Would push args to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
-                $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-                  var ref2, ref3, useIcon;
-                  console.log("Server permissions alter said", result);
-                  if (result.status !== true) {
-                    error = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "We couldn't update user permissions";
-                    stopLoadError(error);
-                    return false;
-                  }
-                  if (permission !== "delete") {
-                    $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("disabled", "disabled").attr("data-current", permission);
-                    $(".set-permission-block[data-user='" + user + "'] paper-icon-button:not([data-permission='" + permission + "'])").removeAttr("disabled");
-                    useIcon = $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("icon");
-                    $(".user-permission-list-row[data-user='" + {
-                      user: user
-                    } + "'] .user-current-permission iron-icon").attr("icon", useIcon);
-                    toastStatusMessage(user + " granted " + permission + " permissions");
-                  } else {
-                    $(".set-permission-block[data-user='" + user + "']").parent().remove();
-                    $(".user-permission-list-row[data-user='" + {
-                      user: user
-                    } + "']").remove();
-                    toastStatusMessage("Removed " + user + " from project #" + window.projectParams.pid);
-                  }
-                  return stopLoad();
-                }).error(function(result, status) {
-                  console.error("Server error", result, status);
-                  return stopLoadError("Problem changing permissions");
-                });
-                return false;
-              });
-              $(".add-user").unbind().click(function() {
-                showAddUserDialog(project.access_data.total);
-                return false;
-              });
-              safariDialogHelper("#user-setter-dialog");
-              return false;
-            });
-          };
+          _adp.fetchResult = result;
           userHtml = "";
           ref1 = project.access_data.total;
           for (l = 0, len = ref1.length; l < len; l++) {
@@ -1884,7 +1775,7 @@ loadEditor = function(projectPreload) {
             } else if (indexOf.call(project.access_data.editors_list, user) >= 0) {
               icon = "<iron-icon icon=\"image:edit\"></iron-icon>";
             } else if (indexOf.call(project.access_data.viewers_list, user) >= 0) {
-              icon = "<iron-icon icon=\"image:remove-red-eye\"></iron-icon>";
+              icon = "<iron-icon icon=\"icons:visibility\"></iron-icon>";
             }
             userHtml += "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
           }
@@ -1997,7 +1888,7 @@ loadEditor = function(projectPreload) {
           if (years.length === 0 || isNull(yearPretty)) {
             yearPretty = "<em>(no data)</em>";
           }
-          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + " " + icon + " <paper-icon-button icon=\"icons:visibility\" class=\"click\" data-href=\"" + uri.urlString + "/project.php?id=" + opid + "\"></paper-icon-button><br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project Creation\" value=\"" + (creation.toLocaleString()) + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project ARK\" value=\"" + project.project_obj_id + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project-title\" data-field=\"project_title\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Pathogen\" value=\"" + project.disease + "\" data-field=\"disease\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project-title\" data-field=\"pi_lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Reference\" value=\"" + project.reference_id + "\" id=\"project-reference\" data-field=\"reference_id\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Publication DOI\" value=\"" + project.publication + "\" id=\"doi\" data-field=\"publication\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Contact\" value=\"" + authorData.name + "\" id=\"project-contact\"></paper-input>\n  <gold-email-input " + conditionalReadonly + " class=\"project-param\" label=\"Contact Email\" value=\"" + authorData.contact_email + "\" id=\"contact-email\"></gold-email-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Diagnostic Lab\" value=\"" + authorData.diagnostic_lab + "\" id=\"project-lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Affiliation\" value=\"" + authorData.affiliation + "\" id=\"project-affiliation\"></paper-input>\n</section>\n<section id=\"notes\" class=\"col-xs-12 col-md-8 clearfix\">\n  " + noteHtml + "\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append Data</span>\n        <paper-toggle-button id=\"replace-data-toggle\" checked>Replace Data</paper-toggle-button>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n      <paper-input readonly label=\"Sampled Species\" value=\"" + (project.sampled_species.split(",").sort().join(", ")) + "\"></paper-input>\n      <paper-input readonly label=\"Sampled Clades\" value=\"" + (project.sampled_clades.split(",").sort().join(", ")) + "\"></paper-input>\n      <p class=\"text-muted\">\n        <span class=\"glyphicon glyphicon-info-sign\"></span> There are " + (project.sampled_species.split(",").length) + " species in this dataset, across " + (project.sampled_clades.split(",").length) + " clades\n      </p>\n    <h4>Sample Metrics</h4>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n      <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(project.lat, 6)) + ", " + (roundNumberSigfig(project.lng, 6)) + ") with a sample radius of " + project.radius + "m and a resulting locality <strong class='locality'>" + project.locality + "</strong></p>\n      <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + project.disease_positive + " positive samples (" + (roundNumber(project.disease_positive * 100 / project.disease_samples)) + "%), " + project.disease_negative + " negative samples (" + (roundNumber(project.disease_negative * 100 / project.disease_samples)) + "%), and " + project.disease_no_confidence + " inconclusive samples (" + (roundNumber(project.disease_no_confidence * 100 / project.disease_samples)) + "%)</p>\n    <h4 id=\"map-header\">Locality &amp; Transect Data</h4>\n      <div id=\"carto-map-container\" class=\"clearfix\">\n      " + googleMap + "\n      </div>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n</section>";
+          html = "<h2 class=\"clearfix newtitle col-xs-12\">Managing " + project.project_title + " " + icon + " <paper-icon-button icon=\"icons:visibility\" class=\"click\" data-href=\"" + uri.urlString + "/project.php?id=" + opid + "\"></paper-icon-button><br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\" id=\"permissions-table\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project Creation\" value=\"" + (creation.toLocaleString()) + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project ARK\" value=\"" + project.project_obj_id + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project-title\" data-field=\"project_title\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Pathogen\" value=\"" + project.disease + "\" data-field=\"disease\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project-title\" data-field=\"pi_lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Reference\" value=\"" + project.reference_id + "\" id=\"project-reference\" data-field=\"reference_id\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Publication DOI\" value=\"" + project.publication + "\" id=\"doi\" data-field=\"publication\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Contact\" value=\"" + authorData.name + "\" id=\"project-contact\"></paper-input>\n  <gold-email-input " + conditionalReadonly + " class=\"project-param\" label=\"Contact Email\" value=\"" + authorData.contact_email + "\" id=\"contact-email\"></gold-email-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Diagnostic Lab\" value=\"" + authorData.diagnostic_lab + "\" id=\"project-lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Affiliation\" value=\"" + authorData.affiliation + "\" id=\"project-affiliation\"></paper-input>\n</section>\n<section id=\"notes\" class=\"col-xs-12 col-md-8 clearfix\">\n  " + noteHtml + "\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append Data</span>\n        <paper-toggle-button id=\"replace-data-toggle\" checked>Replace Data</paper-toggle-button>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n      <paper-input readonly label=\"Sampled Species\" value=\"" + (project.sampled_species.split(",").sort().join(", ")) + "\"></paper-input>\n      <paper-input readonly label=\"Sampled Clades\" value=\"" + (project.sampled_clades.split(",").sort().join(", ")) + "\"></paper-input>\n      <p class=\"text-muted\">\n        <span class=\"glyphicon glyphicon-info-sign\"></span> There are " + (project.sampled_species.split(",").length) + " species in this dataset, across " + (project.sampled_clades.split(",").length) + " clades\n      </p>\n    <h4>Sample Metrics</h4>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n      <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(project.lat, 6)) + ", " + (roundNumberSigfig(project.lng, 6)) + ") with a sample radius of " + project.radius + "m and a resulting locality <strong class='locality'>" + project.locality + "</strong></p>\n      <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + project.disease_positive + " positive samples (" + (roundNumber(project.disease_positive * 100 / project.disease_samples)) + "%), " + project.disease_negative + " negative samples (" + (roundNumber(project.disease_negative * 100 / project.disease_samples)) + "%), and " + project.disease_no_confidence + " inconclusive samples (" + (roundNumber(project.disease_no_confidence * 100 / project.disease_samples)) + "%)</p>\n    <h4 id=\"map-header\">Locality &amp; Transect Data</h4>\n      <div id=\"carto-map-container\" class=\"clearfix\">\n      " + googleMap + "\n      </div>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n      <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"\" value=\"\" id=\"\"></paper-input>\n</section>";
           $("#main-body").html(html);
           if (((ref3 = cartoParsed.bounding_polygon) != null ? ref3.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);
@@ -2072,7 +1963,7 @@ loadEditor = function(projectPreload) {
               button = "<paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>";
               $("#confirm-delete-project").replaceWith(button);
             }
-            toastStatusMessage("TODO Would save this project");
+            saveEditorData();
             return false;
           });
           $("#discard-changes-exit").click(function() {
@@ -2164,6 +2055,151 @@ loadEditor = function(projectPreload) {
   return false;
 };
 
+popManageUserAccess = function(project, result) {
+  if (project == null) {
+    project = _adp.projectData;
+  }
+  if (result == null) {
+    result = _adp.fetchResult;
+  }
+  return verifyLoginCredentials(function(credentialResult) {
+    var authorDisabled, currentPermission, currentRole, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref, theirHtml, uid, userHtml, viewerDisabled;
+    userHtml = "";
+    ref = project.access_data.total;
+    for (l = 0, len = ref.length; l < len; l++) {
+      user = ref[l];
+      uid = project.access_data.composite[user]["user_id"];
+      theirHtml = user + " <span class='set-permission-block' data-user='" + uid + "'>";
+      isAuthor = user === project.access_data.author;
+      isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
+      isViewer = !isEditor;
+      editDisabled = isEditor || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Editor'";
+      viewerDisabled = isViewer || isAuthor ? "disabled" : "data-toggle='tooltip' title='Make Read-Only'";
+      authorDisabled = isAuthor ? "disabled" : "data-toggle='tooltip' title='Grant Ownership'";
+      currentRole = isAuthor ? "author" : isEditor ? "edit" : "read";
+      currentPermission = "data-current='" + currentRole + "'";
+      theirHtml += "<paper-icon-button icon=\"image:edit\" " + editDisabled + " class=\"set-permission\" data-permission=\"edit\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>\n<paper-icon-button icon=\"icons:visibility\" " + viewerDisabled + " class=\"set-permission\" data-permission=\"read\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
+      if (result.user.is_author) {
+        theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
+      }
+      if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user) {
+        theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\" " + currentPermission + ">\n</paper-icon-button>";
+      }
+      userHtml += "<li>" + theirHtml + "</span></li>";
+    }
+    userHtml = "<ul class=\"simple-list\">\n  " + userHtml + "\n</ul>";
+    if (project.access_data.total.length === 1) {
+      userHtml += "<div id=\"single-user-warning\">\n  <iron-icon icon=\"icons:warning\"></iron-icon> <strong>Head's-up</strong>: You can't change permissions when a project only has one user. Consider adding another user first.\n</div>";
+    }
+    dialogHtml = "<paper-dialog modal id=\"user-setter-dialog\">\n  <h2>Manage \"" + project.project_title + "\" users</h2>\n  <paper-dialog-scrollable>\n    " + userHtml + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button class=\"add-user\" dialog-confirm><iron-icon icon=\"social:group-add\"></iron-icon> Add Users</paper-button>\n    <paper-button class=\"close-dialog\" dialog-dismiss>Done</paper-button>\n  </div>\n</paper-dialog>";
+    $("#user-setter-dialog").remove();
+    $("body").append(dialogHtml);
+    userEmail = user;
+    $(".set-permission").unbind().click(function() {
+      var args, confirm, current, el, error1, j64, permission, permissionsObj;
+      user = $(this).attr("data-user");
+      permission = $(this).attr("data-permission");
+      current = $(this).attr("data-current");
+      el = this;
+      if (permission !== "delete") {
+        permissionsObj = {
+          changes: {
+            0: {
+              newRole: permission,
+              currentRole: current,
+              uid: user
+            }
+          }
+        };
+      } else {
+        try {
+          confirm = $(this).attr("data-confirm").toBool();
+        } catch (error1) {
+          confirm = false;
+        }
+        if (!confirm) {
+          $(this).addClass("extreme-danger").attr("data-confirm", "true");
+          return false;
+        }
+        permissionsObj = {
+          "delete": {
+            0: {
+              currentRole: current,
+              uid: user
+            }
+          }
+        };
+      }
+      startLoad();
+      j64 = jsonTo64(permissionsObj);
+      args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
+      console.log("Would push args to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
+      $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
+        var error, k, objPrefix, ref1, ref2, ref3, ref4, useIcon, userObj;
+        console.log("Server permissions alter said", result);
+        if (result.status !== true) {
+          error = (ref1 = (ref2 = result.human_error) != null ? ref2 : result.error) != null ? ref1 : "We couldn't update user permissions";
+          stopLoadError(error);
+          return false;
+        }
+        if (permission !== "delete") {
+          $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("disabled", "disabled").attr("data-current", permission);
+          $(".set-permission-block[data-user='" + user + "'] paper-icon-button:not([data-permission='" + permission + "'])").removeAttr("disabled");
+          useIcon = $(".set-permission-block[data-user='" + user + "'] paper-icon-button[data-permission='" + permission + "']").attr("icon");
+          $(".user-permission-list-row[data-user='" + {
+            user: user
+          } + "'] .user-current-permission iron-icon").attr("icon", useIcon);
+          toastStatusMessage(user + " granted " + permission + " permissions");
+        } else {
+          $(".set-permission-block[data-user='" + user + "']").parent().remove();
+          $(".user-permission-list-row[data-user='" + {
+            user: user
+          } + "']").remove();
+          toastStatusMessage("Removed " + user + " from project #" + window.projectParams.pid);
+          objPrefix = current === "read" ? "viewers" : "editors";
+          delete _adp.projectData.access_data.composite[userEmail];
+          ref3 = _adp.projectData.access_data[objPrefix + "_list"];
+          for (k in ref3) {
+            userObj = ref3[k];
+            try {
+              if (typeof userObj !== "object") {
+                continue;
+              }
+              if (userObj.user_id === user) {
+                delete _adp.projectData.access_data[objPrefix + "_list"][k];
+              }
+            } catch (undefined) {}
+          }
+          ref4 = _adp.projectData.access_data[objPrefix];
+          for (k in ref4) {
+            userObj = ref4[k];
+            try {
+              if (typeof userObj !== "object") {
+                continue;
+              }
+              if (userObj.user_id === user) {
+                delete _adp.projectData.access_data[objPrefix][k];
+              }
+            } catch (undefined) {}
+          }
+        }
+        _adp.projectData.access_data.raw = result.new_access_saved;
+        return stopLoad();
+      }).error(function(result, status) {
+        console.error("Server error", result, status);
+        return stopLoadError("Problem changing permissions");
+      });
+      return false;
+    });
+    $(".add-user").unbind().click(function() {
+      showAddUserDialog(project.access_data.total);
+      return false;
+    });
+    safariDialogHelper("#user-setter-dialog");
+    return false;
+  });
+};
+
 showAddUserDialog = function(refAccessList) {
 
   /*
@@ -2187,14 +2223,21 @@ showAddUserDialog = function(refAccessList) {
         return $("#user-search-result-container").prop("hidden", "hidden");
       } else {
         return $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
-          var html, l, len, users;
+          var badge, html, l, len, prefix, users;
           console.info(result);
           users = Object.toArray(result.result);
           if (users.length > 0) {
             $("#user-search-result-container").removeAttr("hidden");
             for (l = 0, len = users.length; l < len; l++) {
               user = users[l];
-              html = "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\">\n  <span class=\"email\">" + user.email + "</span>\n    |\n  <span class=\"name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\">" + user.handle + "</span></div>";
+              if (_adp.projectData.access_data.composite[user.email] != null) {
+                prefix = "<iron-icon icon=\"icons:done-all\" class=\"materialgreen round\"></iron-icon>";
+                badge = "<paper-badge for=\"" + user.uid + "-email\" class=\"materialgreen\" icon=\"icons:done-all\" label=\"Already Added\"> </paper-badge>";
+              } else {
+                prefix = "";
+                badge = "";
+              }
+              html = "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\" id=\"" + user.uid + "-result\">\n  " + prefix + "\n  <span class=\"email\" id=\"" + user.uid + "-email\">" + user.email + "</span>" + badge + "\n    |\n  <span class=\"name\" id=\"" + user.uid + "-name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\" id=\"" + user.uid + "-handle\">" + user.handle + "</span></div>";
             }
             $("#user-search-result-container").html(html);
             return $(".user-search-result").click(function() {
@@ -2239,13 +2282,15 @@ showAddUserDialog = function(refAccessList) {
     return searchHelper.debounce();
   });
   $("#add-user").click(function() {
-    var args, jsonUids, l, len, ref, toAddUids, uidArgs;
+    var args, jsonUids, l, len, ref, toAddEmails, toAddUids, uidArgs;
     startLoad();
     toAddUids = new Array();
+    toAddEmails = new Array();
     ref = $("#user-add-queue .list-add-users");
     for (l = 0, len = ref.length; l < len; l++) {
       user = ref[l];
       toAddUids.push($(user).attr("data-uid"));
+      toAddEmails.push(user);
     }
     if (toAddUids.length < 1) {
       toastStatusMessage("Please add at least one user to the access list.");
@@ -2259,7 +2304,7 @@ showAddUserDialog = function(refAccessList) {
     args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + uidArgs;
     console.log("Would push args to", adminParams.apiTarget + "?" + args);
     return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-      var error, ref1, ref2, tense;
+      var error, html, i, icon, len1, m, ref1, ref2, tense, uid, userObj;
       console.log("Server permissions said", result);
       if (result.status !== true) {
         error = (ref1 = (ref2 = result.human_error) != null ? ref2 : result.error) != null ? ref1 : "We couldn't update user permissions";
@@ -2269,6 +2314,26 @@ showAddUserDialog = function(refAccessList) {
       stopLoad();
       tense = toAddUids.length === 1 ? "viewer" : "viewers";
       toastStatusMessage("Successfully added " + toAddUids.length + " " + tense + " to the project");
+      $("#user-add-queue").empty();
+      icon = "<iron-icon icon=\"icons:visibility\"></iron-icon>";
+      i = 0;
+      for (m = 0, len1 = toAddUids.length; m < len1; m++) {
+        uid = toAddUids[m];
+        user = toAddEmails[i];
+        ++i;
+        html = "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
+        $("#permissions-table").append(html);
+        userObj = {
+          email: user,
+          user_id: uid,
+          permission: "READ"
+        };
+        _adp.projectData.access_data.total.push(user);
+        _adp.projectData.access_data.viewers_list.push(user);
+        _adp.projectData.access_data.viewers.push(userObj);
+        _adp.projectData.access_data.raw = result.new_access_saved;
+        _adp.projectData.access_data.composite[user] = userObj;
+      }
       return p$("#add-new-user").close();
     }).error(function(result, status) {
       return console.error("Server error", result, status);
@@ -2413,6 +2478,18 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     $("#append-replace-data-toggle").attr("hidden", "hidden");
   }
   bootstrapUploader("data-card-uploader", "");
+  return false;
+};
+
+saveEditorData = function() {
+
+  /*
+   * Actually do the file saving
+   */
+  var postData;
+  postData = _adp.projectData;
+  postData.access_data = _adp.projectData.access_data.raw;
+  foo();
   return false;
 };
 

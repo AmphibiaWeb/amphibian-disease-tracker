@@ -168,6 +168,22 @@ function getLoginState($get, $default = false)
         unset($userDetail['userdata']['secdata']);
         unset($userDetail['userdata']['emergency_code']);
         unset($userDetail['userdata']['auth_key']);
+        unset($userDetail['userdata']['data']);
+        unset($userDetail['userdata']['private_key']);
+        unset($userDetail['userdata']['random_seed']);
+        unset($userDetail['userdata']['special_1']);
+        unset($userDetail['userdata']['special_2']);
+        unset($userDetail['userdata']['app_key']);
+        unset($userDetail['userdata']['flag']);
+        unset($userDetail['userdata']['admin_flag']);
+        unset($userDetail['userdata']['su_flag']);
+        unset($userDetail['userdata']['phone_verified']);
+        unset($userDetail['userdata']['last_ip']);
+        unset($userDetail['source']);
+        unset($userDetail['salt']);
+        unset($userDetail['calc_conf']);
+        unset($userDetail['basis_conf']);
+        unset($userDetail['iv']);
     } catch (Exception $e) {
         # Do nothing, that unset just failed
       $userDetail = $e->getMessage();
