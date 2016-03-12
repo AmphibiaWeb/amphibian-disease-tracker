@@ -2223,7 +2223,7 @@ showAddUserDialog = function(refAccessList) {
         return $("#user-search-result-container").prop("hidden", "hidden");
       } else {
         return $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
-          var badge, html, l, len, prefix, users;
+          var badge, bonusClass, html, l, len, prefix, users;
           console.info(result);
           users = Object.toArray(result.result);
           if (users.length > 0) {
@@ -2233,15 +2233,17 @@ showAddUserDialog = function(refAccessList) {
               user = users[l];
               if (_adp.projectData.access_data.composite[user.email] != null) {
                 prefix = "<iron-icon icon=\"icons:done-all\" class=\"materialgreen round\"></iron-icon>";
-                badge = "<paper-badge for=\"" + user.uid + "-email\" class=\"materialgreen\" icon=\"icons:done-all\" label=\"Already Added\"> </paper-badge>";
+                badge = "<paper-badge for=\"" + user.uid + "-email\" icon=\"icons:done-all\" label=\"Already Added\"> </paper-badge>";
+                bonusClass = "noclick";
               } else {
                 prefix = "";
                 badge = "";
+                bonusClass = "";
               }
-              html += "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\" id=\"" + user.uid + "-result\">\n  " + prefix + "\n  <span class=\"email\" id=\"" + user.uid + "-email\">" + user.email + "</span>" + badge + "\n    |\n  <span class=\"name\" id=\"" + user.uid + "-name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\" id=\"" + user.uid + "-handle\">" + user.handle + "</span></div>";
+              html += "<div class=\"user-search-result " + bonusClass + "\" data-uid=\"" + user.uid + "\" id=\"" + user.uid + "-result\">\n  <span class=\"email search-result-detail\" id=\"" + user.uid + "-email\">" + prefix + user.email + "</span>\n    |\n  <span class=\"name search-result-detail\" id=\"" + user.uid + "-name\">" + user.full_name + "</span>\n    |\n  <span class=\"user search-result-detail\" id=\"" + user.uid + "-handle\">" + user.handle + "</span></div>";
             }
             $("#user-search-result-container").html(html);
-            return $(".user-search-result").click(function() {
+            return $(".user-search-result:not(.noclick)").click(function() {
               var email, len1, listHtml, m, ref, uid;
               uid = $(this).attr("data-uid");
               console.info("Clicked on " + uid);

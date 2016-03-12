@@ -697,20 +697,21 @@ showAddUserDialog = (refAccessList) ->
                 badge = """
                 <paper-badge for="#{user.uid}-email" icon="icons:done-all" label="Already Added"> </paper-badge>
                 """
+                bonusClass = "noclick"
               else
                 prefix = ""
                 badge = ""
+                bonusClass = ""
               html += """
-              <div class="user-search-result" data-uid="#{user.uid}" id="#{user.uid}-result">
-                #{prefix}
-                <span class="email" id="#{user.uid}-email">#{user.email}</span>#{badge}
+              <div class="user-search-result #{bonusClass}" data-uid="#{user.uid}" id="#{user.uid}-result">
+                <span class="email search-result-detail" id="#{user.uid}-email">#{prefix}#{user.email}</span>
                   |
-                <span class="name" id="#{user.uid}-name">#{user.full_name}</span>
+                <span class="name search-result-detail" id="#{user.uid}-name">#{user.full_name}</span>
                   |
-                <span class="user" id="#{user.uid}-handle">#{user.handle}</span></div>
+                <span class="user search-result-detail" id="#{user.uid}-handle">#{user.handle}</span></div>
               """
             $("#user-search-result-container").html html
-            $(".user-search-result").click ->
+            $(".user-search-result:not(.noclick)").click ->
               uid = $(this).attr "data-uid"
               console.info "Clicked on #{uid}"
               email = $(this).find(".email").text()
