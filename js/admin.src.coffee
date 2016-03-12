@@ -1737,7 +1737,8 @@ loadEditor = (projectPreload) ->
           project.access_data.viewers = Object.toArray project.access_data.viewers
           console.info "Project access lists:", project.access_data
           # Helper functions to bind to upcoming buttons
-          popManageUserAccess = ->
+          _adp.projectData = project
+          popManageUserAccess = (project = _adp.projectData) ->
             verifyLoginCredentials (credentialResult) ->
               # For each user in the access list, give some toggles
               userHtml = ""
@@ -1855,6 +1856,7 @@ loadEditor = (projectPreload) ->
                     $(".set-permission-block[data-user='#{user}']").parent().remove()
                     $(".user-permission-list-row[data-user='#{{user}}']").remove()
                     toastStatusMessage "Removed #{user} from project ##{window.projectParams.pid}"
+                  # Update _adp.projectData.access_data
                   stopLoad()
                 .error (result, status) ->
                   console.error "Server error", result, status
@@ -2172,7 +2174,7 @@ loadEditor = (projectPreload) ->
               $.post adminParams.apiTarget, args, "json"
               .done (result) ->
                 if result.status is true
-                  stopLoad
+                  stopLoad()
                   toastStatusMessage "Successfully deleted Project ##{project.project_id}"
                   delay 1000, ->
                     populateAdminActions()
@@ -2205,7 +2207,7 @@ loadEditor = (projectPreload) ->
           # $("#data-management").affix affixOptions
           # console.info "Affixed at #{topPosition}px", affixOptions
           $("#manage-users").click ->
-            popManageUserAccess()
+            popManageUserAccess(_adp.projectData)
           $(".danger-toggle").on "iron-change", ->
             if $(this).get(0).checked
               $(this).find("iron-icon").addClass("material-red")
@@ -2396,6 +2398,9 @@ showAddUserDialog = (refAccessList) ->
       tense = if toAddUids.length is 1 then "viewer" else "viewers"
       toastStatusMessage "Successfully added #{toAddUids.length} #{tense} to the project"
       # Update the UI with the new list
+      ## Remove from to-add list
+      ## Add to manage users table
+      ## Update _adp.projectData.access_data
       # Dismiss the dialog
       p$("#add-new-user").close()
     .error (result, status) ->

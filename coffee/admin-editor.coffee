@@ -506,7 +506,7 @@ loadEditor = (projectPreload) ->
               $.post adminParams.apiTarget, args, "json"
               .done (result) ->
                 if result.status is true
-                  stopLoad
+                  stopLoad()
                   toastStatusMessage "Successfully deleted Project ##{project.project_id}"
                   delay 1000, ->
                     populateAdminActions()

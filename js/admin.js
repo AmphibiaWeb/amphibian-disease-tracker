@@ -1757,7 +1757,11 @@ loadEditor = function(projectPreload) {
           project.access_data.editors = Object.toArray(project.access_data.editors);
           project.access_data.viewers = Object.toArray(project.access_data.viewers);
           console.info("Project access lists:", project.access_data);
-          popManageUserAccess = function() {
+          _adp.projectData = project;
+          popManageUserAccess = function(project) {
+            if (project == null) {
+              project = _adp.projectData;
+            }
             return verifyLoginCredentials(function(credentialResult) {
               var authorDisabled, currentPermission, currentRole, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref1, theirHtml, uid, userHtml, viewerDisabled;
               userHtml = "";
@@ -2045,7 +2049,7 @@ loadEditor = function(projectPreload) {
               args = "perform=delete&id=" + project.id;
               $.post(adminParams.apiTarget, args, "json").done(function(result) {
                 if (result.status === true) {
-                  stopLoad;
+                  stopLoad();
                   toastStatusMessage("Successfully deleted Project #" + project.project_id);
                   return delay(1000, function() {
                     return populateAdminActions();
@@ -2082,7 +2086,7 @@ loadEditor = function(projectPreload) {
             target: window
           };
           $("#manage-users").click(function() {
-            return popManageUserAccess();
+            return popManageUserAccess(_adp.projectData);
           });
           $(".danger-toggle").on("iron-change", function() {
             if ($(this).get(0).checked) {
