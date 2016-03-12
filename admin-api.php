@@ -208,6 +208,7 @@ function saveEntry($get)
   unset($data["project_obj_id"]); # ARK
   unset($data["dataset_arks"]); # File uploads should handle this directly
   unset($data["id"]); # Obvious
+  unset($data["access_data"]); # Handled seperately
 
   #DEBUG SEE WHAT'LL BE WRITTEN
   return $data;
