@@ -7405,6 +7405,14 @@ section#notes marked-element {
   background: #4CAF50;
   color: #fff;
 }
+.noclick {
+  opacity: .8;
+  cursor: not-allowed;
+}
+.search-result-detail {
+  width: 32%;
+  display: inline-block;
+}
 @media (min-width: 992px) {
   #user-setter-dialog,
   #add-new-user {
