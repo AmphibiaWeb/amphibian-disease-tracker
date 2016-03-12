@@ -1665,3 +1665,19 @@ $ ->
       selector: "[data-toggle='tooltip']"
   # The rest of the onload for the admin has been moved to the core.coffee file.
   checkFileVersion false, "js/admin.min.js"
+  # Load the input state
+  fragment = uri.o.attr "fragment"
+  fragmentSettings = fragment.split ":"
+  switch fragmentSettings[0]
+    when "edit"
+      loadEditor fragmentSettings[0]
+    when "action"
+      switch fragmentSettings[1]
+        when "show-editable"
+          loadEditor()
+        when "create-project"
+          loadCreateNewProject()
+        when "show-viewable"
+          loadProjectBrowser()
+        when "show-su-viewable"
+          loadSUProjectBrowser()

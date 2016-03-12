@@ -1676,6 +1676,7 @@ checkInitLoad = function(callback) {
 };
 
 $(function() {
+  var fragment, fragmentSettings;
   if ($("#next").exists()) {
     $("#next").unbind().click(function() {
       return openTab(adminParams.adminPageUrl);
@@ -1686,7 +1687,24 @@ $(function() {
       selector: "[data-toggle='tooltip']"
     });
   });
-  return checkFileVersion(false, "js/admin.min.js");
+  checkFileVersion(false, "js/admin.min.js");
+  fragment = uri.o.attr("fragment");
+  fragmentSettings = fragment.split(":");
+  switch (fragmentSettings[0]) {
+    case "edit":
+      return loadEditor(fragmentSettings[0]);
+    case "action":
+      switch (fragmentSettings[1]) {
+        case "show-editable":
+          return loadEditor();
+        case "create-project":
+          return loadCreateNewProject();
+        case "show-viewable":
+          return loadProjectBrowser();
+        case "show-su-viewable":
+          return loadSUProjectBrowser();
+      }
+  }
 });
 
 
