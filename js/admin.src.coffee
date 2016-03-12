@@ -253,7 +253,7 @@ loadCreateNewProject = ->
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.
     </p>
     <div class="alert alert-info" role="alert">
-      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
     </div>
     <div class="alert alert-warning" role="alert">
       <strong>If the data is in Excel</strong>, ensure that it is the first sheet in the workbook. Data across multiple sheets in one workbook may be improperly processed.
@@ -282,6 +282,7 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  mapNewWindows()
   try
     for input in $("paper-input[required]")
       p$(input).validate()
@@ -1859,10 +1860,23 @@ loadEditor = (projectPreload) ->
             <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher">Preview</a></li>
             <li role="presentation" data-view="edit"><a href="#markdown-switcher">Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden>#{project.sample_notes}</iron-autogrow-textarea>
+          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="note-preview">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{mdNotes}</script>
+          </marked-element>
+          """
+          mdFunding = if isNull(project.extended_funding_reach_goals) then "*No funding reach goals*" else project.extended_funding_reach_goals.unescape()
+          noteHtml = """
+          <h3>Project Notes</h3>
+          <ul class="nav nav-tabs" id="markdown-switcher-funding">
+            <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher-funding">Preview</a></li>
+            <li role="presentation" data-view="edit"><a href="#markdown-switcher-funding">Edit</a></li>
+          </ul>
+          <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
+          <marked-element class="markdown-pair" id="preview-funding">
+            <div class="markdown-html"></div>
+            <script type="text/markdown">#{mdFunding}</script>
           </marked-element>
           """
           try
@@ -1924,7 +1938,7 @@ loadEditor = (projectPreload) ->
           if months.length is 0 or isNull monthPretty then monthPretty = "<em>(no data)</em>"
           if years.length is 0 or isNull yearPretty then yearPretty = "<em>(no data)</em>"
           html = """
-          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
+          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}" data-toggle="tooltip" title="View in Project Viewer" data-newtab="true"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Collaborators" elevation="2">
@@ -1971,8 +1985,8 @@ loadEditor = (projectPreload) ->
                 Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
                 </div>
                 <div id="append-replace-data-toggle">
-                  <span class="toggle-off-label iron-label">Append Data</span>
-                  <paper-toggle-button id="replace-data-toggle" checked>Replace Data</paper-toggle-button>
+                  <span class="toggle-off-label iron-label">Append Data #{getInfoTooltip "If you upload a dataset, append all rows as additional data"}</span>
+                  <paper-toggle-button id="replace-data-toggle" checked disabled>Replace Data</paper-toggle-button>#{getInfoTooltip("If you upload data, archive current data and only have new data parsed")}
                 </div>
                 <div id="uploader-container-section">
                 </div>
@@ -2012,14 +2026,10 @@ loadEditor = (projectPreload) ->
                 <div id="carto-map-container" class="clearfix">
                 #{googleMap}
                 </div>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
             <h3>Project Meta Parameters</h3>
               <h4>Project funding status</h4>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
-                <paper-input #{conditionalReadonly} class="project-param" label="" value="" id=""></paper-input>
+                #{mdFunding}
+                <paper-input #{conditionalReadonly} class="project-param" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
           </section>
           """
           $("#main-body").html html
@@ -2059,6 +2069,18 @@ loadEditor = (projectPreload) ->
                 $("#project-notes").attr "hidden", "hidden"
               when "edit"
                 $("#note-preview").attr "hidden", "hidden"
+          ta = p$("#project-funding").textarea
+          $(ta).keyup ->
+            p$("#preview-funding").markdown = $(this).val()
+          $("#markdown-switcher-funding li").click ->
+            $("#markdown-switcher-funding li").removeClass "active"
+            $(".markdown-pair").removeAttr "hidden"
+            $(this).addClass "active"
+            switch $(this).attr "data-view"
+              when "md"
+                $("#project-funding").attr "hidden", "hidden"
+              when "edit"
+                $("#preview-funding").attr "hidden", "hidden"
 
           $("#delete-project").click ->
             confirmButton = """
@@ -2120,9 +2142,11 @@ loadEditor = (projectPreload) ->
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"
           console.warn e.stack
+          showEditList()
           return false
       .error (result, status) ->
         stopLoadError "We couldn't load your project. Please try again."
+        showEditList()
     false
 
   unless projectPreload?
@@ -2673,8 +2697,8 @@ saveEditorData = ->
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     console.error result, status
-  postData
-  #false
+  console.log "Would send to server", postData
+  false
 
 ###
 #
