@@ -7407,7 +7407,7 @@ section#notes marked-element {
 }
 .noclick {
   opacity: .8;
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 .search-result-detail {
   width: 32%;
