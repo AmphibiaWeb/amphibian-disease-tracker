@@ -890,6 +890,8 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       if pointArr.length is 0
         center = geo.centerPoint ? [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng] ? [window.locationData.lat, window.locationData.lng]
         pointArr.push center
+      mapOptions.onClickCallback = ->
+        console.log "No callback for data-provided maps."
       createMap2 pointArr, mapOptions, (map) ->
         after = """
         <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>

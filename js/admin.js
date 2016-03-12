@@ -1663,12 +1663,35 @@ renderValidateProgress = function() {
 };
 
 checkInitLoad = function(callback) {
-  var projectId;
+  var fragment, fragmentSettings, projectId;
   projectId = uri.o.param("id");
   if (!isNull(projectId)) {
     loadEditor(projectId);
   } else {
-    if (typeof callback === "function") {
+    fragment = uri.o.attr("fragment");
+    if (!isNull(fragment)) {
+      fragmentSettings = fragment.split(":");
+      console.info("Looking at fragment", fragment, fragmentSettings);
+      switch (fragmentSettings[0]) {
+        case "edit":
+          loadEditor(fragmentSettings[0]);
+          break;
+        case "action":
+          switch (fragmentSettings[1]) {
+            case "show-editable":
+              loadEditor();
+              break;
+            case "create-project":
+              loadCreateNewProject();
+              break;
+            case "show-viewable":
+              loadProjectBrowser();
+              break;
+            case "show-su-viewable":
+              loadSUProjectBrowser();
+          }
+      }
+    } else if (typeof callback === "function") {
       callback();
     }
   }
@@ -1676,7 +1699,6 @@ checkInitLoad = function(callback) {
 };
 
 $(function() {
-  var fragment, fragmentSettings;
   if ($("#next").exists()) {
     $("#next").unbind().click(function() {
       return openTab(adminParams.adminPageUrl);
@@ -1687,24 +1709,7 @@ $(function() {
       selector: "[data-toggle='tooltip']"
     });
   });
-  checkFileVersion(false, "js/admin.min.js");
-  fragment = uri.o.attr("fragment");
-  fragmentSettings = fragment.split(":");
-  switch (fragmentSettings[0]) {
-    case "edit":
-      return loadEditor(fragmentSettings[0]);
-    case "action":
-      switch (fragmentSettings[1]) {
-        case "show-editable":
-          return loadEditor();
-        case "create-project":
-          return loadCreateNewProject();
-        case "show-viewable":
-          return loadProjectBrowser();
-        case "show-su-viewable":
-          return loadSUProjectBrowser();
-      }
-  }
+  return checkFileVersion(false, "js/admin.min.js");
 });
 
 
@@ -2450,6 +2455,9 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         center = (ref3 = (ref4 = geo.centerPoint) != null ? ref4 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref3 : [window.locationData.lat, window.locationData.lng];
         pointArr.push(center);
       }
+      mapOptions.onClickCallback = function() {
+        return console.log("No callback for data-provided maps.");
+      };
       return createMap2(pointArr, mapOptions, function(map) {
         var after;
         after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";

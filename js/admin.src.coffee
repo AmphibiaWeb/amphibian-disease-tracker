@@ -1650,7 +1650,25 @@ checkInitLoad = (callback) ->
   unless isNull projectId
     loadEditor projectId
   else
-    if typeof callback is "function"
+    # Load the input state
+    fragment = uri.o.attr "fragment"
+    unless isNull fragment
+      fragmentSettings = fragment.split ":"
+      console.info "Looking at fragment", fragment, fragmentSettings
+      switch fragmentSettings[0]
+        when "edit"
+          loadEditor fragmentSettings[0]
+        when "action"
+          switch fragmentSettings[1]
+            when "show-editable"
+              loadEditor()
+            when "create-project"
+              loadCreateNewProject()
+            when "show-viewable"
+              loadProjectBrowser()
+            when "show-su-viewable"
+              loadSUProjectBrowser()
+    else if typeof callback is "function"
       callback()
   false
 
@@ -1665,22 +1683,6 @@ $ ->
       selector: "[data-toggle='tooltip']"
   # The rest of the onload for the admin has been moved to the core.coffee file.
   checkFileVersion false, "js/admin.min.js"
-  # Load the input state
-  fragment = uri.o.attr "fragment"
-  fragmentSettings = fragment.split ":"
-  switch fragmentSettings[0]
-    when "edit"
-      loadEditor fragmentSettings[0]
-    when "action"
-      switch fragmentSettings[1]
-        when "show-editable"
-          loadEditor()
-        when "create-project"
-          loadCreateNewProject()
-        when "show-viewable"
-          loadProjectBrowser()
-        when "show-su-viewable"
-          loadSUProjectBrowser()
 
 ###
 # Split-out coffeescript file for adminstrative editor.
@@ -2574,6 +2576,8 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       if pointArr.length is 0
         center = geo.centerPoint ? [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng] ? [window.locationData.lat, window.locationData.lng]
         pointArr.push center
+      mapOptions.onClickCallback = ->
+        console.log "No callback for data-provided maps."
       createMap2 pointArr, mapOptions, (map) ->
         after = """
         <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
