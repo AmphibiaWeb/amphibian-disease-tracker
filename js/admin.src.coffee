@@ -1984,8 +1984,11 @@ loadEditor = (projectPreload) ->
                 Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
                 </div>
                 <div id="append-replace-data-toggle">
-                  <span class="toggle-off-label iron-label">Append Data #{getInfoTooltip "If you upload a dataset, append all rows as additional data"}</span>
-                  <paper-toggle-button id="replace-data-toggle" checked disabled>Replace Data</paper-toggle-button>#{getInfoTooltip("If you upload data, archive current data and only have new data parsed")}
+                  <span class="toggle-off-label iron-label">Append Data
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data"></span>
+                  </span>
+                  <paper-toggle-button id="replace-data-toggle" checked disabled>Replace Data</paper-toggle-button>
+                  <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload data, archive current data and only have new data parsed"></span>
                 </div>
                 <div id="uploader-container-section">
                 </div>
@@ -2028,7 +2031,9 @@ loadEditor = (projectPreload) ->
             <h3>Project Meta Parameters</h3>
               <h4>Project funding status</h4>
                 #{fundingHtml}
-                <paper-input #{conditionalReadonly} class="project-param" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
+                <div class="row">
+                  <span class="col-xs-1">$</span><paper-input #{conditionalReadonly} class="project-param col-xs-11" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
+                </div>
           </section>
           """
           $("#main-body").html html
