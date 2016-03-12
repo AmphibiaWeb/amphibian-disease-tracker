@@ -2228,6 +2228,7 @@ showAddUserDialog = function(refAccessList) {
           users = Object.toArray(result.result);
           if (users.length > 0) {
             $("#user-search-result-container").removeAttr("hidden");
+            html = "";
             for (l = 0, len = users.length; l < len; l++) {
               user = users[l];
               if (_adp.projectData.access_data.composite[user.email] != null) {
@@ -2237,7 +2238,7 @@ showAddUserDialog = function(refAccessList) {
                 prefix = "";
                 badge = "";
               }
-              html = "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\" id=\"" + user.uid + "-result\">\n  " + prefix + "\n  <span class=\"email\" id=\"" + user.uid + "-email\">" + user.email + "</span>" + badge + "\n    |\n  <span class=\"name\" id=\"" + user.uid + "-name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\" id=\"" + user.uid + "-handle\">" + user.handle + "</span></div>";
+              html += "<div class=\"user-search-result\" data-uid=\"" + user.uid + "\" id=\"" + user.uid + "-result\">\n  " + prefix + "\n  <span class=\"email\" id=\"" + user.uid + "-email\">" + user.email + "</span>" + badge + "\n    |\n  <span class=\"name\" id=\"" + user.uid + "-name\">" + user.full_name + "</span>\n    |\n  <span class=\"user\" id=\"" + user.uid + "-handle\">" + user.handle + "</span></div>";
             }
             $("#user-search-result-container").html(html);
             return $(".user-search-result").click(function() {

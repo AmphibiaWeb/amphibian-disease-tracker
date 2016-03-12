@@ -2355,6 +2355,7 @@ showAddUserDialog = (refAccessList) ->
           users = Object.toArray result.result
           if users.length > 0
             $("#user-search-result-container").removeAttr "hidden"
+            html = ""
             for user in users
               # TODO check if user already has access
               if _adp.projectData.access_data.composite[user.email]?
@@ -2367,7 +2368,7 @@ showAddUserDialog = (refAccessList) ->
               else
                 prefix = ""
                 badge = ""
-              html = """
+              html += """
               <div class="user-search-result" data-uid="#{user.uid}" id="#{user.uid}-result">
                 #{prefix}
                 <span class="email" id="#{user.uid}-email">#{user.email}</span>#{badge}

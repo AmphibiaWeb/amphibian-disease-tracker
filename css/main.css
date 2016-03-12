@@ -7397,6 +7397,14 @@ section#notes marked-element {
   width: 80%;
   min-height: 5rem;
 }
+.user-search-result paper-badge {
+  display: inline-block;
+  position: relative;
+}
+.user-search-result paper-badge .badge.paper-badge {
+  background: #4CAF50;
+  color: #fff;
+}
 @media (min-width: 992px) {
   #user-setter-dialog,
   #add-new-user {
