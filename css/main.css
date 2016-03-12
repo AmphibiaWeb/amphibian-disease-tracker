@@ -6951,6 +6951,9 @@ paper-fab.materialblue.paper-fab-0 {
   background: #5677fc;
   color: #fff;
 }
+.round {
+  border-radius: 50%;
+}
 .materialgreen,
 .materialblue:hover,
 paper-fab.materialblue.paper-fab-0:hover {
