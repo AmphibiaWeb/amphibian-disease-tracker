@@ -169,8 +169,7 @@ loadEditor = (projectPreload) ->
           </marked-element>
           """
           mdFunding = if isNull(project.extended_funding_reach_goals) then "*No funding reach goals*" else project.extended_funding_reach_goals.unescape()
-          noteHtml = """
-          <h3>Project Notes</h3>
+          fundingHtml = """
           <ul class="nav nav-tabs" id="markdown-switcher-funding">
             <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher-funding">Preview</a></li>
             <li role="presentation" data-view="edit"><a href="#markdown-switcher-funding">Edit</a></li>
@@ -330,7 +329,7 @@ loadEditor = (projectPreload) ->
                 </div>
             <h3>Project Meta Parameters</h3>
               <h4>Project funding status</h4>
-                #{mdFunding}
+                #{fundingHtml}
                 <paper-input #{conditionalReadonly} class="project-param" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
           </section>
           """
@@ -355,8 +354,10 @@ loadEditor = (projectPreload) ->
                       tryReload()
             poly = cartoParsed.bounding_polygon
             googleMap = geo.googleMapWebComponent ? ""
-
-          p$("#project-notes").bindValue = deEscape project.sample_notes
+          try
+            p$("#project-notes").bindValue = project.sample_notes.unescape()
+          try
+            p$("#project-funding").bindValue = project.extended_funding_reach_goals.unescape()
           # Watch for changes and toggle save watcher state
           # Events
           ta = p$("#project-notes").textarea
@@ -444,11 +445,11 @@ loadEditor = (projectPreload) ->
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"
           console.warn e.stack
-          showEditList()
+          loadEditor()
           return false
       .error (result, status) ->
         stopLoadError "We couldn't load your project. Please try again."
-        showEditList()
+        loadEditor()
     false
 
   unless projectPreload?
