@@ -253,7 +253,7 @@ loadCreateNewProject = ->
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.
     </p>
     <div class="alert alert-info" role="alert">
-      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
     </div>
     <div class="alert alert-warning" role="alert">
       <strong>If the data is in Excel</strong>, ensure that it is the first sheet in the workbook. Data across multiple sheets in one workbook may be improperly processed.
@@ -282,6 +282,7 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  mapNewWindows()
   try
     for input in $("paper-input[required]")
       p$(input).validate()
