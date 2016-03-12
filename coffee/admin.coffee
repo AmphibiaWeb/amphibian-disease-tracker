@@ -1661,7 +1661,7 @@ checkInitLoad = (callback) ->
       console.info "Looking at fragment", fragment, fragmentSettings
       switch fragmentSettings[0]
         when "edit"
-          loadEditor fragmentSettings[0]
+          loadEditor fragmentSettings[1]
         when "action"
           switch fragmentSettings[1]
             when "show-editable"
