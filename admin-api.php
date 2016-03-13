@@ -210,8 +210,6 @@ function saveEntry($get)
   unset($data["id"]); # Obvious
   unset($data["access_data"]); # Handled seperately
 
-  #DEBUG SEE WHAT'LL BE WRITTEN
-  return $data;
   try
     {
       $result = $db->updateEntry($data,$ref);
