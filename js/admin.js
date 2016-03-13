@@ -2551,8 +2551,11 @@ saveEditorData = function() {
    */
   var args, authorObj, el, key, l, len, len1, m, postData, ref, ref1, ref2;
   startLoad();
+  $(".hanging-alert").remove();
   postData = _adp.projectData;
-  postData.access_data = _adp.projectData.access_data.raw;
+  try {
+    postData.access_data = _adp.projectData.access_data.raw;
+  } catch (undefined) {}
   ref = $(".project-param:not([readonly])");
   for (l = 0, len = ref.length; l < len; l++) {
     el = ref[l];
@@ -2579,6 +2582,8 @@ saveEditorData = function() {
       error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
       stopLoadError("There was an error saving to the server");
       bsAlert("<strong>Save Error:</strong> " + error, "danger");
+      console.error(result.error);
+      return false;
     }
     stopLoad();
     return toastStatusMessage("Save successful");
