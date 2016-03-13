@@ -2683,8 +2683,10 @@ saveEditorData = ->
   # Actually do the file saving
   ###
   startLoad()
+  $(".hanging-alert").remove()
   postData = _adp.projectData
-  postData.access_data = _adp.projectData.access_data.raw
+  try
+    postData.access_data = _adp.projectData.access_data.raw
   # Alter this based on inputs
   for el in $(".project-param:not([readonly])")
     key = $(el).attr "data-field"
@@ -2705,8 +2707,11 @@ saveEditorData = ->
       error = result.human_error ? result.error ? "There was an error saving to the server"
       stopLoadError "There was an error saving to the server"
       bsAlert "<strong>Save Error:</strong> #{error}", "danger"
+      console.error result.error
+      return false
     stopLoad()
     toastStatusMessage "Save successful"
+    # Update the project data
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     console.error result, status

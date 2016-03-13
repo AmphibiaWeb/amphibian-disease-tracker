@@ -323,19 +323,19 @@ class DBHelper
             $field_name = $this->sanitize($field_name);
         }
 
-        if (false) {
-            #is_numeric($item))
-
-            $item_string = $item;
-        } else {
-            $item_string = "'$item'";
-        }
+        $item_string = "'$item'";
         $query = 'SELECT * FROM `'.$this->getTable()."` WHERE `$field_name`=".$item_string;
         try {
             $result = mysqli_query($this->getLink(), $query);
             if ($result === false) {
                 if ($test) {
-                    return array('status' => false,'query' => $query,'error' => 'false result');
+                    return array(
+                      'status' => false,
+                      'query' => $query,
+                      'error' => 'false result'
+                      "item" => $item,
+                      "column" => $field_name,
+                    );
                 }
 
                 return false;
@@ -652,7 +652,10 @@ class DBHelper
         $uval = current($unq_id);
         $this->invalidateLink();
         if (!$this->is_entry($uval, $column, $precleaned)) {
-            throw(new Exception("No item '$uval' exists for column '$column' in ".$this->getTable()));
+          $debug = $this->is_entry($uval, $column, $precleaned, true);
+          $item = $debug["item"];
+          $field_name = $debug["column"];
+          throw(new Exception("No item '$item' exists for column '$field_name' in ".$this->getTable() . " (".$debug["query"].")"));
         }
 
         if (!empty($field_name)) {
