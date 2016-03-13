@@ -1854,7 +1854,7 @@ loadEditor = function(projectPreload) {
           fundingHtml = "<ul class=\"nav nav-tabs\" id=\"markdown-switcher-funding\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a href=\"#markdown-switcher-funding\">Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a href=\"#markdown-switcher-funding\">Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-funding\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"extended_funding_reach_goals\" hidden " + conditionalReadonly + ">" + project.extended_funding_reach_goals + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair\" id=\"preview-funding\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdFunding + "</script>\n</marked-element>";
           try {
             authorData = JSON.parse(project.author_data);
-            creation = new Date(authorData.entry_date);
+            creation = new Date(toInt(authorData.entry_date));
           } catch (error3) {
             authorData = new Object();
             creation = new Object();

@@ -182,7 +182,7 @@ loadEditor = (projectPreload) ->
           """
           try
             authorData = JSON.parse project.author_data
-            creation = new Date(authorData.entry_date)
+            creation = new Date(toInt authorData.entry_date)
           catch
             authorData = new Object()
             creation = new Object()
