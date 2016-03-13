@@ -23,7 +23,10 @@ loadEditor = (projectPreload) ->
     # Empty out the main view
     startAdminActionHelper()
     url = "#{uri.urlString}admin-page.html#edit:#{projectId}"
-    history.pushState null, "Editing ##{projectId}", url
+    state =
+      do: "edit"
+      prop: projectId
+    history.pushState state, "Editing ##{projectId}", url
     startLoad()
     window.projectParams = new Object()
     window.projectParams.pid = projectId
@@ -467,7 +470,10 @@ loadEditor = (projectPreload) ->
       # just based on authorship right now.
       ###
       url = "#{uri.urlString}admin-page.html#action:show-editable"
-      history.pushState null, "Viewing Editable Projects", url
+      state =
+        do: "action"
+        prop: "show-editable"
+      history.pushState state, "Viewing Editable Projects", url
       startLoad()
       args = "perform=list"
       $.get adminParams.apiTarget, args, "json"

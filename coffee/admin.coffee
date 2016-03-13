@@ -68,7 +68,10 @@ window.loadAdminUi = ->
 populateAdminActions = ->
   # Reset the URI
   url = "#{uri.urlString}admin-page.html"
-  history.pushState null, "Admin Home", url
+  state =
+    do: "home"
+    prop: null
+  history.pushState state, "Admin Home", url
   adminActions = """
         <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:add"></iron-icon>
@@ -173,7 +176,10 @@ alertBadProject = (projectId) ->
 
 loadCreateNewProject = ->
   url = "#{uri.urlString}admin-page.html#action:create-project"
-  history.pushState null, "Create New Project", url
+  state =
+    do: "action"
+    prop: "create-project"
+  history.pushState state, "Create New Project", url
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
@@ -1654,6 +1660,8 @@ checkInitLoad = (callback) ->
     # Load the input state
     if typeof callback is "string"
       fragment = callback
+    else if typeof callback is "object"
+      fragment = "#{callback.do}:#{callback.prop}"
     else
       fragment = uri.o.attr "fragment"
     unless isNull fragment
@@ -1672,6 +1680,8 @@ checkInitLoad = (callback) ->
               loadProjectBrowser()
             when "show-su-viewable"
               loadSUProjectBrowser()
+        when "home"
+          populateAdminActions()
     else if typeof callback is "function"
       callback()
   false
@@ -1681,6 +1691,7 @@ window.onpopstate = (event) ->
   # https://developer.mozilla.org/en-US/docs/Web/Events/popstate
   # https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate
   console.log "State popped", event, event.state
+  # checkInitLoad(event.state)
   false
 
 
