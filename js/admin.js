@@ -1778,7 +1778,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, fundingHtml, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
+        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, error5, fundingHtml, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -2060,9 +2060,18 @@ loadEditor = function(projectPreload) {
           });
           console.info("Getting carto data with id " + project.carto_id + " and options", createMapOptions);
           getProjectCartoData(project.carto_id, createMapOptions);
-          return window.dropperParams.dropzone.disable();
-        } catch (error4) {
-          e = error4;
+          try {
+            return window.dropperParams.dropzone.disable();
+          } catch (error4) {
+            e = error4;
+            return delay(1500, function() {
+              try {
+                return window.dropperParams.dropzone.disable();
+              } catch (undefined) {}
+            });
+          }
+        } catch (error5) {
+          e = error5;
           stopLoadError("There was an error loading your project");
           console.error("Unhandled exception loading project! " + e.message);
           console.warn(e.stack);
