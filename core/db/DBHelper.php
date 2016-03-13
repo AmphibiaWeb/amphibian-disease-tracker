@@ -237,9 +237,10 @@ class DBHelper
             if (!$dirty_entities && json_encode(json_decode($input,true)) != $input) {
                 $input = htmlentities(self::cleanInput($input));
                 $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
-            $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
-            $input = str_replace("'", '&#39;', $input);
+                $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
+                $input = str_replace("'", '&#39;', $input);
                 $input = str_replace('"', '&#34;', $input);
+                $input = preg_replace('/^([a-zA-Z]+)&#95;([a-zA-Z]+)$/', '$1_$2', $input);
             }
             $output = mysqli_real_escape_string($this->getLink(), $input);
         }
@@ -267,9 +268,10 @@ class DBHelper
             }
             $input = htmlentities(self::cleanInput($input, $strip_html));
             $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
-        $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
-        $input = str_replace("'", '&#39;', $input);
+            $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
+            $input = str_replace("'", '&#39;', $input);
             $input = str_replace('"', '&#34;', $input);
+            $input = preg_replace('/^([a-zA-Z]+)&#95;([a-zA-Z]+)$/', '$1_$2', $input); # Allow simple underscores
             $output = self::mysql_escape_mimic($input);
         }
 
@@ -510,8 +512,8 @@ class DBHelper
             return false;
         }
     }
-    
-    
+
+
 
     public function getQueryResults($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false) {
         $this->invalidateLink();
@@ -527,10 +529,10 @@ class DBHelper
         }
         return $response;
     }
-    
-    
-    
-    
+
+
+
+
     public function doQuery($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false)
     {
         /***
@@ -679,7 +681,6 @@ class DBHelper
             $values = array();
             foreach ($value as $key => $value) {
                 $key = $precleaned ? mysqli_real_escape_string($this->getLink(), $key) : $this->sanitize($key);
-                $key = str_replace('&#95;', '_', $key);
                 $values[$key] = $precleaned ? mysqli_real_escape_string($this->getLink(), $value) : $this->sanitize($value);
             }
         } else {

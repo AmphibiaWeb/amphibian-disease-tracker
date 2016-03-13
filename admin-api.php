@@ -212,7 +212,7 @@ function saveEntry($get)
 
   try
     {
-      $result = $db->updateEntry($data,$ref);
+      $result = $db->updateEntry($data, $ref);
 
     }
   catch(Exception $e)
