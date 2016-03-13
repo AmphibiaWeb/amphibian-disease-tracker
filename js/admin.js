@@ -2586,7 +2586,8 @@ saveEditorData = function() {
       return false;
     }
     stopLoad();
-    return toastStatusMessage("Save successful");
+    toastStatusMessage("Save successful");
+    return _adp.projectData = result.project;
   }).error(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
     return console.error(result, status);

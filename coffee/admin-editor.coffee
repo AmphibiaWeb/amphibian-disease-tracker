@@ -1012,8 +1012,9 @@ saveEditorData = ->
       console.error result.error
       return false
     stopLoad()
-    toastStatusMessage "Save successful"
+    toastStatusMessage "Save successful"    
     # Update the project data
+    _adp.projectData = result.project
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     console.error result, status
