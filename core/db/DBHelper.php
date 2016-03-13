@@ -648,7 +648,7 @@ class DBHelper
     }
         $column = key($unq_id);
         $uval = current($unq_id);
-
+        $this->invalidateLink();
         if (!$this->is_entry($uval, $column, $precleaned)) {
             throw(new Exception("No item '$uval' exists for column '$column' in ".$this->getTable()));
         }
