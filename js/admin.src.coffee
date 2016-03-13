@@ -1706,6 +1706,11 @@ $ ->
       selector: "[data-toggle='tooltip']"
   # The rest of the onload for the admin has been moved to the core.coffee file.
   checkFileVersion false, "js/admin.min.js"
+  $("paper-icon-button[icon='icons:dashboard']")
+  .removeAttr("data-href")
+  .unbind("click")
+  .click ->
+    populateAdminActions()
 
 ###
 # Split-out coffeescript file for adminstrative editor.

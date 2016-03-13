@@ -1733,7 +1733,10 @@ $(function() {
       selector: "[data-toggle='tooltip']"
     });
   });
-  return checkFileVersion(false, "js/admin.min.js");
+  checkFileVersion(false, "js/admin.min.js");
+  return $("paper-icon-button[icon='icons:dashboard']").removeAttr("data-href").unbind("click").click(function() {
+    return populateAdminActions();
+  });
 });
 
 
