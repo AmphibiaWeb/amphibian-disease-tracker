@@ -332,7 +332,7 @@ class DBHelper
                     return array(
                       'status' => false,
                       'query' => $query,
-                      'error' => 'false result'
+                      'error' => 'false result',
                       "item" => $item,
                       "column" => $field_name,
                     );
