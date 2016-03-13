@@ -1718,6 +1718,7 @@ checkInitLoad = function(callback) {
 
 window.onpopstate = function(event) {
   console.log("State popped", event, event.state);
+  checkInitLoad(event.state);
   return false;
 };
 

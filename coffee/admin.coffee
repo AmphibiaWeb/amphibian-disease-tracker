@@ -1691,7 +1691,7 @@ window.onpopstate = (event) ->
   # https://developer.mozilla.org/en-US/docs/Web/Events/popstate
   # https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate
   console.log "State popped", event, event.state
-  # checkInitLoad(event.state)
+  checkInitLoad(event.state)
   false
 
 
