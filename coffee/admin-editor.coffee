@@ -334,7 +334,7 @@ loadEditor = (projectPreload) ->
               <h4>Project funding status</h4>
                 #{fundingHtml}
                 <div class="row">
-                  <span class="pull-left" style="margin-top:1.75em;vertical-align:bottom">$</span><paper-input #{conditionalReadonly} class="project-param col-xs-11" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
+                  <span class="pull-left" style="margin-top:1.75em;vertical-align:bottom;padding-left:15px">$</span><paper-input #{conditionalReadonly} class="project-param col-xs-11" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
                 </div>
           </section>
           """
@@ -984,6 +984,7 @@ saveEditorData = ->
   ###
   # Actually do the file saving
   ###
+  startLoad()
   postData = _adp.projectData
   postData.access_data = _adp.projectData.access_data.raw
   # Alter this based on inputs
@@ -997,13 +998,18 @@ saveEditorData = ->
     authorObj[key] = $(el).attr("data-value") ? p$(el).value
   postData.author_data = JSON.stringify authorObj
   # Post it
-  toastStatusMessage "This is incomplete. Your data has NOT been saved"
+  console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.info "Save result: server said", result
+    unless result.status is true
+      error = result.human_error ? result.error ? "There was an error saving to the server"
+      stopLoadError "There was an error saving to the server"
+      bsAlert "<strong>Save Error:</strong> #{error}", "danger"
+    stopLoad()
+    toastStatusMessage "Save successful"
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     console.error result, status
-  console.log "Would send to server", postData
   false
