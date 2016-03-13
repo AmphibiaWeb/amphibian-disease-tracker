@@ -292,6 +292,7 @@ loadEditor = (projectPreload) ->
                   <paper-toggle-button id="replace-data-toggle" checked disabled>Replace Data</paper-toggle-button>
                   <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload data, archive current data and only have new data parsed"></span>
                 </div>
+                <p><strong>PLEASE NOTE UPLOADS ARE CURRENTLY DISABLED HERE PENDING DEBUGGING</strong></p>
                 <div id="uploader-container-section">
                 </div>
               </div>
@@ -446,6 +447,8 @@ loadEditor = (projectPreload) ->
           # Load more detailed data from CartoDB
           console.info "Getting carto data with id #{project.carto_id} and options", createMapOptions
           getProjectCartoData project.carto_id, createMapOptions
+          # TODO TEST AND FIX UPLOADS
+          window.dropperParams.dropzone.disable()
         catch e
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"
