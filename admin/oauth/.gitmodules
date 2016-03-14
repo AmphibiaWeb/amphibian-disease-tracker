@@ -1,6 +1,0 @@
-[submodule "modular/twitteroauth"]
-	path = modular/twitteroauth
-	url = https://github.com/abraham/twitteroauth.git
-[submodule "modular/facebook-php"]
-	path = modular/facebook-php
-	url = https://github.com/facebook/facebook-php-sdk.git

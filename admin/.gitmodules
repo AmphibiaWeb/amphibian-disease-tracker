@@ -1,3 +1,0 @@
-[submodule "oauth"]
-	path = oauth
-	url = https://github.com/tigerhawkvok/php-multioauth.git

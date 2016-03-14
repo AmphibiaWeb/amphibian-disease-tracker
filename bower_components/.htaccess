@@ -1,4 +1,0 @@
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "http://fiddle.jshell.net"
-    Header set Access-Control-Allow-Origin "https://fiddle.jshell.net"
-</IfModule>
