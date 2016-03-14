@@ -1,6 +1,8 @@
 AmphibianDisease.og
 ==========================
 
+[![Documentation Status](https://readthedocs.org/projects/amphibian-disease-tracker/badge/?version=latest)](http://amphibian-disease-tracker.readthedocs.org/en/latest/?badge=latest)
+
 Quick Links:
 
 - [Project Browser](https://amphibiandisease.org/project.php)
