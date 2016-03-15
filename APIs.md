@@ -1,12 +1,10 @@
-API Information
-================
-## General API information
+# General API information
 
 All responses are as `application/json`.
 
 Note that input is aggressively URL escaped. Depending on your use you may want to de-escape the text before use (especially raw JSON-as-text).
 
-### API errors
+## API errors
 
 If a given query produces an error, the `status` key will be `false`.
 
@@ -14,11 +12,11 @@ In addition, you will always have an `error` key with technical
 details. When appropriate, the server may provide a `human_error` key
 with a response that's more friendly to an end user.
 
-## API Authentication
+# API Authentication
 
 These parameters are optional for unauthenticated API access (in some cases, you may get additional results here), and mandatory for authenticated API access.
 
-### Acquiring API tokens
+## Acquiring API tokens
 
 If you don't already have a set of identifier tokens, you will need to acquire them.
 
@@ -53,7 +51,7 @@ Response:
 
 
 
-#### Aside: TOTP
+### Aside: TOTP
 >**Important Note**: If your user is configured to use Two-Factor authentication, you'll recieve a response like:
 >
 >```json
@@ -81,7 +79,7 @@ Response:
 > Only once you've done that, will you get a response as above.
 
 
-### Sending API tokens
+## Sending API tokens
 
 Assuming you're accessing the return in JavaScript and have named the variable `response`:
 
@@ -94,7 +92,7 @@ Assuming you're accessing the return in JavaScript and have named the variable `
 
 For any authenticated/psuedoauthenticated request, these parameters can be sent as extra parameters to validate a login session. The cookie key pairs may also be sent in the header of the POST, rather than these raw cookie values.
 
-## Unauthenticated APIs
+# Unauthenticated APIs
 
 API target: `https://amphibiandisease.org/api.php`  
 Method: `GET`/`POST`
@@ -143,7 +141,7 @@ Mandatory parameter: `action`
 
 
 
-## Authenticated APIs
+# Authenticated APIs
 
 API target: `https://amphibiandisease.org/admin-api.php`  
 Method: `POST`
@@ -161,103 +159,109 @@ Mandatory parameter: `perform`
 - `delete`
 
 - `get`:
-  > TODO DOC
-  >
-  > Response:  
-  >
-  >
-  > Sample Response:  
-  >
-  > ```json
-  >{
-  >  "execution_time": 6.0899257659912,
-  >  "project_id_raw": "ffa21641ba4266adabd59ee826a15eaa",
-  >  "project_id": "ffa21641ba4266adabd59ee826a15eaa",
-  >  "user": {
-  >    "is_author": true,
-  >    "has_view_permissions": true,
-  >    "has_edit_permissions": true,
-  >    "user": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
-  >  },
-  >  "project": {
-  >    "project_dir_identifier": "45c66a601877cadcb32caa4181c582b4",
-  >    "dataset_arks": "ark:\/21547\/AMe2::f70e11df52296545a7d61c184064f992.xlsx",
-  >    "project_obj_id": "ark:\/21547\/AMd2",
-  >    "extended_funding_reach_goals": "",
-  >    "more_analysis_funding_request": "0",
-  >    "public": true,
-  >    "carto_id": "{\"table\":\"t29c7b8ff37f83116c16efc7d1e70136b&#95;6d6d454828c05e8ceea03c99cc5f547e52fcb5fb\",\"raw&#95;data\":{\"hasDataFile\":true,\"fileName\":\"f70e11df52296545a7d61c184064f992.xlsx\",\"filePath\":\"helpers\/js-dragdrop\/uploaded\/45c66a601877cadcb32caa4181c582b4\/f70e11df52296545a7d61c184064f992.xlsx\"},\"bounding&#95;polygon\":[{\"lat\":37.86,\"lng\":-122.30000000000001},{\"lat\":37.87,\"lng\":-122.2894},{\"lat\":37.88,\"lng\":-122.281},{\"lat\":37.89,\"lng\":-122.27499999999998},{\"lat\":37.8865,\"lng\":-122.28499999999997},{\"lat\":37.88,\"lng\":-122.29500000000002},{\"lat\":37.86,\"lng\":-122.30000000000001}]}",
-  >    "publication": "",
-  >    "pi_lab": "mkoo",
-  >    "access_data": {
-  >      "composite": {
-  >        "tigerhawkvok@gmail.com": {
-  >          "user_id": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb",
-  >          "email": "tigerhawkvok@gmail.com"
-  >        }
-  >      },
-  >      "author": "tigerhawkvok@gmail.com",
-  >      "viewers_list": null,
-  >      "editors_list": {
-  >        "0": "tigerhawkvok@gmail.com"
-  >      },
-  >      "total": {
-  >        "0": "tigerhawkvok@gmail.com"
-  >      },
-  >      "viewers": null,
-  >      "editors": {
-  >        "0": {
-  >          "user_id": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb",
-  >          "email": "tigerhawkvok@gmail.com"
-  >        },
-  >      }
-  >    },
-  >    "author_data": "{\"name\":\"Philip Kahn\",\"contact_email\":\"tigerhawkvok@gmail.com\",\"affiliation\":\"Github\",\"lab\":\"mkoo\",\"diagnostic_lab\":\"CoffeeScript\",\"entry_date\":1457399089073}",
-  >    "author": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb",
-  >    "transect_file": "",
-  >    "radius": "2238",
-  >    "bounding_box_s": "37.86",
-  >    "bounding_box_w": "-122.3",
-  >    "bounding_box_e": "-122.275",
-  >    "bounding_box_n": "37.89",
-  >    "lng": "-122.28805466667",
-  >    "lat": "37.877788555556",
-  >    "sample_raw_data": "https:\/\/amphibiandisease.org\/helpers\/js-dragdrop\/uploaded\/45c66a601877cadcb32caa4181c582b4\/f70e11df52296545a7d61c184064f992.xlsx",
-  >    "locality": "Berkeley, CA, USA",
-  >    "sample_notes": "Testing different ARKs for project and datasets. Expedition ARK should be `ark:\/21547\/AMd2`",
-  >    "sample_field_numbers": "1,2,3,4,5,6,6,6,6",
-  >    "sample_catalog_numbers": "PLK1,PLK2,PLK3,PLK4,PLK5,PLK6,PLK7,PLK8,PLK9",
-  >    "sample_dispositions_used": "",
-  >    "sample_methods_used": "",
-  >    "sampling_years": "2015,2016",
-  >    "sampling_months": "February,January,November",
-  >    "sampled_collection_end": "1.45437e+12",
-  >    "sampled_collection_start": "1.4478e+12",
-  >    "sampled_species_data": "",
-  >    "sampled_clades": "Plethodontidae,Bufonidae",
-  >    "sampled_species": "Batrachoseps attenuatus,Anaxyrus fowleri,Batrachoseps major,Atelopus tricolor",
-  >    "includes_gymnophiona": false,
-  >    "includes_caudata": true,
-  >    "includes_anura": true,
-  >    "sample_method": "",
-  >    "disease_mortality": "5",
-  >    "disease_morbidity": "3",
-  >    "disease_no_confidence": "1",
-  >    "disease_negative": "5",
-  >    "disease_positive": "3",
-  >    "disease_samples": "9",
-  >    "disease_strain": "",
-  >    "disease": "Batrachochytridium dendrobatidus",
-  >    "reference_id": "",
-  >    "project_title": "test diff arks for project and datasets",
-  >    "project_id": "ffa21641ba4266adabd59ee826a15eaa",
-  >    "id": "39"
-  >  },
-  >  "human_error": null,
-  >  "error": "OK",
-  >  "status": true
-  >}
-  >```
+
+TODO DOC
+
+Response:  
+
+| Key | Detail                                       |
+|-----------|-----------------------------------------------------|
+| `project_id` | ID of the project |
+| `user`  | Permission details of the user making this request  |
+| `project`  | Actual project details  |
+
+Sample Response:  
+
+ ```json
+{
+  "execution_time": 6.0899257659912,
+  "project_id_raw": "ffa21641ba4266adabd59ee826a15eaa",
+  "project_id": "ffa21641ba4266adabd59ee826a15eaa",
+  "user": {
+    "is_author": true,
+    "has_view_permissions": true,
+    "has_edit_permissions": true,
+    "user": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb"
+  },
+  "project": {
+    "project_dir_identifier": "45c66a601877cadcb32caa4181c582b4",
+    "dataset_arks": "ark:\/21547\/AMe2::f70e11df52296545a7d61c184064f992.xlsx",
+    "project_obj_id": "ark:\/21547\/AMd2",
+    "extended_funding_reach_goals": "",
+    "more_analysis_funding_request": "0",
+    "public": true,
+    "carto_id": "{\"table\":\"t29c7b8ff37f83116c16efc7d1e70136b&#95;6d6d454828c05e8ceea03c99cc5f547e52fcb5fb\",\"raw&#95;data\":{\"hasDataFile\":true,\"fileName\":\"f70e11df52296545a7d61c184064f992.xlsx\",\"filePath\":\"helpers\/js-dragdrop\/uploaded\/45c66a601877cadcb32caa4181c582b4\/f70e11df52296545a7d61c184064f992.xlsx\"},\"bounding&#95;polygon\":[{\"lat\":37.86,\"lng\":-122.30000000000001},{\"lat\":37.87,\"lng\":-122.2894},{\"lat\":37.88,\"lng\":-122.281},{\"lat\":37.89,\"lng\":-122.27499999999998},{\"lat\":37.8865,\"lng\":-122.28499999999997},{\"lat\":37.88,\"lng\":-122.29500000000002},{\"lat\":37.86,\"lng\":-122.30000000000001}]}",
+    "publication": "",
+    "pi_lab": "mkoo",
+    "access_data": {
+      "composite": {
+        "tigerhawkvok@gmail.com": {
+          "user_id": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb",
+          "email": "tigerhawkvok@gmail.com"
+        }
+      },
+      "author": "tigerhawkvok@gmail.com",
+      "viewers_list": null,
+      "editors_list": {
+        "0": "tigerhawkvok@gmail.com"
+      },
+      "total": {
+        "0": "tigerhawkvok@gmail.com"
+      },
+      "viewers": null,
+      "editors": {
+        "0": {
+          "user_id": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb",
+          "email": "tigerhawkvok@gmail.com"
+        },
+      }
+    },
+    "author_data": "{\"name\":\"Philip Kahn\",\"contact_email\":\"tigerhawkvok@gmail.com\",\"affiliation\":\"Github\",\"lab\":\"mkoo\",\"diagnostic_lab\":\"CoffeeScript\",\"entry_date\":1457399089073}",
+    "author": "6d6d454828c05e8ceea03c99cc5f547e52fcb5fb",
+    "transect_file": "",
+    "radius": "2238",
+    "bounding_box_s": "37.86",
+    "bounding_box_w": "-122.3",
+    "bounding_box_e": "-122.275",
+    "bounding_box_n": "37.89",
+    "lng": "-122.28805466667",
+    "lat": "37.877788555556",
+    "sample_raw_data": "https:\/\/amphibiandisease.org\/helpers\/js-dragdrop\/uploaded\/45c66a601877cadcb32caa4181c582b4\/f70e11df52296545a7d61c184064f992.xlsx",
+    "locality": "Berkeley, CA, USA",
+    "sample_notes": "Testing different ARKs for project and datasets. Expedition ARK should be `ark:\/21547\/AMd2`",
+    "sample_field_numbers": "1,2,3,4,5,6,6,6,6",
+    "sample_catalog_numbers": "PLK1,PLK2,PLK3,PLK4,PLK5,PLK6,PLK7,PLK8,PLK9",
+    "sample_dispositions_used": "",
+    "sample_methods_used": "",
+    "sampling_years": "2015,2016",
+    "sampling_months": "February,January,November",
+    "sampled_collection_end": "1.45437e+12",
+    "sampled_collection_start": "1.4478e+12",
+    "sampled_species_data": "",
+    "sampled_clades": "Plethodontidae,Bufonidae",
+    "sampled_species": "Batrachoseps attenuatus,Anaxyrus fowleri,Batrachoseps major,Atelopus tricolor",
+    "includes_gymnophiona": false,
+    "includes_caudata": true,
+    "includes_anura": true,
+    "sample_method": "",
+    "disease_mortality": "5",
+    "disease_morbidity": "3",
+    "disease_no_confidence": "1",
+    "disease_negative": "5",
+    "disease_positive": "3",
+    "disease_samples": "9",
+    "disease_strain": "",
+    "disease": "Batrachochytridium dendrobatidus",
+    "reference_id": "",
+    "project_title": "test diff arks for project and datasets",
+    "project_id": "ffa21641ba4266adabd59ee826a15eaa",
+    "id": "39"
+  },
+  "human_error": null,
+  "error": "OK",
+  "status": true
+}
+```
 
 - `mint_data`
 
