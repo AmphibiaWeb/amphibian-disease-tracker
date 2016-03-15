@@ -423,6 +423,6 @@ Sample Response:
 ## Validate Project Data
 `validate`
 
-# Get Project Access Lists
+## Get Project Access Lists
 `check_access`
 
