@@ -1,6 +1,6 @@
 # Data Storage
 
-You can view  a [CSON](https://github.com/bevry/cson) representation of the data storage of the system at [`./meta/data-storage.coffee`](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee)
+You can view  a [CSON](https://github.com/bevry/cson) representation of the data storage of the system at [`./meta/data-storage.coffee` here](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee)
 
 The file `DB_CONFIG.php` should have all the columns as represented in the CSON file above.
 
