@@ -1,10 +1,12 @@
-# General API information
+API Information
+================
+## General API information
 
 All responses are as `application/json`.
 
 Note that input is aggressively URL escaped. Depending on your use you may want to de-escape the text before use (especially raw JSON-as-text).
 
-## API errors
+### API errors
 
 If a given query produces an error, the `status` key will be `false`.
 
@@ -12,13 +14,13 @@ In addition, you will always have an `error` key with technical
 details. When appropriate, the server may provide a `human_error` key
 with a response that's more friendly to an end user.
 
-# API Authentication
+## API Authentication
 
 These parameters are optional for unauthenticated API access (in some cases, you may get additional results here), and mandatory for authenticated API access.
 
-## Acquiring API tokens
+### Acquiring API tokens
 
-### Test nested subheader
+#### Test nested subheader
 
 If you don't already have a set of identifier tokens, you will need to acquire them.
 
@@ -32,7 +34,7 @@ Parameters:
 > `password`: The password of the user  
 
 
-**Aside: TOTP**
+#### Aside: TOTP
 >**Important Note**: If your user is configured to use Two-Factor authentication, you'll recieve a response like:
 >
 >```json
@@ -76,7 +78,7 @@ Response:
 > `raw_uid`: The data from `response.link`  
 > `expires`: The expires parameter on the cookies.  
 
-## Sending API tokens
+### Sending API tokens
 
 | Parameter | Value Meaning                                       | Key from Acquired Tokens |
 |-----------|-----------------------------------------------------|--------------------------|
@@ -87,7 +89,7 @@ Response:
 
 For any authenticated/psuedoauthenticated request, these parameters can be sent as extra parameters to validate a login session. The cookie key pairs may also be sent in the header of the POST, rather than these raw cookie values.
 
-# Unauthenticated APIs
+## Unauthenticated APIs
 
 API target: `https://amphibiandisease.org/api.php`  
 Method: `GET`/`POST`
@@ -136,7 +138,7 @@ Mandatory parameter: `action`
 
 
 
-# Authenticated APIs
+## Authenticated APIs
 
 API target: `https://amphibiandisease.org/admin-api.php`  
 Method: `POST`
