@@ -27,9 +27,12 @@ Method: `POST`
 
 Parameters:
 
-> `action`: `login`  
-> `username`: The email of the user  
-> `password`: The password of the user  
+
+| Parameter | Value |
+|-----------|-------|
+| `action` | `login` |
+| `username` | The email of the user |
+| `password` | The password of the user |
 
 
 Response:
@@ -112,19 +115,28 @@ Method: `GET`/`POST`
 
 Mandatory parameter: `action`
 
-- `fetch`:
-  > Queries raw data from the total dataset. Psuedoauthenticated.
-  >
-  > Be aware that access may be restricted based on your login status. If you're not logged in, only public resources are queryable.  
-  >
-  > Parameters:  
-  > `sql_query`: An SQL query against the raw data. When constructing your query, you'll want to use the `table` value from the JSON in the `carto_id` key. To obtain this the first time, you'll want to make an authenticated API hit with `perform=get` ([see below](#authenticated-apis))
-  >
-  > Response:  
-  > `status`: boolean   
-  > `sql_statements`: Array of queried statements  
-  > `post_response`: Array of raw responses from CartoDB  
-  > `parsed_responses`: Formatted responses from CartoDB  
+## Querying project samples
+
+
+Queries raw data from the total dataset. Psuedoauthenticated.
+
+Be aware that access may be restricted based on your login status. If you're not logged in, only public resources are queryable.  Attempting to access a non-public project will return an `UNAUTHORIZED` error.
+
+| Parameter | Value |
+|-----------|-------|
+| `action` | `fetch` |
+| `sql_query` | An SQL query against the raw data. When constructing your query, you'll want to use the `table` value from the JSON in the `carto_id` key. To obtain this the first time, you'll want to make an authenticated API hit with `perform=get` ([see below](#authenticated-apis)) |
+
+Response:
+
+
+| Key | Detail                                       |
+|-----|----------------------------------------------|
+| `status` | `true` or `false` (boolean) |
+| `sql_statements`  | Array of queried statements  |
+| `post_response`  | Array of raw responses from CartoDB |
+| `parsed_responses`  | Formatted responses from CartoDB  |
+
 
 - `validate`:
   > Validates a taxon against Amphibiaweb and returns canonical information.
