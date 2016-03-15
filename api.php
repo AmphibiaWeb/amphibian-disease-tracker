@@ -162,7 +162,6 @@ function searchUsers($get) {
     );
     $cols = array("username", "name", "dblink");
     $response["status"] = true;
-    $response["cols"] = $cols;
     $result = $udb->getQueryResults($search, $cols, "OR", true, true);
     foreach($result as $k=>$entry) {
         $clean = array(
