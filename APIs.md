@@ -468,20 +468,28 @@ Sample Response:
 ```
 
 ## Validate Project Data
-`validate`
+
+Validate the project data against [the FIMS system](https://fims.readthedocs.org/en/latest/)
+
+Please note the source file needs to exist locally on the host server.
 
 Parameters: 
 
 | Parameter | Value  |
 |-----------|--------|
 | `perform` | `validate` |
+| `datasrc` | Server relative path to the file to be validated |
+| `project` | Project ID of project with existing BiSciCol expedition (has an ARK) |
 
 Response:  
 
 | Key      | Detail                      |
 |----------|-----------------------------|
 | `status` | `true` or `false` (boolean) |
-
+| `validate_status` | `true` or `false` (boolean) |
+| `responses` | Object of raw response data. Most important fields here are `validate_response` and `validate_has_error` |
+| `post_params` | Details on what was sent to FIMS |
+| `data` | Details on the datafile sent to FIMS | 
 
 
 ## Get Project Access Lists
