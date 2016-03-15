@@ -154,7 +154,7 @@ Parameters:
 |-----------|-------|
 | `action` | `validate` |
 | `genus` |  Genus to validate. Case-insensitive. |
-| `species` | Species to validate. If you only want to check for a genus, the value 'sp.' may be used here. |
+| `species` | Species to validate. If you only want to check for a genus, the string `sp.` may be used here. |
 | `subspecies` | **Optional:** Reserved for future use; currently not tracked by AmphibiaWeb. |
 
 Response:  
@@ -254,9 +254,14 @@ Mandatory parameter: `perform`
 
 ## Get project details
 
-`perform=get`:
+Get the details of a project
 
-TODO DOC
+Parameters:  
+
+| Parameter | Value |
+|-----------|-------|
+| `perform` | `get` |
+| `project_id` | The ID string of the project |
 
 Response:  
 
@@ -265,6 +270,9 @@ Response:
 | `project_id` | ID of the project |
 | `user`  | Permission details of the user making this request  |
 | `project`  | Actual project details  |
+
+
+Please note that if you're not authorized to view the project, you'll recieve an `ACCESS_AUTHORIZATION_FAILED` error.
 
 Sample Response:  
 
@@ -354,7 +362,7 @@ Sample Response:
     "id": "39"
   },
   "human_error": null,
-  "error": "OK",
+  "error": null,
   "status": true
 }
 ```
