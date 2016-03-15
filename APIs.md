@@ -4,6 +4,8 @@ All responses are as `application/json`.
 
 Note that input is aggressively URL escaped. Depending on your use you may want to de-escape the text before use (especially raw JSON-as-text).
 
+[This Github Gist](https://gist.github.com/tigerhawkvok/285b8631ed6ebef4446d) has CoffeeScript and JavaScript code to help, or [this PHP block](https://github.com/tigerhawkvok/php-core/blob/070cd80b9c5ae5526be87ae41abc0d047e5e948a/core.php#L349-L369) as a PHP helper.
+
 ## API errors
 
 If a given query produces an error, the `status` key will be `false`.
