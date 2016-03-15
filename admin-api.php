@@ -128,7 +128,7 @@ if($as_include !== true) {
     case "validate":
       //$data = $_REQUEST["data"];
         $datasrc = $_REQUEST["datasrc"];
-        $link = $_REQUEST["link"];
+        $link = isset($_REQUEST["link"]) ? $_REQUEST["link"] : $_REQUEST["project"];
         $cookies = $_REQUEST["auth"];
         $continue = empty($cookies) ? false : true;
         returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
