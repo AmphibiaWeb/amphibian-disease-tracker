@@ -294,8 +294,8 @@ Mandatory parameter: `perform`
 
 Parameters: 
 
-| Parameter | Value |
-|-----------|-------|
+| Parameter | Value  |
+|-----------|--------|
 | `perform` | `list` |
 
 Response:
@@ -310,13 +310,46 @@ Response:
 
 
 ## Create a new project
-`new`:
+
+Parameters: 
+
+| Parameter | Value |
+|-----------|-------|
+| `perform` | `new` |
+
+Response:  
+
+| Key      | Detail                      |
+|----------|-----------------------------|
+| `status` | `true` or `false` (boolean) |
 
 ## Save changes to a project
-`save`:
+
+Parameters: 
+
+| Parameter | Value  |
+|-----------|--------|
+| `perform` | `save` |
+
+Response:  
+
+| Key      | Detail                      |
+|----------|-----------------------------|
+| `status` | `true` or `false` (boolean) |
 
 ## Delete a project
-`delete`:
+
+Parameters: 
+
+| Parameter | Value    |
+|-----------|----------|
+| `perform` | `delete` |
+
+Response:  
+
+| Key      | Detail                      |
+|----------|-----------------------------|
+| `status` | `true` or `false` (boolean) |
 
 ## Get project details
 
@@ -437,6 +470,49 @@ Sample Response:
 ## Validate Project Data
 `validate`
 
+Parameters: 
+
+| Parameter | Value  |
+|-----------|--------|
+| `perform` | `validate` |
+
+Response:  
+
+| Key      | Detail                      |
+|----------|-----------------------------|
+| `status` | `true` or `false` (boolean) |
+
+
+
 ## Get Project Access Lists
-`check_access`
+
+Parameters: 
+
+| Parameter | Value  |
+|-----------|--------|
+| `perform` | `check_access` |
+| `project` | The project ID |
+
+Response:  
+
+| Key      | Detail                      |
+|----------|-----------------------------|
+| `status` | `true` or `false` (boolean) reflects your ability to view the project |
+| `project`| The project ID you looked up |
+| `detailed_authorization` | The full authorization lists |
+| `details` | If you're authorized to view the project, details about the project as per `perform=get` above. Otherwise, this key will not be present. |
+
+## Edit Project Access Lists
+
+Parameters: 
+
+| Parameter | Value  |
+|-----------|--------|
+| `perform` | `edit_access` |
+
+Response:  
+
+| Key      | Detail                      |
+|----------|-----------------------------|
+| `status` | `true` or `false` (boolean) |
 
