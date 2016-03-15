@@ -39,20 +39,23 @@ Response:
 
 *Please note that a "JSON string" is **not** an object, below. It is instead a string representing JSON that will have to be `json_decode()`d (PHP) or `JSON.parse()`d (JavaScript).*
 
-> `status`: boolean  
-> `user`: JSON string of `{'COOKIE_NAME':'USER_EMAIL'}`.
-> `auth`: JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}`.
-> `secret`: JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}`.  
-> `link`: JSON string of `{'COOKIE_NAME':'USER_DB_UNQ_ID'}`.
-> `pic`: JSON string of `{'COOKIE_NAME':'USER_PICTURE_PATH'}`.
-> `name`: JSON string of `{'COOKIE_NAME':'USER_FIRST_NAME'}`.
-> `full_name`: JSON string of `{'COOKIE_NAME':'USER_FULL_NAME'}`.  
-> `js`: A JavaScript function to evaluate using [js-cookie](https://github.com/js-cookie/js-cookie/tree/v1.5.1) to set the cookies in-browser.  
-> `ip_given`: The IP from which these cookies are valid. Changing IP addresses will invalidate the cookies.  
-> `raw_auth`: The data from `response.auth`  
-> `raw_secret`: The data from `response.secret`  
-> `raw_uid`: The data from `response.link`  
-> `expires`: The expires parameter on the cookies.  
+
+| Key | Detail                                       |
+|-----|----------------------------------------------|
+| `status` | `true` or `false` (boolean) |
+| `user` | JSON string of `{'COOKIE_NAME':'USER_EMAIL'}` |
+| `auth`: JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}`.|
+| `secret` | JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}`.  |
+| `link` | JSON string of `{'COOKIE_NAME':'USER_DB_UNQ_ID'}`.|
+| `pic` | JSON string of `{'COOKIE_NAME':'USER_PICTURE_PATH'}`.|
+| `name` | JSON string of `{'COOKIE_NAME':'USER_FIRST_NAME'}`.|
+| `full_name` | JSON string of `{'COOKIE_NAME':'USER_FULL_NAME'}`.  |
+| `js` | A JavaScript function to evaluate using [js-cookie](https://github.com/js-cookie/js-cookie/tree/v1.5.1) to set the cookies in-browser.  |
+| `ip_given` | The IP from which these cookies are valid. Changing IP addresses will invalidate the cookies.  |
+| `raw_auth` | The data from `response.auth`  |
+| `raw_secret` | The data from `response.secret`  |
+| `raw_uid` | The data from `response.link`  |
+| `expires` | The expires parameter on the cookies.  |
 
 
 
@@ -75,6 +78,7 @@ Response:
 Which you can test for by checking
 
 ```coffee
+# CoffeeScript
 $.post endpointUrl, args, "json"
 .done (response) ->
   if response.status is false and response.totp is true
@@ -118,7 +122,7 @@ Mandatory parameter: `action`
 ## Querying project samples
 
 
-Queries raw data from the total dataset. Psuedoauthenticated.
+Queries raw data from the total dataset. **Psuedoauthenticated**.
 
 Be aware that access may be restricted based on your login status. If you're not logged in, only public resources are queryable.  Attempting to access a non-public project will return an `UNAUTHORIZED` error.
 
@@ -138,23 +142,82 @@ Response:
 | `parsed_responses`  | Formatted responses from CartoDB  |
 
 
-- `validate`:
-  > Validates a taxon against Amphibiaweb and returns canonical information.
-  >
-  > The taxonomy returned may be different from the one provided if AmphibiaWeb views it as a synonym. Synonyms may also include a species gender change, which you can monitor via the notice `FUZZY_SPECIES_MATCH`.
-  >
-  > Parameters:  
-  > (req) `genus`: Genus to validate. Case-insensitive.  
-  > (req) `species`: Species to validate. If you only want to check for a genus, the value 'sp.' may be used here.  
-  > `subspecies`: Reserved for future use; currently not tracked by AmphibiaWeb.  
-  >
-  > Response:  
-  > `status`: boolean  
-  > `aweb_list_age`: Current age of the taxonomy list being validated against  
-  > `aweb_list_max_age`: Maximum age of the AmphibiaWeb taxonomy used, in seconds.  
-  > `notices`: Array. List of non-fatal notices. Includes notices if taxonomy was changed.  
-  > `original_taxon`: The provided taxon, if changed. If unchanged, this field is absent.  
-  > `validated_taxon`: Object. The canonical taxon information  
+## Validating / Updating Taxa
+
+Validates a taxon against Amphibiaweb and returns canonical information.
+
+The taxonomy returned may be different from the one provided if AmphibiaWeb views it as a synonym. Synonyms may also include a species gender change, which you can monitor via the `notices` response key for `FUZZY_SPECIES_MATCH`.
+
+Parameters:  
+
+| Parameter | Value |
+|-----------|-------|
+| `action` | `validate` |
+| `genus` |  Genus to validate. Case-insensitive. |
+| `species` | Species to validate. If you only want to check for a genus, the value 'sp.' may be used here. |
+| `subspecies` | **Optional:** Reserved for future use; currently not tracked by AmphibiaWeb. |
+
+Response:  
+
+| Key | Detail                                       |
+|-----|----------------------------------------------|
+| `status` | `true` or `false` (boolean) |
+| `aweb_list_age` | Current age of the taxonomy list being validated against  |
+| `aweb_list_max_age` | Maximum age of the AmphibiaWeb taxonomy used, in seconds.  |
+| `notices`: Array. List of non-fatal notices. Includes notices if taxonomy was changed.  |
+| `original_taxon` | The provided taxon, if changed. If unchanged, this field is absent.  |
+| `validated_taxon` | Object. The canonical taxon information |
+
+Please note that generic names are not capitalized. It is assumed that this will be taken care of presentationally when parsed.
+
+Sample response: (query: `https://amphibiandisease.org/api.php?action=validate&genus=bufo&species=boreas` )
+
+```json
+{
+  "execution_time": 173.39897155762,
+  "validated_taxon": {
+    "taxon_notes_public": "",
+    "uri_or_guid": "http:\/\/amphibiaweb.org\/species\/122",
+    "aweb_uid": "122",
+    "intro_isocc": "",
+    "isocc": {
+      "2": "MX",
+      "1": "CA",
+      "0": "US"
+    },
+    "iucn": "Near Threatened (NT)",
+    "itis_names": {
+      "1": "Bufo politus",
+      "0": "Bufo boreas"
+    },
+    "synonymies": "",
+    "gaa_name": "Anaxyrus boreas",
+    "common_name": {
+      "2": "California Toad (<i>B. b. halophilus<\/i>)",
+      "1": "Boreal Toad (<i>B. b. boreas<\/i>)",
+      "0": "Western Toad"
+    },
+    "species": "boreas",
+    "subgenus": "",
+    "genus": "Anaxyrus",
+    "subfamily": "",
+    "family": "Bufonidae",
+    "order": "Anura"
+  },
+  "original_taxon": "bufo boreas",
+  "aweb_list_max_age": 86400,
+  "aweb_list_age": 13,
+  "notices": {
+    "0": "Your entry 'bufo boreas' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon."
+  },
+  "args_provided": {
+    "species": "boreas",
+    "genus": "bufo",
+    "action": "validate"
+  },
+  "status": true
+}
+```
 
 - `search_project`:
 
