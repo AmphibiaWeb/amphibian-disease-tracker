@@ -150,15 +150,17 @@ Method: `POST`
 
 Mandatory parameter: `perform`
 
-- `list`
+`list`:
 
-- `new`
+`new`:
 
-- `save`
+`save`:
 
-- `delete`
+`delete`:
 
-- `get`:
+## Get project details
+
+`perform=get`:
 
 TODO DOC
 
@@ -172,7 +174,7 @@ Response:
 
 Sample Response:  
 
- ```json
+```json
 {
   "execution_time": 6.0899257659912,
   "project_id_raw": "ffa21641ba4266adabd59ee826a15eaa",
