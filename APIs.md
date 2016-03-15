@@ -228,19 +228,33 @@ Sample response:
 ```
 
 ## Find a project
-`search_projects`:
+
+Search for a project based on criteria. This is the back-end that drives the project search on [the Project Browser page](https://amphibiandisease.org/project.php). 
 
 Parameters:  
 
 | Parameter | Value |
 |-----------|-------|
 | `action` | `search_projects` |
+| `q` | The query value to search against |
+| `cols` | **Optional:** The columns to search against, as comma-separated values. Defaults to `project_id,project_title`. |
+
+In the project browser, the radio buttons map as follows:
+
+- Project Names & IDs: `project_id,project_title`
+- PIs, Labs, Creators, Affiliation: `author_data`
+- Project Taxa: `sampled_species,sampled_clades`
+
+If any column is specified that does not exist, the defaults will be used (even if the rest are valid).
 
 Response:  
 
-| Key | Detail                                       |
-|-----|----------------------------------------------|
+| Key      | Detail                      |
+|----------|-----------------------------|
 | `status` | `true` or `false` (boolean) |
+| `cols` | Array. List of columns searched. |
+| `result` | Array. Each item has `project_id`, `project_title`, and `public` as keys. |
+| `count` | Number of results |
 
 
 ## Find a user
