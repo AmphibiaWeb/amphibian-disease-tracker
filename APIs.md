@@ -164,7 +164,7 @@ Response:
 | `status` | `true` or `false` (boolean) |
 | `aweb_list_age` | Current age of the taxonomy list being validated against  |
 | `aweb_list_max_age` | Maximum age of the AmphibiaWeb taxonomy used, in seconds.  |
-| `notices`: Array. List of non-fatal notices. Includes notices if taxonomy was changed.  |
+| `notices` | Array. List of non-fatal notices. Includes notices if taxonomy was changed.  |
 | `original_taxon` | The provided taxon, if changed. If unchanged, this field is absent.  |
 | `validated_taxon` | Object. The canonical taxon information. Most relevant keys would be `genus` and `species`. |
 
