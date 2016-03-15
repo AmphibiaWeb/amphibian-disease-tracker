@@ -170,7 +170,9 @@ Response:
 
 Please note that generic names are not capitalized. It is assumed that this will be taken care of presentationally when parsed.
 
-Sample response: (query: `https://amphibiandisease.org/api.php?action=validate&genus=bufo&species=boreas` )
+Sample response: 
+
+*query: `https://amphibiandisease.org/api.php?action=validate&genus=bufo&species=boreas`*
 
 ```json
 {
