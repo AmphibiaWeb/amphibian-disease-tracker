@@ -559,7 +559,6 @@ function listProjects($unauthenticated = true) {
         "projects" => $authorizedProjects,
         "public_projects" => $publicProjects,
         "authored_projects" => $authoredProjects,
-        "table" => $db->getTable(),
         "check_authentication" => !$unauthenticated,
     );
 
@@ -709,7 +708,7 @@ function readProjectData($get, $precleaned = false, $debug = false) {
     # Base response
     $response = array(
         "status" => false,
-        "error" => "Unprocessed read",
+        "error" => "UNPROCESSED_READ",
         "human_error" => "Server error handling project read",
         "project" => array(
             "project_id" => $project,
@@ -810,7 +809,7 @@ function readProjectData($get, $precleaned = false, $debug = false) {
     # Do we want to flag if the current user is a superuser?
     # Return it!
     $response["status"] = true;
-    $response["error"] = "OK";
+    $response["error"] = null;
     $response["human_error"] = null;
     $response["project_id"] = $project;
     $response["project_id_raw"] = $get["project"];

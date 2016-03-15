@@ -92,10 +92,12 @@ switch ($do) {
   case "is_human":
       validateCaptcha($_REQUEST);
       break;
+  case "search_projects":
   case "search_project":
       searchProject($_REQUEST);
       break;
   case "search_users":
+  case "search_user":
     searchUsers($_REQUEST);
     break;
   default:
@@ -132,6 +134,7 @@ function searchProject($get) {
             $colList = explode(",", $get["cols"]);
             $search = array();
             foreach($colList as $col) {
+              $col = trim($col);
                 $search[$col] = $q;
             }
         } else {
@@ -142,6 +145,9 @@ function searchProject($get) {
     $response["status"] = true;
     $response["cols"] = $cols;
     $response["result"] = $db->getQueryResults($search, $cols, "OR", true, true);
+    foreach($response["result"] as $k=>$projectResult) {
+      $response["result"][$k]["public"] = boolstr($projectResult["public"]);
+    }
     returnAjax($response);
 }
 
@@ -162,7 +168,6 @@ function searchUsers($get) {
     );
     $cols = array("username", "name", "dblink");
     $response["status"] = true;
-    $response["cols"] = $cols;
     $result = $udb->getQueryResults($search, $cols, "OR", true, true);
     foreach($result as $k=>$entry) {
         $clean = array(
