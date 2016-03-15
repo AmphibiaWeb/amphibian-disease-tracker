@@ -1,4 +1,4 @@
-AmphibianDisease.og
+AmphibianDisease.org
 ==========================
 ## Quick Links
 
