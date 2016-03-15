@@ -244,6 +244,26 @@ Method: `POST`
 
 Mandatory parameter: `perform`
 
+## Listing accessible projects
+
+**Psuedoauthenticated**. If this is hit without authentication, a list of public projects will be returned.
+
+Parameters: 
+
+| Parameter | Value |
+|-----------|-------|
+| `perform` | `list` |
+
+Response:
+
+| Key | Detail                                       |
+|-----|----------------------------------------------|
+| `status` | `true` or `false` (boolean) |
+| `projects` | Array of projects, as `projectId: "projectName"` key:value pairs. |
+| `public_projects` | Array of project IDs for public projects in this list |
+| `authored_projects` | Array of project IDs for projects authored by the checking user |
+| `check_authentication` | `true` or `false` if the authentication status of the user was checked |
+
 `list`:
 
 `new`:
@@ -267,6 +287,7 @@ Response:
 
 | Key | Detail                                       |
 |-----------|-----------------------------------------------------|
+| `status` | `true` or `false` (boolean) |
 | `project_id` | ID of the project |
 | `user`  | Permission details of the user making this request  |
 | `project`  | Actual project details. Detailed key information is available [on Github in the  `./meta/data-storage.coffee` file, with comments](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee). However, note that some columns will contain parsed information, rather than raw database information, such as `access_data`.  |
