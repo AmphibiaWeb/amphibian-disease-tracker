@@ -148,6 +148,7 @@ function searchProject($get) {
     foreach($response["result"] as $k=>$projectResult) {
       $response["result"][$k]["public"] = boolstr($projectResult["public"]);
     }
+    $response["count"] = sizeof($response["result"]);
     returnAjax($response);
 }
 
