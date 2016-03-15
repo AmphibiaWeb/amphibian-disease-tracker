@@ -134,6 +134,7 @@ function searchProject($get) {
             $colList = explode(",", $get["cols"]);
             $search = array();
             foreach($colList as $col) {
+              $col = trim($col);
                 $search[$col] = $q;
             }
         } else {
@@ -144,6 +145,9 @@ function searchProject($get) {
     $response["status"] = true;
     $response["cols"] = $cols;
     $response["result"] = $db->getQueryResults($search, $cols, "OR", true, true);
+    foreach($response["result"] as $k=>$projectResult) {
+      $response["result"][$k]["public"] = boolstr($projectResult["public"]);
+    }
     returnAjax($response);
 }
 
