@@ -360,7 +360,7 @@ Parameters:
 | Parameter | Value |
 |-----------|-------|
 | `perform` | `get` |
-| `project_id` | The ID string of the project |
+| `project` | The ID string of the project |
 
 Response:  
 
