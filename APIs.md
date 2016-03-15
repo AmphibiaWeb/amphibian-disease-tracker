@@ -269,7 +269,7 @@ Response:
 |-----------|-----------------------------------------------------|
 | `project_id` | ID of the project |
 | `user`  | Permission details of the user making this request  |
-| `project`  | Actual project details. Detailed key information is available [on Github in the  `./meta/data-storage.coffee` file, with comments](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee)  |
+| `project`  | Actual project details. Detailed key information is available [on Github in the  `./meta/data-storage.coffee` file, with comments](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee). However, note that some columns will contain parsed information, rather than raw database information, such as `access_data`.  |
 
 
 Please note that if you're not authorized to view the project, you'll recieve an `ACCESS_AUTHORIZATION_FAILED` error.
