@@ -85,6 +85,7 @@ if($as_include !== true) {
     case "get":
         returnAjax(readProjectData($_REQUEST));
         break;
+    case "edit_access":
     case "editaccess":
         $link = $_REQUEST["project"];
         $deltas = smart_decode64($_REQUEST["deltas"]);
