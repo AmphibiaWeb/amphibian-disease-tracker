@@ -44,7 +44,7 @@ Response:
 |-----|----------------------------------------------|
 | `status` | `true` or `false` (boolean) |
 | `user` | JSON string of `{'COOKIE_NAME':'USER_EMAIL'}` |
-| `auth`: JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}`.|
+| `auth` | JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}`.|
 | `secret` | JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}`.  |
 | `link` | JSON string of `{'COOKIE_NAME':'USER_DB_UNQ_ID'}`.|
 | `pic` | JSON string of `{'COOKIE_NAME':'USER_PICTURE_PATH'}`.|
