@@ -20,8 +20,6 @@ These parameters are optional for unauthenticated API access (in some cases, you
 
 ### Acquiring API tokens
 
-#### Test nested subheader
-
 If you don't already have a set of identifier tokens, you will need to acquire them.
 
 API target: `https://amphibiandisease.org/api.php`  
@@ -32,6 +30,27 @@ Parameters:
 > `action`: `login`  
 > `username`: The email of the user  
 > `password`: The password of the user  
+
+
+Response:
+
+*Please note that a "JSON string" is **not** an object, below. It is instead a string representing JSON that will have to be `json_decode()`d (PHP) or `JSON.parse()`d (JavaScript).*
+
+> `status`: boolean  
+> `user`: JSON string of `{'COOKIE_NAME':'USER_EMAIL'}`.
+> `auth`: JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}`.
+> `secret`: JSON string of `{'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}`.  
+> `link`: JSON string of `{'COOKIE_NAME':'USER_DB_UNQ_ID'}`.
+> `pic`: JSON string of `{'COOKIE_NAME':'USER_PICTURE_PATH'}`.
+> `name`: JSON string of `{'COOKIE_NAME':'USER_FIRST_NAME'}`.
+> `full_name`: JSON string of `{'COOKIE_NAME':'USER_FULL_NAME'}`.  
+> `js`: A JavaScript function to evaluate using [js-cookie](https://github.com/js-cookie/js-cookie/tree/v1.5.1) to set the cookies in-browser.  
+> `ip_given`: The IP from which these cookies are valid. Changing IP addresses will invalidate the cookies.  
+> `raw_auth`: The data from `response.auth`  
+> `raw_secret`: The data from `response.secret`  
+> `raw_uid`: The data from `response.link`  
+> `expires`: The expires parameter on the cookies.  
+
 
 
 #### Aside: TOTP
@@ -58,27 +77,13 @@ Parameters:
 >> `username`: The email of the user  
 >> `password`: The previous response `response.encrypted_password`  
 >> `totp`: Your TOTP value  
+>
+> Only once you've done that, will you get a response as above.
 
-
-
-Response:
-
-> `status`: boolean  
-> `user`: JSON string of {'COOKIE_NAME':'USER_EMAIL'}. Note this is NOT an object.  
-> `auth`: JSON string of {'COOKIE_NAME':'USER_AUTHORIZATION_HASH'}. Note this is NOT an object.  
-> `secret`: JSON string of {'COOKIE_NAME':'USER_AUTHORIZATION_SECRET'}. Note this is NOT an object.  
-> `link`: JSON string of {'COOKIE_NAME':'USER_DB_UNQ_ID'}. Note this is NOT an object.  
-> `pic`: JSON string of {'COOKIE_NAME':'USER_PICTURE_PATH'}. Note this is NOT an object.  
-> `name`: JSON string of {'COOKIE_NAME':'USER_FIRST_NAME'}. Note this is NOT an object.  
-> `full_name`: JSON string of {'COOKIE_NAME':'USER_FULL_NAME'}. Note this is NOT an object.  
-> `js`: A JavaScript function to evaluate using [js-cookie](https://github.com/js-cookie/js-cookie/tree/v1.5.1) to set the cookies in-browser.  
-> `ip_given`: The IP from which these cookies are valid. Changing IP addresses will invalidate the cookies.  
-> `raw_auth`: The data from `response.auth`  
-> `raw_secret`: The data from `response.secret`  
-> `raw_uid`: The data from `response.link`  
-> `expires`: The expires parameter on the cookies.  
 
 ### Sending API tokens
+
+Assuming you're accessing the return in JavaScript and have named the variable `response`:
 
 | Parameter | Value Meaning                                       | Key from Acquired Tokens |
 |-----------|-----------------------------------------------------|--------------------------|
