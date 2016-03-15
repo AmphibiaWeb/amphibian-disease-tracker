@@ -227,10 +227,40 @@ Sample response:
 }
 ```
 
-- `search_project`:
+## Find a project
+`search_projects`:
 
-- `search_users`:
+Parameters:  
 
+| Parameter | Value |
+|-----------|-------|
+| `action` | `search_projects` |
+
+Response:  
+
+| Key | Detail                                       |
+|-----|----------------------------------------------|
+| `status` | `true` or `false` (boolean) |
+
+
+## Find a user
+
+Find a user in the database. Searches email, name, and handle. Returns all partial string matches.
+
+Parameters:  
+
+| Parameter | Value |
+|-----------|-------|
+| `action` | `search_users` |
+| `q` | Search query |
+
+Response:  
+
+| Key | Detail                                       |
+|-----|----------------------------------------------|
+| `status` | `true` or `false` (boolean) |
+| `result` | Array of results, each an object containing `email`, `uid`, `handle`, `first_name`, `last_name`, and `full_name` |
+| `count` | Total number of results |
 
 
 
@@ -264,12 +294,14 @@ Response:
 | `authored_projects` | Array of project IDs for projects authored by the checking user |
 | `check_authentication` | `true` or `false` if the authentication status of the user was checked |
 
-`list`:
 
+## Create a new project
 `new`:
 
+## Save changes to a project
 `save`:
 
+## Delete a project
 `delete`:
 
 ## Get project details
@@ -388,13 +420,9 @@ Sample Response:
 }
 ```
 
-- `mint_data`
+## Validate Project Data
+`validate`
 
-- `create_expedition`
-
-- `associate_expedition`
-
-- `validate`
-
-- `check_access`
+# Get Project Access Lists
+`check_access`
 
