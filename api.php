@@ -92,10 +92,12 @@ switch ($do) {
   case "is_human":
       validateCaptcha($_REQUEST);
       break;
+  case "search_projects":
   case "search_project":
       searchProject($_REQUEST);
       break;
   case "search_users":
+  case "search_user":
     searchUsers($_REQUEST);
     break;
   default:
