@@ -1,23 +1,10 @@
-AmphibianDisease.og
-==========================
-
-Quick Links:
-
-- [Project Browser](https://amphibiandisease.org/project.php)
-- [Login/Administration](https://amphibiandisease.org/admin)
-- [Administration Dashboard](https://amphibiandisease.org/admin-page.html)
-
-## Features
-
-TODO
-
-## API access
+# General API information
 
 All responses are as `application/json`.
 
 Note that input is aggressively URL escaped. Depending on your use you may want to de-escape the text before use (especially raw JSON-as-text).
 
-### API errors
+## API errors
 
 If a given query produces an error, the `status` key will be `false`.
 
@@ -25,11 +12,11 @@ In addition, you will always have an `error` key with technical
 details. When appropriate, the server may provide a `human_error` key
 with a response that's more friendly to an end user.
 
-### API Authentication
+# API Authentication
 
 These parameters are optional for unauthenticated API access (in some cases, you may get additional results here), and mandatory for authenticated API access.
 
-#### Acquiring API tokens
+## Acquiring API tokens
 
 If you don't already have a set of identifier tokens, you will need to acquire them.
 
@@ -87,7 +74,7 @@ Response:
 > `raw_uid`: The data from `response.link`  
 > `expires`: The expires parameter on the cookies.  
 
-#### Sending API tokens
+## Sending API tokens
 
 | Parameter | Value Meaning                                       | Key from Acquired Tokens |
 |-----------|-----------------------------------------------------|--------------------------|
@@ -98,7 +85,7 @@ Response:
 
 For any authenticated/psuedoauthenticated request, these parameters can be sent as extra parameters to validate a login session. The cookie key pairs may also be sent in the header of the POST, rather than these raw cookie values.
 
-### Unauthenticated APIs
+# Unauthenticated APIs
 
 API target: `https://amphibiandisease.org/api.php`  
 Method: `GET`/`POST`
@@ -147,7 +134,7 @@ Mandatory parameter: `action`
 
 
 
-### Authenticated APIs
+# Authenticated APIs
 
 API target: `https://amphibiandisease.org/admin-api.php`  
 Method: `POST`
@@ -273,29 +260,3 @@ Mandatory parameter: `perform`
 
 - `check_access`
 
-
-## Data Storage
-
-You can view  a [CSON](https://github.com/bevry/cson) representation of the data storage of the system at [./meta/data-storage.coffee](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee)
-
-There is no equivalent to [BD-Maps'](http://www.bd-maps.net/isolates/) following fields:
-
-- Global ID: Redundant to sample ID
-- Country / Continent / Region: Redundant and derivable from coordinate bounding boxes
-- Elevation: Lookup-able from sample coordinates
-- Accuracy: Should be built in to `radius` field.
-- Coordinate source: Is the model of GPS actually relevant?
-- Developmental stage: Per-sample, should be included in raw data. At a high level, redundant to `sampled_species_detail[N].sampled_life_stages`
-- Method of detection: Since this may vary on a per-sample basis, this is relegated to the raw data.
-- Abnormalities: Problems in data are encapsulated in `disease_no_confidence`, problems with animals belong with the raw data.
-- All individual sample data (eg, spore count, genbank ID, etc): Belongs in raw data
-
-
-## Configuration Data
-
-This data is encrypted using
-[BlackBox](https://github.com/StackExchange/blackbox). If you want
-access to the configuration, please ask to have your credentials
-added, or add it yourself in a clone and push the changes. Once you
-let an administrator know, you can be added to the keyring and gain
-decryption privledges.
