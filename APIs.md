@@ -166,9 +166,15 @@ Response:
 | `aweb_list_max_age` | Maximum age of the AmphibiaWeb taxonomy used, in seconds.  |
 | `notices`: Array. List of non-fatal notices. Includes notices if taxonomy was changed.  |
 | `original_taxon` | The provided taxon, if changed. If unchanged, this field is absent.  |
-| `validated_taxon` | Object. The canonical taxon information |
+| `validated_taxon` | Object. The canonical taxon information. Most relevant keys would be `genus` and `species`. |
 
-Please note that generic names are not capitalized. It is assumed that this will be taken care of presentationally when parsed.
+Please note that generic names are not necessarily capitalized. It is assumed that this will be taken care of presentationally when parsed, eg,
+
+```coffee
+html = """
+<span style="text-transform:capitalize;">#{response.validated_taxon.genus}</span> #{response.validated_taxon.species}
+"""
+```
 
 Sample response: 
 
