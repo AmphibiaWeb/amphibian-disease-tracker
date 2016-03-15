@@ -85,6 +85,7 @@ if($as_include !== true) {
     case "get":
         returnAjax(readProjectData($_REQUEST));
         break;
+    case "edit_access":
     case "editaccess":
         $link = $_REQUEST["project"];
         $deltas = smart_decode64($_REQUEST["deltas"]);
@@ -127,7 +128,7 @@ if($as_include !== true) {
     case "validate":
       //$data = $_REQUEST["data"];
         $datasrc = $_REQUEST["datasrc"];
-        $link = $_REQUEST["link"];
+        $link = isset($_REQUEST["link"]) ? $_REQUEST["link"] : $_REQUEST["project"];
         $cookies = $_REQUEST["auth"];
         $continue = empty($cookies) ? false : true;
         returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
