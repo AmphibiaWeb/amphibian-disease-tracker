@@ -45,6 +45,7 @@ window.loadAdminUi = ->
   try
     verifyLoginCredentials (data) ->
       # Post verification
+      $("#please-wait-prefill").remove()
       articleHtml = """
       <h3>
         Welcome, #{$.cookie("#{adminParams.domain}_name")}

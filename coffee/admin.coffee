@@ -1663,6 +1663,7 @@ renderValidateProgress = ->
 
 
 checkInitLoad = (callback) ->
+  $("#please-wait-prefill").remove()
   projectId = uri.o.param "id"
   unless isNull projectId
     loadEditor projectId

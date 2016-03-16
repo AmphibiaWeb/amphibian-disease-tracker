@@ -61,6 +61,7 @@ window.loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml;
+      $("#please-wait-prefill").remove();
       articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
       $(".fill-user-fullname").text($.cookie(adminParams.domain + "_fullname"));
