@@ -386,7 +386,7 @@ finalizeData = function() {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, len3, q, ref7, ref8, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref7, ref8, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -413,7 +413,14 @@ finalizeData = function() {
           };
           postData.carto_id = JSON.stringify(cartoData);
           postData.project_id = _adp.projectId;
-          postData.project_obj_id = _adp.fims.expedition.ark;
+          try {
+            postData.project_obj_id = _adp.fims.expedition.ark;
+          } catch (error1) {
+            mintExpedition(_adp.projectId, null, function() {
+              return postBBLocality();
+            });
+            return false;
+          }
           if (dataAttrs.data_ark == null) {
             dataAttrs.data_ark = new Array();
           }
@@ -471,7 +478,13 @@ finalizeData = function() {
               _adp.locality = "";
             }
           }
-          return postBBLocality();
+          if (!dataFileParams.hasDataFile) {
+            return mintExpedition(_adp.projectId, null, function() {
+              return postBBLocality();
+            });
+          } else {
+            return postBBLocality();
+          }
         } else if (dataFileParams.hasDataFile) {
           if (center == null) {
             center = getMapCenter(geo.boundingBox);
