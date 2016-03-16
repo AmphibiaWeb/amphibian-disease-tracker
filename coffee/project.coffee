@@ -454,7 +454,7 @@ renderPublicMap = (projectData = publicData) ->
     mapHtml += "    </google-map-poly>"
     googleMap = """
     <div class="row" id="public-map">
-      <h2 class="col-xs-12">Approximate Mapping Data</h2>
+      <h2 class="col-xs-12">Project Area of Interest</h2>
       <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  apiKey="#{gMapsApiKey}">
             #{mapHtml}
       </google-map>

@@ -447,12 +447,12 @@ finalizeData = function() {
           console.info("Data object constructed:", postData);
           return $.post(adminParams.apiTarget, args, "json").done(function(result) {
             if (result.status === true) {
-              toastStatusMessage("Data successfully saved to server");
               bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
               stopLoad();
               delay(1000, function() {
                 return loadEditor(_adp.projectId);
               });
+              toastStatusMessage("Data successfully saved to server");
             } else {
               console.error(result.error.error);
               console.log(result);
@@ -1686,6 +1686,7 @@ renderValidateProgress = function() {
 
 checkInitLoad = function(callback) {
   var fragment, fragmentSettings, projectId;
+  $("#please-wait-prefill").remove();
   projectId = uri.o.param("id");
   if (!isNull(projectId)) {
     loadEditor(projectId);

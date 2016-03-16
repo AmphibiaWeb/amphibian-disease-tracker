@@ -243,7 +243,7 @@ function doCartoSqlApiPush($get)
             $response = array(
                 "status" => false,
                 "error" => "NOT_LOGGED_IN",
-                "human_error" => "Attempted to read from table `$cartoTable` without being logged in",
+                "human_error" => "Attempted to read from private project without being logged in",
                 "args_provided" => $get,
                 "is_public_dataset" => $isPublic,
             );

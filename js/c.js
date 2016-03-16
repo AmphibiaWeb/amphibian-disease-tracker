@@ -883,7 +883,9 @@ toastStatusMessage = function(message, className, duration, selector) {
     $(html).appendTo("body");
   }
   $(selector).attr("text", message).text(message).addClass(className);
-  $(selector).get(0).show();
+  try {
+    p$(selector).show();
+  } catch (undefined) {}
   return delay(duration + 500, function() {
     $(selector).empty();
     $(selector).removeClass(className);
