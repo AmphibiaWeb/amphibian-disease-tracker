@@ -7397,6 +7397,9 @@ section#notes marked-element {
   width: 80%;
   min-height: 5rem;
 }
+.project-inputs[hidden] + #submission-section .pull-right {
+  margin-top: 5rem;
+}
 .user-search-result paper-badge {
   display: inline-block;
   position: relative;

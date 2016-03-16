@@ -280,7 +280,7 @@ loadCreateNewProject = ->
       <p class="col-xs-12">Etc</p>
     </div>
   </section>
-  <section id="submission-section col-xs-12">
+  <section id="submission-section" class="col-xs-12">
     <div class="pull-right">
       <button id="upload-data" class="btn btn-success click" data-function="finalizeData"><iron-icon icon="icons:lock-open"></iron-icon> <span class="label-with-data">Save Data &amp;</span> Create Private Project</button>
       <button id="reset-data" class="btn btn-danger click" data-function="resetForm">Reset Form</button>
