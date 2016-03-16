@@ -286,8 +286,9 @@ createMap2 = (pointsObj, options, callback) ->
       classes = escape classes
     else
       classes = ""
+    # fit-to-markers
     googleMap = """
-      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" fit-to-markers map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 #{options.bsGrid} center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
+      <google-map id="#{id}" latitude="#{center.lat}" longitude="#{center.lng}" map-type="hybrid" click-events disable-default-ui zoom="#{zoom}" class="col-xs-12 #{options.bsGrid} center-block clearfix google-map transect-viewport map-viewport #{classes}" api-key="#{gMapsApiKey}" #{mapObjAttr}>
             #{mapHtml}
       </google-map>
     """

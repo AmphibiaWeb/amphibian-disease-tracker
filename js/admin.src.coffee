@@ -487,7 +487,12 @@ finalizeData = ->
             bounding_polygon_geojson: geo?.geoJsonBoundingBox
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
-          postData.project_obj_id = _adp.fims.expedition.ark
+          try
+            postData.project_obj_id = _adp.fims.expedition.ark
+          catch
+            mintExpedition _adp.projectId, null, ->
+              postBBLocality()
+            return false
           dataAttrs.data_ark ?= new Array()
           postData.dataset_arks = dataAttrs.data_ark.join ","
           postData.project_dir_identifier = getUploadIdentifier()
@@ -538,7 +543,12 @@ finalizeData = ->
             catch
               console.info "Can't figure out locality"
               _adp.locality = ""
-          postBBLocality()
+          if not dataFileParams.hasDataFile
+            # Foo
+            mintExpedition _adp.projectId, null, ->
+              postBBLocality()
+          else
+            postBBLocality()
         else if dataFileParams.hasDataFile
           # No locality and have a data file
           # First, get the locality
