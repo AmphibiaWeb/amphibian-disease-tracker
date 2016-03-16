@@ -646,7 +646,8 @@ toastStatusMessage = (message, className = "", duration = 3000, selector = "#sta
   .attr("text",message)
   .text(message)
   .addClass(className)
-  $(selector).get(0).show()
+  try
+    p$(selector).show()
   delay duration + 500, ->
     # A short time after it hides, clean it up
     $(selector).empty()

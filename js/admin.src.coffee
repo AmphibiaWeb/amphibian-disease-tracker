@@ -45,7 +45,6 @@ window.loadAdminUi = ->
   try
     verifyLoginCredentials (data) ->
       # Post verification
-      $("#please-wait-prefill").remove()
       articleHtml = """
       <h3>
         Welcome, #{$.cookie("#{adminParams.domain}_name")}
@@ -516,11 +515,11 @@ finalizeData = ->
           $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             if result.status is true
-              toastStatusMessage "Data successfully saved to server"
               bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
               stopLoad()
               delay 1000, ->
                 loadEditor _adp.projectId
+              toastStatusMessage "Data successfully saved to server"
             else
               console.error result.error.error
               console.log result
@@ -1664,6 +1663,7 @@ renderValidateProgress = ->
 
 
 checkInitLoad = (callback) ->
+  $("#please-wait-prefill").remove()
   projectId = uri.o.param "id"
   unless isNull projectId
     loadEditor projectId

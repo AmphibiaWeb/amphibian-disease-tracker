@@ -515,11 +515,11 @@ finalizeData = ->
           $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             if result.status is true
-              toastStatusMessage "Data successfully saved to server"
               bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
               stopLoad()
               delay 1000, ->
                 loadEditor _adp.projectId
+              toastStatusMessage "Data successfully saved to server"
             else
               console.error result.error.error
               console.log result
