@@ -2915,7 +2915,7 @@ validateFimsData = function(dataObject, callback) {
         overrideShowErrors = true;
         error = error.substr(0, 255) + "[...] and more.";
       }
-      bsAlert("<strong>Error with your data:</strong> " + error, "danger");
+      bsAlert("<strong>FIMS reported an error validating your data:</strong> " + error, "danger");
       stopLoadBarsError(validatorTimeout);
       errors = result.validate_status.errors;
       if (Object.size(errors) > 1 || overrideShowErrors) {
