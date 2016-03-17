@@ -446,7 +446,7 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
-          if (array_key_exists($providedGenus, $synonymGenusList) && (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
+          if (array_key_exists($providedGenus, $synonymGenusList) && preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies) ) {
                 # OK, they were just looking for a genus anyway
                 $row = $synonymGenusList[$providedGenus];
                 $aWebMatch = $aWebListArray[$row];
