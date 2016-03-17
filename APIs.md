@@ -154,7 +154,7 @@ Parameters:
 |-----------|-------|
 | `action` | `validate` |
 | `genus` |  Genus to validate. Case-insensitive. |
-| `species` | Species to validate. If you only want to check for a genus, the string `sp.` may be used here. |
+| `species` | Species to validate. If you only want to check for a genus, the string `sp.`, `sp`, or `nov. sp.` may be used here. |
 | `subspecies` | **Optional:** Reserved for future use; currently not tracked by AmphibiaWeb. |
 
 Response:  
@@ -176,7 +176,7 @@ html = """
 """
 ```
 
-Sample response: 
+Sample response:
 
 *query: `https://amphibiandisease.org/api.php?action=validate&genus=bufo&species=boreas`*
 
@@ -229,7 +229,7 @@ Sample response:
 
 ## Find a project
 
-Search for a project based on criteria. This is the back-end that drives the project search on [the Project Browser page](https://amphibiandisease.org/project.php). 
+Search for a project based on criteria. This is the back-end that drives the project search on [the Project Browser page](https://amphibiandisease.org/project.php).
 
 Parameters:  
 
@@ -292,7 +292,7 @@ Mandatory parameter: `perform`
 
 **Psuedoauthenticated**. If this is hit without authentication, a list of public projects will be returned.
 
-Parameters: 
+Parameters:
 
 | Parameter | Value  |
 |-----------|--------|
@@ -311,7 +311,7 @@ Response:
 
 ## Create a new project
 
-Parameters: 
+Parameters:
 
 | Parameter | Value |
 |-----------|-------|
@@ -325,7 +325,7 @@ Response:
 
 ## Save changes to a project
 
-Parameters: 
+Parameters:
 
 | Parameter | Value  |
 |-----------|--------|
@@ -339,7 +339,7 @@ Response:
 
 ## Delete a project
 
-Parameters: 
+Parameters:
 
 | Parameter | Value    |
 |-----------|----------|
@@ -473,7 +473,7 @@ Validate the project data against [the FIMS system](https://fims.readthedocs.org
 
 Please note the source file needs to exist locally on the host server.
 
-Parameters: 
+Parameters:
 
 | Parameter | Value  |
 |-----------|--------|
@@ -489,12 +489,12 @@ Response:
 | `validate_status` | `true` or `false` (boolean) |
 | `responses` | Object of raw response data. Most important fields here are `validate_response` and `validate_has_error` |
 | `post_params` | Details on what was sent to FIMS |
-| `data` | Details on the datafile sent to FIMS | 
+| `data` | Details on the datafile sent to FIMS |
 
 
 ## Get Project Access Lists
 
-Parameters: 
+Parameters:
 
 | Parameter | Value  |
 |-----------|--------|
@@ -512,7 +512,7 @@ Response:
 
 ## Edit Project Access Lists
 
-Parameters: 
+Parameters:
 
 | Parameter | Value  |
 |-----------|--------|
@@ -523,4 +523,3 @@ Response:
 | Key      | Detail                      |
 |----------|-----------------------------|
 | `status` | `true` or `false` (boolean) |
-
