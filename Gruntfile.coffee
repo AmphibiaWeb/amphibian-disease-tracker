@@ -141,7 +141,7 @@ module.exports = (grunt) ->
           "js/project.js":["coffee/project.coffee"]
     phpcsfixer:
       app:
-        dir: ["api.php", "meta.php", "admin-login.php"]
+        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "home.php"]
       options:
         ignoreExitCode: true
         verbose: true
