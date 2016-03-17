@@ -4,18 +4,18 @@
 <?php
 $debug = false;
 
-if($debug) {
+if ($debug) {
     error_reporting(E_ALL);
-    ini_set("display_errors", 1);
-    error_log("Home page is running in debug mode!");
+    ini_set('display_errors', 1);
+    error_log('Home page is running in debug mode!');
 }
 
 $print_login_state = false;
-require_once("DB_CONFIG.php");
-require_once(dirname(__FILE__)."/core/core.php");
-require_once(dirname(__FILE__)."/admin/async_login_handler.php");
+require_once 'DB_CONFIG.php';
+require_once dirname(__FILE__).'/core/core.php';
+require_once dirname(__FILE__).'/admin/async_login_handler.php';
 
-$db = new DBHelper($default_database,$default_sql_user,$default_sql_password, $sql_url,$default_table,$db_cols);
+$db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 $loginStatus = getLoginState();
 ?>
     <title>Amphibian Disease Portal</title>
@@ -100,14 +100,17 @@ $loginStatus = getLoginState();
     <header id="header-bar" class="fixed-bar clearfix row">
      <p class="col-xs-12 text-right">
       <?php
-         $user = $_COOKIE["amphibiandisease_fullname"];
-         $test = $loginStatus["status"];
-         if($test) { ?>
-           Logged in as <?php echo $user; ?>
+         $user = $_COOKIE['amphibiandisease_fullname'];
+         $test = $loginStatus['status'];
+         if ($test) {
+             ?>
+           Logged in as <?php echo $user;
+             ?>
            <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
            <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
-      <?php } else {
-          # TODO replace login icon with glyphicon login icon
+      <?php 
+         } else {
+             # TODO replace login icon with glyphicon login icon
           ?>
           <paper-button class="click materialgreen" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom">
               <iron-icon icon="icons:exit-to-app"></iron-icon>
@@ -118,7 +121,8 @@ $loginStatus = getLoginState();
               Sign Up
           </paper-button>
 
-      <?php } ?>
+      <?php 
+         } ?>
             <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         </p>
     </header>

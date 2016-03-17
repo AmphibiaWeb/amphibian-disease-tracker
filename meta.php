@@ -45,33 +45,33 @@ function returnAjax($data)
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
     header('Content-type: application/json');
     $json = json_encode($data, JSON_FORCE_OBJECT);
-    $replace_array = array('&quot;','&#34;');
-    print str_replace($replace_array, '\\"', $json);
+    $replace_array = array('&quot;', '&#34;');
+    echo str_replace($replace_array, '\\"', $json);
     exit();
 }
 
 function getUserFileModTime($get = array())
 {
-    $a = array("defaulted" => false);
-    if(!empty($get["file"])) {
-        $file = $get["file"];
-        if(!file_exists($file)) {
-            return "INVALID_FILE";
+    $a = array('defaulted' => false);
+    if (!empty($get['file'])) {
+        $file = $get['file'];
+        if (!file_exists($file)) {
+            return 'INVALID_FILE';
         }
+    } else {
+        $file = 'js/c.min.js';
+        $a['defaulted'] = true;
     }
-    else {
-        $file = "js/c.min.js";
-        $a["defaulted"] = true;
-    }    
-    $a["last_mod"] = filemtime($file);
-    $a["file"] = $file;
+    $a['last_mod'] = filemtime($file);
+    $a['file'] = $file;
+
     return $a;
 }
 
 function doUploadImage()
 {
     if (empty($_FILES)) {
-        return array('status' => false,'error' => 'No files provided','human_error' => 'Please provide a file to upload');
+        return array('status' => false, 'error' => 'No files provided', 'human_error' => 'Please provide a file to upload');
     }
     $temp = $_FILES['file']['tmp_name'];
     $savePath = dirname(__FILE__).'/user_photos/';
@@ -80,7 +80,7 @@ function doUploadImage()
     $newFilePath = md5($file).'.'.$extension;
     $fileWritePath = $savePath.$newFilePath;
 
-    return array('status' => move_uploaded_file($temp, $fileWritePath),'original_file' => $file,'wrote_file' => $newFilePath,'full_path' => $fileWritePath);
+    return array('status' => move_uploaded_file($temp, $fileWritePath), 'original_file' => $file, 'wrote_file' => $newFilePath, 'full_path' => $fileWritePath);
 }
 
 if (isset($_SERVER['QUERY_STRING'])) {
@@ -97,11 +97,11 @@ case 'upload_image':
     break;
 default:
     $default_answer = array(
-        'status' => false, 
-        'error' => 'Invalid action', 
+        'status' => false,
+        'error' => 'Invalid action',
         'human_error' => 'No valid action was supplied.',
-        "provided_args" => $_REQUEST,
-        "requested_action" => $do,
+        'provided_args' => $_REQUEST,
+        'requested_action' => $do,
     );
     # doUploadImage()
     returnAjax($default_answer);
