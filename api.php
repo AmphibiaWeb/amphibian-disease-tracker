@@ -446,7 +446,7 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
-            if (array_key_exists($providedGenus, $synonymGenusList) && ($providedSpecies == 'sp' || $providedSpecies == 'sp.' || $providedSpecies == 'nov. sp.')) {
+          if (array_key_exists($providedGenus, $synonymGenusList) && (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
                 # OK, they were just looking for a genus anyway
                 $row = $synonymGenusList[$providedGenus];
                 $aWebMatch = $aWebListArray[$row];
@@ -475,7 +475,9 @@ function doAWebValidate($get)
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
-                $aWebPretty['species'] = $providedSpecies == 'nov. sp.' ? 'nov. sp.' : 'sp.';
+                $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ?
+                                       trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) :
+                                       trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
                 $response['status'] = true;
                 $response['notices'][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical genus.";
                 $response['original_taxon'] = $providedGenus;
@@ -532,7 +534,7 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
-            if ($providedSpecies == 'sp' || $providedSpecies == 'sp.' || $providedSpecies == 'nov. sp.') {
+          if (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
                 # OK, they were just looking for a genus anyway
                 $row = $genusList[$providedGenus];
                 $aWebMatch = $aWebListArray[$row];
@@ -561,7 +563,9 @@ function doAWebValidate($get)
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
-                $aWebPretty['species'] = $providedSpecies == 'nov. sp.' ? 'nov. sp.' : 'sp.';
+                $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ? 
+                                       trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) : 
+                                       trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
                 $response['status'] = true;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response['validated_taxon'] = $aWebPretty;
