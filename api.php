@@ -480,6 +480,7 @@ function doAWebValidate($get)
                                        trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
                 $response['status'] = true;
                 $response['notices'][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical genus.";
+                $response['notices'][] = "You provided a generic species '".$aWebPretty['species']."'. Only the genus has been validated.";
                 $response['original_taxon'] = $providedGenus;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response['validated_taxon'] = $aWebPretty;
@@ -563,9 +564,10 @@ function doAWebValidate($get)
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
-                $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ? 
-                                       trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) : 
+                $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ?
+                                       trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) :
                                        trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
+                $response['notices'][] = "You provided a generic species '".$aWebPretty['species']."'. Only the genus has been validated.";
                 $response['status'] = true;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response['validated_taxon'] = $aWebPretty;
