@@ -137,7 +137,7 @@ validateFimsData = (dataObject, callback = null) ->
       if error.length > 255
         overrideShowErrors = true
         error = error.substr(0, 255) + "[...] and more."
-      bsAlert "<strong>Error with your data:</strong> #{error}", "danger"
+      bsAlert "<strong>FIMS reported an error validating your data:</strong> #{error}", "danger"
       stopLoadBarsError validatorTimeout
       # Show all other errors, if there
       errors = result.validate_status.errors
