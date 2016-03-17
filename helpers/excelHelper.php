@@ -80,18 +80,24 @@ function excelToPhp($filePath) {
   | Input: path to excel file, set wether excel first row are headers
   | Dependencies: PHPExcel.php include needed
 */
-function excelToArray($filePath, $header=true){
+function excelToArray($filePath, $header=true, $sheets = null){
     //Create excel reader after determining the file type
     $inputFileName =  $filePath;
     /**  Identify the type of $inputFileName  **/
     $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
     /**  Create a new Reader of the type that has been identified  **/
     $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-    /** Set read type to read cell data onl **/
+    /** Set read type to read cell data only **/
     $objReader->setReadDataOnly(true);
+    if(!empty($sheets)) {
+        # See
+        # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/phpexcel/Documentation/markdown/ReadingSpreadsheetFiles/05-Reader-Options.md#reading-only-named-worksheets-from-a-file
+        $objReader->setLoadSheetsOnly($sheets);
+    }
     /**  Load $inputFileName to a PHPExcel Object  **/
     $objPHPExcel = $objReader->load($inputFileName);
-    //Get worksheet and built array with first row as header
+    
+    # Get worksheet and built array with first row as header
     $objWorksheet = $objPHPExcel->getActiveSheet();
 
     //excel with first row header, use header as key
@@ -153,15 +159,21 @@ case "parse":
         ));
     }
     $header = isset($_REQUEST["has_header"]) ? boolstr($_REQUEST["has_header"]) : true;
+    $sheets = $_REQUEST["sheets"];
+    $sheets_arr = explode(",", $sheets);
+    if(sizeof($sheets_arr) > 1) {
+        # PHPExcel only wants array for many sheets
+        $sheets = $sheets_arr;
+    }
     try {
         returnAjax(array(
             "status" => true,
-            "data" => excelToArray($validatedPath, $header)
+            "data" => excelToArray($validatedPath, $header, $sheets),
         ));
     } catch (Exception $e) {
         returnAjax(array(
             "status" => false,
-            "error" => $e->getMessage()
+            "error" => $e->getMessage(),
         ));
     }
     break;
