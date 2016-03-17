@@ -1247,7 +1247,7 @@ excelHandler = (path, hasHeaders = true) ->
     console.info "removing '#{helperDir}'"
     correctedPath = path.slice helperDir.length
   console.info "Pinging for #{correctedPath}"
-  args = "action=parse&path=#{correctedPath}"
+  args = "action=parse&path=#{correctedPath}&sheets=Samples"
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result

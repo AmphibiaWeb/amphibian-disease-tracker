@@ -1219,7 +1219,7 @@ excelHandler = function(path, hasHeaders) {
     correctedPath = path.slice(helperDir.length);
   }
   console.info("Pinging for " + correctedPath);
-  args = "action=parse&path=" + correctedPath;
+  args = "action=parse&path=" + correctedPath + "&sheets=Samples";
   $.get(helperApi, args, "json").done(function(result) {
     console.info("Got result", result);
     if (result.status === false) {
