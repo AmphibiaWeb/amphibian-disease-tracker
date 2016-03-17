@@ -5,8 +5,7 @@
 // ini_set("log_errors",1);
 // error_reporting(E_ALL);
 
-require_once(dirname(__FILE__)."/../phpexcel/Classes/PHPExcel.php");
-
+require_once dirname(__FILE__).'/../phpexcel/Classes/PHPExcel.php';
 
 # We require the functions living in core.php
 require_once dirname(__FILE__).'/../core/core.php';
@@ -36,7 +35,7 @@ if (!function_exists('elapsed')) {
 
         return 1000 * (microtime_float() - (float) $start_time);
     }
-                                 }
+}
 
 function returnAjax($data)
 {
@@ -55,21 +54,19 @@ function returnAjax($data)
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
     header('Content-type: application/json');
     $json = json_encode($data, JSON_FORCE_OBJECT);
-    $replace_array = array('&quot;','&#34;');
-    print str_replace($replace_array, '\\"', $json);
+    $replace_array = array('&quot;', '&#34;');
+    echo str_replace($replace_array, '\\"', $json);
     exit();
 }
-
-
 
 # Based on this answer:
 # http://stackoverflow.com/a/3895965/1877527
 
-function excelToPhp($filePath) {
+function excelToPhp($filePath)
+{
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
     $objWriter->save($filePath);
 }
-
 
 # From this gist: https://gist.github.com/calvinchoy/5821235
 /*
@@ -80,59 +77,53 @@ function excelToPhp($filePath) {
   | Input: path to excel file, set wether excel first row are headers
   | Dependencies: PHPExcel.php include needed
 */
-function excelToArray($filePath, $header=true, $sheets = null){
+function excelToArray($filePath, $header = true, $sheets = null)
+{
     //Create excel reader after determining the file type
-    $inputFileName =  $filePath;
-    /**  Identify the type of $inputFileName  **/
+    $inputFileName = $filePath;
+    /*  Identify the type of $inputFileName  **/
     $inputFileType = PHPExcel_IOFactory::identify($inputFileName);
-    /**  Create a new Reader of the type that has been identified  **/
+    /*  Create a new Reader of the type that has been identified  **/
     $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-    /** Set read type to read cell data only **/
+    /* Set read type to read cell data only **/
     $objReader->setReadDataOnly(true);
-    if(!empty($sheets)) {
+    if (!empty($sheets)) {
         # See
         # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/phpexcel/Documentation/markdown/ReadingSpreadsheetFiles/05-Reader-Options.md#reading-only-named-worksheets-from-a-file
         $objReader->setLoadSheetsOnly($sheets);
     }
-    /**  Load $inputFileName to a PHPExcel Object  **/
+    /*  Load $inputFileName to a PHPExcel Object  **/
     $objPHPExcel = $objReader->load($inputFileName);
-    
+
     # Get worksheet and built array with first row as header
     $objWorksheet = $objPHPExcel->getActiveSheet();
 
     //excel with first row header, use header as key
-    if($header){
+    if ($header) {
         $highestRow = $objWorksheet->getHighestRow();
         $highestColumn = $objWorksheet->getHighestColumn();
-        $headingsArray = $objWorksheet->rangeToArray('A1:'.$highestColumn.'1',null, true, true, true);
+        $headingsArray = $objWorksheet->rangeToArray('A1:'.$highestColumn.'1', null, true, true, true);
         $headingsArray = $headingsArray[1];
 
         $r = -1;
         $namedDataArray = array();
         for ($row = 2; $row <= $highestRow; ++$row) {
-            $dataRow = $objWorksheet->rangeToArray('A'.$row.':'.$highestColumn.$row,null, true, true, true);
+            $dataRow = $objWorksheet->rangeToArray('A'.$row.':'.$highestColumn.$row, null, true, true, true);
             if ((isset($dataRow[$row]['A'])) && ($dataRow[$row]['A'] > '')) {
                 ++$r;
-                foreach($headingsArray as $columnKey => $columnHeading) {
+                foreach ($headingsArray as $columnKey => $columnHeading) {
                     $columnHeading = trim($columnHeading);
                     $namedDataArray[$r][$columnHeading] = $dataRow[$row][$columnKey];
                 }
             }
         }
-    }
-    else{
+    } else {
         //excel sheet with no header
-        $namedDataArray = $objWorksheet->toArray(null,true,true,true);
+        $namedDataArray = $objWorksheet->toArray(null, true, true, true);
     }
 
     return $namedDataArray;
 }
-
-
-
-
-
-
 
 /********
  * Actual handler
@@ -140,52 +131,48 @@ function excelToArray($filePath, $header=true, $sheets = null){
 if (isset($_SERVER['QUERY_STRING'])) {
     parse_str($_SERVER['QUERY_STRING'], $_REQUEST);
 }
-$do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : "NO_PROVIDED_ACTION";
+$do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : 'NO_PROVIDED_ACTION';
 
 # Check the cases ....
 
 switch ($do) {
-case "parse":
-    $validatedPath = dirname(__FILE__) . "/" .$_REQUEST["path"]; 
-    if(!file_exists($validatedPath)) {
+case 'parse':
+    $validatedPath = dirname(__FILE__).'/'.$_REQUEST['path'];
+    if (!file_exists($validatedPath)) {
         returnAjax(array(
-            "status" => false,
-            "error" => "Non-existant file '".$validatedPath."'",
-            "path" => array(
-                "requested_path" => $_REQUEST["path"],
-                "validated_path" => $validatedPath,
+            'status' => false,
+            'error' => "Non-existant file '".$validatedPath."'",
+            'path' => array(
+                'requested_path' => $_REQUEST['path'],
+                'validated_path' => $validatedPath,
             ),
-            "human_error" => "There was a problem validating your file. Please try again."
+            'human_error' => 'There was a problem validating your file. Please try again.',
         ));
     }
-    $header = isset($_REQUEST["has_header"]) ? boolstr($_REQUEST["has_header"]) : true;
-    $sheets = $_REQUEST["sheets"];
-    $sheets_arr = explode(",", $sheets);
-    if(sizeof($sheets_arr) > 1) {
+    $header = isset($_REQUEST['has_header']) ? boolstr($_REQUEST['has_header']) : true;
+    $sheets = $_REQUEST['sheets'];
+    $sheets_arr = explode(',', $sheets);
+    if (sizeof($sheets_arr) > 1) {
         # PHPExcel only wants array for many sheets
         $sheets = $sheets_arr;
     }
     try {
         returnAjax(array(
-            "status" => true,
-            "data" => excelToArray($validatedPath, $header, $sheets),
+            'status' => true,
+            'data' => excelToArray($validatedPath, $header, $sheets),
         ));
     } catch (Exception $e) {
         returnAjax(array(
-            "status" => false,
-            "error" => $e->getMessage(),
+            'status' => false,
+            'error' => $e->getMessage(),
         ));
     }
     break;
 default:
     returnAjax(array(
-        "status" => false,
-        "error" => "Invalid action (got '$do')",
-        "args" => $_REQUEST,
-        "human_error" => "The server recieved an instruction it didn't understand. Please try again."
+        'status' => false,
+        'error' => "Invalid action (got '$do')",
+        'args' => $_REQUEST,
+        'human_error' => "The server recieved an instruction it didn't understand. Please try again.",
     ));
 }
-
-
-
-?>
