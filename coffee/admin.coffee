@@ -1592,7 +1592,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
           console.warn "Couldn't get the family! #{e.message}", taxon.response
           console.warn e.stack
         ++i
-      p$("#species-list").bindValue = taxonListString
+      try
+        p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData
       _adp.data.dataObj = validatedData
       _adp.data.taxa = new Object()

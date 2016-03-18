@@ -94,11 +94,13 @@
   };
 
   String.prototype.toBool = function() {
-    return this.toString() === 'true';
+    var test;
+    test = this.toString().toLowerCase();
+    return test === 'true' || test === "1";
   };
 
   Boolean.prototype.toBool = function() {
-    return this.toString() === 'true';
+    return this;
   };
 
   Number.prototype.toBool = function() {
