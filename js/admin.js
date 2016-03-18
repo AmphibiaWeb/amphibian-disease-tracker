@@ -2628,7 +2628,14 @@ getProjectCartoData = function(cartoObj, mapOptions) {
 };
 
 revalidateAndUpdateData = function() {
-  excelHandler(dataFileParams.filePath, true, function(data) {
+  var cartoData, path;
+  if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
+    path = dataFileParams.filePath;
+  } else {
+    cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
+    path = cartoData.raw_data.filePath;
+  }
+  excelHandler(path, true, function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
       console.info(validatedData);
       return false;

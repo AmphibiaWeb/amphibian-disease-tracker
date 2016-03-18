@@ -2748,7 +2748,12 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 
 revalidateAndUpdateData = ->
-  excelHandler dataFileParams.filePath, true, (data) ->
+  if dataFileParams?.filePath?
+    path = dataFileParams.filePath
+  else
+    cartoData = JSON.parse _adp.projectData.carto_id.unescape()
+    path = cartoData.raw_data.filePath
+  excelHandler path, true, (data) ->
     newGeoDataHandler data, (validatedData, projectIdentifier)->
       console.info validatedData
       # Need carto update
