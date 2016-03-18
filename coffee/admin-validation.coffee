@@ -41,7 +41,7 @@ validateData = (dataObject, callback = null) ->
 
 
 
-stopLoadBarsError = (currentTimeout) ->
+stopLoadBarsError = (currentTimeout, message) ->
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
@@ -52,6 +52,9 @@ stopLoadBarsError = (currentTimeout) ->
     if p$(el).value isnt p$(el).max
       $(el).addClass "error-progress"
       $(el).find("#primaryProgress").css "background", "#F44336"
+  if message?
+    bsAlert "<strong>Data Validation Error</strong: #{message}", "danger"
+    stopLoadError "There was a problem validating your data"
   false
 
 

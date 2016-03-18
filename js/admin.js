@@ -1204,10 +1204,13 @@ singleDataFileHelper = function(newFile, callback) {
   }
 };
 
-excelHandler = function(path, hasHeaders) {
+excelHandler = function(path, hasHeaders, skipGeoHandler) {
   var args, correctedPath, helperApi;
   if (hasHeaders == null) {
     hasHeaders = true;
+  }
+  if (skipGeoHandler == null) {
+    skipGeoHandler = false;
   }
   startLoad();
   $("#validator-progress-container").remove();
@@ -1242,7 +1245,10 @@ excelHandler = function(path, hasHeaders) {
       }
       html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
       uploadedData = result.data;
-      newGeoDataHandler(result.data);
+      _adp.parsedUploadedData = result.data;
+      if (!skipGeoHandler) {
+        newGeoDataHandler(result.data);
+      }
       return stopLoad();
     });
   }).fail(function(result, error) {
@@ -1297,10 +1303,13 @@ removeDataFile = function(removeFile, unsetHDF) {
   return false;
 };
 
-newGeoDataHandler = function(dataObject) {
+newGeoDataHandler = function(dataObject, skipCarto) {
   var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
   if (dataObject == null) {
     dataObject = new Object();
+  }
+  if (skipCarto == null) {
+    skipCarto = false;
   }
 
   /*
@@ -1311,7 +1320,7 @@ newGeoDataHandler = function(dataObject) {
    * FIMS data format:
    * https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
    *
-   * Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "alt"
+   * Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters"
    */
   try {
     if (geo.geocoder == null) {
@@ -1427,19 +1436,19 @@ newGeoDataHandler = function(dataObject) {
           case "alt":
           case "coordinateUncertaintyInMeters":
             if (!isNumber(value)) {
-              stopLoadError("Detected an invalid number for " + column + " at row " + n + " ('" + value + "')");
+              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + n + " ('" + value + "')");
               return false;
             }
             if (column === "decimalLatitude" && (-90 > value && value > 90)) {
-              stopLoadError("Detected an invalid latitude " + value + " at row " + n);
+              stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + n);
               return false;
             }
             if (column === "decimalLongitude" && (-180 > value && value > 180)) {
-              stopLoadError("Detected an invalid longitude " + value + " at row " + n);
+              stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + n);
               return false;
             }
             if (column === "coordinateUncertaintyInMeters" && value <= 0) {
-              stopLoadError("Coordinate uncertainty must be >= 0 at row " + n);
+              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + n);
               return false;
             }
             cleanValue = toFloat(value);
@@ -1613,13 +1622,15 @@ newGeoDataHandler = function(dataObject) {
       _adp.data.taxa.list = taxonList;
       _adp.data.taxa.clades = cladeList;
       _adp.data.taxa.validated = validatedData.validated_taxa;
-      return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table, coords, options) {
-        return createMap2(coords, options, function() {
-          window.mapBuilder.points = new Array();
-          $("#init-map-build").attr("disabled", "disabled");
-          return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+      if (!skipCarto) {
+        return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table, coords, options) {
+          return createMap2(coords, options, function() {
+            window.mapBuilder.points = new Array();
+            $("#init-map-build").attr("disabled", "disabled");
+            return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+          });
         });
-      });
+      }
     });
   } catch (error4) {
     e = error4;
@@ -2053,7 +2064,7 @@ loadEditor = function(projectPreload) {
               button = "<paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>";
               $("#confirm-delete-project").replaceWith(button);
             }
-            saveEditorData();
+            saveEditorData(true);
             return false;
           });
           $("#discard-changes-exit").click(function() {
@@ -2616,15 +2627,18 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   return false;
 };
 
-saveEditorData = function(callback) {
+saveEditorData = function(force, callback) {
+  var args, authorObj, el, key, l, len, len1, m, postData, ref, ref1, ref2;
+  if (force == null) {
+    force = false;
+  }
 
   /*
    * Actually do the file saving
    */
-  var args, authorObj, el, key, l, len, len1, m, postData, ref, ref1, ref2;
   startLoad();
   $(".hanging-alert").remove();
-  if (localStorage._adp == null) {
+  if (force || (localStorage._adp == null)) {
     postData = _adp.projectData;
     try {
       postData.access_data = _adp.projectData.access_data.raw;
@@ -2689,7 +2703,7 @@ $(function() {
     alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + localStorage._adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");
     return $("#offline-save").click(function() {
-      return saveEditorData(function() {
+      return saveEditorData(false, function() {
         return document.location.reload(true);
       });
     });
@@ -2858,7 +2872,7 @@ validateData = function(dataObject, callback) {
   return false;
 };
 
-stopLoadBarsError = function(currentTimeout) {
+stopLoadBarsError = function(currentTimeout, message) {
   var el, l, len, others;
   try {
     clearTimeout(currentTimeout);
@@ -2871,6 +2885,10 @@ stopLoadBarsError = function(currentTimeout) {
       $(el).addClass("error-progress");
       $(el).find("#primaryProgress").css("background", "#F44336");
     }
+  }
+  if (message != null) {
+    bsAlert("<strong>Data Validation Error</strong: " + message, "danger");
+    stopLoadError("There was a problem validating your data");
   }
   return false;
 };

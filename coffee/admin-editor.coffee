@@ -428,7 +428,7 @@ loadEditor = (projectPreload) ->
               """
               $("#confirm-delete-project").replaceWith button
             # Save it
-            saveEditorData()
+            saveEditorData(true)
             false
           $("#discard-changes-exit").click ->
             showEditList()
@@ -1009,13 +1009,13 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   false
 
 
-saveEditorData = (callback) ->
+saveEditorData = (force = false, callback) ->
   ###
   # Actually do the file saving
   ###
   startLoad()
   $(".hanging-alert").remove()
-  unless localStorage._adp?
+  if force or not localStorage._adp?
     postData = _adp.projectData
     try
       postData.access_data = _adp.projectData.access_data.raw
@@ -1077,5 +1077,5 @@ $ ->
     """
     bsAlert alertHtml, "info"
     $("#offline-save").click ->
-      saveEditorData ->
+      saveEditorData false,  ->
         document.location.reload(true)
