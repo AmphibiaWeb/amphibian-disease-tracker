@@ -1009,6 +1009,23 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   false
 
 
+
+
+revalidateAndUpdateData = ->
+  excelHandler dataFileParams.filePath, true, (data) ->
+    newGeoDataHandler data, (validatedData, projectIdentifier)->
+      console.info validatedData
+      # Need carto update
+      false
+    false
+  false
+
+
+
+
+
+
+
 saveEditorData = (force = false, callback) ->
   ###
   # Actually do the file saving

@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, saveEditorData, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -1204,13 +1204,10 @@ singleDataFileHelper = function(newFile, callback) {
   }
 };
 
-excelHandler = function(path, hasHeaders, skipGeoHandler) {
+excelHandler = function(path, hasHeaders, callbackSkipsGeoHandler) {
   var args, correctedPath, helperApi;
   if (hasHeaders == null) {
     hasHeaders = true;
-  }
-  if (skipGeoHandler == null) {
-    skipGeoHandler = false;
   }
   startLoad();
   $("#validator-progress-container").remove();
@@ -1231,23 +1228,20 @@ excelHandler = function(path, hasHeaders, skipGeoHandler) {
       return false;
     }
     return singleDataFileHelper(path, function() {
-      var html, nameArr, randomData, randomRow, rows;
+      var nameArr, rows;
       $("#upload-data").attr("disabled", "disabled");
       nameArr = path.split("/");
       dataFileParams.hasDataFile = true;
       dataFileParams.fileName = nameArr.pop();
       dataFileParams.filePath = correctedPath;
       rows = Object.size(result.data);
-      randomData = "";
-      if (rows > 0) {
-        randomRow = randomInt(1, rows) - 1;
-        randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow]);
-      }
-      html = "<pre>\nFrom upload, fetched " + rows + " rows." + randomData + "\n</pre>";
       uploadedData = result.data;
       _adp.parsedUploadedData = result.data;
-      if (!skipGeoHandler) {
+      if (typeof callbackSkipsGeoHandler !== "function") {
         newGeoDataHandler(result.data);
+      } else {
+        console.warn("Skipping newGeoDataHandler() !");
+        callback(result.data);
       }
       return stopLoad();
     });
@@ -1622,7 +1616,7 @@ newGeoDataHandler = function(dataObject, skipCarto) {
       _adp.data.taxa.list = taxonList;
       _adp.data.taxa.clades = cladeList;
       _adp.data.taxa.validated = validatedData.validated_taxa;
-      if (!skipCarto) {
+      if (!(typeof skipCarto === "function" || skipCarto === true)) {
         return geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table, coords, options) {
           return createMap2(coords, options, function() {
             window.mapBuilder.points = new Array();
@@ -1630,6 +1624,12 @@ newGeoDataHandler = function(dataObject, skipCarto) {
             return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
           });
         });
+      } else {
+        if (typeof skipCarto === "function") {
+          return skipCarto(validatedData, projectIdentifier);
+        } else {
+          return console.warn("Carto upload was skipped, but no callback provided");
+        }
       }
     });
   } catch (error4) {
@@ -2624,6 +2624,17 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     $("#append-replace-data-toggle").attr("hidden", "hidden");
   }
   bootstrapUploader("data-card-uploader", "");
+  return false;
+};
+
+revalidateAndUpdateData = function() {
+  excelHandler(dataFileParams.filePath, true, function(data) {
+    newGeoDataHandler(data, function(validatedData, projectIdentifier) {
+      console.info(validatedData);
+      return false;
+    });
+    return false;
+  });
   return false;
 };
 

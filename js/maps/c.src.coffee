@@ -88,9 +88,11 @@ String::toAscii = ->
     .replace(/[\u02DC|\u00A0]/g, " ")
 
 
-String::toBool = -> @toString().toLowerCase() is 'true' or @toString() is "1"
+String::toBool = ->
+  test = @toString().toLowerCase()
+  test is 'true' or test is "1"
 
-Boolean::toBool = -> @toString() is 'true'
+Boolean::toBool = -> @
 
 Number::toBool = -> @toString() is "1"
 
