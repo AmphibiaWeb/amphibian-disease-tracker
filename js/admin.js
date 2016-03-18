@@ -2533,7 +2533,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     }
     if ((cartoData != null ? (ref1 = cartoData.bounding_polygon) != null ? ref1.paths : void 0 : void 0) == null) {
       try {
-        _adp.canonicalHull = createConvexHull(points, true);
+        _adp.canonicalHull = createConvexHull(pointArr, true);
         try {
           cartoObj = new Object();
           if (cartoData == null) {

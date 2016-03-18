@@ -2655,7 +2655,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     # p$("#transect-viewport").resize()
     unless cartoData?.bounding_polygon?.paths?
       try
-        _adp.canonicalHull = createConvexHull points, true
+        _adp.canonicalHull = createConvexHull pointArr, true
         try
           cartoObj = new Object()
           unless cartoData?
