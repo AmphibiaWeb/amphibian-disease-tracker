@@ -121,9 +121,11 @@ renderMapWithData = (projectData, force = false) ->
   catch
     zoom = ""
   poly = cartoData.bounding_polygon
-  if isArray poly or not poly?.paths?
+  if isArray(poly) or not poly?.paths?
     paths = poly
     tmp = toObject poly
+    if typeof tmp isnt "object"
+      tmp = new Object()
     tmp.paths = poly
     poly = tmp
     poly.fillColor ?= defaultFillColor
