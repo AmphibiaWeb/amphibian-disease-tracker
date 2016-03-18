@@ -130,8 +130,8 @@ renderMapWithData = (projectData, force = false) ->
     unless isArray tmp.paths
       tmp.paths = new Array()
     poly = tmp
-    poly.fillColor ?= defaultFillColor
-    poly.fillOpacity ?= defaultFillOpacity
+  poly.fillColor ?= defaultFillColor
+  poly.fillOpacity ?= defaultFillOpacity
   mapHtml = """
   <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
   """
