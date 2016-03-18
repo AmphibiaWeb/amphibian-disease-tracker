@@ -3017,9 +3017,10 @@ stopLoadBarsError = (currentTimeout, message) ->
   .removeAttr "indeterminate"
   others = $("#validator-progress-container paper-progress:not([indeterminate])")
   for el in others
-    if p$(el).value isnt p$(el).max
-      $(el).addClass "error-progress"
-      $(el).find("#primaryProgress").css "background", "#F44336"
+    try
+      if p$(el).value isnt p$(el).max
+        $(el).addClass "error-progress"
+        $(el).find("#primaryProgress").css "background", "#F44336"
   if message?
     bsAlert "<strong>Data Validation Error</strong: #{message}", "danger"
     stopLoadError "There was a problem validating your data"
@@ -3072,7 +3073,11 @@ validateFimsData = (dataObject, callback = null) ->
   timerPerRow = 20
   validatorTimeout = null
   do animateProgress = ->
-    val = p$("#data-validation").value
+    try
+      val = p$("#data-validation").value
+    catch
+      # Probably revalidating ...
+      return false
     if val >= rowCount
       # Stop the animation
       clearTimeout validatorTimeout
@@ -3154,8 +3159,9 @@ validateFimsData = (dataObject, callback = null) ->
         $("#validator-progress-container").append html
         $("#validator-progress-container").get(0).scrollIntoView()
       return false
-    p$("#data-validation").value = p$("#data-validation").max
-    clearTimeout validatorTimeout
+    try
+      p$("#data-validation").value = p$("#data-validation").max
+      clearTimeout validatorTimeout
     # When we're successful, run the dependent callback
     if typeof callback is "function"
       callback(dataObject)
@@ -3302,14 +3308,16 @@ validateTaxonData = (dataObject, callback = null) ->
         console.warn "Problem replacing rows! #{e.message}"
         console.warn e.stack
       taxonArray[key] = result
-      p$("#taxa-validation").value = key
+      try
+        p$("#taxa-validation").value = key
       key++
       if key < taxonArray.length
         if key %% 50 is 0
           toastStatusMessage "Validating taxa #{key} of #{taxonArray.length} ..."
         taxonValidatorLoop(taxonArray, key)
       else
-        p$("#taxa-validation").value = key
+        try
+          p$("#taxa-validation").value = key
         dataObject.validated_taxa  = taxonArray
         console.info "Calling back!", dataObject
         callback(dataObject)
