@@ -105,7 +105,7 @@ renderMapWithData = function(projectData, force) {
   if (raw.hasDataFile) {
     helperDir = "helpers/";
     filePath = raw.filePath;
-    if (filePath.search(helperDir === -1)) {
+    if (filePath.search(helperDir) === -1) {
       filePath = "" + helperDir + filePath;
     }
     downloadButton = "<button class=\"btn btn-primary click download-file download-data-file\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Newest Data File\n</button>";

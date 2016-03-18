@@ -88,7 +88,7 @@ renderMapWithData = (projectData, force = false) ->
   if raw.hasDataFile
     helperDir = "helpers/"
     filePath = raw.filePath
-    if filePath.search helperDir is -1
+    if filePath.search(helperDir) is -1
       filePath = "#{helperDir}#{filePath}"
     # most recent download
     downloadButton = """
