@@ -2921,10 +2921,12 @@ stopLoadBarsError = function(currentTimeout, message) {
   others = $("#validator-progress-container paper-progress:not([indeterminate])");
   for (l = 0, len = others.length; l < len; l++) {
     el = others[l];
-    if (p$(el).value !== p$(el).max) {
-      $(el).addClass("error-progress");
-      $(el).find("#primaryProgress").css("background", "#F44336");
-    }
+    try {
+      if (p$(el).value !== p$(el).max) {
+        $(el).addClass("error-progress");
+        $(el).find("#primaryProgress").css("background", "#F44336");
+      }
+    } catch (undefined) {}
   }
   if (message != null) {
     bsAlert("<strong>Data Validation Error</strong: " + message, "danger");
@@ -2989,8 +2991,12 @@ validateFimsData = function(dataObject, callback) {
   timerPerRow = 20;
   validatorTimeout = null;
   (animateProgress = function() {
-    var error1, val;
-    val = p$("#data-validation").value;
+    var error1, error2, val;
+    try {
+      val = p$("#data-validation").value;
+    } catch (error1) {
+      return false;
+    }
     if (val >= rowCount) {
       clearTimeout(validatorTimeout);
       return false;
@@ -2998,7 +3004,7 @@ validateFimsData = function(dataObject, callback) {
     ++val;
     try {
       p$("#data-validation").value = val;
-    } catch (error1) {
+    } catch (error2) {
       return false;
     }
     return validatorTimeout = delay(timerPerRow, function() {
@@ -3059,8 +3065,10 @@ validateFimsData = function(dataObject, callback) {
       }
       return false;
     }
-    p$("#data-validation").value = p$("#data-validation").max;
-    clearTimeout(validatorTimeout);
+    try {
+      p$("#data-validation").value = p$("#data-validation").max;
+      clearTimeout(validatorTimeout);
+    } catch (undefined) {}
     if (typeof callback === "function") {
       return callback(dataObject);
     }
@@ -3247,7 +3255,9 @@ validateTaxonData = function(dataObject, callback) {
         console.warn(e.stack);
       }
       taxonArray[key] = result;
-      p$("#taxa-validation").value = key;
+      try {
+        p$("#taxa-validation").value = key;
+      } catch (undefined) {}
       key++;
       if (key < taxonArray.length) {
         if (modulo(key, 50) === 0) {
@@ -3255,7 +3265,9 @@ validateTaxonData = function(dataObject, callback) {
         }
         return taxonValidatorLoop(taxonArray, key);
       } else {
-        p$("#taxa-validation").value = key;
+        try {
+          p$("#taxa-validation").value = key;
+        } catch (undefined) {}
         dataObject.validated_taxa = taxonArray;
         console.info("Calling back!", dataObject);
         return callback(dataObject);
