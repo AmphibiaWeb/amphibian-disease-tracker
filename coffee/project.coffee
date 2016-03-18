@@ -127,6 +127,8 @@ renderMapWithData = (projectData, force = false) ->
     if typeof tmp isnt "object"
       tmp = new Object()
     tmp.paths = poly
+    unless isArray tmp.paths
+      tmp.paths = new Array()
     poly = tmp
     poly.fillColor ?= defaultFillColor
     poly.fillOpacity ?= defaultFillOpacity
