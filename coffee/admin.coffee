@@ -1236,7 +1236,7 @@ singleDataFileHelper = (newFile, callback) ->
     callback()
 
 
-excelHandler = (path, hasHeaders = true, skipGeoHandler = false) ->
+excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
   startLoad()
   $("#validator-progress-container").remove()
   renderValidateProgress()
@@ -1262,20 +1262,23 @@ excelHandler = (path, hasHeaders = true, skipGeoHandler = false) ->
       dataFileParams.fileName = nameArr.pop()
       dataFileParams.filePath = correctedPath
       rows = Object.size(result.data)
-      randomData = ""
-      if rows > 0
-        randomRow = randomInt(1,rows) - 1
-        randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow])
-      html = """
-      <pre>
-      From upload, fetched #{rows} rows.#{randomData}
-      </pre>
-      """
+      # randomData = ""
+      # if rows > 0
+      #   randomRow = randomInt(1,rows) - 1
+      #   randomData = "\n\nHere's a random row: " + JSON.stringify(result.data[randomRow])
+      # html = """
+      # <pre>
+      # From upload, fetched #{rows} rows.#{randomData}
+      # </pre>
+      # """
       # $("#main-body").append html
       uploadedData = result.data
       _adp.parsedUploadedData = result.data
-      unless skipGeoHandler
+      unless typeof callbackSkipsGeoHandler is "function"
         newGeoDataHandler(result.data)
+      else
+        console.warn "Skipping newGeoDataHandler() !"
+        callback(result.data)
       stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
@@ -1591,7 +1594,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
       _adp.data.taxa.list = taxonList
       _adp.data.taxa.clades = cladeList
       _adp.data.taxa.validated = validatedData.validated_taxa
-      unless skipCarto
+      unless typeof skipCarto is "function" or skipCarto is true
         geo.requestCartoUpload validatedData, projectIdentifier, "create", (table, coords, options) ->
           #mapOverlayPolygon validatedData.transectRing
           createMap2 coords, options, ->
@@ -1599,6 +1602,11 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
             window.mapBuilder.points = new Array()
             $("#init-map-build").attr "disabled", "disabled"
             $("#init-map-build .points-count").text window.mapBuilder.points.length
+      else
+        if typeof skipCarto is "function"
+          skipCarto validatedData, projectIdentifier
+        else
+          console.warn "Carto upload was skipped, but no callback provided"
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"

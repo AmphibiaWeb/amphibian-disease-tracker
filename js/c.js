@@ -132,11 +132,13 @@ String.prototype.toAscii = function() {
 };
 
 String.prototype.toBool = function() {
-  return this.toString().toLowerCase() === 'true' || this.toString() === "1";
+  var test;
+  test = this.toString().toLowerCase();
+  return test === 'true' || test === "1";
 };
 
 Boolean.prototype.toBool = function() {
-  return this.toString() === 'true';
+  return this;
 };
 
 Number.prototype.toBool = function() {
