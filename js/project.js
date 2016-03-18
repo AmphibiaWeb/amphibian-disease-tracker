@@ -141,6 +141,9 @@ renderMapWithData = function(projectData, force) {
       tmp = new Object();
     }
     tmp.paths = poly;
+    if (!isArray(tmp.paths)) {
+      tmp.paths = new Array();
+    }
     poly = tmp;
     if (poly.fillColor == null) {
       poly.fillColor = defaultFillColor;
