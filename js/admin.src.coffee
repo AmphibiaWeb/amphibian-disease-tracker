@@ -1203,7 +1203,7 @@ singleDataFileHelper = (newFile, callback) ->
   if typeof callback isnt "function"
     console.error "Second argument must be a function"
     return false
-  if dataFileParams.hasDataFile is true
+  if dataFileParams.hasDataFile is true and newFile isnt dataFileParams.filePath
     # Show a popup that conditionally calls callback
     if $("#single-data-file-modal").exists()
       $("#single-data-file-modal").remove()
@@ -1242,7 +1242,7 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
   renderValidateProgress()
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
-  if path.search helperDir isnt -1
+  if path.search(helperDir) isnt -1
     # The helper file lives in /helpers/ so we want to remove that
     console.info "removing '#{helperDir}'"
     correctedPath = path.slice helperDir.length
@@ -1278,7 +1278,7 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
         newGeoDataHandler(result.data)
       else
         console.warn "Skipping newGeoDataHandler() !"
-        callback(result.data)
+        callbackSkipsGeoHandler(result.data)
       stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
@@ -1366,9 +1366,11 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
       removeDataFile()
       return false
     rows = Object.size(dataObject)
-    p$("#samplecount").value = rows
+    try
+      p$("#samplecount").value = rows
     if isNull $("#project-disease").val()
-      p$("#project-disease").value = sampleRow.diseaseTested
+      try
+        p$("#project-disease").value = sampleRow.diseaseTested
     # Clean up the data for CartoDB
     # FIMS it up
     parsedData = new Object()
@@ -1379,7 +1381,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
     # Iterate over the data, coerce some data types
     toastStatusMessage "Please wait, parsing your data"
     $("#data-parsing").removeAttr "indeterminate"
-    p$("#data-parsing").max = rows
+    try
+      p$("#data-parsing").max = rows
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1480,7 +1483,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
       parsedData[n] = tRow
       if n %% 500 is 0 and n > 0
         toastStatusMessage "Processed #{n} rows ..."
-      p$("#data-parsing").value = n + 1
+      try
+        p$("#data-parsing").value = n + 1
 
     if isNull _adp.projectIdentifierString
       # Create a project identifier from the user hash and project title
@@ -1537,11 +1541,12 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
           samplesMeta.no_confidence++
       if data.fatal
         samplesMeta.mortality++
-    p$("#positive-samples").value = samplesMeta.positive
-    p$("#negative-samples").value = samplesMeta.negative
-    p$("#no_confidence-samples").value = samplesMeta.no_confidence
-    p$("#morbidity-count").value = samplesMeta.morbidity
-    p$("#mortality-count").value = samplesMeta.mortality
+    try
+      p$("#positive-samples").value = samplesMeta.positive
+      p$("#negative-samples").value = samplesMeta.negative
+      p$("#no_confidence-samples").value = samplesMeta.no_confidence
+      p$("#morbidity-count").value = samplesMeta.morbidity
+      p$("#mortality-count").value = samplesMeta.mortality
     if isNull _adp.projectId
       author = $.cookie("#{adminParams.domain}_link")
       _adp.projectId = md5("#{projectIdentifier}#{author}#{Date.now()}")
@@ -1608,7 +1613,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
         else
           console.warn "Carto upload was skipped, but no callback provided"
   catch e
-    console.error e.message
+    console.error "Error parsing data - #{e.message}"
+    console.warn e.stack
     toastStatusMessage "There was a problem parsing your data"
   false
 
@@ -2748,10 +2754,23 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 
 revalidateAndUpdateData = ->
-  excelHandler dataFileParams.filePath, true, (data) ->
+  cartoData = JSON.parse _adp.projectData.carto_id.unescape()
+  if dataFileParams?.filePath?
+    path = dataFileParams.filePath
+  else
+    path = cartoData.raw_data.filePath
+  _adp.projectIdentifierString = cartoData.table.split("_")[0]
+  _adp.projectId = _adp.projectData.project_id
+  unless _adp.fims?.expedition?.expeditionId?
+    _adp.fims =
+      expedition:
+        expeditionId: 26
+        ark: _adp.projectData.project_obj_id
+  excelHandler path, true, (data) ->
     newGeoDataHandler data, (validatedData, projectIdentifier)->
       console.info validatedData
       # Need carto update
+      stopLoad()
       false
     false
   false
@@ -3047,7 +3066,8 @@ validateFimsData = (dataObject, callback = null) ->
   console.info "FIMS Validating", dataObject.data
   $("#data-validation").removeAttr "indeterminate"
   rowCount = Object.size dataObject.data
-  p$("#data-validation").max = rowCount * 2
+  try
+    p$("#data-validation").max = rowCount * 2
   # Set an animation timer
   timerPerRow = 20
   validatorTimeout = null
@@ -3058,7 +3078,10 @@ validateFimsData = (dataObject, callback = null) ->
       clearTimeout validatorTimeout
       return false
     ++val
-    p$("#data-validation").value = val
+    try
+      p$("#data-validation").value = val
+    catch
+      return false
     validatorTimeout = delay timerPerRow, ->
       animateProgress()
   # Format the JSON for FIMS

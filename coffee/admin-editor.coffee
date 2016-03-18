@@ -1012,10 +1012,23 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 
 revalidateAndUpdateData = ->
-  excelHandler dataFileParams.filePath, true, (data) ->
+  cartoData = JSON.parse _adp.projectData.carto_id.unescape()
+  if dataFileParams?.filePath?
+    path = dataFileParams.filePath
+  else
+    path = cartoData.raw_data.filePath
+  _adp.projectIdentifierString = cartoData.table.split("_")[0]
+  _adp.projectId = _adp.projectData.project_id
+  unless _adp.fims?.expedition?.expeditionId?
+    _adp.fims =
+      expedition:
+        expeditionId: 26
+        ark: _adp.projectData.project_obj_id
+  excelHandler path, true, (data) ->
     newGeoDataHandler data, (validatedData, projectIdentifier)->
       console.info validatedData
       # Need carto update
+      stopLoad()
       false
     false
   false
