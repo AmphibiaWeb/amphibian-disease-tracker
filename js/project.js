@@ -134,9 +134,12 @@ renderMapWithData = function(projectData, force) {
     zoom = "";
   }
   poly = cartoData.bounding_polygon;
-  if (isArray(poly || ((poly != null ? poly.paths : void 0) == null))) {
+  if (isArray(poly) || ((poly != null ? poly.paths : void 0) == null)) {
     paths = poly;
     tmp = toObject(poly);
+    if (typeof tmp !== "object") {
+      tmp = new Object();
+    }
     tmp.paths = poly;
     poly = tmp;
     if (poly.fillColor == null) {
