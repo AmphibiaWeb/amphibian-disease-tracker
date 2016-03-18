@@ -1236,7 +1236,7 @@ singleDataFileHelper = (newFile, callback) ->
     callback()
 
 
-excelHandler = (path, hasHeaders = true) ->
+excelHandler = (path, hasHeaders = true, skipGeoHandler = false) ->
   startLoad()
   $("#validator-progress-container").remove()
   renderValidateProgress()
@@ -1273,7 +1273,9 @@ excelHandler = (path, hasHeaders = true) ->
       """
       # $("#main-body").append html
       uploadedData = result.data
-      newGeoDataHandler(result.data)
+      _adp.parsedUploadedData = result.data
+      unless skipGeoHandler
+        newGeoDataHandler(result.data)
       stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
@@ -1316,7 +1318,7 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   # TODO FINISH THIS
   false
 
-newGeoDataHandler = (dataObject = new Object()) ->
+newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
   ###
   # Data expected in form
   #
@@ -1325,7 +1327,7 @@ newGeoDataHandler = (dataObject = new Object()) ->
   # FIMS data format:
   # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
   #
-  # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters", "alt"
+  # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters"
   ###
   try
     unless geo.geocoder?
@@ -1434,16 +1436,16 @@ newGeoDataHandler = (dataObject = new Object()) ->
           when "decimalLatitude", "decimalLongitude", "alt", "coordinateUncertaintyInMeters"
             # Sanity -- do the coordinates exist on earth?
             if not isNumber value
-              stopLoadError "Detected an invalid number for #{column} at row #{n} ('#{value}')"
+              stopLoadBarsError null, "Detected an invalid number for #{column} at row #{n} ('#{value}')"
               return false
             if column is "decimalLatitude" and -90 > value > 90
-              stopLoadError "Detected an invalid latitude #{value} at row #{n}"
+              stopLoadBarsError null, "Detected an invalid latitude #{value} at row #{n}"
               return false
             if column is "decimalLongitude" and -180 > value > 180
-              stopLoadError "Detected an invalid longitude #{value} at row #{n}"
+              stopLoadBarsError null, "Detected an invalid longitude #{value} at row #{n}"
               return false
             if column is "coordinateUncertaintyInMeters" and value <= 0
-              stopLoadError "Coordinate uncertainty must be >= 0 at row #{n}"
+              stopLoadBarsError null, "Coordinate uncertainty must be >= 0 at row #{n}"
               return false
             cleanValue = toFloat value
           when "diseaseDetected"
@@ -1589,13 +1591,14 @@ newGeoDataHandler = (dataObject = new Object()) ->
       _adp.data.taxa.list = taxonList
       _adp.data.taxa.clades = cladeList
       _adp.data.taxa.validated = validatedData.validated_taxa
-      geo.requestCartoUpload validatedData, projectIdentifier, "create", (table, coords, options) ->
-        #mapOverlayPolygon validatedData.transectRing
-        createMap2 coords, options, ->
-          # Reset the biulder
-          window.mapBuilder.points = new Array()
-          $("#init-map-build").attr "disabled", "disabled"
-          $("#init-map-build .points-count").text window.mapBuilder.points.length
+      unless skipCarto
+        geo.requestCartoUpload validatedData, projectIdentifier, "create", (table, coords, options) ->
+          #mapOverlayPolygon validatedData.transectRing
+          createMap2 coords, options, ->
+            # Reset the biulder
+            window.mapBuilder.points = new Array()
+            $("#init-map-build").attr "disabled", "disabled"
+            $("#init-map-build .points-count").text window.mapBuilder.points.length
   catch e
     console.error e.message
     toastStatusMessage "There was a problem parsing your data"
