@@ -928,6 +928,17 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       workingMap += marker
       pointArr.push point
     # p$("#transect-viewport").resize()
+    unless cartoData?.bounding_polygon?.paths?
+      try
+        _adp.canonicalHull = createConvexHull points, true
+        try
+          cartoObj = new Object()
+          unless cartoData?
+            cartoData = new Object()
+          unless cartoData.bounding_polygon?
+            cartoData.bounding_polygon = new Object()
+          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+          _adp.projectData.carto_id = JSON.stringify cartoData
     totalRows = result.parsed_responses[0].total_rows ? 0
     if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
       mapOptions.skipHull = false

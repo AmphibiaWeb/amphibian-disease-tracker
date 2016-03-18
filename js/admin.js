@@ -2483,7 +2483,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var center, error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, ref3, ref4, row, rows, taxa, totalRows, truncateLength, workingMap;
+    var center, error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, ref3, ref4, ref5, row, rows, taxa, totalRows, truncateLength, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
@@ -2531,11 +2531,27 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       workingMap += marker;
       pointArr.push(point);
     }
-    totalRows = (ref1 = result.parsed_responses[0].total_rows) != null ? ref1 : 0;
-    if (pointArr.length > 0 || (mapOptions != null ? (ref2 = mapOptions.boundingBox) != null ? ref2.length : void 0 : void 0) > 0) {
+    if ((cartoData != null ? (ref1 = cartoData.bounding_polygon) != null ? ref1.paths : void 0 : void 0) == null) {
+      try {
+        _adp.canonicalHull = createConvexHull(points, true);
+        try {
+          cartoObj = new Object();
+          if (cartoData == null) {
+            cartoData = new Object();
+          }
+          if (cartoData.bounding_polygon == null) {
+            cartoData.bounding_polygon = new Object();
+          }
+          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
+          _adp.projectData.carto_id = JSON.stringify(cartoData);
+        } catch (undefined) {}
+      } catch (undefined) {}
+    }
+    totalRows = (ref2 = result.parsed_responses[0].total_rows) != null ? ref2 : 0;
+    if (pointArr.length > 0 || (mapOptions != null ? (ref3 = mapOptions.boundingBox) != null ? ref3.length : void 0 : void 0) > 0) {
       mapOptions.skipHull = false;
       if (pointArr.length === 0) {
-        center = (ref3 = (ref4 = geo.centerPoint) != null ? ref4 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref3 : [window.locationData.lat, window.locationData.lng];
+        center = (ref4 = (ref5 = geo.centerPoint) != null ? ref5 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref4 : [window.locationData.lat, window.locationData.lng];
         pointArr.push(center);
       }
       mapOptions.onClickCallback = function() {
