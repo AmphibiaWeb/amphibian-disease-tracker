@@ -54,7 +54,7 @@ String::toBool = ->
   test = @toString().toLowerCase()
   test is 'true' or test is "1"
 
-Boolean::toBool = -> @
+Boolean::toBool = -> @toString() is "true"
 
 Number::toBool = -> @toString() is "1"
 

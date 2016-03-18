@@ -100,7 +100,7 @@
   };
 
   Boolean.prototype.toBool = function() {
-    return this;
+    return this.toString() === "true";
   };
 
   Number.prototype.toBool = function() {
