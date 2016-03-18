@@ -1182,7 +1182,7 @@ singleDataFileHelper = function(newFile, callback) {
     console.error("Second argument must be a function");
     return false;
   }
-  if (dataFileParams.hasDataFile === true) {
+  if (dataFileParams.hasDataFile === true && newFile !== dataFileParams.filePath) {
     if ($("#single-data-file-modal").exists()) {
       $("#single-data-file-modal").remove();
     }
@@ -1214,7 +1214,7 @@ excelHandler = function(path, hasHeaders, callbackSkipsGeoHandler) {
   renderValidateProgress();
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
-  if (path.search(helperDir !== -1)) {
+  if (path.search(helperDir) !== -1) {
     console.info("removing '" + helperDir + "'");
     correctedPath = path.slice(helperDir.length);
   }
@@ -1241,7 +1241,7 @@ excelHandler = function(path, hasHeaders, callbackSkipsGeoHandler) {
         newGeoDataHandler(result.data);
       } else {
         console.warn("Skipping newGeoDataHandler() !");
-        callback(result.data);
+        callbackSkipsGeoHandler(result.data);
       }
       return stopLoad();
     });
@@ -1356,9 +1356,13 @@ newGeoDataHandler = function(dataObject, skipCarto) {
       return false;
     }
     rows = Object.size(dataObject);
-    p$("#samplecount").value = rows;
+    try {
+      p$("#samplecount").value = rows;
+    } catch (undefined) {}
     if (isNull($("#project-disease").val())) {
-      p$("#project-disease").value = sampleRow.diseaseTested;
+      try {
+        p$("#project-disease").value = sampleRow.diseaseTested;
+      } catch (undefined) {}
     }
     parsedData = new Object();
     dataAttrs.coords = new Array();
@@ -1367,7 +1371,9 @@ newGeoDataHandler = function(dataObject, skipCarto) {
     fimsExtra = new Object();
     toastStatusMessage("Please wait, parsing your data");
     $("#data-parsing").removeAttr("indeterminate");
-    p$("#data-parsing").max = rows;
+    try {
+      p$("#data-parsing").max = rows;
+    } catch (undefined) {}
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -1484,7 +1490,9 @@ newGeoDataHandler = function(dataObject, skipCarto) {
       if (modulo(n, 500) === 0 && n > 0) {
         toastStatusMessage("Processed " + n + " rows ...");
       }
-      p$("#data-parsing").value = n + 1;
+      try {
+        p$("#data-parsing").value = n + 1;
+      } catch (undefined) {}
     }
     if (isNull(_adp.projectIdentifierString)) {
       projectIdentifier = "t" + md5(p$("#project-title").value + author);
@@ -1552,11 +1560,13 @@ newGeoDataHandler = function(dataObject, skipCarto) {
         samplesMeta.mortality++;
       }
     }
-    p$("#positive-samples").value = samplesMeta.positive;
-    p$("#negative-samples").value = samplesMeta.negative;
-    p$("#no_confidence-samples").value = samplesMeta.no_confidence;
-    p$("#morbidity-count").value = samplesMeta.morbidity;
-    p$("#mortality-count").value = samplesMeta.mortality;
+    try {
+      p$("#positive-samples").value = samplesMeta.positive;
+      p$("#negative-samples").value = samplesMeta.negative;
+      p$("#no_confidence-samples").value = samplesMeta.no_confidence;
+      p$("#morbidity-count").value = samplesMeta.morbidity;
+      p$("#mortality-count").value = samplesMeta.mortality;
+    } catch (undefined) {}
     if (isNull(_adp.projectId)) {
       author = $.cookie(adminParams.domain + "_link");
       _adp.projectId = md5("" + projectIdentifier + author + (Date.now()));
@@ -1634,7 +1644,8 @@ newGeoDataHandler = function(dataObject, skipCarto) {
     });
   } catch (error4) {
     e = error4;
-    console.error(e.message);
+    console.error("Error parsing data - " + e.message);
+    console.warn(e.stack);
     toastStatusMessage("There was a problem parsing your data");
   }
   return false;
@@ -2629,15 +2640,25 @@ getProjectCartoData = function(cartoObj, mapOptions) {
 
 revalidateAndUpdateData = function() {
   var cartoData, path;
+  cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
   if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
     path = dataFileParams.filePath;
   } else {
-    cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
     path = cartoData.raw_data.filePath;
+  }
+  _adp.projectIdentifierString = cartoData.table.split("_")[0];
+  _adp.projectId = _adp.projectData.project_id;
+  if (_adp.fims == null) {
+    _adp.fims = {
+      expedition: {
+        expeditionId: 26
+      }
+    };
   }
   excelHandler(path, true, function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
       console.info(validatedData);
+      stopLoad();
       return false;
     });
     return false;
@@ -2961,18 +2982,24 @@ validateFimsData = function(dataObject, callback) {
   console.info("FIMS Validating", dataObject.data);
   $("#data-validation").removeAttr("indeterminate");
   rowCount = Object.size(dataObject.data);
-  p$("#data-validation").max = rowCount * 2;
+  try {
+    p$("#data-validation").max = rowCount * 2;
+  } catch (undefined) {}
   timerPerRow = 20;
   validatorTimeout = null;
   (animateProgress = function() {
-    var val;
+    var error1, val;
     val = p$("#data-validation").value;
     if (val >= rowCount) {
       clearTimeout(validatorTimeout);
       return false;
     }
     ++val;
-    p$("#data-validation").value = val;
+    try {
+      p$("#data-validation").value = val;
+    } catch (error1) {
+      return false;
+    }
     return validatorTimeout = delay(timerPerRow, function() {
       return animateProgress();
     });

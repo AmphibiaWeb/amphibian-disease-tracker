@@ -1012,11 +1012,17 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 
 revalidateAndUpdateData = ->
+  cartoData = JSON.parse _adp.projectData.carto_id.unescape()
   if dataFileParams?.filePath?
     path = dataFileParams.filePath
   else
-    cartoData = JSON.parse _adp.projectData.carto_id.unescape()
     path = cartoData.raw_data.filePath
+  _adp.projectIdentifierString = cartoData.table.split("_")[0]
+  _adp.projectId = _adp.projectData.project_id
+  unless _adp.fims?
+    _adp.fims =
+      expedition:
+        expeditionId: 26
   excelHandler path, true, (data) ->
     newGeoDataHandler data, (validatedData, projectIdentifier)->
       console.info validatedData

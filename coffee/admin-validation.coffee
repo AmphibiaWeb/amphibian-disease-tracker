@@ -98,7 +98,8 @@ validateFimsData = (dataObject, callback = null) ->
   console.info "FIMS Validating", dataObject.data
   $("#data-validation").removeAttr "indeterminate"
   rowCount = Object.size dataObject.data
-  p$("#data-validation").max = rowCount * 2
+  try
+    p$("#data-validation").max = rowCount * 2
   # Set an animation timer
   timerPerRow = 20
   validatorTimeout = null
@@ -109,7 +110,10 @@ validateFimsData = (dataObject, callback = null) ->
       clearTimeout validatorTimeout
       return false
     ++val
-    p$("#data-validation").value = val
+    try
+      p$("#data-validation").value = val
+    catch
+      return false
     validatorTimeout = delay timerPerRow, ->
       animateProgress()
   # Format the JSON for FIMS
