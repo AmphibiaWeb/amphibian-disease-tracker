@@ -50,9 +50,11 @@ toInt = (str) ->
   if not isNumber(str) or isNull(str) then return 0
   parseInt(str)
 
-String::toBool = -> @toString() is 'true'
+String::toBool = ->
+  test = @toString().toLowerCase()
+  test is 'true' or test is "1"
 
-Boolean::toBool = -> @toString() is 'true'
+Boolean::toBool = -> @
 
 Number::toBool = -> @toString() is "1"
 

@@ -1592,7 +1592,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
           console.warn "Couldn't get the family! #{e.message}", taxon.response
           console.warn e.stack
         ++i
-      p$("#species-list").bindValue = taxonListString
+      try
+        p$("#species-list").bindValue = taxonListString
       dataAttrs.dataObj = validatedData
       _adp.data.dataObj = validatedData
       _adp.data.taxa = new Object()
@@ -3278,7 +3279,8 @@ validateTaxonData = (dataObject, callback = null) ->
   toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
   console.info "Replacement tracker", taxaPerRow
   $("#taxa-validation").removeAttr "indeterminate"
-  p$("#taxa-validation").max = taxa.length
+  try
+    p$("#taxa-validation").max = taxa.length
   do taxonValidatorLoop = (taxonArray = taxa, key = 0) ->
     taxaString = "#{taxonArray[key].genus} #{taxonArray[key].species}"
     unless isNull taxonArray[key].subspecies

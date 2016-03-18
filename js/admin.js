@@ -1619,7 +1619,9 @@ newGeoDataHandler = function(dataObject, skipCarto) {
         }
         ++i;
       }
-      p$("#species-list").bindValue = taxonListString;
+      try {
+        p$("#species-list").bindValue = taxonListString;
+      } catch (undefined) {}
       dataAttrs.dataObj = validatedData;
       _adp.data.dataObj = validatedData;
       _adp.data.taxa = new Object();
@@ -3218,7 +3220,9 @@ validateTaxonData = function(dataObject, callback) {
   toastStatusMessage("Validating " + taxa.length + " uniqe " + grammar);
   console.info("Replacement tracker", taxaPerRow);
   $("#taxa-validation").removeAttr("indeterminate");
-  p$("#taxa-validation").max = taxa.length;
+  try {
+    p$("#taxa-validation").max = taxa.length;
+  } catch (undefined) {}
   (taxonValidatorLoop = function(taxonArray, key) {
     taxaString = taxonArray[key].genus + " " + taxonArray[key].species;
     if (!isNull(taxonArray[key].subspecies)) {
