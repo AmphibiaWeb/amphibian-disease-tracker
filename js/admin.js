@@ -2616,7 +2616,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   return false;
 };
 
-saveEditorData = function() {
+saveEditorData = function(callback) {
 
   /*
    * Actually do the file saving
@@ -2624,27 +2624,34 @@ saveEditorData = function() {
   var args, authorObj, el, key, l, len, len1, m, postData, ref, ref1, ref2;
   startLoad();
   $(".hanging-alert").remove();
-  postData = _adp.projectData;
-  try {
-    postData.access_data = _adp.projectData.access_data.raw;
-  } catch (undefined) {}
-  ref = $(".project-param:not([readonly])");
-  for (l = 0, len = ref.length; l < len; l++) {
-    el = ref[l];
-    key = $(el).attr("data-field");
-    if (isNull(key)) {
-      continue;
+  if (localStorage._adp == null) {
+    postData = _adp.projectData;
+    try {
+      postData.access_data = _adp.projectData.access_data.raw;
+    } catch (undefined) {}
+    ref = $(".project-param:not([readonly])");
+    for (l = 0, len = ref.length; l < len; l++) {
+      el = ref[l];
+      key = $(el).attr("data-field");
+      if (isNull(key)) {
+        continue;
+      }
+      postData[key] = p$(el).value;
     }
-    postData[key] = p$(el).value;
+    authorObj = new Object();
+    ref1 = $(".author-param");
+    for (m = 0, len1 = ref1.length; m < len1; m++) {
+      el = ref1[m];
+      key = $(el).attr("data-key");
+      authorObj[key] = (ref2 = $(el).attr("data-value")) != null ? ref2 : p$(el).value;
+    }
+    postData.author_data = JSON.stringify(authorObj);
+    _adp.postedSaveData = postData;
+    _adp.postedSaveTimestamp = Date.now();
+  } else {
+    postData = localStorage._adp.postedSaveData;
+    window._adp = localStorage._adp;
   }
-  authorObj = new Object();
-  ref1 = $(".author-param");
-  for (m = 0, len1 = ref1.length; m < len1; m++) {
-    el = ref1[m];
-    key = $(el).attr("data-key");
-    authorObj[key] = (ref2 = $(el).attr("data-value")) != null ? ref2 : p$(el).value;
-  }
-  postData.author_data = JSON.stringify(authorObj);
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
@@ -2653,19 +2660,41 @@ saveEditorData = function() {
     if (result.status !== true) {
       error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
       stopLoadError("There was an error saving to the server");
-      bsAlert("<strong>Save Error:</strong> " + error, "danger");
+      localStorage._adp = _adp;
+      bsAlert("<strong>Save Error:</strong> " + error + ". An offline backup has been made.", "danger");
       console.error(result.error);
       return false;
     }
     stopLoad();
     toastStatusMessage("Save successful");
-    return _adp.projectData = result.project;
+    _adp.projectData = result.project;
+    return delete localStorage._adp;
   }).error(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
+    localStorage._adp = _adp;
+    bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger");
     return console.error(result, status);
+  }).always(function() {
+    if (typeof callback === "function") {
+      return callback();
+    }
   });
   return false;
 };
+
+$(function() {
+  var alertHtml, d, ref;
+  if (((ref = localStorage._adp) != null ? ref.postedSaveData : void 0) != null) {
+    d = new Date(localStorage._adp.postedSaveTimestamp);
+    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + localStorage._adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
+    bsAlert(alertHtml, "info");
+    return $("#offline-save").click(function() {
+      return saveEditorData(function() {
+        return document.location.reload(true);
+      });
+    });
+  }
+});
 
 
 /*

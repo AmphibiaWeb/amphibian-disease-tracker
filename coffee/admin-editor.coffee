@@ -1009,25 +1009,31 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   false
 
 
-saveEditorData = ->
+saveEditorData = (callback) ->
   ###
   # Actually do the file saving
   ###
   startLoad()
   $(".hanging-alert").remove()
-  postData = _adp.projectData
-  try
-    postData.access_data = _adp.projectData.access_data.raw
-  # Alter this based on inputs
-  for el in $(".project-param:not([readonly])")
-    key = $(el).attr "data-field"
-    if isNull key then continue
-    postData[key] = p$(el).value
-  authorObj = new Object()
-  for el in $(".author-param")
-    key = $(el).attr "data-key"
-    authorObj[key] = $(el).attr("data-value") ? p$(el).value
-  postData.author_data = JSON.stringify authorObj
+  unless localStorage._adp?
+    postData = _adp.projectData
+    try
+      postData.access_data = _adp.projectData.access_data.raw
+    # Alter this based on inputs
+    for el in $(".project-param:not([readonly])")
+      key = $(el).attr "data-field"
+      if isNull key then continue
+      postData[key] = p$(el).value
+    authorObj = new Object()
+    for el in $(".author-param")
+      key = $(el).attr "data-key"
+      authorObj[key] = $(el).attr("data-value") ? p$(el).value
+    postData.author_data = JSON.stringify authorObj
+    _adp.postedSaveData = postData
+    _adp.postedSaveTimestamp = Date.now()
+  else
+    postData = localStorage._adp.postedSaveData
+    window._adp = localStorage._adp
   # Post it
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
@@ -1037,14 +1043,39 @@ saveEditorData = ->
     unless result.status is true
       error = result.human_error ? result.error ? "There was an error saving to the server"
       stopLoadError "There was an error saving to the server"
-      bsAlert "<strong>Save Error:</strong> #{error}", "danger"
+      localStorage._adp = _adp
+      bsAlert "<strong>Save Error:</strong> #{error}. An offline backup has been made.", "danger"
       console.error result.error
       return false
     stopLoad()
     toastStatusMessage "Save successful"
     # Update the project data
     _adp.projectData = result.project
+    delete localStorage._adp
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
+    localStorage._adp = _adp
+    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger"
     console.error result, status
+  .always ->
+    if typeof callback is "function"
+      callback()
   false
+
+
+$ ->
+  if localStorage._adp?.postedSaveData?
+    d = new Date localStorage._adp.postedSaveTimestamp
+    alertHtml = """
+    <strong>You have offline save information</strong> &#8212; did you want to save it?
+    <br/><br/>
+    Project ##{localStorage._adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
+    <br/><br/>
+    <button class="btn btn-success" id="offline-save">
+      Save Now &amp; Refresh Page
+    </button>
+    """
+    bsAlert alertHtml, "info"
+    $("#offline-save").click ->
+      saveEditorData ->
+        document.location.reload(true)
