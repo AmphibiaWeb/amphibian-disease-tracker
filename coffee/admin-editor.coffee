@@ -1011,12 +1011,15 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 
 
-revalidateAndUpdateData = ->
+revalidateAndUpdateData = (newFilePath = false) ->
   cartoData = JSON.parse _adp.projectData.carto_id.unescape()
-  if dataFileParams?.filePath?
-    path = dataFileParams.filePath
+  if newFilePath isnt false
+    path = newFilePath
   else
-    path = cartoData.raw_data.filePath
+    if dataFileParams?.filePath?
+      path = dataFileParams.filePath
+    else
+      path = cartoData.raw_data.filePath
   _adp.projectIdentifierString = cartoData.table.split("_")[0]
   _adp.projectId = _adp.projectData.project_id
   unless _adp.fims?.expedition?.expeditionId?
@@ -1026,8 +1029,16 @@ revalidateAndUpdateData = ->
         ark: _adp.projectData.project_obj_id
   excelHandler path, true, (data) ->
     newGeoDataHandler data, (validatedData, projectIdentifier)->
-      console.info validatedData
+      console.info "Ready to update", validatedData
       # Need carto update
+      # Recalculate hull and update project data
+      _adp.canonicalHull = createConvexHull validatedData.transectRing, true
+      cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+      # Update project data with new taxa info
+      # Update project data with new sample data
+      _adp.disease_morbidity = validatedData.samples.morbidity #etc
+      # If the datasrc isn't the stored one, remint an ark and append
+      # Save it
       stopLoad()
       false
     false
