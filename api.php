@@ -446,6 +446,10 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
+          # For 'nov. sp.', 'sp.' variants, and with following digits,
+          # check genus only
+          # See
+          # http://regexr.com/3d1kb
           if (array_key_exists($providedGenus, $synonymGenusList) && preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies) ) {
                 # OK, they were just looking for a genus anyway
                 $row = $synonymGenusList[$providedGenus];
@@ -475,6 +479,7 @@ function doAWebValidate($get)
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
+                # Pretty format the 'nov sp'/'sp'/etc
                 $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ?
                                        trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) :
                                        trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
@@ -535,6 +540,10 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
+          # For 'nov. sp.', 'sp.' variants, and with following digits,
+          # check genus only
+          # See 
+          # http://regexr.com/3d1kb
           if (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
                 # OK, they were just looking for a genus anyway
                 $row = $genusList[$providedGenus];
@@ -564,6 +573,7 @@ function doAWebValidate($get)
                         $aWebPretty[$prettyKey] = $val;
                     }
                 }
+                # Pretty format the 'nov sp'/'sp'/etc
                 $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ?
                                        trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) :
                                        trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));

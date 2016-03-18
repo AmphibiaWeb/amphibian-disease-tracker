@@ -121,7 +121,7 @@ renderMapWithData = (projectData, force = false) ->
   catch
     zoom = ""
   poly = cartoData.bounding_polygon
-  if isArray poly or not poly.paths?
+  if isArray poly or not poly?.paths?
     paths = poly
     tmp = toObject poly
     tmp.paths = poly
@@ -157,10 +157,12 @@ renderMapWithData = (projectData, force = false) ->
       stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
       return false
     rows = result.parsed_responses[0].rows
+    points = new Array()
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       lat = geoJson.coordinates[0]
       lng = geoJson.coordinates[1]
+      points.push [lat,lng]
       # Fill the points as markers
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
@@ -184,6 +186,9 @@ renderMapWithData = (projectData, force = false) ->
       """
       # $("#transect-viewport").append marker
       mapHtml += marker
+    unless poly?.paths?
+      try
+        _adp.canonicalHull = createConvexHull points, true
     # Looped over all of them
     googleMap = """
           <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6">

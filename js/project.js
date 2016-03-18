@@ -134,7 +134,7 @@ renderMapWithData = function(projectData, force) {
     zoom = "";
   }
   poly = cartoData.bounding_polygon;
-  if (isArray(poly || (poly.paths == null))) {
+  if (isArray(poly || ((poly != null ? poly.paths : void 0) == null))) {
     paths = poly;
     tmp = toObject(poly);
     tmp.paths = poly;
@@ -162,7 +162,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, i, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, ref1, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, i, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, points, ref1, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -177,11 +177,13 @@ renderMapWithData = function(projectData, force) {
       return false;
     }
     rows = result.parsed_responses[0].rows;
+    points = new Array();
     for (k in rows) {
       row = rows[k];
       geoJson = JSON.parse(row.st_asgeojson);
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
+      points.push([lat, lng]);
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
@@ -199,6 +201,11 @@ renderMapWithData = function(projectData, force) {
       }
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\" data-disease-detected=\"" + row.diseasedetected + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
       mapHtml += marker;
+    }
+    if ((poly != null ? poly.paths : void 0) == null) {
+      try {
+        _adp.canonicalHull = createConvexHull(points, true);
+      } catch (undefined) {}
     }
     googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6\">\n  " + mapHtml + "\n</google-map>";
     monthPretty = "";
