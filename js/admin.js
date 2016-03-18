@@ -2483,7 +2483,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var center, error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, ref3, ref4, ref5, row, rows, taxa, totalRows, truncateLength, workingMap;
+    var base, base1, center, error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, ref3, ref4, ref5, ref6, row, rows, taxa, totalRows, truncateLength, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
@@ -2531,7 +2531,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       workingMap += marker;
       pointArr.push(point);
     }
-    if ((cartoData != null ? (ref1 = cartoData.bounding_polygon) != null ? ref1.paths : void 0 : void 0) == null) {
+    if (!(((cartoData != null ? (ref1 = cartoData.bounding_polygon) != null ? ref1.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref2 = cartoData.bounding_polygon) != null ? ref2.fillColor : void 0 : void 0) != null))) {
       try {
         _adp.canonicalHull = createConvexHull(pointArr, true);
         try {
@@ -2543,15 +2543,22 @@ getProjectCartoData = function(cartoObj, mapOptions) {
             cartoData.bounding_polygon = new Object();
           }
           cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
+          if ((base = cartoData.bounding_polygon).fillOpacity == null) {
+            base.fillOpacity = defaultFillOpacity;
+          }
+          if ((base1 = cartoData.bounding_polygon).fillColor == null) {
+            base1.fillColor = defaultFillColor;
+          }
           _adp.projectData.carto_id = JSON.stringify(cartoData);
+          bsAlert("We've updated some of your data automatically. Please save the project before continuing.", "warning");
         } catch (undefined) {}
       } catch (undefined) {}
     }
-    totalRows = (ref2 = result.parsed_responses[0].total_rows) != null ? ref2 : 0;
-    if (pointArr.length > 0 || (mapOptions != null ? (ref3 = mapOptions.boundingBox) != null ? ref3.length : void 0 : void 0) > 0) {
+    totalRows = (ref3 = result.parsed_responses[0].total_rows) != null ? ref3 : 0;
+    if (pointArr.length > 0 || (mapOptions != null ? (ref4 = mapOptions.boundingBox) != null ? ref4.length : void 0 : void 0) > 0) {
       mapOptions.skipHull = false;
       if (pointArr.length === 0) {
-        center = (ref4 = (ref5 = geo.centerPoint) != null ? ref5 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref4 : [window.locationData.lat, window.locationData.lng];
+        center = (ref5 = (ref6 = geo.centerPoint) != null ? ref6 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref5 : [window.locationData.lat, window.locationData.lng];
         pointArr.push(center);
       }
       mapOptions.onClickCallback = function() {

@@ -2653,7 +2653,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       workingMap += marker
       pointArr.push point
     # p$("#transect-viewport").resize()
-    unless cartoData?.bounding_polygon?.paths?
+    unless cartoData?.bounding_polygon?.paths? and cartoData?.bounding_polygon?.fillColor?
       try
         _adp.canonicalHull = createConvexHull pointArr, true
         try
@@ -2663,7 +2663,10 @@ getProjectCartoData = (cartoObj, mapOptions) ->
           unless cartoData.bounding_polygon?
             cartoData.bounding_polygon = new Object()
           cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+          cartoData.bounding_polygon.fillOpacity ?= defaultFillOpacity
+          cartoData.bounding_polygon.fillColor ?= defaultFillColor
           _adp.projectData.carto_id = JSON.stringify cartoData
+          bsAlert "We've updated some of your data automatically. Please save the project before continuing.", "warning"
     totalRows = result.parsed_responses[0].total_rows ? 0
     if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
       mapOptions.skipHull = false

@@ -145,12 +145,12 @@ renderMapWithData = function(projectData, force) {
       tmp.paths = new Array();
     }
     poly = tmp;
-    if (poly.fillColor == null) {
-      poly.fillColor = defaultFillColor;
-    }
-    if (poly.fillOpacity == null) {
-      poly.fillOpacity = defaultFillOpacity;
-    }
+  }
+  if (poly.fillColor == null) {
+    poly.fillColor = defaultFillColor;
+  }
+  if (poly.fillOpacity == null) {
+    poly.fillOpacity = defaultFillOpacity;
   }
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
