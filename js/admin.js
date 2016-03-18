@@ -2639,7 +2639,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
 };
 
 revalidateAndUpdateData = function() {
-  var cartoData, path;
+  var cartoData, path, ref, ref1;
   cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
   if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
     path = dataFileParams.filePath;
@@ -2648,10 +2648,11 @@ revalidateAndUpdateData = function() {
   }
   _adp.projectIdentifierString = cartoData.table.split("_")[0];
   _adp.projectId = _adp.projectData.project_id;
-  if (_adp.fims == null) {
+  if (((ref = _adp.fims) != null ? (ref1 = ref.expedition) != null ? ref1.expeditionId : void 0 : void 0) == null) {
     _adp.fims = {
       expedition: {
-        expeditionId: 26
+        expeditionId: 26,
+        ark: _adp.projectData.project_obj_id
       }
     };
   }
