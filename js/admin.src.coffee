@@ -72,6 +72,7 @@ populateAdminActions = ->
     do: "home"
     prop: null
   history.pushState state, "Admin Home", url
+  $(".hanging-alert").remove()
   adminActions = """
         <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:add"></iron-icon>
@@ -2875,7 +2876,7 @@ startEditorUploader = ->
           exit-animation="fade-out-animation">
           <h2>Upload Progress</h2>
           <paper-dialog-scrollable>
-            <div id="upload-progress-container" style="min-height:60vh; ">
+            <div id="upload-progress-container" style="min-height:60vh;min-width:80vw; ">
             </div>
           </paper-dialog-scrollable>
           <div class="buttons">
@@ -2989,7 +2990,7 @@ startEditorUploader = ->
 excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
   startLoad()
   $("#validator-progress-container").remove()
-  renderValidateProgress()
+  renderValidateProgress("#upload-progress-container")
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
   if path.search(helperDir) isnt -1
@@ -3068,6 +3069,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
         "delete"
         "create"
         ]
+      operation = "edit" # For now      
       unless operation in allowedOperations
         console.error "#{operation} is not an allowed operation on a data set!"
         console.info "Allowed operations are ", allowedOperations

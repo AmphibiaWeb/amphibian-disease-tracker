@@ -2580,6 +2580,7 @@ geo.postToCarto = function(sqlQuery, dataTable) {
   console.info("Querying:");
   console.info(sqlQuery);
   console.info("POSTing to server");
+  $("#data-sync").removeAttr("indeterminate");
   postTimeStart = Date.now();
   workingIter = 0;
   story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen 'Staying&#39; Alive',", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
@@ -2683,6 +2684,7 @@ geo.postToCarto = function(sqlQuery, dataTable) {
       stopLoad();
       max = p$("#data-sync").max;
       p$("#data-sync").value = max;
+      $("#data-sync").removeAttr("indeterminate");
       options = {
         boundingBox: geo.boundingBox,
         bsGrid: ""

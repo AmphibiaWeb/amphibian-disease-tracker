@@ -85,6 +85,7 @@ populateAdminActions = function() {
     prop: null
   };
   history.pushState(state, "Admin Home", url);
+  $(".hanging-alert").remove();
   adminActions = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All My Projects\n</paper-button>";
   $("#admin-actions-block").html(adminActions);
   $("#show-actions").remove();
@@ -2761,7 +2762,7 @@ startEditorUploader = function() {
         return false;
       }
       try {
-        dialogHtml = "<paper-dialog modal id=\"upload-progress-dialog\"\n  entry-animation=\"fade-in-animation\"\n  exit-animation=\"fade-out-animation\">\n  <h2>Upload Progress</h2>\n  <paper-dialog-scrollable>\n    <div id=\"upload-progress-container\" style=\"min-height:60vh; \">\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"close-overlay\">Close</paper-button>\n  </div>\n</paper-dialog>";
+        dialogHtml = "<paper-dialog modal id=\"upload-progress-dialog\"\n  entry-animation=\"fade-in-animation\"\n  exit-animation=\"fade-out-animation\">\n  <h2>Upload Progress</h2>\n  <paper-dialog-scrollable>\n    <div id=\"upload-progress-container\" style=\"min-height:60vh;min-width:80vw; \">\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"close-overlay\">Close</paper-button>\n  </div>\n</paper-dialog>";
         $("#upload-progress-dialog").remove();
         $("body").append(dialogHtml);
         p$("#upload-progress-dialog").open();
@@ -2836,7 +2837,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   }
   startLoad();
   $("#validator-progress-container").remove();
-  renderValidateProgress();
+  renderValidateProgress("#upload-progress-container");
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
   if (path.search(helperDir) !== -1) {
@@ -2910,7 +2911,7 @@ revalidateAndUpdateData = function(newFilePath) {
   }
   dataCallback = function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
-      var allowedOperations, args, dataTable, hash, link, secret;
+      var allowedOperations, args, dataTable, hash, link, operation, secret;
       console.info("Ready to update", validatedData);
       dataTable = cartoData.table;
       data = validatedData.data;
@@ -2920,6 +2921,7 @@ revalidateAndUpdateData = function(newFilePath) {
         return false;
       }
       allowedOperations = ["edit", "insert", "delete", "create"];
+      operation = "edit";
       if (indexOf.call(allowedOperations, operation) < 0) {
         console.error(operation + " is not an allowed operation on a data set!");
         console.info("Allowed operations are ", allowedOperations);
