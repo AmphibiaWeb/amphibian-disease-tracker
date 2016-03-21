@@ -284,15 +284,30 @@ renderMapWithData = function(projectData, force) {
     }
     bindClicks(".download-file");
     $(".download-data-file").contextmenu(function(event) {
-      var elPos;
+      var caller, elPos, inFn, outFn;
       event.preventDefault();
-      elPos = $(this).position();
-      html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + elPos.top + ";left:" + elPos.left + "\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+      console.log("Event details", event);
+      elPos = $(this).offset();
+      html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + elPos.top + ";left:" + elPos.left + ";position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".ark-context-wrapper").remove();
       $("body").append(html);
       ark = $(this).attr("data-ark");
-      $(".copy-ark-content").click(function() {
-        return foo();
+      inFn = function(el) {
+        $(this).addClass("iron-selected");
+        return false;
+      };
+      outFn = function(el) {
+        $(this).removeClass("iron-selected");
+        return false;
+      };
+      caller = this;
+      $(".context-menu paper-item").hover(inFn, outFn).click(function() {
+        foo();
+        $(".ark-context-wrapper").remove();
+        return false;
+      }).contextmenu(function() {
+        $(".ark-context-wrapper").remove();
+        return false;
       });
       return false;
     });

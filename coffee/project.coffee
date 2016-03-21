@@ -271,11 +271,10 @@ renderMapWithData = (projectData, force = false) ->
     bindClicks(".download-file")
     $(".download-data-file").contextmenu (event) ->
       event.preventDefault()
-      # TODO copy ark option
-      # vs. offset https://api.jquery.com/offset/
-      elPos = $(this).position()
+      console.log "Event details", event
+      elPos = $(this).offset()
       html = """
-      <paper-material class="ark-context-wrapper" style="top:#{elPos.top};left:#{elPos.left}">
+      <paper-material class="ark-context-wrapper" style="top:#{elPos.top};left:#{elPos.left};position:absolute">
         <paper-menu class=context-menu">
           <paper-item class="copy-ark-context">
             Copy ARK to clipboard
@@ -288,8 +287,24 @@ renderMapWithData = (projectData, force = false) ->
       $("body").append html
       # Create copy event
       ark = $(this).attr "data-ark"
-      $(".copy-ark-content").click ->
+      ##
+      # Events
+      inFn = (el) ->
+        $(this).addClass "iron-selected"
+        false
+      outFn = (el) ->
+        $(this).removeClass "iron-selected"
+        false
+      caller = this
+      $(".context-menu paper-item")
+      .hover inFn, outFn
+      .click ->
         foo()
+        $(".ark-context-wrapper").remove()
+        false
+      .contextmenu ->
+        $(".ark-context-wrapper").remove()
+        false
       false
     checkArkDataset(projectData)
     setPublicData(projectData)
