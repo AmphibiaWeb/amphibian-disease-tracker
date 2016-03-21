@@ -2762,7 +2762,7 @@ startEditorUploader = function() {
         return false;
       }
       try {
-        dialogHtml = "<paper-dialog modal id=\"upload-progress-dialog\"\n  entry-animation=\"fade-in-animation\"\n  exit-animation=\"fade-out-animation\">\n  <h2>Upload Progress</h2>\n  <paper-dialog-scrollable>\n    <div id=\"upload-progress-container\" style=\"min-height:60vh;min-width:80vw; \">\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"close-overlay\">Close</paper-button>\n  </div>\n</paper-dialog>";
+        dialogHtml = "<paper-dialog modal id=\"upload-progress-dialog\"\n  entry-animation=\"fade-in-animation\"\n  exit-animation=\"fade-out-animation\">\n  <h2>Upload Progress</h2>\n  <paper-dialog-scrollable>\n    <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"close-overlay\">Close</paper-button>\n  </div>\n</paper-dialog>";
         $("#upload-progress-dialog").remove();
         $("body").append(dialogHtml);
         p$("#upload-progress-dialog").open();
@@ -2950,6 +2950,7 @@ revalidateAndUpdateData = function(newFilePath) {
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
         var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref2, ref3, ref4, ref5, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, userTransectRing, value, valuesArr, valuesList;
         if (result.status) {
+          console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
           lats = new Array();
           lngs = new Array();
@@ -2976,7 +2977,7 @@ revalidateAndUpdateData = function(newFilePath) {
           bb_west = (ref5 = lngs.min()) != null ? ref5 : 0;
           defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
           try {
-            userTransectRing = JSON.parse(totalData.transectRing);
+            userTransectRing = JSON.parse(data.transectRing);
             userTransectRing = Object.toArray(userTransectRing);
             i = 0;
             for (l = 0, len = userTransectRing.length; l < len; l++) {
