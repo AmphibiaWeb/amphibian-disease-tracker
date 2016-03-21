@@ -2969,7 +2969,7 @@ revalidateAndUpdateData = function(newFilePath) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, error2, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
+        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, error2, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3084,8 +3084,10 @@ revalidateAndUpdateData = function(newFilePath) {
             if (refRowNum != null) {
               refRow = _adp.cartoRows[refRowNum];
             }
+            colArr = new Array();
             for (column in row) {
               value = row[column];
+              colArr.push(column);
               if (i === 0) {
                 columnNamesList.push(column + " " + columnDatatype[column]);
               }
@@ -3108,17 +3110,33 @@ revalidateAndUpdateData = function(newFilePath) {
                 }
               }
               if (typeof value === "string") {
-                valuesArr.push("`" + column + "`='" + value + "'");
+                if (refRow != null) {
+                  valuesArr.push("`" + column + "`='" + value + "'");
+                } else {
+                  valuesArr.push("'" + value + "'");
+                }
               } else if (isNull(value)) {
-                valuesArr.push("null");
+                if (refRow != null) {
+                  valuesArr.push("`" + column + "`=null");
+                } else {
+                  valuesArr.push("null");
+                }
               } else {
-                valuesArr.push("`" + column + "`=" + value);
+                if (refRow != null) {
+                  valuesArr.push("`" + column + "`=" + value);
+                } else {
+                  valuesArr.push(value);
+                }
               }
             }
             geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
             valuesArr.push(geoJsonVal);
-            sqlWhere = " WHERE `fieldNumber`='" + fieldNumber + "';";
-            sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
+            if (refRow != null) {
+              sqlWhere = " WHERE `fieldNumber`='" + fieldNumber + "';";
+              sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
+            } else {
+              sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + ")";
+            }
           }
           console.log(sqlQuery);
           return false;

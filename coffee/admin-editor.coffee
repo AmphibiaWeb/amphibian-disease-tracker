@@ -1395,8 +1395,10 @@ revalidateAndUpdateData = (newFilePath = false) ->
             refRow = null
             if refRowNum?
               refRow = _adp.cartoRows[refRowNum]
+            colArr = new Array()
             for column, value of row
               # Loop data ....
+              colArr.push column
               if i is 0
                 columnNamesList.push "#{column} #{columnDatatype[column]}"
               try
@@ -1415,15 +1417,28 @@ revalidateAndUpdateData = (newFilePath = false) ->
                   # Don't need to add it again
                   continue;
               if typeof value is "string"
-                valuesArr.push "`#{column}`='#{value}'"
+                if refRow?
+                  valuesArr.push "`#{column}`='#{value}'"
+                else
+                  valuesArr.push "'#{value}'"
               else if isNull value
-                valuesArr.push "null"
+                if refRow?
+                  valuesArr.push "`#{column}`=null"
+                else
+                  valuesArr.push "null"
               else
-                valuesArr.push "`#{column}`=#{value}"
+                if refRow?
+                  valuesArr.push "`#{column}`=#{value}"
+                else
+                  valuesArr.push value
             geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
             valuesArr.push geoJsonVal
-            sqlWhere = " WHERE `fieldNumber`='#{fieldNumber}';"
-            sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
+            if refRow?
+              sqlWhere = " WHERE `fieldNumber`='#{fieldNumber}';"
+              sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
+            else
+              # Add new row
+              sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")})"
           console.log sqlQuery
           return false
           # Recalculate hull and update project data
