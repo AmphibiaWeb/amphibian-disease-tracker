@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, ark, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, filePath, helperDir, html, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, tmp, usedPoints, zoom;
+  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, title, tmp, usedPoints, zoom;
   if (force == null) {
     force = false;
   }
@@ -108,18 +108,23 @@ renderMapWithData = function(projectData, force) {
     if (filePath.search(helperDir) === -1) {
       filePath = "" + helperDir + filePath;
     }
-    downloadButton = "<button class=\"btn btn-primary click download-file download-data-file\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  Download Newest Data File\n</button>";
+    downloadButton = "";
     arkIdentifiers = projectData.dataset_arks.split(",");
-    if (arkIdentifiers.length > 1) {
+    if (arkIdentifiers.length > 0) {
       baseFilePath = filePath.split("/");
       baseFilePath.pop();
       baseFilePath = baseFilePath.join("/");
+      i = 0;
       for (j = 0, len = arkIdentifiers.length; j < len; j++) {
         ark = arkIdentifiers[j];
         data = ark.split("::");
+        arkId = data[0];
         filePath = baseFilePath + "/" + data[1];
-        html = "<button class=\"btn btn-primary btn-xs click download-file download-data-file download-alt-datafile\" data-href=\"" + filePath + "\" data-newtab=\"true\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + data[0] + " dataset\n</button>";
+        extraClasses = i === 0 ? "" : "btn-xs download-alt-datafile";
+        title = i === 0 ? "Download Most Recent Dataset" : arkId + " dataset";
+        html = "<button class=\"btn btn-primary click download-file download-data-file " + extraClasses + "\" data-href=\"" + filePath + "\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"" + arkId + "\" data-ark=\"" + arkId + "\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + title + "\n</button>";
         downloadButton += html;
+        ++i;
       }
     }
   }
@@ -168,7 +173,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, i, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, points, ref1, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, points, ref1, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -278,6 +283,19 @@ renderMapWithData = function(projectData, force) {
       }
     }
     bindClicks(".download-file");
+    $(".download-data-file").context(function(event) {
+      var elPos;
+      event.preventDefault();
+      elPos = $(this).position();
+      html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + elPos.top + ";left:" + elPos.left + "\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+      $(".ark-context-wrapper").remove();
+      $("body").append(html);
+      ark = $(this).attr("data-ark");
+      $(".copy-ark-content").click(function() {
+        return foo();
+      });
+      return false;
+    });
     checkArkDataset(projectData);
     setPublicData(projectData);
     return stopLoad();
