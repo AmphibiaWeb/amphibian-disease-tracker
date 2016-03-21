@@ -274,7 +274,7 @@ renderMapWithData = (projectData, force = false) ->
       console.log "Event details", event
       elPos = $(this).offset()
       html = """
-      <paper-material class="ark-context-wrapper" style="top:#{elPos.top};left:#{elPos.left};position:absolute">
+      <paper-material class="ark-context-wrapper" style="top:#{event.pageX}px;left:#{event.pageY}px;position:absolute">
         <paper-menu class=context-menu">
           <paper-item class="copy-ark-context">
             Copy ARK to clipboard
@@ -296,7 +296,7 @@ renderMapWithData = (projectData, force = false) ->
         $(this).removeClass "iron-selected"
         false
       caller = this
-      $(".context-menu paper-item")
+      $(".ark-context-wrapper paper-item")
       .hover inFn, outFn
       .click ->
         foo()
