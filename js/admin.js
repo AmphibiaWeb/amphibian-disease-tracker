@@ -1378,7 +1378,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1541,14 +1541,18 @@ newGeoDataHandler = function(dataObject, skipCarto) {
             }
             break;
           case "fieldNumber":
-            trimmed = value.trim();
-            trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
-            cleanValue = trimmed;
+            try {
+              trimmed = value.trim();
+              trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
+              cleanValue = trimmed;
+            } catch (error2) {
+              cleanValue = value;
+            }
             break;
           default:
             try {
               cleanValue = value.trim();
-            } catch (error2) {
+            } catch (error3) {
               cleanValue = value;
             }
         }
@@ -1568,7 +1572,7 @@ newGeoDataHandler = function(dataObject, skipCarto) {
       dataAttrs.fimsData.push(fimsExtra);
       try {
         tRow.fimsExtra = JSON.stringify(fimsExtra);
-      } catch (error3) {
+      } catch (error4) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
@@ -1670,7 +1674,7 @@ newGeoDataHandler = function(dataObject, skipCarto) {
     }
     _adp.data.pushDataUpload = totalData;
     validateData(totalData, function(validatedData) {
-      var cladeList, e, error4, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
+      var cladeList, e, error5, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
       taxonList = new Array();
       cladeList = new Array();
@@ -1697,8 +1701,8 @@ newGeoDataHandler = function(dataObject, skipCarto) {
           if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
             cladeList.push(taxon.response.validated_taxon.family);
           }
-        } catch (error4) {
-          e = error4;
+        } catch (error5) {
+          e = error5;
           console.warn("Couldn't get the family! " + e.message, taxon.response);
           console.warn(e.stack);
         }
@@ -1729,8 +1733,8 @@ newGeoDataHandler = function(dataObject, skipCarto) {
         }
       }
     });
-  } catch (error4) {
-    e = error4;
+  } catch (error5) {
+    e = error5;
     console.error("Error parsing data - " + e.message);
     console.warn(e.stack);
     toastStatusMessage("There was a problem parsing your data");
@@ -1908,7 +1912,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, error5, fundingHtml, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
+        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, fundingHtml, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ta, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -2189,19 +2193,9 @@ loadEditor = function(projectPreload) {
             }
           });
           console.info("Getting carto data with id " + project.carto_id + " and options", createMapOptions);
-          getProjectCartoData(project.carto_id, createMapOptions);
-          try {
-            return window.dropperParams.dropzone.disable();
-          } catch (error4) {
-            e = error4;
-            return delay(1500, function() {
-              try {
-                return window.dropperParams.dropzone.disable();
-              } catch (undefined) {}
-            });
-          }
-        } catch (error5) {
-          e = error5;
+          return getProjectCartoData(project.carto_id, createMapOptions);
+        } catch (error4) {
+          e = error4;
           stopLoadError("There was an error loading your project");
           console.error("Unhandled exception loading project! " + e.message);
           console.warn(e.stack);

@@ -450,14 +450,6 @@ loadEditor = (projectPreload) ->
           # Load more detailed data from CartoDB
           console.info "Getting carto data with id #{project.carto_id} and options", createMapOptions
           getProjectCartoData project.carto_id, createMapOptions
-          try
-            # TODO TEST AND FIX UPLOADS
-            window.dropperParams.dropzone.disable()
-          catch e
-            delay 1500, ->
-              try
-                # TODO TEST AND FIX UPLOADS
-                window.dropperParams.dropzone.disable()
         catch e
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"

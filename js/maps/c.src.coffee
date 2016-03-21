@@ -2071,7 +2071,10 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           # Deletion criteria ...
           foo()
           return false
-      geo.postToCarto sqlQuery, postTimeStart
+      try
+        geo.postToCarto sqlQuery
+      catch
+        stopLoadBarsErrors()
     else
       console.error "Unable to authenticate session. Please log in."
       stopLoadError "Sorry, your session has expired. Please log in and try again."
