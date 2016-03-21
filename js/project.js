@@ -121,7 +121,7 @@ renderMapWithData = function(projectData, force) {
         arkId = data[0];
         filePath = baseFilePath + "/" + data[1];
         extraClasses = i === 0 ? "" : "btn-xs download-alt-datafile";
-        title = i === 0 ? "Download Most Recent Dataset" : arkId + " dataset";
+        title = i === 0 ? "Download Newest Datafile" : arkId + " dataset";
         html = "<button class=\"btn btn-primary click download-file download-data-file " + extraClasses + "\" data-href=\"" + filePath + "\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"" + arkId + "\" data-ark=\"" + arkId + "\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + title + "\n</button>";
         downloadButton += html;
         ++i;
@@ -283,7 +283,7 @@ renderMapWithData = function(projectData, force) {
       }
     }
     bindClicks(".download-file");
-    $(".download-data-file").context(function(event) {
+    $(".download-data-file").contextmenu(function(event) {
       var elPos;
       event.preventDefault();
       elPos = $(this).position();

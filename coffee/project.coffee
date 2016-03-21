@@ -104,7 +104,7 @@ renderMapWithData = (projectData, force = false) ->
         arkId = data[0]
         filePath = "#{baseFilePath}/#{data[1]}"
         extraClasses = if i is 0 then "" else "btn-xs download-alt-datafile"
-        title = if i is 0 then "Download Most Recent Dataset" else "#{arkId} dataset"
+        title = if i is 0 then "Download Newest Datafile" else "#{arkId} dataset"
         html = """
           <button class="btn btn-primary click download-file download-data-file #{extraClasses}" data-href="#{filePath}" data-newtab="true" data-toggle="tooltip" title="#{arkId}" data-ark="#{arkId}">
             <iron-icon icon="editor:insert-chart"></iron-icon>
@@ -269,7 +269,7 @@ renderMapWithData = (projectData, force = false) ->
           header: ["Genus","Species","Subspecies"]
         downloadCSVFile _adp.pageSpeciesList, options
     bindClicks(".download-file")
-    $(".download-data-file").context (event) ->
+    $(".download-data-file").contextmenu (event) ->
       event.preventDefault()
       # TODO copy ark option
       # vs. offset https://api.jquery.com/offset/
