@@ -1537,10 +1537,13 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
               cleanValue = "NO_CONFIDENCE"
           when "fieldNumber"
             # These are "validForUri" columns
-            trimmed = value.trim()
-            # For field that are "PLC 123", remove the space
-            trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
-            cleanValue = trimmed
+            try
+              trimmed = value.trim()
+              # For field that are "PLC 123", remove the space
+              trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
+              cleanValue = trimmed
+            catch
+              cleanValue = value
           else
             try
               cleanValue = value.trim()

@@ -2363,7 +2363,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -2555,7 +2555,11 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           foo();
           return false;
       }
-      return geo.postToCarto(sqlQuery, postTimeStart);
+      try {
+        return geo.postToCarto(sqlQuery);
+      } catch (error3) {
+        return stopLoadBarsErrors();
+      }
     } else {
       console.error("Unable to authenticate session. Please log in.");
       return stopLoadError("Sorry, your session has expired. Please log in and try again.");
