@@ -2565,7 +2565,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, error1, filePath, html, zoom;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, col, colRemap, cols, colsArr, error1, filePath, html, ref, type, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
@@ -2585,15 +2585,26 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     console.info("Got zoom", zoom);
     $("#transect-viewport").attr("zoom", zoom);
   } catch (undefined) {}
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
+  cols = getColumnObj();
+  colsArr = new Array();
+  colRemap = new Object();
+  ref = getColumnObj();
+  for (col in ref) {
+    type = ref[col];
+    if (col !== "id" && col !== "the_geom") {
+      colsArr.push(col);
+      colRemap[col.toLowerCase()] = col;
+    }
+  }
+  cartoQuery = "SELECT " + (colsArr.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var base, base1, center, error, error2, geoJson, infoWindow, k, lat, lng, marker, note, point, pointArr, ref, ref1, ref2, ref3, ref4, ref5, ref6, row, rows, taxa, totalRows, truncateLength, workingMap;
+    var base, base1, center, error, error2, geoJson, i, infoWindow, k, lat, lng, marker, note, point, pointArr, realRow, ref1, ref2, ref3, ref4, ref5, ref6, ref7, row, rows, taxa, totalRows, truncateLength, val, workingMap;
     console.info("Carto query got result:", result);
     if (!result.status) {
-      error = (ref = result.human_error) != null ? ref : result.error;
+      error = (ref1 = result.human_error) != null ? ref1 : result.error;
       if (error == null) {
         error = "Unknown error";
       }
@@ -2601,6 +2612,16 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       return false;
     }
     rows = result.parsed_responses[0].rows;
+    _adp.cartoRows = new Object();
+    for (i in rows) {
+      row = rows[i];
+      _adp.cartoRows[i] = new Object();
+      for (col in row) {
+        val = row[col];
+        realRow = colRemap[col];
+        _adp.cartoRows[i][realRow] = val;
+      }
+    }
     truncateLength = 0 - "</google-map>".length;
     try {
       workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
@@ -2638,7 +2659,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       workingMap += marker;
       pointArr.push(point);
     }
-    if (!(((cartoData != null ? (ref1 = cartoData.bounding_polygon) != null ? ref1.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref2 = cartoData.bounding_polygon) != null ? ref2.fillColor : void 0 : void 0) != null))) {
+    if (!(((cartoData != null ? (ref2 = cartoData.bounding_polygon) != null ? ref2.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref3 = cartoData.bounding_polygon) != null ? ref3.fillColor : void 0 : void 0) != null))) {
       try {
         _adp.canonicalHull = createConvexHull(pointArr, true);
         try {
@@ -2661,11 +2682,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         } catch (undefined) {}
       } catch (undefined) {}
     }
-    totalRows = (ref3 = result.parsed_responses[0].total_rows) != null ? ref3 : 0;
-    if (pointArr.length > 0 || (mapOptions != null ? (ref4 = mapOptions.boundingBox) != null ? ref4.length : void 0 : void 0) > 0) {
+    totalRows = (ref4 = result.parsed_responses[0].total_rows) != null ? ref4 : 0;
+    if (pointArr.length > 0 || (mapOptions != null ? (ref5 = mapOptions.boundingBox) != null ? ref5.length : void 0 : void 0) > 0) {
       mapOptions.skipHull = false;
       if (pointArr.length === 0) {
-        center = (ref5 = (ref6 = geo.centerPoint) != null ? ref6 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref5 : [window.locationData.lat, window.locationData.lng];
+        center = (ref6 = (ref7 = geo.centerPoint) != null ? ref7 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref6 : [window.locationData.lat, window.locationData.lng];
         pointArr.push(center);
       }
       mapOptions.onClickCallback = function() {
@@ -2948,7 +2969,7 @@ revalidateAndUpdateData = function(newFilePath) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref2, ref3, ref4, ref5, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+        var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, error2, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -2977,7 +2998,12 @@ revalidateAndUpdateData = function(newFilePath) {
           bb_west = (ref5 = lngs.min()) != null ? ref5 : 0;
           defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
           try {
-            userTransectRing = JSON.parse(data.transectRing);
+            if (typeof data.transectRing === "string") {
+              userTransectRing = JSON.parse(validatedData.transectRing);
+            }
+            if (isArray(data.transectRing)) {
+              userTransectRing = validatedData.transectRing;
+            }
             userTransectRing = Object.toArray(userTransectRing);
             i = 0;
             for (l = 0, len = userTransectRing.length; l < len; l++) {
@@ -3020,32 +3046,21 @@ revalidateAndUpdateData = function(newFilePath) {
             ]
           };
           dataGeometry = "ST_AsBinary(" + (JSON.stringify(geoJson)) + ", 4326)";
-          columnDatatype = {
-            id: "int",
-            collectionID: "varchar",
-            catalogNumber: "varchar",
-            fieldNumber: "varchar",
-            diseaseTested: "varchar",
-            diseaseStrain: "varchar",
-            sampleMethod: "varchar",
-            sampleDisposition: "varchar",
-            diseaseDetected: "varchar",
-            fatal: "boolean",
-            cladeSampled: "varchar",
-            genus: "varchar",
-            specificEpithet: "varchar",
-            infraspecificEpithet: "varchar",
-            lifeStage: "varchar",
-            dateIdentified: "date",
-            decimalLatitude: "decimal",
-            decimalLongitude: "decimal",
-            alt: "decimal",
-            coordinateUncertaintyInMeters: "decimal",
-            Collector: "varchar",
-            originalTaxa: "varchar",
-            fimsExtra: "json",
-            the_geom: "varchar"
-          };
+          columnDatatype = getColumnObj();
+          try {
+            lookupMap = new Object();
+            ref6 = _adp.cartoRows;
+            for (i in ref6) {
+              row = ref6[i];
+              fieldNumber = row.fieldNumber;
+              trimmed = fieldNumber.trim();
+              trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
+              fieldNumber = trimmed;
+              lookupMap[fieldNumber] = i;
+            }
+          } catch (error2) {
+            console.warn("Couldn't make lookupMap");
+          }
           sqlQuery = "";
           valuesList = new Array();
           columnNamesList = new Array();
@@ -3063,6 +3078,12 @@ revalidateAndUpdateData = function(newFilePath) {
               coordinates: new Array()
             };
             iIndex = i + 1;
+            fieldNumber = row.fieldNumber;
+            refRowNum = lookupMap[fieldNumber];
+            refRow = null;
+            if (refRowNum != null) {
+              refRow = _adp.cartoRows[refRowNum];
+            }
             for (column in row) {
               value = row[column];
               if (i === 0) {
@@ -3079,8 +3100,12 @@ revalidateAndUpdateData = function(newFilePath) {
                   geoJsonGeom.coordinates[0] = value;
                   break;
                 case "fieldNumber":
-                  fieldNumber = value;
                   continue;
+              }
+              if (refRow != null) {
+                if (refRow[column] === value) {
+                  continue;
+                }
               }
               if (typeof value === "string") {
                 valuesArr.push("`" + column + "`='" + value + "'");

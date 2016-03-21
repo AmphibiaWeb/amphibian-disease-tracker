@@ -863,7 +863,15 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     console.info "Got zoom", zoom
     $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  cols = getColumnObj()
+  colsArr = new Array()
+  colRemap = new Object()
+  for col, type of getColumnObj()
+    if col isnt "id" and col isnt "the_geom"
+      colsArr.push col
+      colRemap[col.toLowerCase()] = col
+  cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  # cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
@@ -877,6 +885,12 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
       return false
     rows = result.parsed_responses[0].rows
+    _adp.cartoRows = new Object()
+    for i, row of rows
+      _adp.cartoRows[i] = new Object()
+      for col, val of row
+        realRow = colRemap[col]
+        _adp.cartoRows[i][realRow] = val
     truncateLength = 0 - "</google-map>".length
     try
       workingMap = geo.googleMapWebComponent.slice 0, truncateLength
@@ -1240,7 +1254,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
         "delete"
         "create"
         ]
-      operation = "edit" # For now      
+      operation = "edit" # For now
       unless operation in allowedOperations
         console.error "#{operation} is not an allowed operation on a data set!"
         console.info "Allowed operations are ", allowedOperations
@@ -1304,7 +1318,10 @@ revalidateAndUpdateData = (newFilePath = false) ->
           # See if the user provided a good transect polygon
           try
             # See if the user provided a valid JSON string of coordinates
-            userTransectRing = JSON.parse data.transectRing
+            if typeof data.transectRing is "string"
+              userTransectRing = JSON.parse validatedData.transectRing
+            if isArray data.transectRing
+              userTransectRing = validatedData.transectRing
             userTransectRing = Object.toArray userTransectRing
             i = 0
             for coordinatePair in userTransectRing
@@ -1341,32 +1358,19 @@ revalidateAndUpdateData = (newFilePath = false) ->
           # Uses DarwinCore terms
           # http://www.biscicol.org/biocode-fims/templates.jsp#
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
-          columnDatatype =
-            id: "int"
-            collectionID: "varchar"
-            catalogNumber: "varchar"
-            fieldNumber: "varchar"
-            diseaseTested: "varchar"
-            diseaseStrain: "varchar"
-            sampleMethod: "varchar"
-            sampleDisposition: "varchar"
-            diseaseDetected: "varchar"
-            fatal: "boolean"
-            cladeSampled: "varchar"
-            genus: "varchar"
-            specificEpithet: "varchar"
-            infraspecificEpithet: "varchar"
-            lifeStage: "varchar"
-            dateIdentified: "date" # Should be ISO8601; coerce it!
-            decimalLatitude: "decimal"
-            decimalLongitude: "decimal"
-            alt: "decimal"
-            coordinateUncertaintyInMeters: "decimal"
-            Collector: "varchar"
-            originalTaxa: "varchar"
-            fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
-            the_geom: "varchar"
+          columnDatatype = getColumnObj()
           # Make a lookup fieldNumber -> obj map
+          try
+            lookupMap = new Object()
+            for i, row of _adp.cartoRows
+              fieldNumber = row.fieldNumber
+              trimmed = fieldNumber.trim()
+              # For field that are "PLC 123", remove the space
+              trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
+              fieldNumber = trimmed
+              lookupMap[fieldNumber] = i
+          catch
+            console.warn "Couldn't make lookupMap"
           # Construct the SQL query
           sqlQuery = ""
           valuesList = new Array()
@@ -1374,6 +1378,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
           columnNamesList.push "id int"
           for i, row of data
             i = toInt(i)
+
             ##console.log "Iter ##{i}", i is 0, `i == 0`
             # Each row ...
             valuesArr = new Array()
@@ -1385,6 +1390,11 @@ revalidateAndUpdateData = (newFilePath = false) ->
               type: "Point"
               coordinates: new Array()
             iIndex = i + 1
+            fieldNumber = row.fieldNumber
+            refRowNum = lookupMap[fieldNumber]
+            refRow = null
+            if refRowNum?
+              refRow = _adp.cartoRows[refRowNum]
             for column, value of row
               # Loop data ....
               if i is 0
@@ -1399,8 +1409,11 @@ revalidateAndUpdateData = (newFilePath = false) ->
                 when "decimalLatitude"
                   geoJsonGeom.coordinates[0] = value
                 when "fieldNumber"
-                  fieldNumber = value
                   continue
+              if refRow?
+                if refRow[column] is value
+                  # Don't need to add it again
+                  continue;
               if typeof value is "string"
                 valuesArr.push "`#{column}`='#{value}'"
               else if isNull value
