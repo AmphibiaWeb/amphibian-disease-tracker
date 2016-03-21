@@ -1,6 +1,6 @@
 #spawn = require('child_process').spawn
 #require("load-grunt-tasks")(grunt)
-
+Promise = require('es6-promise').Promise
 module.exports = (grunt) ->
   # Gruntfile
   # https://github.com/sindresorhus/grunt-shell
