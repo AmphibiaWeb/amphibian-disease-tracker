@@ -810,7 +810,7 @@ geo.postToCarto = (sqlQuery, dataTable) ->
   console.info "POSTing to server"
   # console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
   # Big uploads can take a while, so let's put up a notice.
-
+  $("#data-sync").removeAttr("indeterminate")
   postTimeStart = Date.now()
   workingIter = 0
   # http://birdisabsurd.blogspot.com/p/one-paragraph-stories.html
@@ -903,6 +903,7 @@ geo.postToCarto = (sqlQuery, dataTable) ->
       stopLoad()
       max = p$("#data-sync").max
       p$("#data-sync").value = max
+      $("#data-sync").removeAttr("indeterminate")
       options =
         boundingBox: geo.boundingBox
         bsGrid: ""

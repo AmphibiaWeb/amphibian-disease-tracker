@@ -72,6 +72,7 @@ populateAdminActions = ->
     do: "home"
     prop: null
   history.pushState state, "Admin Home", url
+  $(".hanging-alert").remove()
   adminActions = """
         <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:add"></iron-icon>
