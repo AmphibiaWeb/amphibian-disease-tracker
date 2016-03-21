@@ -7566,3 +7566,6 @@ google-map.center-block:after {
 .ark-context-wrapper {
   position: absolute;
 }
+#upload-progress-container {
+  min-height: 60vh;
+}
