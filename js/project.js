@@ -122,7 +122,7 @@ renderMapWithData = function(projectData, force) {
         filePath = baseFilePath + "/" + data[1];
         extraClasses = i === 0 ? "" : "btn-xs download-alt-datafile";
         title = i === 0 ? "Download Newest Datafile" : arkId + " dataset";
-        html = "<button class=\"btn btn-primary click download-file download-data-file " + extraClasses + "\" data-href=\"" + filePath + "\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"" + arkId + "\" data-ark=\"" + arkId + "\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + title + "\n</button>";
+        html = "<button class=\"btn btn-primary click download-file download-data-file " + extraClasses + "\" data-href=\"" + filePath + "\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"" + arkId + " (right-click to copy)\" data-ark=\"" + arkId + "\">\n  <iron-icon icon=\"editor:insert-chart\"></iron-icon>\n  " + title + "\n</button>";
         downloadButton += html;
         ++i;
       }

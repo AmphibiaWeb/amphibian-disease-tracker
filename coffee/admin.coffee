@@ -1033,7 +1033,7 @@ getUploadIdentifier = ->
 
 
 
-bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
+bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", callback) ->
   ###
   # Bootstrap the file uploader into existence
   ###
@@ -1196,6 +1196,9 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
             when "image" then imageHandler()
         catch e
           toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
+      # Callback if exists
+      if typeof callback is "function"
+        callback()
     false
 
 
