@@ -274,7 +274,7 @@ renderMapWithData = (projectData, force = false) ->
       console.log "Event details", event
       elPos = $(this).offset()
       html = """
-      <paper-material class="ark-context-wrapper" style="top:#{event.pageX}px;left:#{event.pageY}px;position:absolute">
+      <paper-material class="ark-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
         <paper-menu class=context-menu">
           <paper-item class="copy-ark-context">
             Copy ARK to clipboard

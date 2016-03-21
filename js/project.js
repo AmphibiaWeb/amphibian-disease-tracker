@@ -288,7 +288,7 @@ renderMapWithData = function(projectData, force) {
       event.preventDefault();
       console.log("Event details", event);
       elPos = $(this).offset();
-      html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + event.pageX + "px;left:" + event.pageY + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+      html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".ark-context-wrapper").remove();
       $("body").append(html);
       ark = $(this).attr("data-ark");
