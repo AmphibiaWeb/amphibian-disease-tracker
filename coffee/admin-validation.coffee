@@ -389,6 +389,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
       taxonObj.genus = result.validated_taxon.genus
       taxonObj.species = result.validated_taxon.species
       taxonObj.subspecies = result.validated_taxon.subspecies
+      taxonObj.clade ?= result.validated_taxon.family
       window.validationMeta.validatedTaxons.push taxonObj
     else
       taxonObj.invalid = true

@@ -1119,13 +1119,13 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
           previewHtml = switch mediaType
             when "image"
               """
-              <div class="uploaded-media center-block" data-system-file="#{fileName}">
+              <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
                 <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
                   <p class="text-muted">
                     #{file.name} -> #{fileName}
-                (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
-                  Original Image
-                </a>)
+                    (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                      Original Image
+                    </a>)
                   </p>
               </div>
               """
@@ -1294,7 +1294,80 @@ csvHandler = (path) ->
   geoDataHandler()
   false
 
+
+copyMarkdown = (selector, zeroClipEvent, html5 = true) ->
+  # TODO FINISH ME
+  unless _adp?.zcClient?
+    zcConfig =
+      swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+    ZeroClipboard.config zcConfig
+    _adp.zcClient = new ZeroClipboard $(selector).get 0
+    # client.on "copy", (e) =>
+    #   copyLink(this, e)
+    $("#copy-ark").click ->
+      copyLink _adp.zcClient
+  ark = p$(".ark-identifier").value
+  if html5
+    # http://caniuse.com/#feat=clipboard
+    try
+      url = "https://n2t.net/#{ark}"
+      clipboardData =
+        dataType: "text/plain"
+        data: url
+        "text/plain": url
+      clip = new ClipboardEvent("copy", clipboardData)
+      document.dispatchEvent(clip)
+      toastStatusMessage "ARK resolver path copied to clipboard"
+      return false
+    catch e
+      console.error "Error creating copy: #{e.message}"
+      console.warn e.stack
+  console.warn "Can't use HTML5"
+  # http://zeroclipboard.org/
+  # https://github.com/zeroclipboard/zeroclipboard
+  if zeroClipObj?
+    zeroClipObj.setData clipboardData
+    if zeroClipEvent?
+      zeroClipEvent.setData clipboardData
+    zeroClipObj.on "aftercopy", (e) ->
+      if e.data["text/plain"]
+        toastStatusMessage "ARK resolver path copied to clipboard"
+      else
+        toastStatusMessage "Error copying to clipboard"
+    zeroClipObj.on "error", (e) ->
+      #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
+      console.error "Error copying to clipboard"
+      console.warn "Got", e
+      if e.name is "flash-overdue"
+        # ZeroClipboard.destroy()
+        if _adp.resetClipboard is true
+          console.error "Resetting ZeroClipboard didn't work!"
+          return false
+        ZeroClipboard.on "ready", ->
+          # Re-call
+          _adp.resetClipboard = true
+          copyLink()
+        _adp.zcClient = new ZeroClipboard $("#copy-ark").get 0
+      # Case for no flash at all
+      if e.name is "flash-disabled"
+        # stuff
+        console.info "No flash on this system"
+        ZeroClipboard.destroy()
+        $("#copy-ark")
+        .tooltip("destroy") # Otherwise stays on click: http://getbootstrap.com/javascript/#tooltipdestroy
+        .remove()
+        $(".ark-identifier")
+        .removeClass "col-xs-9 col-md-11"
+        .addClass "col-xs-12"
+        toastStatusMessage "Clipboard copying isn't available on your system"
+  else
+    console.error "Can't use HTML, and ZeroClipboard wasn't passed"
+  false
+
+
 imageHandler = (path) ->
+  # Insert a link to put a copy link with MD path
+  divEl = $("div[data-link-path='#{path}']")
   foo()
   false
 
@@ -1459,6 +1532,12 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
               cleanValue = value.toBool()
             else
               cleanValue = "NO_CONFIDENCE"
+          when "fieldNumber"
+            # These are "validForUri" columns
+            trimmed = value.trim()
+            # For field that are "PLC 123", remove the space
+            trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
+            cleanValue = trimmed
           else
             try
               cleanValue = value.trim()
@@ -1660,7 +1739,7 @@ excelDateToUnixTime = (excelTime) ->
   t
 
 
-renderValidateProgress = ->
+renderValidateProgress = (placeAfterSelector = "#file-uploader-form")->
   ###
   # Show paper-progress bars as validation goes
   #
@@ -1676,7 +1755,7 @@ renderValidateProgress = ->
   </div>
   """
   unless $("#validator-progress-container").exists()
-    $("#file-uploader-form").after html
+    $(placeAfterSelector).after html
   false
 
 

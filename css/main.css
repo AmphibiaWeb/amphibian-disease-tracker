@@ -7563,3 +7563,6 @@ google-map.center-block:after {
 .basics-list paper-input {
   margin-left: 15px;
 }
+.ark-context-wrapper {
+  position: absolute;
+}

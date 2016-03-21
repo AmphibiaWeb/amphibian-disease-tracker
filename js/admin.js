@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -1131,7 +1131,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth) {
           previewHtml = (function() {
             switch (mediaType) {
               case "image":
-                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + fileName + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\" data-link-path=\"" + linkPath + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + fileName + "\n      (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n        Original Image\n      </a>)\n    </p>\n</div>";
               case "audio":
                 return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
               case "video":
@@ -1263,7 +1263,84 @@ csvHandler = function(path) {
   return false;
 };
 
+copyMarkdown = function(selector, zeroClipEvent, html5) {
+  var ark, clip, clipboardData, e, error1, url, zcConfig;
+  if (html5 == null) {
+    html5 = true;
+  }
+  if ((typeof _adp !== "undefined" && _adp !== null ? _adp.zcClient : void 0) == null) {
+    zcConfig = {
+      swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+    };
+    ZeroClipboard.config(zcConfig);
+    _adp.zcClient = new ZeroClipboard($(selector).get(0));
+    $("#copy-ark").click(function() {
+      return copyLink(_adp.zcClient);
+    });
+  }
+  ark = p$(".ark-identifier").value;
+  if (html5) {
+    try {
+      url = "https://n2t.net/" + ark;
+      clipboardData = {
+        dataType: "text/plain",
+        data: url,
+        "text/plain": url
+      };
+      clip = new ClipboardEvent("copy", clipboardData);
+      document.dispatchEvent(clip);
+      toastStatusMessage("ARK resolver path copied to clipboard");
+      return false;
+    } catch (error1) {
+      e = error1;
+      console.error("Error creating copy: " + e.message);
+      console.warn(e.stack);
+    }
+  }
+  console.warn("Can't use HTML5");
+  if (typeof zeroClipObj !== "undefined" && zeroClipObj !== null) {
+    zeroClipObj.setData(clipboardData);
+    if (zeroClipEvent != null) {
+      zeroClipEvent.setData(clipboardData);
+    }
+    zeroClipObj.on("aftercopy", function(e) {
+      if (e.data["text/plain"]) {
+        return toastStatusMessage("ARK resolver path copied to clipboard");
+      } else {
+        return toastStatusMessage("Error copying to clipboard");
+      }
+    });
+    zeroClipObj.on("error", function(e) {
+      console.error("Error copying to clipboard");
+      console.warn("Got", e);
+      if (e.name === "flash-overdue") {
+        if (_adp.resetClipboard === true) {
+          console.error("Resetting ZeroClipboard didn't work!");
+          return false;
+        }
+        ZeroClipboard.on("ready", function() {
+          _adp.resetClipboard = true;
+          return copyLink();
+        });
+        _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
+      }
+      if (e.name === "flash-disabled") {
+        console.info("No flash on this system");
+        ZeroClipboard.destroy();
+        $("#copy-ark").tooltip("destroy").remove();
+        $(".ark-identifier").removeClass("col-xs-9 col-md-11").addClass("col-xs-12");
+        return toastStatusMessage("Clipboard copying isn't available on your system");
+      }
+    });
+  } else {
+    console.error("Can't use HTML, and ZeroClipboard wasn't passed");
+  }
+  return false;
+};
+
 imageHandler = function(path) {
+  var divEl;
+  divEl = $("div[data-link-path='" + path + "']");
   foo();
   return false;
 };
@@ -1298,7 +1375,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1459,6 +1536,11 @@ newGeoDataHandler = function(dataObject, skipCarto) {
             } else {
               cleanValue = "NO_CONFIDENCE";
             }
+            break;
+          case "fieldNumber":
+            trimmed = value.trim();
+            trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
+            cleanValue = trimmed;
             break;
           default:
             try {
@@ -1693,17 +1775,20 @@ excelDateToUnixTime = function(excelTime) {
   return t;
 };
 
-renderValidateProgress = function() {
+renderValidateProgress = function(placeAfterSelector) {
+  var html;
+  if (placeAfterSelector == null) {
+    placeAfterSelector = "#file-uploader-form";
+  }
 
   /*
    * Show paper-progress bars as validation goes
    *
    * https://elements.polymer-project.org/elements/paper-progress
    */
-  var html;
   html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\" class=\"blue\" indeterminate></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\" class=\"cyan\" indeterminate></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\" class=\"teal\" indeterminate></paper-progress>\n  <label for=\"data-sync\">Estimated Data Sync Progress:</label><paper-progress id=\"data-sync\" indeterminate></paper-progress>\n</div>";
   if (!$("#validator-progress-container").exists()) {
-    $("#file-uploader-form").after(html);
+    $(placeAfterSelector).after(html);
   }
   return false;
 };
@@ -2636,17 +2721,162 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     $("#data-card .card-content .variable-card-content").html("<p>You can upload data to your project here:</p>");
     $("#append-replace-data-toggle").attr("hidden", "hidden");
   }
+  startEditorUploader();
+  return false;
+};
+
+startEditorUploader = function() {
+  window.dropperParams.postUploadHandler = function(file, result) {
+
+    /*
+     * The callback function for handleDragDropImage
+     *
+     * The "file" object contains information about the uploaded file,
+     * such as name, height, width, size, type, and more. Check the
+     * console logs in the demo for a full output.
+     *
+     * The result object contains the results of the upload. The "status"
+     * key is true or false depending on the status of the upload, and
+     * the other most useful keys will be "full_path" and "thumb_path".
+     *
+     * When invoked, it calls the "self" helper methods to actually do
+     * the file sending.
+     */
+    var e, error1, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+    window.dropperParams.dropzone.removeAllFiles();
+    if (typeof result !== "object") {
+      console.error("Dropzone returned an error - " + result);
+      toastStatusMessage("There was a problem with the server handling your image. Please try again.");
+      return false;
+    }
+    if (result.status !== true) {
+      if (result.human_error == null) {
+        result.human_error = "There was a problem uploading your image.";
+      }
+      toastStatusMessage("" + result.human_error);
+      console.error("Error uploading!", result);
+      return false;
+    }
+    try {
+      console.info("Server returned the following result:", result);
+      console.info("The script returned the following file information:", file);
+      pathPrefix = "helpers/js-dragdrop/uploaded/" + (getUploadIdentifier()) + "/";
+      fileName = result.full_path.split("/").pop();
+      thumbPath = result.wrote_thumb;
+      mediaType = result.mime_provided.split("/")[0];
+      longType = result.mime_provided.split("/")[1];
+      linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.wrote_file : "" + pathPrefix + thumbPath;
+      previewHtml = (function() {
+        switch (mediaType) {
+          case "image":
+            return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + fileName + "\n  (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n    Original Image\n  </a>)\n    </p>\n</div>";
+          case "audio":
+            return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+          case "video":
+            return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + thumbPath + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+          default:
+            return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\" data-link-path=\"" + linkPath + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + fileName + "</p>\n</div>";
+        }
+      })();
+      $(window.dropperParams.dropTargetSelector).before(previewHtml);
+      $("#validator-progress-container").remove();
+      switch (mediaType) {
+        case "application":
+          console.info("Checking " + longType + " in application");
+          switch (longType) {
+            case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            case "vnd.ms-excel":
+              excelHandler2(linkPath);
+              break;
+            case "zip":
+            case "x-zip-compressed":
+              if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || linkPath.split(".").pop() === "xlsx") {
+                excelHandler(linkPath);
+              } else {
+                zipHandler(linkPath);
+              }
+              break;
+            case "x-7z-compressed":
+              _7zHandler(linkPath);
+          }
+          break;
+        case "text":
+          csvHandler();
+          break;
+        case "image":
+          imageHandler();
+      }
+    } catch (error1) {
+      e = error1;
+      toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
+    }
+    return false;
+  };
   bootstrapUploader("data-card-uploader", "");
   return false;
 };
 
-revalidateAndUpdateData = function() {
+excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
+  var args, correctedPath, helperApi;
+  if (hasHeaders == null) {
+    hasHeaders = true;
+  }
+  startLoad();
+  $("#validator-progress-container").remove();
+  renderValidateProgress();
+  helperApi = helperDir + "excelHelper.php";
+  correctedPath = path;
+  if (path.search(helperDir) !== -1) {
+    console.info("removing '" + helperDir + "'");
+    correctedPath = path.slice(helperDir.length);
+  }
+  console.info("Pinging for " + correctedPath);
+  args = "action=parse&path=" + correctedPath + "&sheets=Samples";
+  $.get(helperApi, args, "json").done(function(result) {
+    var nameArr, rows;
+    console.info("Got result", result);
+    if (result.status === false) {
+      bsAlert("There was a problem verifying your upload. Please try again.", "danger");
+      stopLoadError("There was a problem processing your data");
+      return false;
+    }
+    $("#upload-data").attr("disabled", "disabled");
+    nameArr = path.split("/");
+    dataFileParams.hasDataFile = true;
+    dataFileParams.fileName = nameArr.pop();
+    dataFileParams.filePath = correctedPath;
+    rows = Object.size(result.data);
+    uploadedData = result.data;
+    _adp.parsedUploadedData = result.data;
+    if (typeof callbackSkipsGeoHandler !== "function") {
+      revalidateAndUpdateData(result.data);
+    } else {
+      console.warn("Skipping Revalidator() !");
+      callbackSkipsRevalidate(result.data);
+    }
+    return stopLoad();
+  }).fail(function(result, error) {
+    console.error("Couldn't POST");
+    console.warn(result, error);
+    return stopLoadError();
+  });
+  return false;
+};
+
+revalidateAndUpdateData = function(newFilePath) {
   var cartoData, path, ref, ref1;
+  if (newFilePath == null) {
+    newFilePath = false;
+  }
   cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
-  if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
-    path = dataFileParams.filePath;
+  if (newFilePath !== false) {
+    path = newFilePath;
   } else {
-    path = cartoData.raw_data.filePath;
+    if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
+      path = dataFileParams.filePath;
+    } else {
+      path = cartoData.raw_data.filePath;
+    }
   }
   _adp.projectIdentifierString = cartoData.table.split("_")[0];
   _adp.projectId = _adp.projectData.project_id;
@@ -2660,7 +2890,10 @@ revalidateAndUpdateData = function() {
   }
   excelHandler(path, true, function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
-      console.info(validatedData);
+      console.info("Ready to update", validatedData);
+      _adp.canonicalHull = createConvexHull(validatedData.transectRing, true);
+      cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
+      _adp.disease_morbidity = validatedData.samples.morbidity;
       stopLoad();
       return false;
     });
@@ -3320,6 +3553,9 @@ validateAWebTaxon = function(taxonObj, callback) {
       taxonObj.genus = result.validated_taxon.genus;
       taxonObj.species = result.validated_taxon.species;
       taxonObj.subspecies = result.validated_taxon.subspecies;
+      if (taxonObj.clade == null) {
+        taxonObj.clade = result.validated_taxon.family;
+      }
       window.validationMeta.validatedTaxons.push(taxonObj);
     } else {
       taxonObj.invalid = true;

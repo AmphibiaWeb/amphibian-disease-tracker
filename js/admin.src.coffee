@@ -1119,13 +1119,13 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
           previewHtml = switch mediaType
             when "image"
               """
-              <div class="uploaded-media center-block" data-system-file="#{fileName}">
+              <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
                 <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
                   <p class="text-muted">
                     #{file.name} -> #{fileName}
-                (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
-                  Original Image
-                </a>)
+                    (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                      Original Image
+                    </a>)
                   </p>
               </div>
               """
@@ -1294,7 +1294,80 @@ csvHandler = (path) ->
   geoDataHandler()
   false
 
+
+copyMarkdown = (selector, zeroClipEvent, html5 = true) ->
+  # TODO FINISH ME
+  unless _adp?.zcClient?
+    zcConfig =
+      swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+    ZeroClipboard.config zcConfig
+    _adp.zcClient = new ZeroClipboard $(selector).get 0
+    # client.on "copy", (e) =>
+    #   copyLink(this, e)
+    $("#copy-ark").click ->
+      copyLink _adp.zcClient
+  ark = p$(".ark-identifier").value
+  if html5
+    # http://caniuse.com/#feat=clipboard
+    try
+      url = "https://n2t.net/#{ark}"
+      clipboardData =
+        dataType: "text/plain"
+        data: url
+        "text/plain": url
+      clip = new ClipboardEvent("copy", clipboardData)
+      document.dispatchEvent(clip)
+      toastStatusMessage "ARK resolver path copied to clipboard"
+      return false
+    catch e
+      console.error "Error creating copy: #{e.message}"
+      console.warn e.stack
+  console.warn "Can't use HTML5"
+  # http://zeroclipboard.org/
+  # https://github.com/zeroclipboard/zeroclipboard
+  if zeroClipObj?
+    zeroClipObj.setData clipboardData
+    if zeroClipEvent?
+      zeroClipEvent.setData clipboardData
+    zeroClipObj.on "aftercopy", (e) ->
+      if e.data["text/plain"]
+        toastStatusMessage "ARK resolver path copied to clipboard"
+      else
+        toastStatusMessage "Error copying to clipboard"
+    zeroClipObj.on "error", (e) ->
+      #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
+      console.error "Error copying to clipboard"
+      console.warn "Got", e
+      if e.name is "flash-overdue"
+        # ZeroClipboard.destroy()
+        if _adp.resetClipboard is true
+          console.error "Resetting ZeroClipboard didn't work!"
+          return false
+        ZeroClipboard.on "ready", ->
+          # Re-call
+          _adp.resetClipboard = true
+          copyLink()
+        _adp.zcClient = new ZeroClipboard $("#copy-ark").get 0
+      # Case for no flash at all
+      if e.name is "flash-disabled"
+        # stuff
+        console.info "No flash on this system"
+        ZeroClipboard.destroy()
+        $("#copy-ark")
+        .tooltip("destroy") # Otherwise stays on click: http://getbootstrap.com/javascript/#tooltipdestroy
+        .remove()
+        $(".ark-identifier")
+        .removeClass "col-xs-9 col-md-11"
+        .addClass "col-xs-12"
+        toastStatusMessage "Clipboard copying isn't available on your system"
+  else
+    console.error "Can't use HTML, and ZeroClipboard wasn't passed"
+  false
+
+
 imageHandler = (path) ->
+  # Insert a link to put a copy link with MD path
+  divEl = $("div[data-link-path='#{path}']")
   foo()
   false
 
@@ -1459,6 +1532,12 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
               cleanValue = value.toBool()
             else
               cleanValue = "NO_CONFIDENCE"
+          when "fieldNumber"
+            # These are "validForUri" columns
+            trimmed = value.trim()
+            # For field that are "PLC 123", remove the space
+            trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
+            cleanValue = trimmed
           else
             try
               cleanValue = value.trim()
@@ -1660,7 +1739,7 @@ excelDateToUnixTime = (excelTime) ->
   t
 
 
-renderValidateProgress = ->
+renderValidateProgress = (placeAfterSelector = "#file-uploader-form")->
   ###
   # Show paper-progress bars as validation goes
   #
@@ -1676,7 +1755,7 @@ renderValidateProgress = ->
   </div>
   """
   unless $("#validator-progress-container").exists()
-    $("#file-uploader-form").after html
+    $(placeAfterSelector).after html
   false
 
 
@@ -2748,18 +2827,186 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     # We don't already have a data file
     $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
     $("#append-replace-data-toggle").attr "hidden", "hidden"
-  bootstrapUploader("data-card-uploader", "")
+  startEditorUploader()
   false
 
 
 
+startEditorUploader = ->
+  window.dropperParams.postUploadHandler = (file, result) ->
+    ###
+    # The callback function for handleDragDropImage
+    #
+    # The "file" object contains information about the uploaded file,
+    # such as name, height, width, size, type, and more. Check the
+    # console logs in the demo for a full output.
+    #
+    # The result object contains the results of the upload. The "status"
+    # key is true or false depending on the status of the upload, and
+    # the other most useful keys will be "full_path" and "thumb_path".
+    #
+    # When invoked, it calls the "self" helper methods to actually do
+    # the file sending.
+    ###
+    # Clear out the file uploader
+    window.dropperParams.dropzone.removeAllFiles()
 
-revalidateAndUpdateData = ->
+    if typeof result isnt "object"
+      console.error "Dropzone returned an error - #{result}"
+      toastStatusMessage "There was a problem with the server handling your image. Please try again."
+      return false
+    unless result.status is true
+      # Yikes! Didn't work
+      result.human_error ?= "There was a problem uploading your image."
+      toastStatusMessage "#{result.human_error}"
+      console.error("Error uploading!",result)
+      return false
+    try
+      console.info "Server returned the following result:", result
+      console.info "The script returned the following file information:", file
+      pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
+      # path = "helpers/js-dragdrop/#{result.full_path}"
+      # Replace full_path and thumb_path with "wrote"
+      fileName = result.full_path.split("/").pop()
+      thumbPath = result.wrote_thumb
+      mediaType = result.mime_provided.split("/")[0]
+      longType = result.mime_provided.split("/")[1]
+      linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
+      previewHtml = switch mediaType
+        when "image"
+          """
+          <div class="uploaded-media center-block" data-system-file="#{fileName}">
+            <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
+              <p class="text-muted">
+                #{file.name} -> #{fileName}
+            (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+              Original Image
+            </a>)
+              </p>
+          </div>
+          """
+        when "audio" then """
+        <div class="uploaded-media center-block" data-system-file="#{fileName}">
+          <audio src="#{linkPath}" controls preload="auto">
+            <span class="glyphicon glyphicon-music"></span>
+            <p>
+              Your browser doesn't support the HTML5 <code>audio</code> element.
+              Please download the file below.
+            </p>
+          </audio>
+          <p class="text-muted">
+            #{file.name} -> #{fileName}
+            (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+              Original Media
+            </a>)
+          </p>
+        </div>
+        """
+        when "video" then """
+        <div class="uploaded-media center-block" data-system-file="#{fileName}">
+          <video src="#{linkPath}" controls preload="auto">
+            <img src="#{pathPrefix}#{thumbPath}" alt="Video Thumbnail" class="img-responsive" />
+            <p>
+              Your browser doesn't support the HTML5 <code>video</code> element.
+              Please download the file below.
+            </p>
+          </video>
+          <p class="text-muted">
+            #{file.name} -> #{fileName}
+            (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+              Original Media
+            </a>)
+          </p>
+        </div>
+        """
+        else
+          """
+          <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
+            <span class="glyphicon glyphicon-file"></span>
+            <p class="text-muted">#{file.name} -> #{fileName}</p>
+          </div>
+          """
+      # Append the preview HTML
+      $(window.dropperParams.dropTargetSelector).before previewHtml
+      # Finally, execute handlers for different file types
+      $("#validator-progress-container").remove()
+      switch mediaType
+        when "application"
+          # Another switch!
+          console.info "Checking #{longType} in application"
+          switch longType
+            # Fuck you MS, and your terrible MIME types
+            when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
+              excelHandler2(linkPath)
+            when "zip", "x-zip-compressed"
+              # Some servers won't read it as the crazy MS mime type
+              # But as a zip, instead. So, check the extension.
+              #
+              if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
+                excelHandler(linkPath)
+              else
+                zipHandler(linkPath)
+            when "x-7z-compressed"
+              _7zHandler(linkPath)
+        when "text" then csvHandler()
+        when "image" then imageHandler()
+    catch e
+      toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
+    false
+  # We've finished the handler, reinitialize
+  bootstrapUploader("data-card-uploader", "")
+  false
+
+excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
+  startLoad()
+  $("#validator-progress-container").remove()
+  renderValidateProgress()
+  helperApi = "#{helperDir}excelHelper.php"
+  correctedPath = path
+  if path.search(helperDir) isnt -1
+    # The helper file lives in /helpers/ so we want to remove that
+    console.info "removing '#{helperDir}'"
+    correctedPath = path.slice helperDir.length
+  console.info "Pinging for #{correctedPath}"
+  args = "action=parse&path=#{correctedPath}&sheets=Samples"
+  $.get helperApi, args, "json"
+  .done (result) ->
+    console.info "Got result", result
+    if result.status is false
+      bsAlert "There was a problem verifying your upload. Please try again.", "danger"
+      stopLoadError "There was a problem processing your data"
+      return false
+    # We don't care about the single file here
+    $("#upload-data").attr "disabled", "disabled"
+    nameArr = path.split "/"
+    dataFileParams.hasDataFile = true
+    dataFileParams.fileName = nameArr.pop()
+    dataFileParams.filePath = correctedPath
+    rows = Object.size(result.data)
+    uploadedData = result.data
+    _adp.parsedUploadedData = result.data
+    unless typeof callbackSkipsGeoHandler is "function"
+      revalidateAndUpdateData(result.data)
+    else
+      console.warn "Skipping Revalidator() !"
+      callbackSkipsRevalidate(result.data)
+    stopLoad()
+  .fail (result, error) ->
+    console.error "Couldn't POST"
+    console.warn result, error
+    stopLoadError()
+  false
+
+
+revalidateAndUpdateData = (newFilePath = false) ->
   cartoData = JSON.parse _adp.projectData.carto_id.unescape()
-  if dataFileParams?.filePath?
-    path = dataFileParams.filePath
+  if newFilePath isnt false
+    path = newFilePath
   else
-    path = cartoData.raw_data.filePath
+    if dataFileParams?.filePath?
+      path = dataFileParams.filePath
+    else
+      path = cartoData.raw_data.filePath
   _adp.projectIdentifierString = cartoData.table.split("_")[0]
   _adp.projectId = _adp.projectData.project_id
   unless _adp.fims?.expedition?.expeditionId?
@@ -2769,8 +3016,16 @@ revalidateAndUpdateData = ->
         ark: _adp.projectData.project_obj_id
   excelHandler path, true, (data) ->
     newGeoDataHandler data, (validatedData, projectIdentifier)->
-      console.info validatedData
+      console.info "Ready to update", validatedData
       # Need carto update
+      # Recalculate hull and update project data
+      _adp.canonicalHull = createConvexHull validatedData.transectRing, true
+      cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+      # Update project data with new taxa info
+      # Update project data with new sample data
+      _adp.disease_morbidity = validatedData.samples.morbidity #etc
+      # If the datasrc isn't the stored one, remint an ark and append
+      # Save it
       stopLoad()
       false
     false
@@ -3358,6 +3613,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
       taxonObj.genus = result.validated_taxon.genus
       taxonObj.species = result.validated_taxon.species
       taxonObj.subspecies = result.validated_taxon.subspecies
+      taxonObj.clade ?= result.validated_taxon.family
       window.validationMeta.validatedTaxons.push taxonObj
     else
       taxonObj.invalid = true

@@ -91,28 +91,28 @@ renderMapWithData = (projectData, force = false) ->
     if filePath.search(helperDir) is -1
       filePath = "#{helperDir}#{filePath}"
     # most recent download
-    downloadButton = """
-    <button class="btn btn-primary click download-file download-data-file" data-href="#{filePath}" data-newtab="true">
-      <iron-icon icon="editor:insert-chart"></iron-icon>
-      Download Newest Data File
-    </button>
-    """
+    downloadButton = ""
     arkIdentifiers = projectData.dataset_arks.split ","
-    if arkIdentifiers.length > 1
+    if arkIdentifiers.length > 0
       baseFilePath = filePath.split "/"
       baseFilePath.pop()
       baseFilePath = baseFilePath.join "/"
       # Add other small buttons
+      i = 0
       for ark in arkIdentifiers
         data = ark.split "::"
+        arkId = data[0]
         filePath = "#{baseFilePath}/#{data[1]}"
+        extraClasses = if i is 0 then "" else "btn-xs download-alt-datafile"
+        title = if i is 0 then "Download Most Recent Dataset" else "#{arkId} dataset"
         html = """
-          <button class="btn btn-primary btn-xs click download-file download-data-file download-alt-datafile" data-href="#{filePath}" data-newtab="true">
+          <button class="btn btn-primary click download-file download-data-file #{extraClasses}" data-href="#{filePath}" data-newtab="true" data-toggle="tooltip" title="#{arkId}" data-ark="#{arkId}">
             <iron-icon icon="editor:insert-chart"></iron-icon>
-            #{data[0]} dataset
+            #{title}
           </button>
         """
         downloadButton += html
+        ++i
   downloadButton ?= ""
   cartoTable = cartoData.table
   try
@@ -269,6 +269,28 @@ renderMapWithData = (projectData, force = false) ->
           header: ["Genus","Species","Subspecies"]
         downloadCSVFile _adp.pageSpeciesList, options
     bindClicks(".download-file")
+    $(".download-data-file").context (event) ->
+      event.preventDefault()
+      # TODO copy ark option
+      # vs. offset https://api.jquery.com/offset/
+      elPos = $(this).position()
+      html = """
+      <paper-material class="ark-context-wrapper" style="top:#{elPos.top};left:#{elPos.left}">
+        <paper-menu class=context-menu">
+          <paper-item class="copy-ark-context">
+            Copy ARK to clipboard
+          </paper-item>
+        </paper-menu>
+      </paper-material>
+      """
+      $(".ark-context-wrapper").remove()
+      # Append to DOM
+      $("body").append html
+      # Create copy event
+      ark = $(this).attr "data-ark"
+      $(".copy-ark-content").click ->
+        foo()
+      false
     checkArkDataset(projectData)
     setPublicData(projectData)
     stopLoad()
