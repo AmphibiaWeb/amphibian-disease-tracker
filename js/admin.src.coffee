@@ -1033,7 +1033,7 @@ getUploadIdentifier = ->
 
 
 
-bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
+bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", callback) ->
   ###
   # Bootstrap the file uploader into existence
   ###
@@ -1196,6 +1196,9 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4") ->
             when "image" then imageHandler()
         catch e
           toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
+      # Callback if exists
+      if typeof callback is "function"
+        callback()
     false
 
 
@@ -2833,128 +2836,128 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 
 startEditorUploader = ->
-  window.dropperParams.postUploadHandler = (file, result) ->
-    ###
-    # The callback function for handleDragDropImage
-    #
-    # The "file" object contains information about the uploaded file,
-    # such as name, height, width, size, type, and more. Check the
-    # console logs in the demo for a full output.
-    #
-    # The result object contains the results of the upload. The "status"
-    # key is true or false depending on the status of the upload, and
-    # the other most useful keys will be "full_path" and "thumb_path".
-    #
-    # When invoked, it calls the "self" helper methods to actually do
-    # the file sending.
-    ###
-    # Clear out the file uploader
-    window.dropperParams.dropzone.removeAllFiles()
-
-    if typeof result isnt "object"
-      console.error "Dropzone returned an error - #{result}"
-      toastStatusMessage "There was a problem with the server handling your image. Please try again."
-      return false
-    unless result.status is true
-      # Yikes! Didn't work
-      result.human_error ?= "There was a problem uploading your image."
-      toastStatusMessage "#{result.human_error}"
-      console.error("Error uploading!",result)
-      return false
-    try
-      console.info "Server returned the following result:", result
-      console.info "The script returned the following file information:", file
-      pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
-      # path = "helpers/js-dragdrop/#{result.full_path}"
-      # Replace full_path and thumb_path with "wrote"
-      fileName = result.full_path.split("/").pop()
-      thumbPath = result.wrote_thumb
-      mediaType = result.mime_provided.split("/")[0]
-      longType = result.mime_provided.split("/")[1]
-      linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
-      previewHtml = switch mediaType
-        when "image"
-          """
-          <div class="uploaded-media center-block" data-system-file="#{fileName}">
-            <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
-              <p class="text-muted">
-                #{file.name} -> #{fileName}
-            (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
-              Original Image
-            </a>)
-              </p>
-          </div>
-          """
-        when "audio" then """
-        <div class="uploaded-media center-block" data-system-file="#{fileName}">
-          <audio src="#{linkPath}" controls preload="auto">
-            <span class="glyphicon glyphicon-music"></span>
-            <p>
-              Your browser doesn't support the HTML5 <code>audio</code> element.
-              Please download the file below.
-            </p>
-          </audio>
-          <p class="text-muted">
-            #{file.name} -> #{fileName}
-            (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
-              Original Media
-            </a>)
-          </p>
-        </div>
-        """
-        when "video" then """
-        <div class="uploaded-media center-block" data-system-file="#{fileName}">
-          <video src="#{linkPath}" controls preload="auto">
-            <img src="#{pathPrefix}#{thumbPath}" alt="Video Thumbnail" class="img-responsive" />
-            <p>
-              Your browser doesn't support the HTML5 <code>video</code> element.
-              Please download the file below.
-            </p>
-          </video>
-          <p class="text-muted">
-            #{file.name} -> #{fileName}
-            (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
-              Original Media
-            </a>)
-          </p>
-        </div>
-        """
-        else
-          """
-          <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
-            <span class="glyphicon glyphicon-file"></span>
-            <p class="text-muted">#{file.name} -> #{fileName}</p>
-          </div>
-          """
-      # Append the preview HTML
-      $(window.dropperParams.dropTargetSelector).before previewHtml
-      # Finally, execute handlers for different file types
-      $("#validator-progress-container").remove()
-      switch mediaType
-        when "application"
-          # Another switch!
-          console.info "Checking #{longType} in application"
-          switch longType
-            # Fuck you MS, and your terrible MIME types
-            when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
-              excelHandler2(linkPath)
-            when "zip", "x-zip-compressed"
-              # Some servers won't read it as the crazy MS mime type
-              # But as a zip, instead. So, check the extension.
-              #
-              if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
-                excelHandler(linkPath)
-              else
-                zipHandler(linkPath)
-            when "x-7z-compressed"
-              _7zHandler(linkPath)
-        when "text" then csvHandler()
-        when "image" then imageHandler()
-    catch e
-      toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
-    false
   # We've finished the handler, reinitialize
-  bootstrapUploader("data-card-uploader", "")
+  bootstrapUploader "data-card-uploader", "", ->
+    window.dropperParams.postUploadHandler = (file, result) ->
+      ###
+      # The callback function for handleDragDropImage
+      #
+      # The "file" object contains information about the uploaded file,
+      # such as name, height, width, size, type, and more. Check the
+      # console logs in the demo for a full output.
+      #
+      # The result object contains the results of the upload. The "status"
+      # key is true or false depending on the status of the upload, and
+      # the other most useful keys will be "full_path" and "thumb_path".
+      #
+      # When invoked, it calls the "self" helper methods to actually do
+      # the file sending.
+      ###
+      # Clear out the file uploader
+      window.dropperParams.dropzone.removeAllFiles()
+
+      if typeof result isnt "object"
+        console.error "Dropzone returned an error - #{result}"
+        toastStatusMessage "There was a problem with the server handling your image. Please try again."
+        return false
+      unless result.status is true
+        # Yikes! Didn't work
+        result.human_error ?= "There was a problem uploading your image."
+        toastStatusMessage "#{result.human_error}"
+        console.error("Error uploading!",result)
+        return false
+      try
+        console.info "Server returned the following result:", result
+        console.info "The script returned the following file information:", file
+        pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
+        # path = "helpers/js-dragdrop/#{result.full_path}"
+        # Replace full_path and thumb_path with "wrote"
+        fileName = result.full_path.split("/").pop()
+        thumbPath = result.wrote_thumb
+        mediaType = result.mime_provided.split("/")[0]
+        longType = result.mime_provided.split("/")[1]
+        linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
+        previewHtml = switch mediaType
+          when "image"
+            """
+            <div class="uploaded-media center-block" data-system-file="#{fileName}">
+              <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
+                <p class="text-muted">
+                  #{file.name} -> #{fileName}
+              (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                Original Image
+              </a>)
+                </p>
+            </div>
+            """
+          when "audio" then """
+          <div class="uploaded-media center-block" data-system-file="#{fileName}">
+            <audio src="#{linkPath}" controls preload="auto">
+              <span class="glyphicon glyphicon-music"></span>
+              <p>
+                Your browser doesn't support the HTML5 <code>audio</code> element.
+                Please download the file below.
+              </p>
+            </audio>
+            <p class="text-muted">
+              #{file.name} -> #{fileName}
+              (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                Original Media
+              </a>)
+            </p>
+          </div>
+          """
+          when "video" then """
+          <div class="uploaded-media center-block" data-system-file="#{fileName}">
+            <video src="#{linkPath}" controls preload="auto">
+              <img src="#{pathPrefix}#{thumbPath}" alt="Video Thumbnail" class="img-responsive" />
+              <p>
+                Your browser doesn't support the HTML5 <code>video</code> element.
+                Please download the file below.
+              </p>
+            </video>
+            <p class="text-muted">
+              #{file.name} -> #{fileName}
+              (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                Original Media
+              </a>)
+            </p>
+          </div>
+          """
+          else
+            """
+            <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
+              <span class="glyphicon glyphicon-file"></span>
+              <p class="text-muted">#{file.name} -> #{fileName}</p>
+            </div>
+            """
+        # Append the preview HTML
+        $(window.dropperParams.dropTargetSelector).before previewHtml
+        # Finally, execute handlers for different file types
+        $("#validator-progress-container").remove()
+        switch mediaType
+          when "application"
+            # Another switch!
+            console.info "Checking #{longType} in application"
+            switch longType
+              # Fuck you MS, and your terrible MIME types
+              when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
+                excelHandler2(linkPath)
+              when "zip", "x-zip-compressed"
+                # Some servers won't read it as the crazy MS mime type
+                # But as a zip, instead. So, check the extension.
+                #
+                if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
+                  excelHandler(linkPath)
+                else
+                  zipHandler(linkPath)
+              when "x-7z-compressed"
+                _7zHandler(linkPath)
+          when "text" then csvHandler()
+          when "image" then imageHandler()
+      catch e
+        toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
+      false
   false
 
 excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->

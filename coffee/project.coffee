@@ -106,7 +106,7 @@ renderMapWithData = (projectData, force = false) ->
         extraClasses = if i is 0 then "" else "btn-xs download-alt-datafile"
         title = if i is 0 then "Download Newest Datafile" else "#{arkId} dataset"
         html = """
-          <button class="btn btn-primary click download-file download-data-file #{extraClasses}" data-href="#{filePath}" data-newtab="true" data-toggle="tooltip" title="#{arkId}" data-ark="#{arkId}">
+          <button class="btn btn-primary click download-file download-data-file #{extraClasses}" data-href="#{filePath}" data-newtab="true" data-toggle="tooltip" title="#{arkId} (right-click to copy)" data-ark="#{arkId}">
             <iron-icon icon="editor:insert-chart"></iron-icon>
             #{title}
           </button>
