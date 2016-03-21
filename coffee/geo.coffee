@@ -535,6 +535,35 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       geo.cartoUrl = dataVisUrl
       postConfig()
 
+getColumnObj = ->
+  columnDatatype =
+    id: "int"
+    collectionID: "varchar"
+    catalogNumber: "varchar"
+    fieldNumber: "varchar"
+    diseaseTested: "varchar"
+    diseaseStrain: "varchar"
+    sampleMethod: "varchar"
+    sampleDisposition: "varchar"
+    diseaseDetected: "varchar"
+    fatal: "boolean"
+    cladeSampled: "varchar"
+    genus: "varchar"
+    specificEpithet: "varchar"
+    infraspecificEpithet: "varchar"
+    lifeStage: "varchar"
+    dateIdentified: "date" # Should be ISO8601; coerce it!
+    decimalLatitude: "decimal"
+    decimalLongitude: "decimal"
+    alt: "decimal"
+    coordinateUncertaintyInMeters: "decimal"
+    Collector: "varchar"
+    originalTaxa: "varchar"
+    fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
+    the_geom: "varchar"
+  columnDatatype
+      
+
 geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   ###
   # Acts as a shim between the server-side uploader and the client.
@@ -680,31 +709,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       # Uses DarwinCore terms
       # http://www.biscicol.org/biocode-fims/templates.jsp#
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
-      columnDatatype =
-        id: "int"
-        collectionID: "varchar"
-        catalogNumber: "varchar"
-        fieldNumber: "varchar"
-        diseaseTested: "varchar"
-        diseaseStrain: "varchar"
-        sampleMethod: "varchar"
-        sampleDisposition: "varchar"
-        diseaseDetected: "varchar"
-        fatal: "boolean"
-        cladeSampled: "varchar"
-        genus: "varchar"
-        specificEpithet: "varchar"
-        infraspecificEpithet: "varchar"
-        lifeStage: "varchar"
-        dateIdentified: "date" # Should be ISO8601; coerce it!
-        decimalLatitude: "decimal"
-        decimalLongitude: "decimal"
-        alt: "decimal"
-        coordinateUncertaintyInMeters: "decimal"
-        Collector: "varchar"
-        originalTaxa: "varchar"
-        fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
-        the_geom: "varchar"
+      columnDatatype = getColumnObj()
       # Construct the SQL query
       switch operation
         when "edit"
