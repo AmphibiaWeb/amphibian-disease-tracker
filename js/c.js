@@ -2363,7 +2363,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, apiPostSqlQuery, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, doStillWorking, e2, err, error2, error3, error4, estimate, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, max, n, postTimeStart, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, story, tempList, transectPolygon, updateUploadProgress, userTransectRing, value, valuesArr, valuesList, workingIter;
+    var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -2487,7 +2487,6 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           if (operation === "create") {
             sqlQuery = "CREATE TABLE " + dataTable + " ";
           }
-          valuesList = "";
           dataObject = {
             the_geom: dataGeometry
           };
@@ -2556,154 +2555,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           foo();
           return false;
       }
-      apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
-      args = "action=upload&sql_query=" + apiPostSqlQuery;
-      console.info("Querying:");
-      console.info(sqlQuery);
-      console.info("GeoJSON:", geoJson);
-      console.info("GeoJSON String:", dataGeometry);
-      console.info("POSTing to server");
-      postTimeStart = Date.now();
-      workingIter = 0;
-      story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen 'Staying&#39; Alive',", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
-      doStillWorking = function() {
-        var extra;
-        extra = story[workingIter] != null ? "(" + story[workingIter] + ")" : "";
-        toastStatusMessage("Still working ... " + extra);
-        ++workingIter;
-        return window._adp.secondaryTimeout = delay(15000, function() {
-          return doStillWorking();
-        });
-      };
-      try {
-        estimate = toInt(.7 * valuesList.length);
-        console.log("Estimate " + estimate + " seconds");
-        window._adp.uploader = true;
-        $("#data-sync").removeAttr("indeterminate");
-        max = estimate * 30;
-        p$("#data-sync").max = max;
-        (updateUploadProgress = function(prog) {
-          p$("#data-sync").value = prog;
-          ++prog;
-          if (window._adp.uploader && prog <= max) {
-            return delay(33, function() {
-              return updateUploadProgress(prog);
-            });
-          } else if (prog > max) {
-            toastStatusMessage("This may take a few minutes. We'll give you an error if things go wrong.");
-            return window._adp.secondaryTimeout = delay(15000, function() {
-              return doStillWorking();
-            });
-          } else {
-            return console.log("Not running upload progress indicator", prog, window._adp.uploader, max);
-          }
-        })(0);
-      } catch (error3) {
-        e = error3;
-        console.warn("Can't show upload status - " + e.message);
-        console.warn(e.stack);
-        try {
-          window._adp.initialTimeout = delay(5000, function() {
-            var estMin, minWord;
-            estMin = toInt(estimate / 60) + 1;
-            minWord = estMin > 1 ? "minutes" : "minute";
-            toastStatusMessage("Please be patient, it may take a few minutes (we guess " + estMin + " " + minWord + ")");
-            return window._adp.secondaryTimeout = delay(15000, function() {
-              return doStillWorking();
-            });
-          });
-        } catch (error4) {
-          e2 = error4;
-          console.error("Can't show backup upload notices! " + e2.message);
-          console.warn(e2.stack);
-        }
-      }
-      return $.post("api.php", args, "json").done(function(result) {
-        var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, parentCallback, prettyHtml, response;
-        console.log("Got back", result);
-        if (result.status !== true) {
-          console.error("Got an error from the server!");
-          console.warn(result);
-          stopLoadError("There was a problem uploading your data. Please try again.");
-          return false;
-        }
-        cartoResults = result.post_response;
-        cartoHasError = false;
-        for (j in cartoResults) {
-          response = cartoResults[j];
-          if (!isNull(response != null ? response.error : void 0)) {
-            error = (response != null ? response.error : void 0) != null ? response.error[0] : "Unspecified Error";
-            cartoHasError = error;
-          }
-        }
-        if (cartoHasError !== false) {
-          bsAlert("Error uploading your data: " + cartoHasError, "danger");
-          stopLoadError("CartoDB returned an error: " + cartoHasError);
-          return false;
-        }
-        console.info("Carto was successful! Got results", cartoResults);
-        try {
-          prettyHtml = JsonHuman.format(cartoResults);
-        } catch (undefined) {}
-        bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
-        toastStatusMessage("Data parse and upload successful");
-        geo.dataTable = dataTable;
-        dataBlobUrl = "";
-        if (!isNull(dataBlobUrl)) {
-          dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
-        } else if (typeof dataBlobUrl === "object") {
-          dataVisUrl = dataBlobUrl;
-        } else {
-          dataVisUrl = "";
-        }
-        parentCallback = function(coords) {
-          var options, ref4;
-          console.info("Initiating parent callback");
-          stopLoad();
-          max = p$("#data-sync").max;
-          p$("#data-sync").value = max;
-          options = {
-            boundingBox: geo.boundingBox,
-            bsGrid: ""
-          };
-          if (((ref4 = window.mapBuilder) != null ? ref4.selector : void 0) != null) {
-            options.selector = window.mapBuilder.selector;
-          } else if ($("google-map").exists()) {
-            options.selector = $($("google-map").get(0)).attr("id");
-          } else {
-            options.selector = "#carto-map-container";
-          }
-          _adp.defaultMapOptions = options;
-          if (typeof callback === "function") {
-            return callback(geo.dataTable, coords, options);
-          } else {
-            return console.info("requestCartoUpload recieved no callback");
-          }
-        };
-        return geo.init(function() {
-          console.info("Post init");
-          getCanonicalDataCoords(geo.dataTable, null, function(coords, options) {
-            console.info("gcdc callback successful");
-            return parentCallback(coords);
-          });
-          return false;
-        });
-      }).error(function(result, status) {
-        console.error("Couldn't communicate with server!", result, status);
-        console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
-        stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
-        return bsAlert("Couldn't upload dataset. Please try again later.", "danger");
-      }).always(function() {
-        var duration;
-        try {
-          duration = Date.now() - postTimeStart;
-          console.info("POST and process took " + duration + "ms");
-          clearTimeout(window._adp.initialTimeout);
-          clearTimeout(window._adp.secondaryTimeout);
-          window._adp.uploader = false;
-          return $("#upload-data").removeAttr("disabled");
-        } catch (undefined) {}
-      });
+      return geo.postToCarto(sqlQuery, postTimeStart);
     } else {
       console.error("Unable to authenticate session. Please log in.");
       return stopLoadError("Sorry, your session has expired. Please log in and try again.");
@@ -2713,6 +2565,161 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-001)");
     return $("#upload-data").removeAttr("disabled");
+  });
+  return false;
+};
+
+geo.postToCarto = function(sqlQuery) {
+  var apiPostSqlQuery, args, doStillWorking, e2, error2, error3, estimate, max, postTimeStart, story, updateUploadProgress, workingIter;
+  apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
+  args = "action=upload&sql_query=" + apiPostSqlQuery;
+  console.info("Querying:");
+  console.info(sqlQuery);
+  console.info("POSTing to server");
+  postTimeStart = Date.now();
+  workingIter = 0;
+  story = ["A silly story for you, while you wait!", "Everything had gone according to plan, up 'til this moment.", "His design team had done their job flawlessly,", "and the machine, still thrumming behind him,", "a thing of another age,", "was settled on a bed of prehistoric moss.", "They'd done it.", "But now,", "beyond the protection of the pod", "and facing an enormous Tyrannosaurus rex with dripping jaws,", "Professor Cho reflected that,", "had he known of the dinosaur's presence,", "he wouldn’t have left the Chronoculator", "- and he certainly wouldn't have chosen 'Staying&#39; Alive',", "by The Beegees,", "as his dying soundtrack.", "Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"];
+  doStillWorking = function() {
+    var extra;
+    extra = story[workingIter] != null ? "(" + story[workingIter] + ")" : "";
+    toastStatusMessage("Still working ... " + extra);
+    ++workingIter;
+    return window._adp.secondaryTimeout = delay(15000, function() {
+      return doStillWorking();
+    });
+  };
+  try {
+    estimate = toInt(.7 * valuesList.length);
+    console.log("Estimate " + estimate + " seconds");
+    window._adp.uploader = true;
+    $("#data-sync").removeAttr("indeterminate");
+    max = estimate * 30;
+    try {
+      p$("#data-sync").max = max;
+    } catch (undefined) {}
+    (updateUploadProgress = function(prog) {
+      try {
+        p$("#data-sync").value = prog;
+      } catch (undefined) {}
+      ++prog;
+      if (window._adp.uploader && prog <= max) {
+        return delay(33, function() {
+          return updateUploadProgress(prog);
+        });
+      } else if (prog > max) {
+        toastStatusMessage("This may take a few minutes. We'll give you an error if things go wrong.");
+        return window._adp.secondaryTimeout = delay(15000, function() {
+          return doStillWorking();
+        });
+      } else {
+        return console.log("Not running upload progress indicator", prog, window._adp.uploader, max);
+      }
+    })(0);
+  } catch (error2) {
+    e = error2;
+    console.warn("Can't show upload status - " + e.message);
+    console.warn(e.stack);
+    try {
+      window._adp.initialTimeout = delay(5000, function() {
+        var estMin, minWord;
+        estMin = toInt(estimate / 60) + 1;
+        minWord = estMin > 1 ? "minutes" : "minute";
+        toastStatusMessage("Please be patient, it may take a few minutes (we guess " + estMin + " " + minWord + ")");
+        return window._adp.secondaryTimeout = delay(15000, function() {
+          return doStillWorking();
+        });
+      });
+    } catch (error3) {
+      e2 = error3;
+      console.error("Can't show backup upload notices! " + e2.message);
+      console.warn(e2.stack);
+    }
+  }
+  $.post("api.php", args, "json").done(function(result) {
+    var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, parentCallback, prettyHtml, response;
+    console.log("Got back", result);
+    if (result.status !== true) {
+      console.error("Got an error from the server!");
+      console.warn(result);
+      stopLoadError("There was a problem uploading your data. Please try again.");
+      return false;
+    }
+    cartoResults = result.post_response;
+    cartoHasError = false;
+    for (j in cartoResults) {
+      response = cartoResults[j];
+      if (!isNull(response != null ? response.error : void 0)) {
+        error = (response != null ? response.error : void 0) != null ? response.error[0] : "Unspecified Error";
+        cartoHasError = error;
+      }
+    }
+    if (cartoHasError !== false) {
+      bsAlert("Error uploading your data: " + cartoHasError, "danger");
+      stopLoadError("CartoDB returned an error: " + cartoHasError);
+      return false;
+    }
+    console.info("Carto was successful! Got results", cartoResults);
+    try {
+      prettyHtml = JsonHuman.format(cartoResults);
+    } catch (undefined) {}
+    bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
+    toastStatusMessage("Data parse and upload successful");
+    geo.dataTable = dataTable;
+    dataBlobUrl = "";
+    if (!isNull(dataBlobUrl)) {
+      dataVisUrl = "https://" + cartoAccount + ".cartodb.com/api/v2/viz/" + dataBlobUrl + "/viz.json";
+    } else if (typeof dataBlobUrl === "object") {
+      dataVisUrl = dataBlobUrl;
+    } else {
+      dataVisUrl = "";
+    }
+    parentCallback = function(coords) {
+      var options, ref;
+      console.info("Initiating parent callback");
+      stopLoad();
+      max = p$("#data-sync").max;
+      p$("#data-sync").value = max;
+      options = {
+        boundingBox: geo.boundingBox,
+        bsGrid: ""
+      };
+      if (((ref = window.mapBuilder) != null ? ref.selector : void 0) != null) {
+        options.selector = window.mapBuilder.selector;
+      } else if ($("google-map").exists()) {
+        options.selector = $($("google-map").get(0)).attr("id");
+      } else {
+        options.selector = "#carto-map-container";
+      }
+      _adp.defaultMapOptions = options;
+      if (typeof callback === "function") {
+        return callback(geo.dataTable, coords, options);
+      } else {
+        return console.info("requestCartoUpload recieved no callback");
+      }
+    };
+    return geo.init(function() {
+      console.info("Post init");
+      getCanonicalDataCoords(geo.dataTable, null, function(coords, options) {
+        console.info("gcdc callback successful");
+        return parentCallback(coords);
+      });
+      return false;
+    });
+  }).error(function(result, status) {
+    console.error("Couldn't communicate with server!", result, status);
+    console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
+    stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+    return bsAlert("Couldn't upload dataset. Please try again later.", "danger");
+  }).always(function() {
+    var duration;
+    try {
+      duration = Date.now() - postTimeStart;
+      console.info("POST and process took " + duration + "ms");
+      clearTimeout(window._adp.initialTimeout);
+      clearTimeout(window._adp.secondaryTimeout);
+      window._adp.uploader = false;
+      return $("#upload-data").removeAttr("disabled");
+    } catch (undefined) {}
   });
   return false;
 };

@@ -2837,6 +2837,12 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 startEditorUploader = ->
   # We've finished the handler, reinitialize
+  unless $("link[href='components/neon-animation/animations/fade-out-animation.html']").exists()
+    animations = """
+    <link rel="import" href="components/neon-animation/animations/fade-in-animation.html" />
+    <link rel="import" href="components/neon-animation/animations/fade-out-animation.html" />
+    """
+    $("head").append animations
   bootstrapUploader "data-card-uploader", "", ->
     window.dropperParams.postUploadHandler = (file, result) ->
       ###
@@ -2867,6 +2873,26 @@ startEditorUploader = ->
         console.error("Error uploading!",result)
         return false
       try
+        # Open up dialog
+        dialogHtml = """
+        <paper-dialog modal id="upload-progress-dialog"
+          entry-animation="fade-in-animation"
+          exit-animation="fade-out-animation">
+          <h2>Upload Progress</h2>
+          <paper-dialog-scrollable>
+            <div id="upload-progress-container" style="min-height:60vh; ">
+            </div>
+          </paper-dialog-scrollable>
+          <div class="buttons">
+            <paper-button id="close-overlay">Close</paper-button>
+          </div>
+        </paper-dialog>
+        """
+        $("#upload-progress-dialog").remove()
+        $("body").append dialogHtml
+        p$("#upload-progress-dialog").open()
+        $("#close-overlay").click ->
+          p$("#upload-progress-dialog").close()
         console.info "Server returned the following result:", result
         console.info "The script returned the following file information:", file
         pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
@@ -2948,13 +2974,18 @@ startEditorUploader = ->
                 # But as a zip, instead. So, check the extension.
                 #
                 if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
-                  excelHandler(linkPath)
+                  excelHandler2(linkPath)
                 else
                   zipHandler(linkPath)
               when "x-7z-compressed"
                 _7zHandler(linkPath)
-          when "text" then csvHandler()
-          when "image" then imageHandler()
+                p$("#upload-progress-dialog").close()
+          when "text"
+            csvHandler()
+            p$("#upload-progress-dialog").close()
+          when "image"
+            imageHandler()
+            p$("#upload-progress-dialog").close()
       catch e
         toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
       false
@@ -2988,11 +3019,11 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     rows = Object.size(result.data)
     uploadedData = result.data
     _adp.parsedUploadedData = result.data
-    unless typeof callbackSkipsGeoHandler is "function"
-      revalidateAndUpdateData(result.data)
+    unless typeof callbackSkipsRevalidate is "function"
+      revalidateAndUpdateData(result)
     else
       console.warn "Skipping Revalidator() !"
-      callbackSkipsRevalidate(result.data)
+      callbackSkipsRevalidate(result)
     stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
@@ -3003,8 +3034,14 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
 
 revalidateAndUpdateData = (newFilePath = false) ->
   cartoData = JSON.parse _adp.projectData.carto_id.unescape()
+  skipHandler = false
   if newFilePath isnt false
-    path = newFilePath
+    if typeof newFilePath is "object"
+      skipHandler = true
+      passedData = newFilePath.data
+      path = newFilePath.path.requested_path
+    else
+      path = newFilePath
   else
     if dataFileParams?.filePath?
       path = dataFileParams.filePath
@@ -3017,21 +3054,216 @@ revalidateAndUpdateData = (newFilePath = false) ->
       expedition:
         expeditionId: 26
         ark: _adp.projectData.project_obj_id
-  excelHandler path, true, (data) ->
-    newGeoDataHandler data, (validatedData, projectIdentifier)->
+
+  dataCallback = (data) ->
+    newGeoDataHandler data, (validatedData, projectIdentifier) ->
       console.info "Ready to update", validatedData
+      dataTable = cartoData.table
+      data = validatedData.data
       # Need carto update
-      # Recalculate hull and update project data
-      _adp.canonicalHull = createConvexHull validatedData.transectRing, true
-      cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
-      # Update project data with new taxa info
-      # Update project data with new sample data
-      _adp.disease_morbidity = validatedData.samples.morbidity #etc
-      # If the datasrc isn't the stored one, remint an ark and append
-      # Save it
-      stopLoad()
-      false
+      if typeof data isnt "object"
+        console.info "This function requires the base data to be a JSON object."
+        toastStatusMessage "Your data is malformed. Please double check your data and try again."
+        return false
+
+      # Is this a legitimate operation?
+      allowedOperations = [
+        "edit"
+        "insert"
+        "delete"
+        "create"
+        ]
+      unless operation in allowedOperations
+        console.error "#{operation} is not an allowed operation on a data set!"
+        console.info "Allowed operations are ", allowedOperations
+        toastStatusMessage "Sorry, '#{operation}' isn't an allowed operation."
+        return false
+
+      if isNull dataTable
+        console.error "Must use a defined table name!"
+        toastStatusMessage "You must name your data table"
+        return false
+
+      # Is the user allowed and logged in?
+      link = $.cookie "#{uri.domain}_link"
+      hash = $.cookie "#{uri.domain}_auth"
+      secret = $.cookie "#{uri.domain}_secret"
+      unless link? and hash? and secret?
+        console.error "You're not logged in. Got one or more invalid tokens for secrets.", link, hash, secret
+        toastStatusMessage "Sorry, you're not logged in. Please log in and try again."
+        return false
+      args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
+      ## NOTE THIS SHOULD ACTUALLY VERIFY THAT THE DATA COULD BE WRITTEN
+      # TO THIS PROJECT BY THIS PERSON!!!
+      #
+      # Some of this could, in theory, be done via
+      # http://docs.cartodb.com/cartodb-platform/cartodb-js/sql/
+      unless adminParams?.apiTarget?
+        console.warn "Administration file not loaded. Upload cannot continue"
+        stopLoadError "Administration file not loaded. Upload cannot continue"
+        return false
+      $.post adminParams.apiTarget, args, "json"
+      .done (result) ->
+        if result.status
+          sampleLatLngArray = new Array()
+          # Before we begin parsing, throw up an overlay for the duration
+          # Loop over the data and clean it up
+          # Create a GeoJSON from the data
+          lats = new Array()
+          lngs = new Array()
+          for n, row of data
+            ll = new Array()
+            for column, value of row
+              switch column
+                when "decimalLongitude"
+                  ll[1] = value
+                  lngs.push value
+                when "decimalLatitude"
+                  ll[0] = value
+                  lats.push value
+            sampleLatLngArray.push ll
+          bb_north = lats.max() ? 0
+          bb_south = lats.min() ? 0
+          bb_east = lngs.max() ? 0
+          bb_west = lngs.min() ? 0
+          defaultPolygon = [
+              [bb_north, bb_west]
+              [bb_north, bb_east]
+              [bb_south, bb_east]
+              [bb_south, bb_west]
+            ]
+          # See if the user provided a good transect polygon
+          try
+            # See if the user provided a valid JSON string of coordinates
+            userTransectRing = JSON.parse totalData.transectRing
+            userTransectRing = Object.toArray userTransectRing
+            i = 0
+            for coordinatePair in userTransectRing
+              if coordinatePair instanceof Point
+                # Coerce it into simple coords
+                coordinatePair = coordinatePair.toGeoJson()
+                userTransectRing[i] = coordinatePair
+              # Is it just two long?
+              if coordinatePair.length isnt 2
+                throw
+                  message: "Bad coordinate length for '#{coordinatePair}'"
+              for coordinate in coordinatePair
+                unless isNumber coordinate
+                  throw
+                    message: "Bad coordinate number '#{coordinate}'"
+              ++i
+          catch e
+            console.warn "Error parsing the user transect ring - #{e.message}"
+            userTransectRing = undefined
+          # Massive object row
+          transectPolygon = userTransectRing ? defaultPolygon
+          geoJson =
+            type: "GeometryCollection"
+            geometries: [
+                  type: "MultiPoint"
+                  coordinates: sampleLatLngArray # An array of all sample points
+                ,
+                  type: "Polygon"
+                  coordinates: transectPolygon
+              ]
+          dataGeometry = "ST_AsBinary(#{JSON.stringify(geoJson)}, 4326)"
+          # Rows per-sample ...
+          # FIMS based
+          # Uses DarwinCore terms
+          # http://www.biscicol.org/biocode-fims/templates.jsp#
+          # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
+          columnDatatype =
+            id: "int"
+            collectionID: "varchar"
+            catalogNumber: "varchar"
+            fieldNumber: "varchar"
+            diseaseTested: "varchar"
+            diseaseStrain: "varchar"
+            sampleMethod: "varchar"
+            sampleDisposition: "varchar"
+            diseaseDetected: "varchar"
+            fatal: "boolean"
+            cladeSampled: "varchar"
+            genus: "varchar"
+            specificEpithet: "varchar"
+            infraspecificEpithet: "varchar"
+            lifeStage: "varchar"
+            dateIdentified: "date" # Should be ISO8601; coerce it!
+            decimalLatitude: "decimal"
+            decimalLongitude: "decimal"
+            alt: "decimal"
+            coordinateUncertaintyInMeters: "decimal"
+            Collector: "varchar"
+            originalTaxa: "varchar"
+            fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
+            the_geom: "varchar"
+          # Construct the SQL query
+          sqlQuery = ""
+          valuesList = new Array()
+          columnNamesList = new Array()
+          columnNamesList.push "id int"
+          for i, row of data
+            i = toInt(i)
+            ##console.log "Iter ##{i}", i is 0, `i == 0`
+            # Each row ...
+            valuesArr = new Array()
+            lat = 0
+            lng = 0
+            alt = 0
+            err = 0
+            geoJsonGeom =
+              type: "Point"
+              coordinates: new Array()
+            iIndex = i + 1
+            for column, value of row
+              # Loop data ....
+              if i is 0
+                columnNamesList.push "#{column} #{columnDatatype[column]}"
+              try
+                # Strings only!
+                value = value.replace("'", "&#95;")
+              switch column
+                # Assign geoJSON values
+                when "decimalLongitude"
+                  geoJsonGeom.coordinates[1] = value
+                when "decimalLatitude"
+                  geoJsonGeom.coordinates[0] = value
+                when "fieldNumber"
+                  fieldNumber = value
+                  continue
+              if typeof value is "string"
+                valuesArr.push "`#{column}`='#{value}'"
+              else if isNull value
+                valuesArr.push "null"
+              else
+                valuesArr.push "`#{column}`=#{value}"
+            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
+            valuesArr.push geoJsonVal
+            sqlWhere = " WHERE `fieldNumber`='#{fieldNumber}';"
+            sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
+          console.log sqlQuery
+          return false
+          # Recalculate hull and update project data
+          _adp.canonicalHull = createConvexHull validatedData.transectRing, true
+          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+          # Update project data with new taxa info
+          # Update project data with new sample data
+          _adp.disease_morbidity = validatedData.samples.morbidity #etc
+          # If the datasrc isn't the stored one, remint an ark and append
+          # Save it
+          stopLoad()
+          false
+        else
+          stopLoadError "Error updating Carto"
+      .error (result, status) ->
+        stopLoadError "Error updating Carto"
     false
+  unless skipHandler
+    excelHandler2 path, true, (resultObj) ->
+      data = resultObj.data
+      dataCallback(data)
+  else
+    dataCallback(passedData)
   false
 
 

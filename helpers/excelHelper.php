@@ -142,7 +142,7 @@ case 'parse':
         returnAjax(array(
             'status' => false,
             'error' => "Non-existant file '".$validatedPath."'",
-            'path' => array(
+            'paths' => array(
                 'requested_path' => $_REQUEST['path'],
                 'validated_path' => $validatedPath,
             ),
@@ -160,6 +160,10 @@ case 'parse':
         returnAjax(array(
             'status' => true,
             'data' => excelToArray($validatedPath, $header, $sheets),
+            'path' => array(
+                'requested_path' => $_REQUEST['path'],
+                'validated_path' => $validatedPath,
+            ),
         ));
     } catch (Exception $e) {
         returnAjax(array(

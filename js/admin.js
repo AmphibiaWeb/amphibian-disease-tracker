@@ -2729,6 +2729,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
 };
 
 startEditorUploader = function() {
+  var animations;
+  if (!$("link[href='components/neon-animation/animations/fade-out-animation.html']").exists()) {
+    animations = "<link rel=\"import\" href=\"components/neon-animation/animations/fade-in-animation.html\" />\n<link rel=\"import\" href=\"components/neon-animation/animations/fade-out-animation.html\" />";
+    $("head").append(animations);
+  }
   bootstrapUploader("data-card-uploader", "", function() {
     return window.dropperParams.postUploadHandler = function(file, result) {
 
@@ -2746,7 +2751,7 @@ startEditorUploader = function() {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var e, error1, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      var dialogHtml, e, error1, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
       window.dropperParams.dropzone.removeAllFiles();
       if (typeof result !== "object") {
         console.error("Dropzone returned an error - " + result);
@@ -2762,6 +2767,13 @@ startEditorUploader = function() {
         return false;
       }
       try {
+        dialogHtml = "<paper-dialog modal id=\"upload-progress-dialog\"\n  entry-animation=\"fade-in-animation\"\n  exit-animation=\"fade-out-animation\">\n  <h2>Upload Progress</h2>\n  <paper-dialog-scrollable>\n    <div id=\"upload-progress-container\" style=\"min-height:60vh; \">\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"close-overlay\">Close</paper-button>\n  </div>\n</paper-dialog>";
+        $("#upload-progress-dialog").remove();
+        $("body").append(dialogHtml);
+        p$("#upload-progress-dialog").open();
+        $("#close-overlay").click(function() {
+          return p$("#upload-progress-dialog").close();
+        });
         console.info("Server returned the following result:", result);
         console.info("The script returned the following file information:", file);
         pathPrefix = "helpers/js-dragdrop/uploaded/" + (getUploadIdentifier()) + "/";
@@ -2795,20 +2807,23 @@ startEditorUploader = function() {
               case "zip":
               case "x-zip-compressed":
                 if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || linkPath.split(".").pop() === "xlsx") {
-                  excelHandler(linkPath);
+                  excelHandler2(linkPath);
                 } else {
                   zipHandler(linkPath);
                 }
                 break;
               case "x-7z-compressed":
                 _7zHandler(linkPath);
+                p$("#upload-progress-dialog").close();
             }
             break;
           case "text":
             csvHandler();
+            p$("#upload-progress-dialog").close();
             break;
           case "image":
             imageHandler();
+            p$("#upload-progress-dialog").close();
         }
       } catch (error1) {
         e = error1;
@@ -2852,11 +2867,11 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
     rows = Object.size(result.data);
     uploadedData = result.data;
     _adp.parsedUploadedData = result.data;
-    if (typeof callbackSkipsGeoHandler !== "function") {
-      revalidateAndUpdateData(result.data);
+    if (typeof callbackSkipsRevalidate !== "function") {
+      revalidateAndUpdateData(result);
     } else {
       console.warn("Skipping Revalidator() !");
-      callbackSkipsRevalidate(result.data);
+      callbackSkipsRevalidate(result);
     }
     return stopLoad();
   }).fail(function(result, error) {
@@ -2868,13 +2883,20 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
 };
 
 revalidateAndUpdateData = function(newFilePath) {
-  var cartoData, path, ref, ref1;
+  var cartoData, dataCallback, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
   }
   cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
+  skipHandler = false;
   if (newFilePath !== false) {
-    path = newFilePath;
+    if (typeof newFilePath === "object") {
+      skipHandler = true;
+      passedData = newFilePath.data;
+      path = newFilePath.path.requested_path;
+    } else {
+      path = newFilePath;
+    }
   } else {
     if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
       path = dataFileParams.filePath;
@@ -2892,17 +2914,215 @@ revalidateAndUpdateData = function(newFilePath) {
       }
     };
   }
-  excelHandler(path, true, function(data) {
+  dataCallback = function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
+      var allowedOperations, args, dataTable, hash, link, secret;
       console.info("Ready to update", validatedData);
-      _adp.canonicalHull = createConvexHull(validatedData.transectRing, true);
-      cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
-      _adp.disease_morbidity = validatedData.samples.morbidity;
-      stopLoad();
-      return false;
+      dataTable = cartoData.table;
+      data = validatedData.data;
+      if (typeof data !== "object") {
+        console.info("This function requires the base data to be a JSON object.");
+        toastStatusMessage("Your data is malformed. Please double check your data and try again.");
+        return false;
+      }
+      allowedOperations = ["edit", "insert", "delete", "create"];
+      if (indexOf.call(allowedOperations, operation) < 0) {
+        console.error(operation + " is not an allowed operation on a data set!");
+        console.info("Allowed operations are ", allowedOperations);
+        toastStatusMessage("Sorry, '" + operation + "' isn't an allowed operation.");
+        return false;
+      }
+      if (isNull(dataTable)) {
+        console.error("Must use a defined table name!");
+        toastStatusMessage("You must name your data table");
+        return false;
+      }
+      link = $.cookie(uri.domain + "_link");
+      hash = $.cookie(uri.domain + "_auth");
+      secret = $.cookie(uri.domain + "_secret");
+      if (!((link != null) && (hash != null) && (secret != null))) {
+        console.error("You're not logged in. Got one or more invalid tokens for secrets.", link, hash, secret);
+        toastStatusMessage("Sorry, you're not logged in. Please log in and try again.");
+        return false;
+      }
+      args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
+      if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.apiTarget : void 0) == null) {
+        console.warn("Administration file not loaded. Upload cannot continue");
+        stopLoadError("Administration file not loaded. Upload cannot continue");
+        return false;
+      }
+      return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+        var alt, bb_east, bb_north, bb_south, bb_west, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref2, ref3, ref4, ref5, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+        if (result.status) {
+          sampleLatLngArray = new Array();
+          lats = new Array();
+          lngs = new Array();
+          for (n in data) {
+            row = data[n];
+            ll = new Array();
+            for (column in row) {
+              value = row[column];
+              switch (column) {
+                case "decimalLongitude":
+                  ll[1] = value;
+                  lngs.push(value);
+                  break;
+                case "decimalLatitude":
+                  ll[0] = value;
+                  lats.push(value);
+              }
+            }
+            sampleLatLngArray.push(ll);
+          }
+          bb_north = (ref2 = lats.max()) != null ? ref2 : 0;
+          bb_south = (ref3 = lats.min()) != null ? ref3 : 0;
+          bb_east = (ref4 = lngs.max()) != null ? ref4 : 0;
+          bb_west = (ref5 = lngs.min()) != null ? ref5 : 0;
+          defaultPolygon = [[bb_north, bb_west], [bb_north, bb_east], [bb_south, bb_east], [bb_south, bb_west]];
+          try {
+            userTransectRing = JSON.parse(totalData.transectRing);
+            userTransectRing = Object.toArray(userTransectRing);
+            i = 0;
+            for (l = 0, len = userTransectRing.length; l < len; l++) {
+              coordinatePair = userTransectRing[l];
+              if (coordinatePair instanceof Point) {
+                coordinatePair = coordinatePair.toGeoJson();
+                userTransectRing[i] = coordinatePair;
+              }
+              if (coordinatePair.length !== 2) {
+                throw {
+                  message: "Bad coordinate length for '" + coordinatePair + "'"
+                };
+              }
+              for (m = 0, len1 = coordinatePair.length; m < len1; m++) {
+                coordinate = coordinatePair[m];
+                if (!isNumber(coordinate)) {
+                  throw {
+                    message: "Bad coordinate number '" + coordinate + "'"
+                  };
+                }
+              }
+              ++i;
+            }
+          } catch (error1) {
+            e = error1;
+            console.warn("Error parsing the user transect ring - " + e.message);
+            userTransectRing = void 0;
+          }
+          transectPolygon = userTransectRing != null ? userTransectRing : defaultPolygon;
+          geoJson = {
+            type: "GeometryCollection",
+            geometries: [
+              {
+                type: "MultiPoint",
+                coordinates: sampleLatLngArray
+              }, {
+                type: "Polygon",
+                coordinates: transectPolygon
+              }
+            ]
+          };
+          dataGeometry = "ST_AsBinary(" + (JSON.stringify(geoJson)) + ", 4326)";
+          columnDatatype = {
+            id: "int",
+            collectionID: "varchar",
+            catalogNumber: "varchar",
+            fieldNumber: "varchar",
+            diseaseTested: "varchar",
+            diseaseStrain: "varchar",
+            sampleMethod: "varchar",
+            sampleDisposition: "varchar",
+            diseaseDetected: "varchar",
+            fatal: "boolean",
+            cladeSampled: "varchar",
+            genus: "varchar",
+            specificEpithet: "varchar",
+            infraspecificEpithet: "varchar",
+            lifeStage: "varchar",
+            dateIdentified: "date",
+            decimalLatitude: "decimal",
+            decimalLongitude: "decimal",
+            alt: "decimal",
+            coordinateUncertaintyInMeters: "decimal",
+            Collector: "varchar",
+            originalTaxa: "varchar",
+            fimsExtra: "json",
+            the_geom: "varchar"
+          };
+          sqlQuery = "";
+          valuesList = new Array();
+          columnNamesList = new Array();
+          columnNamesList.push("id int");
+          for (i in data) {
+            row = data[i];
+            i = toInt(i);
+            valuesArr = new Array();
+            lat = 0;
+            lng = 0;
+            alt = 0;
+            err = 0;
+            geoJsonGeom = {
+              type: "Point",
+              coordinates: new Array()
+            };
+            iIndex = i + 1;
+            for (column in row) {
+              value = row[column];
+              if (i === 0) {
+                columnNamesList.push(column + " " + columnDatatype[column]);
+              }
+              try {
+                value = value.replace("'", "&#95;");
+              } catch (undefined) {}
+              switch (column) {
+                case "decimalLongitude":
+                  geoJsonGeom.coordinates[1] = value;
+                  break;
+                case "decimalLatitude":
+                  geoJsonGeom.coordinates[0] = value;
+                  break;
+                case "fieldNumber":
+                  fieldNumber = value;
+                  continue;
+              }
+              if (typeof value === "string") {
+                valuesArr.push("`" + column + "`='" + value + "'");
+              } else if (isNull(value)) {
+                valuesArr.push("null");
+              } else {
+                valuesArr.push("`" + column + "`=" + value);
+              }
+            }
+            geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
+            valuesArr.push(geoJsonVal);
+            sqlWhere = " WHERE `fieldNumber`='" + fieldNumber + "';";
+            sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
+          }
+          console.log(sqlQuery);
+          return false;
+          _adp.canonicalHull = createConvexHull(validatedData.transectRing, true);
+          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
+          _adp.disease_morbidity = validatedData.samples.morbidity;
+          stopLoad();
+          return false;
+        } else {
+          return stopLoadError("Error updating Carto");
+        }
+      }).error(function(result, status) {
+        return stopLoadError("Error updating Carto");
+      });
     });
     return false;
-  });
+  };
+  if (!skipHandler) {
+    excelHandler2(path, true, function(resultObj) {
+      var data;
+      data = resultObj.data;
+      return dataCallback(data);
+    });
+  } else {
+    dataCallback(passedData);
+  }
   return false;
 };
 

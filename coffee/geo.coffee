@@ -718,7 +718,6 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             sqlQuery = "CREATE TABLE #{dataTable} "
           # Create a set of nice data blocks, then push that into the
           # query
-          valuesList = ""
           # First row, the big collection
           dataObject =
             the_geom: dataGeometry
@@ -783,144 +782,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           # Deletion criteria ...
           foo()
           return false
-      # Ping the server
-      apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
-      args = "action=upload&sql_query=#{apiPostSqlQuery}"
-      # console.info "Would query with args", args
-      console.info "Querying:"
-      console.info sqlQuery
-      # $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
-      console.info "GeoJSON:", geoJson
-      console.info "GeoJSON String:", dataGeometry
-      console.info "POSTing to server"
-      # console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
-      # Big uploads can take a while, so let's put up a notice.
-
-      postTimeStart = Date.now()
-      workingIter = 0
-      # http://birdisabsurd.blogspot.com/p/one-paragraph-stories.html
-      story = ["A silly story for you, while you wait!","Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous Tyrannosaurus rex with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen 'Staying&#39; Alive',","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"]
-      doStillWorking = ->
-        extra = if story[workingIter]? then "(#{story[workingIter]})" else ""
-        toastStatusMessage "Still working ... #{extra}"
-        ++workingIter
-        window._adp.secondaryTimeout = delay 15000, ->
-          doStillWorking()
-      try
-        estimate = toInt(.7 * valuesList.length)
-        console.log "Estimate #{estimate} seconds"
-        window._adp.uploader = true
-        $("#data-sync").removeAttr "indeterminate"
-        max = estimate * 30 # 30fps
-        p$("#data-sync").max = max
-        do updateUploadProgress = (prog = 0) ->
-          # Update a progress bar
-          p$("#data-sync").value = prog
-          ++prog
-          if window._adp.uploader and prog <= max
-            delay 33, ->
-              updateUploadProgress(prog)
-          else if prog > max
-            toastStatusMessage "This may take a few minutes. We'll give you an error if things go wrong."
-            window._adp.secondaryTimeout = delay 15000, ->
-              doStillWorking()
-          else
-            console.log "Not running upload progress indicator", prog, window._adp.uploader, max
-      catch e
-        console.warn "Can't show upload status - #{e.message}"
-        console.warn e.stack
-        # Alternate notices
-        try
-          window._adp.initialTimeout = delay 5000, ->
-            estMin = toInt(estimate / 60) + 1
-            minWord = if estMin > 1 then "minutes" else "minute"
-            toastStatusMessage "Please be patient, it may take a few minutes (we guess #{estMin} #{minWord})"
-            window._adp.secondaryTimeout = delay 15000, ->
-              doStillWorking()
-        catch e2
-          console.error "Can't show backup upload notices! #{e2.message}"
-          console.warn e2.stack
-      $.post "api.php", args, "json"
-      .done (result) ->
-        console.log "Got back", result
-        if result.status isnt true
-          console.error "Got an error from the server!"
-          console.warn result
-          stopLoadError "There was a problem uploading your data. Please try again."
-          return false
-        cartoResults = result.post_response
-        cartoHasError = false
-        for j, response of cartoResults
-          if not isNull response?.error
-            error = if response?.error? then response.error[0] else "Unspecified Error"
-            cartoHasError = error
-        unless cartoHasError is false
-          bsAlert "Error uploading your data: #{cartoHasError}", "danger"
-          stopLoadError "CartoDB returned an error: #{cartoHasError}"
-          return false
-        console.info "Carto was successful! Got results", cartoResults
-        try
-          # http://marianoguerra.github.io/json.human.js/
-          prettyHtml = JsonHuman.format cartoResults
-          # $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
-        bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
-        toastStatusMessage("Data parse and upload successful")
-        geo.dataTable = dataTable
-        # resultRows = cartoResults.rows
-        # Update the overlay for sending to Carto
-        # Post this data over to the back end
-        # Update the UI
-        # Get the blob URL ..
-        # https://gis.stackexchange.com/questions/171283/get-a-viz-json-uri-from-a-table-name
-        #
-        dataBlobUrl = "" # The returned viz.json url
-        unless isNull dataBlobUrl
-          dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
-        else if typeof dataBlobUrl is "object"
-          # Parse the object
-          dataVisUrl = dataBlobUrl
-        else
-          dataVisUrl = ""
-        parentCallback = (coords) ->
-          console.info "Initiating parent callback"
-          stopLoad()
-          max = p$("#data-sync").max
-          p$("#data-sync").value = max
-          options =
-            boundingBox: geo.boundingBox
-            bsGrid: ""
-          if window.mapBuilder?.selector?
-            options.selector = window.mapBuilder.selector
-          else if $("google-map").exists()
-            options.selector = $($("google-map").get(0)).attr "id"
-          else
-            options.selector = "#carto-map-container"
-          _adp.defaultMapOptions = options
-          if typeof callback is "function"
-            callback geo.dataTable, coords, options
-          else
-            console.info "requestCartoUpload recieved no callback"
-        geo.init ->
-          # Callback
-          console.info "Post init"
-          getCanonicalDataCoords geo.dataTable, null, (coords, options) ->
-            console.info "gcdc callback successful"
-            parentCallback(coords)
-          false
-      .error (result, status) ->
-        console.error "Couldn't communicate with server!", result, status
-        console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-        stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
-        bsAlert "Couldn't upload dataset. Please try again later.", "danger"
-      .always ->
-        try
-          duration = Date.now() - postTimeStart
-          console.info "POST and process took #{duration}ms"
-          clearTimeout window._adp.initialTimeout
-          clearTimeout window._adp.secondaryTimeout
-          window._adp.uploader = false
-          $("#upload-data").removeAttr "disabled"
-
+      geo.postToCarto sqlQuery, postTimeStart
     else
       console.error "Unable to authenticate session. Please log in."
       stopLoadError "Sorry, your session has expired. Please log in and try again."
@@ -930,6 +792,150 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-001)"
     $("#upload-data").removeAttr "disabled"
   false
+
+
+geo.postToCarto = (sqlQuery) ->
+  # Ping the server
+  apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
+  args = "action=upload&sql_query=#{apiPostSqlQuery}"
+  # console.info "Would query with args", args
+  console.info "Querying:"
+  console.info sqlQuery
+  # $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
+  # console.info "GeoJSON:", geoJson
+  # console.info "GeoJSON String:", dataGeometry
+  console.info "POSTing to server"
+  # console.warn "Want to post:", "#{uri.urlString}api.php?#{args}"
+  # Big uploads can take a while, so let's put up a notice.
+
+  postTimeStart = Date.now()
+  workingIter = 0
+  # http://birdisabsurd.blogspot.com/p/one-paragraph-stories.html
+  story = ["A silly story for you, while you wait!","Everything had gone according to plan, up 'til this moment.","His design team had done their job flawlessly,","and the machine, still thrumming behind him,","a thing of another age,","was settled on a bed of prehistoric moss.","They'd done it.","But now,","beyond the protection of the pod","and facing an enormous Tyrannosaurus rex with dripping jaws,","Professor Cho reflected that,","had he known of the dinosaur's presence,","he wouldn’t have left the Chronoculator","- and he certainly wouldn't have chosen 'Staying&#39; Alive',","by The Beegees,","as his dying soundtrack.","Curse his MP3 player!", "The End.", "Yep, your data is still being processed", "And we're out of fun things to say", "We hope you think it's all worth it"]
+  doStillWorking = ->
+    extra = if story[workingIter]? then "(#{story[workingIter]})" else ""
+    toastStatusMessage "Still working ... #{extra}"
+    ++workingIter
+    window._adp.secondaryTimeout = delay 15000, ->
+      doStillWorking()
+  try
+    estimate = toInt(.7 * valuesList.length)
+    console.log "Estimate #{estimate} seconds"
+    window._adp.uploader = true
+    $("#data-sync").removeAttr "indeterminate"
+    max = estimate * 30 # 30fps
+    try
+      p$("#data-sync").max = max
+    do updateUploadProgress = (prog = 0) ->
+      # Update a progress bar
+      try
+        p$("#data-sync").value = prog
+      ++prog
+      if window._adp.uploader and prog <= max
+        delay 33, ->
+          updateUploadProgress(prog)
+      else if prog > max
+        toastStatusMessage "This may take a few minutes. We'll give you an error if things go wrong."
+        window._adp.secondaryTimeout = delay 15000, ->
+          doStillWorking()
+      else
+        console.log "Not running upload progress indicator", prog, window._adp.uploader, max
+  catch e
+    console.warn "Can't show upload status - #{e.message}"
+    console.warn e.stack
+    # Alternate notices
+    try
+      window._adp.initialTimeout = delay 5000, ->
+        estMin = toInt(estimate / 60) + 1
+        minWord = if estMin > 1 then "minutes" else "minute"
+        toastStatusMessage "Please be patient, it may take a few minutes (we guess #{estMin} #{minWord})"
+        window._adp.secondaryTimeout = delay 15000, ->
+          doStillWorking()
+    catch e2
+      console.error "Can't show backup upload notices! #{e2.message}"
+      console.warn e2.stack
+  $.post "api.php", args, "json"
+  .done (result) ->
+    console.log "Got back", result
+    if result.status isnt true
+      console.error "Got an error from the server!"
+      console.warn result
+      stopLoadError "There was a problem uploading your data. Please try again."
+      return false
+    cartoResults = result.post_response
+    cartoHasError = false
+    for j, response of cartoResults
+      if not isNull response?.error
+        error = if response?.error? then response.error[0] else "Unspecified Error"
+        cartoHasError = error
+    unless cartoHasError is false
+      bsAlert "Error uploading your data: #{cartoHasError}", "danger"
+      stopLoadError "CartoDB returned an error: #{cartoHasError}"
+      return false
+    console.info "Carto was successful! Got results", cartoResults
+    try
+      # http://marianoguerra.github.io/json.human.js/
+      prettyHtml = JsonHuman.format cartoResults
+      # $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
+    bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
+    toastStatusMessage("Data parse and upload successful")
+    geo.dataTable = dataTable
+    # resultRows = cartoResults.rows
+    # Update the overlay for sending to Carto
+    # Post this data over to the back end
+    # Update the UI
+    # Get the blob URL ..
+    # https://gis.stackexchange.com/questions/171283/get-a-viz-json-uri-from-a-table-name
+    #
+    dataBlobUrl = "" # The returned viz.json url
+    unless isNull dataBlobUrl
+      dataVisUrl = "https://#{cartoAccount}.cartodb.com/api/v2/viz/#{dataBlobUrl}/viz.json"
+    else if typeof dataBlobUrl is "object"
+      # Parse the object
+      dataVisUrl = dataBlobUrl
+    else
+      dataVisUrl = ""
+    parentCallback = (coords) ->
+      console.info "Initiating parent callback"
+      stopLoad()
+      max = p$("#data-sync").max
+      p$("#data-sync").value = max
+      options =
+        boundingBox: geo.boundingBox
+        bsGrid: ""
+      if window.mapBuilder?.selector?
+        options.selector = window.mapBuilder.selector
+      else if $("google-map").exists()
+        options.selector = $($("google-map").get(0)).attr "id"
+      else
+        options.selector = "#carto-map-container"
+      _adp.defaultMapOptions = options
+      if typeof callback is "function"
+        callback geo.dataTable, coords, options
+      else
+        console.info "requestCartoUpload recieved no callback"
+    geo.init ->
+      # Callback
+      console.info "Post init"
+      getCanonicalDataCoords geo.dataTable, null, (coords, options) ->
+        console.info "gcdc callback successful"
+        parentCallback(coords)
+      false
+  .error (result, status) ->
+    console.error "Couldn't communicate with server!", result, status
+    console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+    stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
+    bsAlert "Couldn't upload dataset. Please try again later.", "danger"
+  .always ->
+    try
+      duration = Date.now() - postTimeStart
+      console.info "POST and process took #{duration}ms"
+      clearTimeout window._adp.initialTimeout
+      clearTimeout window._adp.secondaryTimeout
+      window._adp.uploader = false
+      $("#upload-data").removeAttr "disabled"
+  false
+
 
 
 sortPoints = (pointArray, asObj = true) ->
