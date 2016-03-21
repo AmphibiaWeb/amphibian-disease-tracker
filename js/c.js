@@ -2556,7 +2556,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           return false;
       }
       try {
-        return geo.postToCarto(sqlQuery);
+        return geo.postToCarto(sqlQuery, dataTable);
       } catch (error3) {
         return stopLoadBarsErrors();
       }
@@ -2573,7 +2573,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
   return false;
 };
 
-geo.postToCarto = function(sqlQuery) {
+geo.postToCarto = function(sqlQuery, dataTable) {
   var apiPostSqlQuery, args, doStillWorking, e2, error2, error3, estimate, max, postTimeStart, story, updateUploadProgress, workingIter;
   apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
   args = "action=upload&sql_query=" + apiPostSqlQuery;

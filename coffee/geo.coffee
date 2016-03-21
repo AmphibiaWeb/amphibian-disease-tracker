@@ -783,7 +783,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           foo()
           return false
       try
-        geo.postToCarto sqlQuery
+        geo.postToCarto sqlQuery, dataTable
       catch
         stopLoadBarsErrors()
     else
@@ -797,7 +797,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   false
 
 
-geo.postToCarto = (sqlQuery) ->
+geo.postToCarto = (sqlQuery, dataTable) ->
   # Ping the server
   apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
   args = "action=upload&sql_query=#{apiPostSqlQuery}"
