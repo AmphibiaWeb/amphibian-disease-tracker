@@ -2876,7 +2876,7 @@ startEditorUploader = ->
           exit-animation="fade-out-animation">
           <h2>Upload Progress</h2>
           <paper-dialog-scrollable>
-            <div id="upload-progress-container" style="min-height:60vh;min-width:80vw; ">
+            <div id="upload-progress-container" style="min-width:80vw; ">
             </div>
           </paper-dialog-scrollable>
           <div class="buttons">
@@ -3102,6 +3102,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
       $.post adminParams.apiTarget, args, "json"
       .done (result) ->
         if result.status
+          console.info "Validated data", validatedData
           sampleLatLngArray = new Array()
           # Before we begin parsing, throw up an overlay for the duration
           # Loop over the data and clean it up
@@ -3132,7 +3133,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
           # See if the user provided a good transect polygon
           try
             # See if the user provided a valid JSON string of coordinates
-            userTransectRing = JSON.parse totalData.transectRing
+            userTransectRing = JSON.parse data.transectRing
             userTransectRing = Object.toArray userTransectRing
             i = 0
             for coordinatePair in userTransectRing
@@ -3194,6 +3195,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
             originalTaxa: "varchar"
             fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
             the_geom: "varchar"
+          # Make a lookup fieldNumber -> obj map
           # Construct the SQL query
           sqlQuery = ""
           valuesList = new Array()
