@@ -2700,7 +2700,6 @@ getProjectCartoData = function(cartoObj, mapOptions) {
             base1.fillColor = defaultFillColor;
           }
           _adp.projectData.carto_id = JSON.stringify(cartoData);
-          bsAlert("We've updated some of your data automatically. Please save the project before continuing.", "warning");
         } catch (undefined) {}
       } catch (undefined) {}
     }
@@ -3310,9 +3309,10 @@ revalidateAndUpdateData = function(newFilePath) {
               _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
               _adp.projectData.sample_methods_used = sampleMethods.join(",");
               finalize = function() {
+                _adp.skipRead = true;
                 saveEditorData(true, function() {
                   if (localStorage._adp == null) {
-                    return document.location.reload(true);
+                    return foo();
                   }
                 });
                 return false;
@@ -3378,23 +3378,25 @@ saveEditorData = function(force, callback) {
     try {
       postData.access_data = _adp.projectData.access_data.raw;
     } catch (undefined) {}
-    ref = $(".project-param:not([readonly])");
-    for (l = 0, len = ref.length; l < len; l++) {
-      el = ref[l];
-      key = $(el).attr("data-field");
-      if (isNull(key)) {
-        continue;
+    if (_adp.skipRead !== true) {
+      ref = $(".project-param:not([readonly])");
+      for (l = 0, len = ref.length; l < len; l++) {
+        el = ref[l];
+        key = $(el).attr("data-field");
+        if (isNull(key)) {
+          continue;
+        }
+        postData[key] = p$(el).value;
       }
-      postData[key] = p$(el).value;
+      authorObj = new Object();
+      ref1 = $(".author-param");
+      for (m = 0, len1 = ref1.length; m < len1; m++) {
+        el = ref1[m];
+        key = $(el).attr("data-key");
+        authorObj[key] = (ref2 = $(el).attr("data-value")) != null ? ref2 : p$(el).value;
+      }
+      postData.author_data = JSON.stringify(authorObj);
     }
-    authorObj = new Object();
-    ref1 = $(".author-param");
-    for (m = 0, len1 = ref1.length; m < len1; m++) {
-      el = ref1[m];
-      key = $(el).attr("data-key");
-      authorObj[key] = (ref2 = $(el).attr("data-value")) != null ? ref2 : p$(el).value;
-    }
-    postData.author_data = JSON.stringify(authorObj);
     _adp.postedSaveData = postData;
     _adp.postedSaveTimestamp = Date.now();
   } else {
