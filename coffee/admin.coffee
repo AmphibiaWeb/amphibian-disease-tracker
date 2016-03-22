@@ -976,7 +976,14 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
   # Validate the user
   verifyLoginCredentials (data) ->
     # Try to get the data straight from the CartoDB database
-    sqlQuery = "SELECT ST_AsText(the_geom), genus, specificEpithet, infraspecificEpithet, dateIdentified, sampleMethod, diseaseDetected, diseaseTested, catalogNumber FROM #{table}"
+    cols = getColumnObj()
+    colsArr = new Array()
+    colRemap = new Object()
+    for col, type of cols
+      if col isnt "id" and col isnt "the_geom"
+        colsArr.push col
+        colRemap[col.toLowerCase()] = col
+    sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
     apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
     args = "action=fetch&sql_query=#{apiPostSqlQuery}"
     $.post "api.php", args, "json"
@@ -984,7 +991,12 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
       cartoResponse = result.parsed_responses[0]
       coords = new Array()
       info = new Array()
+      _adp.cartoRows = new Object()
       for i, row of cartoResponse.rows
+        _adp.cartoRows[i] = new Object()
+        for col, val of row
+          realRow = colRemap[col]
+          _adp.cartoRows[i][realRow] = val
         textPoint = row.st_astext
         if isNull row.infraspecificepithet
           row.infraspecificepithet = ""
