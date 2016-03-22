@@ -3296,6 +3296,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
           columnNamesList = new Array()
           columnNamesList.push "id int"
           _adp.rowsCount = Object.size data
+          _adp.lookupMap = lookupMap
           for i, row of data
             i = toInt(i)
 
@@ -3316,6 +3317,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
             refRow = null
             if refRowNum?
               refRow = _adp.cartoRows[refRowNum]
+            console.info "For row #{i}, fn #{fieldNumber} = refrownum #{refRowNum}", refRow
             colArr = new Array()
             for column, value of row
               # Loop data ....
