@@ -3162,6 +3162,7 @@ revalidateAndUpdateData = function(newFilePath) {
           columnNamesList = new Array();
           columnNamesList.push("id int");
           _adp.rowsCount = Object.size(data);
+          _adp.lookupMap = lookupMap;
           for (i in data) {
             row = data[i];
             i = toInt(i);
@@ -3183,6 +3184,7 @@ revalidateAndUpdateData = function(newFilePath) {
             if (refRowNum != null) {
               refRow = _adp.cartoRows[refRowNum];
             }
+            console.info("For row " + i + ", fn " + fieldNumber + " = refrownum " + refRowNum, refRow);
             colArr = new Array();
             for (column in row) {
               value = row[column];
