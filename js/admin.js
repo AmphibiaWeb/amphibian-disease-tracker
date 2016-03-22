@@ -3174,7 +3174,7 @@ revalidateAndUpdateData = function(newFilePath) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, clade, cladeList, date, dates, dispositions, distanceFromCenter, error3, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error3, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3238,6 +3238,8 @@ revalidateAndUpdateData = function(newFilePath) {
               _adp.projectData.disease_positive = validatedData.samples.positive;
               _adp.projectData.disease_negative = validatedData.samples.negative;
               _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence;
+              center = getMapCenter(geo.boundingBox);
+              excursion = 0;
               dates = new Array();
               months = new Array();
               years = new Array();
@@ -3860,7 +3862,7 @@ mintExpedition = function(projectId, title, callback) {
 };
 
 validateTaxonData = function(dataObject, callback) {
-  var data, grammar, n, row, taxa, taxaPerRow, taxaString, taxon, taxonValidatorLoop;
+  var data, grammar, length, n, row, taxa, taxaPerRow, taxaString, taxon, taxonValidatorLoop;
   if (callback == null) {
     callback = null;
   }
@@ -3893,7 +3895,8 @@ validateTaxonData = function(dataObject, callback) {
   }
   console.info("Found " + taxa.length + " unique taxa:", taxa);
   grammar = taxa.length > 1 ? "taxa" : "taxon";
-  toastStatusMessage("Validating " + taxa.length + " unique " + grammar + " from " + data.length + " rows ...");
+  length = Object.toArray(data).length;
+  toastStatusMessage("Validating " + taxa.length + " unique " + grammar + " from " + length + " rows ...");
   console.info("Replacement tracker", taxaPerRow);
   $("#taxa-validation").removeAttr("indeterminate");
   try {

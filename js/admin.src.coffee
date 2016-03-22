@@ -3358,6 +3358,9 @@ revalidateAndUpdateData = (newFilePath = false) ->
               _adp.projectData.disease_negative = validatedData.samples.negative
               _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
               # All the parsed month data, etc.
+              center = getMapCenter(geo.boundingBox)
+              # Have some fun times with uploadedData
+              excursion = 0
               dates = new Array()
               months = new Array()
               years = new Array()
@@ -3945,7 +3948,8 @@ validateTaxonData = (dataObject, callback = null) ->
     taxaPerRow[taxaString].push n
   console.info "Found #{taxa.length} unique taxa:", taxa
   grammar = if taxa.length > 1 then "taxa" else "taxon"
-  toastStatusMessage "Validating #{taxa.length} unique #{grammar} from #{data.length} rows ..."
+  length = Object.toArray(data).length
+  toastStatusMessage "Validating #{taxa.length} unique #{grammar} from #{length} rows ..."
   console.info "Replacement tracker", taxaPerRow
   $("#taxa-validation").removeAttr "indeterminate"
   try
