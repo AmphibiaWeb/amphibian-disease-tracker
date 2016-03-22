@@ -3249,7 +3249,7 @@ revalidateAndUpdateData = function(newFilePath) {
               _adp.data.taxa.list = taxonList;
               _adp.data.taxa.clades = cladeList;
               _adp.data.taxa.validated = validatedData.validated_taxa;
-              _adp.projectData.disease_morbidity = validatedData.samples.morbidity;
+              _adp.projectData._adp.projectData.disease_morbidity = validatedData.samples.morbidity;
               _adp.projectData.disease_mortality = validatedData.samples.mortality;
               _adp.projectData.disease_positive = validatedData.samples.positive;
               _adp.projectData.disease_negative = validatedData.samples.negative;
@@ -3314,7 +3314,7 @@ revalidateAndUpdateData = function(newFilePath) {
                 _adp.skipRead = true;
                 saveEditorData(true, function() {
                   if (localStorage._adp == null) {
-                    return foo();
+                    return document.location.reload(true);
                   }
                 });
                 return false;
@@ -3342,6 +3342,7 @@ revalidateAndUpdateData = function(newFilePath) {
                   } else {
                     console.warn("Couldn't mint!");
                   }
+                  _adp.projectData.sample_raw_data = fullPath;
                   return finalize();
                 });
               } else {

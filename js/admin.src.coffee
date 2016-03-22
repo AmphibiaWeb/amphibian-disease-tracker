@@ -3364,6 +3364,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
               _adp.data.taxa.list = taxonList
               _adp.data.taxa.clades = cladeList
               _adp.data.taxa.validated = validatedData.validated_taxa
+              _adp.projectData.
               # Update project data with new sample data
               _adp.projectData.disease_morbidity = validatedData.samples.morbidity
               _adp.projectData.disease_mortality = validatedData.samples.mortality
@@ -3426,8 +3427,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                 _adp.skipRead = true
                 saveEditorData true, ->
                   unless localStorage._adp?
-                    foo()
-                    #document.location.reload(true)
+                    document.location.reload(true)
                 false
               # If the datasrc isn't the stored one, remint an ark and
               # append
@@ -3450,6 +3450,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                     _adp.projectData.dataset_arks = arks.join(",")
                   else
                     console.warn "Couldn't mint!"
+                  _adp.projectData.sample_raw_data = fullPath
                   finalize()
               else
                 finalize()
