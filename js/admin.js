@@ -2789,7 +2789,7 @@ startEditorUploader = function() {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var dialogHtml, e, error1, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      var dialogHtml, e, error1, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
       window.dropperParams.dropzone.removeAllFiles();
       if (typeof result !== "object") {
         console.error("Dropzone returned an error - " + result);
@@ -2805,7 +2805,8 @@ startEditorUploader = function() {
         return false;
       }
       try {
-        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n        " + (renderValidateProgress(null, true)) + "\n      </div>\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
+        html = renderValidateProgress("dont-exist", true);
+        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
         $("#upload-progress-dialog").remove();
         $("body").append(dialogHtml);
         p$("#upload-progress-dialog").open();
@@ -2921,11 +2922,20 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
 };
 
 revalidateAndUpdateData = function(newFilePath) {
-  var cartoData, dataCallback, passedData, path, ref, ref1, skipHandler;
+  var cartoData, dataCallback, error1, link, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
   }
-  cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
+  try {
+    cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
+    _adp.cartoData = cartoData;
+  } catch (error1) {
+    link = $.cookie(uri.domain + "_link");
+    cartoData = {
+      table: _adp.projectIdentifierString + ("_" + link),
+      bounding_polygon: new Object()
+    };
+  }
   skipHandler = false;
   if (newFilePath !== false) {
     if (typeof newFilePath === "object") {
@@ -2954,7 +2964,7 @@ revalidateAndUpdateData = function(newFilePath) {
   }
   dataCallback = function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
-      var allowedOperations, args, dataTable, hash, link, operation, secret;
+      var allowedOperations, args, dataTable, hash, operation, secret;
       console.info("Ready to update", validatedData);
       dataTable = cartoData.table;
       data = validatedData.data;
@@ -2991,7 +3001,7 @@ revalidateAndUpdateData = function(newFilePath) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, error2, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
+        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3048,8 +3058,8 @@ revalidateAndUpdateData = function(newFilePath) {
               }
               ++i;
             }
-          } catch (error1) {
-            e = error1;
+          } catch (error2) {
+            e = error2;
             console.warn("Error parsing the user transect ring - " + e.message);
             userTransectRing = void 0;
           }
@@ -3079,7 +3089,7 @@ revalidateAndUpdateData = function(newFilePath) {
               fieldNumber = trimmed;
               lookupMap[fieldNumber] = i;
             }
-          } catch (error2) {
+          } catch (error3) {
             console.warn("Couldn't make lookupMap");
           }
           sqlQuery = "";
@@ -3179,7 +3189,7 @@ revalidateAndUpdateData = function(newFilePath) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error3, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error4, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3222,8 +3232,8 @@ revalidateAndUpdateData = function(newFilePath) {
                   if (ref9 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref9) < 0) {
                     cladeList.push(taxon.response.validated_taxon.family);
                   }
-                } catch (error3) {
-                  e = error3;
+                } catch (error4) {
+                  e = error4;
                   console.warn("Couldn't get the family! " + e.message, taxon.response);
                   console.warn(e.stack);
                 }
@@ -3317,7 +3327,7 @@ revalidateAndUpdateData = function(newFilePath) {
                     file = fileA.pop();
                     newArk = result.ark + "::" + file;
                     arks.push(newArk);
-                    _adp.projectData.datset_arks = arks.join(",");
+                    _adp.projectData.dataset_arks = arks.join(",");
                   } else {
                     console.warn("Couldn't mint!");
                   }
@@ -3388,8 +3398,8 @@ saveEditorData = function(force, callback) {
     _adp.postedSaveData = postData;
     _adp.postedSaveTimestamp = Date.now();
   } else {
-    postData = localStorage._adp.postedSaveData;
-    window._adp = localStorage._adp;
+    window._adp = JSON.parse(localStorage._adp);
+    postData = _adp.postedSaveData;
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
@@ -3399,7 +3409,7 @@ saveEditorData = function(force, callback) {
     if (result.status !== true) {
       error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
       stopLoadError("There was an error saving to the server");
-      localStorage._adp = _adp;
+      localStorage._adp = JSON.stringify(_adp);
       bsAlert("<strong>Save Error:</strong> " + error + ". An offline backup has been made.", "danger");
       console.error(result.error);
       return false;
@@ -3410,7 +3420,7 @@ saveEditorData = function(force, callback) {
     return delete localStorage._adp;
   }).error(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
-    localStorage._adp = _adp;
+    localStorage._adp = JSON.stringify(_adp);
     bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger");
     return console.error(result, status);
   }).always(function() {
@@ -3422,10 +3432,11 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, d, ref;
-  if (((ref = localStorage._adp) != null ? ref.postedSaveData : void 0) != null) {
-    d = new Date(localStorage._adp.postedSaveTimestamp);
-    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + localStorage._adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
+  var alertHtml, d;
+  if (localStorage._adp != null) {
+    window._adp = JSON.parse(localStorage._adp);
+    d = new Date(_adp.postedSaveTimestamp);
+    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");
     return $("#offline-save").click(function() {
       return saveEditorData(false, function() {
