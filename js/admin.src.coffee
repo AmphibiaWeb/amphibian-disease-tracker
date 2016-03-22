@@ -3244,7 +3244,6 @@ revalidateAndUpdateData = (newFilePath = false) ->
             colArr = new Array()
             for column, value of row
               # Loop data ....
-              colArr.push column
               if i is 0
                 columnNamesList.push "#{column} #{columnDatatype[column]}"
               try
@@ -3261,7 +3260,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
               if refRow?
                 if refRow[column] is value
                   # Don't need to add it again
-                  continue;
+                    continue
               if typeof value is "string"
                 if refRow?
                   valuesArr.push "`#{column}`='#{value}'"
@@ -3277,6 +3276,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                   valuesArr.push "`#{column}`=#{value}"
                 else
                   valuesArr.push value
+              colArr.push column
             geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
             valuesArr.push geoJsonVal
             if refRow?
