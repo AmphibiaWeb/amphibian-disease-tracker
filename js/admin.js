@@ -3180,7 +3180,7 @@ revalidateAndUpdateData = function(newFilePath) {
               valuesArr.push(geoJsonVal);
             }
             if (refRow != null) {
-              sqlWhere = " WHERE `fieldNumber`='" + fieldNumber + "';";
+              sqlWhere = " WHERE fieldnumber='" + fieldNumber + "';";
               sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
             } else {
               sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + "); ";
