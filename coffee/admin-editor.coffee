@@ -1421,7 +1421,8 @@ revalidateAndUpdateData = (newFilePath = false) ->
                 when "decimalLatitude"
                   geoJsonGeom.coordinates[0] = value
                 when "fieldNumber"
-                  continue
+                  if refRow?
+                    continue
               if refRow?
                 if refRow[column] is value
                   # Don't need to add it again
@@ -1591,6 +1592,12 @@ revalidateAndUpdateData = (newFilePath = false) ->
               if fullPath isnt _adp.projectData.sample_raw_data
                 # Mint it
                 arks = _adp.projectData.dataset_arks.split(",")
+                unless _adp.fims?.expedition?.ark?
+                  unless _adp.fims?
+                    _adp.fims = new Object()
+                  unless _adp.fims.expedition?
+                    _adp.fims.expedition = new Object()
+                  _adp.fims.expedition.ark = _adp.projectData.project_obj_id
                 mintBcid _adp.projectId, fullPath, _adp.projectData.project_title, (result) ->
                   if result.ark?
                     fileA = fullPath.split("/")
@@ -1667,7 +1674,7 @@ saveEditorData = (force = false, callback) ->
     stopLoad()
     toastStatusMessage "Save successful"
     # Update the project data
-    _adp.projectData = result.project
+    _adp.projectData = result.project.project
     delete localStorage._adp
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
