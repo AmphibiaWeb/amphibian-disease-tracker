@@ -1258,12 +1258,12 @@ revalidateAndUpdateData = (newFilePath = false) ->
     else
       path = newFilePath
   else
-    if dataFileParams?.filePath?
-      path = dataFileParams.filePath
-    else
-      path = cartoData.raw_data.filePath
+    path = _adp.projectData.sample_raw_data.slice uri.urlString.length
     unless path?
-      path = _adp.projectData.sample_raw_data.slice uri.urlString.length
+      if dataFileParams?.filePath?
+        path = dataFileParams.filePath
+      else
+        path = cartoData.raw_data.filePath
   _adp.projectIdentifierString = cartoData.table.split("_")[0]
   _adp.projectId = _adp.projectData.project_id
   unless _adp.fims?.expedition?.expeditionId?
