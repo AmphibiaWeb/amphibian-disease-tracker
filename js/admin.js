@@ -2957,13 +2957,13 @@ revalidateAndUpdateData = function(newFilePath) {
       path = newFilePath;
     }
   } else {
-    if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
-      path = dataFileParams.filePath;
-    } else {
-      path = cartoData.raw_data.filePath;
-    }
+    path = _adp.projectData.sample_raw_data.slice(uri.urlString.length);
     if (path == null) {
-      path = _adp.projectData.sample_raw_data.slice(uri.urlString.length);
+      if ((dataFileParams != null ? dataFileParams.filePath : void 0) != null) {
+        path = dataFileParams.filePath;
+      } else {
+        path = cartoData.raw_data.filePath;
+      }
     }
   }
   _adp.projectIdentifierString = cartoData.table.split("_")[0];
