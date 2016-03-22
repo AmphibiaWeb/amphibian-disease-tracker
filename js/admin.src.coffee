@@ -3061,6 +3061,30 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
 
 
 revalidateAndUpdateData = (newFilePath = false) ->
+  unless $("#upload-progress-dialog").exists()
+    html = renderValidateProgress("dont-exist", true)
+    dialogHtml = """
+    <paper-dialog modal id="upload-progress-dialog"
+      entry-animation="fade-in-animation"
+      exit-animation="fade-out-animation">
+      <h2>Upload Progress</h2>
+      <paper-dialog-scrollable>
+        <div id="upload-progress-container" style="min-width:80vw; ">
+        </div>
+        #{html}
+  <p class="col-xs-12">Species in dataset</p>
+  <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button id="close-overlay">Close</paper-button>
+      </div>
+    </paper-dialog>
+    """
+    $("#upload-progress-dialog").remove()
+    $("body").append dialogHtml
+    p$("#upload-progress-dialog").open()
+    $("#close-overlay").click ->
+      p$("#upload-progress-dialog").close()
   try
     cartoData = JSON.parse _adp.projectData.carto_id.unescape()
     _adp.cartoData = cartoData

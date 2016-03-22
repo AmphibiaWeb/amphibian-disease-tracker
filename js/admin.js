@@ -2923,9 +2923,19 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
 };
 
 revalidateAndUpdateData = function(newFilePath) {
-  var cartoData, dataCallback, error1, link, passedData, path, ref, ref1, skipHandler;
+  var cartoData, dataCallback, dialogHtml, error1, html, link, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
+  }
+  if (!$("#upload-progress-dialog").exists()) {
+    html = renderValidateProgress("dont-exist", true);
+    dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
+    $("#upload-progress-dialog").remove();
+    $("body").append(dialogHtml);
+    p$("#upload-progress-dialog").open();
+    $("#close-overlay").click(function() {
+      return p$("#upload-progress-dialog").close();
+    });
   }
   try {
     cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
