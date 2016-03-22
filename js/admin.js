@@ -3108,7 +3108,6 @@ revalidateAndUpdateData = function(newFilePath) {
             colArr = new Array();
             for (column in row) {
               value = row[column];
-              colArr.push(column);
               if (i === 0) {
                 columnNamesList.push(column + " " + columnDatatype[column]);
               }
@@ -3149,6 +3148,7 @@ revalidateAndUpdateData = function(newFilePath) {
                   valuesArr.push(value);
                 }
               }
+              colArr.push(column);
             }
             geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
             valuesArr.push(geoJsonVal);
