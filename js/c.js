@@ -2647,7 +2647,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
     }
   }
   $.post("api.php", args, "json").done(function(result) {
-    var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, parentCallback, prettyHtml, response;
+    var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, key, parentCallback, prettyHtml, response, val;
     console.log("Got back", result);
     if (result.status !== true) {
       console.error("Got an error from the server!");
@@ -2663,6 +2663,15 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
         error = (response != null ? response.error : void 0) != null ? response.error[0] : "Unspecified Error";
         cartoHasError = error;
       }
+      try {
+        response = JSON.parse(response);
+        for (key in response) {
+          val = response[key];
+          if (key === "error") {
+            cartoHasError = val;
+          }
+        }
+      } catch (undefined) {}
     }
     if (cartoHasError !== false) {
       bsAlert("Error uploading your data: " + cartoHasError, "danger");

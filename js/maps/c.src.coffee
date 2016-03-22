@@ -2165,6 +2165,11 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
       if not isNull response?.error
         error = if response?.error? then response.error[0] else "Unspecified Error"
         cartoHasError = error
+      try
+        response = JSON.parse response
+        for key, val of response
+          if key is "error"
+            cartoHasError = val
     unless cartoHasError is false
       bsAlert "Error uploading your data: #{cartoHasError}", "danger"
       stopLoadError "CartoDB returned an error: #{cartoHasError}"

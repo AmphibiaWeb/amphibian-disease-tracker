@@ -1417,7 +1417,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
               if refRow?
                 if refRow[column] is value
                   # Don't need to add it again
-                  continue
+                    continue
               if typeof value is "string"
                 if refRow?
                   valuesArr.push "`#{column}`='#{value}'"
