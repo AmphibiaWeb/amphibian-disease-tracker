@@ -2950,6 +2950,9 @@ revalidateAndUpdateData = function(newFilePath) {
     } else {
       path = cartoData.raw_data.filePath;
     }
+    if (path == null) {
+      path = _adp.projectData.sample_raw_data.slice(uri.urlString.length);
+    }
   }
   _adp.projectIdentifierString = cartoData.table.split("_")[0];
   _adp.projectId = _adp.projectData.project_id;
@@ -3000,7 +3003,7 @@ revalidateAndUpdateData = function(newFilePath) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
+        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, error4, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3083,12 +3086,16 @@ revalidateAndUpdateData = function(newFilePath) {
             for (i in ref6) {
               row = ref6[i];
               fieldNumber = row.fieldNumber;
-              trimmed = fieldNumber.trim();
+              try {
+                trimmed = fieldNumber.trim();
+              } catch (error3) {
+                continue;
+              }
               trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
               fieldNumber = trimmed;
               lookupMap[fieldNumber] = i;
             }
-          } catch (error3) {
+          } catch (error4) {
             console.warn("Couldn't make lookupMap");
           }
           sqlQuery = "";
@@ -3109,7 +3116,9 @@ revalidateAndUpdateData = function(newFilePath) {
             };
             iIndex = i + 1;
             fieldNumber = row.fieldNumber;
-            refRowNum = lookupMap[fieldNumber];
+            try {
+              refRowNum = lookupMap[fieldNumber];
+            } catch (undefined) {}
             refRow = null;
             if (refRowNum != null) {
               refRow = _adp.cartoRows[refRowNum];
@@ -3190,7 +3199,7 @@ revalidateAndUpdateData = function(newFilePath) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error4, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error5, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3233,8 +3242,8 @@ revalidateAndUpdateData = function(newFilePath) {
                   if (ref9 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref9) < 0) {
                     cladeList.push(taxon.response.validated_taxon.family);
                   }
-                } catch (error4) {
-                  e = error4;
+                } catch (error5) {
+                  e = error5;
                   console.warn("Couldn't get the family! " + e.message, taxon.response);
                   console.warn(e.stack);
                 }

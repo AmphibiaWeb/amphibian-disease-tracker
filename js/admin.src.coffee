@@ -3081,6 +3081,8 @@ revalidateAndUpdateData = (newFilePath = false) ->
       path = dataFileParams.filePath
     else
       path = cartoData.raw_data.filePath
+    unless path?
+      path = _adp.projectData.sample_raw_data.slice uri.urlString.length
   _adp.projectIdentifierString = cartoData.table.split("_")[0]
   _adp.projectId = _adp.projectData.project_id
   unless _adp.fims?.expedition?.expeditionId?
@@ -3217,7 +3219,10 @@ revalidateAndUpdateData = (newFilePath = false) ->
             lookupMap = new Object()
             for i, row of _adp.cartoRows
               fieldNumber = row.fieldNumber
-              trimmed = fieldNumber.trim()
+              try
+                trimmed = fieldNumber.trim()
+              catch
+                continue
               # For field that are "PLC 123", remove the space
               trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
               fieldNumber = trimmed
@@ -3244,7 +3249,8 @@ revalidateAndUpdateData = (newFilePath = false) ->
               coordinates: new Array()
             iIndex = i + 1
             fieldNumber = row.fieldNumber
-            refRowNum = lookupMap[fieldNumber]
+            try
+              refRowNum = lookupMap[fieldNumber]
             refRow = null
             if refRowNum?
               refRow = _adp.cartoRows[refRowNum]
