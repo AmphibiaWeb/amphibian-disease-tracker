@@ -947,7 +947,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
           cartoData.bounding_polygon.fillOpacity ?= defaultFillOpacity
           cartoData.bounding_polygon.fillColor ?= defaultFillColor
           _adp.projectData.carto_id = JSON.stringify cartoData
-          bsAlert "We've updated some of your data automatically. Please save the project before continuing.", "warning"
+          # bsAlert "We've updated some of your data automatically. Please save the project before continuing.", "warning"
     totalRows = result.parsed_responses[0].total_rows ? 0
     if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
       mapOptions.skipHull = false
@@ -1579,9 +1579,11 @@ revalidateAndUpdateData = (newFilePath = false) ->
               # Finalizing callback
               finalize = ->
                 # Save it
+                _adp.skipRead = true
                 saveEditorData true, ->
                   unless localStorage._adp?
-                    document.location.reload(true)
+                    foo()
+                    #document.location.reload(true)
                 false
               # If the datasrc isn't the stored one, remint an ark and
               # append
@@ -1634,15 +1636,16 @@ saveEditorData = (force = false, callback) ->
     try
       postData.access_data = _adp.projectData.access_data.raw
     # Alter this based on inputs
-    for el in $(".project-param:not([readonly])")
-      key = $(el).attr "data-field"
-      if isNull key then continue
-      postData[key] = p$(el).value
-    authorObj = new Object()
-    for el in $(".author-param")
-      key = $(el).attr "data-key"
-      authorObj[key] = $(el).attr("data-value") ? p$(el).value
-    postData.author_data = JSON.stringify authorObj
+    unless _adp.skipRead is true
+      for el in $(".project-param:not([readonly])")
+        key = $(el).attr "data-field"
+        if isNull key then continue
+        postData[key] = p$(el).value
+      authorObj = new Object()
+      for el in $(".author-param")
+        key = $(el).attr "data-key"
+        authorObj[key] = $(el).attr("data-value") ? p$(el).value
+      postData.author_data = JSON.stringify authorObj
     _adp.postedSaveData = postData
     _adp.postedSaveTimestamp = Date.now()
   else
