@@ -1710,11 +1710,13 @@ newGeoDataHandler = function(dataObject, skipCarto) {
         if (!isNull(taxon.subspecies)) {
           taxonString += " " + taxon.subspecies;
         }
-        if (i > 0) {
-          taxonListString += "\n";
+        if (indexOf.call(taxonList, taxonString) < 0) {
+          if (i > 0) {
+            taxonListString += "\n";
+          }
+          taxonListString += "" + taxonString;
+          taxonList.push(taxonString);
         }
-        taxonListString += "" + taxonString;
-        taxonList.push(taxonString);
         try {
           if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
             cladeList.push(taxon.response.validated_taxon.family);
@@ -3233,11 +3235,13 @@ revalidateAndUpdateData = function(newFilePath) {
                 if (!isNull(taxon.subspecies)) {
                   taxonString += " " + taxon.subspecies;
                 }
-                if (i > 0) {
-                  taxonListString += "\n";
+                if (indexOf.call(taxonList, taxonString) < 0) {
+                  if (i > 0) {
+                    taxonListString += "\n";
+                  }
+                  taxonListString += "" + taxonString;
+                  taxonList.push(taxonString);
                 }
-                taxonListString += "" + taxonString;
-                taxonList.push(taxonString);
                 try {
                   if (ref9 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref9) < 0) {
                     cladeList.push(taxon.response.validated_taxon.family);
