@@ -1425,7 +1425,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
           try
             lookupMap = new Object()
             for i, row of _adp.cartoRows
-              fieldNumber = row.fieldNumber
+              fieldNumber = row.fieldNumber ? row.fieldnumber
               try
                 trimmed = fieldNumber.trim()
               catch
