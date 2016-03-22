@@ -1507,10 +1507,11 @@ revalidateAndUpdateData = (newFilePath = false) ->
                   $("#species-list").before noticeHtml
                 unless isNull taxon.subspecies
                   taxonString += " #{taxon.subspecies}"
-                if i > 0
-                  taxonListString += "\n"
-                taxonListString += "#{taxonString}"
-                taxonList.push taxonString
+                unless taxonString in taxonList
+                  if i > 0
+                    taxonListString += "\n"
+                  taxonListString += "#{taxonString}"
+                  taxonList.push taxonString
                 try
                   unless taxon.response.validated_taxon.family in cladeList
                     cladeList.push taxon.response.validated_taxon.family
