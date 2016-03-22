@@ -2151,7 +2151,7 @@ loadEditor = (projectPreload) ->
                 <paper-button id="save-project"><iron-icon icon="icons:save" class="material-green"></iron-icon> Save Project</paper-button>
               </div>
               <div class="card-actions">
-                <paper-button id="save-project"><iron-icon icon="icons:cached" class="materialindigotext"></iron-icon>Re-parse Data, Save Project &amp; Reload</paper-button>
+                <paper-button id="reparse-project"><iron-icon icon="icons:cached" class="materialindigotext"></iron-icon>Re-parse Data, Save Project &amp; Reload</paper-button>
               </div>
               <div class="card-actions">
                 <paper-button id="discard-changes-exit"><iron-icon icon="icons:undo"></iron-icon> Discard Changes &amp; Exit</paper-button>
@@ -2278,6 +2278,9 @@ loadEditor = (projectPreload) ->
             false
           $("#discard-changes-exit").click ->
             showEditList()
+            false
+          $("#reparse-project").click ->
+            revalidateAndUpdateData()
             false
           topPosition = $("#data-management").offset().top
           affixOptions =
