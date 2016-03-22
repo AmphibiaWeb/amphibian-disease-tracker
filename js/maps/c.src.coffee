@@ -1850,6 +1850,8 @@ getColumnObj = ->
     originalTaxa: "varchar"
     fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
     the_geom: "varchar"
+  if _adp.activeCols?
+    return _adp.activeCols
   columnDatatype
       
 

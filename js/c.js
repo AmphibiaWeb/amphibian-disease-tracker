@@ -2343,6 +2343,9 @@ getColumnObj = function() {
     fimsExtra: "json",
     the_geom: "varchar"
   };
+  if (_adp.activeCols != null) {
+    return _adp.activeCols;
+  }
   return columnDatatype;
 };
 

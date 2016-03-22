@@ -976,60 +976,70 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
   # Validate the user
   verifyLoginCredentials (data) ->
     # Try to get the data straight from the CartoDB database
-    cols = getColumnObj()
-    colsArr = new Array()
-    colRemap = new Object()
-    for col, type of cols
-      if col isnt "id" and col isnt "the_geom"
-        colsArr.push col
-        colRemap[col.toLowerCase()] = col
-    sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
-    apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
-    args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+    getCols = "SELECT * FROM #{table} WHERE FALSE"
+    args = "action=fetch&sql_query=#{post64(getCols)}"
     $.post "api.php", args, "json"
     .done (result) ->
-      cartoResponse = result.parsed_responses[0]
-      coords = new Array()
-      info = new Array()
-      _adp.cartoRows = new Object()
-      for i, row of cartoResponse.rows
-        _adp.cartoRows[i] = new Object()
-        for col, val of row
-          realRow = colRemap[col]
-          _adp.cartoRows[i][realRow] = val
-        textPoint = row.st_astext
-        if isNull row.infraspecificepithet
-          row.infraspecificepithet = ""
-        #point = pointStringToPoint textPoint
-        point = pointStringToLatLng textPoint
-        data =
-          title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
-          html: """
-          <p>
-            <span class="sciname italic">#{row.genus} #{row.specificepithet} #{row.infraspecificepithet}</span> collected on #{row.dateidentified}
-          </p>
-          <p>
-            <strong>Status:</strong>
-            Sampled by #{row.samplemethod}, disease status #{row.diseasedetected} for #{row.diseasetested}
-          </p>
-          """
-        point.infoWindow = data
-        coords.push point
-        info.push data
-      # Push the coordinates and the formatted infowindows
-      dataAttrs.coords = coords
-      dataAttrs.markerInfo = info
-      console.info "Calling back with", coords, options
-      callback coords, options
-      # callback coords, info
+      r = JSON.parse(result.post_response[0])
+      cols = new Object()
+      for k, v of r.fields
+        cols[k] = v
+      _adp.activeCols = cols
+      colsArr = new Array()
+      colRemap = new Object()
+      for col, type of cols
+        if col isnt "id" and col isnt "the_geom"
+          colsArr.push col
+          colRemap[col.toLowerCase()] = col
+      sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
+      apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
+      args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+      $.post "api.php", args, "json"
+      .done (result) ->
+        cartoResponse = result.parsed_responses[0]
+        coords = new Array()
+        info = new Array()
+        _adp.cartoRows = new Object()
+        for i, row of cartoResponse.rows
+          _adp.cartoRows[i] = new Object()
+          for col, val of row
+            realRow = colRemap[col]
+            _adp.cartoRows[i][realRow] = val
+          textPoint = row.st_astext
+          if isNull row.infraspecificepithet
+            row.infraspecificepithet = ""
+          #point = pointStringToPoint textPoint
+          point = pointStringToLatLng textPoint
+          data =
+            title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
+            html: """
+            <p>
+              <span class="sciname italic">#{row.genus} #{row.specificepithet} #{row.infraspecificepithet}</span> collected on #{row.dateidentified}
+            </p>
+            <p>
+              <strong>Status:</strong>
+              Sampled by #{row.samplemethod}, disease status #{row.diseasedetected} for #{row.diseasetested}
+            </p>
+            """
+          point.infoWindow = data
+          coords.push point
+          info.push data
+        # Push the coordinates and the formatted infowindows
+        dataAttrs.coords = coords
+        dataAttrs.markerInfo = info
+        console.info "Calling back with", coords, options
+        callback coords, options
+        # callback coords, info
+      .error (result, status) ->
+        # On error, return direct from file upload
+        if dataAttrs?.coords?
+          callback dataAttrs.coords, options
+          # callback dataAttrs.coords, dataAttrs.markerInfo
+        else
+          stopLoadError "Couldn't get bounding coordinates from data"
+          console.error "No valid coordinates accessible!"
     .error (result, status) ->
-      # On error, return direct from file upload
-      if dataAttrs?.coords?
-        callback dataAttrs.coords, options
-        # callback dataAttrs.coords, dataAttrs.markerInfo
-      else
-        stopLoadError "Couldn't get bounding coordinates from data"
-        console.error "No valid coordinates accessible!"
+      false
   false
 
 getUploadIdentifier = ->

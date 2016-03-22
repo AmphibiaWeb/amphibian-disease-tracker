@@ -986,59 +986,73 @@ getCanonicalDataCoords = function(table, options, callback) {
     return false;
   }
   verifyLoginCredentials(function(data) {
-    var apiPostSqlQuery, args, col, colRemap, cols, colsArr, sqlQuery, type;
-    cols = getColumnObj();
-    colsArr = new Array();
-    colRemap = new Object();
-    for (col in cols) {
-      type = cols[col];
-      if (col !== "id" && col !== "the_geom") {
-        colsArr.push(col);
-        colRemap[col.toLowerCase()] = col;
-      }
-    }
-    sqlQuery = "SELECT ST_AsText(the_geom), " + (colsArr.join(",")) + " FROM " + table;
-    apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
-    args = "action=fetch&sql_query=" + apiPostSqlQuery;
+    var args, getCols;
+    getCols = "SELECT * FROM " + table + " WHERE FALSE";
+    args = "action=fetch&sql_query=" + (post64(getCols));
     return $.post("api.php", args, "json").done(function(result) {
-      var cartoResponse, coords, i, info, point, realRow, ref, row, textPoint, val;
-      cartoResponse = result.parsed_responses[0];
-      coords = new Array();
-      info = new Array();
-      _adp.cartoRows = new Object();
-      ref = cartoResponse.rows;
-      for (i in ref) {
-        row = ref[i];
-        _adp.cartoRows[i] = new Object();
-        for (col in row) {
-          val = row[col];
-          realRow = colRemap[col];
-          _adp.cartoRows[i][realRow] = val;
-        }
-        textPoint = row.st_astext;
-        if (isNull(row.infraspecificepithet)) {
-          row.infraspecificepithet = "";
-        }
-        point = pointStringToLatLng(textPoint);
-        data = {
-          title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
-          html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
-        };
-        point.infoWindow = data;
-        coords.push(point);
-        info.push(data);
+      var apiPostSqlQuery, col, colRemap, cols, colsArr, k, r, ref, sqlQuery, type, v;
+      r = JSON.parse(result.post_response[0]);
+      cols = new Object();
+      ref = r.fields;
+      for (k in ref) {
+        v = ref[k];
+        cols[k] = v;
       }
-      dataAttrs.coords = coords;
-      dataAttrs.markerInfo = info;
-      console.info("Calling back with", coords, options);
-      return callback(coords, options);
+      _adp.activeCols = cols;
+      colsArr = new Array();
+      colRemap = new Object();
+      for (col in cols) {
+        type = cols[col];
+        if (col !== "id" && col !== "the_geom") {
+          colsArr.push(col);
+          colRemap[col.toLowerCase()] = col;
+        }
+      }
+      sqlQuery = "SELECT ST_AsText(the_geom), " + (colsArr.join(",")) + " FROM " + table;
+      apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
+      args = "action=fetch&sql_query=" + apiPostSqlQuery;
+      return $.post("api.php", args, "json").done(function(result) {
+        var cartoResponse, coords, i, info, point, realRow, ref1, row, textPoint, val;
+        cartoResponse = result.parsed_responses[0];
+        coords = new Array();
+        info = new Array();
+        _adp.cartoRows = new Object();
+        ref1 = cartoResponse.rows;
+        for (i in ref1) {
+          row = ref1[i];
+          _adp.cartoRows[i] = new Object();
+          for (col in row) {
+            val = row[col];
+            realRow = colRemap[col];
+            _adp.cartoRows[i][realRow] = val;
+          }
+          textPoint = row.st_astext;
+          if (isNull(row.infraspecificepithet)) {
+            row.infraspecificepithet = "";
+          }
+          point = pointStringToLatLng(textPoint);
+          data = {
+            title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
+            html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
+          };
+          point.infoWindow = data;
+          coords.push(point);
+          info.push(data);
+        }
+        dataAttrs.coords = coords;
+        dataAttrs.markerInfo = info;
+        console.info("Calling back with", coords, options);
+        return callback(coords, options);
+      }).error(function(result, status) {
+        if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
+          return callback(dataAttrs.coords, options);
+        } else {
+          stopLoadError("Couldn't get bounding coordinates from data");
+          return console.error("No valid coordinates accessible!");
+        }
+      });
     }).error(function(result, status) {
-      if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
-        return callback(dataAttrs.coords, options);
-      } else {
-        stopLoadError("Couldn't get bounding coordinates from data");
-        return console.error("No valid coordinates accessible!");
-      }
+      return false;
     });
   });
   return false;
@@ -3233,7 +3247,7 @@ revalidateAndUpdateData = function(newFilePath) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error5, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error5, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref7, ref8, ref9, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3312,8 +3326,8 @@ revalidateAndUpdateData = function(newFilePath) {
               dispositions = new Array();
               sampleMethods = new Array();
               ref10 = Object.toArray(_adp.cartoRows);
-              for (r = 0, len4 = ref10.length; r < len4; r++) {
-                row = ref10[r];
+              for (s = 0, len4 = ref10.length; s < len4; s++) {
+                row = ref10[s];
                 date = (ref11 = row.dateCollected) != null ? ref11 : row.dateIdentified;
                 uTime = excelDateToUnixTime(date);
                 dates.push(uTime);
