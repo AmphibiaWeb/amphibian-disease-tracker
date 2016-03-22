@@ -3368,8 +3368,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
               # Add new row
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
           console.log sqlQuery
-          foo()
-          return false
+
           geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->
             console.info "Post carto callback fn"
             try
