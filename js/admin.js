@@ -3156,7 +3156,7 @@ revalidateAndUpdateData = function(newFilePath) {
               sqlWhere = " WHERE `fieldNumber`='" + fieldNumber + "';";
               sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
             } else {
-              sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + ")";
+              sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + "); ";
             }
           }
           console.log(sqlQuery);
