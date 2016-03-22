@@ -1063,8 +1063,8 @@ startEditorUploader = ->
           <h2>Upload Progress</h2>
           <paper-dialog-scrollable>
             <div id="upload-progress-container" style="min-width:80vw; ">
-              #{html}
             </div>
+            #{html}
       <p class="col-xs-12">Species in dataset</p>
       <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
           </paper-dialog-scrollable>
@@ -1218,7 +1218,14 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
 
 
 revalidateAndUpdateData = (newFilePath = false) ->
-  cartoData = JSON.parse _adp.projectData.carto_id.unescape()
+  try
+    cartoData = JSON.parse _adp.projectData.carto_id.unescape()
+    _adp.cartoData = cartoData
+  catch
+    link = $.cookie "#{uri.domain}_link"
+    cartoData =
+      table: _adp.projectIdentifierString + "_#{link}"
+      bounding_polygon: new Object()
   skipHandler = false
   if newFilePath isnt false
     if typeof newFilePath is "object"

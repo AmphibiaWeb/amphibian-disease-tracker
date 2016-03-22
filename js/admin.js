@@ -2806,7 +2806,7 @@ startEditorUploader = function() {
       }
       try {
         html = renderValidateProgress("dont-exist", true);
-        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n        " + html + "\n      </div>\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
+        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
         $("#upload-progress-dialog").remove();
         $("body").append(dialogHtml);
         p$("#upload-progress-dialog").open();
@@ -2922,11 +2922,20 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
 };
 
 revalidateAndUpdateData = function(newFilePath) {
-  var cartoData, dataCallback, passedData, path, ref, ref1, skipHandler;
+  var cartoData, dataCallback, error1, link, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
   }
-  cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
+  try {
+    cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
+    _adp.cartoData = cartoData;
+  } catch (error1) {
+    link = $.cookie(uri.domain + "_link");
+    cartoData = {
+      table: _adp.projectIdentifierString + ("_" + link),
+      bounding_polygon: new Object()
+    };
+  }
   skipHandler = false;
   if (newFilePath !== false) {
     if (typeof newFilePath === "object") {
@@ -2955,7 +2964,7 @@ revalidateAndUpdateData = function(newFilePath) {
   }
   dataCallback = function(data) {
     newGeoDataHandler(data, function(validatedData, projectIdentifier) {
-      var allowedOperations, args, dataTable, hash, link, operation, secret;
+      var allowedOperations, args, dataTable, hash, operation, secret;
       console.info("Ready to update", validatedData);
       dataTable = cartoData.table;
       data = validatedData.data;
@@ -2992,7 +3001,7 @@ revalidateAndUpdateData = function(newFilePath) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error1, error2, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
+        var alt, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, refRow, refRowNum, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3049,8 +3058,8 @@ revalidateAndUpdateData = function(newFilePath) {
               }
               ++i;
             }
-          } catch (error1) {
-            e = error1;
+          } catch (error2) {
+            e = error2;
             console.warn("Error parsing the user transect ring - " + e.message);
             userTransectRing = void 0;
           }
@@ -3080,7 +3089,7 @@ revalidateAndUpdateData = function(newFilePath) {
               fieldNumber = trimmed;
               lookupMap[fieldNumber] = i;
             }
-          } catch (error2) {
+          } catch (error3) {
             console.warn("Couldn't make lookupMap");
           }
           sqlQuery = "";
@@ -3180,7 +3189,7 @@ revalidateAndUpdateData = function(newFilePath) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error3, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error4, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3223,8 +3232,8 @@ revalidateAndUpdateData = function(newFilePath) {
                   if (ref9 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref9) < 0) {
                     cladeList.push(taxon.response.validated_taxon.family);
                   }
-                } catch (error3) {
-                  e = error3;
+                } catch (error4) {
+                  e = error4;
                   console.warn("Couldn't get the family! " + e.message, taxon.response);
                   console.warn(e.stack);
                 }
