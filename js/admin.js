@@ -3153,19 +3153,19 @@ revalidateAndUpdateData = function(newFilePath) {
               }
               if (typeof value === "string") {
                 if (refRow != null) {
-                  valuesArr.push("`" + column + "`='" + value + "'");
+                  valuesArr.push((column.toLowerCase()) + "='" + value + "'");
                 } else {
                   valuesArr.push("'" + value + "'");
                 }
               } else if (isNull(value)) {
                 if (refRow != null) {
-                  valuesArr.push("`" + column + "`=null");
+                  valuesArr.push((column.toLowerCase()) + "=null");
                 } else {
                   valuesArr.push("null");
                 }
               } else {
                 if (refRow != null) {
-                  valuesArr.push("`" + column + "`=" + value);
+                  valuesArr.push((column.toLowerCase()) + "=" + value);
                 } else {
                   valuesArr.push(value);
                 }
@@ -3214,7 +3214,7 @@ revalidateAndUpdateData = function(newFilePath) {
                 clade = aweb.order.toLowerCase();
                 key = "includes_" + clade;
                 _adp.projectData[key] = true;
-                if ((_adp.projectData.includes_anura != null) !== false && (_adp.projectData.includes_caudata != null) !== false && (_adp.projectData.includes_gymnophiona != null) !== false) {
+                if (_adp.projectData.includes_anura !== false && _adp.projectData.includes_caudata !== false && _adp.projectData.includes_gymnophiona !== false) {
                   break;
                 }
               }
