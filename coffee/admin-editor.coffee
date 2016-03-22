@@ -868,7 +868,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     console.info "Got zoom", zoom
     $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
-  getCols = "SELECT * FROM #{table} WHERE FALSE"
+  getCols = "SELECT * FROM #{cartoTable} WHERE FALSE"
   args = "action=fetch&sql_query=#{post64(getCols)}"
   $.post "api.php", args, "json"
   .done (result) ->

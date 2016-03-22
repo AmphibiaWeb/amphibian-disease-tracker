@@ -2628,7 +2628,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     console.info("Got zoom", zoom);
     $("#transect-viewport").attr("zoom", zoom);
   } catch (undefined) {}
-  getCols = "SELECT * FROM " + table + " WHERE FALSE";
+  getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
   $.post("api.php", args, "json").done(function(result) {
     var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, filePath, html, k, r, ref, type, v;
