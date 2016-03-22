@@ -868,155 +868,165 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     console.info "Got zoom", zoom
     $("#transect-viewport").attr "zoom", zoom
   # Ping Carto on this and get the data
-  cols = getColumnObj()
-  colsArr = new Array()
-  colRemap = new Object()
-  for col, type of cols
-    if col isnt "id" and col isnt "the_geom"
-      colsArr.push col
-      colRemap[col.toLowerCase()] = col
-  cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
-  # cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
-  console.info "Would ping cartodb with", cartoQuery
-  apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
-  args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  getCols = "SELECT * FROM #{table} WHERE FALSE"
+  args = "action=fetch&sql_query=#{post64(getCols)}"
   $.post "api.php", args, "json"
   .done (result) ->
-    console.info "Carto query got result:", result
-    unless result.status
-      error = result.human_error ? result.error
-      unless error?
-        error = "Unknown error"
-      stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
-      return false
-    rows = result.parsed_responses[0].rows
-    _adp.cartoRows = new Object()
-    for i, row of rows
-      _adp.cartoRows[i] = new Object()
-      for col, val of row
-        realRow = colRemap[col]
-        _adp.cartoRows[i][realRow] = val
-    truncateLength = 0 - "</google-map>".length
-    try
-      workingMap = geo.googleMapWebComponent.slice 0, truncateLength
-    catch
-      workingMap = "<google-map>"
-    pointArr = new Array()
-    for k, row of rows
-      geoJson = JSON.parse row.st_asgeojson
-      lat = geoJson.coordinates[0]
-      lng = geoJson.coordinates[1]
-      point = new Point lat, lng
-      point.infoWindow = new Object()
-      point.data = row
-      # Fill the points as markers
-      row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
-        when "true"
-          "positive"
-        when "false"
-          "negative"
-        else
-          row.diseasedetected.toString()
-      taxa = "#{row.genus} #{row.specificepithet}"
-      note = ""
-      if taxa isnt row.originaltaxa
-        console.warn "#{taxa} was changed from #{row.originaltaxa}"
-        note = "(<em>#{row.originaltaxa}</em>)"
-      infoWindow = """
-        <p>
-          <em>#{row.genus} #{row.specificepithet}</em> #{note}
-          <br/>
-          Tested <strong>#{row.diseasedetected}</strong> for #{row.diseasetested}
-        </p>
-      """
-      point.infoWindow.html = infoWindow
-      marker = """
-      <google-map-marker latitude="#{lat}" longitude="#{lng}" data-disease-detected="#{row.diseasedetected}">
-      #{infoWindow}
-      </google-map-marker>
-      """
-      # $("#transect-viewport").append marker
-      workingMap += marker
-      pointArr.push point
-    # p$("#transect-viewport").resize()
-    unless cartoData?.bounding_polygon?.paths? and cartoData?.bounding_polygon?.fillColor?
+    r = JSON.parse(result.post_response[0])
+    cols = new Object()
+    for k, v of r.fields
+      cols[k] = v
+    _adp.activeCols = cols
+    colsArr = new Array()
+    colRemap = new Object()
+    for col, type of cols
+      if col isnt "id" and col isnt "the_geom"
+        colsArr.push col
+        colRemap[col.toLowerCase()] = col        
+    cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+    # cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+    console.info "Would ping cartodb with", cartoQuery
+    apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
+    args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+    $.post "api.php", args, "json"
+    .done (result) ->
+      console.info "Carto query got result:", result
+      unless result.status
+        error = result.human_error ? result.error
+        unless error?
+          error = "Unknown error"
+        stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
+        return false
+      rows = result.parsed_responses[0].rows
+      _adp.cartoRows = new Object()
+      for i, row of rows
+        _adp.cartoRows[i] = new Object()
+        for col, val of row
+          realRow = colRemap[col]
+          _adp.cartoRows[i][realRow] = val
+      truncateLength = 0 - "</google-map>".length
       try
-        _adp.canonicalHull = createConvexHull pointArr, true
+        workingMap = geo.googleMapWebComponent.slice 0, truncateLength
+      catch
+        workingMap = "<google-map>"
+      pointArr = new Array()
+      for k, row of rows
+        geoJson = JSON.parse row.st_asgeojson
+        lat = geoJson.coordinates[0]
+        lng = geoJson.coordinates[1]
+        point = new Point lat, lng
+        point.infoWindow = new Object()
+        point.data = row
+        # Fill the points as markers
+        row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
+          when "true"
+            "positive"
+          when "false"
+            "negative"
+          else
+            row.diseasedetected.toString()
+        taxa = "#{row.genus} #{row.specificepithet}"
+        note = ""
+        if taxa isnt row.originaltaxa
+          console.warn "#{taxa} was changed from #{row.originaltaxa}"
+          note = "(<em>#{row.originaltaxa}</em>)"
+        infoWindow = """
+          <p>
+            <em>#{row.genus} #{row.specificepithet}</em> #{note}
+            <br/>
+            Tested <strong>#{row.diseasedetected}</strong> for #{row.diseasetested}
+          </p>
+        """
+        point.infoWindow.html = infoWindow
+        marker = """
+        <google-map-marker latitude="#{lat}" longitude="#{lng}" data-disease-detected="#{row.diseasedetected}">
+        #{infoWindow}
+        </google-map-marker>
+        """
+        # $("#transect-viewport").append marker
+        workingMap += marker
+        pointArr.push point
+      # p$("#transect-viewport").resize()
+      unless cartoData?.bounding_polygon?.paths? and cartoData?.bounding_polygon?.fillColor?
         try
-          cartoObj = new Object()
-          unless cartoData?
-            cartoData = new Object()
-          unless cartoData.bounding_polygon?
-            cartoData.bounding_polygon = new Object()
-          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
-          cartoData.bounding_polygon.fillOpacity ?= defaultFillOpacity
-          cartoData.bounding_polygon.fillColor ?= defaultFillColor
-          _adp.projectData.carto_id = JSON.stringify cartoData
-          # bsAlert "We've updated some of your data automatically. Please save the project before continuing.", "warning"
-    totalRows = result.parsed_responses[0].total_rows ? 0
-    if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
-      mapOptions.skipHull = false
-      if pointArr.length is 0
-        center = geo.centerPoint ? [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng] ? [window.locationData.lat, window.locationData.lng]
-        pointArr.push center
-      mapOptions.onClickCallback = ->
-        console.log "No callback for data-provided maps."
-      createMap2 pointArr, mapOptions, (map) ->
-        after = """
+          _adp.canonicalHull = createConvexHull pointArr, true
+          try
+            cartoObj = new Object()
+            unless cartoData?
+              cartoData = new Object()
+            unless cartoData.bounding_polygon?
+              cartoData.bounding_polygon = new Object()
+            cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+            cartoData.bounding_polygon.fillOpacity ?= defaultFillOpacity
+            cartoData.bounding_polygon.fillColor ?= defaultFillColor
+            _adp.projectData.carto_id = JSON.stringify cartoData
+            # bsAlert "We've updated some of your data automatically. Please save the project before continuing.", "warning"
+      totalRows = result.parsed_responses[0].total_rows ? 0
+      if pointArr.length > 0 or mapOptions?.boundingBox?.length > 0
+        mapOptions.skipHull = false
+        if pointArr.length is 0
+          center = geo.centerPoint ? [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng] ? [window.locationData.lat, window.locationData.lng]
+          pointArr.push center
+        mapOptions.onClickCallback = ->
+          console.log "No callback for data-provided maps."
+        createMap2 pointArr, mapOptions, (map) ->
+          after = """
+          <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
+          """
+          $(map.selector).after
+          stopLoad()
+      else
+        console.info "Classic render.", mapOptions, pointArr.length
+        workingMap += """
+        </google-map>
         <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
         """
-        $(map.selector).after
+        $("#transect-viewport").replaceWith workingMap
         stopLoad()
-    else
-      console.info "Classic render.", mapOptions, pointArr.length
-      workingMap += """
-      </google-map>
-      <p class="text-muted"><span class="glyphicon glyphicon-info-sign"></span> There are <span class='carto-row-count'>#{totalRows}</span> sample points in this dataset</p>
-      """
-      $("#transect-viewport").replaceWith workingMap
-      stopLoad()
-  .fail (result, status) ->
-    console.error "Couldn't talk to back end server to ping carto!"
-    stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
-  window.dataFileparams = cartoData.raw_data
-  if cartoData.raw_data.hasDataFile
-    # We already have a data file
-    filePath = cartoData.raw_data.filePath
-    if filePath.search(helperDir) is -1
-      filePath = "#{helperDir}#{filePath}"
-    html = """
-    <p>
-      Your project already has data associated with it. <span id="last-modified-file"></span>
-    </p>
-    <button id="download-project-file" class="btn btn-primary center-block click download-file" data-href="#{filePath}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
-    <p>You can upload more data below, or replace this existing data.</p>
-    """
-    $("#data-card .card-content .variable-card-content").html html
-    args = "do=get_last_mod&file=#{filePath}"
-    console.info "Timestamp: ", "#{uri.urlString}meta.php?#{args}"
-    $.get "meta.php", args, "json"
-    .done (result) ->
-      time = toInt(result.last_mod) * 1000 # Seconds -> Milliseconds
-      console.log "Last modded", time, result
-      if isNumber time
-        t = new Date(time)
-        iso = t.toISOString()
-        #  Not good enough time resolution to use t.toTimeString().split(" ")[0]
-        timeString = "#{iso.slice(0, iso.search("T"))}"
-        $("#last-modified-file").text "Last uploaded on #{timeString}."
-        bindClicks()
-      else
-        console.warn "Didn't get a number back to check last mod time for #{filePath}"
-      false
     .fail (result, status) ->
-      # We don't really care, actually.
-      console.warn "Couldn't get last mod time for #{filePath}"
-      false
-  else
-    # We don't already have a data file
-    $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
-    $("#append-replace-data-toggle").attr "hidden", "hidden"
-  startEditorUploader()
+      console.error "Couldn't talk to back end server to ping carto!"
+      stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
+    window.dataFileparams = cartoData.raw_data
+    if cartoData.raw_data.hasDataFile
+      # We already have a data file
+      filePath = cartoData.raw_data.filePath
+      if filePath.search(helperDir) is -1
+        filePath = "#{helperDir}#{filePath}"
+      html = """
+      <p>
+        Your project already has data associated with it. <span id="last-modified-file"></span>
+      </p>
+      <button id="download-project-file" class="btn btn-primary center-block click download-file" data-href="#{filePath}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
+      <p>You can upload more data below, or replace this existing data.</p>
+      """
+      $("#data-card .card-content .variable-card-content").html html
+      args = "do=get_last_mod&file=#{filePath}"
+      console.info "Timestamp: ", "#{uri.urlString}meta.php?#{args}"
+      $.get "meta.php", args, "json"
+      .done (result) ->
+        time = toInt(result.last_mod) * 1000 # Seconds -> Milliseconds
+        console.log "Last modded", time, result
+        if isNumber time
+          t = new Date(time)
+          iso = t.toISOString()
+          #  Not good enough time resolution to use t.toTimeString().split(" ")[0]
+          timeString = "#{iso.slice(0, iso.search("T"))}"
+          $("#last-modified-file").text "Last uploaded on #{timeString}."
+          bindClicks()
+        else
+          console.warn "Didn't get a number back to check last mod time for #{filePath}"
+        false
+      .fail (result, status) ->
+        # We don't really care, actually.
+        console.warn "Couldn't get last mod time for #{filePath}"
+        false
+    else
+      # We don't already have a data file
+      $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
+      $("#append-replace-data-toggle").attr "hidden", "hidden"
+    startEditorUploader()
+  .error (result, status) ->
+    false
   false
 
 

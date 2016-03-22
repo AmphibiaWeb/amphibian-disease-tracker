@@ -2608,7 +2608,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, col, colRemap, cols, colsArr, error1, filePath, html, type, zoom;
+  var args, cartoData, cartoTable, error1, getCols, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
@@ -2628,160 +2628,174 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     console.info("Got zoom", zoom);
     $("#transect-viewport").attr("zoom", zoom);
   } catch (undefined) {}
-  cols = getColumnObj();
-  colsArr = new Array();
-  colRemap = new Object();
-  for (col in cols) {
-    type = cols[col];
-    if (col !== "id" && col !== "the_geom") {
-      colsArr.push(col);
-      colRemap[col.toLowerCase()] = col;
-    }
-  }
-  cartoQuery = "SELECT " + (colsArr.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
-  console.info("Would ping cartodb with", cartoQuery);
-  apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
-  args = "action=fetch&sql_query=" + apiPostSqlQuery;
+  getCols = "SELECT * FROM " + table + " WHERE FALSE";
+  args = "action=fetch&sql_query=" + (post64(getCols));
   $.post("api.php", args, "json").done(function(result) {
-    var base, base1, center, error, error2, geoJson, i, infoWindow, k, lat, lng, marker, note, point, pointArr, realRow, ref, ref1, ref2, ref3, ref4, ref5, ref6, row, rows, taxa, totalRows, truncateLength, val, workingMap;
-    console.info("Carto query got result:", result);
-    if (!result.status) {
-      error = (ref = result.human_error) != null ? ref : result.error;
-      if (error == null) {
-        error = "Unknown error";
-      }
-      stopLoadError("Sorry, we couldn't retrieve your information at the moment (" + error + ")");
-      return false;
+    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, filePath, html, k, r, ref, type, v;
+    r = JSON.parse(result.post_response[0]);
+    cols = new Object();
+    ref = r.fields;
+    for (k in ref) {
+      v = ref[k];
+      cols[k] = v;
     }
-    rows = result.parsed_responses[0].rows;
-    _adp.cartoRows = new Object();
-    for (i in rows) {
-      row = rows[i];
-      _adp.cartoRows[i] = new Object();
-      for (col in row) {
-        val = row[col];
-        realRow = colRemap[col];
-        _adp.cartoRows[i][realRow] = val;
+    _adp.activeCols = cols;
+    colsArr = new Array();
+    colRemap = new Object();
+    for (col in cols) {
+      type = cols[col];
+      if (col !== "id" && col !== "the_geom") {
+        colsArr.push(col);
+        colRemap[col.toLowerCase()] = col;
       }
     }
-    truncateLength = 0 - "</google-map>".length;
-    try {
-      workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
-    } catch (error2) {
-      workingMap = "<google-map>";
-    }
-    pointArr = new Array();
-    for (k in rows) {
-      row = rows[k];
-      geoJson = JSON.parse(row.st_asgeojson);
-      lat = geoJson.coordinates[0];
-      lng = geoJson.coordinates[1];
-      point = new Point(lat, lng);
-      point.infoWindow = new Object();
-      point.data = row;
-      row.diseasedetected = (function() {
-        switch (row.diseasedetected.toString().toLowerCase()) {
-          case "true":
-            return "positive";
-          case "false":
-            return "negative";
-          default:
-            return row.diseasedetected.toString();
+    cartoQuery = "SELECT " + (colsArr.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
+    console.info("Would ping cartodb with", cartoQuery);
+    apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
+    args = "action=fetch&sql_query=" + apiPostSqlQuery;
+    $.post("api.php", args, "json").done(function(result) {
+      var base, base1, center, error, error2, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realRow, ref1, ref2, ref3, ref4, ref5, ref6, ref7, row, rows, taxa, totalRows, truncateLength, val, workingMap;
+      console.info("Carto query got result:", result);
+      if (!result.status) {
+        error = (ref1 = result.human_error) != null ? ref1 : result.error;
+        if (error == null) {
+          error = "Unknown error";
         }
-      })();
-      taxa = row.genus + " " + row.specificepithet;
-      note = "";
-      if (taxa !== row.originaltaxa) {
-        console.warn(taxa + " was changed from " + row.originaltaxa);
-        note = "(<em>" + row.originaltaxa + "</em>)";
+        stopLoadError("Sorry, we couldn't retrieve your information at the moment (" + error + ")");
+        return false;
       }
-      infoWindow = "<p>\n  <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n  <br/>\n  Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n</p>";
-      point.infoWindow.html = infoWindow;
-      marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\" data-disease-detected=\"" + row.diseasedetected + "\">\n" + infoWindow + "\n</google-map-marker>";
-      workingMap += marker;
-      pointArr.push(point);
-    }
-    if (!(((cartoData != null ? (ref1 = cartoData.bounding_polygon) != null ? ref1.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref2 = cartoData.bounding_polygon) != null ? ref2.fillColor : void 0 : void 0) != null))) {
+      rows = result.parsed_responses[0].rows;
+      _adp.cartoRows = new Object();
+      for (i in rows) {
+        row = rows[i];
+        _adp.cartoRows[i] = new Object();
+        for (col in row) {
+          val = row[col];
+          realRow = colRemap[col];
+          _adp.cartoRows[i][realRow] = val;
+        }
+      }
+      truncateLength = 0 - "</google-map>".length;
       try {
-        _adp.canonicalHull = createConvexHull(pointArr, true);
-        try {
-          cartoObj = new Object();
-          if (cartoData == null) {
-            cartoData = new Object();
-          }
-          if (cartoData.bounding_polygon == null) {
-            cartoData.bounding_polygon = new Object();
-          }
-          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
-          if ((base = cartoData.bounding_polygon).fillOpacity == null) {
-            base.fillOpacity = defaultFillOpacity;
-          }
-          if ((base1 = cartoData.bounding_polygon).fillColor == null) {
-            base1.fillColor = defaultFillColor;
-          }
-          _adp.projectData.carto_id = JSON.stringify(cartoData);
-        } catch (undefined) {}
-      } catch (undefined) {}
-    }
-    totalRows = (ref3 = result.parsed_responses[0].total_rows) != null ? ref3 : 0;
-    if (pointArr.length > 0 || (mapOptions != null ? (ref4 = mapOptions.boundingBox) != null ? ref4.length : void 0 : void 0) > 0) {
-      mapOptions.skipHull = false;
-      if (pointArr.length === 0) {
-        center = (ref5 = (ref6 = geo.centerPoint) != null ? ref6 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref5 : [window.locationData.lat, window.locationData.lng];
-        pointArr.push(center);
+        workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
+      } catch (error2) {
+        workingMap = "<google-map>";
       }
-      mapOptions.onClickCallback = function() {
-        return console.log("No callback for data-provided maps.");
-      };
-      return createMap2(pointArr, mapOptions, function(map) {
-        var after;
-        after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
-        $(map.selector).after;
+      pointArr = new Array();
+      for (k in rows) {
+        row = rows[k];
+        geoJson = JSON.parse(row.st_asgeojson);
+        lat = geoJson.coordinates[0];
+        lng = geoJson.coordinates[1];
+        point = new Point(lat, lng);
+        point.infoWindow = new Object();
+        point.data = row;
+        row.diseasedetected = (function() {
+          switch (row.diseasedetected.toString().toLowerCase()) {
+            case "true":
+              return "positive";
+            case "false":
+              return "negative";
+            default:
+              return row.diseasedetected.toString();
+          }
+        })();
+        taxa = row.genus + " " + row.specificepithet;
+        note = "";
+        if (taxa !== row.originaltaxa) {
+          console.warn(taxa + " was changed from " + row.originaltaxa);
+          note = "(<em>" + row.originaltaxa + "</em>)";
+        }
+        infoWindow = "<p>\n  <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n  <br/>\n  Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n</p>";
+        point.infoWindow.html = infoWindow;
+        marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\" data-disease-detected=\"" + row.diseasedetected + "\">\n" + infoWindow + "\n</google-map-marker>";
+        workingMap += marker;
+        pointArr.push(point);
+      }
+      if (!(((cartoData != null ? (ref2 = cartoData.bounding_polygon) != null ? ref2.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref3 = cartoData.bounding_polygon) != null ? ref3.fillColor : void 0 : void 0) != null))) {
+        try {
+          _adp.canonicalHull = createConvexHull(pointArr, true);
+          try {
+            cartoObj = new Object();
+            if (cartoData == null) {
+              cartoData = new Object();
+            }
+            if (cartoData.bounding_polygon == null) {
+              cartoData.bounding_polygon = new Object();
+            }
+            cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
+            if ((base = cartoData.bounding_polygon).fillOpacity == null) {
+              base.fillOpacity = defaultFillOpacity;
+            }
+            if ((base1 = cartoData.bounding_polygon).fillColor == null) {
+              base1.fillColor = defaultFillColor;
+            }
+            _adp.projectData.carto_id = JSON.stringify(cartoData);
+          } catch (undefined) {}
+        } catch (undefined) {}
+      }
+      totalRows = (ref4 = result.parsed_responses[0].total_rows) != null ? ref4 : 0;
+      if (pointArr.length > 0 || (mapOptions != null ? (ref5 = mapOptions.boundingBox) != null ? ref5.length : void 0 : void 0) > 0) {
+        mapOptions.skipHull = false;
+        if (pointArr.length === 0) {
+          center = (ref6 = (ref7 = geo.centerPoint) != null ? ref7 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref6 : [window.locationData.lat, window.locationData.lng];
+          pointArr.push(center);
+        }
+        mapOptions.onClickCallback = function() {
+          return console.log("No callback for data-provided maps.");
+        };
+        return createMap2(pointArr, mapOptions, function(map) {
+          var after;
+          after = "<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
+          $(map.selector).after;
+          return stopLoad();
+        });
+      } else {
+        console.info("Classic render.", mapOptions, pointArr.length);
+        workingMap += "</google-map>\n<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
+        $("#transect-viewport").replaceWith(workingMap);
         return stopLoad();
+      }
+    }).fail(function(result, status) {
+      console.error("Couldn't talk to back end server to ping carto!");
+      return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+    });
+    window.dataFileparams = cartoData.raw_data;
+    if (cartoData.raw_data.hasDataFile) {
+      filePath = cartoData.raw_data.filePath;
+      if (filePath.search(helperDir) === -1) {
+        filePath = "" + helperDir + filePath;
+      }
+      html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
+      $("#data-card .card-content .variable-card-content").html(html);
+      args = "do=get_last_mod&file=" + filePath;
+      console.info("Timestamp: ", uri.urlString + "meta.php?" + args);
+      $.get("meta.php", args, "json").done(function(result) {
+        var iso, t, time, timeString;
+        time = toInt(result.last_mod) * 1000;
+        console.log("Last modded", time, result);
+        if (isNumber(time)) {
+          t = new Date(time);
+          iso = t.toISOString();
+          timeString = "" + (iso.slice(0, iso.search("T")));
+          $("#last-modified-file").text("Last uploaded on " + timeString + ".");
+          bindClicks();
+        } else {
+          console.warn("Didn't get a number back to check last mod time for " + filePath);
+        }
+        return false;
+      }).fail(function(result, status) {
+        console.warn("Couldn't get last mod time for " + filePath);
+        return false;
       });
     } else {
-      console.info("Classic render.", mapOptions, pointArr.length);
-      workingMap += "</google-map>\n<p class=\"text-muted\"><span class=\"glyphicon glyphicon-info-sign\"></span> There are <span class='carto-row-count'>" + totalRows + "</span> sample points in this dataset</p>";
-      $("#transect-viewport").replaceWith(workingMap);
-      return stopLoad();
+      $("#data-card .card-content .variable-card-content").html("<p>You can upload data to your project here:</p>");
+      $("#append-replace-data-toggle").attr("hidden", "hidden");
     }
-  }).fail(function(result, status) {
-    console.error("Couldn't talk to back end server to ping carto!");
-    return stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
+    return startEditorUploader();
+  }).error(function(result, status) {
+    return false;
   });
-  window.dataFileparams = cartoData.raw_data;
-  if (cartoData.raw_data.hasDataFile) {
-    filePath = cartoData.raw_data.filePath;
-    if (filePath.search(helperDir) === -1) {
-      filePath = "" + helperDir + filePath;
-    }
-    html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
-    $("#data-card .card-content .variable-card-content").html(html);
-    args = "do=get_last_mod&file=" + filePath;
-    console.info("Timestamp: ", uri.urlString + "meta.php?" + args);
-    $.get("meta.php", args, "json").done(function(result) {
-      var iso, t, time, timeString;
-      time = toInt(result.last_mod) * 1000;
-      console.log("Last modded", time, result);
-      if (isNumber(time)) {
-        t = new Date(time);
-        iso = t.toISOString();
-        timeString = "" + (iso.slice(0, iso.search("T")));
-        $("#last-modified-file").text("Last uploaded on " + timeString + ".");
-        bindClicks();
-      } else {
-        console.warn("Didn't get a number back to check last mod time for " + filePath);
-      }
-      return false;
-    }).fail(function(result, status) {
-      console.warn("Couldn't get last mod time for " + filePath);
-      return false;
-    });
-  } else {
-    $("#data-card .card-content .variable-card-content").html("<p>You can upload data to your project here:</p>");
-    $("#append-replace-data-toggle").attr("hidden", "hidden");
-  }
-  startEditorUploader();
   return false;
 };
 
