@@ -1515,6 +1515,9 @@ revalidateAndUpdateData = (newFilePath = false) ->
               _adp.projectData.disease_negative = validatedData.samples.negative
               _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
               # All the parsed month data, etc.
+              center = getMapCenter(geo.boundingBox)
+              # Have some fun times with uploadedData
+              excursion = 0
               dates = new Array()
               months = new Array()
               years = new Array()
