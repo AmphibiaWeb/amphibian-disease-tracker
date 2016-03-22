@@ -3184,7 +3184,6 @@ revalidateAndUpdateData = function(newFilePath) {
             if (refRowNum != null) {
               refRow = _adp.cartoRows[refRowNum];
             }
-            console.info("For row " + i + ", fn " + fieldNumber + " = refrownum " + refRowNum, refRow);
             colArr = new Array();
             for (column in row) {
               value = row[column];
@@ -3207,7 +3206,7 @@ revalidateAndUpdateData = function(newFilePath) {
                   }
               }
               if (refRow != null) {
-                if (refRow[column] === value) {
+                if (refRow[column] === value || refRow[column.toLowerCase()] === value) {
                   continue;
                 }
               }
@@ -3239,7 +3238,7 @@ revalidateAndUpdateData = function(newFilePath) {
               colArr.push("the_geom");
               valuesArr.push(geoJsonVal);
             }
-            if (refRow != null) {
+            if ((refRow != null) && valuesArr.length > 0) {
               sqlWhere = " WHERE fieldnumber='" + fieldNumber + "';";
               sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
             } else {
