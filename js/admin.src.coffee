@@ -2151,6 +2151,9 @@ loadEditor = (projectPreload) ->
                 <paper-button id="save-project"><iron-icon icon="icons:save" class="material-green"></iron-icon> Save Project</paper-button>
               </div>
               <div class="card-actions">
+                <paper-button id="save-project"><iron-icon icon="icons:cached" class="materialindigotext"></iron-icon> Revalidate &amp; Reparse Data and Save Project</paper-button>
+              </div>
+              <div class="card-actions">
                 <paper-button id="discard-changes-exit"><iron-icon icon="icons:undo"></iron-icon> Discard Changes &amp; Exit</paper-button>
               </div>
               #{deleteCardAction}
@@ -3117,6 +3120,29 @@ revalidateAndUpdateData = (newFilePath = false) ->
         ark: _adp.projectData.project_obj_id
 
   dataCallback = (data) ->
+    # Is this a legitimate operation?
+    allowedOperations = [
+      "edit"
+      "create"
+      ]
+    operation = if p$("#replace-data-toggle").checked then "create" else "edit" # For now
+    unless operation in allowedOperations
+      console.error "#{operation} is not an allowed operation on a data set!"
+      console.info "Allowed operations are ", allowedOperations
+      toastStatusMessage "Sorry, '#{operation}' isn't an allowed operation."
+      return false
+    if operation is "create"
+      newGeoDataHandler data, (validatedData, projectIdentifier) ->
+        geo.requestCartoUpload validatedData, projectIdentifier, "create", (table, coords, options) ->
+          bsAlert "Hang on for a moment while we reprocess this for saving", "info"
+          cartoData.table = geo.dataTable
+          # Call back and re-parse all this
+          _adp.projectData.carto_id = JSON.stringify cartoData
+          path = dataFileParams.filePath
+          revalidateAndUpdateData(path)
+          false
+        false
+      return false
     newGeoDataHandler data, (validatedData, projectIdentifier) ->
       console.info "Ready to update", validatedData
       dataTable = cartoData.table
@@ -3127,19 +3153,6 @@ revalidateAndUpdateData = (newFilePath = false) ->
         toastStatusMessage "Your data is malformed. Please double check your data and try again."
         return false
 
-      # Is this a legitimate operation?
-      allowedOperations = [
-        "edit"
-        "insert"
-        "delete"
-        "create"
-        ]
-      operation = "edit" # For now
-      unless operation in allowedOperations
-        console.error "#{operation} is not an allowed operation on a data set!"
-        console.info "Allowed operations are ", allowedOperations
-        toastStatusMessage "Sorry, '#{operation}' isn't an allowed operation."
-        return false
 
       if isNull dataTable
         console.error "Must use a defined table name!"
