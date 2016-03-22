@@ -307,7 +307,7 @@ validateTaxonData = (dataObject, callback = null) ->
     taxaPerRow[taxaString].push n
   console.info "Found #{taxa.length} unique taxa:", taxa
   grammar = if taxa.length > 1 then "taxa" else "taxon"
-  toastStatusMessage "Validating #{taxa.length} uniqe #{grammar}"
+  toastStatusMessage "Validating #{taxa.length} unique #{grammar} from #{data.length} rows ..."
   console.info "Replacement tracker", taxaPerRow
   $("#taxa-validation").removeAttr "indeterminate"
   try

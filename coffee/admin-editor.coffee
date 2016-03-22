@@ -866,7 +866,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   cols = getColumnObj()
   colsArr = new Array()
   colRemap = new Object()
-  for col, type of getColumnObj()
+  for col, type of cols
     if col isnt "id" and col isnt "the_geom"
       colsArr.push col
       colRemap[col.toLowerCase()] = col
@@ -1063,6 +1063,8 @@ startEditorUploader = ->
           <paper-dialog-scrollable>
             <div id="upload-progress-container" style="min-width:80vw; ">
             </div>
+      <p>Species in dataset</p>
+      <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
           </paper-dialog-scrollable>
           <div class="buttons">
             <paper-button id="close-overlay">Close</paper-button>
@@ -1320,7 +1322,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
             # See if the user provided a valid JSON string of coordinates
             if typeof data.transectRing is "string"
               userTransectRing = JSON.parse validatedData.transectRing
-            if isArray data.transectRing
+            else
               userTransectRing = validatedData.transectRing
             userTransectRing = Object.toArray userTransectRing
             i = 0
@@ -1438,18 +1440,152 @@ revalidateAndUpdateData = (newFilePath = false) ->
               sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
             else
               # Add new row
-              sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")})"
+              sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")})";
           console.log sqlQuery
           return false
-          # Recalculate hull and update project data
-          _adp.canonicalHull = createConvexHull validatedData.transectRing, true
-          cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
-          # Update project data with new taxa info
-          # Update project data with new sample data
-          _adp.disease_morbidity = validatedData.samples.morbidity #etc
-          # If the datasrc isn't the stored one, remint an ark and append
-          # Save it
-          stopLoad()
+          geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->
+            try
+              p$("#taxa-validation").value = 0
+              p$("#taxa-validation").indeterminate = true
+            # Recalculate hull and update project data
+            _adp.canonicalHull = createConvexHull coords, true
+            cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+            _adp.projectData.carto_id = JSON.stringify cartoData
+            # Update project data with new taxa info
+            # Recheck the integrated taxa
+            faux =
+              data: _adp.cartoRows
+            validateTaxonData faux, (taxa) ->
+              validatedData.validated_taxa = taxa.validated_taxa
+              _adp.projectData.includes_anura = false
+              _adp.projectData.includes_caudata = false
+              _adp.projectData.includes_gymnophiona = false
+              for taxonObject in validatedData.validated_taxa
+                aweb = taxonObject.response.validated_taxon
+                console.info "Aweb taxon result:", aweb
+                clade = aweb.order.toLowerCase()
+                key = "includes_#{clade}"
+                _adp.projectData[key] = true
+                # If we have all three, stop checking
+                if _adp.projectData.includes_anura? isnt false and _adp.projectData.includes_caudata? isnt false and _adp.projectData.includes_gymnophiona? isnt false then break
+              taxonListString = ""
+              taxonList = new Array()
+              cladeList = new Array()
+              i = 0
+              for taxon in validatedData.validated_taxa
+                taxonString = "#{taxon.genus} #{taxon.species}"
+                if taxon.response.original_taxon?
+                  # Append a notice
+                  console.info "Taxon obj", taxon
+                  originalTaxon = "#{taxon.response.original_taxon.slice(0,1).toUpperCase()}#{taxon.response.original_taxon.slice(1)}"
+                  noticeHtml = """
+                  <div class="alert alert-info alert-dismissable amended-taxon-notice col-md-6 col-xs-12 project-field" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      Your entry '<em>#{originalTaxon}</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>#{taxonString}</em>' below. <a href="#{taxon.response.validated_taxon.uri_or_guid}" target="_blank">See the AmphibiaWeb entry <span class="glyphicon glyphicon-new-window"></span></a>
+                  </div>
+                  """
+                  $("#species-list").before noticeHtml
+                unless isNull taxon.subspecies
+                  taxonString += " #{taxon.subspecies}"
+                if i > 0
+                  taxonListString += "\n"
+                taxonListString += "#{taxonString}"
+                taxonList.push taxonString
+                try
+                  unless taxon.response.validated_taxon.family in cladeList
+                    cladeList.push taxon.response.validated_taxon.family
+                catch e
+                  console.warn "Couldn't get the family! #{e.message}", taxon.response
+                  console.warn e.stack
+                ++i
+              try
+                p$("#species-list").bindValue = taxonListString
+              dataAttrs.dataObj = validatedData
+              _adp.data.dataObj = validatedData
+              _adp.data.taxa = new Object()
+              _adp.data.taxa.list = taxonList
+              _adp.data.taxa.clades = cladeList
+              _adp.data.taxa.validated = validatedData.validated_taxa
+              # Update project data with new sample data
+              _adp.projectData.disease_morbidity = validatedData.samples.morbidity
+              _adp.projectData.disease_mortality = validatedData.samples.mortality
+              _adp.projectData.disease_positive = validatedData.samples.positive
+              _adp.projectData.disease_negative = validatedData.samples.negative
+              _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
+              # All the parsed month data, etc.
+              dates = new Array()
+              months = new Array()
+              years = new Array()
+              methods = new Array()
+              catalogNumbers = new Array()
+              fieldNumbers = new Array()
+              dispositions = new Array()
+              sampleMethods = new Array()
+              for row in Object.toArray _adp.cartoRows
+                # sanify the dates
+                date = row.dateCollected ? row.dateIdentified
+                uTime = excelDateToUnixTime date
+                dates.push uTime
+                uDate = new Date(uTime)
+                mString = dateMonthToString uDate.getUTCMonth()
+                unless mString in months
+                  months.push mString
+                unless uDate.getFullYear() in years
+                  years.push uDate.getFullYear()
+                # Get the catalog number list
+                if row.catalogNumber? # Not mandatory
+                  catalogNumbers.push row.catalogNumber
+                fieldNumbers.push row.fieldNumber
+                # Prepare to calculate the radius
+                rowLat = row.decimalLatitude
+                rowLng = row.decimalLongitude
+                distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
+                if distanceFromCenter > excursion then excursion = distanceFromCenter
+                # Samples
+                if row.sampleType?
+                  unless row.sampleType in sampleMethods
+                    sampleMethods.push row.sampleType
+                if row.specimenDisposition?
+                  unless row.specimenDisposition in dispositions
+                    dispositions.push row.sampleDisposition
+              console.info "Got date ranges", dates
+              months.sort()
+              years.sort()
+              _adp.projectData.sampled_collection_start = dates.min()
+              _adp.projectData.sampled_collection_end = dates.max()
+              console.info "Collected from", dates.min(), dates.max()
+              _adp.projectData.sampling_months = months.join(",")
+              _adp.projectData.sampling_years = years.join(",")
+              _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",")
+              _adp.projectData.sample_field_numbers = fieldNumbers.join(",")
+              _adp.projectData.sample_methods_used = sampleMethods.join(",")
+              # Finalizing callback
+              finalize = ->
+                # Save it
+                saveEditorData true, ->
+                  unless localStorage._adp?
+                    document.location.reload(true)
+                false
+              # If the datasrc isn't the stored one, remint an ark and
+              # append
+              fullPath = "#{uri.urlString}#{validatedData.dataSrc}"
+              if fullPath isnt _adp.projectData.sample_raw_data
+                # Mint it
+                arks = _adp.projectData.dataset_arks.split(",")
+                mintBcid _adp.projectId, fullPath, _adp.projectData.project_title, (result) ->
+                  if result.ark?
+                    fileA = fullPath.split("/")
+                    file = fileA.pop()
+                    newArk = "#{result.ark}::#{file}"
+                    arks.push newArk
+                    _adp.projectData.datset_arks = arks.join(",")
+                  else
+                    console.warn "Couldn't mint!"
+                  finalize()
+              else
+                finalize()
+              false
+            false
           false
         else
           stopLoadError "Error updating Carto"
