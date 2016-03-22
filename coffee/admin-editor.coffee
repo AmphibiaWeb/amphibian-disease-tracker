@@ -1434,17 +1434,17 @@ revalidateAndUpdateData = (newFilePath = false) ->
                     continue
               if typeof value is "string"
                 if refRow?
-                  valuesArr.push "`#{column}`='#{value}'"
+                  valuesArr.push "#{column.toLowerCase()}='#{value}'"
                 else
                   valuesArr.push "'#{value}'"
               else if isNull value
                 if refRow?
-                  valuesArr.push "`#{column}`=null"
+                  valuesArr.push "#{column.toLowerCase()}=null"
                 else
                   valuesArr.push "null"
               else
                 if refRow?
-                  valuesArr.push "`#{column}`=#{value}"
+                  valuesArr.push "#{column.toLowerCase()}=#{value}"
                 else
                   valuesArr.push value
               colArr.push column
@@ -1487,7 +1487,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                 key = "includes_#{clade}"
                 _adp.projectData[key] = true
                 # If we have all three, stop checking
-                if _adp.projectData.includes_anura? isnt false and _adp.projectData.includes_caudata? isnt false and _adp.projectData.includes_gymnophiona? isnt false then break
+                if _adp.projectData.includes_anura isnt false and _adp.projectData.includes_caudata isnt false and _adp.projectData.includes_gymnophiona isnt false then break
               taxonListString = ""
               taxonList = new Array()
               cladeList = new Array()
