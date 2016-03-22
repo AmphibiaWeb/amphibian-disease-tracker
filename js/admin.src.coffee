@@ -3275,6 +3275,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
           valuesList = new Array()
           columnNamesList = new Array()
           columnNamesList.push "id int"
+          _adp.rowsCount = Object.size data
           for i, row of data
             i = toInt(i)
 
@@ -3345,7 +3346,8 @@ revalidateAndUpdateData = (newFilePath = false) ->
               # Add new row
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
           console.log sqlQuery
-          # return false
+          foo()
+          return false
           geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->
             console.info "Post carto callback fn"
             try

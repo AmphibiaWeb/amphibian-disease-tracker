@@ -730,6 +730,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           valuesList = new Array()
           columnNamesList = new Array()
           columnNamesList.push "id int"
+          _adp.rowsCount = Object.size data
           for i, row of data
             i = toInt(i)
             ##console.log "Iter ##{i}", i is 0, `i == 0`
@@ -782,6 +783,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength)
             insertPlace += insertMaxLength
             sqlQuery += "INSERT INTO #{dataTable} VALUES #{tempList.join(", ")};"
+            
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
@@ -827,7 +829,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
     window._adp.secondaryTimeout = delay 15000, ->
       doStillWorking()
   try
-    estimate = toInt(.7 * valuesList.length)
+    estimate = toInt(.7 * _adp.rowsCount)
     console.log "Estimate #{estimate} seconds"
     window._adp.uploader = true
     $("#data-sync").removeAttr "indeterminate"

@@ -2499,6 +2499,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
           valuesList = new Array();
           columnNamesList = new Array();
           columnNamesList.push("id int");
+          _adp.rowsCount = Object.size(data);
           for (i in data) {
             row = data[i];
             i = toInt(i);
@@ -2600,7 +2601,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
     });
   };
   try {
-    estimate = toInt(.7 * valuesList.length);
+    estimate = toInt(.7 * _adp.rowsCount);
     console.log("Estimate " + estimate + " seconds");
     window._adp.uploader = true;
     $("#data-sync").removeAttr("indeterminate");
