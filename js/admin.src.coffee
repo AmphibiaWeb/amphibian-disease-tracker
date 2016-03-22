@@ -2132,13 +2132,12 @@ loadEditor = (projectPreload) ->
                 Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)
                 </div>
                 <div id="append-replace-data-toggle">
-                  <span class="toggle-off-label iron-label">Append Data
-                    <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data"></span>
+                  <span class="toggle-off-label iron-label">Append/Amend Data
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data, and modify existing ones by fieldNumber"></span>
                   </span>
-                  <paper-toggle-button id="replace-data-toggle" checked disabled>Replace Data</paper-toggle-button>
+                  <paper-toggle-button id="replace-data-toggle" disabled>Replace Data</paper-toggle-button>
                   <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload data, archive current data and only have new data parsed"></span>
                 </div>
-                <p><strong>PLEASE NOTE UPLOADS ARE CURRENTLY DISABLED HERE PENDING DEBUGGING</strong></p>
                 <div id="uploader-container-section">
                 </div>
               </div>
