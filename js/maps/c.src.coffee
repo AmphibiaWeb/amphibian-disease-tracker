@@ -2195,8 +2195,9 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
     parentCallback = (coords) ->
       console.info "Initiating parent callback"
       stopLoad()
-      max = p$("#data-sync").max
-      p$("#data-sync").value = max
+      try
+        max = p$("#data-sync").max
+        p$("#data-sync").value = max
       $("#data-sync").removeAttr("indeterminate")
       options =
         boundingBox: geo.boundingBox

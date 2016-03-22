@@ -2688,8 +2688,10 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       var options, ref;
       console.info("Initiating parent callback");
       stopLoad();
-      max = p$("#data-sync").max;
-      p$("#data-sync").value = max;
+      try {
+        max = p$("#data-sync").max;
+        p$("#data-sync").value = max;
+      } catch (undefined) {}
       $("#data-sync").removeAttr("indeterminate");
       options = {
         boundingBox: geo.boundingBox,

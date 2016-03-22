@@ -1062,6 +1062,7 @@ startEditorUploader = ->
           <h2>Upload Progress</h2>
           <paper-dialog-scrollable>
             <div id="upload-progress-container" style="min-width:80vw; ">
+              #{renderValidateProgress(null, true)}
             </div>
       <p class="col-xs-12">Species in dataset</p>
       <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
@@ -1440,7 +1441,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
               sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
             else
               # Add new row
-              sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")})";
+              sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
           console.log sqlQuery
           # return false
           geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->

@@ -1758,7 +1758,7 @@ excelDateToUnixTime = (excelTime) ->
   t
 
 
-renderValidateProgress = (placeAfterSelector = "#file-uploader-form")->
+renderValidateProgress = (placeAfterSelector = "#file-uploader-form", returnIt = false)->
   ###
   # Show paper-progress bars as validation goes
   #
@@ -1775,6 +1775,8 @@ renderValidateProgress = (placeAfterSelector = "#file-uploader-form")->
   """
   unless $("#validator-progress-container").exists()
     $(placeAfterSelector).after html
+  if returnIt
+    return html
   false
 
 
