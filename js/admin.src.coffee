@@ -2904,7 +2904,7 @@ startEditorUploader = ->
           <paper-dialog-scrollable>
             <div id="upload-progress-container" style="min-width:80vw; ">
             </div>
-      <p>Species in dataset</p>
+      <p class="col-xs-12">Species in dataset</p>
       <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
           </paper-dialog-scrollable>
           <div class="buttons">
@@ -3283,8 +3283,9 @@ revalidateAndUpdateData = (newFilePath = false) ->
               # Add new row
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")})";
           console.log sqlQuery
-          return false
+          # return false
           geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->
+            console.info "Post carto callback fn"
             try
               p$("#taxa-validation").value = 0
               p$("#taxa-validation").indeterminate = true
