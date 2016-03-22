@@ -1521,7 +1521,8 @@ revalidateAndUpdateData = (newFilePath = false) ->
               _adp.data.taxa.list = taxonList
               _adp.data.taxa.clades = cladeList
               _adp.data.taxa.validated = validatedData.validated_taxa
-              _adp.projectData.
+              _adp.projectData.sampled_species = taxonList.join ","
+              _adp.projectData.sampled_clades = cladeList.join ","
               # Update project data with new sample data
               _adp.projectData.disease_morbidity = validatedData.samples.morbidity
               _adp.projectData.disease_mortality = validatedData.samples.mortality
