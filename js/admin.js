@@ -3131,7 +3131,9 @@ revalidateAndUpdateData = function(newFilePath) {
                   geoJsonGeom.coordinates[0] = value;
                   break;
                 case "fieldNumber":
-                  continue;
+                  if (refRow != null) {
+                    continue;
+                  }
               }
               if (refRow != null) {
                 if (refRow[column] === value) {
@@ -3188,7 +3190,7 @@ revalidateAndUpdateData = function(newFilePath) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error4, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error4, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, r, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref7, ref8, ref9, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3320,6 +3322,15 @@ revalidateAndUpdateData = function(newFilePath) {
               fullPath = "" + uri.urlString + validatedData.dataSrc;
               if (fullPath !== _adp.projectData.sample_raw_data) {
                 arks = _adp.projectData.dataset_arks.split(",");
+                if (((ref15 = _adp.fims) != null ? (ref16 = ref15.expedition) != null ? ref16.ark : void 0 : void 0) == null) {
+                  if (_adp.fims == null) {
+                    _adp.fims = new Object();
+                  }
+                  if (_adp.fims.expedition == null) {
+                    _adp.fims.expedition = new Object();
+                  }
+                  _adp.fims.expedition.ark = _adp.projectData.project_obj_id;
+                }
                 mintBcid(_adp.projectId, fullPath, _adp.projectData.project_title, function(result) {
                   var file, fileA, newArk;
                   if (result.ark != null) {
@@ -3418,7 +3429,7 @@ saveEditorData = function(force, callback) {
     }
     stopLoad();
     toastStatusMessage("Save successful");
-    _adp.projectData = result.project;
+    _adp.projectData = result.project.project;
     return delete localStorage._adp;
   }).error(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
