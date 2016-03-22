@@ -3133,6 +3133,7 @@ revalidateAndUpdateData = function(newFilePath) {
           valuesList = new Array();
           columnNamesList = new Array();
           columnNamesList.push("id int");
+          _adp.rowsCount = Object.size(data);
           for (i in data) {
             row = data[i];
             i = toInt(i);
@@ -3216,6 +3217,8 @@ revalidateAndUpdateData = function(newFilePath) {
             }
           }
           console.log(sqlQuery);
+          foo();
+          return false;
           geo.postToCarto(sqlQuery, dataTable, function(table, coords, options) {
             var faux;
             console.info("Post carto callback fn");
