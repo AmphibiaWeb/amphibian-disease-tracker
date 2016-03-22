@@ -2898,6 +2898,7 @@ startEditorUploader = ->
         return false
       try
         # Open up dialog
+        html = renderValidateProgress("dont-exist", true)
         dialogHtml = """
         <paper-dialog modal id="upload-progress-dialog"
           entry-animation="fade-in-animation"
@@ -2905,7 +2906,7 @@ startEditorUploader = ->
           <h2>Upload Progress</h2>
           <paper-dialog-scrollable>
             <div id="upload-progress-container" style="min-width:80vw; ">
-              #{renderValidateProgress(null, true)}
+              #{html}
             </div>
       <p class="col-xs-12">Species in dataset</p>
       <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
@@ -3430,7 +3431,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                     file = fileA.pop()
                     newArk = "#{result.ark}::#{file}"
                     arks.push newArk
-                    _adp.projectData.datset_arks = arks.join(",")
+                    _adp.projectData.dataset_arks = arks.join(",")
                   else
                     console.warn "Couldn't mint!"
                   finalize()
@@ -3481,8 +3482,8 @@ saveEditorData = (force = false, callback) ->
     _adp.postedSaveData = postData
     _adp.postedSaveTimestamp = Date.now()
   else
-    postData = localStorage._adp.postedSaveData
-    window._adp = localStorage._adp
+    window._adp = JSON.parse localStorage._adp
+    postData = _adp.postedSaveData
   # Post it
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
@@ -3492,7 +3493,7 @@ saveEditorData = (force = false, callback) ->
     unless result.status is true
       error = result.human_error ? result.error ? "There was an error saving to the server"
       stopLoadError "There was an error saving to the server"
-      localStorage._adp = _adp
+      localStorage._adp = JSON.stringify _adp
       bsAlert "<strong>Save Error:</strong> #{error}. An offline backup has been made.", "danger"
       console.error result.error
       return false
@@ -3503,7 +3504,7 @@ saveEditorData = (force = false, callback) ->
     delete localStorage._adp
   .error (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
-    localStorage._adp = _adp
+    localStorage._adp = JSON.stringify _adp
     bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger"
     console.error result, status
   .always ->
@@ -3513,12 +3514,13 @@ saveEditorData = (force = false, callback) ->
 
 
 $ ->
-  if localStorage._adp?.postedSaveData?
-    d = new Date localStorage._adp.postedSaveTimestamp
+  if localStorage._adp?
+    window._adp = JSON.parse localStorage._adp
+    d = new Date _adp.postedSaveTimestamp
     alertHtml = """
     <strong>You have offline save information</strong> &#8212; did you want to save it?
     <br/><br/>
-    Project ##{localStorage._adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
+    Project ##{_adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
     <br/><br/>
     <button class="btn btn-success" id="offline-save">
       Save Now &amp; Refresh Page

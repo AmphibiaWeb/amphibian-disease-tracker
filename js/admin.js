@@ -2789,7 +2789,7 @@ startEditorUploader = function() {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var dialogHtml, e, error1, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      var dialogHtml, e, error1, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
       window.dropperParams.dropzone.removeAllFiles();
       if (typeof result !== "object") {
         console.error("Dropzone returned an error - " + result);
@@ -2805,7 +2805,8 @@ startEditorUploader = function() {
         return false;
       }
       try {
-        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n        " + (renderValidateProgress(null, true)) + "\n      </div>\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
+        html = renderValidateProgress("dont-exist", true);
+        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n        " + html + "\n      </div>\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
         $("#upload-progress-dialog").remove();
         $("body").append(dialogHtml);
         p$("#upload-progress-dialog").open();
@@ -3317,7 +3318,7 @@ revalidateAndUpdateData = function(newFilePath) {
                     file = fileA.pop();
                     newArk = result.ark + "::" + file;
                     arks.push(newArk);
-                    _adp.projectData.datset_arks = arks.join(",");
+                    _adp.projectData.dataset_arks = arks.join(",");
                   } else {
                     console.warn("Couldn't mint!");
                   }
@@ -3388,8 +3389,8 @@ saveEditorData = function(force, callback) {
     _adp.postedSaveData = postData;
     _adp.postedSaveTimestamp = Date.now();
   } else {
-    postData = localStorage._adp.postedSaveData;
-    window._adp = localStorage._adp;
+    window._adp = JSON.parse(localStorage._adp);
+    postData = _adp.postedSaveData;
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
@@ -3399,7 +3400,7 @@ saveEditorData = function(force, callback) {
     if (result.status !== true) {
       error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
       stopLoadError("There was an error saving to the server");
-      localStorage._adp = _adp;
+      localStorage._adp = JSON.stringify(_adp);
       bsAlert("<strong>Save Error:</strong> " + error + ". An offline backup has been made.", "danger");
       console.error(result.error);
       return false;
@@ -3410,7 +3411,7 @@ saveEditorData = function(force, callback) {
     return delete localStorage._adp;
   }).error(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
-    localStorage._adp = _adp;
+    localStorage._adp = JSON.stringify(_adp);
     bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger");
     return console.error(result, status);
   }).always(function() {
@@ -3422,10 +3423,11 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, d, ref;
-  if (((ref = localStorage._adp) != null ? ref.postedSaveData : void 0) != null) {
-    d = new Date(localStorage._adp.postedSaveTimestamp);
-    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + localStorage._adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
+  var alertHtml, d;
+  if (localStorage._adp != null) {
+    window._adp = JSON.parse(localStorage._adp);
+    d = new Date(_adp.postedSaveTimestamp);
+    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");
     return $("#offline-save").click(function() {
       return saveEditorData(false, function() {
