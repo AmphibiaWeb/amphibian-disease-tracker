@@ -1638,6 +1638,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                     _adp.projectData.dataset_arks = arks.join(",")
                   else
                     console.warn "Couldn't mint!"
+                  _adp.previousRawData = _adp.projectData.sample_raw_data
                   _adp.projectData.sample_raw_data = fullPath
                   finalize()
               else

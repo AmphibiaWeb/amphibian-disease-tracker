@@ -3367,6 +3367,7 @@ revalidateAndUpdateData = function(newFilePath) {
                   } else {
                     console.warn("Couldn't mint!");
                   }
+                  _adp.previousRawData = _adp.projectData.sample_raw_data;
                   _adp.projectData.sample_raw_data = fullPath;
                   return finalize();
                 });
