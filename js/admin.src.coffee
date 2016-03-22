@@ -3317,7 +3317,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
             refRow = null
             if refRowNum?
               refRow = _adp.cartoRows[refRowNum]
-            console.info "For row #{i}, fn #{fieldNumber} = refrownum #{refRowNum}", refRow
+            #console.info "For row #{i}, fn #{fieldNumber} = refrownum #{refRowNum}", refRow
             colArr = new Array()
             for column, value of row
               # Loop data ....
@@ -3336,7 +3336,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
                   if refRow?
                     continue
               if refRow?
-                if refRow[column] is value
+                if refRow[column] is value or refRow[column.toLowerCase()] is value
                   # Don't need to add it again
                     continue
               if typeof value is "string"
@@ -3361,7 +3361,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
             else
               colArr.push "the_geom"
               valuesArr.push geoJsonVal
-            if refRow?
+            if refRow? and valuesArr.length > 0
               sqlWhere = " WHERE fieldnumber='#{fieldNumber}';"
               sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
             else
