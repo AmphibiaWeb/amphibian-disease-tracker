@@ -3246,8 +3246,6 @@ revalidateAndUpdateData = function(newFilePath) {
             }
           }
           console.log(sqlQuery);
-          foo();
-          return false;
           geo.postToCarto(sqlQuery, dataTable, function(table, coords, options) {
             var faux;
             console.info("Post carto callback fn");
