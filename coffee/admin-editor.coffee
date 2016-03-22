@@ -1435,7 +1435,11 @@ revalidateAndUpdateData = (newFilePath = false) ->
                   valuesArr.push value
               colArr.push column
             geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
-            valuesArr.push geoJsonVal
+            if refRow?
+              valuesArr.push "`the_geom`=#{geoJsonVal}"
+            else
+              colArr.push "the_geom"
+              valuesArr.push geoJsonVal
             if refRow?
               sqlWhere = " WHERE `fieldNumber`='#{fieldNumber}';"
               sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
