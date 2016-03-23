@@ -1728,7 +1728,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
   catch e
     console.error "Error parsing data - #{e.message}"
     console.warn e.stack
-    stopLoadBarsError null,  "There was a problem parsing your data"
+    message = """There was a problem parsing your data. Please check <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org FIMS requirements<span class="glyphicon glyphicon-new-window"></span></a>"""
+    stopLoadBarsError null, message
     
   false
 
@@ -3883,7 +3884,7 @@ stopLoadBarsError = (currentTimeout, message) ->
         $(el).addClass "error-progress"
         $(el).find("#primaryProgress").css "background", "#F44336"
   if message?
-    bsAlert "<strong>Data Validation Error</strong: #{message}", "danger"
+    bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
     stopLoadError "There was a problem validating your data"
   false
 

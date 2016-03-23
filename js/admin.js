@@ -1412,7 +1412,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, fimsExtra, getCoordsFromData, k, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1773,7 +1773,8 @@ newGeoDataHandler = function(dataObject, skipCarto) {
     e = error5;
     console.error("Error parsing data - " + e.message);
     console.warn(e.stack);
-    stopLoadBarsError(null, "There was a problem parsing your data");
+    message = "There was a problem parsing your data. Please check <a href=\"http://biscicol.org/biocode-fims/templates.jsp\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org FIMS requirements<span class=\"glyphicon glyphicon-new-window\"></span></a>";
+    stopLoadBarsError(null, message);
   }
   return false;
 };
@@ -3835,7 +3836,7 @@ stopLoadBarsError = function(currentTimeout, message) {
     } catch (undefined) {}
   }
   if (message != null) {
-    bsAlert("<strong>Data Validation Error</strong: " + message, "danger");
+    bsAlert("<strong>Data Validation Error</strong>: " + message, "danger");
     stopLoadError("There was a problem validating your data");
   }
   return false;
