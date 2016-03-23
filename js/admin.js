@@ -3336,7 +3336,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
             _adp.canonicalHull = createConvexHull(coords, true);
             cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
             _adp.projectData.carto_id = JSON.stringify(cartoData);
-            cartoQuery = "SELECT " + (colsArr.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + dataTable + ";";
+            cartoQuery = "SELECT " + (_adp.colsList.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + dataTable + ";";
             args = "action=fetch&sql_query=" + (post64(cartoQuery));
             $.post("api.php", args, "json").done(function(result) {
               var col, error, faux, realCol, ref10, ref11, rows, val;
@@ -3356,7 +3356,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 _adp.cartoRows[i] = new Object();
                 for (col in row) {
                   val = row[col];
-                  realCol = (ref11 = colRemap[col]) != null ? ref11 : col;
+                  realCol = (ref11 = _adp.colRemap[col]) != null ? ref11 : col;
                   _adp.cartoRows[i][realCol] = val;
                 }
               }
