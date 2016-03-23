@@ -1498,7 +1498,10 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 else if refVal is null
                   altRefVal = "null"
                 else
-                  altRefVal = refVal.replace "T00:00:00Z", ""
+                  try
+                    altRefVal = refVal.replace "T00:00:00Z", ""
+                  catch
+                    altRefVal = undefined
                 if refVal is value or altRefVal is value
                   # Don't need to add it again
                     continue

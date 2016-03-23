@@ -3070,7 +3070,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, error4, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3233,7 +3233,11 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                 } else if (refVal === null) {
                   altRefVal = "null";
                 } else {
-                  altRefVal = refVal.replace("T00:00:00Z", "");
+                  try {
+                    altRefVal = refVal.replace("T00:00:00Z", "");
+                  } catch (error5) {
+                    altRefVal = void 0;
+                  }
                 }
                 if (refVal === value || altRefVal === value) {
                   continue;
@@ -3297,7 +3301,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error5, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref9, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref9, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3342,8 +3346,8 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                   if (ref11 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref11) < 0) {
                     cladeList.push(taxon.response.validated_taxon.family);
                   }
-                } catch (error5) {
-                  e = error5;
+                } catch (error6) {
+                  e = error6;
                   console.warn("Couldn't get the family! " + e.message, taxon.response);
                   console.warn(e.stack);
                 }
