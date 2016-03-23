@@ -3070,7 +3070,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, error4, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, defaultPolygon, e, err, error2, error3, error4, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3216,14 +3216,24 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               if (refRow != null) {
                 refVal = (ref8 = refRow[column]) != null ? ref8 : refRow[column.toLowerCase()];
                 if (typeof refVal === "object") {
+                  for (k in refVal) {
+                    v = refVal[k];
+                    if (typeof v === "number") {
+                      refVal[k] = roundNumber(v, 13);
+                    }
+                  }
                   refVal = JSON.stringify(refVal);
                 }
                 if (typeof value === "boolean") {
                   altRefVal = refVal.toBool();
                 } else if (typeof refVal === "boolean") {
                   altRefVal = refVal.toString();
+                } else if (refVal === "null") {
+                  altRefVal = null;
+                } else if (refVal === null) {
+                  altRefVal = "null";
                 } else {
-                  altRefVal = refVal + "T00:00:00Z";
+                  altRefVal = refVal.replace("T00:00:00Z", "");
                 }
                 if (refVal === value || altRefVal === value) {
                   continue;
