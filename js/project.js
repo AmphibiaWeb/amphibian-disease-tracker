@@ -307,23 +307,21 @@ renderMapWithData = function(projectData, force) {
         var copyFn;
         (copyFn = function() {
           var clip, clipboardData, e, error2, url;
-          if (html5) {
-            try {
-              url = "https://n2t.net/" + ark;
-              clipboardData = {
-                dataType: "text/plain",
-                data: url,
-                "text/plain": url
-              };
-              clip = new ClipboardEvent("copy", clipboardData);
-              document.dispatchEvent(clip);
-              toastStatusMessage("ARK resolver path copied to clipboard");
-              return false;
-            } catch (error2) {
-              e = error2;
-              console.error("Error creating copy: " + e.message);
-              console.warn(e.stack);
-            }
+          try {
+            url = "https://n2t.net/" + ark;
+            clipboardData = {
+              dataType: "text/plain",
+              data: url,
+              "text/plain": url
+            };
+            clip = new ClipboardEvent("copy", clipboardData);
+            document.dispatchEvent(clip);
+            toastStatusMessage("ARK resolver path copied to clipboard");
+            return false;
+          } catch (error2) {
+            e = error2;
+            console.error("Error creating copy: " + e.message);
+            console.warn(e.stack);
           }
           console.warn("Can't use HTML5");
           zcClient.setData(clipboardData);
@@ -331,6 +329,7 @@ renderMapWithData = function(projectData, force) {
             if (e.data["text/plain"]) {
               return toastStatusMessage("ARK resolver path copied to clipboard");
             } else {
+              console.error("ZeroClipboard had an error - ", e);
               return toastStatusMessage("Error copying to clipboard");
             }
           });
