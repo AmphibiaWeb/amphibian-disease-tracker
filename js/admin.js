@@ -3219,7 +3219,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                   refVal = JSON.stringify(refVal);
                   if (typeof value === "string") {
                     try {
-                      v2 = JSON.stringify(value);
+                      v2 = JSON.parse(value);
                     } catch (undefined) {}
                   } else {
                     v2 = value;
@@ -3233,6 +3233,8 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                   cv = JSON.stringify(v2);
                   if (refVal === cv) {
                     continue;
+                  } else {
+                    console.info("No Object Match:", refVal, cv);
                   }
                 }
                 if (typeof value === "boolean") {
