@@ -3334,7 +3334,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
@@ -3415,7 +3415,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               ref13 = Object.toArray(_adp.cartoRows);
               for (s = 0, len4 = ref13.length; s < len4; s++) {
                 row = ref13[s];
-                date = (ref14 = row.dateCollected) != null ? ref14 : row.dateIdentified;
+                date = row.dateidentified;
                 uTime = excelDateToUnixTime(date);
                 dates.push(uTime);
                 uDate = new Date(uTime);
@@ -3423,27 +3423,27 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                 if (indexOf.call(months, mString) < 0) {
                   months.push(mString);
                 }
-                if (ref15 = uDate.getFullYear(), indexOf.call(years, ref15) < 0) {
+                if (ref14 = uDate.getFullYear(), indexOf.call(years, ref14) < 0) {
                   years.push(uDate.getFullYear());
                 }
                 if (row.catalogNumber != null) {
-                  catalogNumbers.push(row.catalogNumber);
+                  catalogNumbers.push(row.catalognumber);
                 }
-                fieldNumbers.push(row.fieldNumber);
-                rowLat = row.decimalLatitude;
-                rowLng = row.decimalLongitude;
+                fieldNumbers.push(row.fieldnumber);
+                rowLat = row.decimallatitude;
+                rowLng = row.decimallongitude;
                 distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
                 if (distanceFromCenter > excursion) {
                   excursion = distanceFromCenter;
                 }
-                if (row.sampleType != null) {
-                  if (ref16 = row.sampleType, indexOf.call(sampleMethods, ref16) < 0) {
-                    sampleMethods.push(row.sampleType);
+                if (row.samplemethod != null) {
+                  if (ref15 = row.samplemethod, indexOf.call(sampleMethods, ref15) < 0) {
+                    sampleMethods.push(row.samplemethod);
                   }
                 }
-                if (row.specimenDisposition != null) {
-                  if (ref17 = row.specimenDisposition, indexOf.call(dispositions, ref17) < 0) {
-                    dispositions.push(row.sampleDisposition);
+                if (row.specimendisposition != null) {
+                  if (ref16 = row.specimendisposition, indexOf.call(dispositions, ref16) < 0) {
+                    dispositions.push(row.sampledisposition);
                   }
                 }
               }
@@ -3475,7 +3475,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               fullPath = "" + uri.urlString + validatedData.dataSrc;
               if (fullPath !== _adp.projectData.sample_raw_data) {
                 arks = _adp.projectData.dataset_arks.split(",");
-                if (((ref18 = _adp.fims) != null ? (ref19 = ref18.expedition) != null ? ref19.ark : void 0 : void 0) == null) {
+                if (((ref17 = _adp.fims) != null ? (ref18 = ref17.expedition) != null ? ref18.ark : void 0 : void 0) == null) {
                   if (_adp.fims == null) {
                     _adp.fims = new Object();
                   }
