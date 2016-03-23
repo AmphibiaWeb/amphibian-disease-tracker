@@ -472,6 +472,7 @@ searchProjects = ->
   ###
   search = $("#project-search").val()
   if isNull search
+    $("google-map-poly").removeAttr "hidden"
     return false
   item = p$("#search-filter").selectedItem
   cols = $(item).attr "data-cols"
@@ -482,9 +483,11 @@ searchProjects = ->
   .done (result) ->
     console.info result
     html = ""
+    showList = new Array()
     projects = Object.toArray result.result
     if projects.length > 0
       for project in projects
+        showList.push project.project_id
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
         button = """
@@ -497,7 +500,10 @@ searchProjects = ->
       s = result.search ? search
       html = "<p><em>No results found for \"<strong>#{s}</strong>\""
     $("#project-result-container").html html
-    bindClicks(".search-proj-link")
+    bindClicks(".search-proj-link")    
+    $("google-map-poly").attr "hidden", "hidden"
+    for projectId in showList
+      $("google-map-poly[data-project='#{projectId}']").removeAttr "hidden"
   .error (result, status) ->
     console.error result, status
   false
