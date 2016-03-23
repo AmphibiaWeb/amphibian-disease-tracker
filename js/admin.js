@@ -3070,7 +3070,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3293,8 +3293,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
             geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
             if (refRow != null) {
               gjString = JSON.stringify(geoJsonGeom);
-              if (refRow.the_geom !== gjString) {
-                console.info("Not skipping coords", refRow.the_geom, geoJsonGeom, gjString);
+              refGeom = (ref9 = refRow.the_geom) != null ? ref9 : refRow.st_asgeojson;
+              if (refGeom !== gjString) {
+                console.info("Not skipping coords", refGeom, geoJsonGeom, gjString);
                 valuesArr.push("the_geom=" + geoJsonVal);
               }
             } else {
@@ -3327,14 +3328,14 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               data: _adp.cartoRows
             };
             validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref9, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
               validatedData.validated_taxa = taxa.validated_taxa;
               _adp.projectData.includes_anura = false;
               _adp.projectData.includes_caudata = false;
               _adp.projectData.includes_gymnophiona = false;
-              ref9 = validatedData.validated_taxa;
-              for (o = 0, len2 = ref9.length; o < len2; o++) {
-                taxonObject = ref9[o];
+              ref10 = validatedData.validated_taxa;
+              for (o = 0, len2 = ref10.length; o < len2; o++) {
+                taxonObject = ref10[o];
                 aweb = taxonObject.response.validated_taxon;
                 console.info("Aweb taxon result:", aweb);
                 clade = aweb.order.toLowerCase();
@@ -3348,9 +3349,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               taxonList = new Array();
               cladeList = new Array();
               i = 0;
-              ref10 = validatedData.validated_taxa;
-              for (q = 0, len3 = ref10.length; q < len3; q++) {
-                taxon = ref10[q];
+              ref11 = validatedData.validated_taxa;
+              for (q = 0, len3 = ref11.length; q < len3; q++) {
+                taxon = ref11[q];
                 taxonString = taxon.genus + " " + taxon.species;
                 if (taxon.response.original_taxon != null) {
                   console.info("Taxon obj", taxon);
@@ -3369,7 +3370,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                   taxonList.push(taxonString);
                 }
                 try {
-                  if (ref11 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref11) < 0) {
+                  if (ref12 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref12) < 0) {
                     cladeList.push(taxon.response.validated_taxon.family);
                   }
                 } catch (error6) {
@@ -3405,10 +3406,10 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               fieldNumbers = new Array();
               dispositions = new Array();
               sampleMethods = new Array();
-              ref12 = Object.toArray(_adp.cartoRows);
-              for (s = 0, len4 = ref12.length; s < len4; s++) {
-                row = ref12[s];
-                date = (ref13 = row.dateCollected) != null ? ref13 : row.dateIdentified;
+              ref13 = Object.toArray(_adp.cartoRows);
+              for (s = 0, len4 = ref13.length; s < len4; s++) {
+                row = ref13[s];
+                date = (ref14 = row.dateCollected) != null ? ref14 : row.dateIdentified;
                 uTime = excelDateToUnixTime(date);
                 dates.push(uTime);
                 uDate = new Date(uTime);
@@ -3416,7 +3417,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                 if (indexOf.call(months, mString) < 0) {
                   months.push(mString);
                 }
-                if (ref14 = uDate.getFullYear(), indexOf.call(years, ref14) < 0) {
+                if (ref15 = uDate.getFullYear(), indexOf.call(years, ref15) < 0) {
                   years.push(uDate.getFullYear());
                 }
                 if (row.catalogNumber != null) {
@@ -3430,12 +3431,12 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                   excursion = distanceFromCenter;
                 }
                 if (row.sampleType != null) {
-                  if (ref15 = row.sampleType, indexOf.call(sampleMethods, ref15) < 0) {
+                  if (ref16 = row.sampleType, indexOf.call(sampleMethods, ref16) < 0) {
                     sampleMethods.push(row.sampleType);
                   }
                 }
                 if (row.specimenDisposition != null) {
-                  if (ref16 = row.specimenDisposition, indexOf.call(dispositions, ref16) < 0) {
+                  if (ref17 = row.specimenDisposition, indexOf.call(dispositions, ref17) < 0) {
                     dispositions.push(row.sampleDisposition);
                   }
                 }
@@ -3468,7 +3469,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               fullPath = "" + uri.urlString + validatedData.dataSrc;
               if (fullPath !== _adp.projectData.sample_raw_data) {
                 arks = _adp.projectData.dataset_arks.split(",");
-                if (((ref17 = _adp.fims) != null ? (ref18 = ref17.expedition) != null ? ref18.ark : void 0 : void 0) == null) {
+                if (((ref18 = _adp.fims) != null ? (ref19 = ref18.expedition) != null ? ref19.ark : void 0 : void 0) == null) {
                   if (_adp.fims == null) {
                     _adp.fims = new Object();
                   }
