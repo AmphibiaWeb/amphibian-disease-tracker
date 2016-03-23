@@ -3415,7 +3415,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               # Add new row
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
           # console.log sqlQuery
-          statements = sqlQuery.split ","
+          statements = sqlQuery.split ";"
           statementCount = statements.length
           console.log statements
           console.info "Running #{statementCount} statements"
