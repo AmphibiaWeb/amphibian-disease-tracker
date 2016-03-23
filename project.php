@@ -497,6 +497,7 @@ $loginStatus = getLoginState();
         </div>
         <div class="col-xs-12">
           <h2>Species List</h2>
+          <h3>Click on a species below to see the AmphibiaWeb entry</h3>
           <ul class="species-list">
 <?php
           $aWebUri = 'http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;';
@@ -515,7 +516,7 @@ $loginStatus = getLoginState();
         $args['where-genus'] = $speciesParts[0];
         $args['where-species'] = $speciesParts[1];
         $linkUri = $aWebUri.'where-genus='.$speciesParts[0].'&amp;where-species='.$speciesParts[1];
-        $html = '<li class="aweb-link-species"> <span class="click sciname" data-href="'.$linkUri.'"data-newtab="true">'.$species.'</span> <paper-icon-button class="click" data-href="'.$linkUri.'" icon="icons:open-in-new" data-newtab="true"></paper-icon-button></li>';
+        $html = '<li class="aweb-link-species" data-species="'.$species.'" data-positive="false" data-negative="false" data-inconclusive="false"> <span class="click sciname" data-href="'.$linkUri.'"data-newtab="true">'.$species.'</span> <paper-icon-button class="click" data-href="'.$linkUri.'" icon="icons:open-in-new" data-newtab="true"></paper-icon-button></li>';
         echo $html;
     }
     if ($i === 0) {

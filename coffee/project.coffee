@@ -590,6 +590,8 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
   # @param projectData -> required so that an unauthorized user can't
   #  invoke this to get data.
   ###
+  unless _adp?
+    window._adp = new Object()
   fragment = uri.o.attr "fragment"
   fragList = fragment.split ","
   if forceReparse or not _adp.fragmentData?

@@ -630,6 +630,9 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
    * @param projectData -> required so that an unauthorized user can't
    *  invoke this to get data.
    */
+  if (typeof _adp === "undefined" || _adp === null) {
+    window._adp = new Object();
+  }
   fragment = uri.o.attr("fragment");
   fragList = fragment.split(",");
   if (forceReparse || (_adp.fragmentData == null)) {
