@@ -314,6 +314,7 @@ loadCreateNewProject = ->
     window.mapBuilder.points = new Array()
     $("#init-map-build").attr "disabled", "disabled"
     $("#init-map-build .points-count").text window.mapBuilder.points.length
+    # Remove the points
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()
@@ -1727,7 +1728,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
   catch e
     console.error "Error parsing data - #{e.message}"
     console.warn e.stack
-    toastStatusMessage "There was a problem parsing your data"
+    stopLoadBarsError null,  "There was a problem parsing your data"
+    
   false
 
 

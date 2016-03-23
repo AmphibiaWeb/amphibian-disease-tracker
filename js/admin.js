@@ -1773,7 +1773,7 @@ newGeoDataHandler = function(dataObject, skipCarto) {
     e = error5;
     console.error("Error parsing data - " + e.message);
     console.warn(e.stack);
-    toastStatusMessage("There was a problem parsing your data");
+    stopLoadBarsError(null, "There was a problem parsing your data");
   }
   return false;
 };
