@@ -3090,7 +3090,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
   false
 
 
-revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly = false) ->
+revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly = false, skipSave = false) ->
   unless $("#upload-progress-dialog").exists()
     html = renderValidateProgress("dont-exist", true)
     dialogHtml = """
@@ -3572,7 +3572,11 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 finalize = ->
                   # Save it
                   _adp.skipRead = true
-                  dataBu = _adp.projectData
+                  _adp.dataBu = _adp.projectData
+                  if skipSave is true
+                    console.warn "Save skipped on flag!"
+                    console.info "Project data", _adp.projectData
+                    return false
                   saveEditorData true, ->
                     if skipCallback is true
                       # Debugging

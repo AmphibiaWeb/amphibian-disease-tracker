@@ -2958,7 +2958,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   return false;
 };
 
-revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
+revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave) {
   var cartoData, dataCallback, dialogHtml, error1, html, link, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
@@ -2968,6 +2968,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
   }
   if (testOnly == null) {
     testOnly = false;
+  }
+  if (skipSave == null) {
+    skipSave = false;
   }
   if (!$("#upload-progress-dialog").exists()) {
     html = renderValidateProgress("dont-exist", true);
@@ -3486,9 +3489,13 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                 _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
                 _adp.projectData.sample_methods_used = sampleMethods.join(",");
                 finalize = function() {
-                  var dataBu;
                   _adp.skipRead = true;
-                  dataBu = _adp.projectData;
+                  _adp.dataBu = _adp.projectData;
+                  if (skipSave === true) {
+                    console.warn("Save skipped on flag!");
+                    console.info("Project data", _adp.projectData);
+                    return false;
+                  }
                   saveEditorData(true, function() {
                     if (skipCallback === true) {
                       console.info("Saved", _adp.projectData, dataBu);
