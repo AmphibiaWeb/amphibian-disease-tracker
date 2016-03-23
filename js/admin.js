@@ -3070,7 +3070,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3216,7 +3216,6 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               if (refRow != null) {
                 refVal = (ref8 = refRow[column]) != null ? ref8 : refRow[column.toLowerCase()];
                 if (typeof refVal === "object") {
-                  refVal = JSON.stringify(refVal);
                   if (typeof value === "string") {
                     try {
                       v2 = JSON.parse(value);
@@ -3224,13 +3223,21 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                   } else {
                     v2 = value;
                   }
+                  roundCutoff = 10;
                   for (k in v2) {
                     v = v2[k];
                     if (typeof v === "number") {
-                      v2[k] = roundNumber(v, 13);
+                      v2[k] = roundNumber(v, roundCutoff);
+                    }
+                  }
+                  for (k in refVal) {
+                    v = refVal[k];
+                    if (typeof v === "number") {
+                      refVal[k] = roundNumber(v, roundCutoff);
                     }
                   }
                   cv = JSON.stringify(v2);
+                  refVal = JSON.stringify(refVal);
                   if (refVal === cv) {
                     continue;
                   } else {
@@ -3259,7 +3266,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                 if (refVal === value || altRefVal === value) {
                   continue;
                 } else {
-                  console.info("Not skipping for", refVal, altRefVal, "at " + row.fieldNumber + " = ", value);
+                  console.info("Not skipping for", refVal, altRefVal, "on " + row.fieldNumber + " @ " + column + " = ", value);
                 }
               }
               if (typeof value === "string") {

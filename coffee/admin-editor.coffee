@@ -1485,16 +1485,20 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               if refRow?
                 refVal = refRow[column] ? refRow[column.toLowerCase()]
                 if typeof refVal is "object"
-                  refVal = JSON.stringify refVal
                   if typeof value is "string"
                     try
                       v2 = JSON.parse value
                   else
                     v2 = value
+                  roundCutoff = 10 # Should be more than good enough
                   for k, v of v2
                     if typeof v is "number"
-                      v2[k] = roundNumber v, 13
+                      v2[k] = roundNumber v, roundCutoff
+                  for k, v of refVal
+                    if typeof v is "number"
+                      refVal[k] = roundNumber v, roundCutoff
                   cv = JSON.stringify v2
+                  refVal = JSON.stringify refVal
                   if refVal is cv then continue
                   else
                     console.info "No Object Match:", refVal, cv
@@ -1519,7 +1523,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   # Don't need to add it again
                     continue
                 else
-                  console.info "Not skipping for", refVal, altRefVal, "at #{row.fieldNumber} = ", value
+                  console.info "Not skipping for", refVal, altRefVal, "on #{row.fieldNumber} @ #{column} = ", value
               if typeof value is "string"
                 if refRow?
                   valuesArr.push "#{column.toLowerCase()}='#{value}'"
