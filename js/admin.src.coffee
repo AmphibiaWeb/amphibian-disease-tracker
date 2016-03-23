@@ -3406,7 +3406,9 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
             else
               colArr.push "the_geom"
               valuesArr.push geoJsonVal
-            if refRow? and valuesArr.length > 0
+            if valuesArr.length is 0
+              continue
+            if refRow?
               sqlWhere = " WHERE fieldnumber='#{fieldNumber}';"
               sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
             else

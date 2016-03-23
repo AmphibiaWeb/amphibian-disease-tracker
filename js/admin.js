@@ -3302,7 +3302,10 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               colArr.push("the_geom");
               valuesArr.push(geoJsonVal);
             }
-            if ((refRow != null) && valuesArr.length > 0) {
+            if (valuesArr.length === 0) {
+              continue;
+            }
+            if (refRow != null) {
               sqlWhere = " WHERE fieldnumber='" + fieldNumber + "';";
               sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
             } else {
