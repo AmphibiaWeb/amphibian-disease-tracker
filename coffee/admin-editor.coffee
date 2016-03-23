@@ -882,7 +882,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     for col, type of cols
       if col isnt "id" and col isnt "the_geom"
         colsArr.push col
-        colRemap[col.toLowerCase()] = col        
+      colRemap[col.toLowerCase()] = col
     cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
     # cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
     console.info "Would ping cartodb with", cartoQuery
@@ -1481,8 +1481,17 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 when "fieldNumber"
                   if refRow?
                     continue
-              if refRow?
-                if refRow[column] is value or refRow[column.toLowerCase()] is value
+              if refRow?                
+                refVal = refRow[column] ? refRow[column.toLowerCase()]
+                if typeof refVal is "object"
+                  refVal = JSON.stringify refVal
+                altRefVal = refVal + "T00:00:00Z"
+                if typeof value is "boolean"
+                  altRefVal = refVal.toBool()
+                lat = row.decimalLatitude ? row.decimallatitude
+                lng = row.decimalLongitude ? row.decimallongitude
+                gjString = "{\"type\":\"Point\",\"coordinates\":[#{lat},#{lng}]}"
+                if refVal is value or altRefVal is value or refval is gjString
                   # Don't need to add it again
                     continue
               if typeof value is "string"

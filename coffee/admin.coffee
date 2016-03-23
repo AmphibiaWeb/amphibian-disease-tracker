@@ -990,7 +990,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
       for col, type of cols
         if col isnt "id" and col isnt "the_geom"
           colsArr.push col
-          colRemap[col.toLowerCase()] = col
+        colRemap[col.toLowerCase()] = col
       sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
       args = "action=fetch&sql_query=#{apiPostSqlQuery}"
