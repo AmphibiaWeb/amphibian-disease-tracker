@@ -1485,13 +1485,20 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               if refRow?
                 refVal = refRow[column] ? refRow[column.toLowerCase()]
                 if typeof refVal is "object"
+                  for k, v of refVal
+                    if typeof v is "number"
+                      refVal[k] = roundNumber v, 13
                   refVal = JSON.stringify refVal
                 if typeof value is "boolean"
                   altRefVal = refVal.toBool()
                 else if typeof refVal is "boolean"
                   altRefVal = refVal.toString()
+                else if refVal is "null"
+                  altRefVal = null
+                else if refVal is null
+                  altRefVal = "null"
                 else
-                  altRefVal = refVal + "T00:00:00Z"
+                  altRefVal = refVal.replace "T00:00:00Z", ""
                 if refVal is value or altRefVal is value
                   # Don't need to add it again
                     continue
