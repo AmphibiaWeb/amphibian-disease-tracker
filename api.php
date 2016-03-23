@@ -235,6 +235,9 @@ function doCartoSqlApiPush($get)
         "insertinto" => "EDIT",
         "update" => "EDIT",
     );
+    $unrestrictedActions = array(
+        "create" => true,
+    );
     if (isset($restrictedActions[$sqlAction])) {
         # Check the user
         # If bad, kick the access out
@@ -299,7 +302,7 @@ function doCartoSqlApiPush($get)
                 returnAjax($response);
             }
         }
-    } else if ($sqlAction != "create") {
+    } else if (!isset($unrestrictedActions[$sqlAction])) {
         # Unrecognized query type
         returnAjax(array(
             "status" => false,
