@@ -3418,7 +3418,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
           # console.log sqlQuery
           statements = sqlQuery.split ";"
-          statementCount = statements.length
+          statementCount = statements.length - 1
           console.log statements
           console.info "Running #{statementCount} statements"
 
@@ -3458,6 +3458,8 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   _adp.cartoRows[i][realCol] = val
               faux =
                 data: _adp.cartoRows
+              try
+                p$("#taxa-validation").indeterminate = false
               validateTaxonData faux, (taxa) ->
                 validatedData.validated_taxa = taxa.validated_taxa
                 _adp.projectData.includes_anura = false

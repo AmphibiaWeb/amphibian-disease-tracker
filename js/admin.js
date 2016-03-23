@@ -3318,7 +3318,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
             }
           }
           statements = sqlQuery.split(";");
-          statementCount = statements.length;
+          statementCount = statements.length - 1;
           console.log(statements);
           console.info("Running " + statementCount + " statements");
           if (testOnly === true) {
@@ -3363,6 +3363,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
               faux = {
                 data: _adp.cartoRows
               };
+              try {
+                p$("#taxa-validation").indeterminate = false;
+              } catch (undefined) {}
               validateTaxonData(faux, function(taxa) {
                 var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref20, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
                 validatedData.validated_taxa = taxa.validated_taxa;
