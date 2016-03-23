@@ -314,6 +314,7 @@ loadCreateNewProject = ->
     window.mapBuilder.points = new Array()
     $("#init-map-build").attr "disabled", "disabled"
     $("#init-map-build .points-count").text window.mapBuilder.points.length
+    # Remove the points
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()
