@@ -294,9 +294,9 @@ validateTaxonData = (dataObject, callback = null) ->
   for n, row of data
     taxon =
       genus: row.genus
-      species: row.specificEpithet
-      subspecies: row.infraspecificEpithet
-      clade: row.cladeSampled
+      species: row.specificEpithet ? row.specificepithet
+      subspecies: row.infraspecificEpithet ? row.infraspecificepithet
+      clade: row.cladeSampled ? row.cladesampled
     unless taxa.containsObject taxon
       taxa.push taxon
     taxaString = "#{taxon.genus} #{taxon.species}"
