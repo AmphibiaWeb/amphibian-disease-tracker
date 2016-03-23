@@ -326,7 +326,7 @@ renderMapWithData = function(projectData, force) {
           }
           console.warn("Can't use HTML5");
           zcClient.setData(clipboardData);
-          if (zcEvent != null) {
+          if (!isNull(zcEvent)) {
             zcEvent.setData(clipboardData);
           }
           zcClient.on("aftercopy", function(e) {
@@ -358,7 +358,7 @@ renderMapWithData = function(projectData, force) {
             }
           });
           return false;
-        })(zcClientInitial, zcEvent);
+        })(zcClientInitial, null);
         $(".ark-context-wrapper").remove();
         return false;
       }).contextmenu(function() {
