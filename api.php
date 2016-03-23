@@ -225,7 +225,7 @@ function doCartoSqlApiPush($get)
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
-    $queryPattern = '/(?i)([a-zA-Z]+(?: +[a-zA-Z]+)?) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/m';
+    $queryPattern = '/(?i)([a-zA-Z]+(?:(?! +FROM) +[a-zA-Z]+)?) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/m';
     $sqlAction = preg_replace($queryPattern, '$1', $sqlQuery);
     $sqlAction = strtolower(str_replace(" ","", $sqlAction));
     $restrictedActions = array(
