@@ -228,7 +228,7 @@ $loginStatus = getLoginState();
       </section>
     </main>
     <footer class="row">
-      <div class="col-md-8 col-xs-12">
+      <div class="col-md-7 col-xs-12">
         <copyright-statement copyrightStart="2015">AmphibiaWeb &amp; AmphibianDisease.org</copyright-statement>
       </div>
       <div class="col-md-1 col-xs-4">
