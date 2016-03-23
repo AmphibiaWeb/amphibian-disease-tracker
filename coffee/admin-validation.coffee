@@ -292,11 +292,14 @@ validateTaxonData = (dataObject, callback = null) ->
   taxa = new Array()
   taxaPerRow = new Object()
   for n, row of data
+    species = row.specificEpithet ? row.specificepithet
+    ssp = row.infraspecificEpithet ? row.infraspecificepithet
+    clade = row.cladeSampled ? row.cladesampled
     taxon =
       genus: row.genus
-      species: row.specificEpithet
-      subspecies: row.infraspecificEpithet
-      clade: row.cladeSampled
+      species: species
+      subspecies: ssp
+      clade: clade
     unless taxa.containsObject taxon
       taxa.push taxon
     taxaString = "#{taxon.genus} #{taxon.species}"

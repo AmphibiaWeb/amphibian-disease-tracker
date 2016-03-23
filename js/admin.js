@@ -4046,7 +4046,7 @@ mintExpedition = function(projectId, title, callback) {
 };
 
 validateTaxonData = function(dataObject, callback) {
-  var data, grammar, length, n, row, taxa, taxaPerRow, taxaString, taxon, taxonValidatorLoop;
+  var clade, data, grammar, length, n, ref, ref1, ref2, row, species, ssp, taxa, taxaPerRow, taxaString, taxon, taxonValidatorLoop;
   if (callback == null) {
     callback = null;
   }
@@ -4059,11 +4059,14 @@ validateTaxonData = function(dataObject, callback) {
   taxaPerRow = new Object();
   for (n in data) {
     row = data[n];
+    species = (ref = row.specificEpithet) != null ? ref : row.specificepithet;
+    ssp = (ref1 = row.infraspecificEpithet) != null ? ref1 : row.infraspecificepithet;
+    clade = (ref2 = row.cladeSampled) != null ? ref2 : row.cladesampled;
     taxon = {
       genus: row.genus,
-      species: row.specificEpithet,
-      subspecies: row.infraspecificEpithet,
-      clade: row.cladeSampled
+      species: species,
+      subspecies: ssp,
+      clade: clade
     };
     if (!taxa.containsObject(taxon)) {
       taxa.push(taxon);

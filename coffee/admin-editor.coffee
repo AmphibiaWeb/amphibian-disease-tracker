@@ -1564,6 +1564,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
           statementCount = statements.length
           console.log statements
           console.info "Running #{statementCount} statements"
+          
           if testOnly is true
             console.warn "Exiting before carto post because testOnly is set true"
             return false
