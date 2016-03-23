@@ -903,8 +903,8 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       for i, row of rows
         _adp.cartoRows[i] = new Object()
         for col, val of row
-          realRow = colRemap[col]
-          _adp.cartoRows[i][realRow] = val
+          realCol = colRemap[col] ? col
+          _adp.cartoRows[i][realCol] = val
       truncateLength = 0 - "</google-map>".length
       try
         workingMap = geo.googleMapWebComponent.slice 0, truncateLength
@@ -1543,8 +1543,11 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
             geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
             if refRow?
               # is it needed?
-              if refRow.the_geom isnt JSON.stringify geoJsonGeom
+              gjString = JSON.stringify geoJsonGeom
+              if refRow.the_geom isnt gjString
                 valuesArr.push "the_geom=#{geoJsonVal}"
+              else
+                console.info "Not skipping", refRow.the_geom, geoJsonGeom, gjString
             else
               colArr.push "the_geom"
               valuesArr.push geoJsonVal

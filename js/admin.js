@@ -1013,7 +1013,7 @@ getCanonicalDataCoords = function(table, options, callback) {
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
       args = "action=fetch&sql_query=" + apiPostSqlQuery;
       return $.post("api.php", args, "json").done(function(result) {
-        var cartoResponse, coords, i, info, point, realRow, ref1, row, textPoint, val;
+        var cartoResponse, coords, i, info, point, realCol, ref1, ref2, row, textPoint, val;
         cartoResponse = result.parsed_responses[0];
         coords = new Array();
         info = new Array();
@@ -1024,8 +1024,8 @@ getCanonicalDataCoords = function(table, options, callback) {
           _adp.cartoRows[i] = new Object();
           for (col in row) {
             val = row[col];
-            realRow = colRemap[col];
-            _adp.cartoRows[i][realRow] = val;
+            realCol = (ref2 = colRemap[col]) != null ? ref2 : col;
+            _adp.cartoRows[i][realCol] = val;
           }
           textPoint = row.st_astext;
           if (isNull(row.infraspecificepithet)) {
@@ -2656,7 +2656,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
     $.post("api.php", args, "json").done(function(result) {
-      var base, base1, center, error, error2, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realRow, ref1, ref2, ref3, ref4, ref5, ref6, ref7, row, rows, taxa, totalRows, truncateLength, val, workingMap;
+      var base, base1, center, error, error2, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
       console.info("Carto query got result:", result);
       if (!result.status) {
         error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -2673,8 +2673,8 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         _adp.cartoRows[i] = new Object();
         for (col in row) {
           val = row[col];
-          realRow = colRemap[col];
-          _adp.cartoRows[i][realRow] = val;
+          realCol = (ref2 = colRemap[col]) != null ? ref2 : col;
+          _adp.cartoRows[i][realCol] = val;
         }
       }
       truncateLength = 0 - "</google-map>".length;
@@ -2714,7 +2714,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         workingMap += marker;
         pointArr.push(point);
       }
-      if (!(((cartoData != null ? (ref2 = cartoData.bounding_polygon) != null ? ref2.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref3 = cartoData.bounding_polygon) != null ? ref3.fillColor : void 0 : void 0) != null))) {
+      if (!(((cartoData != null ? (ref3 = cartoData.bounding_polygon) != null ? ref3.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref4 = cartoData.bounding_polygon) != null ? ref4.fillColor : void 0 : void 0) != null))) {
         try {
           _adp.canonicalHull = createConvexHull(pointArr, true);
           try {
@@ -2736,11 +2736,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
           } catch (undefined) {}
         } catch (undefined) {}
       }
-      totalRows = (ref4 = result.parsed_responses[0].total_rows) != null ? ref4 : 0;
-      if (pointArr.length > 0 || (mapOptions != null ? (ref5 = mapOptions.boundingBox) != null ? ref5.length : void 0 : void 0) > 0) {
+      totalRows = (ref5 = result.parsed_responses[0].total_rows) != null ? ref5 : 0;
+      if (pointArr.length > 0 || (mapOptions != null ? (ref6 = mapOptions.boundingBox) != null ? ref6.length : void 0 : void 0) > 0) {
         mapOptions.skipHull = false;
         if (pointArr.length === 0) {
-          center = (ref6 = (ref7 = geo.centerPoint) != null ? ref7 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref6 : [window.locationData.lat, window.locationData.lng];
+          center = (ref7 = (ref8 = geo.centerPoint) != null ? ref8 : [mapOptions.boundingBox[0].lat, mapOptions.boundingBox[0].lng]) != null ? ref7 : [window.locationData.lat, window.locationData.lng];
           pointArr.push(center);
         }
         mapOptions.onClickCallback = function() {
@@ -3070,7 +3070,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3292,8 +3292,11 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
             }
             geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
             if (refRow != null) {
-              if (refRow.the_geom !== JSON.stringify(geoJsonGeom)) {
+              gjString = JSON.stringify(geoJsonGeom);
+              if (refRow.the_geom !== gjString) {
                 valuesArr.push("the_geom=" + geoJsonVal);
+              } else {
+                console.info("Not skipping", refRow.the_geom, geoJsonGeom, gjString);
               }
             } else {
               colArr.push("the_geom");

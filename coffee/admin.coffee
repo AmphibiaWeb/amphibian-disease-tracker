@@ -1004,8 +1004,8 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         for i, row of cartoResponse.rows
           _adp.cartoRows[i] = new Object()
           for col, val of row
-            realRow = colRemap[col]
-            _adp.cartoRows[i][realRow] = val
+            realCol = colRemap[col] ? col
+            _adp.cartoRows[i][realCol] = val
           textPoint = row.st_astext
           if isNull row.infraspecificepithet
             row.infraspecificepithet = ""
