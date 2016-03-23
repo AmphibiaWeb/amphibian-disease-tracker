@@ -289,6 +289,66 @@ renderMapWithData = (projectData, force = false) ->
       ZeroClipboard.config _adp.zcConfig
       zcClientInitial = new ZeroClipboard $(".copy-ark-context").get 0
       ark = $(this).attr "data-ark"
+      url = "https://n2t.net/#{ark}"
+      clipboardData =
+        dataType: "text/plain"
+        data: url
+        "text/plain": url
+      zcClientInitial.setData clipboardData
+      zcClientInitial.on "aftercopy", (e) ->
+        if e.data["text/plain"]
+          toastStatusMessage "ARK resolver path copied to clipboard"
+        else
+          console.error "ZeroClipboard had an error - ", e
+          console.warn clipboardData
+          toastStatusMessage "Error copying to clipboard"
+      zcClientInitial.on "error", (e) ->
+        console.error "Initial error"
+        zcClient = new ZeroClipboard $(".copy-ark-context").get 0
+        copyFn(zcClient)
+      #
+      # Copy helper
+      copyFn = (zcClient = zcClientInitial, zcEvent = null) ->
+        # http://caniuse.com/#feat=clipboard
+        try
+          clip = new ClipboardEvent("copy", clipboardData)
+          document.dispatchEvent(clip)
+          toastStatusMessage "ARK resolver path copied to clipboard"
+          return false
+        catch e
+          console.error "Error creating copy: #{e.message}"
+          console.warn e.stack
+          console.warn "Can't use HTML5"
+        zcClient.setData clipboardData
+        unless isNull zcEvent
+          zcEvent.setData clipboardData
+        zcClient.on "aftercopy", (e) ->
+          if e.data["text/plain"]
+            toastStatusMessage "ARK resolver path copied to clipboard"
+          else
+            console.error "ZeroClipboard had an error - ", e
+            console.warn clipboardData
+            toastStatusMessage "Error copying to clipboard"
+        zcClient.on "error", (e) ->
+          #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
+          console.error "Error copying to clipboard"
+          console.warn "Got", e
+          if e.name is "flash-overdue"
+            # ZeroClipboard.destroy()
+            if _adp.resetClipboard is true
+              console.error "Resetting ZeroClipboard didn't work!"
+              return false
+            ZeroClipboard.on "ready", ->
+              # Re-call
+              _adp.resetClipboard = true
+              zcClient = new ZeroClipboard $(".copy-ark-context").get 0
+              copyFn(zcClient)
+          # Case for no flash at all
+          if e.name is "flash-disabled"
+            # stuff
+            console.info "No flash on this system"
+            ZeroClipboard.destroy()
+            toastStatusMessage "Clipboard copying isn't available on your system"
       ##
       # Events
       inFn = (el) ->
@@ -302,52 +362,6 @@ renderMapWithData = (projectData, force = false) ->
       .hover inFn, outFn
       .click ->
         _adp.resetClipboard = false
-        do copyFn = (zcClient = zcClientInitial, zcEvent = null) ->
-          # http://caniuse.com/#feat=clipboard
-          try
-            url = "https://n2t.net/#{ark}"
-            clipboardData =
-              dataType: "text/plain"
-              data: url
-              "text/plain": url
-            clip = new ClipboardEvent("copy", clipboardData)
-            document.dispatchEvent(clip)
-            toastStatusMessage "ARK resolver path copied to clipboard"
-            return false
-          catch e
-            console.error "Error creating copy: #{e.message}"
-            console.warn e.stack
-          console.warn "Can't use HTML5"
-          zcClient.setData clipboardData
-          unless isNull zcEvent
-            zcEvent.setData clipboardData
-          zcClient.on "aftercopy", (e) ->
-            if e.data["text/plain"]
-              toastStatusMessage "ARK resolver path copied to clipboard"
-            else
-              console.error "ZeroClipboard had an error - ", e
-              toastStatusMessage "Error copying to clipboard"
-          zcClient.on "error", (e) ->
-            #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
-            console.error "Error copying to clipboard"
-            console.warn "Got", e
-            if e.name is "flash-overdue"
-              # ZeroClipboard.destroy()
-              if _adp.resetClipboard is true
-                console.error "Resetting ZeroClipboard didn't work!"
-                return false
-              ZeroClipboard.on "ready", ->
-                # Re-call
-                _adp.resetClipboard = true
-                copyFn(zcClient)
-              zcClient = new ZeroClipboard $(".copy-ark-context").get 0
-            # Case for no flash at all
-            if e.name is "flash-disabled"
-              # stuff
-              console.info "No flash on this system"
-              ZeroClipboard.destroy()
-              toastStatusMessage "Clipboard copying isn't available on your system"
-          false
         # Remove wrapper
         $(".ark-context-wrapper").remove()
         false
