@@ -302,27 +302,27 @@ renderMapWithData = (projectData, force = false) ->
       .hover inFn, outFn
       .click ->
         do copyFn = ->
-          if html5
-            # http://caniuse.com/#feat=clipboard
-            try
-              url = "https://n2t.net/#{ark}"
-              clipboardData =
-                dataType: "text/plain"
-                data: url
-                "text/plain": url
-              clip = new ClipboardEvent("copy", clipboardData)
-              document.dispatchEvent(clip)
-              toastStatusMessage "ARK resolver path copied to clipboard"
-              return false
-            catch e
-              console.error "Error creating copy: #{e.message}"
-              console.warn e.stack
+          # http://caniuse.com/#feat=clipboard
+          try
+            url = "https://n2t.net/#{ark}"
+            clipboardData =
+              dataType: "text/plain"
+              data: url
+              "text/plain": url
+            clip = new ClipboardEvent("copy", clipboardData)
+            document.dispatchEvent(clip)
+            toastStatusMessage "ARK resolver path copied to clipboard"
+            return false
+          catch e
+            console.error "Error creating copy: #{e.message}"
+            console.warn e.stack
           console.warn "Can't use HTML5"
           zcClient.setData clipboardData
           zcClient.on "aftercopy", (e) ->
             if e.data["text/plain"]
               toastStatusMessage "ARK resolver path copied to clipboard"
             else
+              console.error "ZeroClipboard had an error - ", e
               toastStatusMessage "Error copying to clipboard"
           zcClient.on "error", (e) ->
             #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
