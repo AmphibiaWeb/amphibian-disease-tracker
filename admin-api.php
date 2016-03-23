@@ -350,7 +350,7 @@ function editAccess($link, $deltas)
 
         # Add users
         foreach ($additions as $newUid) {
-            if (!$udb->isEntry($user['uid'], 'dblink')) {
+            if (!$udb->isEntry($newUid, 'dblink')) {
                 $notices[] = 'User '.$user['uid']." doesn't exist";
                 continue;
             }
