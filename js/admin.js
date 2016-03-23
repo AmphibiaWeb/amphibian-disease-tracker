@@ -3216,6 +3216,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               if (refRow != null) {
                 refVal = (ref8 = refRow[column]) != null ? ref8 : refRow[column.toLowerCase()];
                 if (typeof refVal === "object") {
+                  refVal = JSON.stringify(refVal);
                   if (typeof value === "string") {
                     try {
                       v2 = JSON.stringify(value);
