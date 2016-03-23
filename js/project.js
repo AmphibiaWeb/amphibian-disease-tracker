@@ -284,7 +284,7 @@ renderMapWithData = function(projectData, force) {
     }
     bindClicks(".download-file");
     $(".download-data-file").contextmenu(function(event) {
-      var caller, elPos, inFn, outFn, zcClient;
+      var caller, elPos, inFn, outFn, zcClientInitial;
       event.preventDefault();
       console.log("Event details", event);
       elPos = $(this).offset();
@@ -292,7 +292,7 @@ renderMapWithData = function(projectData, force) {
       $(".ark-context-wrapper").remove();
       $("body").append(html);
       ZeroClipboard.config(_adp.zcConfig);
-      zcClient = new ZeroClipboard($(".copy-ark-context").get(0));
+      zcClientInitial = new ZeroClipboard($(".copy-ark-context").get(0));
       ark = $(this).attr("data-ark");
       inFn = function(el) {
         $(this).addClass("iron-selected");
@@ -305,7 +305,8 @@ renderMapWithData = function(projectData, force) {
       caller = this;
       $(".ark-context-wrapper paper-item").hover(inFn, outFn).click(function() {
         var copyFn;
-        (copyFn = function() {
+        _adp.resetClipboard = false;
+        (copyFn = function(zcClient, zcEvent) {
           var clip, clipboardData, e, error2, url;
           try {
             url = "https://n2t.net/" + ark;
@@ -325,6 +326,9 @@ renderMapWithData = function(projectData, force) {
           }
           console.warn("Can't use HTML5");
           zcClient.setData(clipboardData);
+          if (zcEvent != null) {
+            zcEvent.setData(clipboardData);
+          }
           zcClient.on("aftercopy", function(e) {
             if (e.data["text/plain"]) {
               return toastStatusMessage("ARK resolver path copied to clipboard");
@@ -343,7 +347,7 @@ renderMapWithData = function(projectData, force) {
               }
               ZeroClipboard.on("ready", function() {
                 _adp.resetClipboard = true;
-                return copyFn();
+                return copyFn(zcClient);
               });
               zcClient = new ZeroClipboard($(".copy-ark-context").get(0));
             }
@@ -354,7 +358,7 @@ renderMapWithData = function(projectData, force) {
             }
           });
           return false;
-        })();
+        })(zcClientInitial, zcEvent);
         $(".ark-context-wrapper").remove();
         return false;
       }).contextmenu(function() {

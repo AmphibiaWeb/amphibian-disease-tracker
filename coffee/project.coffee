@@ -287,7 +287,7 @@ renderMapWithData = (projectData, force = false) ->
       $("body").append html
       # Create copy event
       ZeroClipboard.config _adp.zcConfig
-      zcClient = new ZeroClipboard $(".copy-ark-context").get 0
+      zcClientInitial = new ZeroClipboard $(".copy-ark-context").get 0
       ark = $(this).attr "data-ark"
       ##
       # Events
@@ -301,7 +301,8 @@ renderMapWithData = (projectData, force = false) ->
       $(".ark-context-wrapper paper-item")
       .hover inFn, outFn
       .click ->
-        do copyFn = ->
+        _adp.resetClipboard = false
+        do copyFn = (zcClient = zcClientInitial, zcEvent) ->
           # http://caniuse.com/#feat=clipboard
           try
             url = "https://n2t.net/#{ark}"
@@ -318,6 +319,8 @@ renderMapWithData = (projectData, force = false) ->
             console.warn e.stack
           console.warn "Can't use HTML5"
           zcClient.setData clipboardData
+          if zcEvent?
+            zcEvent.setData clipboardData
           zcClient.on "aftercopy", (e) ->
             if e.data["text/plain"]
               toastStatusMessage "ARK resolver path copied to clipboard"
@@ -336,7 +339,7 @@ renderMapWithData = (projectData, force = false) ->
               ZeroClipboard.on "ready", ->
                 # Re-call
                 _adp.resetClipboard = true
-                copyFn()
+                copyFn(zcClient)
               zcClient = new ZeroClipboard $(".copy-ark-context").get 0
             # Case for no flash at all
             if e.name is "flash-disabled"
