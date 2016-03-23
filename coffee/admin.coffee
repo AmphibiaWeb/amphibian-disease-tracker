@@ -1727,7 +1727,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
   catch e
     console.error "Error parsing data - #{e.message}"
     console.warn e.stack
-    toastStatusMessage "There was a problem parsing your data"
+    stopLoadBarsError null,  "There was a problem parsing your data"
+    
   false
 
 
