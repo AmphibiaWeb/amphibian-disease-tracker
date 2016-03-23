@@ -2043,9 +2043,9 @@ loadEditor = function(projectPreload) {
           geo.googleMapWebComponent = googleMap;
           deleteCardAction = result.user.is_author ? "<div class=\"card-actions\">\n      <paper-button id=\"delete-project\"><iron-icon icon=\"icons:delete\" class=\"material-red\"></iron-icon> Delete this project</paper-button>\n    </div>" : "";
           mdNotes = isNull(project.sample_notes) ? "*No notes for this project*" : project.sample_notes.unescape();
-          noteHtml = "<h3>Project Notes</h3>\n<ul class=\"nav nav-tabs\" id=\"markdown-switcher\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a href=\"#markdown-switcher\">Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a href=\"#markdown-switcher\">Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-notes\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"sample_notes\" hidden " + conditionalReadonly + ">" + project.sample_notes + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair\" id=\"note-preview\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdNotes + "</script>\n</marked-element>";
+          noteHtml = "<h3>Project Notes</h3>\n<ul class=\"nav nav-tabs\" id=\"markdown-switcher\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a>Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a>Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-notes\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"sample_notes\" hidden " + conditionalReadonly + ">" + project.sample_notes + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair\" id=\"note-preview\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdNotes + "</script>\n</marked-element>";
           mdFunding = isNull(project.extended_funding_reach_goals) ? "*No funding reach goals*" : project.extended_funding_reach_goals.unescape();
-          fundingHtml = "<ul class=\"nav nav-tabs\" id=\"markdown-switcher-funding\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a href=\"#markdown-switcher-funding\">Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a href=\"#markdown-switcher-funding\">Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-funding\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"extended_funding_reach_goals\" hidden " + conditionalReadonly + ">" + project.extended_funding_reach_goals + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair\" id=\"preview-funding\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdFunding + "</script>\n</marked-element>";
+          fundingHtml = "<ul class=\"nav nav-tabs\" id=\"markdown-switcher-funding\">\n  <li role=\"presentation\" class=\"active\" data-view=\"md\"><a>Preview</a></li>\n  <li role=\"presentation\" data-view=\"edit\"><a>Edit</a></li>\n</ul>\n<iron-autogrow-textarea id=\"project-funding\" class=\"markdown-pair project-param\" rows=\"3\" data-field=\"extended_funding_reach_goals\" hidden " + conditionalReadonly + ">" + project.extended_funding_reach_goals + "</iron-autogrow-textarea>\n<marked-element class=\"markdown-pair\" id=\"preview-funding\">\n  <div class=\"markdown-html\"></div>\n  <script type=\"text/markdown\">" + mdFunding + "</script>\n</marked-element>";
           try {
             authorData = JSON.parse(project.author_data);
             creation = new Date(toInt(authorData.entry_date));
@@ -2154,7 +2154,7 @@ loadEditor = function(projectPreload) {
           });
           $("#markdown-switcher li").click(function() {
             $("#markdown-switcher li").removeClass("active");
-            $(".markdown-pair").removeAttr("hidden");
+            $("#markdown-switcher .markdown-pair").removeAttr("hidden");
             $(this).addClass("active");
             switch ($(this).attr("data-view")) {
               case "md":
@@ -2169,7 +2169,7 @@ loadEditor = function(projectPreload) {
           });
           $("#markdown-switcher-funding li").click(function() {
             $("#markdown-switcher-funding li").removeClass("active");
-            $(".markdown-pair").removeAttr("hidden");
+            $("#markdown-switcher-funding .markdown-pair").removeAttr("hidden");
             $(this).addClass("active");
             switch ($(this).attr("data-view")) {
               case "md":
@@ -3595,7 +3595,7 @@ saveEditorData = function(force, callback) {
         if (isNull(key)) {
           continue;
         }
-        postData[key] = p$(el).value;
+        postData[key] = p$(el).value.unescape();
       }
       authorObj = new Object();
       ref1 = $(".author-param");

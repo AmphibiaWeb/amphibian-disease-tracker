@@ -376,7 +376,7 @@ loadEditor = (projectPreload) ->
             p$("#note-preview").markdown = $(this).val()
           $("#markdown-switcher li").click ->
             $("#markdown-switcher li").removeClass "active"
-            $(".markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher .markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
             switch $(this).attr "data-view"
               when "md"
@@ -388,7 +388,7 @@ loadEditor = (projectPreload) ->
             p$("#preview-funding").markdown = $(this).val()
           $("#markdown-switcher-funding li").click ->
             $("#markdown-switcher-funding li").removeClass "active"
-            $(".markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher-funding .markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
             switch $(this).attr "data-view"
               when "md"
