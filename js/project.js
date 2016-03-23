@@ -284,13 +284,15 @@ renderMapWithData = function(projectData, force) {
     }
     bindClicks(".download-file");
     $(".download-data-file").contextmenu(function(event) {
-      var caller, elPos, inFn, outFn;
+      var caller, elPos, inFn, outFn, zcClient;
       event.preventDefault();
       console.log("Event details", event);
       elPos = $(this).offset();
       html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".ark-context-wrapper").remove();
       $("body").append(html);
+      ZeroClipboard.config(_adp.zcConfig);
+      zcClient = new ZeroClipboard($(".copy-ark-context").get(0));
       ark = $(this).attr("data-ark");
       inFn = function(el) {
         $(this).addClass("iron-selected");
@@ -302,7 +304,58 @@ renderMapWithData = function(projectData, force) {
       };
       caller = this;
       $(".ark-context-wrapper paper-item").hover(inFn, outFn).click(function() {
-        foo();
+        var copyFn;
+        (copyFn = function() {
+          var clip, clipboardData, e, error2, url;
+          if (html5) {
+            try {
+              url = "https://n2t.net/" + ark;
+              clipboardData = {
+                dataType: "text/plain",
+                data: url,
+                "text/plain": url
+              };
+              clip = new ClipboardEvent("copy", clipboardData);
+              document.dispatchEvent(clip);
+              toastStatusMessage("ARK resolver path copied to clipboard");
+              return false;
+            } catch (error2) {
+              e = error2;
+              console.error("Error creating copy: " + e.message);
+              console.warn(e.stack);
+            }
+          }
+          console.warn("Can't use HTML5");
+          zcClient.setData(clipboardData);
+          zcClient.on("aftercopy", function(e) {
+            if (e.data["text/plain"]) {
+              return toastStatusMessage("ARK resolver path copied to clipboard");
+            } else {
+              return toastStatusMessage("Error copying to clipboard");
+            }
+          });
+          zcClient.on("error", function(e) {
+            console.error("Error copying to clipboard");
+            console.warn("Got", e);
+            if (e.name === "flash-overdue") {
+              if (_adp.resetClipboard === true) {
+                console.error("Resetting ZeroClipboard didn't work!");
+                return false;
+              }
+              ZeroClipboard.on("ready", function() {
+                _adp.resetClipboard = true;
+                return copyFn();
+              });
+              zcClient = new ZeroClipboard($(".copy-ark-context").get(0));
+            }
+            if (e.name === "flash-disabled") {
+              console.info("No flash on this system");
+              ZeroClipboard.destroy();
+              return toastStatusMessage("Clipboard copying isn't available on your system");
+            }
+          });
+          return false;
+        })();
         $(".ark-context-wrapper").remove();
         return false;
       }).contextmenu(function() {
@@ -627,6 +680,7 @@ $(function() {
   zcConfig = {
     swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
   };
+  _adp.zcConfig = zcConfig;
   ZeroClipboard.config(zcConfig);
   _adp.zcClient = new ZeroClipboard($("#copy-ark").get(0));
   $("#copy-ark").click(function() {
