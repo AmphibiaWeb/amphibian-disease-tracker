@@ -1485,14 +1485,24 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               if refRow?
                 refVal = refRow[column] ? refRow[column.toLowerCase()]
                 if typeof refVal is "object"
-                  for k, v of refVal
+                  if typeof value is "string"
+                    try
+                      v2 = JSON.stringify value
+                  else
+                    v2 = value
+                  for k, v of v2
                     if typeof v is "number"
-                      refVal[k] = roundNumber v, 13
-                  refVal = JSON.stringify refVal
+                      v2[k] = roundNumber v, 13
+                  cv = JSON.stringify v2
+                  if refVal is cv then continue
                 if typeof value is "boolean"
                   altRefVal = refVal.toBool()
                 else if typeof refVal is "boolean"
                   altRefVal = refVal.toString()
+                else if typeof refVal is "number"
+                  altRefVal = "#{refVal}"
+                else if typeof value is "number"
+                  altRefVal = toFloat refVal
                 else if refVal is "null"
                   altRefVal = null
                 else if refVal is null
