@@ -3340,6 +3340,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               if refRow?
                 refVal = refRow[column] ? refRow[column.toLowerCase()]
                 if typeof refVal is "object"
+                  refVal = JSON.stringify refVal
                   if typeof value is "string"
                     try
                       v2 = JSON.stringify value
