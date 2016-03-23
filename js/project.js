@@ -500,6 +500,7 @@ searchProjects = function() {
   var args, cols, item, search;
   search = $("#project-search").val();
   if (isNull(search)) {
+    $("google-map-poly").removeAttr("hidden");
     return false;
   }
   item = p$("#search-filter").selectedItem;
@@ -507,13 +508,15 @@ searchProjects = function() {
   console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var button, html, icon, j, len, project, projects, publicState, ref, s;
+    var button, html, icon, j, l, len, len1, project, projectId, projects, publicState, ref, results, s, showList;
     console.info(result);
     html = "";
+    showList = new Array();
     projects = Object.toArray(result.result);
     if (projects.length > 0) {
       for (j = 0, len = projects.length; j < len; j++) {
         project = projects[j];
+        showList.push(project.project_id);
         publicState = project["public"].toBool();
         icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
         button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
@@ -524,7 +527,14 @@ searchProjects = function() {
       html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
     }
     $("#project-result-container").html(html);
-    return bindClicks(".search-proj-link");
+    bindClicks(".search-proj-link");
+    $("google-map-poly").attr("hidden", "hidden");
+    results = [];
+    for (l = 0, len1 = showList.length; l < len1; l++) {
+      projectId = showList[l];
+      results.push($("google-map-poly[data-project='" + projectId + "']").removeAttr("hidden"));
+    }
+    return results;
   }).error(function(result, status) {
     return console.error(result, status);
   });
