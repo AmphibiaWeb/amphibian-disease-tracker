@@ -1488,7 +1488,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   refVal = JSON.stringify refVal
                   if typeof value is "string"
                     try
-                      v2 = JSON.stringify value
+                      v2 = JSON.parse value
                   else
                     v2 = value
                   for k, v of v2
@@ -1496,6 +1496,8 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                       v2[k] = roundNumber v, 13
                   cv = JSON.stringify v2
                   if refVal is cv then continue
+                  else
+                    console.info "No Object Match:", refVal, cv
                 if typeof value is "boolean"
                   altRefVal = refVal.toBool()
                 else if typeof refVal is "boolean"
