@@ -3438,7 +3438,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
             # Update project data with new taxa info
             # Recheck the integrated taxa
 
-            cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{dataTable};"
+            cartoQuery = "SELECT #{_adp.colsList.join(",")}, ST_asGeoJSON(the_geom) FROM #{dataTable};"
             args = "action=fetch&sql_query=#{post64(cartoQuery)}"
             $.post "api.php", args, "json"
             .done (result) ->
@@ -3454,7 +3454,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               for i, row of rows
                 _adp.cartoRows[i] = new Object()
                 for col, val of row
-                  realCol = colRemap[col] ? col
+                  realCol = _adp.colRemap[col] ? col
                   _adp.cartoRows[i][realCol] = val
               faux =
                 data: _adp.cartoRows
