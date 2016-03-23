@@ -3294,9 +3294,8 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
             if (refRow != null) {
               gjString = JSON.stringify(geoJsonGeom);
               if (refRow.the_geom !== gjString) {
-                valuesArr.push("the_geom=" + geoJsonVal);
-              } else {
                 console.info("Not skipping coords", refRow.the_geom, geoJsonGeom, gjString);
+                valuesArr.push("the_geom=" + geoJsonVal);
               }
             } else {
               colArr.push("the_geom");
