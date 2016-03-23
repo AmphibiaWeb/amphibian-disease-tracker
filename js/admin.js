@@ -2954,10 +2954,16 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   return false;
 };
 
-revalidateAndUpdateData = function(newFilePath) {
+revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
   var cartoData, dataCallback, dialogHtml, error1, html, link, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
+  }
+  if (skipCallback == null) {
+    skipCallback = false;
+  }
+  if (testOnly == null) {
+    testOnly = false;
   }
   if (!$("#upload-progress-dialog").exists()) {
     html = renderValidateProgress("dont-exist", true);
@@ -3246,6 +3252,10 @@ revalidateAndUpdateData = function(newFilePath) {
             }
           }
           console.log(sqlQuery);
+          if (testOnly === true) {
+            console.warn("Exiting before carto post because testOnly is set true");
+            return false;
+          }
           geo.postToCarto(sqlQuery, dataTable, function(table, coords, options) {
             var faux;
             console.info("Post carto callback fn");
@@ -3385,8 +3395,13 @@ revalidateAndUpdateData = function(newFilePath) {
               _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
               _adp.projectData.sample_methods_used = sampleMethods.join(",");
               finalize = function() {
+                var dataBu;
                 _adp.skipRead = true;
+                dataBu = _adp.projectData;
                 saveEditorData(true, function() {
+                  if (skipCallback === true) {
+                    console.info("Saved", _adp.projectData, dataBu);
+                  }
                   if (localStorage._adp == null) {
                     return document.location.reload(true);
                   }

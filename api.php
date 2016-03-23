@@ -225,15 +225,33 @@ function doCartoSqlApiPush($get)
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
-    if (strpos($searchSql, 'select') !== false) {
+    $queryPattern = '/(?i)([a-zA-Z]+(?: +[a-zA-Z]+)?) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/m';
+    $sqlAction = preg_replace($queryPattern, '$1', $sqlQuery);
+    $sqlAction = strtolower(str_replace(" ","", $sqlAction));
+    $restrictedActions = array(
+        "select" => "READ",
+        "delete" => "EDIT",
+        "insert" => "EDIT",
+        "insertinto" => "EDIT",
+        "update" => "EDIT",
+    );
+    if (isset($restrictedActions[$sqlAction])) {
         # Check the user
         # If bad, kick the access out
-        $cartoTable = preg_replace('/(?i)SELECT .*FROM[ `]*(t[0-9a-f]*_[0-9a-f]*)[ `]*.*;/m', '$1', $sqlQuery);
+        $cartoTable = preg_replace($queryPattern, '$2', $sqlQuery);
         $cartoTableJson = str_replace('_', '&#95;', $cartoTable);
-        $accessListLookupQuery = 'SELECT `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
+        $accessListLookupQuery = 'SELECT `project_id`, `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
         $l = $db->openDB();
         $r = mysqli_query($l, $accessListLookupQuery);
         $row = mysqli_fetch_assoc($r);
+        $pid = $row["project_id"];
+        $requestedPermission = $restrictedActions[$sqlAction];
+        $pArr = explode(",", $row["access_data"]);
+        $permissions = array();
+        foreach($pArr as $access) {
+            $up = explode(":", $access);
+            $permissions[$up[0]] = $up[1];
+        }
         $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row['access_data']);
         $users = explode(',', $csvString);
         $users[] = $row['author'];
@@ -245,8 +263,9 @@ function doCartoSqlApiPush($get)
             $response = array(
                 'status' => false,
                 'error' => 'NOT_LOGGED_IN',
-                'human_error' => 'Attempted to read from private project without being logged in',
+                'human_error' => 'Attempted to access private project without being logged in',
                 'args_provided' => $get,
+                "project_id" => $pid,
                 'is_public_dataset' => $isPublic,
             );
             returnAjax($response);
@@ -258,10 +277,34 @@ function doCartoSqlApiPush($get)
                 'error' => 'UNAUTHORIZED_USER',
                 'human_error' => "User $uid isn't authorized to access this dataset",
                 'args_provided' => $get,
+                "project_id" => $pid,
                 'is_public_dataset' => $isPublic,
             );
             returnAjax($response);
         }
+        if ($requestedPermission == "EDIT") {
+            # Editing has an extra filter
+            $hasPermission = $permissions[$uid];
+            if ($hasPermission !== $requestedPermission && $isSu !== true) {
+                $response = array(
+                    'status' => false,
+                    'error' => 'UNAUTHORIZED_USER',
+                    'human_error' => "User $uid isn't authorized to edit this dataset",
+                    'args_provided' => $get,
+                    "project_id" => $pid,
+                    "user_permissions" => $hasPermission,
+                );
+                returnAjax($response);
+            }
+        }
+    } else {
+        # Unrecognized query type
+        returnAjax(array(
+            "status" => false,
+            "error" => "UNAUTHORIZED_QUERY_TYPE",
+            "query_type" => $sqlAction,
+            "args_provided" => $get,
+        ));
     }
     if (empty($sqlQuery)) {
         returnAjax(array(
@@ -542,7 +585,7 @@ function doAWebValidate($get)
         if (!array_key_exists($testSpecies, $synonymList)) {
           # For 'nov. sp.', 'sp.' variants, and with following digits,
           # check genus only
-          # See 
+          # See
           # http://regexr.com/3d1kb
           if (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
                 # OK, they were just looking for a genus anyway

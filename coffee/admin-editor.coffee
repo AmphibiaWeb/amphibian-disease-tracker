@@ -1232,7 +1232,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
   false
 
 
-revalidateAndUpdateData = (newFilePath = false) ->
+revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly = false) ->
   unless $("#upload-progress-dialog").exists()
     html = renderValidateProgress("dont-exist", true)
     dialogHtml = """
@@ -1503,6 +1503,7 @@ revalidateAndUpdateData = (newFilePath = false) ->
               colArr.push column
             geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
             if refRow?
+              # is it needed?
               valuesArr.push "the_geom=#{geoJsonVal}"
             else
               colArr.push "the_geom"
@@ -1514,7 +1515,9 @@ revalidateAndUpdateData = (newFilePath = false) ->
               # Add new row
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
           console.log sqlQuery
-
+          if testOnly is true
+            console.warn "Exiting before carto post because testOnly is set true"
+            return false
           geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->
             console.info "Post carto callback fn"
             try
@@ -1642,7 +1645,11 @@ revalidateAndUpdateData = (newFilePath = false) ->
               finalize = ->
                 # Save it
                 _adp.skipRead = true
+                dataBu = _adp.projectData
                 saveEditorData true, ->
+                  if skipCallback is true
+                    # Debugging
+                    console.info "Saved", _adp.projectData, dataBu
                   unless localStorage._adp?
                     document.location.reload(true)
                 false
