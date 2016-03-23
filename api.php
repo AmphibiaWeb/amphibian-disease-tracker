@@ -299,7 +299,7 @@ function doCartoSqlApiPush($get)
                 returnAjax($response);
             }
         }
-    } else {
+    } else if ($sqlAction != "create") {
         # Unrecognized query type
         returnAjax(array(
             "status" => false,
