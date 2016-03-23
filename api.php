@@ -266,6 +266,7 @@ function doCartoSqlApiPush($get)
                 'human_error' => 'Attempted to access private project without being logged in',
                 'args_provided' => $get,
                 "project_id" => $pid,
+                "query_type" => $sqlAction,
                 'is_public_dataset' => $isPublic,
             );
             returnAjax($response);
@@ -292,6 +293,7 @@ function doCartoSqlApiPush($get)
                     'human_error' => "User $uid isn't authorized to edit this dataset",
                     'args_provided' => $get,
                     "project_id" => $pid,
+                    "query_type" => $sqlAction,
                     "user_permissions" => $hasPermission,
                 );
                 returnAjax($response);
@@ -370,6 +372,8 @@ function doCartoSqlApiPush($get)
             'post_response' => $responses,
             'parsed_responses' => $parsed_responses,
             'blobby' => boolstr($get['blobby']),
+            "query_type" => $sqlAction,
+            "project_id" => $pid,
             # "urls_posted" => $urls,
         ));
     } catch (Exception $e) {
@@ -378,6 +382,8 @@ function doCartoSqlApiPush($get)
             'error' => $e->getMessage(),
             'human_error' => 'There was a problem uploading to the CartoDB server.',
             'blobby' => boolstr($get['blobby']),
+            "query_type" => $sqlAction,
+            "project_id" => $pid,
         ));
     }
 }
