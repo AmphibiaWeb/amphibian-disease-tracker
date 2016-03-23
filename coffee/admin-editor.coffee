@@ -1655,7 +1655,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               sampleMethods = new Array()
               for row in Object.toArray _adp.cartoRows
                 # sanify the dates
-                date = row.dateCollected ? row.dateIdentified
+                date = row.dateidentified
                 uTime = excelDateToUnixTime date
                 dates.push uTime
                 uDate = new Date(uTime)
@@ -1666,20 +1666,20 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   years.push uDate.getFullYear()
                 # Get the catalog number list
                 if row.catalogNumber? # Not mandatory
-                  catalogNumbers.push row.catalogNumber
-                fieldNumbers.push row.fieldNumber
+                  catalogNumbers.push row.catalognumber
+                fieldNumbers.push row.fieldnumber
                 # Prepare to calculate the radius
-                rowLat = row.decimalLatitude
-                rowLng = row.decimalLongitude
+                rowLat = row.decimallatitude
+                rowLng = row.decimallongitude
                 distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
                 if distanceFromCenter > excursion then excursion = distanceFromCenter
                 # Samples
-                if row.sampleType?
-                  unless row.sampleType in sampleMethods
-                    sampleMethods.push row.sampleType
-                if row.specimenDisposition?
-                  unless row.specimenDisposition in dispositions
-                    dispositions.push row.sampleDisposition
+                if row.samplemethod?
+                  unless row.samplemethod in sampleMethods
+                    sampleMethods.push row.samplemethod
+                if row.specimendisposition?
+                  unless row.specimendisposition in dispositions
+                    dispositions.push row.sampledisposition
               console.info "Got date ranges", dates
               months.sort()
               years.sort()
