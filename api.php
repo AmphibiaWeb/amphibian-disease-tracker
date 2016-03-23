@@ -225,10 +225,14 @@ function doCartoSqlApiPush($get)
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
+    $sqlAction = preg_replace('/(?i)(SELECT|DELETE|INSERT(?: +INTO)?|UPDATE) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/im', '$2', $sqlQuery);
+    $restrictedActions = array(
+        
+    );
     if (strpos($searchSql, 'select') !== false) {
         # Check the user
         # If bad, kick the access out
-        $cartoTable = preg_replace('/(?i)SELECT .*FROM[ `]*(t[0-9a-f]*_[0-9a-f]*)[ `]*.*;/m', '$1', $sqlQuery);
+        $cartoTable = preg_replace('/(?i)(SELECT|DELETE|INSERT(?: +INTO)?|UPDATE) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/im', '$2', $sqlQuery);
         $cartoTableJson = str_replace('_', '&#95;', $cartoTable);
         $accessListLookupQuery = 'SELECT `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
         $l = $db->openDB();
@@ -262,6 +266,7 @@ function doCartoSqlApiPush($get)
             );
             returnAjax($response);
         }
+        # Higher level checks
     }
     if (empty($sqlQuery)) {
         returnAjax(array(
@@ -542,7 +547,7 @@ function doAWebValidate($get)
         if (!array_key_exists($testSpecies, $synonymList)) {
           # For 'nov. sp.', 'sp.' variants, and with following digits,
           # check genus only
-          # See 
+          # See
           # http://regexr.com/3d1kb
           if (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
                 # OK, they were just looking for a genus anyway
