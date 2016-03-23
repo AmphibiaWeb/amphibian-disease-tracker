@@ -3312,7 +3312,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + "); ";
             }
           }
-          statements = sqlQuery.split(",");
+          statements = sqlQuery.split(";");
           statementCount = statements.length;
           console.log(statements);
           console.info("Running " + statementCount + " statements");
