@@ -991,6 +991,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         if col isnt "id" and col isnt "the_geom"
           colsArr.push col
         colRemap[col.toLowerCase()] = col
+      _adp.colsList = colsArr
       _adp.colRemap = colRemap
       sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
@@ -2738,6 +2739,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       if col isnt "id" and col isnt "the_geom"
         colsArr.push col
       colRemap[col.toLowerCase()] = col
+    _adp.colsList = colsArr
     _adp.colRemap = colRemap
     cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
     # cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
@@ -3419,12 +3421,13 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
           statementCount = statements.length
           console.log statements
           console.info "Running #{statementCount} statements"
-          
+
           if testOnly is true
             console.warn "Exiting before carto post because testOnly is set true"
             return false
           geo.postToCarto sqlQuery, dataTable, (table, coords, options) ->
             console.info "Post carto callback fn"
+            bsAlert "<strong>Please Wait</strong>: Re-Validating your total taxa data", "info"
             try
               p$("#taxa-validation").value = 0
               p$("#taxa-validation").indeterminate = true
@@ -3434,164 +3437,187 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
             _adp.projectData.carto_id = JSON.stringify cartoData
             # Update project data with new taxa info
             # Recheck the integrated taxa
-            faux =
-              data: _adp.cartoRows
-            validateTaxonData faux, (taxa) ->
-              validatedData.validated_taxa = taxa.validated_taxa
-              _adp.projectData.includes_anura = false
-              _adp.projectData.includes_caudata = false
-              _adp.projectData.includes_gymnophiona = false
-              for taxonObject in validatedData.validated_taxa
-                aweb = taxonObject.response.validated_taxon
-                console.info "Aweb taxon result:", aweb
-                clade = aweb.order.toLowerCase()
-                key = "includes_#{clade}"
-                _adp.projectData[key] = true
-                # If we have all three, stop checking
-                if _adp.projectData.includes_anura isnt false and _adp.projectData.includes_caudata isnt false and _adp.projectData.includes_gymnophiona isnt false then break
-              taxonListString = ""
-              taxonList = new Array()
-              cladeList = new Array()
-              i = 0
-              for taxon in validatedData.validated_taxa
-                taxonString = "#{taxon.genus} #{taxon.species}"
-                if taxon.response.original_taxon?
-                  # Append a notice
-                  console.info "Taxon obj", taxon
-                  originalTaxon = "#{taxon.response.original_taxon.slice(0,1).toUpperCase()}#{taxon.response.original_taxon.slice(1)}"
-                  noticeHtml = """
-                  <div class="alert alert-info alert-dismissable amended-taxon-notice col-md-6 col-xs-12 project-field" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      Your entry '<em>#{originalTaxon}</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>#{taxonString}</em>' below. <a href="#{taxon.response.validated_taxon.uri_or_guid}" target="_blank">See the AmphibiaWeb entry <span class="glyphicon glyphicon-new-window"></span></a>
-                  </div>
-                  """
-                  $("#species-list").before noticeHtml
-                unless isNull taxon.subspecies
-                  taxonString += " #{taxon.subspecies}"
-                unless taxonString in taxonList
-                  if i > 0
-                    taxonListString += "\n"
-                  taxonListString += "#{taxonString}"
-                  taxonList.push taxonString
+
+            cartoQuery = "SELECT #{colsArr.join(",")}, ST_asGeoJSON(the_geom) FROM #{dataTable};"
+            args = "action=fetch&sql_query=#{post64(cartoQuery)}"
+            $.post "api.php", args, "json"
+            .done (result) ->
+              console.info "Carto query got result:", result
+              unless result.status
+                error = result.human_error ? result.error
+                unless error?
+                  error = "Unknown error"
+                stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
+                return false
+              rows = result.parsed_responses[0].rows
+              _adp.cartoRows = new Object()
+              for i, row of rows
+                _adp.cartoRows[i] = new Object()
+                for col, val of row
+                  realCol = colRemap[col] ? col
+                  _adp.cartoRows[i][realCol] = val
+              faux =
+                data: _adp.cartoRows
+              validateTaxonData faux, (taxa) ->
+                validatedData.validated_taxa = taxa.validated_taxa
+                _adp.projectData.includes_anura = false
+                _adp.projectData.includes_caudata = false
+                _adp.projectData.includes_gymnophiona = false
+                for taxonObject in validatedData.validated_taxa
+                  aweb = taxonObject.response.validated_taxon
+                  console.info "Aweb taxon result:", aweb
+                  clade = aweb.order.toLowerCase()
+                  key = "includes_#{clade}"
+                  _adp.projectData[key] = true
+                  # If we have all three, stop checking
+                  if _adp.projectData.includes_anura isnt false and _adp.projectData.includes_caudata isnt false and _adp.projectData.includes_gymnophiona isnt false then break
+                taxonListString = ""
+                taxonList = new Array()
+                cladeList = new Array()
+                i = 0
+                for taxon in validatedData.validated_taxa
+                  taxonString = "#{taxon.genus} #{taxon.species}"
+                  if taxon.response.original_taxon?
+                    # Append a notice
+                    console.info "Taxon obj", taxon
+                    originalTaxon = "#{taxon.response.original_taxon.slice(0,1).toUpperCase()}#{taxon.response.original_taxon.slice(1)}"
+                    noticeHtml = """
+                    <div class="alert alert-info alert-dismissable amended-taxon-notice col-md-6 col-xs-12 project-field" role="alert">
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        Your entry '<em>#{originalTaxon}</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>#{taxonString}</em>' below. <a href="#{taxon.response.validated_taxon.uri_or_guid}" target="_blank">See the AmphibiaWeb entry <span class="glyphicon glyphicon-new-window"></span></a>
+                    </div>
+                    """
+                    $("#species-list").before noticeHtml
+                  unless isNull taxon.subspecies
+                    taxonString += " #{taxon.subspecies}"
+                  unless taxonString in taxonList
+                    if i > 0
+                      taxonListString += "\n"
+                    taxonListString += "#{taxonString}"
+                    taxonList.push taxonString
+                  try
+                    unless taxon.response.validated_taxon.family in cladeList
+                      cladeList.push taxon.response.validated_taxon.family
+                  catch e
+                    console.warn "Couldn't get the family! #{e.message}", taxon.response
+                    console.warn e.stack
+                  ++i
                 try
-                  unless taxon.response.validated_taxon.family in cladeList
-                    cladeList.push taxon.response.validated_taxon.family
-                catch e
-                  console.warn "Couldn't get the family! #{e.message}", taxon.response
-                  console.warn e.stack
-                ++i
-              try
-                p$("#species-list").bindValue = taxonListString
-              dataAttrs.dataObj = validatedData
-              _adp.data.dataObj = validatedData
-              _adp.data.taxa = new Object()
-              _adp.data.taxa.list = taxonList
-              _adp.data.taxa.clades = cladeList
-              _adp.data.taxa.validated = validatedData.validated_taxa
-              _adp.projectData.sampled_species = taxonList.join ","
-              _adp.projectData.sampled_clades = cladeList.join ","
-              # Update project data with new sample data
-              _adp.projectData.disease_morbidity = validatedData.samples.morbidity
-              _adp.projectData.disease_mortality = validatedData.samples.mortality
-              _adp.projectData.disease_positive = validatedData.samples.positive
-              _adp.projectData.disease_negative = validatedData.samples.negative
-              _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
-              # All the parsed month data, etc.
-              center = getMapCenter(geo.boundingBox)
-              # Have some fun times with uploadedData
-              excursion = 0
-              dates = new Array()
-              months = new Array()
-              years = new Array()
-              methods = new Array()
-              catalogNumbers = new Array()
-              fieldNumbers = new Array()
-              dispositions = new Array()
-              sampleMethods = new Array()
-              for row in Object.toArray _adp.cartoRows
-                # sanify the dates
-                date = row.dateidentified
-                uTime = excelDateToUnixTime date
-                dates.push uTime
-                uDate = new Date(uTime)
-                mString = dateMonthToString uDate.getUTCMonth()
-                unless mString in months
-                  months.push mString
-                unless uDate.getFullYear() in years
-                  years.push uDate.getFullYear()
-                # Get the catalog number list
-                if row.catalogNumber? # Not mandatory
-                  catalogNumbers.push row.catalognumber
-                fieldNumbers.push row.fieldnumber
-                # Prepare to calculate the radius
-                rowLat = row.decimallatitude
-                rowLng = row.decimallongitude
-                distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
-                if distanceFromCenter > excursion then excursion = distanceFromCenter
-                # Samples
-                if row.samplemethod?
-                  unless row.samplemethod in sampleMethods
-                    sampleMethods.push row.samplemethod
-                if row.specimendisposition?
-                  unless row.specimendisposition in dispositions
-                    dispositions.push row.sampledisposition
-              console.info "Got date ranges", dates
-              months.sort()
-              years.sort()
-              _adp.projectData.sampled_collection_start = dates.min()
-              _adp.projectData.sampled_collection_end = dates.max()
-              console.info "Collected from", dates.min(), dates.max()
-              _adp.projectData.sampling_months = months.join(",")
-              _adp.projectData.sampling_years = years.join(",")
-              _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",")
-              _adp.projectData.sample_field_numbers = fieldNumbers.join(",")
-              _adp.projectData.sample_methods_used = sampleMethods.join(",")
-              # Finalizing callback
-              finalize = ->
-                # Save it
-                _adp.skipRead = true
-                dataBu = _adp.projectData
-                saveEditorData true, ->
-                  if skipCallback is true
-                    # Debugging
-                    console.info "Saved", _adp.projectData, dataBu
-                  unless localStorage._adp?
-                    document.location.reload(true)
-                false
-              # If the datasrc isn't the stored one, remint an ark and
-              # append
-              fullPath = "#{uri.urlString}#{validatedData.dataSrc}"
-              if fullPath isnt _adp.projectData.sample_raw_data
-                # Mint it
-                arks = _adp.projectData.dataset_arks.split(",")
-                unless _adp.fims?.expedition?.ark?
-                  unless _adp.fims?
-                    _adp.fims = new Object()
-                  unless _adp.fims.expedition?
-                    _adp.fims.expedition = new Object()
-                  _adp.fims.expedition.ark = _adp.projectData.project_obj_id
-                mintBcid _adp.projectId, fullPath, _adp.projectData.project_title, (result) ->
-                  if result.ark?
-                    fileA = fullPath.split("/")
-                    file = fileA.pop()
-                    newArk = "#{result.ark}::#{file}"
-                    arks.push newArk
-                    _adp.projectData.dataset_arks = arks.join(",")
-                  else
-                    console.warn "Couldn't mint!"
-                  _adp.previousRawData = _adp.projectData.sample_raw_data
-                  _adp.projectData.sample_raw_data = fullPath
+                  p$("#species-list").bindValue = taxonListString
+                dataAttrs.dataObj = validatedData
+                _adp.data.dataObj = validatedData
+                _adp.data.taxa = new Object()
+                _adp.data.taxa.list = taxonList
+                _adp.data.taxa.clades = cladeList
+                _adp.data.taxa.validated = validatedData.validated_taxa
+                _adp.projectData.sampled_species = taxonList.join ","
+                _adp.projectData.sampled_clades = cladeList.join ","
+                # Update project data with new sample data
+                _adp.projectData.disease_morbidity = validatedData.samples.morbidity
+                _adp.projectData.disease_mortality = validatedData.samples.mortality
+                _adp.projectData.disease_positive = validatedData.samples.positive
+                _adp.projectData.disease_negative = validatedData.samples.negative
+                _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
+                # All the parsed month data, etc.
+                center = getMapCenter(geo.boundingBox)
+                # Have some fun times with uploadedData
+                excursion = 0
+                dates = new Array()
+                months = new Array()
+                years = new Array()
+                methods = new Array()
+                catalogNumbers = new Array()
+                fieldNumbers = new Array()
+                dispositions = new Array()
+                sampleMethods = new Array()
+                for row in Object.toArray _adp.cartoRows
+                  # sanify the dates
+                  date = row.dateidentified
+                  uTime = excelDateToUnixTime date
+                  dates.push uTime
+                  uDate = new Date(uTime)
+                  mString = dateMonthToString uDate.getUTCMonth()
+                  unless mString in months
+                    months.push mString
+                  unless uDate.getFullYear() in years
+                    years.push uDate.getFullYear()
+                  # Get the catalog number list
+                  if row.catalogNumber? # Not mandatory
+                    catalogNumbers.push row.catalognumber
+                  fieldNumbers.push row.fieldnumber
+                  # Prepare to calculate the radius
+                  rowLat = row.decimallatitude
+                  rowLng = row.decimallongitude
+                  distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
+                  if distanceFromCenter > excursion then excursion = distanceFromCenter
+                  # Samples
+                  if row.samplemethod?
+                    unless row.samplemethod in sampleMethods
+                      sampleMethods.push row.samplemethod
+                  if row.specimendisposition?
+                    unless row.specimendisposition in dispositions
+                      dispositions.push row.sampledisposition
+                console.info "Got date ranges", dates
+                months.sort()
+                years.sort()
+                _adp.projectData.sampled_collection_start = dates.min()
+                _adp.projectData.sampled_collection_end = dates.max()
+                console.info "Collected from", dates.min(), dates.max()
+                _adp.projectData.sampling_months = months.join(",")
+                _adp.projectData.sampling_years = years.join(",")
+                _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",")
+                _adp.projectData.sample_field_numbers = fieldNumbers.join(",")
+                _adp.projectData.sample_methods_used = sampleMethods.join(",")
+                # Finalizing callback
+                finalize = ->
+                  # Save it
+                  _adp.skipRead = true
+                  dataBu = _adp.projectData
+                  saveEditorData true, ->
+                    if skipCallback is true
+                      # Debugging
+                      console.info "Saved", _adp.projectData, dataBu
+                    unless localStorage._adp?
+                      document.location.reload(true)
+                  false
+                # If the datasrc isn't the stored one, remint an ark and
+                # append
+                fullPath = "#{uri.urlString}#{validatedData.dataSrc}"
+                if fullPath isnt _adp.projectData.sample_raw_data
+                  # Mint it
+                  arks = _adp.projectData.dataset_arks.split(",")
+                  unless _adp.fims?.expedition?.ark?
+                    unless _adp.fims?
+                      _adp.fims = new Object()
+                    unless _adp.fims.expedition?
+                      _adp.fims.expedition = new Object()
+                    _adp.fims.expedition.ark = _adp.projectData.project_obj_id
+                  mintBcid _adp.projectId, fullPath, _adp.projectData.project_title, (result) ->
+                    if result.ark?
+                      fileA = fullPath.split("/")
+                      file = fileA.pop()
+                      newArk = "#{result.ark}::#{file}"
+                      arks.push newArk
+                      _adp.projectData.dataset_arks = arks.join(",")
+                    else
+                      console.warn "Couldn't mint!"
+                    _adp.previousRawData = _adp.projectData.sample_raw_data
+                    _adp.projectData.sample_raw_data = fullPath
+                    finalize()
+                else
                   finalize()
-              else
-                finalize()
-              false
-            false
-          false
+                false # End validateTaxa callback
+              false # End updated carto fetch callback
+            .error (result, status) ->
+              stopLoadError "Error fetching updated table"
+            false # End postToCarto callback
+          false # End API validation check
         else
-          stopLoadError "Error updating Carto"
+          stopLoadError "Invalid user"
       .error (result, status) ->
         stopLoadError "Error updating Carto"
-    false
+      false # End newGeoDataHandler callback
+    false # End dataCallback
   unless skipHandler
     excelHandler2 path, true, (resultObj) ->
       data = resultObj.data

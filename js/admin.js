@@ -1008,6 +1008,7 @@ getCanonicalDataCoords = function(table, options, callback) {
         }
         colRemap[col.toLowerCase()] = col;
       }
+      _adp.colsList = colsArr;
       _adp.colRemap = colRemap;
       sqlQuery = "SELECT ST_AsText(the_geom), " + (colsArr.join(",")) + " FROM " + table;
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
@@ -2650,6 +2651,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       }
       colRemap[col.toLowerCase()] = col;
     }
+    _adp.colsList = colsArr;
     _adp.colRemap = colRemap;
     cartoQuery = "SELECT " + (colsArr.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
     console.info("Would ping cartodb with", cartoQuery);
@@ -3069,7 +3071,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         stopLoadError("Administration file not loaded. Upload cannot continue");
         return false;
       }
-      return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+      $.post(adminParams.apiTarget, args, "json").done(function(result) {
         var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, statementCount, statements, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
@@ -3321,8 +3323,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
             return false;
           }
           geo.postToCarto(sqlQuery, dataTable, function(table, coords, options) {
-            var faux;
+            var cartoQuery;
             console.info("Post carto callback fn");
+            bsAlert("<strong>Please Wait</strong>: Re-Validating your total taxa data", "info");
             try {
               p$("#taxa-validation").value = 0;
               p$("#taxa-validation").indeterminate = true;
@@ -3330,189 +3333,218 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
             _adp.canonicalHull = createConvexHull(coords, true);
             cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
             _adp.projectData.carto_id = JSON.stringify(cartoData);
-            faux = {
-              data: _adp.cartoRows
-            };
-            validateTaxonData(faux, function(taxa) {
-              var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
-              validatedData.validated_taxa = taxa.validated_taxa;
-              _adp.projectData.includes_anura = false;
-              _adp.projectData.includes_caudata = false;
-              _adp.projectData.includes_gymnophiona = false;
-              ref10 = validatedData.validated_taxa;
-              for (o = 0, len2 = ref10.length; o < len2; o++) {
-                taxonObject = ref10[o];
-                aweb = taxonObject.response.validated_taxon;
-                console.info("Aweb taxon result:", aweb);
-                clade = aweb.order.toLowerCase();
-                key = "includes_" + clade;
-                _adp.projectData[key] = true;
-                if (_adp.projectData.includes_anura !== false && _adp.projectData.includes_caudata !== false && _adp.projectData.includes_gymnophiona !== false) {
-                  break;
+            cartoQuery = "SELECT " + (colsArr.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + dataTable + ";";
+            args = "action=fetch&sql_query=" + (post64(cartoQuery));
+            $.post("api.php", args, "json").done(function(result) {
+              var col, error, faux, realCol, ref10, ref11, rows, val;
+              console.info("Carto query got result:", result);
+              if (!result.status) {
+                error = (ref10 = result.human_error) != null ? ref10 : result.error;
+                if (error == null) {
+                  error = "Unknown error";
+                }
+                stopLoadError("Sorry, we couldn't retrieve your information at the moment (" + error + ")");
+                return false;
+              }
+              rows = result.parsed_responses[0].rows;
+              _adp.cartoRows = new Object();
+              for (i in rows) {
+                row = rows[i];
+                _adp.cartoRows[i] = new Object();
+                for (col in row) {
+                  val = row[col];
+                  realCol = (ref11 = colRemap[col]) != null ? ref11 : col;
+                  _adp.cartoRows[i][realCol] = val;
                 }
               }
-              taxonListString = "";
-              taxonList = new Array();
-              cladeList = new Array();
-              i = 0;
-              ref11 = validatedData.validated_taxa;
-              for (q = 0, len3 = ref11.length; q < len3; q++) {
-                taxon = ref11[q];
-                taxonString = taxon.genus + " " + taxon.species;
-                if (taxon.response.original_taxon != null) {
-                  console.info("Taxon obj", taxon);
-                  originalTaxon = "" + (taxon.response.original_taxon.slice(0, 1).toUpperCase()) + (taxon.response.original_taxon.slice(1));
-                  noticeHtml = "<div class=\"alert alert-info alert-dismissable amended-taxon-notice col-md-6 col-xs-12 project-field\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    Your entry '<em>" + originalTaxon + "</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>" + taxonString + "</em>' below. <a href=\"" + taxon.response.validated_taxon.uri_or_guid + "\" target=\"_blank\">See the AmphibiaWeb entry <span class=\"glyphicon glyphicon-new-window\"></span></a>\n</div>";
-                  $("#species-list").before(noticeHtml);
-                }
-                if (!isNull(taxon.subspecies)) {
-                  taxonString += " " + taxon.subspecies;
-                }
-                if (indexOf.call(taxonList, taxonString) < 0) {
-                  if (i > 0) {
-                    taxonListString += "\n";
+              faux = {
+                data: _adp.cartoRows
+              };
+              validateTaxonData(faux, function(taxa) {
+                var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref20, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+                validatedData.validated_taxa = taxa.validated_taxa;
+                _adp.projectData.includes_anura = false;
+                _adp.projectData.includes_caudata = false;
+                _adp.projectData.includes_gymnophiona = false;
+                ref12 = validatedData.validated_taxa;
+                for (o = 0, len2 = ref12.length; o < len2; o++) {
+                  taxonObject = ref12[o];
+                  aweb = taxonObject.response.validated_taxon;
+                  console.info("Aweb taxon result:", aweb);
+                  clade = aweb.order.toLowerCase();
+                  key = "includes_" + clade;
+                  _adp.projectData[key] = true;
+                  if (_adp.projectData.includes_anura !== false && _adp.projectData.includes_caudata !== false && _adp.projectData.includes_gymnophiona !== false) {
+                    break;
                   }
-                  taxonListString += "" + taxonString;
-                  taxonList.push(taxonString);
+                }
+                taxonListString = "";
+                taxonList = new Array();
+                cladeList = new Array();
+                i = 0;
+                ref13 = validatedData.validated_taxa;
+                for (q = 0, len3 = ref13.length; q < len3; q++) {
+                  taxon = ref13[q];
+                  taxonString = taxon.genus + " " + taxon.species;
+                  if (taxon.response.original_taxon != null) {
+                    console.info("Taxon obj", taxon);
+                    originalTaxon = "" + (taxon.response.original_taxon.slice(0, 1).toUpperCase()) + (taxon.response.original_taxon.slice(1));
+                    noticeHtml = "<div class=\"alert alert-info alert-dismissable amended-taxon-notice col-md-6 col-xs-12 project-field\" role=\"alert\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    Your entry '<em>" + originalTaxon + "</em>' was a synonym in the AmphibiaWeb database. It was automatically converted to '<em>" + taxonString + "</em>' below. <a href=\"" + taxon.response.validated_taxon.uri_or_guid + "\" target=\"_blank\">See the AmphibiaWeb entry <span class=\"glyphicon glyphicon-new-window\"></span></a>\n</div>";
+                    $("#species-list").before(noticeHtml);
+                  }
+                  if (!isNull(taxon.subspecies)) {
+                    taxonString += " " + taxon.subspecies;
+                  }
+                  if (indexOf.call(taxonList, taxonString) < 0) {
+                    if (i > 0) {
+                      taxonListString += "\n";
+                    }
+                    taxonListString += "" + taxonString;
+                    taxonList.push(taxonString);
+                  }
+                  try {
+                    if (ref14 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref14) < 0) {
+                      cladeList.push(taxon.response.validated_taxon.family);
+                    }
+                  } catch (error6) {
+                    e = error6;
+                    console.warn("Couldn't get the family! " + e.message, taxon.response);
+                    console.warn(e.stack);
+                  }
+                  ++i;
                 }
                 try {
-                  if (ref12 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref12) < 0) {
-                    cladeList.push(taxon.response.validated_taxon.family);
+                  p$("#species-list").bindValue = taxonListString;
+                } catch (undefined) {}
+                dataAttrs.dataObj = validatedData;
+                _adp.data.dataObj = validatedData;
+                _adp.data.taxa = new Object();
+                _adp.data.taxa.list = taxonList;
+                _adp.data.taxa.clades = cladeList;
+                _adp.data.taxa.validated = validatedData.validated_taxa;
+                _adp.projectData.sampled_species = taxonList.join(",");
+                _adp.projectData.sampled_clades = cladeList.join(",");
+                _adp.projectData.disease_morbidity = validatedData.samples.morbidity;
+                _adp.projectData.disease_mortality = validatedData.samples.mortality;
+                _adp.projectData.disease_positive = validatedData.samples.positive;
+                _adp.projectData.disease_negative = validatedData.samples.negative;
+                _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence;
+                center = getMapCenter(geo.boundingBox);
+                excursion = 0;
+                dates = new Array();
+                months = new Array();
+                years = new Array();
+                methods = new Array();
+                catalogNumbers = new Array();
+                fieldNumbers = new Array();
+                dispositions = new Array();
+                sampleMethods = new Array();
+                ref15 = Object.toArray(_adp.cartoRows);
+                for (s = 0, len4 = ref15.length; s < len4; s++) {
+                  row = ref15[s];
+                  date = row.dateidentified;
+                  uTime = excelDateToUnixTime(date);
+                  dates.push(uTime);
+                  uDate = new Date(uTime);
+                  mString = dateMonthToString(uDate.getUTCMonth());
+                  if (indexOf.call(months, mString) < 0) {
+                    months.push(mString);
                   }
-                } catch (error6) {
-                  e = error6;
-                  console.warn("Couldn't get the family! " + e.message, taxon.response);
-                  console.warn(e.stack);
-                }
-                ++i;
-              }
-              try {
-                p$("#species-list").bindValue = taxonListString;
-              } catch (undefined) {}
-              dataAttrs.dataObj = validatedData;
-              _adp.data.dataObj = validatedData;
-              _adp.data.taxa = new Object();
-              _adp.data.taxa.list = taxonList;
-              _adp.data.taxa.clades = cladeList;
-              _adp.data.taxa.validated = validatedData.validated_taxa;
-              _adp.projectData.sampled_species = taxonList.join(",");
-              _adp.projectData.sampled_clades = cladeList.join(",");
-              _adp.projectData.disease_morbidity = validatedData.samples.morbidity;
-              _adp.projectData.disease_mortality = validatedData.samples.mortality;
-              _adp.projectData.disease_positive = validatedData.samples.positive;
-              _adp.projectData.disease_negative = validatedData.samples.negative;
-              _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence;
-              center = getMapCenter(geo.boundingBox);
-              excursion = 0;
-              dates = new Array();
-              months = new Array();
-              years = new Array();
-              methods = new Array();
-              catalogNumbers = new Array();
-              fieldNumbers = new Array();
-              dispositions = new Array();
-              sampleMethods = new Array();
-              ref13 = Object.toArray(_adp.cartoRows);
-              for (s = 0, len4 = ref13.length; s < len4; s++) {
-                row = ref13[s];
-                date = row.dateidentified;
-                uTime = excelDateToUnixTime(date);
-                dates.push(uTime);
-                uDate = new Date(uTime);
-                mString = dateMonthToString(uDate.getUTCMonth());
-                if (indexOf.call(months, mString) < 0) {
-                  months.push(mString);
-                }
-                if (ref14 = uDate.getFullYear(), indexOf.call(years, ref14) < 0) {
-                  years.push(uDate.getFullYear());
-                }
-                if (row.catalogNumber != null) {
-                  catalogNumbers.push(row.catalognumber);
-                }
-                fieldNumbers.push(row.fieldnumber);
-                rowLat = row.decimallatitude;
-                rowLng = row.decimallongitude;
-                distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
-                if (distanceFromCenter > excursion) {
-                  excursion = distanceFromCenter;
-                }
-                if (row.samplemethod != null) {
-                  if (ref15 = row.samplemethod, indexOf.call(sampleMethods, ref15) < 0) {
-                    sampleMethods.push(row.samplemethod);
+                  if (ref16 = uDate.getFullYear(), indexOf.call(years, ref16) < 0) {
+                    years.push(uDate.getFullYear());
+                  }
+                  if (row.catalogNumber != null) {
+                    catalogNumbers.push(row.catalognumber);
+                  }
+                  fieldNumbers.push(row.fieldnumber);
+                  rowLat = row.decimallatitude;
+                  rowLng = row.decimallongitude;
+                  distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
+                  if (distanceFromCenter > excursion) {
+                    excursion = distanceFromCenter;
+                  }
+                  if (row.samplemethod != null) {
+                    if (ref17 = row.samplemethod, indexOf.call(sampleMethods, ref17) < 0) {
+                      sampleMethods.push(row.samplemethod);
+                    }
+                  }
+                  if (row.specimendisposition != null) {
+                    if (ref18 = row.specimendisposition, indexOf.call(dispositions, ref18) < 0) {
+                      dispositions.push(row.sampledisposition);
+                    }
                   }
                 }
-                if (row.specimendisposition != null) {
-                  if (ref16 = row.specimendisposition, indexOf.call(dispositions, ref16) < 0) {
-                    dispositions.push(row.sampledisposition);
+                console.info("Got date ranges", dates);
+                months.sort();
+                years.sort();
+                _adp.projectData.sampled_collection_start = dates.min();
+                _adp.projectData.sampled_collection_end = dates.max();
+                console.info("Collected from", dates.min(), dates.max());
+                _adp.projectData.sampling_months = months.join(",");
+                _adp.projectData.sampling_years = years.join(",");
+                _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",");
+                _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
+                _adp.projectData.sample_methods_used = sampleMethods.join(",");
+                finalize = function() {
+                  var dataBu;
+                  _adp.skipRead = true;
+                  dataBu = _adp.projectData;
+                  saveEditorData(true, function() {
+                    if (skipCallback === true) {
+                      console.info("Saved", _adp.projectData, dataBu);
+                    }
+                    if (localStorage._adp == null) {
+                      return document.location.reload(true);
+                    }
+                  });
+                  return false;
+                };
+                fullPath = "" + uri.urlString + validatedData.dataSrc;
+                if (fullPath !== _adp.projectData.sample_raw_data) {
+                  arks = _adp.projectData.dataset_arks.split(",");
+                  if (((ref19 = _adp.fims) != null ? (ref20 = ref19.expedition) != null ? ref20.ark : void 0 : void 0) == null) {
+                    if (_adp.fims == null) {
+                      _adp.fims = new Object();
+                    }
+                    if (_adp.fims.expedition == null) {
+                      _adp.fims.expedition = new Object();
+                    }
+                    _adp.fims.expedition.ark = _adp.projectData.project_obj_id;
                   }
+                  mintBcid(_adp.projectId, fullPath, _adp.projectData.project_title, function(result) {
+                    var file, fileA, newArk;
+                    if (result.ark != null) {
+                      fileA = fullPath.split("/");
+                      file = fileA.pop();
+                      newArk = result.ark + "::" + file;
+                      arks.push(newArk);
+                      _adp.projectData.dataset_arks = arks.join(",");
+                    } else {
+                      console.warn("Couldn't mint!");
+                    }
+                    _adp.previousRawData = _adp.projectData.sample_raw_data;
+                    _adp.projectData.sample_raw_data = fullPath;
+                    return finalize();
+                  });
+                } else {
+                  finalize();
                 }
-              }
-              console.info("Got date ranges", dates);
-              months.sort();
-              years.sort();
-              _adp.projectData.sampled_collection_start = dates.min();
-              _adp.projectData.sampled_collection_end = dates.max();
-              console.info("Collected from", dates.min(), dates.max());
-              _adp.projectData.sampling_months = months.join(",");
-              _adp.projectData.sampling_years = years.join(",");
-              _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",");
-              _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
-              _adp.projectData.sample_methods_used = sampleMethods.join(",");
-              finalize = function() {
-                var dataBu;
-                _adp.skipRead = true;
-                dataBu = _adp.projectData;
-                saveEditorData(true, function() {
-                  if (skipCallback === true) {
-                    console.info("Saved", _adp.projectData, dataBu);
-                  }
-                  if (localStorage._adp == null) {
-                    return document.location.reload(true);
-                  }
-                });
                 return false;
-              };
-              fullPath = "" + uri.urlString + validatedData.dataSrc;
-              if (fullPath !== _adp.projectData.sample_raw_data) {
-                arks = _adp.projectData.dataset_arks.split(",");
-                if (((ref17 = _adp.fims) != null ? (ref18 = ref17.expedition) != null ? ref18.ark : void 0 : void 0) == null) {
-                  if (_adp.fims == null) {
-                    _adp.fims = new Object();
-                  }
-                  if (_adp.fims.expedition == null) {
-                    _adp.fims.expedition = new Object();
-                  }
-                  _adp.fims.expedition.ark = _adp.projectData.project_obj_id;
-                }
-                mintBcid(_adp.projectId, fullPath, _adp.projectData.project_title, function(result) {
-                  var file, fileA, newArk;
-                  if (result.ark != null) {
-                    fileA = fullPath.split("/");
-                    file = fileA.pop();
-                    newArk = result.ark + "::" + file;
-                    arks.push(newArk);
-                    _adp.projectData.dataset_arks = arks.join(",");
-                  } else {
-                    console.warn("Couldn't mint!");
-                  }
-                  _adp.previousRawData = _adp.projectData.sample_raw_data;
-                  _adp.projectData.sample_raw_data = fullPath;
-                  return finalize();
-                });
-              } else {
-                finalize();
-              }
+              });
               return false;
+            }).error(function(result, status) {
+              return stopLoadError("Error fetching updated table");
             });
             return false;
           });
           return false;
         } else {
-          return stopLoadError("Error updating Carto");
+          return stopLoadError("Invalid user");
         }
       }).error(function(result, status) {
         return stopLoadError("Error updating Carto");
       });
+      return false;
     });
     return false;
   };
