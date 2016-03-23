@@ -302,7 +302,7 @@ renderMapWithData = (projectData, force = false) ->
       .hover inFn, outFn
       .click ->
         _adp.resetClipboard = false
-        do copyFn = (zcClient = zcClientInitial, zcEvent) ->
+        do copyFn = (zcClient = zcClientInitial, zcEvent = null) ->
           # http://caniuse.com/#feat=clipboard
           try
             url = "https://n2t.net/#{ark}"
@@ -319,7 +319,7 @@ renderMapWithData = (projectData, force = false) ->
             console.warn e.stack
           console.warn "Can't use HTML5"
           zcClient.setData clipboardData
-          if zcEvent?
+          unless isNull zcEvent
             zcEvent.setData clipboardData
           zcClient.on "aftercopy", (e) ->
             if e.data["text/plain"]
