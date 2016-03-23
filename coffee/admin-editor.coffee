@@ -1559,7 +1559,11 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
             else
               # Add new row
               sqlQuery += "INSERT INTO #{dataTable} (#{colArr.join(",")}) VALUES (#{valuesArr.join(",")}); "
-          console.log sqlQuery
+          # console.log sqlQuery
+          statements = sqlQuery.split ","
+          statementCount = statements.length
+          console.log statements
+          console.info "Running #{statementCount} statements"
           if testOnly is true
             console.warn "Exiting before carto post because testOnly is set true"
             return false
