@@ -3070,7 +3070,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
         return false;
       }
       return $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, statementCount, statements, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3312,7 +3312,10 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
               sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + "); ";
             }
           }
-          console.log(sqlQuery);
+          statements = sqlQuery.split(",");
+          statementCount = statements.length;
+          console.log(statements);
+          console.info("Running " + statementCount + " statements");
           if (testOnly === true) {
             console.warn("Exiting before carto post because testOnly is set true");
             return false;
