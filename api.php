@@ -226,10 +226,15 @@ function doCartoSqlApiPush($get)
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
     $sqlAction = preg_replace('/(?i)(SELECT|DELETE|INSERT(?: +INTO)?|UPDATE) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/im', '$2', $sqlQuery);
+    $sqlAction = strtolower(str_replace(" ","", $sqlAction));
     $restrictedActions = array(
-        
+        "select" => "READ",
+        "delete" => "EDIT",
+        "insert" => "EDIT",
+        "insertinto" => "EDIT",
+        "update" => "EDIT",
     );
-    if (strpos($searchSql, 'select') !== false) {
+    if (isset($restrictedActions[$sqlAction])) {
         # Check the user
         # If bad, kick the access out
         $cartoTable = preg_replace('/(?i)(SELECT|DELETE|INSERT(?: +INTO)?|UPDATE) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/im', '$2', $sqlQuery);
@@ -238,6 +243,13 @@ function doCartoSqlApiPush($get)
         $l = $db->openDB();
         $r = mysqli_query($l, $accessListLookupQuery);
         $row = mysqli_fetch_assoc($r);
+        $requestedPermission = $restrictedActions[$sqlAction];
+        $pArr = explode(",", $row["access_data"]);
+        $permissions = array();
+        foreach($pArr as $access) {
+            $up = explode(":", $access);
+            $permissions[$up[0]] = $up[1];
+        }
         $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row['access_data']);
         $users = explode(',', $csvString);
         $users[] = $row['author'];
@@ -249,7 +261,7 @@ function doCartoSqlApiPush($get)
             $response = array(
                 'status' => false,
                 'error' => 'NOT_LOGGED_IN',
-                'human_error' => 'Attempted to read from private project without being logged in',
+                'human_error' => 'Attempted to access private project without being logged in',
                 'args_provided' => $get,
                 'is_public_dataset' => $isPublic,
             );
@@ -266,7 +278,27 @@ function doCartoSqlApiPush($get)
             );
             returnAjax($response);
         }
-        # Higher level checks
+        if ($requestedPermission == "EDIT") {
+            # Editing has an extra filter
+            $hasPermission = $permissions[$uid];
+            if ($hasPermission !== $requestedPermission && $isSu !== true) {
+                $response = array(
+                    'status' => false,
+                    'error' => 'UNAUTHORIZED_USER',
+                    'human_error' => "User $uid isn't authorized to edit this dataset",
+                    'args_provided' => $get,
+                    "user_permissions" => $hasPermission,
+                );
+                returnAjax($response);
+            }
+        }
+    } else {
+        # Unrecognized query type
+        returnAjax(array(
+            "status" => false,
+            "error" => "UNAUTHORIZED_QUERY_TYPE"
+            "args_provided" => $get,
+        ));
     }
     if (empty($sqlQuery)) {
         returnAjax(array(
