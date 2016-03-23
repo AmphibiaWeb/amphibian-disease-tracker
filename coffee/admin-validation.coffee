@@ -54,7 +54,7 @@ stopLoadBarsError = (currentTimeout, message) ->
         $(el).addClass "error-progress"
         $(el).find("#primaryProgress").css "background", "#F44336"
   if message?
-    bsAlert "<strong>Data Validation Error</strong: #{message}", "danger"
+    bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
     stopLoadError "There was a problem validating your data"
   false
 

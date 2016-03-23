@@ -25,6 +25,7 @@
     "es6-promise": "^3.1.2",
     "grunt": "^0.4.5",
     "grunt-bootlint": "^0.10.0",
+    "grunt-cli": "^1.1.0",
     "grunt-contrib-coffee": "^1.0.0",
     "grunt-contrib-cssmin": "^1.0.1",
     "grunt-contrib-less": "^1.1.0",

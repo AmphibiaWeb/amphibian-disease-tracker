@@ -363,6 +363,9 @@ finalizeData = ->
     if isNull(_adp.projectId)
       _adp.projectId = md5("#{geo.dataTable}#{author}#{Date.now()}")
     title = p$("#project-title").value
+    if dataFileParams?.hasDataFile
+      if dataFileParams.filePath.search(helperDir) is -1
+        dataFileParams.filePath = "#{helperDir}#{dataFileParams.filePath}"
     file = dataFileParams?.filePath ? null
     mintBcid _adp.projectId, file, title, (result) ->
       try
@@ -457,7 +460,7 @@ finalizeData = ->
               distanceFromCenter = geo.distance point.lat, point.lng, center.lat, center.lng
               if distanceFromCenter > excursion then excursion = distanceFromCenter
         if dataFileParams?.hasDataFile
-          if dataFileParams.filePath.search helperDir is -1
+          if dataFileParams.filePath.search(helperDir) is -1
             dataFileParams.filePath = "#{helperDir}#{dataFileParams.filePath}"
           postData.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.filePath}"
         postData.lat = center.lat
@@ -1728,8 +1731,9 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
   catch e
     console.error "Error parsing data - #{e.message}"
     console.warn e.stack
-    stopLoadBarsError null,  "There was a problem parsing your data"
-    
+    message = """There was a problem parsing your data. Please check <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org FIMS requirements<span class="glyphicon glyphicon-new-window"></span></a>"""
+    stopLoadBarsError null, message
+
   false
 
 
@@ -2020,8 +2024,8 @@ loadEditor = (projectPreload) ->
           noteHtml = """
           <h3>Project Notes</h3>
           <ul class="nav nav-tabs" id="markdown-switcher">
-            <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher">Preview</a></li>
-            <li role="presentation" data-view="edit"><a href="#markdown-switcher">Edit</a></li>
+            <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
+            <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
           <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="note-preview">
@@ -2032,8 +2036,8 @@ loadEditor = (projectPreload) ->
           mdFunding = if isNull(project.extended_funding_reach_goals) then "*No funding reach goals*" else project.extended_funding_reach_goals.unescape()
           fundingHtml = """
           <ul class="nav nav-tabs" id="markdown-switcher-funding">
-            <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher-funding">Preview</a></li>
-            <li role="presentation" data-view="edit"><a href="#markdown-switcher-funding">Edit</a></li>
+            <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
+            <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
           <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="preview-funding">
@@ -2100,7 +2104,7 @@ loadEditor = (projectPreload) ->
           if months.length is 0 or isNull monthPretty then monthPretty = "<em>(no data)</em>"
           if years.length is 0 or isNull yearPretty then yearPretty = "<em>(no data)</em>"
           html = """
-          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}/project.php?id=#{opid}" data-toggle="tooltip" title="View in Project Viewer" data-newtab="true"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
+          <h2 class="clearfix newtitle col-xs-12">Managing #{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}project.php?id=#{opid}" data-toggle="tooltip" title="View in Project Viewer" data-newtab="true"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
           <section id="manage-users" class="col-xs-12 col-md-4 pull-right">
             <paper-card class="clearfix" heading="Project Collaborators" elevation="2">
@@ -2234,7 +2238,7 @@ loadEditor = (projectPreload) ->
             p$("#note-preview").markdown = $(this).val()
           $("#markdown-switcher li").click ->
             $("#markdown-switcher li").removeClass "active"
-            $(".markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher .markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
             switch $(this).attr "data-view"
               when "md"
@@ -2246,7 +2250,7 @@ loadEditor = (projectPreload) ->
             p$("#preview-funding").markdown = $(this).val()
           $("#markdown-switcher-funding li").click ->
             $("#markdown-switcher-funding li").removeClass "active"
-            $(".markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher-funding .markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
             switch $(this).attr "data-view"
               when "md"
@@ -3655,7 +3659,7 @@ saveEditorData = (force = false, callback) ->
       for el in $(".project-param:not([readonly])")
         key = $(el).attr "data-field"
         if isNull key then continue
-        postData[key] = p$(el).value
+        postData[key] = p$(el).value.unescape()
       authorObj = new Object()
       for el in $(".author-param")
         key = $(el).attr "data-key"
@@ -3883,7 +3887,7 @@ stopLoadBarsError = (currentTimeout, message) ->
         $(el).addClass "error-progress"
         $(el).find("#primaryProgress").css "background", "#F44336"
   if message?
-    bsAlert "<strong>Data Validation Error</strong: #{message}", "danger"
+    bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
     stopLoadError "There was a problem validating your data"
   false
 

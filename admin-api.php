@@ -206,7 +206,11 @@ function saveEntry($get)
   );
     unset($data['project_id']); # Obvious
   unset($data['project_obj_id']); # ARK
-#  unset($data['dataset_arks']); # File uploads should handle this directly
+  if (strlen($data['dataset_arks']) < strlen($projectServer['dataset_arks'])) {
+      # It can only grow, not shrink
+      # Check formatting
+      unset($data['dataset_arks']);
+  }
   unset($data['id']); # Obvious
   unset($data['access_data']); # Handled seperately
 
@@ -855,6 +859,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
     $dataFileIdentifier = implode('.', $dataNameArray);
     $datasetCanonicalUri = 'https://amphibiandisease.org/project.php?id='.$projectLink.'#dataset:'.$dataFileIdentifier;
     # Is the dataset a file, or a project identifier?
+    $notices = array();
     $filePath = dirname(__FILE__).'/'.$datasetRelativeUri;
     if (strpos($datasetRelativeUri, '.') === false || !file_exists($filePath)) {
         # No file extension == no file
@@ -863,6 +868,13 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         if (empty($datasetTitle)) {
             $datasetTitle = $datasetRelativeUri;
         }
+        $notices[] = array(
+          "message" => "Bad file",
+          "has_extension" => strpos($datasetRelativeUri, '.') !== false,
+          "file_exists" => file_exists($filePath),
+          "provided_relative_uri" => $datasetRelativeUri,
+          "computed_path" => $filePath,
+        );
     }
     $fimsMintUrl = 'http://www.biscicol.org/biocode-fims/rest/bcids';
     # http://biscicol.org/biocode-fims/rest/fims.wadl#idp752895712
