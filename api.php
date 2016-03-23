@@ -225,7 +225,8 @@ function doCartoSqlApiPush($get)
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
-    $sqlAction = preg_replace('/(?i)(SELECT|DELETE|INSERT(?: +INTO)?|UPDATE) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/im', '$2', $sqlQuery);
+    $queryPattern = '/(?i)([a-zA-Z]+(?: +[a-zA-Z]+)?) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/m';
+    $sqlAction = preg_replace($queryPattern, '$1', $sqlQuery);
     $sqlAction = strtolower(str_replace(" ","", $sqlAction));
     $restrictedActions = array(
         "select" => "READ",
@@ -237,12 +238,13 @@ function doCartoSqlApiPush($get)
     if (isset($restrictedActions[$sqlAction])) {
         # Check the user
         # If bad, kick the access out
-        $cartoTable = preg_replace('/(?i)(SELECT|DELETE|INSERT(?: +INTO)?|UPDATE) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/im', '$2', $sqlQuery);
+        $cartoTable = preg_replace($queryPattern, '$2', $sqlQuery);
         $cartoTableJson = str_replace('_', '&#95;', $cartoTable);
-        $accessListLookupQuery = 'SELECT `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
+        $accessListLookupQuery = 'SELECT `project_id`, `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
         $l = $db->openDB();
         $r = mysqli_query($l, $accessListLookupQuery);
         $row = mysqli_fetch_assoc($r);
+        $pid = $row["project_id"];
         $requestedPermission = $restrictedActions[$sqlAction];
         $pArr = explode(",", $row["access_data"]);
         $permissions = array();
@@ -263,6 +265,7 @@ function doCartoSqlApiPush($get)
                 'error' => 'NOT_LOGGED_IN',
                 'human_error' => 'Attempted to access private project without being logged in',
                 'args_provided' => $get,
+                "project_id" => $pid,
                 'is_public_dataset' => $isPublic,
             );
             returnAjax($response);
@@ -274,6 +277,7 @@ function doCartoSqlApiPush($get)
                 'error' => 'UNAUTHORIZED_USER',
                 'human_error' => "User $uid isn't authorized to access this dataset",
                 'args_provided' => $get,
+                "project_id" => $pid,
                 'is_public_dataset' => $isPublic,
             );
             returnAjax($response);
@@ -287,6 +291,7 @@ function doCartoSqlApiPush($get)
                     'error' => 'UNAUTHORIZED_USER',
                     'human_error' => "User $uid isn't authorized to edit this dataset",
                     'args_provided' => $get,
+                    "project_id" => $pid,
                     "user_permissions" => $hasPermission,
                 );
                 returnAjax($response);
@@ -296,7 +301,8 @@ function doCartoSqlApiPush($get)
         # Unrecognized query type
         returnAjax(array(
             "status" => false,
-            "error" => "UNAUTHORIZED_QUERY_TYPE"
+            "error" => "UNAUTHORIZED_QUERY_TYPE",
+            "query_type" => $sqlAction,
             "args_provided" => $get,
         ));
     }
