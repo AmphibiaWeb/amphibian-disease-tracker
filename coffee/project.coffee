@@ -286,6 +286,8 @@ renderMapWithData = (projectData, force = false) ->
       # Append to DOM
       $("body").append html
       # Create copy event
+      ZeroClipboard.config _adp.zcConfig
+      zcClient = new ZeroClipboard $(".copy-ark-context").get 0
       ark = $(this).attr "data-ark"
       ##
       # Events
@@ -299,7 +301,51 @@ renderMapWithData = (projectData, force = false) ->
       $(".ark-context-wrapper paper-item")
       .hover inFn, outFn
       .click ->
-        foo()
+        do copyFn = ->
+          if html5
+            # http://caniuse.com/#feat=clipboard
+            try
+              url = "https://n2t.net/#{ark}"
+              clipboardData =
+                dataType: "text/plain"
+                data: url
+                "text/plain": url
+              clip = new ClipboardEvent("copy", clipboardData)
+              document.dispatchEvent(clip)
+              toastStatusMessage "ARK resolver path copied to clipboard"
+              return false
+            catch e
+              console.error "Error creating copy: #{e.message}"
+              console.warn e.stack
+          console.warn "Can't use HTML5"
+          zcClient.setData clipboardData
+          zcClient.on "aftercopy", (e) ->
+            if e.data["text/plain"]
+              toastStatusMessage "ARK resolver path copied to clipboard"
+            else
+              toastStatusMessage "Error copying to clipboard"
+          zcClient.on "error", (e) ->
+            #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
+            console.error "Error copying to clipboard"
+            console.warn "Got", e
+            if e.name is "flash-overdue"
+              # ZeroClipboard.destroy()
+              if _adp.resetClipboard is true
+                console.error "Resetting ZeroClipboard didn't work!"
+                return false
+              ZeroClipboard.on "ready", ->
+                # Re-call
+                _adp.resetClipboard = true
+                copyFn()
+              zcClient = new ZeroClipboard $(".copy-ark-context").get 0
+            # Case for no flash at all
+            if e.name is "flash-disabled"
+              # stuff
+              console.info "No flash on this system"
+              ZeroClipboard.destroy()
+              toastStatusMessage "Clipboard copying isn't available on your system"
+          false
+        # Remove wrapper
         $(".ark-context-wrapper").remove()
         false
       .contextmenu ->
@@ -598,6 +644,7 @@ $ ->
     searchProjects.debounce()
   zcConfig =
     swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+  _adp.zcConfig = zcConfig
   ZeroClipboard.config zcConfig
   _adp.zcClient = new ZeroClipboard $("#copy-ark").get 0
   # client.on "copy", (e) =>
