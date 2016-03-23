@@ -162,8 +162,8 @@ loadEditor = (projectPreload) ->
           noteHtml = """
           <h3>Project Notes</h3>
           <ul class="nav nav-tabs" id="markdown-switcher">
-            <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher">Preview</a></li>
-            <li role="presentation" data-view="edit"><a href="#markdown-switcher">Edit</a></li>
+            <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
+            <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
           <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="note-preview">
@@ -174,8 +174,8 @@ loadEditor = (projectPreload) ->
           mdFunding = if isNull(project.extended_funding_reach_goals) then "*No funding reach goals*" else project.extended_funding_reach_goals.unescape()
           fundingHtml = """
           <ul class="nav nav-tabs" id="markdown-switcher-funding">
-            <li role="presentation" class="active" data-view="md"><a href="#markdown-switcher-funding">Preview</a></li>
-            <li role="presentation" data-view="edit"><a href="#markdown-switcher-funding">Edit</a></li>
+            <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
+            <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
           <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="preview-funding">
@@ -1797,7 +1797,7 @@ saveEditorData = (force = false, callback) ->
       for el in $(".project-param:not([readonly])")
         key = $(el).attr "data-field"
         if isNull key then continue
-        postData[key] = p$(el).value
+        postData[key] = p$(el).value.unescape()
       authorObj = new Object()
       for el in $(".author-param")
         key = $(el).attr "data-key"

@@ -4,6 +4,7 @@ Promise = require('es6-promise').Promise
 module.exports = (grunt) ->
   # Gruntfile
   # https://github.com/sindresorhus/grunt-shell
+  grunt.option('stack', true)
   grunt.loadNpmTasks("grunt-shell")
   # https://www.npmjs.com/package/grunt-contrib-coffee
   grunt.loadNpmTasks("grunt-contrib-coffee")
