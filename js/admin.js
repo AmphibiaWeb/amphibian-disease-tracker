@@ -3223,7 +3223,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly) {
                 lat = (ref9 = row.decimalLatitude) != null ? ref9 : row.decimallatitude;
                 lng = (ref10 = row.decimalLongitude) != null ? ref10 : row.decimallongitude;
                 gjString = "{\"type\":\"Point\",\"coordinates\":[" + lat + "," + lng + "]}";
-                if (refVal === value || altRefVal === value || refval === gjString) {
+                if (refVal === value || altRefVal === value || refVal === gjString) {
                   continue;
                 }
               }

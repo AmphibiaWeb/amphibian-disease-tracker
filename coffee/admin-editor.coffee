@@ -1491,7 +1491,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 lat = row.decimalLatitude ? row.decimallatitude
                 lng = row.decimalLongitude ? row.decimallongitude
                 gjString = "{\"type\":\"Point\",\"coordinates\":[#{lat},#{lng}]}"
-                if refVal is value or altRefVal is value or refval is gjString
+                if refVal is value or altRefVal is value or refVal is gjString
                   # Don't need to add it again
                     continue
               if typeof value is "string"
