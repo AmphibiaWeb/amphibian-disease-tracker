@@ -1547,7 +1547,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               if refRow.the_geom isnt gjString
                 valuesArr.push "the_geom=#{geoJsonVal}"
               else
-                console.info "Not skipping", refRow.the_geom, geoJsonGeom, gjString
+                console.info "Not skipping coords", refRow.the_geom, geoJsonGeom, gjString
             else
               colArr.push "the_geom"
               valuesArr.push geoJsonVal
