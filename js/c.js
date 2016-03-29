@@ -3249,7 +3249,7 @@ setupMapMarkerToggles = function() {
     status = $(this).attr("data-disease-status");
     $(".aweb-link-species").removeAttr("hidden");
     console.log("Clicked '" + status + "' toggle");
-    return toggleGoogleMapMarkers(status, function(isOpen) {
+    return toggleGoogleMapMarkers(status, null, function(isOpen) {
       if (status === "no_confidence") {
         status = "inconclusive";
       }
