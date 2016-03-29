@@ -168,9 +168,6 @@ renderMapWithData = (projectData, force = false) ->
       lng = geoJson.coordinates[1]
       points.push [lat,lng]
       # Fill the points as markers
-      dataSwitch = row.diseasedetected
-      if dataSwitch isnt "true" and dataSwitch isnt "false"
-        dataSwitch = "inconclusive"
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
           "positive"
@@ -191,7 +188,9 @@ renderMapWithData = (projectData, force = false) ->
         </p>
       </google-map-marker>
       """
-      $(".aweb-link-species[data-species='#{row.genus} #{row.specificepithet}']").attr "data-#{dataSwitch}", "true"
+      if row.diseasedetected isnt "positive" and row.diseasedetected isnt "negative"
+        row.diseasedetected = "inconclusive"
+      $(".aweb-link-species[data-species='#{row.genus} #{row.specificepithet}']").attr "data-#{row.diseasedetected}", "true"
       # $("#transect-viewport").append marker
       mapHtml += marker
     unless poly?.paths?
