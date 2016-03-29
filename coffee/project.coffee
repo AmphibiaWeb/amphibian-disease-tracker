@@ -198,7 +198,7 @@ renderMapWithData = (projectData, force = false) ->
         _adp.canonicalHull = createConvexHull points, true
     # Looped over all of them
     googleMap = """
-          <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" fit-to-markers map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6">
+          <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" map-type="hybrid" disable-default-ui zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6">
             #{mapHtml}
           </google-map>
     """
