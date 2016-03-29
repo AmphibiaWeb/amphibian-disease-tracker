@@ -173,7 +173,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, points, ref1, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, points, ref1, ref2, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -394,6 +394,14 @@ renderMapWithData = function(projectData, force) {
     });
     checkArkDataset(projectData);
     setPublicData(projectData);
+    ref2 = $(".aweb-link-species");
+    for (o = 0, len4 = ref2.length; o < len4; o++) {
+      el = ref2[o];
+      isPositive = $(el).attr("data-positive").toBool();
+      if (isPositive) {
+        $(el).attr("data-negative", "false").attr("data-inconclusive", "false");
+      }
+    }
     return stopLoad();
   }).error(function(result, status) {
     console.error(result, status);
