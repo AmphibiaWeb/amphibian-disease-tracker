@@ -374,6 +374,12 @@ renderMapWithData = (projectData, force = false) ->
       false
     checkArkDataset(projectData)
     setPublicData(projectData)
+    for el in $(".aweb-link-species")
+      isPositive = $(el).attr("data-positive").toBool()
+      if isPositive
+        $(el)
+        .attr "data-negative", "false"
+        .attr "data-inconclusive", "false"
     stopLoad()
   .error (result, status) ->
     console.error result, status
@@ -503,7 +509,7 @@ searchProjects = ->
       s = result.search ? search
       html = "<p><em>No results found for \"<strong>#{s}</strong>\""
     $("#project-result-container").html html
-    bindClicks(".search-proj-link")    
+    bindClicks(".search-proj-link")
     $("google-map-poly").attr "hidden", "hidden"
     for projectId in showList
       $("google-map-poly[data-project='#{projectId}']").removeAttr "hidden"
