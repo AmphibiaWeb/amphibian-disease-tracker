@@ -564,7 +564,7 @@ getColumnObj = ->
   if _adp.activeCols?
     return _adp.activeCols
   columnDatatype
-      
+
 
 geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
   ###
@@ -785,7 +785,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength)
             insertPlace += insertMaxLength
             sqlQuery += "INSERT INTO #{dataTable} VALUES #{tempList.join(", ")};"
-            
+
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...
@@ -1316,7 +1316,7 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
 
 
 
-toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewport") ->
+toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewport", callback) ->
   ###
   #
   ###
@@ -1329,11 +1329,13 @@ toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewpo
       state = not p$(marker).open
       console.info "Setting #{diseaseStatus} markers open state to #{state}"
     p$(marker).open = state
+  if typeof callback is "function"
+    callback(state)
   false
 
 setupMapMarkerToggles = ->
   ###
-  # 
+  #
   ###
   html = """
   <div class="row">
@@ -1354,10 +1356,14 @@ setupMapMarkerToggles = ->
     status = $(this).attr "data-disease-status"
     $(".aweb-link-species").removeAttr "hidden"
     console.log "Clicked '#{status}' toggle"
-    toggleGoogleMapMarkers status
-    if status is "no_confidence"
-      status = "inconclusive"
-    $(".aweb-link-species:not([data-#{status}='true'])").attr "hidden", "hidden"
+    toggleGoogleMapMarkers status, (isOpen) ->
+      if status is "no_confidence"
+        status = "inconclusive"
+      if isOpen
+        console.info "Hiding selector", ".aweb-link-species:not([data-#{status}='true'])"
+        $(".aweb-link-species:not([data-#{status}='true'])").attr "hidden", "hidden"
+      else
+        console.info "Removing hidden attribute"
   false
 
 

@@ -3203,7 +3203,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
   });
 };
 
-toggleGoogleMapMarkers = function(diseaseStatus, selector) {
+toggleGoogleMapMarkers = function(diseaseStatus, selector, callback) {
   var l, len, marker, markers, state;
   if (diseaseStatus == null) {
     diseaseStatus = "positive";
@@ -3227,6 +3227,9 @@ toggleGoogleMapMarkers = function(diseaseStatus, selector) {
     }
     p$(marker).open = state;
   }
+  if (typeof callback === "function") {
+    callback(state);
+  }
   return false;
 };
 
@@ -3246,11 +3249,17 @@ setupMapMarkerToggles = function() {
     status = $(this).attr("data-disease-status");
     $(".aweb-link-species").removeAttr("hidden");
     console.log("Clicked '" + status + "' toggle");
-    toggleGoogleMapMarkers(status);
-    if (status === "no_confidence") {
-      status = "inconclusive";
-    }
-    return $(".aweb-link-species:not([data-" + status + "='true'])").attr("hidden", "hidden");
+    return toggleGoogleMapMarkers(status, function(isOpen) {
+      if (status === "no_confidence") {
+        status = "inconclusive";
+      }
+      if (isOpen) {
+        console.info("Hiding selector", ".aweb-link-species:not([data-" + status + "='true'])");
+        return $(".aweb-link-species:not([data-" + status + "='true'])").attr("hidden", "hidden");
+      } else {
+        return console.info("Removing hidden attribute");
+      }
+    });
   });
   return false;
 };
