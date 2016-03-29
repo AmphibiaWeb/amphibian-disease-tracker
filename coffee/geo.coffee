@@ -1356,7 +1356,7 @@ setupMapMarkerToggles = ->
     status = $(this).attr "data-disease-status"
     $(".aweb-link-species").removeAttr "hidden"
     console.log "Clicked '#{status}' toggle"
-    toggleGoogleMapMarkers status, (isOpen) ->
+    toggleGoogleMapMarkers status, null, (isOpen) ->
       if status is "no_confidence"
         status = "inconclusive"
       if isOpen
