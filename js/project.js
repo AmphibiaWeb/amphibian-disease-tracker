@@ -173,7 +173,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, error, geoJson, googleMap, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, points, ref1, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, dataSwitch, error, geoJson, googleMap, k, lat, len2, len3, lng, m, mapData, marker, month, monthPretty, months, n, note, options, points, ref1, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -195,6 +195,10 @@ renderMapWithData = function(projectData, force) {
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
       points.push([lat, lng]);
+      dataSwitch = row.diseasedetected;
+      if (dataSwitch !== "true" && dataSwitch !== "false") {
+        dataSwitch = "inconclusive";
+      }
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
@@ -211,6 +215,7 @@ renderMapWithData = function(projectData, force) {
         note = "(<em>" + row.originaltaxa + "</em>)";
       }
       marker = "<google-map-marker latitude=\"" + lat + "\" longitude=\"" + lng + "\" data-disease-detected=\"" + row.diseasedetected + "\">\n  <p>\n    <em>" + row.genus + " " + row.specificepithet + "</em> " + note + "\n    <br/>\n    Tested <strong>" + row.diseasedetected + "</strong> for " + row.diseasetested + "\n  </p>\n</google-map-marker>";
+      $(".aweb-link-species[data-species='" + row.genus + " " + row.specificepithet + "']").attr("data-" + dataSwitch, "true");
       mapHtml += marker;
     }
     if ((poly != null ? poly.paths : void 0) == null) {

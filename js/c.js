@@ -3244,8 +3244,13 @@ setupMapMarkerToggles = function() {
   $(".toggle-marker").unbind().click(function() {
     var status;
     status = $(this).attr("data-disease-status");
+    $(".aweb-link-species").removeAttr("hidden");
     console.log("Clicked '" + status + "' toggle");
-    return toggleGoogleMapMarkers(status);
+    toggleGoogleMapMarkers(status);
+    if (status === "no_confidence") {
+      status = "inconclusive";
+    }
+    return $(".aweb-link-species:not([data-" + status + "='true'])").attr("hidden", "hidden");
   });
   return false;
 };

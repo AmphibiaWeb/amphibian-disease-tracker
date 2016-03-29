@@ -1333,7 +1333,7 @@ toggleGoogleMapMarkers = (diseaseStatus = "positive", selector="#transect-viewpo
 
 setupMapMarkerToggles = ->
   ###
-  #
+  # 
   ###
   html = """
   <div class="row">
@@ -1352,8 +1352,12 @@ setupMapMarkerToggles = ->
   .unbind()
   .click ->
     status = $(this).attr "data-disease-status"
+    $(".aweb-link-species").removeAttr "hidden"
     console.log "Clicked '#{status}' toggle"
     toggleGoogleMapMarkers status
+    if status is "no_confidence"
+      status = "inconclusive"
+    $(".aweb-link-species:not([data-#{status}='true'])").attr "hidden", "hidden"
   false
 
 

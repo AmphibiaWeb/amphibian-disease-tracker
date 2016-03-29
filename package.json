@@ -41,8 +41,5 @@
     "npm": "^3.8.2",
     "npm-check-updates": "^2.5.6",
     "vulcanize": "^1.14.0"
-  },
-  "dependencies": {
-    "left-pad": "github:azer/left-pad#bff80e3ef0db0bfaba7698606c4f623433d14355"
   }
 }
