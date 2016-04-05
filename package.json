@@ -40,6 +40,7 @@
     "less": "^2.5.3",
     "npm": "^3.8.2",
     "npm-check-updates": "^2.5.6",
-    "vulcanize": "^1.14.0"
+      "vulcanize": "^1.14.0",
+      "clean-css": "github:tigerhawkvok/clean-css#9f6c20549f8312bad4a5e7d281102278a39e4fe4"
   }
 }

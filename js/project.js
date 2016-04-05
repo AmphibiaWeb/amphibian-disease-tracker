@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showEmailField,
+var checkArkDataset, checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -706,6 +706,31 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
     $(selector).get(0).scrollIntoView(true);
   }
   return selector;
+};
+
+sqlQueryBox = function() {
+
+  /*
+   *
+   */
+  var formatQuery, html, queryCarto, queryResultDialog, queryResultSummaryHistory;
+  queryCarto = function() {
+    return false;
+  };
+  formatQuery = function() {
+    return false;
+  };
+  queryResultDialog = function() {
+    return false;
+  };
+  queryResultSummaryHistory = function() {
+    return false;
+  };
+  if (!$("#project-sql-query-box").exists()) {
+    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n    \n</div>";
+    $("main").append(html);
+  }
+  return false;
 };
 
 $(function() {
