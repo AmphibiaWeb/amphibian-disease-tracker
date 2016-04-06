@@ -7250,7 +7250,7 @@ copyright-statement {
   font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 main .btn,
-main paper-button {
+main paper-button.paper-button-0 {
   margin-top: 5px;
   margin-bottom: 5px;
 }
