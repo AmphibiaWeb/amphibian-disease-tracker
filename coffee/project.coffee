@@ -662,7 +662,8 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
 
 sqlQueryBox = ->
   ###
-  #
+  # Render and bind events for a box to directly execute queries on a
+  # project. 
   ###
   # Function definitions
   queryCarto = ->
