@@ -7249,6 +7249,11 @@ copyright-statement {
   border-radius: 4px;
   font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+main .btn,
+main paper-button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
 .help-block ol,
 .help-block ul {
   display: inline-block;

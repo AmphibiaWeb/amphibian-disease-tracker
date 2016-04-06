@@ -188,7 +188,7 @@ loadCreateNewProject = ->
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
-      <paper-input label="Primary Pathogen Studied" id="project-disease" class="project-field col-md-6 col-xs-7" required auto-validate data-field="disease"></paper-input>
+      <paper-input label="Primary Pathogen" id="project-disease" class="project-field col-xs-6" required auto-validate data-field="disease"></paper-input>
         #{getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")}
         <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium dendrobatidis">Bd</button>
         <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium salamandrivorans ">Bsal</button>
@@ -241,7 +241,7 @@ loadCreateNewProject = ->
         </button>
         <paper-icon-button icon="icons:restore" id="reset-map-builder" data-toggle="tooltip" title="Reset Points"></paper-icon-button>
       </div>
-      <div id="carto-rendered-map" class="col-md-6">
+      <div id="carto-rendered-map" class="col-md-6 col-xs-12">
         <div id="carto-map-container" class="carto-map map">
         </div>
       </div>
