@@ -459,10 +459,19 @@ copyright-statement {
 
 
 .help-block {
-  display: block;
-  margin-top: 1.25rem;
-  margin-bottom: 10px;
-  .text-muted;
+  // display: block;
+  // margin-top: 1.25rem;
+  // margin-bottom: 10px;
+  // .text-muted;
+    ol, ul {
+        display: inline-block;
+        li {
+            display: inline-block;
+        }
+    }
+    ul {
+        list-style-type: none;
+    }
 }
 
 

@@ -6916,12 +6916,21 @@ html >>> .code {
   font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 html >>> .help-block {
-  margin-top: 5px;
-  color: #737373;
   display: block;
-  margin-top: 1.25rem;
+  margin-top: 5px;
   margin-bottom: 10px;
-  color: #777777;
+  color: #737373;
+}
+html >>> .help-block ol,
+html >>> .help-block ul {
+  display: inline-block;
+}
+html >>> .help-block ol li,
+html >>> .help-block ul li {
+  display: inline-block;
+}
+html >>> .help-block ul {
+  list-style-type: none;
 }
 html >>> paper-autogrow-textarea textarea {
   width: 90%;
@@ -7240,11 +7249,16 @@ copyright-statement {
   border-radius: 4px;
   font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
-.help-block {
-  display: block;
-  margin-top: 1.25rem;
-  margin-bottom: 10px;
-  color: #777777;
+.help-block ol,
+.help-block ul {
+  display: inline-block;
+}
+.help-block ol li,
+.help-block ul li {
+  display: inline-block;
+}
+.help-block ul {
+  list-style-type: none;
 }
 paper-toast,
 paper-spinner {
