@@ -711,7 +711,8 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
 sqlQueryBox = function() {
 
   /*
-   *
+   * Render and bind events for a box to directly execute queries on a
+   * project.
    */
   var formatQuery, html, queryCarto, queryResultDialog, queryResultSummaryHistory;
   queryCarto = function() {
