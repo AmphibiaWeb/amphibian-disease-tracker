@@ -2087,7 +2087,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
     else
       console.error "Unable to authenticate session. Please log in."
       stopLoadError "Sorry, your session has expired. Please log in and try again."
-  .error (result, status) ->
+  .fail (result, status) ->
     console.error "Couldn't communicate with server!", result, status
     console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-001)"
@@ -2229,7 +2229,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
         console.info "gcdc callback successful"
         parentCallback(coords)
       false
-  .error (result, status) ->
+  .fail (result, status) ->
     console.error "Couldn't communicate with server!", result, status
     console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"

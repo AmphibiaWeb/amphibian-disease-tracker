@@ -1064,12 +1064,110 @@ finishChangePassword = ->
 ###################################
 
 verifyEmail = (caller) ->
+  isAlternate = $(caller).attr("data-alternate").toBool()
+  user = $(caller).atter "data-user"
+  args = "action=verifyemail&user=#{encodeURIComponent(user)}&alternate=#{isAlternate}"
+  validateEmailCode = ->
+    code = $("#verify-email-code").val().trim()
+    args += "&token=#{code}"
+    $.post apiUri.apiTarget, args, "json"
+    .done (result) ->
+      if result.is_good is true
+        if result.status is false
+          # Already validated
+          stopLoad()
+          toastStatusMessage "You're already verified"
+        else
+          toastStatusMessage "Verification successful"
+        $("#verify-email-filler").remove()
+        html = """
+         <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>
+        """
+        if result.meets_restriction_criteria
+          html += """
+           <span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>
+          """
+        $(caller).append html
+      else
+        stopLoadError result.human_error
+      false
+    .fail (result, status) ->
+      stopLoadError "Sorry, we couldn't verify your email at this time"
+      false
+    false
+  # Post it
+  try
+    startLoad()
+  $.post apiUri.apiTarget, args, "json"
+  .done (result) ->
+    if result.is_good is true
+      if result.status is false
+        # Already validated
+        stopLoad()
+        toastStatusMessage "You're already verified"
+      else
+        # Somehow just validated????
+        false
+    else
+      if result.status
+        # Sent email
+        # Put a form to fill
+        html = """
+        <div id='verify-email-filler' class='form'>
+          <p>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>
+          <label for='verify-email-code' class='sr-only'>Validation Code:</label>
+          <input class='form-control' type='text' length='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>
+          <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>
+        </div>
+        """
+        $(caller).after html
+        $("#validate-email-code").click ->
+          validateEmailCode()
+      else
+        console.error result.error
+        try
+          stopLoadError result.human_error
+        catch
+          try
+            toastStatusMessage result.human_error
+    false
+  .fail (result, status) ->
+    stopLoadError "Sorry, we couldn't verify your email at this time"
+    false
   false
 
-validateEmailCode = ->
+
+addAlternateEmail = (caller) ->
+  html = """
+  <div id='add-alternate-form' class='form'>
+    <input type='email' class='form-control' placeholder='Alternate email address' id='alternate-email-value' name='alternate-email-value' required/>
+    <button class='btn btn-primary' id='submit-alternate-email'>Add</button>
+  </div>
+  """
+  $(caller).after html
+  $("#submit-alternate-email").click ->
+    startLoad()
+    # POST, etc
+    email = $("#alternate-email-value").val().trim()
+    args = "action=addalternateemail&email=#{encodeURIComponent(email)}"
+    $.post apiUri.apiTarget, args, "json"
+    .done (result) ->
+      if result.status isnt true
+        stopLoadError result.human_error
+        return false
+      toastStatusMessage "Added '#{email}' as an alternate email"
+      $("#add-alternate-form").remove()
+      html = """
+      #{email} <small>(check your email for a verification link)</small>
+      """
+      $(caller).html html
+      stopLoad()
+      false
+    .fail (result, status) ->
+      stopLoadError "Sorry, we couldn't assign your alternate email at this time"
+      false
+    false
   false
-
-
 
 
 $ ->
@@ -1143,6 +1241,14 @@ $ ->
     showAdvancedOptions(domain,has2fa)
   $(".do-password-reset").click ->
     resetPassword()
+    false
+  $(".verify-email").click ->
+    parent = $(this).parent()
+    verifyEmail(parent)
+    false
+  $("#add-alternate").click ->
+    parent = $(this).parent()
+    addAlternateEmail(parent)
     false
   try
     # Use the CDN out of an abundance of caution

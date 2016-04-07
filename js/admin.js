@@ -465,7 +465,7 @@ finalizeData = function() {
               stopLoadError(result.human_error);
             }
             return false;
-          }).error(function(result, status) {
+          }).fail(function(result, status) {
             stopLoadError("There was a problem saving your data. Please try again");
             return false;
           });
@@ -1050,7 +1050,7 @@ getCanonicalDataCoords = function(table, options, callback) {
         dataAttrs.markerInfo = info;
         console.info("Calling back with", coords, options);
         return callback(coords, options);
-      }).error(function(result, status) {
+      }).fail(function(result, status) {
         if ((dataAttrs != null ? dataAttrs.coords : void 0) != null) {
           return callback(dataAttrs.coords, options);
         } else {
@@ -1058,7 +1058,7 @@ getCanonicalDataCoords = function(table, options, callback) {
           return console.error("No valid coordinates accessible!");
         }
       });
-    }).error(function(result, status) {
+    }).fail(function(result, status) {
       return false;
     });
   });
@@ -2203,7 +2203,7 @@ loadEditor = function(projectPreload) {
                   stopLoadError(result.human_error);
                   return $(el).remove();
                 }
-              }).error(function(result, status) {
+              }).fail(function(result, status) {
                 console.error("Server error", result, status);
                 return stopLoadError("Error deleting project");
               });
@@ -2254,7 +2254,7 @@ loadEditor = function(projectPreload) {
           loadEditor();
           return false;
         }
-      }).error(function(result, status) {
+      }).fail(function(result, status) {
         stopLoadError("We couldn't load your project. Please try again.");
         return loadEditor();
       });
@@ -2309,7 +2309,7 @@ loadEditor = function(projectPreload) {
           return editProject(project);
         });
         return stopLoad();
-      }).error(function(result, status) {
+      }).fail(function(result, status) {
         return stopLoadError("There was a problem loading viable projects");
       });
     })();
@@ -2449,7 +2449,7 @@ popManageUserAccess = function(project, result) {
         }
         _adp.projectData.access_data.raw = result.new_access_saved;
         return stopLoad();
-      }).error(function(result, status) {
+      }).fail(function(result, status) {
         console.error("Server error", result, status);
         return stopLoadError("Problem changing permissions");
       });
@@ -2541,7 +2541,7 @@ showAddUserDialog = function(refAccessList) {
           } else {
             return $("#user-search-result-container").prop("hidden", "hidden");
           }
-        }).error(function(result, status) {
+        }).fail(function(result, status) {
           return console.error(result, status);
         });
       }
@@ -2602,7 +2602,7 @@ showAddUserDialog = function(refAccessList) {
         _adp.projectData.access_data.composite[user] = userObj;
       }
       return p$("#add-new-user").close();
-    }).error(function(result, status) {
+    }).fail(function(result, status) {
       return console.error("Server error", result, status);
     });
   });
@@ -2803,7 +2803,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       $("#append-replace-data-toggle").attr("hidden", "hidden");
     }
     return startEditorUploader();
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     return false;
   });
   return false;
@@ -3548,7 +3548,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 return false;
               });
               return false;
-            }).error(function(result, status) {
+            }).fail(function(result, status) {
               return stopLoadError("Error fetching updated table");
             });
             return false;
@@ -3557,7 +3557,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
         } else {
           return stopLoadError("Invalid user");
         }
-      }).error(function(result, status) {
+      }).fail(function(result, status) {
         return stopLoadError("Error updating Carto");
       });
       return false;
@@ -3634,7 +3634,7 @@ saveEditorData = function(force, callback) {
     toastStatusMessage("Save successful");
     _adp.projectData = result.project.project;
     return delete localStorage._adp;
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
     localStorage._adp = JSON.stringify(_adp);
     bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger");
@@ -3708,7 +3708,7 @@ loadProjectBrowser = function() {
       return loadProject(project);
     });
     return stopLoad();
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     return stopLoadError("There was a problem loading viable projects");
   });
   return false;
@@ -3767,7 +3767,7 @@ loadSUProjectBrowser = function() {
         return loadEditor(project);
       });
       return stopLoad();
-    }).error(function(result, status) {
+    }).fail(function(result, status) {
       return stopLoadError("There was a problem loading projects");
     });
   });
@@ -3858,7 +3858,7 @@ delayFimsRecheck = function(originalResponse, callback) {
     } else {
       return console.warn("Warning: delayed recheck had no callback");
     }
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     console.error(status + ": Couldn't check status on FIMS server!");
     console.warn("Server said", result.responseText);
     return stopLoadError("There was a problem validating your data, please try again later");
@@ -3984,7 +3984,7 @@ validateFimsData = function(dataObject, callback) {
     if (typeof callback === "function") {
       return callback(dataObject);
     }
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     clearTimeout(validatorTimeout);
     console.error(status + ": Couldn't upload to FIMS server!");
     console.warn("Server said", result.responseText);
@@ -4022,7 +4022,7 @@ mintBcid = function(projectId, datasetUri, title, callback) {
       return false;
     }
     return resultObj = result;
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     resultObj = {
       ark: null,
       error: status,
@@ -4083,7 +4083,7 @@ mintExpedition = function(projectId, title, callback) {
       expeditionId: result.fims_expedition_id,
       fimsRawResponse: result.responses.expedition_response
     };
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     resultObj.ark = null;
     return false;
   }).always(function() {
@@ -4244,7 +4244,7 @@ validateAWebTaxon = function(taxonObj, callback) {
     taxonObj.response = result;
     doCallback(taxonObj);
     return false;
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     var prettyTaxon;
     prettyTaxon = taxonObj.genus + " " + taxonObj.species;
     prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;

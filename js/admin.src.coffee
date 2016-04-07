@@ -530,7 +530,7 @@ finalizeData = ->
               console.log result
               stopLoadError result.human_error
             false
-          .error (result, status) ->
+          .fail (result, status) ->
             stopLoadError "There was a problem saving your data. Please try again"
             false
         # End postBBLocality
@@ -1036,7 +1036,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         console.info "Calling back with", coords, options
         callback coords, options
         # callback coords, info
-      .error (result, status) ->
+      .fail (result, status) ->
         # On error, return direct from file upload
         if dataAttrs?.coords?
           callback dataAttrs.coords, options
@@ -1044,7 +1044,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         else
           stopLoadError "Couldn't get bounding coordinates from data"
           console.error "No valid coordinates accessible!"
-    .error (result, status) ->
+    .fail (result, status) ->
       false
   false
 
@@ -2279,7 +2279,7 @@ loadEditor = (projectPreload) ->
                 else
                   stopLoadError result.human_error
                   $(el).remove()
-              .error (result, status) ->
+              .fail (result, status) ->
                 console.error "Server error", result, status
                 stopLoadError "Error deleting project"
               false
@@ -2323,7 +2323,7 @@ loadEditor = (projectPreload) ->
           console.warn e.stack
           loadEditor()
           return false
-      .error (result, status) ->
+      .fail (result, status) ->
         stopLoadError "We couldn't load your project. Please try again."
         loadEditor()
     false
@@ -2374,7 +2374,7 @@ loadEditor = (projectPreload) ->
           project = $(this).attr("data-project")
           editProject(project)
         stopLoad()
-      .error (result, status) ->
+      .fail (result, status) ->
         stopLoadError "There was a problem loading viable projects"
   else
     # We have a requested project preload
@@ -2519,7 +2519,7 @@ popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
         # Update _adp.projectData.access_data for the saving
         _adp.projectData.access_data.raw = result.new_access_saved
         stopLoad()
-      .error (result, status) ->
+      .fail (result, status) ->
         console.error "Server error", result, status
         stopLoadError "Problem changing permissions"
       false
@@ -2640,7 +2640,7 @@ showAddUserDialog = (refAccessList) ->
                 return false
           else
             $("#user-search-result-container").prop "hidden", "hidden"
-        .error (result, status) ->
+        .fail (result, status) ->
           console.error result, status
     searchHelper.debounce()
 
@@ -2701,7 +2701,7 @@ showAddUserDialog = (refAccessList) ->
         _adp.projectData.access_data.composite[user] = userObj
       # Dismiss the dialog
       p$("#add-new-user").close()
-    .error (result, status) ->
+    .fail (result, status) ->
       console.error "Server error", result, status
   false
 
@@ -2889,7 +2889,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       $("#data-card .card-content .variable-card-content").html "<p>You can upload data to your project here:</p>"
       $("#append-replace-data-toggle").attr "hidden", "hidden"
     startEditorUploader()
-  .error (result, status) ->
+  .fail (result, status) ->
     false
   false
 
@@ -3620,13 +3620,13 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   finalize()
                 false # End validateTaxa callback
               false # End updated carto fetch callback
-            .error (result, status) ->
+            .fail (result, status) ->
               stopLoadError "Error fetching updated table"
             false # End postToCarto callback
           false # End API validation check
         else
           stopLoadError "Invalid user"
-      .error (result, status) ->
+      .fail (result, status) ->
         stopLoadError "Error updating Carto"
       false # End newGeoDataHandler callback
     false # End dataCallback
@@ -3688,7 +3688,7 @@ saveEditorData = (force = false, callback) ->
     # Update the project data
     _adp.projectData = result.project.project
     delete localStorage._adp
-  .error (result, status) ->
+  .fail (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     localStorage._adp = JSON.stringify _adp
     bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger"
@@ -3766,7 +3766,7 @@ loadProjectBrowser = ->
       project = $(this).attr("data-project")
       loadProject(project)
     stopLoad()
-  .error (result, status) ->
+  .fail (result, status) ->
     stopLoadError "There was a problem loading viable projects"
 
   false
@@ -3827,7 +3827,7 @@ loadSUProjectBrowser = ->
         project = $(this).attr("data-project")
         loadEditor(project)
       stopLoad()
-    .error (result, status) ->
+    .fail (result, status) ->
       stopLoadError "There was a problem loading projects"
   false
 
@@ -3902,7 +3902,7 @@ delayFimsRecheck = (originalResponse, callback) ->
       callback()
     else
       console.warn "Warning: delayed recheck had no callback"
-  .error (result, status) ->
+  .fail (result, status) ->
     console.error "#{status}: Couldn't check status on FIMS server!"
     console.warn "Server said", result.responseText
     stopLoadError "There was a problem validating your data, please try again later"
@@ -4030,7 +4030,7 @@ validateFimsData = (dataObject, callback = null) ->
     # When we're successful, run the dependent callback
     if typeof callback is "function"
       callback(dataObject)
-  .error (result, status) ->
+  .fail (result, status) ->
     clearTimeout validatorTimeout
     console.error "#{status}: Couldn't upload to FIMS server!"
     console.warn "Server said", result.responseText
@@ -4062,7 +4062,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
       console.error result.error
       return false
     resultObj = result
-  .error (result, status) ->
+  .fail (result, status) ->
     resultObj =
       ark: null
       error: status
@@ -4108,7 +4108,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       ark: result.ark
       expeditionId: result.fims_expedition_id
       fimsRawResponse: result.responses.expedition_response
-  .error (result, status) ->
+  .fail (result, status) ->
     resultObj.ark = null
     false
   .always ->
@@ -4233,7 +4233,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     taxonObj.response = result
     doCallback(taxonObj)
     return false
-  .error (result, status) ->
+  .fail (result, status) ->
     # On fail, notify the user that the taxon wasn't actually validated
     # with a BSAlert, rather than toast
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
