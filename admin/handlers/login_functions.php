@@ -1242,10 +1242,12 @@ class UserFunctions extends DBHelper
                 # Update the column
                 $lookup = array($this->userColumn => $this->getUsername());
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
+                $response["col_exists"] = $this->columnExists($key);
+                $response["key"] = $key;
                 $fill = array($key => true);
                 $this->updateEntry($fill, $lookup, null, true);
-                $response["col_exists"] = $this->columnExists($key);
                 $response["is_verified"] = $this->isVerified($alternate);
+                $response["col_exists_later"] = $this->columnExists($key);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
             } else {
                 # Bad
@@ -1298,9 +1300,17 @@ class UserFunctions extends DBHelper
 
     public function isVerified($alternate = false) {
         $key = $alternate ? "alternate_email_verified" : "email_verified";
-        if($this->columnExists($key) === false) {
+        $colCheck = array(
+            "key" => $key,
+            "exists" => $this->columnExists($key),
+            "query" => $this->columnExists($key, true),
+        );
+        if($colCheck['exists'] !== true) {
             $r = $this->addColumn($key, "BOOLEAN", 0);
-            if($r["status"] !== true) return $r;
+            if($r["status"] !== true) {
+                $r['col_check'] = $colCheck;
+                return $r;
+            }
         }
         $u = $this->getUser();
         return toBool($u[$key]);

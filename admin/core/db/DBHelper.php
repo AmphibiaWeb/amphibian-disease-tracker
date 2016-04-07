@@ -695,14 +695,15 @@ class DBHelper
     }
 
 
-    public function columnExists($columnName) {
+    public function columnExists($columnName, $test = false) {
         /***
          * Check if the specified column exists
          *
          * @returns bool
          ***/
-
-        $result = mysqli_query($this->getLink(), "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
+        $query = "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'";
+        if($test) return $query;
+        $result = mysqli_query($this->getLink(), $query);
         return (mysqli_num_rows($result) > 0) ? TRUE : FALSE;
     }
 
