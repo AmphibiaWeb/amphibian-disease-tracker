@@ -1059,6 +1059,19 @@ finishChangePassword = ->
   false
 
 
+###################################
+# Verification
+###################################
+
+verifyEmail = ->
+  false
+
+validateEmailCode = ->
+  false
+
+
+
+
 $ ->
   needStylesheetImport = true
   $("link[rel='stylesheet']").each ->

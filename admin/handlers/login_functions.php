@@ -1242,16 +1242,18 @@ class UserFunctions extends DBHelper
             $secret = $this->getSecret(true);
             if($auth_code == $secret) {
                 # Good
+                $response["is_good"] = true;
                 # Update the column
                 $lookup = array($this->userColumn => $this->getUsername());
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
                 $query = "UPDATE `".$this->getTable()."` SET `".$key."` = TRUE ".$this->getUserWhere();
                 $r = mysqli_query($this->getLink(), $query);
-                if($r == false) {
+                if($r === false) {
                     $reponse["error"] = mysqli_error($this->getLink());
                     $reponse["human_error"] = "Error updating verified status";
                 } else {
                     $response["status"] = true;
+                    if($this->isVerified($alternate)) $this->setTempSecret("");
                 }
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
@@ -1325,9 +1327,17 @@ class UserFunctions extends DBHelper
     public function meetsRestrictionCriteria() {
         if($this->isVerified() !== true) return false;
         if($this->hasAlternateEmail()) {
-            if($this->isVerified(true) !== true) return false;
+            if($this->isVerified(true) === true) {
+                $alternateMatch = $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
+                if($alternateMatch === true) return true;
+            }
         }
-        $domainParts = explode("@", $this->getUsername());
+        return $this->matchEmailAgainstRestrictions($this->getUsername());
+    }
+
+
+    private function matchEmailAgainstRestrictions($email) {
+        $domainParts = explode("@", $email);
         $qualifiedDomain = array_pop($domainParts);
         $domainBaseParts = explode(".", $qualifiedDomain);
         $tld = array_pop($domainBaseParts);
@@ -1347,6 +1357,19 @@ class UserFunctions extends DBHelper
             }
         }
         return true;
+    }
+
+    public function setAlternateEmail($email) {
+        # Check it's an email
+        # Write it to the DB
+    }
+
+    public function getAlternateEmail() {
+        if($this->hasAlternateEmail()) {
+            $u = $this->getUser();
+            return $u["alternate_email"];
+        }
+        return false;        
     }
 
     public function getUserPicture($id = null, $path = null, $extra_types_array = null)
