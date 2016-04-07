@@ -301,11 +301,11 @@ $emailVerifiedBadge = $user->isVerified() ? " <span class='glyphicon glyphicon-c
 $unrestricted = $user->meetsRestrictionCriteria() ? " <span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>" : "";
 $emailHtml .= $emailVerifiedBadge . $unrestricted . "</p>";
 if($user->hasAlternateEmail()) {
-      $alternateEmailHtml = "<p class='text-muted alternate-email'>";
+      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>";
       $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
       $alternateEmailHtml .= $emailVerifiedBadge . " <button class='btn btn-xs btn-default' id='add-alternate'>Change</button></p>";
   } else {
-      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getAlternateEmail()."'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
+      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
   }
 $settings_blob = "<section id='account_settings' class='panel panel-default clearfix'><div class='panel-heading'><h2 class='panel-title'>Settings</h2></div><div class='panel-body'>".$emailHtml.$alternateEmailHtml."<ul id='settings_list'><li><a href='#' id='showAdvancedOptions' data-domain='$domain' data-user-tfa='".$has2fa."' role='button' class='btn btn-default'>Account Settings</a></li>".$verifyphone_link.$random."</ul></div></section>";
 

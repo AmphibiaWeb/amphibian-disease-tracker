@@ -1606,10 +1606,16 @@ verifyEmail = (caller) ->
           """
         $(caller).append html
       else
-        stopLoadError result.human_error
+        try
+          stopLoadError result.human_error
+        catch
+          stopLoadError()
       false
     .fail (result, status) ->
-      stopLoadError "Sorry, we couldn't verify your email at this time"
+      try
+        stopLoadError "Sorry, we couldn't verify your email at this time"
+      catch
+        stopLoadError()
       false
     false
   # Post it
@@ -1647,11 +1653,15 @@ verifyEmail = (caller) ->
         try
           stopLoadError result.human_error
         catch
+          stopLoadError()
           try
             toastStatusMessage result.human_error
     false
   .fail (result, status) ->
-    stopLoadError "Sorry, we couldn't verify your email at this time"
+    try
+      stopLoadError "Sorry, we couldn't verify your email at this time"
+    catch
+      stopLoadError()
     false
   false
 
@@ -1668,12 +1678,17 @@ addAlternateEmail = (caller) ->
     startLoad()
     # POST, etc
     email = $("#alternate-email-value").val().trim()
-    args = "action=addalternateemail&email=#{encodeURIComponent(email)}"
+    user = $(caller).attr "data-user"
+    args = "action=addalternateemail&email=#{encodeURIComponent(email)}&user=#{encodeURIComponent(user)}"
     $.post apiUri.apiTarget, args, "json"
     .done (result) ->
       console.info result
       if result.status isnt true
-        stopLoadError result.human_error
+        try
+          stopLoadError result.human_error
+        catch
+          stopLoadError()
+          console.error result.human_error
         return false
       try
         toastStatusMessage "Added '#{email}' as an alternate email"
