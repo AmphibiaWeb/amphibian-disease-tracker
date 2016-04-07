@@ -379,7 +379,7 @@ class UserFunctions extends DBHelper
         // }
         return $link;
     }
-    
+
     private function getUserWhere() {
         return " WHERE `".$this->linkColumn."`='".$this->getHardlink()."'";
     }
@@ -1242,18 +1242,22 @@ class UserFunctions extends DBHelper
             $secret = $this->getSecret(true);
             if($auth_code == $secret) {
                 # Good
-                $response["status"] = true;
                 # Update the column
                 $lookup = array($this->userColumn => $this->getUsername());
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
-                $response["col_exists"] = $this->columnExists($key);
-                $response["key"] = $key;
-                $fill = array($key => true);
-                $this->updateEntry($fill, $lookup, null, true);
+                #$response["col_exists"] = $this->columnExists($key);
+                #$response["key"] = $key;
+                # $fill = array($key => true);
+                #$this->updateEntry($fill, $lookup, null, true);
                 $query = "UPDATE `".$this->getTable()."` SET `".$key."` = TRUE ".$this->getUserWhere();
-                #$r = mysqli_query($this->getLink(), $query);
+                $r = mysqli_query($this->getLink(), $query);
+                if($r == false) {
+                    $reponse["error"] = mysqli_error($this->getLink());
+                    $reponse["human_error"] = "Error updating verified status";
+                } else {
+                    $response["status"] = true;
+                }
                 $response["is_verified"] = $this->isVerified($alternate);
-                $response["col_exists_later"] = $this->columnExists($key);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
                 $response["userdata"] = $this->getUser();
             } else {
