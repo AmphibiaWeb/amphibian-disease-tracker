@@ -1222,7 +1222,7 @@ class UserFunctions extends DBHelper
                 "is_good" => true,
                 "error" => "ALREADY_VERIFIED",
                 "human_error" => "You've already verified this email",
-                "meets_restriction_criteria" => $this->meetsRestrictionCriteria();
+                "meets_restriction_criteria" => $this->meetsRestrictionCriteria(),
             );
         }
         if(empty($auth_code)) {
