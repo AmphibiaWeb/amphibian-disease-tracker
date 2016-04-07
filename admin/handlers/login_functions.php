@@ -116,6 +116,8 @@ class UserFunctions extends DBHelper
         $this->site = $site_name;
         $this->appKeyColumn = $app_column;
         $this->userlink = null;
+        $this->allowedTLDs = $allowedEmailTLDs;
+        $this->allowedDomains = $allowedEmailDomains;
 
         $proto = 'http';
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
@@ -256,6 +258,8 @@ class UserFunctions extends DBHelper
 
         return array('status' => true);
     }
+    
+    
 
     public function has2FA()
     {
@@ -1192,6 +1196,136 @@ class UserFunctions extends DBHelper
         } else {
             return array(false,'status' => false,'message' => 'Sorry, your username or password is incorrect.','error' => 'Bad username','desc' => $result['error']);
         }
+    }
+
+
+    public function hasAlternateEmail() {
+        $key = "alternate_email";
+        if(!$this->columnExists($key)) {
+            $this->addColumn($key, "varchar(255)");
+        }
+
+    }
+
+    public function verifyEmail($auth_code = null, $alternate = false) {
+        if($alternate) {
+            if(!$this->hasAlternateEmail()) return array(
+                "status" => false,
+                "is_good" => false,
+                "error" => "NO_ALTERNATE_EMAIL",
+                "human_error" => "This user has no alternate email",
+            );
+        }
+        if($this->isVerified($alternate)) {
+            return array(
+                "status" => false,
+                "is_good" => true,
+                "error" => "ALREADY_VERIFIED",
+                "human_error" => "You've already verified this email"
+            );
+        }
+        if(empty($auth_code)) {
+            return $this->sendEmailVerification($alternate);
+        } else {
+            # Check it
+            $response = array(
+                "status" => false,
+                "verification_action" => "VALIDATE_CODE",
+                "auth_code" => $auth_code,
+                "alternate" => $alternate,
+            );
+            $secret = $this->getSecret(true);
+            if($auth_code == $secret) {
+                # Good
+                $response["status"] = true;
+                # Update the column
+                $lookup = array($this->userColumn => $this->getUsername());
+                $this->updateEntry(true, $lookup, null, true);
+                $response["is_verified"] = $this->isVerified($alternate);
+                $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
+            } else {
+                # Bad
+                $response["error"] = "BAD_AUTH_CODE";
+                $response["human_error"] = "Invalid authorization code";
+            }
+            return $response;
+        }
+    }
+
+
+    public function sendEmailVerification($alternate = false) {
+        /***
+         *
+         ***/
+
+        if (!class_exists('Stronghash')) {
+            require_once dirname(__FILE__).'/../core/stronghash/php-stronghash.php';
+        }
+        $auth = Stronghash::createSalt(32);
+        $r = $this->setTempSecret($auth);
+        if ($r["status"] === false) {
+            throw(new Exception('Could not prepare authorization code - '.$r['error']));
+        }
+        $mail = $this->getMailObject();
+        $mail_subject = '['.$this->getDomain().'] Verify Your Email';
+        $mail->Subject = $mail_subject;
+        include dirname(__FILE__).'/../CONFIG.php';
+        $url = !isset($login_url) ? 'login.php' : $login_url;
+        $rel_dir = str_replace($relative_path, '', $working_subdirectory);
+        if (substr($rel_dir, -1) != '/' && !empty($rel_dir)) {
+            $rel_dir = $rel_dir.'/';
+        }
+        $link = $this->getQualifiedDomain().$rel_dir.$url.'?action=verifyemail&alternate='.strbool($alternate).'&token='.$auth.'&username='.$this->getUsername();
+        $body = "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/><p>Thanks for verifying! Click <a href='".$link."' class='btn btn-primary'>this link to verify</a>, or enter the following into your verification page:</p>\n<p class='text-center'><code>$auth</code></p>";
+        $mail->Body = $body;
+        $u = $this->getUser();
+        $email = $alternate ? $u["alternate_email"] : $this->getUsername();
+        $mail->addAddress($email);
+        $success = $mail->send();
+        $error = $success ? null : $mail->ErrorInfo;
+        return array(
+            "status" => $success,
+            "error" => $error,
+            "verification_action" => "SEND_EMAIL",
+            "alternate" => $alternate,
+        );
+
+    }
+
+    public function isVerified($alternate = false) {
+        $u = $this->getUser();
+        $key = $alternate ? "alternate_email_verified" : "email_verified";
+        if(!isset($u[$key])) {
+            $this->addColumn($key, "bool", false);
+        }
+        return toBool($u[$key]);
+    }
+
+    public function meetsRestrictionCriteria() {
+        if(!$this->isVerified()) return false;
+        if($this->hasAlternateEmail()) {
+            if(!$this->isVerified(true)) return false;
+        }
+        $domainParts = explode("@", $this->getUsername());
+        $qualifiedDomain = array_pop($domainParts);
+        $domainBaseParts = explode(".", $qualifiedDomain);
+        $tld = array_pop($domainBaseParts);
+        $domain = array_pop($domainBaseParts);
+        if(is_array($this->allowedDomains)) {
+            if(sizeof($this->$allowedDomains) > 0) {
+                # Match
+                $hasFullDomain = in_array($qualifiedDomain, $this->allowedDomains);
+                $hasBaseDomain = in_array($domain, $this->allowedDomains);
+                if(!($hasFullDomain || $hasBaseDomain)) return false;
+            }
+        }
+        if(is_array($this->$allowedTLDs)) {
+            if(sizeof($this->allowedTLDs) > 0) {
+                # Match
+                if(!in_array($tld, $this->allowedTLDs)) return false;
+            }
+        }
+        return true;
     }
 
     public function getUserPicture($id = null, $path = null, $extra_types_array = null)

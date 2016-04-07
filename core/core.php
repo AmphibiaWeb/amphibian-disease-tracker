@@ -206,6 +206,9 @@ if (!function_exists('strbool')) {
 
         return false;
     }
+        function toBool($str) {
+            return boolstr($str);
+        }
 }
 
 if (!function_exists('shuffle_assoc')) {
