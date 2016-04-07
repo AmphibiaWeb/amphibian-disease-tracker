@@ -1227,14 +1227,15 @@ class UserFunctions extends DBHelper
                 "human_error" => "This user has no alternate email",
             );
         }
-        if($this->isVerified($alternate) === true) {
+        $email = $alternate ? $this->getAlternateEmail() : $this->getUsername();
+        if($this->isVerified($alternate) === true) {            
             return array(
                 "status" => false,
                 "is_good" => true,
                 "error" => "ALREADY_VERIFIED",
-                "human_error" => "You've already verified " . $alternate ? $this->getAlternateEmail() : $this->getUsername(),
+                "human_error" => "You've already verified " . $email,
                 "meets_restriction_criteria" => $this->meetsRestrictionCriteria(),
-                "email" => $alternate ? $this->getAlternateEmail() : $this->getUsername(),
+                "email" => $email,
             );
         }
         if(empty($auth_code)) {
@@ -1246,7 +1247,7 @@ class UserFunctions extends DBHelper
                 "verification_action" => "VALIDATE_CODE",
                 "auth_code" => $auth_code,
                 "alternate" => $alternate,
-                "email" => $alternate ? $this->getAlternateEmail() : $this->getUsername(),
+                "email" => $email,
             );
             $secret = $this->getSecret(true);
             if($auth_code == $secret) {
