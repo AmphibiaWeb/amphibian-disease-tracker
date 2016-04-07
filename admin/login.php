@@ -303,7 +303,7 @@ $emailHtml .= $emailVerifiedBadge . $unrestricted . "</p>";
 if($user->hasAlternateEmail()) {
       $alternateEmailHtml = "<p class='text-muted alternate-email'>";
       $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
-      $alternateEmailHtml .= $emailVerifiedBadge . "</p>";
+      $alternateEmailHtml .= $emailVerifiedBadge . " <button class='btn btn-xs btn-default' id='add-alternate'>Change</button></p>";
   } else {
       $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getAlternateEmail()."'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
   }

@@ -1724,9 +1724,13 @@
         if (result.is_good === true) {
           if (result.status === false) {
             stopLoad();
-            toastStatusMessage("You're already verified");
+            try {
+              toastStatusMessage("You're already verified");
+            } catch (_error) {}
           } else {
-            toastStatusMessage("Verification successful");
+            try {
+              toastStatusMessage("Verification successful");
+            } catch (_error) {}
           }
           $("#verify-email-filler").remove();
           html = "<span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>";
@@ -1749,10 +1753,13 @@
     } catch (_error) {}
     $.post(apiUri.apiTarget, args, "json").done(function(result) {
       var html;
+      console.info(result);
       if (result.is_good === true) {
         if (result.status === false) {
           stopLoad();
-          toastStatusMessage("You're already verified");
+          try {
+            toastStatusMessage("You're already verified");
+          } catch (_error) {}
         } else {
           false;
         }
@@ -1792,11 +1799,14 @@
       email = $("#alternate-email-value").val().trim();
       args = "action=addalternateemail&email=" + (encodeURIComponent(email));
       $.post(apiUri.apiTarget, args, "json").done(function(result) {
+        console.info(result);
         if (result.status !== true) {
           stopLoadError(result.human_error);
           return false;
         }
-        toastStatusMessage("Added '" + email + "' as an alternate email");
+        try {
+          toastStatusMessage("Added '" + email + "' as an alternate email");
+        } catch (_error) {}
         $("#add-alternate-form").remove();
         html = email + " <small>(check your email for a verification link)</small>";
         $(caller).html(html);
