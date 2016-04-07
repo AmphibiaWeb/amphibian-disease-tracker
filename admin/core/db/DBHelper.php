@@ -722,7 +722,7 @@ class DBHelper
             $columnType = current($columnName);
             $columnName = key($columnName);
         }
-        if($this->columnExists($columnName)) {
+        if($this->columnExists($columnName) === true) {
             # Already exists
             return array(
                 "status" => false,
