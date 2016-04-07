@@ -258,8 +258,8 @@ class UserFunctions extends DBHelper
 
         return array('status' => true);
     }
-    
-    
+
+
 
     public function has2FA()
     {
@@ -1296,11 +1296,11 @@ class UserFunctions extends DBHelper
     }
 
     public function isVerified($alternate = false) {
-        $u = $this->getUser();
         $key = $alternate ? "alternate_email_verified" : "email_verified";
-        if(!isset($u[$key])) {
+        if(!$this->columnExists($key)) {
             $this->addColumn($key, "bool", false);
         }
+        $u = $this->getUser();
         return toBool($u[$key]);
     }
 
