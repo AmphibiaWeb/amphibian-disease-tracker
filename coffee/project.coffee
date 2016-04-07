@@ -44,7 +44,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
             console.info "Got project data", project
         else
           console.info "User is unauthorized"
-      .error (result, status) ->
+      .fail (result, status) ->
         console.log "Error checking server", result, status
       .always ->
         stopLoad()
@@ -61,7 +61,7 @@ renderEmail = (response) ->
     authorData = result.author_data
     showEmailField authorData.contact_email
     stopLoad()
-  .error (result, status) ->
+  .fail (result, status) ->
     stopLoadError "Sorry, there was a problem getting the contact email"
     false
   false
@@ -381,7 +381,7 @@ renderMapWithData = (projectData, force = false) ->
         .attr "data-negative", "false"
         .attr "data-inconclusive", "false"
     stopLoad()
-  .error (result, status) ->
+  .fail (result, status) ->
     console.error result, status
     stopLoadError "Couldn't render map"
   false
@@ -513,7 +513,7 @@ searchProjects = ->
     $("google-map-poly").attr "hidden", "hidden"
     for projectId in showList
       $("google-map-poly[data-project='#{projectId}']").removeAttr "hidden"
-  .error (result, status) ->
+  .fail (result, status) ->
     console.error result, status
   false
 

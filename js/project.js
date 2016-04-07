@@ -54,7 +54,7 @@ checkProjectAuthorization = function(projectId, callback) {
         } else {
           return console.info("User is unauthorized");
         }
-      }).error(function(result, status) {
+      }).fail(function(result, status) {
         return console.log("Error checking server", result, status);
       }).always(function() {
         return stopLoad();
@@ -76,7 +76,7 @@ renderEmail = function(response) {
     authorData = result.author_data;
     showEmailField(authorData.contact_email);
     return stopLoad();
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     stopLoadError("Sorry, there was a problem getting the contact email");
     return false;
   });
@@ -403,7 +403,7 @@ renderMapWithData = function(projectData, force) {
       }
     }
     return stopLoad();
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     console.error(result, status);
     return stopLoadError("Couldn't render map");
   });
@@ -547,7 +547,7 @@ searchProjects = function() {
       results.push($("google-map-poly[data-project='" + projectId + "']").removeAttr("hidden"));
     }
     return results;
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     return console.error(result, status);
   });
   return false;

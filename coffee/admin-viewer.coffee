@@ -47,7 +47,7 @@ loadProjectBrowser = ->
       project = $(this).attr("data-project")
       loadProject(project)
     stopLoad()
-  .error (result, status) ->
+  .fail (result, status) ->
     stopLoadError "There was a problem loading viable projects"
 
   false
@@ -108,6 +108,6 @@ loadSUProjectBrowser = ->
         project = $(this).attr("data-project")
         loadEditor(project)
       stopLoad()
-    .error (result, status) ->
+    .fail (result, status) ->
       stopLoadError "There was a problem loading projects"
   false

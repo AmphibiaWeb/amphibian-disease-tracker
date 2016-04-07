@@ -69,7 +69,7 @@ delayFimsRecheck = (originalResponse, callback) ->
       callback()
     else
       console.warn "Warning: delayed recheck had no callback"
-  .error (result, status) ->
+  .fail (result, status) ->
     console.error "#{status}: Couldn't check status on FIMS server!"
     console.warn "Server said", result.responseText
     stopLoadError "There was a problem validating your data, please try again later"
@@ -197,7 +197,7 @@ validateFimsData = (dataObject, callback = null) ->
     # When we're successful, run the dependent callback
     if typeof callback is "function"
       callback(dataObject)
-  .error (result, status) ->
+  .fail (result, status) ->
     clearTimeout validatorTimeout
     console.error "#{status}: Couldn't upload to FIMS server!"
     console.warn "Server said", result.responseText
@@ -229,7 +229,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
       console.error result.error
       return false
     resultObj = result
-  .error (result, status) ->
+  .fail (result, status) ->
     resultObj =
       ark: null
       error: status
@@ -275,7 +275,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       ark: result.ark
       expeditionId: result.fims_expedition_id
       fimsRawResponse: result.responses.expedition_response
-  .error (result, status) ->
+  .fail (result, status) ->
     resultObj.ark = null
     false
   .always ->
@@ -400,7 +400,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     taxonObj.response = result
     doCallback(taxonObj)
     return false
-  .error (result, status) ->
+  .fail (result, status) ->
     # On fail, notify the user that the taxon wasn't actually validated
     # with a BSAlert, rather than toast
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"

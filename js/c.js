@@ -2574,7 +2574,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
       console.error("Unable to authenticate session. Please log in.");
       return stopLoadError("Sorry, your session has expired. Please log in and try again.");
     }
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
     console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-001)");
@@ -2732,7 +2732,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       });
       return false;
     });
-  }).error(function(result, status) {
+  }).fail(function(result, status) {
     console.error("Couldn't communicate with server!", result, status);
     console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");

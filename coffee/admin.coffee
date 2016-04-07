@@ -530,7 +530,7 @@ finalizeData = ->
               console.log result
               stopLoadError result.human_error
             false
-          .error (result, status) ->
+          .fail (result, status) ->
             stopLoadError "There was a problem saving your data. Please try again"
             false
         # End postBBLocality
@@ -1036,7 +1036,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         console.info "Calling back with", coords, options
         callback coords, options
         # callback coords, info
-      .error (result, status) ->
+      .fail (result, status) ->
         # On error, return direct from file upload
         if dataAttrs?.coords?
           callback dataAttrs.coords, options
@@ -1044,7 +1044,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         else
           stopLoadError "Couldn't get bounding coordinates from data"
           console.error "No valid coordinates accessible!"
-    .error (result, status) ->
+    .fail (result, status) ->
       false
   false
 
