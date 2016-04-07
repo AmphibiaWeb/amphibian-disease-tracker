@@ -379,6 +379,10 @@ class UserFunctions extends DBHelper
         // }
         return $link;
     }
+    
+    private function getUserWhere() {
+        return " WHERE `".$this->linkColumn."`='".$this->getHardlink()."'";
+    }
 
     public function getPhone()
     {
@@ -1246,9 +1250,12 @@ class UserFunctions extends DBHelper
                 $response["key"] = $key;
                 $fill = array($key => true);
                 $this->updateEntry($fill, $lookup, null, true);
+                $query = "UPDATE `".$this->getTable()."` SET `".$key."` = TRUE ".$this->getUserWhere();
+                #$r = mysqli_query($this->getLink(), $query);
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["col_exists_later"] = $this->columnExists($key);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
+                $response["userdata"] = $this->getUser();
             } else {
                 # Bad
                 $response["error"] = "BAD_AUTH_CODE";
