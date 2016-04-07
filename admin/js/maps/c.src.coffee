@@ -1591,9 +1591,11 @@ verifyEmail = (caller) ->
         if result.status is false
           # Already validated
           stopLoad()
-          toastStatusMessage "You're already verified"
+          try
+            toastStatusMessage "You're already verified"
         else
-          toastStatusMessage "Verification successful"
+          try
+            toastStatusMessage "Verification successful"
         $("#verify-email-filler").remove()
         html = """
          <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>
@@ -1615,11 +1617,13 @@ verifyEmail = (caller) ->
     startLoad()
   $.post apiUri.apiTarget, args, "json"
   .done (result) ->
+    console.info result
     if result.is_good is true
       if result.status is false
         # Already validated
         stopLoad()
-        toastStatusMessage "You're already verified"
+        try
+          toastStatusMessage "You're already verified"
       else
         # Somehow just validated????
         false
@@ -1667,10 +1671,12 @@ addAlternateEmail = (caller) ->
     args = "action=addalternateemail&email=#{encodeURIComponent(email)}"
     $.post apiUri.apiTarget, args, "json"
     .done (result) ->
+      console.info result
       if result.status isnt true
         stopLoadError result.human_error
         return false
-      toastStatusMessage "Added '#{email}' as an alternate email"
+      try
+        toastStatusMessage "Added '#{email}' as an alternate email"
       $("#add-alternate-form").remove()
       html = """
       #{email} <small>(check your email for a verification link)</small>
