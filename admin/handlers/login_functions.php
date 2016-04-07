@@ -1298,7 +1298,7 @@ class UserFunctions extends DBHelper
     public function isVerified($alternate = false) {
         $key = $alternate ? "alternate_email_verified" : "email_verified";
         if(!$this->columnExists($key)) {
-            $r = $this->addColumn($key, "bool", 0);
+            $r = $this->addColumn($key, "BOOLEAN", 0);
             if($r["status"] !== true) return $r;
         }
         $u = $this->getUser();

@@ -732,7 +732,7 @@ class DBHelper
             );
         }
         # Create it!
-        $query = "ALTER TABLE `" . $this->getTable() . "` ADD " . $columnName . " " . $columnType;
+        $query = "ALTER TABLE `" . $this->getTable() . "` ADD COLUMN `" . $columnName . "` " . $columnType;
         if(isset($default)) {
             $query .= " DEFAULT ".$default;
         }
@@ -741,7 +741,7 @@ class DBHelper
         if($r === false) {
             return array(
                 "status" => $r,
-                "error" => mysqli_error($this->getLink(), $r),
+                "error" => mysqli_error($this->getLink()),
                 "query" => $query,
                 "default" => $default,
             );
