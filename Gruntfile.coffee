@@ -166,7 +166,7 @@ module.exports = (grunt) ->
         tasks: ["phplint"]
     phplint:
       root: ["*.php", "helpers/*.php", "core/*/*.php", "core/*.php"]
-      admin: ["admin/*.php", "admin/handlers/*.php"]
+      admin: ["admin/*.php", "admin/handlers/*.php", "admin/core/*.php", "admin/core/*/*.php"]
     bootlint:
       options:
         stoponerror: false

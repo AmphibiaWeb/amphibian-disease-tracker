@@ -357,6 +357,9 @@ function verifyEmail($get)
      * Verify an email
      * An empty or bad verification code generates a new one to be saved in the temp column
      ***/
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    error_log('Login is running in debug mode!');
     if(!isset($get["alternate"])) {
         $get["alternate"] = false;
     } else {
