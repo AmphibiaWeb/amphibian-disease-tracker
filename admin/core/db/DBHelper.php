@@ -707,7 +707,7 @@ class DBHelper
         return (mysqli_num_rows($result)) ? TRUE : FALSE;
     }
 
-    protected function addColumn($columnName, $columnType = null) {
+    protected function addColumn($columnName, $columnType = null, $default = null) {
         /***
          * Add a new column. DATA MUST BE SANITIZED BEFORE CALLING!
          *
@@ -733,7 +733,9 @@ class DBHelper
         }
         # Create it!
         $query = "ALTER TABLE `" . $this->getTable() . "` ADD " . $columnName . " " . $columnType;
-
+        if(isset($default)) {
+            $query .= " DEFAULT ".$default;
+        }
         $r = mysqli_query($this->getLink(), $query);
         if($r === false) {
             return array(

@@ -117,6 +117,9 @@ if ($print_login_state === true) {
       case 'verifyphone':
         returnAjax(verifyPhone($_REQUEST));
         break;
+      case 'verifyemail':
+        returnAjax(verifyPhone($_REQUEST));
+        break;
       case 'removeaccount':
         returnAjax(removeAccount($_REQUEST));
         break;
@@ -346,13 +349,32 @@ function sendTOTPText($get)
   }
 }
 
+
+function verifyEmail($get)
+{
+    /***
+     * Verify an email
+     * An empty or bad verification code generates a new one to be saved in the temp column
+     ***/
+    $u = new UserFunctions($get['username']);
+    try {
+        return $u->verifyEmail($get['auth'], $get['alternate']);
+    } catch (Exception $e) {
+        return array(
+            "status" => false,
+            "error" => $e->getMessage(),
+            "human_error" => "Unable to send verification email",
+        );
+    }
+}
+
 function verifyPhone($get)
 {
     /***
-   * Verify a phone number.
-   * An empty or bad verification code generates a new one to be saved in the temp column
-   ***/
-  $u = new UserFunctions($get['username']);
+     * Verify a phone number.
+     * An empty or bad verification code generates a new one to be saved in the temp column
+     ***/
+    $u = new UserFunctions($get['username']);
     try {
         return $u->verifyPhone($get['auth']);
     } catch (Exception $e) {
