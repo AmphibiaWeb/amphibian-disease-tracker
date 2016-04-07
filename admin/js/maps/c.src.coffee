@@ -1578,6 +1578,17 @@ finishChangePassword = ->
 # Verification
 ###################################
 
+unless typeof stopLoad is "function"
+  stopLoad = window.stopLoad
+unless typeof startLoad is "function"
+  startLoad = window.startLoad
+unless typeof stopLoadError is "function"
+  stopLoadError = window.stopLoadError
+unless typeof toastStatusMessage is "function"
+  toastStatusMessage = window.toastStatusMessage
+unless typeof toastStatusMessage is "function"
+  toastStatusMessage = window.bsAlert
+
 verifyEmail = (caller) ->
   isAlternate = $(caller).attr("data-alternate").toBool()
   user = $(caller).attr "data-user"

@@ -1,5 +1,5 @@
 (function() {
-  var activityIndicatorOff, activityIndicatorOn, addAlternateEmail, animateLoad, apiUri, base, base1, beginChangePassword, bsAlert, byteCount, checkMatchPassword, checkPasswordLive, delay, doAsyncCreate, doAsyncLogin, doEmailCheck, doRemoveAccountAction, doTOTPRemove, doTOTPSubmit, evalRequirements, finishChangePassword, finishPasswordResetHandler, giveAltVerificationOptions, isBlank, isBool, isEmpty, isJson, isNull, isNumber, lightboxImages, loadJS, makeTOTP, mapNewWindows, noSubmit, overlayOff, overlayOn, popupSecret, removeAccount, resetPassword, root, roundNumber, saveTOTP, showAdvancedOptions, showInstructions, stopLoad, stopLoadError, toFloat, toInt, toastStatusMessage, toggleNewUserSubmit, verifyEmail, verifyPhone,
+  var activityIndicatorOff, activityIndicatorOn, addAlternateEmail, animateLoad, apiUri, base, base1, beginChangePassword, bsAlert, byteCount, checkMatchPassword, checkPasswordLive, delay, doAsyncCreate, doAsyncLogin, doEmailCheck, doRemoveAccountAction, doTOTPRemove, doTOTPSubmit, evalRequirements, finishChangePassword, finishPasswordResetHandler, giveAltVerificationOptions, isBlank, isBool, isEmpty, isJson, isNull, isNumber, lightboxImages, loadJS, makeTOTP, mapNewWindows, noSubmit, overlayOff, overlayOn, popupSecret, removeAccount, resetPassword, root, roundNumber, saveTOTP, showAdvancedOptions, showInstructions, startLoad, stopLoad, stopLoadError, toFloat, toInt, toastStatusMessage, toggleNewUserSubmit, verifyEmail, verifyPhone,
     slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1709,6 +1709,26 @@
   finishChangePassword = function() {
     return false;
   };
+
+  if (typeof stopLoad !== "function") {
+    stopLoad = window.stopLoad;
+  }
+
+  if (typeof startLoad !== "function") {
+    startLoad = window.startLoad;
+  }
+
+  if (typeof stopLoadError !== "function") {
+    stopLoadError = window.stopLoadError;
+  }
+
+  if (typeof toastStatusMessage !== "function") {
+    toastStatusMessage = window.toastStatusMessage;
+  }
+
+  if (typeof toastStatusMessage !== "function") {
+    toastStatusMessage = window.bsAlert;
+  }
 
   verifyEmail = function(caller) {
     var args, isAlternate, user, validateEmailCode;
