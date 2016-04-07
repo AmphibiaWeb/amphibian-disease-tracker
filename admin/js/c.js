@@ -1758,7 +1758,7 @@
         }
       } else {
         if (result.status) {
-          html = "<div id='verify-email-filler' class='form'>\n  <p>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>\n  <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n  <input class='form-control' type='text' length='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code'/>\n  <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n</div>";
+          html = "<div id='verify-email-filler' class='form'>\n  <p>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>\n  <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n  <input class='form-control' type='text' length='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>\n  <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n</div>";
           $(caller).after(html);
           $("#validate-email-code").click(function() {
             return validateEmailCode();
@@ -1782,7 +1782,32 @@
     return false;
   };
 
-  addAlternateEmail = function() {
+  addAlternateEmail = function(caller) {
+    var html;
+    html = "<div id='add-alternate-form' class='form'>\n  <input type='email' class='form-control' placeholder='Alternate email address' id='alternate-email-value' name='alternate-email-value' required/>\n  <button class='btn btn-primary' id='submit-alternate-email'>Add</button>\n</div>";
+    $(caller).after(html);
+    $("#submit-alternate-email").click(function() {
+      var args, email;
+      startLoad();
+      email = $("#alternate-email-value").val().trim();
+      args = "action=addalternateemail&email=" + (encodeURIComponent(email));
+      $.post(apiUri.apiTarget, args, "json").done(function(result) {
+        if (result.status !== true) {
+          stopLoadError(result.human_error);
+          return false;
+        }
+        toastStatusMessage("Added '" + email + "' as an alternate email");
+        $("#add-alternate-form").remove();
+        html = email + " <small>(check your email for a verification link)</small>";
+        $(caller).html(html);
+        stopLoad();
+        return false;
+      }).fail(function(result, status) {
+        stopLoadError("Sorry, we couldn't assign your alternate email at this time");
+        return false;
+      });
+      return false;
+    });
     return false;
   };
 
@@ -1873,7 +1898,9 @@
       return false;
     });
     $("#add-alternate").click(function() {
-      addAlternateEmail();
+      var parent;
+      parent = $(this).parent();
+      addAlternateEmail(parent);
       return false;
     });
     try {

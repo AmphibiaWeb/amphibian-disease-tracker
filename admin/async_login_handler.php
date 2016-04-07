@@ -121,6 +121,9 @@ if ($print_login_state === true) {
       case 'verifyemail':
         returnAjax(verifyEmail($_REQUEST));
         break;
+      case 'addalternateemail':
+          returnAjax(addAlternateEmail($_REQUEST));
+          break;
       case 'removeaccount':
         returnAjax(removeAccount($_REQUEST));
         break;
@@ -350,6 +353,20 @@ function sendTOTPText($get)
   }
 }
 
+
+function addAlternateEmail($get) {
+    $alternate = $get["email"];
+    $user = $get["username"];
+    $u = new UserFunctions();
+    if($u->getUsername() != $user) {
+        return array(
+            "status" => false,
+            "error" => "NOT_LOGGED_IN",
+            "human_error" => "Sorry, you must be logged in to add an alternate email",
+        );
+    }
+    return $u->setAlternateEmail($alternate);    
+}
 
 function verifyEmail($get)
 {
