@@ -365,7 +365,7 @@ function addAlternateEmail($get) {
             "human_error" => "Sorry, you must be logged in to add an alternate email",
         );
     }
-    return $u->setAlternateEmail($alternate);    
+    return $u->setAlternateEmail($alternate);
 }
 
 function verifyEmail($get)
