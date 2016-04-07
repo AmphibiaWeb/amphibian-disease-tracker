@@ -742,6 +742,8 @@ class DBHelper
             return array(
                 "status" => $r,
                 "error" => mysqli_error($this->getLink(), $r),
+                "query" => $query,
+                "default" => $default,
             );
         }
         return array(
