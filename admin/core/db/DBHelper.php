@@ -702,9 +702,8 @@ class DBHelper
          * @returns bool
          ***/
 
-
         $result = mysqli_query($this->getLink(), "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'");
-        return (mysqli_num_rows($result)) ? TRUE : FALSE;
+        return (mysqli_num_rows($result) > 0) ? TRUE : FALSE;
     }
 
     protected function addColumn($columnName, $columnType = null, $default = null) {
