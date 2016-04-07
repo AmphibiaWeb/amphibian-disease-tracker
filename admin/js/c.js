@@ -1,5 +1,5 @@
 (function() {
-  var activityIndicatorOff, activityIndicatorOn, animateLoad, apiUri, base, base1, beginChangePassword, byteCount, checkMatchPassword, checkPasswordLive, delay, doAsyncCreate, doAsyncLogin, doEmailCheck, doRemoveAccountAction, doTOTPRemove, doTOTPSubmit, evalRequirements, finishChangePassword, finishPasswordResetHandler, giveAltVerificationOptions, isBlank, isBool, isEmpty, isJson, isNull, isNumber, lightboxImages, loadJS, makeTOTP, mapNewWindows, noSubmit, overlayOff, overlayOn, popupSecret, removeAccount, resetPassword, root, roundNumber, saveTOTP, showAdvancedOptions, showInstructions, stopLoad, stopLoadError, toFloat, toInt, toggleNewUserSubmit, verifyPhone,
+  var activityIndicatorOff, activityIndicatorOn, addAlternateEmail, animateLoad, apiUri, base, base1, beginChangePassword, bsAlert, byteCount, checkMatchPassword, checkPasswordLive, delay, doAsyncCreate, doAsyncLogin, doEmailCheck, doRemoveAccountAction, doTOTPRemove, doTOTPSubmit, evalRequirements, finishChangePassword, finishPasswordResetHandler, giveAltVerificationOptions, isBlank, isBool, isEmpty, isJson, isNull, isNumber, lightboxImages, loadJS, makeTOTP, mapNewWindows, noSubmit, overlayOff, overlayOn, popupSecret, removeAccount, resetPassword, root, roundNumber, saveTOTP, showAdvancedOptions, showInstructions, stopLoad, stopLoadError, toFloat, toInt, toastStatusMessage, toggleNewUserSubmit, verifyEmail, verifyPhone,
     slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -479,9 +479,11 @@
       }
       if ($(selector).exists()) {
         $(selector).addClass("bad");
-        if (message != null) {
-          toastStatusMessage(message, "", fadeOut);
-        }
+        try {
+          if (message != null) {
+            toastStatusMessage(message, "", fadeOut);
+          }
+        } catch (_error) {}
         (endLoad = function() {
           return delay(fadeOut, function() {
             $(selector).removeClass("bad").prop("active", false).removeAttr("active");
@@ -522,6 +524,41 @@
       return console.warn('Could not stop load error animation', e.message);
     }
   };
+
+  bsAlert = function(message, type, fallbackContainer, selector) {
+    var html, topContainer;
+    if (type == null) {
+      type = "warning";
+    }
+    if (fallbackContainer == null) {
+      fallbackContainer = "body";
+    }
+    if (selector == null) {
+      selector = "#bs-alert";
+    }
+
+    /*
+     * Pop up a status message
+     * Uses the Bootstrap alert dialog
+     *
+     * See
+     * http://getbootstrap.com/components/#alerts
+     * for available types
+     */
+    if (!$(selector).exists()) {
+      html = "<div class=\"alert alert-" + type + " alert-dismissable hanging-alert\" role=\"alert\" id=\"" + (selector.slice(1)) + "\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    <div class=\"alert-message\"></div>\n</div>";
+      topContainer = $("main").exists() ? "main" : $("article").exists() ? "article" : fallbackContainer;
+      $(topContainer).prepend(html);
+    } else {
+      $(selector).removeClass("alert-warning alert-info alert-danger alert-success");
+      $(selector).addClass("alert-" + type);
+    }
+    return $(selector + " .alert-message").html(message);
+  };
+
+  if (typeof toastStatusMessage === "undefined" || toastStatusMessage === null) {
+    toastStatusMessage = bsAlert;
+  }
 
   lightboxImages = function(selector, lookDeeply) {
     var jqo, options;
@@ -1673,6 +1710,82 @@
     return false;
   };
 
+  verifyEmail = function(caller) {
+    var args, isAlternate, user, validateEmailCode;
+    isAlternate = $(caller).attr("data-alternate").toBool();
+    user = $(caller).atter("data-user");
+    args = "action=verifyemail&user=" + (encodeURIComponent(user)) + "&alternate=" + isAlternate;
+    validateEmailCode = function() {
+      var code;
+      code = $("#verify-email-code").val().trim();
+      args += "&token=" + code;
+      $.post(apiUri.apiTarget, args, "json").done(function(result) {
+        var html;
+        if (result.is_good === true) {
+          if (result.status === false) {
+            stopLoad();
+            toastStatusMessage("You're already verified");
+          } else {
+            toastStatusMessage("Verification successful");
+          }
+          $("#verify-email-filler").remove();
+          html = "<span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>";
+          if (result.meets_restriction_criteria) {
+            html += "<span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>";
+          }
+          $(caller).append(html);
+        } else {
+          stopLoadError(result.human_error);
+        }
+        return false;
+      }).fail(function(result, status) {
+        stopLoadError("Sorry, we couldn't verify your email at this time");
+        return false;
+      });
+      return false;
+    };
+    try {
+      startLoad();
+    } catch (_error) {}
+    $.post(apiUri.apiTarget, args, "json").done(function(result) {
+      var html;
+      if (result.is_good === true) {
+        if (result.status === false) {
+          stopLoad();
+          toastStatusMessage("You're already verified");
+        } else {
+          false;
+        }
+      } else {
+        if (result.status) {
+          html = "<div id='verify-email-filler' class='form'>\n  <p>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>\n  <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n  <input class='form-control' type='text' length='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code'/>\n  <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n</div>";
+          $(caller).after(html);
+          $("#validate-email-code").click(function() {
+            return validateEmailCode();
+          });
+        } else {
+          console.error(result.error);
+          try {
+            stopLoadError(result.human_error);
+          } catch (_error) {
+            try {
+              toastStatusMessage(result.human_error);
+            } catch (_error) {}
+          }
+        }
+      }
+      return false;
+    }).fail(function(result, status) {
+      stopLoadError("Sorry, we couldn't verify your email at this time");
+      return false;
+    });
+    return false;
+  };
+
+  addAlternateEmail = function() {
+    return false;
+  };
+
   $(function() {
     var bootstrapCSS, e, needStylesheetImport, selector;
     needStylesheetImport = true;
@@ -1751,6 +1864,16 @@
     });
     $(".do-password-reset").click(function() {
       resetPassword();
+      return false;
+    });
+    $(".verify-email").click(function() {
+      var parent;
+      parent = $(this).parent();
+      verifyEmail(parent);
+      return false;
+    });
+    $("#add-alternate").click(function() {
+      addAlternateEmail();
       return false;
     });
     try {

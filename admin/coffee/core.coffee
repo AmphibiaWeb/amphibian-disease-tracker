@@ -335,7 +335,8 @@ stopLoadError = (message, elId = "loader", fadeOut = 7500, iteration) ->
         return false
     if $(selector).exists()
       $(selector).addClass("bad")
-      if message? then toastStatusMessage(message,"",fadeOut)
+      try
+        if message? then toastStatusMessage(message,"",fadeOut)
       do endLoad = ->
         delay fadeOut, ->
           $(selector)
@@ -380,6 +381,31 @@ stopLoadError = (message, elId = "loader", fadeOut = 7500, iteration) ->
   catch e
     console.warn('Could not stop load error animation', e.message)
 
+bsAlert = (message, type = "warning", fallbackContainer = "body", selector = "#bs-alert") ->
+  ###
+  # Pop up a status message
+  # Uses the Bootstrap alert dialog
+  #
+  # See
+  # http://getbootstrap.com/components/#alerts
+  # for available types
+  ###
+  if not $(selector).exists()
+    html = """
+    <div class="alert alert-#{type} alert-dismissable hanging-alert" role="alert" id="#{selector.slice(1)}">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="alert-message"></div>
+    </div>
+    """
+    topContainer = if $("main").exists() then "main" else if $("article").exists() then "article" else fallbackContainer
+    $(topContainer).prepend(html)
+  else
+    $(selector).removeClass "alert-warning alert-info alert-danger alert-success"
+    $(selector).addClass "alert-#{type}"
+  $("#{selector} .alert-message").html(message)
+
+unless toastStatusMessage?
+  toastStatusMessage = bsAlert
 
 lightboxImages = (selector = ".lightboximage", lookDeeply = false) ->
   ###
