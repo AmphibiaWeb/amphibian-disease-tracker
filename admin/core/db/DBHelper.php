@@ -743,6 +743,8 @@ class DBHelper
                 "error" => mysqli_error($this->getLink()),
                 "query" => $query,
                 "default" => $default,
+                "col_exists" => $this->columnExists($columnName),
+                "col_name" => $columnName,
             );
         }
         return array(
