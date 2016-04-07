@@ -1245,6 +1245,7 @@ class UserFunctions extends DBHelper
                 $this->updateEntry($fill, $lookup, null, true);
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
+                $response["userdata"] = $this->getUser();
             } else {
                 # Bad
                 $response["error"] = "BAD_AUTH_CODE";
