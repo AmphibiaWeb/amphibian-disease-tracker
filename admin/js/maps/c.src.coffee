@@ -1679,7 +1679,7 @@ addAlternateEmail = (caller) ->
     # POST, etc
     email = $("#alternate-email-value").val().trim()
     user = $(caller).attr "data-user"
-    args = "action=addalternateemail&email=#{encodeURIComponent(email)}&user=#{encodeURIComponent(user)}"
+    args = "action=addalternateemail&email=#{encodeURIComponent(email)}&username=#{encodeURIComponent(user)}"
     $.post apiUri.apiTarget, args, "json"
     .done (result) ->
       console.info result

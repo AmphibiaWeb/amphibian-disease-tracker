@@ -1811,7 +1811,7 @@
       startLoad();
       email = $("#alternate-email-value").val().trim();
       user = $(caller).attr("data-user");
-      args = "action=addalternateemail&email=" + (encodeURIComponent(email)) + "&user=" + (encodeURIComponent(user));
+      args = "action=addalternateemail&email=" + (encodeURIComponent(email)) + "&username=" + (encodeURIComponent(user));
       $.post(apiUri.apiTarget, args, "json").done(function(result) {
         console.info(result);
         if (result.status !== true) {
