@@ -736,6 +736,7 @@ class DBHelper
         if(isset($default)) {
             $query .= " DEFAULT ".$default;
         }
+        $this->invalidateLink();
         $r = mysqli_query($this->getLink(), $query);
         if($r === false) {
             return array(
