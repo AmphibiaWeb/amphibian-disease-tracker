@@ -517,7 +517,7 @@ class DBHelper
         }
         return $response;
     }
-    
+
     public function doQuery($search, $cols = '*', $boolean_type = 'AND', $loose = false, $precleaned = false, $order_by = false, $debug_query = false)
     {
         /***
@@ -702,9 +702,14 @@ class DBHelper
          * @returns bool
          ***/
         $query = "SHOW COLUMNS FROM `".$this->getTable()."` LIKE '".$columnName."'";
-        if($test) return $query;
+        $this->invalidateLink();
         $result = mysqli_query($this->getLink(), $query);
-        return (mysqli_num_rows($result) > 0) ? TRUE : FALSE;
+        $n = mysqli_num_rows($result);
+        if($test) return array(
+            "query" => $query,
+            "results" => $n,
+        );
+        return ($n > 0) ? TRUE : FALSE;
     }
 
     protected function addColumn($columnName, $columnType = null, $default = null) {
