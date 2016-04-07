@@ -371,7 +371,7 @@ function verifyEmail($get)
     }
     $u = new UserFunctions($get['username']);
     try {
-        return $u->verifyEmail($get['auth'], $get['alternate']);
+        return $u->verifyEmail($get['token'], $get['alternate']);
     } catch (Exception $e) {
         return array(
             "status" => false,

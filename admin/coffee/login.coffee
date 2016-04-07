@@ -1063,7 +1063,7 @@ finishChangePassword = ->
 # Verification
 ###################################
 
-verifyEmail = ->
+verifyEmail = (caller) ->
   false
 
 validateEmailCode = ->

@@ -917,6 +917,53 @@ else
         else $durl = $redirect_url;
     }
 
+    if(strtolower($_REQUEST["action"]) == "verifyemail") {
+        if(!isset($_REQUEST["alternate"])) {
+            $alternate = false;
+        } else {
+            $alternate = toBool($_REQUEST["alternate"]);
+        }
+        $skip = false;
+        if(empty($_REQUEST["username"]) && $logged_in) {
+            $uTemp = $user;
+        } else if (!empty($_REQUEST["username"])) {
+            $uTemp = new UserFunctions($_REQUEST["username"]);
+        } else {
+            $skip = true;
+        }
+        if(!$skip) {
+            try {
+                $result = $uTemp->verifyEmail($_REQUEST["token"], $alternate);
+            } catch (Exception $e) {
+                $result = array(
+                    "status" => false,
+                    "error" => $e->getMessage(),
+                    "human_error" => "Unable to send verification email",
+                );
+            }
+            if($result["is_good"] === true || $result["status"] === true) {
+                if($result["status"] === true) {
+                    $class = "alert-success";
+                    $message = "<strong>Success!</strong> You've verified <strong>".$result["email"]."</strong>";
+                } else {
+                    $class = "alert-info";
+                    $message = "<strong>Notice:</strong> " . $result["human_error"];
+                }
+                
+            } else {
+                # Bad verification
+                $class = "alert-warning";
+                $message = "<strong>Couldn't verify email:</strong> Invalid authorization token";
+            }
+            
+        } else {
+            $class = "alert-danger";
+            $message = "<strong>Couldn't verify email:</strong> Bad authorization link";
+        }
+        $login_output .= "<div class='alert ".$class." hanging-alert'>".$message."</div><br/>";
+      }
+    
+    
     if(!$logged_in) $login_output.=$login_preamble . $loginform.$loginform_close;
     else $login_output.="<aside class='ssmall pull-right'><a href='?q=logout' class='btn btn-warning btn-sm'><span class='glyphicon glyphicon-log-out' aria-hidden='true'></span> Logout</a></aside><h1 id='signin_greeting'>Welcome back, $first_name</h1><br/><p id='logout_para'></p>".$settings_blob."<button id='next' name='next' class='btn btn-primary continue click' data-href='$durl'>Continue &#187;</button>";
     $deferredJS .= "\n$(\"#next\").click(function(){window.location.href=\"".$durl."\";});";
