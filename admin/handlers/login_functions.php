@@ -1333,7 +1333,7 @@ class UserFunctions extends DBHelper
         $tld = array_pop($domainBaseParts);
         $domain = array_pop($domainBaseParts);
         if(is_array($this->allowedDomains)) {
-            if(sizeof($this->$allowedDomains) > 0) {
+            if(sizeof($this->allowedDomains) > 0) {
                 # Match
                 $hasFullDomain = in_array($qualifiedDomain, $this->allowedDomains);
                 $hasBaseDomain = in_array($domain, $this->allowedDomains);
