@@ -119,7 +119,7 @@ if ($print_login_state === true) {
         returnAjax(verifyPhone($_REQUEST));
         break;
       case 'verifyemail':
-        returnAjax(verifyPhone($_REQUEST));
+        returnAjax(verifyEmail($_REQUEST));
         break;
       case 'removeaccount':
         returnAjax(removeAccount($_REQUEST));
