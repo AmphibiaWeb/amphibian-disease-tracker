@@ -1244,6 +1244,7 @@ class UserFunctions extends DBHelper
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
                 $fill = array($key => true);
                 $this->updateEntry($fill, $lookup, null, true);
+                $response["col_exists"] = $this->columnExists($key);
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
             } else {
