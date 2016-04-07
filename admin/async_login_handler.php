@@ -357,11 +357,16 @@ function verifyEmail($get)
      * Verify an email
      * An empty or bad verification code generates a new one to be saved in the temp column
      ***/
+    if(!isset($get["alternate"])) {
+        $get["alternate"] = false;
+    } else {
+        $get["alternate"] = toBool($get["alternate"]);
+    }
     if(empty($get["username"])) {
         return array(
             "status" => false,
             "error" => "INVALID_PARAMETERS",
-            "human_error" => "This function needs the parameters 'alternate' and 'username' specified.",
+            "human_error" => "This function needs the parameter 'username' specified.",
         );
     }
     $u = new UserFunctions($get['username']);

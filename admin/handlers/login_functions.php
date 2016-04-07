@@ -1208,7 +1208,7 @@ class UserFunctions extends DBHelper
     }
 
     public function verifyEmail($auth_code = null, $alternate = false) {
-        if($alternate) {
+        if($alternate === true) {
             if(!$this->hasAlternateEmail()) return array(
                 "status" => false,
                 "is_good" => false,
