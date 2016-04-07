@@ -1739,11 +1739,19 @@
           }
           $(caller).append(html);
         } else {
-          stopLoadError(result.human_error);
+          try {
+            stopLoadError(result.human_error);
+          } catch (_error) {
+            stopLoadError();
+          }
         }
         return false;
       }).fail(function(result, status) {
-        stopLoadError("Sorry, we couldn't verify your email at this time");
+        try {
+          stopLoadError("Sorry, we couldn't verify your email at this time");
+        } catch (_error) {
+          stopLoadError();
+        }
         return false;
       });
       return false;
@@ -1775,6 +1783,7 @@
           try {
             stopLoadError(result.human_error);
           } catch (_error) {
+            stopLoadError();
             try {
               toastStatusMessage(result.human_error);
             } catch (_error) {}
@@ -1783,7 +1792,11 @@
       }
       return false;
     }).fail(function(result, status) {
-      stopLoadError("Sorry, we couldn't verify your email at this time");
+      try {
+        stopLoadError("Sorry, we couldn't verify your email at this time");
+      } catch (_error) {
+        stopLoadError();
+      }
       return false;
     });
     return false;
@@ -1794,14 +1807,20 @@
     html = "<div id='add-alternate-form' class='form'>\n  <input type='email' class='form-control' placeholder='Alternate email address' id='alternate-email-value' name='alternate-email-value' required/>\n  <button class='btn btn-primary' id='submit-alternate-email'>Add</button>\n</div>";
     $(caller).after(html);
     $("#submit-alternate-email").click(function() {
-      var args, email;
+      var args, email, user;
       startLoad();
       email = $("#alternate-email-value").val().trim();
-      args = "action=addalternateemail&email=" + (encodeURIComponent(email));
+      user = $(caller).attr("data-user");
+      args = "action=addalternateemail&email=" + (encodeURIComponent(email)) + "&user=" + (encodeURIComponent(user));
       $.post(apiUri.apiTarget, args, "json").done(function(result) {
         console.info(result);
         if (result.status !== true) {
-          stopLoadError(result.human_error);
+          try {
+            stopLoadError(result.human_error);
+          } catch (_error) {
+            stopLoadError();
+            console.error(result.human_error);
+          }
           return false;
         }
         try {
