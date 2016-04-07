@@ -302,9 +302,9 @@ $emailHtml .= $emailVerifiedBadge . "</p>";
 if($user->hasAlternateEmail()) {
       $alternateEmailHtml = "<p class='text-muted alternate-email'>";
       $emailVerifiedBadge = $user->isVerified(true) ? "ICON" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
-      $alternateEmailHtml .= $emailVerifiedBadge . "</p>"
+      $alternateEmailHtml .= $emailVerifiedBadge . "</p>";
   } else {
-      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true'>No alternate email set</p>";
+      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
   }
 $settings_blob = "<section id='account_settings' class='panel panel-default clearfix'><div class='panel-heading'><h2 class='panel-title'>Settings</h2></div><div class='panel-body'>".$emailHtml.$alternateEmailHtml."<ul id='settings_list'><li><a href='#' id='showAdvancedOptions' data-domain='$domain' data-user-tfa='".$has2fa."' role='button' class='btn btn-default'>Account Settings</a></li>".$verifyphone_link.$random."</ul></div></section>";
 
