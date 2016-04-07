@@ -1227,7 +1227,11 @@ class UserFunctions extends DBHelper
                 "human_error" => "This user has no alternate email",
             );
         }
-        $email = $alternate ? $this->getAlternateEmail() : $this->getUsername();
+        if($alternate === true) {
+            $email = $this->getAlternateEmail();
+        } else {
+            $email = $this->getUsername();
+        }
         if($this->isVerified($alternate) === true) {            
             return array(
                 "status" => false,
