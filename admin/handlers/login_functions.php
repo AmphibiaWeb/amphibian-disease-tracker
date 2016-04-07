@@ -21,7 +21,7 @@ class UserFunctions extends DBHelper
      *                         (string)"url" (defaults to "localhost")
      *                         and (array)"cols" of type "column_name"=>"type".
      ***/
-    global $user_data_storage,$profile_picture_storage,$site_security_token,$service_email,$minimum_password_length,$password_threshold_length,$db_cols,$default_user_table,$default_user_database,$password_column,$cookie_ver_column,$user_column,$totp_column,$totp_steps,$temporary_storage,$needs_manual_authentication,$totp_rescue,$ip_record,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$baseurl,$twilio_sid,$twilio_token,$twilio_number,$site_name,$link_column,$app_column;
+        global $user_data_storage,$profile_picture_storage,$site_security_token,$service_email,$minimum_password_length,$password_threshold_length,$db_cols,$default_user_table,$default_user_database,$password_column,$cookie_ver_column,$user_column,$totp_column,$totp_steps,$temporary_storage,$needs_manual_authentication,$totp_rescue,$ip_record,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$baseurl,$twilio_sid,$twilio_token,$twilio_number,$site_name,$link_column,$app_column, $allowedEmailDomains, $allowedEmailTLDs;
     # Set up the parameters in CONFIG.php
     $config_path = dirname(__FILE__).'/../CONFIG.php';
         require_once $config_path;
@@ -1245,10 +1245,6 @@ class UserFunctions extends DBHelper
                 # Update the column
                 $lookup = array($this->userColumn => $this->getUsername());
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
-                #$response["col_exists"] = $this->columnExists($key);
-                #$response["key"] = $key;
-                # $fill = array($key => true);
-                #$this->updateEntry($fill, $lookup, null, true);
                 $query = "UPDATE `".$this->getTable()."` SET `".$key."` = TRUE ".$this->getUserWhere();
                 $r = mysqli_query($this->getLink(), $query);
                 if($r == false) {
@@ -1259,7 +1255,6 @@ class UserFunctions extends DBHelper
                 }
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
-                $response["userdata"] = $this->getUser();
             } else {
                 # Bad
                 $response["error"] = "BAD_AUTH_CODE";
