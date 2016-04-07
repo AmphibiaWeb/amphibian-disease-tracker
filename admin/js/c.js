@@ -1713,7 +1713,7 @@
   verifyEmail = function(caller) {
     var args, isAlternate, user, validateEmailCode;
     isAlternate = $(caller).attr("data-alternate").toBool();
-    user = $(caller).atter("data-user");
+    user = $(caller).attr("data-user");
     args = "action=verifyemail&user=" + (encodeURIComponent(user)) + "&alternate=" + isAlternate;
     validateEmailCode = function() {
       var code;

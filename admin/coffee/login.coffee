@@ -1065,7 +1065,7 @@ finishChangePassword = ->
 
 verifyEmail = (caller) ->
   isAlternate = $(caller).attr("data-alternate").toBool()
-  user = $(caller).atter "data-user"
+  user = $(caller).attr "data-user"
   args = "action=verifyemail&user=#{encodeURIComponent(user)}&alternate=#{isAlternate}"
   validateEmailCode = ->
     code = $("#verify-email-code").val().trim()
