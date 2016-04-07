@@ -1714,7 +1714,7 @@
     var args, isAlternate, user, validateEmailCode;
     isAlternate = $(caller).attr("data-alternate").toBool();
     user = $(caller).attr("data-user");
-    args = "action=verifyemail&user=" + (encodeURIComponent(user)) + "&alternate=" + isAlternate;
+    args = "action=verifyemail&username=" + (encodeURIComponent(user)) + "&alternate=" + isAlternate;
     validateEmailCode = function() {
       var code;
       code = $("#verify-email-code").val().trim();

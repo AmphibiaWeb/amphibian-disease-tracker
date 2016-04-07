@@ -357,6 +357,13 @@ function sendTOTPText($get)
 function addAlternateEmail($get) {
     $alternate = $get["email"];
     $user = $get["username"];
+    if(empty($get["username"])) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_PARAMETERS",
+            "human_error" => "This function needs the parameter 'username' specified.",
+        );
+    }
     $u = new UserFunctions();
     if($u->getUsername() != $user) {
         return array(

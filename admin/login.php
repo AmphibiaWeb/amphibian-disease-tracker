@@ -297,12 +297,12 @@ catch(Exception $e)
     $has2fa = false;
   }
 $emailHtml = "<p class='primary-email' data-alternate='false' data-user='".$user->getUsername()."'>".$user->getUsername();
-$emailVerifiedBadge = $user->isVerified() ? " <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+$emailVerifiedBadge = $user->isVerified() ? " <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : " <button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
 $unrestricted = $user->meetsRestrictionCriteria() ? " <span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>" : "";
 $emailHtml .= $emailVerifiedBadge . $unrestricted . "</p>";
 if($user->hasAlternateEmail()) {
       $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>" . $user->getAlternateEmail();
-      $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+      $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : " <button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
       $alternateEmailHtml .= $emailVerifiedBadge . " <button class='btn btn-xs btn-default' id='add-alternate'>Change</button></p>";
   } else {
       $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
