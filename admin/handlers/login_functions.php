@@ -1345,7 +1345,7 @@ class UserFunctions extends DBHelper
                 if(!($hasFullDomain || $hasBaseDomain)) return false;
             }
         }
-        if(is_array($this->$allowedTLDs)) {
+        if(is_array($this->allowedTLDs)) {
             if(sizeof($this->allowedTLDs) > 0) {
                 # Match
                 if(!in_array($tld, $this->allowedTLDs)) return false;
