@@ -77,6 +77,7 @@ if(!function_exists("returnAjax")) {
   }
 
 parse_str($_SERVER['QUERY_STRING'], $_GET);
+$_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
 
 if ($print_login_state === true) {
@@ -118,7 +119,7 @@ if ($print_login_state === true) {
         returnAjax(verifyPhone($_REQUEST));
         break;
       case 'verifyemail':
-        returnAjax(verifyPhone($_REQUEST));
+        returnAjax(verifyEmail($_REQUEST));
         break;
       case 'removeaccount':
         returnAjax(removeAccount($_REQUEST));
@@ -363,7 +364,7 @@ function verifyEmail($get)
             "human_error" => "This function needs the parameters 'alternate' and 'username' specified.",
         );
     }
-    $u = new UserFunctions($get['username']);    
+    $u = new UserFunctions($get['username']);
     try {
         return $u->verifyEmail($get['auth'], $get['alternate']);
     } catch (Exception $e) {
