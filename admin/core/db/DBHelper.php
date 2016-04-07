@@ -680,6 +680,7 @@ class DBHelper
         }
         $set_string = implode(',', $sets);
         $query = 'UPDATE `'.$this->getTable()."` SET $set_string WHERE `$column`='$uval'";
+        $this->invalidateLink();
         mysqli_query($this->getLink(), 'BEGIN');
         $r = mysqli_query($this->getLink(), $query);
         if ($r !== false) {
