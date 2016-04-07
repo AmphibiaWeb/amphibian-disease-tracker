@@ -296,7 +296,17 @@ catch(Exception $e)
   {
     $has2fa = false;
   }
-$settings_blob = "<section id='account_settings' class='panel panel-default clearfix'><div class='panel-heading'><h2 class='panel-title'>Settings</h2></div><div class='panel-body'><ul id='settings_list'><li><a href='#' id='showAdvancedOptions' data-domain='$domain' data-user-tfa='".$has2fa."' role='button' class='btn btn-default'>Account Settings</a></li>".$verifyphone_link.$random."</ul></div></section>";
+$emailHtml = "<p class='primary-email' data-alternate='false'>".$user->getUsername();
+$emailVerifiedBadge = $user->isVerified() ? "ICON" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+$emailHtml .= $emailVerifiedBadge . "</p>";
+if($user->hasAlternateEmail()) {
+      $alternateEmailHtml = "<p class='text-muted alternate-email'>";
+      $emailVerifiedBadge = $user->isVerified(true) ? "ICON" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+      $alternateEmailHtml .= $emailVerifiedBadge . "</p>"
+  } else {
+      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true'>No alternate email set</p>";
+  }
+$settings_blob = "<section id='account_settings' class='panel panel-default clearfix'><div class='panel-heading'><h2 class='panel-title'>Settings</h2></div><div class='panel-body'>".$emailHtml.$alternateEmailHtml."<ul id='settings_list'><li><a href='#' id='showAdvancedOptions' data-domain='$domain' data-user-tfa='".$has2fa."' role='button' class='btn btn-default'>Account Settings</a></li>".$verifyphone_link.$random."</ul></div></section>";
 
 $login_output.="<div id='login_block'>";
 $alt_forms="<div id='alt_logins'>
@@ -949,21 +959,21 @@ else
                     $class = "alert-info";
                     $message = "<strong>Notice:</strong> " . $result["human_error"];
                 }
-                
+
             } else {
                 # Bad verification
                 $class = "alert-warning";
                 $message = "<strong>Couldn't verify email:</strong> Invalid authorization token";
             }
-            
+
         } else {
             $class = "alert-danger";
             $message = "<strong>Couldn't verify email:</strong> Bad authorization link";
         }
         $login_output .= "<div class='alert ".$class." hanging-alert'>".$message."</div><br/>";
       }
-    
-    
+
+
     if(!$logged_in) $login_output.=$login_preamble . $loginform.$loginform_close;
     else $login_output.="<aside class='ssmall pull-right'><a href='?q=logout' class='btn btn-warning btn-sm'><span class='glyphicon glyphicon-log-out' aria-hidden='true'></span> Logout</a></aside><h1 id='signin_greeting'>Welcome back, $first_name</h1><br/><p id='logout_para'></p>".$settings_blob."<button id='next' name='next' class='btn btn-primary continue click' data-href='$durl'>Continue &#187;</button>";
     $deferredJS .= "\n$(\"#next\").click(function(){window.location.href=\"".$durl."\";});";
