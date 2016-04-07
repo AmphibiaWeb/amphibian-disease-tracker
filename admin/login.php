@@ -297,11 +297,11 @@ catch(Exception $e)
     $has2fa = false;
   }
 $emailHtml = "<p class='primary-email' data-alternate='false'>".$user->getUsername();
-$emailVerifiedBadge = $user->isVerified() ? "ICON" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+$emailVerifiedBadge = $user->isVerified() ? " <span class='glyphicon glyphicon-check text-success'></span>" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
 $emailHtml .= $emailVerifiedBadge . "</p>";
 if($user->hasAlternateEmail()) {
       $alternateEmailHtml = "<p class='text-muted alternate-email'>";
-      $emailVerifiedBadge = $user->isVerified(true) ? "ICON" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+      $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success'></span>" : "<button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
       $alternateEmailHtml .= $emailVerifiedBadge . "</p>";
   } else {
       $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
