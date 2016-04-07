@@ -384,6 +384,12 @@ class UserFunctions extends DBHelper
         return " WHERE `".$this->linkColumn."`='".$this->getHardlink()."'";
     }
 
+
+    public static function isValidEmail($email, $maxLength = 100) {
+        $preg = "/[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/";
+        return preg_match($preg, $email) == 1 && strlen($email) <= $maxLength;
+    }
+
     public function getPhone()
     {
         $userdata = $this->getUser();
@@ -890,7 +896,7 @@ class UserFunctions extends DBHelper
     ***/
     $user = $this->sanitize($username);
       $preg = "/[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum)\b/";
-      if (preg_match($preg, $username) != 1 || strlen($username) > 100) {
+      if (!self::isValidEmail($username)) {
           return array('status' => false,'error' => 'Your email is not a valid email address. Please try again.');
       } else {
           $username = $user;
@@ -1205,10 +1211,11 @@ class UserFunctions extends DBHelper
 
     public function hasAlternateEmail() {
         $key = "alternate_email";
-        if(!$this->columnExists($key)) {
+        if($this->columnExists($key) !== true) {
             $this->addColumn($key, "varchar(255)");
         }
-
+        $u = $this->getUser();
+        return !empty($u[$key]);
     }
 
     public function verifyEmail($auth_code = null, $alternate = false) {
@@ -1225,8 +1232,9 @@ class UserFunctions extends DBHelper
                 "status" => false,
                 "is_good" => true,
                 "error" => "ALREADY_VERIFIED",
-                "human_error" => "You've already verified this email",
+                "human_error" => "You've already verified " . $alternate ? $this->getAlternateEmail() : $this->getUsername(),
                 "meets_restriction_criteria" => $this->meetsRestrictionCriteria(),
+                "email" => $alternate ? $this->getAlternateEmail() : $this->getUsername(),
             );
         }
         if(empty($auth_code)) {
@@ -1238,20 +1246,23 @@ class UserFunctions extends DBHelper
                 "verification_action" => "VALIDATE_CODE",
                 "auth_code" => $auth_code,
                 "alternate" => $alternate,
+                "email" => $alternate ? $this->getAlternateEmail() : $this->getUsername(),
             );
             $secret = $this->getSecret(true);
             if($auth_code == $secret) {
                 # Good
+                $response["is_good"] = true;
                 # Update the column
                 $lookup = array($this->userColumn => $this->getUsername());
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
                 $query = "UPDATE `".$this->getTable()."` SET `".$key."` = TRUE ".$this->getUserWhere();
                 $r = mysqli_query($this->getLink(), $query);
-                if($r == false) {
+                if($r === false) {
                     $reponse["error"] = mysqli_error($this->getLink());
                     $reponse["human_error"] = "Error updating verified status";
                 } else {
                     $response["status"] = true;
+                    if($this->isVerified($alternate)) $this->setTempSecret("");
                 }
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
@@ -1288,7 +1299,8 @@ class UserFunctions extends DBHelper
             $rel_dir = $rel_dir.'/';
         }
         $link = $this->getQualifiedDomain().$rel_dir.$url.'?action=verifyemail&alternate='.strbool($alternate).'&token='.$auth.'&username='.$this->getUsername();
-        $body = "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/><p>Thanks for verifying! Click <a href='".$link."' class='btn btn-primary'>this link to verify</a>, or enter the following into your verification page:</p>\n<p class='text-center'><code>$auth</code></p>";
+        $explanation = $alternate ? "<strong>".$this->getAlternateEmail()."</strong> as an alias of ".$this->getUsername() : "<strong>".$this->getUsername()."</strong>";
+        $body = "<html><head><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/></head><body><p>Thanks for verifying! We're sending this email to ".$explanation." to verify ownership of this email. Click <a href='".$link."' class='btn btn-primary'>this link to verify</a>, or enter the following into your verification page:</p>\n<p class='text-center'><code>$auth</code></p><p>If you did not request this email, feel free to ignore it.</p></body></html>";
         $mail->Body = $body;
         $u = $this->getUser();
         $email = $alternate ? $u["alternate_email"] : $this->getUsername();
@@ -1325,9 +1337,17 @@ class UserFunctions extends DBHelper
     public function meetsRestrictionCriteria() {
         if($this->isVerified() !== true) return false;
         if($this->hasAlternateEmail()) {
-            if($this->isVerified(true) !== true) return false;
+            if($this->isVerified(true) === true) {
+                $alternateMatch = $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
+                if($alternateMatch === true) return true;
+            }
         }
-        $domainParts = explode("@", $this->getUsername());
+        return $this->matchEmailAgainstRestrictions($this->getUsername());
+    }
+
+
+    private function matchEmailAgainstRestrictions($email) {
+        $domainParts = explode("@", $email);
         $qualifiedDomain = array_pop($domainParts);
         $domainBaseParts = explode(".", $qualifiedDomain);
         $tld = array_pop($domainBaseParts);
@@ -1347,6 +1367,54 @@ class UserFunctions extends DBHelper
             }
         }
         return true;
+    }
+
+    public function setAlternateEmail($email) {
+        $email = trim($email);
+        $email = $this->sanitize($email);
+        # Check it's an email
+        if(!self::isValidEmail($email)) {
+            return array(
+                "status" => false,
+                "error" => "INVALID_EMAIL",
+                "email" => $email,
+            );
+        }
+        # Write it to the DB
+        $response = array(
+            "status" => false,
+            "email" => $email,
+        );
+        $key = "alternate_email";
+        if($this->columnExists($key) !== true) {
+            $reponse["column"] = $this->addColumn($key, "varchar(255)");
+            if($response["column"]["status"] !== true) {
+                $response["error"] = "BAD_COLUMN";
+                $response["human_error"] = "Couldn't create column '$key'";
+                return $response;
+            }
+        }
+        $query = "UPDATE `".$this->getTable()."` SET `".$key."`='".$email."' ".$this->getUserWhere();
+
+        $this->invalidateLink();
+        $r = mysqli_query($this->getLink(), $query);
+        if($r === false) {
+            $response["status"] = false;
+            $response["error"] = mysqli_error($this->getLink());
+            $reponse["human_error"] = "Could not save alternate email";
+        } else {
+            $response["status"] = true;
+            $response["verification_status"] = $this->sendEmailVerification(true);
+        }
+        return $response;
+    }
+
+    public function getAlternateEmail() {
+        if($this->hasAlternateEmail()) {
+            $u = $this->getUser();
+            return $u["alternate_email"];
+        }
+        return false;
     }
 
     public function getUserPicture($id = null, $path = null, $extra_types_array = null)
