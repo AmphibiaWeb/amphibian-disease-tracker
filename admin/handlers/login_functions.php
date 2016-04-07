@@ -1216,12 +1216,13 @@ class UserFunctions extends DBHelper
                 "human_error" => "This user has no alternate email",
             );
         }
-        if($this->isVerified($alternate)) {
+        if($this->isVerified($alternate) === true) {
             return array(
                 "status" => false,
                 "is_good" => true,
                 "error" => "ALREADY_VERIFIED",
-                "human_error" => "You've already verified this email"
+                "human_error" => "You've already verified this email",
+                "meets_restriction_criteria" => $this->meetsRestrictionCriteria();
             );
         }
         if(empty($auth_code)) {
@@ -1245,7 +1246,6 @@ class UserFunctions extends DBHelper
                 $this->updateEntry($fill, $lookup, null, true);
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
-                $response["userdata"] = $this->getUser();
             } else {
                 # Bad
                 $response["error"] = "BAD_AUTH_CODE";
@@ -1306,9 +1306,9 @@ class UserFunctions extends DBHelper
     }
 
     public function meetsRestrictionCriteria() {
-        if(!$this->isVerified()) return false;
+        if($this->isVerified() !== true) return false;
         if($this->hasAlternateEmail()) {
-            if(!$this->isVerified(true)) return false;
+            if($this->isVerified(true) !== true) return false;
         }
         $domainParts = explode("@", $this->getUsername());
         $qualifiedDomain = array_pop($domainParts);
