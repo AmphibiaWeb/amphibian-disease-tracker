@@ -521,7 +521,9 @@ if($_REQUEST['q']=='submitlogin')
           {
             ob_end_flush();
             $login_output.=$login_preamble;
-            $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p><strong>Sorry!</strong> " . $res['message'] . "</p><aside class='ssmall'>Did you mean to <a href='?q=create' class='alert-link'>create a new account instead?</a> Or did you need to <a href='#' class='alert-link do-password-reset'>reset your password?</a></aside></div>";
+            $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p><strong>Whoops!</strong> " . $res['message'] . "</p><aside class='ssmall'>Did you mean to <a href='?q=create' class='alert-link'>create a new account instead?</a> Or did you need to <a href='#' class='alert-link do-password-reset'>reset your password?</a></aside>              
+<p class='small'>As a reminder, we require a password of at least $minimum_password_length characters with at least <strong>one upper case</strong> letter, at least <strong>one lower case</strong> letter, and at least <strong>one digit or special character</strong>.</p>              
+              </div>";
             $failcount=intval($_POST['failcount'])+1;
             $loginform_whole = $loginform."
               <input type='hidden' name='failcount' id='failcount' value='$fail'/>".$loginform_close;
