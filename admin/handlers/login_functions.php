@@ -1214,7 +1214,11 @@ class UserFunctions extends DBHelper
         if($this->columnExists($key) !== true) {
             $this->addColumn($key, "varchar(255)");
         }
-        $u = $this->getUser();
+        try {
+            $u = $this->getUser();
+        } catch (Exception $e) {
+            return false;
+        }
         return !empty($u[$key]);
     }
 
