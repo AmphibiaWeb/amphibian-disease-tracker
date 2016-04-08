@@ -45,7 +45,7 @@ window.loadAdminUi = ->
   try
     verifyLoginCredentials (data) ->
       # Post verification
-      badgeHtml = if data.unrestricted is true then "<iron-icon icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" else ""
+      badgeHtml = if data.unrestricted is true then "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" else "<iron-icon id='restriction-badge' icon='icons:verified-user' class='text-muted' data-toggle='tooltip' title='Restricted Account'></iron-icon>"
       articleHtml = """
       <h3>
         Welcome, #{$.cookie("#{adminParams.domain}_name")} #{badgeHtml}
@@ -58,6 +58,8 @@ window.loadAdminUi = ->
       """
       $("main #main-body").before(articleHtml)
       $(".fill-user-fullname").text $.cookie("#{adminParams.domain}_fullname")
+      $("#restriction-badge").click ->
+        showUnrestrictionCriteria()
       checkInitLoad ->
         populateAdminActions()
         bindClicks()
@@ -157,7 +159,7 @@ showUnrestrictionCriteria = ->
     incompleteIcon = """
     <iron-icon icon="icons:verified-user" class="text-muted" data-toggle="tooltip" title="Incomplete"></iron-icon>
     """
-    allowedString = "<small>Allowed domains: #{result.restriction_criteria.domains}. Allowed TLDs: #{result.restriction_criteria.tlds}</small>"
+    allowedString = "<small class='text-muted'>Allowed domains: #{result.restriction_criteria.domains}. Allowed TLDs: #{result.restriction_criteria.tlds}</small>"
     if hasAllowedEmail
       allowedEmail = """
       #{completeIcon} Have an email in allowed TLDs / domains. #{allowedString}

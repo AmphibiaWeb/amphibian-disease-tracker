@@ -61,10 +61,13 @@ window.loadAdminUi = function() {
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml, badgeHtml;
-      badgeHtml = data.unrestricted === true ? "<iron-icon icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" : "";
+      badgeHtml = data.unrestricted === true ? "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" : "<iron-icon id='restriction-badge' icon='icons:verified-user' class='text-muted' data-toggle='tooltip' title='Restricted Account'></iron-icon>";
       articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + " " + badgeHtml + "\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
       $(".fill-user-fullname").text($.cookie(adminParams.domain + "_fullname"));
+      $("#restriction-badge").click(function() {
+        return showUnrestrictionCriteria();
+      });
       checkInitLoad(function() {
         populateAdminActions();
         return bindClicks();
@@ -157,7 +160,7 @@ showUnrestrictionCriteria = function() {
     accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
     completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
     incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
-    allowedString = "<small>Allowed domains: " + result.restriction_criteria.domains + ". Allowed TLDs: " + result.restriction_criteria.tlds + "</small>";
+    allowedString = "<small class='text-muted'>Allowed domains: " + result.restriction_criteria.domains + ". Allowed TLDs: " + result.restriction_criteria.tlds + "</small>";
     if (hasAllowedEmail) {
       allowedEmail = completeIcon + " Have an email in allowed TLDs / domains. " + allowedString;
     } else {
