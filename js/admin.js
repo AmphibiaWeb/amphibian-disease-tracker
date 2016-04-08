@@ -139,7 +139,7 @@ populateAdminActions = function() {
 
 showUnrestrictionCriteria = function() {
   verifyLoginCredentials(function(result) {
-    var accountSettings, allowedEmail, alternateAllowed, completeIcon, dialogContent, dialogHtml, emailAllowed, hasAllowedEmail, hasAlternate, incompleteIcon, isUnrestricted, title, verifiedAlternate, verifiedAlternateEmail, verifiedEmail, verifiedMain;
+    var accountSettings, allowedEmail, allowedString, alternateAllowed, completeIcon, dialogContent, dialogHtml, emailAllowed, hasAllowedEmail, hasAlternate, incompleteIcon, isUnrestricted, title, verifiedAlternate, verifiedAlternateEmail, verifiedEmail, verifiedMain;
     isUnrestricted = result.unrestricted.toBool();
     hasAlternate = result.has_alternate.toBool();
     verifiedEmail = result.detail.userdata.email_verified.toBool();
@@ -154,13 +154,14 @@ showUnrestrictionCriteria = function() {
     accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
     completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
     incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
+    allowedString = "<small>Allowed domains: " + result.restriction_criteria.domains + ". Allowed TLDs: " + result.restriction_criteria.tlds + "</small>";
     if (hasAllowedEmail) {
-      allowedEmail = completeIcon + " Have an email in allowed TLDs / domains";
+      allowedEmail = completeIcon + " Have an email in allowed TLDs / domains. " + allowedString;
     } else {
       if (hasAlternate) {
-        allowedEmail = incompleteIcon + " Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='" + accountSettings + "'>Account Settings</a>";
+        allowedEmail = incompleteIcon + " Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
       } else {
-        allowedEmail = incompleteIcon + " Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='" + accountSettings + "'>Account Settings</a>";
+        allowedEmail = incompleteIcon + " Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
       }
     }
     if (verifiedEmail) {
