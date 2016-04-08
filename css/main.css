@@ -7329,6 +7329,9 @@ paper-button[raised].admin-action {
   background: #4CAF50;
   color: #fff;
 }
+#restriction-summary paper-dialog-scrollable .restriction-criteria {
+  list-style-type: none;
+}
 .thumb-img {
   max-width: 150px;
   max-height: 150px;

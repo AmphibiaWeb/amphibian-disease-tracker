@@ -154,18 +154,19 @@ showUnrestrictionCriteria = ->
     incompleteIcon = """
     <iron-icon icon="icons:verified-user" class="text-muted" data-toggle="tooltip" title="Incomplete"></iron-icon>
     """
+    allowedString = "<small>Allowed domains: #{result.restriction_criteria.domains}. Allowed TLDs: #{result.restriction_criteria.tlds}</small>"
     if hasAllowedEmail
       allowedEmail = """
-      #{completeIcon} Have an email in allowed TLDs / domains
+      #{completeIcon} Have an email in allowed TLDs / domains. #{allowedString}
       """
     else
       if hasAlternate
         allowedEmail = """
-        #{incompleteIcon} Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='#{accountSettings}'>Account Settings</a>
+        #{incompleteIcon} Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='#{accountSettings}'>Account Settings</a>. #{allowedString}
         """
       else
         allowedEmail = """
-        #{incompleteIcon} Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='#{accountSettings}'>Account Settings</a>
+        #{incompleteIcon} Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='#{accountSettings}'>Account Settings</a>. #{allowedString}
         """
     if verifiedEmail
       verifiedMain = """

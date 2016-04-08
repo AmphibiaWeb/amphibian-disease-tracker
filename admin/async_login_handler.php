@@ -202,6 +202,7 @@ function getLoginState($get, $default = false)
         "has_alternate" => $u->hasAlternateEmail(),
         "email_allowed" => $u->emailIsAllowed(),
         "alternate_allowed" => $u->alternateIsAllowed(),
+        "restriction_criteria" => $u->getRestrictionCriteria(),
     );
 }
 
