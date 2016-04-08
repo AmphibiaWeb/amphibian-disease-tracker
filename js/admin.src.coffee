@@ -147,6 +147,9 @@ showUnrestrictionCriteria = ->
       hasAllowedEmail = alternateAllowed or emailAllowed
     else
       hasAllowedEmail = emailAllowed
+    rawSu = toInt result.detail.userdata.su_flag
+    rawAdmin = toInt result.detail.userdata.admin_flag
+    hasOverride = rawSu.toBool() or rawAdmin.toBool()
     accountSettings = "https://#{adminParams.domain}.org/#{adminParams.loginDir.slice(0,-1)}"
     completeIcon = """
     <iron-icon icon="icons:verified-user" class="material-green" data-toggle="tooltip" title="Completed"></iron-icon>
@@ -187,8 +190,15 @@ showUnrestrictionCriteria = ->
           #{incompleteIcon} Your alternate email isn't verified. <strong>Fix:</strong> Verify it in <a href='#{accountSettings}'>Account Settings</a>
           """
     verifiedAlternate =  if isNull(verifiedAlternate) then "" else "<li>#{verifiedAlternate}</li>"
+    overrideHtml = ""
+    if hasOverride
+      phrase = if rawSu.toBool() then "a SuperUser" else "an administrator"
+      overrideHtml = """
+        #{completeIcon} You're #{phrase}. You're always unrestricted.
+      """
     dialogContent = """
     <div>
+      #{overrideHtml}
       <ul class="restriction-criteria">
         <li>#{allowedEmail}</li>
         <li>#{verifiedMain}</li>

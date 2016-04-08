@@ -139,7 +139,7 @@ populateAdminActions = function() {
 
 showUnrestrictionCriteria = function() {
   verifyLoginCredentials(function(result) {
-    var accountSettings, allowedEmail, allowedString, alternateAllowed, completeIcon, dialogContent, dialogHtml, emailAllowed, hasAllowedEmail, hasAlternate, incompleteIcon, isUnrestricted, title, verifiedAlternate, verifiedAlternateEmail, verifiedEmail, verifiedMain;
+    var accountSettings, allowedEmail, allowedString, alternateAllowed, completeIcon, dialogContent, dialogHtml, emailAllowed, hasAllowedEmail, hasAlternate, hasOverride, incompleteIcon, isUnrestricted, overrideHtml, phrase, rawAdmin, rawSu, title, verifiedAlternate, verifiedAlternateEmail, verifiedEmail, verifiedMain;
     isUnrestricted = result.unrestricted.toBool();
     hasAlternate = result.has_alternate.toBool();
     verifiedEmail = result.detail.userdata.email_verified.toBool();
@@ -151,6 +151,9 @@ showUnrestrictionCriteria = function() {
     } else {
       hasAllowedEmail = emailAllowed;
     }
+    rawSu = toInt(result.detail.userdata.su_flag);
+    rawAdmin = toInt(result.detail.userdata.admin_flag);
+    hasOverride = rawSu.toBool() || rawAdmin.toBool();
     accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
     completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
     incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
@@ -179,7 +182,12 @@ showUnrestrictionCriteria = function() {
       }
     }
     verifiedAlternate = isNull(verifiedAlternate) ? "" : "<li>" + verifiedAlternate + "</li>";
-    dialogContent = "<div>\n  <ul class=\"restriction-criteria\">\n    <li>" + allowedEmail + "</li>\n    <li>" + verifiedMain + "</li>\n    " + verifiedAlternate + "\n  </ul>\n  <p>\n    Restricted accounts can't create projects.\n  </p>\n</div>";
+    overrideHtml = "";
+    if (hasOverride) {
+      phrase = rawSu.toBool() ? "a SuperUser" : "an administrator";
+      overrideHtml = completeIcon + " You're " + phrase + ". You're always unrestricted.";
+    }
+    dialogContent = "<div>\n  " + overrideHtml + "\n  <ul class=\"restriction-criteria\">\n    <li>" + allowedEmail + "</li>\n    <li>" + verifiedMain + "</li>\n    " + verifiedAlternate + "\n  </ul>\n  <p>\n    Restricted accounts can't create projects.\n  </p>\n</div>";
     title = isUnrestricted ? "Your account is unrestricted" : "Your account is restricted";
     $("#restriction-summary").remove();
     dialogHtml = "<paper-dialog id=\"restriction-summary\" modal>\n  <h2>" + title + "</h2>\n  <paper-dialog-scrollable>\n    " + dialogContent + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
