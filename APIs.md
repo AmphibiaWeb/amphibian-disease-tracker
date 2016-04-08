@@ -313,6 +313,8 @@ Response:
 
 ## Create a new project
 
+**Requires an [unrestricted account](Creating%20a%20New%20Project/#restricted-vs-unrestricted-profiles)**
+
 Parameters:
 
 | Parameter | Value |

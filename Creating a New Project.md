@@ -15,9 +15,9 @@ The only thing you cannot do is create a new project.
 
 To get your user unrestricted, you must:
 
-1. Verify your email. From your Account Settings, click "verify" and click the link or input the code provided to prove ownership.
+1. Verify your email. From your [Account Settings](https://amphibiandisease.org/admin-login.php), click "verify" and click the link or input the code provided to prove ownership.
 2. Have an email address that *either* matches the list of approved [TLDs](https://en.wikipedia.org/wiki/Top-level_domain) or [domains](https://en.wikipedia.org/wiki/Domain_name) (minus TLD).
-3. If your username (the email you signed up with) doesn't match (2), you can add and verify an "alternate email" in Account Settings to meet those criteria.
+3. If your username (the email you signed up with) doesn't match (2), you can add and verify an "alternate email" in [Account Settings](https://amphibiandisease.org/admin-login.php) to meet those criteria.
 
 At this time, to have a unrestricted user, you must meet the following criteria:
 
