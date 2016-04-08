@@ -195,57 +195,65 @@ $loginStatus = getLoginState();
             <strong>Looking for news and updates?</strong> Bookmark <a href="http://updates.amphibiandisease.org/" class="newwindow alert-link">updates.amphibiandisease.org  <span class="glyphicon glyphicon-new-window"></span></a>!
           </div>
           <div class="row">
-            <paper-card heading="Documentation" class="card-tile col-xs-12 col-md-6 col-lg-3" elevation="2" animated-shadow>
-              <div class="card-content">
-                <p>
-                  Read the documentation for the site
-                </p>
-              </div>
-              <div class="card-actions">
-                <paper-button class="click" data-href="https://amphibian-disease-tracker.readthedocs.org" data-newtab="true">
-                  <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
-                  Documentation
-                </paper-button>
-              </div>
-            </paper-card>
-            <paper-card heading="Blog" class="card-tile col-xs-12 col-md-6 col-lg-3" elevation="2" animated-shadow>
-              <div class="card-content">
-                <p>
-                  Keep up to date with amphibian diseases
-                </p>
-              </div>
-              <div class="card-actions">
-                <paper-button class="click" data-href="http://updates.amphibiandisease.org/" data-newtab="true">
-                  <iron-icon icon="icons:update"></iron-icon>
-                  Updates &amp; Blog
-                </paper-button>
-              </div>
-            </paper-card>
-            <paper-card heading="Browse Project Data" class="card-tile col-xs-12 col-md-6 col-lg-3" elevation="2" animated-shadow>
-              <div class="card-content">
-                <p>
-                  See projects from other users and stuff and things
-                </p>
-              </div>
-              <div class="card-actions">
-                <paper-button class="click" data-href="https://amphibiandisease.org/project.php">
-                  <iron-icon icon="icons:language"></iron-icon>
-                  View the Project Browser
-                </paper-button>
-              </div>
-            </paper-card>
-            <paper-card heading="Amphibiaweb" class="card-tile col-xs-12 col-md-6 col-lg-3" elevation="2" animated-shadow>
-              <div class="card-content">
-                <p>
-                  Visit AmphibiaWeb!
-                </p>
-              </div>
-              <div class="card-actions">
-                <paper-button class="click" data-href="http://amphibiaweb.org" data-newtab="true">
-                  amphibiaweb.org
-                </paper-button>
-              </div>
-            </paper-card>
+            <div class="card-container col-xs-12 col-md-6 col-lg-3">
+              <paper-card heading="Documentation" class="card-tile" elevation="2" animated-shadow>
+                <div class="card-content">
+                  <p>
+                    Read the documentation for the site
+                  </p>
+                </div>
+                <div class="card-actions">
+                  <paper-button class="click" data-href="https://amphibian-disease-tracker.readthedocs.org" data-newtab="true">
+                    <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
+                    Documentation
+                  </paper-button>
+                </div>
+              </paper-card>
+            </div>
+            <div class="card-container col-xs-12 col-md-6 col-lg-3">
+              <paper-card heading="Blog" class="card-tile" elevation="2" animated-shadow>
+                <div class="card-content">
+                  <p>
+                    Keep up to date with amphibian diseases
+                  </p>
+                </div>
+                <div class="card-actions">
+                  <paper-button class="click" data-href="http://updates.amphibiandisease.org/" data-newtab="true">
+                    <iron-icon icon="icons:update"></iron-icon>
+                    Updates &amp; Blog
+                  </paper-button>
+                </div>
+              </paper-card>
+            </div>
+            <div class="card-container col-xs-12 col-md-6 col-lg-3">
+              <paper-card heading="Browse Project Data" class="card-tile" elevation="2" animated-shadow>
+                <div class="card-content">
+                  <p>
+                    See projects from other users and stuff and things
+                  </p>
+                </div>
+                <div class="card-actions">
+                  <paper-button class="click" data-href="https://amphibiandisease.org/project.php">
+                    <iron-icon icon="icons:language"></iron-icon>
+                    View the Project Browser
+                  </paper-button>
+                </div>
+              </paper-card>
+            </div>
+            <div class="card-container col-xs-12 col-md-6 col-lg-3">
+              <paper-card heading="Amphibiaweb" class="card-tile" elevation="2" animated-shadow>
+                <div class="card-content">
+                  <p>
+                    Visit AmphibiaWeb!
+                  </p>
+                </div>
+                <div class="card-actions">
+                  <paper-button class="click" data-href="http://amphibiaweb.org" data-newtab="true">
+                    amphibiaweb.org
+                  </paper-button>
+                </div>
+              </paper-card>
+            </div>
           </div>
         </div>
         <br/><br/>

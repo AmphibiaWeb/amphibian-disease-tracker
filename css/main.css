@@ -7598,3 +7598,9 @@ google-map.center-block:after {
 #upload-progress-dialog paper-dialog-scrollable {
   min-height: 60vh;
 }
+.card-container {
+  padding: 1rem;
+}
+.card-container paper-card {
+  width: 100%;
+}
