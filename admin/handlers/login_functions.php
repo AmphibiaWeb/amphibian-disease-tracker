@@ -1439,7 +1439,7 @@ class UserFunctions extends DBHelper
                 return $response;
             }
         }
-        $query = "UPDATE `".$this->getTable()."` SET `".$key."`='".$email."' ".$this->getUserWhere() . ", `alternate_email_verified` = 0";
+        $query = "UPDATE `".$this->getTable()."` SET `".$key."`='".$email."', `alternate_email_verified`=FALSE".$this->getUserWhere();
 
         $this->invalidateLink();
         $r = mysqli_query($this->getLink(), $query);
