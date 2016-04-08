@@ -1350,13 +1350,13 @@ class UserFunctions extends DBHelper
         }
         return $this->matchEmailAgainstRestrictions($this->getUsername());
     }
-    
+
     public function alternateIsAllowed() {
         if($this->hasAlternateEmail()) {
             return $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
         } else return false;
     }
-    
+
     public function emailIsAllowed() {
         return $this->matchEmailAgainstRestrictions($this->getUsername());
     }
@@ -1392,6 +1392,26 @@ class UserFunctions extends DBHelper
             }
         }
         return true;
+    }
+
+    public function getRestrictionCriteria() {
+        $domains = "any";
+        if(is_array($this->allowedDomains)) {
+            if(sizeof($this->allowedDomains) > 0) {
+                $domains = implode(", ", $this->allowedDomains);
+            }
+        }
+        $tlds = "any";
+        if(is_array($this->allowedTLDs)) {
+            if(sizeof($this->allowedTLDs) > 0) {
+                $tlds = implode(", ", $this->allowedTLDs);
+            }
+        }
+        return array(
+            "domains" => $domains,
+            "tlds" => $tlds,
+        );
+
     }
 
     public function setAlternateEmail($email) {
