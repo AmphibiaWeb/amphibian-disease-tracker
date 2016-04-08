@@ -87,7 +87,7 @@ module.exports = (grunt) ->
             loops: true
             if_return: true
             drop_console: false
-            warnings: true
+            warnings: false
             properties: true
             sequences: true
             cascade: true
