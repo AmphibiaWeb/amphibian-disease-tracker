@@ -250,7 +250,16 @@ function newEntry($get)
    *
    * @param data a base 64-encoded JSON string of the data to insert
    ***/
-  $data64 = $get['data'];
+    global $login_status;
+    $isUnrestricted = toBool($login_status["unrestricted"]);
+    if(!$isUnrestricted) {
+        return array(
+            "status" => false,
+            "error" => "RESTRICTED_USER_UNAUTHORIZED",
+            "human_error" => "Your account is still restricted. Please unrestrict your account before trying to create a project.",
+        );
+    }
+    $data64 = $get['data'];
     $enc = strtr($data64, '-_', '+/');
     $enc = chunk_split(preg_replace('!\015\012|\015|\012!', '', $enc));
     $enc = str_replace(' ', '+', $enc);
