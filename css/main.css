@@ -7329,6 +7329,9 @@ paper-button[raised].admin-action {
   background: #4CAF50;
   color: #fff;
 }
+#restriction-badge {
+  cursor: pointer;
+}
 #restriction-summary paper-dialog-scrollable .restriction-criteria {
   list-style-type: none;
 }
