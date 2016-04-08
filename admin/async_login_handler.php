@@ -193,7 +193,16 @@ function getLoginState($get, $default = false)
       $userDetail = $e->getMessage();
     }
 
-    return array('status' => $loginStatus,'defaulted' => $default,'login_url' => $login_url,'detail' => $userDetail);
+    return array(
+        'status' => $loginStatus,
+        'defaulted' => $default,
+        'login_url' => $login_url,
+        'detail' => $userDetail, 
+        "unrestricted" => $u->meetsRestrictionCriteria(), 
+        "has_alternate" => $u->hasAlternateEmail(),
+        "email_allowed" => $u->emailIsAllowed(),
+        "alternate_allowed" => $u->alternateIsAllowed(),
+    );
 }
 
 function hasTOTP($get)

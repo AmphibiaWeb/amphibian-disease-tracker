@@ -45,9 +45,10 @@ window.loadAdminUi = ->
   try
     verifyLoginCredentials (data) ->
       # Post verification
+      badgeHtml = if data.unrestricted is true then "<iron-icon icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" else ""
       articleHtml = """
       <h3>
-        Welcome, #{$.cookie("#{adminParams.domain}_name")}
+        Welcome, #{$.cookie("#{adminParams.domain}_name")} #{badgeHtml}
       </h3>
       <section id='admin-actions-block' class="row center-block text-center">
         <div class='bs-callout bs-callout-info'>
@@ -73,11 +74,22 @@ populateAdminActions = ->
     prop: null
   history.pushState state, "Admin Home", url
   $(".hanging-alert").remove()
-  adminActions = """
+  createButton = """
         <paper-button id="new-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:add"></iron-icon>
             Create New Project
         </paper-button>
+
+  """
+  createPlaceholder = """
+  <paper-button id="create-placeholder" class="admin-action non-action col-md-3 col-sm-4 col-xs-12" raised>
+    <iron-icon icon="icons:star-border"></iron-icon>
+    Unrestrict Account
+  </paper-button>
+  """
+  createHtml = if _adp.isUnrestricted then createButton else createPlaceholder
+  adminActions = """
+  #{createHtml}
         <paper-button id="edit-project" class="admin-action col-md-3 col-sm-4 col-xs-12" raised>
           <iron-icon icon="icons:create"></iron-icon>
             Edit Existing Project
@@ -94,6 +106,7 @@ populateAdminActions = ->
   $("#new-project").click -> loadCreateNewProject()
   $("#edit-project").click -> loadEditor()
   $("#view-project").click -> loadProjectBrowser()
+  $("#create-placeholder").click -> showUnrestrictionCriteria()
   verifyLoginCredentials (result) ->
     rawSu = toInt result.detail.userdata.su_flag
     if rawSu.toBool()
@@ -108,9 +121,102 @@ populateAdminActions = ->
       $("#admin-actions-block").append html
       $("#su-view-projects").click ->
         loadSUProjectBrowser()
+    _adp.isUnrestricted = result.unrestricted
+    if result.unrestricted isnt true
+      $("#new-project").remove()
+      $("#edit-project").before createPlaceholder
+      $("#create-placeholder").click -> showUnrestrictionCriteria()
+    if result.unrestricted is true and not $("#new-project").exists()
+      # Add the create button
+      $("#create-placeholder").remove()
+      $("#edit-project").before createButton
+      $("#new-project").click -> loadCreateNewProject()
     false
   false
 
+
+showUnrestrictionCriteria = ->
+  verifyLoginCredentials (result) ->
+    isUnrestricted = result.unrestricted.toBool()
+    hasAlternate = result.has_alternate.toBool()
+    verifiedEmail = result.detail.userdata.email_verified.toBool()
+    emailAllowed = result.email_allowed.toBool()
+    if hasAlternate
+      verifiedAlternateEmail = result.detail.userdata.alternate_email_verified.toBool()
+      alternateAllowed = result.alternate_allowed.toBool()
+      hasAllowedEmail = alternateAllowed or emailAllowed
+    else
+      hasAllowedEmail = emailAllowed
+    accountSettings = "https://#{adminParams.domain}.org/#{adminParams.loginDir.slice(0,-1)}"
+    completeIcon = """
+    <iron-icon icon="icons:verified-user" class="material-green" data-toggle="tooltip" title="Completed"></iron-icon>
+    """
+    incompleteIcon = """
+    <iron-icon icon="icons:verified-user" class="text-muted" data-toggle="tooltip" title="Incomplete"></iron-icon>
+    """
+    if hasAllowedEmail
+      allowedEmail = """
+      #{completeIcon} Have an email in allowed TLDs / domains
+      """
+    else
+      if hasAlternate
+        allowedEmail = """
+        #{incompleteIcon} Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='#{accountSettings}'>Account Settings</a>
+        """
+      else
+        allowedEmail = """
+        #{incompleteIcon} Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='#{accountSettings}'>Account Settings</a>
+        """
+    if verifiedEmail
+      verifiedMain = """
+      #{completeIcon} Have a verified username
+      """
+    else
+      verifiedMain = """
+      #{incompleteIcon} Your username isn't verified. <strong>Fix:</strong> Verify it in <a href='#{accountSettings}'>Account Settings</a>
+      """
+    if hasAlternate
+      if verifiedAlternateEmail
+        verifiedAlternate = """
+        #{completeIcon} Your alternate email is verified
+        """
+      else
+        if alternateAllowed
+          verifiedAlternate = """
+          #{incompleteIcon} Your alternate email isn't verified. <strong>Fix:</strong> Verify it in <a href='#{accountSettings}'>Account Settings</a>
+          """
+    verifiedAlternate =  if isNull(verifiedAlternate) then "" else "<li>#{verifiedAlternate}</li>"
+    dialogContent = """
+    <div>
+      <ul class="restriction-criteria">
+        <li>#{allowedEmail}</li>
+        <li>#{verifiedMain}</li>
+        #{verifiedAlternate}
+      </ul>
+      <p>
+        Restricted accounts can't create projects.
+      </p>
+    </div>
+    """
+    title = if isUnrestricted then "Your account is unrestricted" else "Your account is restricted"
+    # Pop a dialog
+    $("#restriction-summary").remove()
+    dialogHtml = """
+    <paper-dialog id="restriction-summary" modal>
+      <h2>#{title}</h2>
+      <paper-dialog-scrollable>
+        #{dialogContent}
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Close</paper-button>
+      </div>
+    </paper-dialog>
+    """
+    $("body").append dialogHtml
+    safariDialogHelper "#restriction-summary", 0, ->
+      console.info "Opened restriction summary dialog"
+    false
+  false
 
 verifyLoginCredentials = (callback) ->
   ###
@@ -124,9 +230,12 @@ verifyLoginCredentials = (callback) ->
   secret = $.cookie("#{adminParams.domain}_secret")
   link = $.cookie("#{adminParams.domain}_link")
   args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
-  $.post(adminParams.loginApiTarget,args,"json")
+  $.post adminParams.loginApiTarget, args, "json"
   .done (result) ->
     if result.status is true
+      unless _adp?
+        window._adp = new Object()
+      _adp.isUnrestricted = result.unrestricted
       callback(result)
     else
       goTo(result.login_url)

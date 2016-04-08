@@ -1350,6 +1350,16 @@ class UserFunctions extends DBHelper
         }
         return $this->matchEmailAgainstRestrictions($this->getUsername());
     }
+    
+    public function alternateIsAllowed() {
+        if($this->hasAlternateEmail()) {
+            return $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
+        } else return false;
+    }
+    
+    public function emailIsAllowed() {
+        return $this->matchEmailAgainstRestrictions($this->getUsername());
+    }
 
     public function isAdmin() {
         $u = $this->getUser();
