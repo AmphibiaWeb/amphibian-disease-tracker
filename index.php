@@ -191,9 +191,6 @@ $loginStatus = getLoginState();
       <section id="landing-blurb" class="row">
         <div class="subcontainer col-xs-12">
           <br/><br/>
-          <div class="alert alert-info center-on-large">
-            <strong>Looking for news and updates?</strong> Bookmark <a href="http://updates.amphibiandisease.org/" class="newwindow alert-link">updates.amphibiandisease.org  <span class="glyphicon glyphicon-new-window"></span></a>!
-          </div>
           <div class="row">
             <div class="card-container col-xs-12 col-md-6 col-lg-3">
               <paper-card heading="Documentation" class="card-tile" elevation="2" animated-shadow>
