@@ -128,9 +128,9 @@ $loginStatus = getLoginState();
         </p>
     </header>
     <main>
-      <h1 id="title" class="main-title">The Amphibian Disease Project</h1>
+      <h1 id="title" class="main-title">The Amphibian Disease Portal</h1>
       <section id="main-body" class="row">
-        <h2 class="col-xs-12 subtitle">A research tracker and data aggregation portal for Chytrid and other amphibian diseases</h2>
+        <h2 class="col-xs-12 subtitle">A repository for aggregating information on <i>Bd</i> and <i>Bsal</i></h2>
         <div class="subcontainer col-xs-12">
           <div id="amphibian-images-carousel" class="carousel slide" data-ride="carousel">
             <!-- Indicators -->
