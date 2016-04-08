@@ -123,15 +123,19 @@ populateAdminActions = function() {
     _adp.isUnrestricted = result.unrestricted;
     if (result.unrestricted !== true) {
       $("#new-project").remove();
-      $("#edit-project").before(createPlaceholder);
-      $("#create-placeholder").click(function() {
+      if (!$("#create-placeholder").exists()) {
+        $("#edit-project").before(createPlaceholder);
+      }
+      $("#create-placeholder").unbind().click(function() {
         return showUnrestrictionCriteria();
       });
     }
     if (result.unrestricted === true && !$("#new-project").exists()) {
       $("#create-placeholder").remove();
-      $("#edit-project").before(createButton);
-      $("#new-project").click(function() {
+      if (!$("#new-project").exists()) {
+        $("#edit-project").before(createButton);
+      }
+      $("#new-project").unbind().click(function() {
         return loadCreateNewProject();
       });
     }
@@ -162,7 +166,7 @@ showUnrestrictionCriteria = function() {
     accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
     completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
     incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
-    allowedString = "<small class='text-muted'>Allowed domains: " + result.restriction_criteria.domains + ". Allowed TLDs: " + result.restriction_criteria.tlds + "</small>";
+    allowedString = "<br/><small class='allowed-tld-domains'>Allowed domains: " + result.restriction_criteria.domains + ". Allowed TLDs: " + result.restriction_criteria.tlds + "</small>";
     if (hasAllowedEmail) {
       allowedEmail = completeIcon + " Have an email in allowed TLDs / domains. " + allowedString;
     } else {
