@@ -1340,15 +1340,19 @@ class UserFunctions extends DBHelper
     }
 
     public function meetsRestrictionCriteria() {
-        if($this->isAdmin() || $this->isSU()) return true;
-        if($this->isVerified() !== true) return false;
-        if($this->hasAlternateEmail()) {
-            if($this->isVerified(true) === true) {
-                $alternateMatch = $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
-                if($alternateMatch === true) return true;
+        try {
+            if($this->isAdmin() || $this->isSU()) return true;
+            if($this->isVerified() !== true) return false;
+            if($this->hasAlternateEmail()) {
+                if($this->isVerified(true) === true) {
+                    $alternateMatch = $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
+                    if($alternateMatch === true) return true;
+                }
             }
+            return $this->matchEmailAgainstRestrictions($this->getUsername());
+        } catch (Exception $e) {
+            return false;
         }
-        return $this->matchEmailAgainstRestrictions($this->getUsername());
     }
 
     public function alternateIsAllowed() {
@@ -1362,13 +1366,21 @@ class UserFunctions extends DBHelper
     }
 
     public function isAdmin() {
-        $u = $this->getUser();
-        return toBool($u["admin_flag"]);
+        try {
+            $u = $this->getUser();
+            return toBool($u["admin_flag"]);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function isSU() {
-        $u = $this->getUser();
-        return toBool($u["su_flag"]);
+        try {
+            $u = $this->getUser();
+            return toBool($u["su_flag"]);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     private function matchEmailAgainstRestrictions($email) {

@@ -2,7 +2,7 @@
 <html>
   <head>
 <?php
-$debug = false;
+$debug = true;
 
 if ($debug) {
     error_reporting(E_ALL);
