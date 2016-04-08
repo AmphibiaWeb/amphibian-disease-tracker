@@ -20,12 +20,31 @@ $as_include = true;
 # The next include includes core, and DB_CONFIG, and sets up $db
 # require_once(dirname(__FILE__)."/admin-api.php");
 
-$pid = $db->sanitize($_GET['id']);
-
 $loginStatus = getLoginState();
 
+$viewUserId = $db->sanitize($_GET['id']);
+if(empty($viewUserId) && $loginStatus["status"]) {
+    $viewuserId = $loginStatus["detail"]["userdetail"]["dblink"];
+}
+$setUser = array("dblink" => $viewUserId);
+$viewUser = new UserFunctions();
+$validUser = true;
+$userdata = array();
+try {
+    $userdata = $viewUser->getUser($setUser);    
+    $nameXml = $userdata["name"];
+    $xml = new Xml();
+    $xml->setXml($nameXml);
+    $title = $xml->getTagContents("name");
+} catch (Exception $e) {
+    $validUser = false;
+    $title = "No Such User";
+}
+
+
+
        ?>
-    <title>Profile - </title>
+    <title>Profile - <?php echo $title; ?></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
     <meta name="theme-color" content="#445e14"/>
