@@ -138,7 +138,9 @@ populateAdminActions = ->
 
 
 showUnrestrictionCriteria = ->
+  startLoad()
   verifyLoginCredentials (result) ->
+    stopLoad()
     isUnrestricted = result.unrestricted.toBool()
     hasAlternate = result.has_alternate.toBool()
     verifiedEmail = result.detail.userdata.email_verified.toBool()

@@ -141,8 +141,10 @@ populateAdminActions = function() {
 };
 
 showUnrestrictionCriteria = function() {
+  startLoad();
   verifyLoginCredentials(function(result) {
     var accountSettings, allowedEmail, allowedString, alternateAllowed, completeIcon, dialogContent, dialogHtml, emailAllowed, hasAllowedEmail, hasAlternate, hasOverride, incompleteIcon, isUnrestricted, overrideHtml, phrase, rawAdmin, rawSu, title, verifiedAlternate, verifiedAlternateEmail, verifiedEmail, verifiedMain;
+    stopLoad();
     isUnrestricted = result.unrestricted.toBool();
     hasAlternate = result.has_alternate.toBool();
     verifiedEmail = result.detail.userdata.email_verified.toBool();
