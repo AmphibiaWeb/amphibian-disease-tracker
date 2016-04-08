@@ -194,36 +194,44 @@ $loginStatus = getLoginState();
           <div class="alert alert-info center-on-large">
             <strong>Looking for news and updates?</strong> Bookmark <a href="http://updates.amphibiandisease.org/" class="newwindow alert-link">updates.amphibiandisease.org  <span class="glyphicon glyphicon-new-window"></span></a>!
           </div>
-          <paper-card heading="Data Collaboration" class="card-tile" elevation="2" animated-shadow>
-            <div class="card-content">
-              <p>
-                Share your data with whitelisted collaborators, or make it open to the public
-              </p>
-            </div>
-            <div class="card-actions">
-              <paper-button class="click" data-function="foo">Example</paper-button>
-            </div>
-          </paper-card>
-          <paper-card heading="Map It!" class="card-tile" elevation="2" image="assets/cards/map-data-sample.png" animated-shadow>
-            <div class="card-content">
-              <p>
-                GIS is a first-class citizen. View your data geospatially, and how it relates to others.
-              </p>
-            </div>
-            <div class="card-actions">
-              <paper-button class="click" data-function="foo">Example</paper-button>
-            </div>
-          </paper-card>
-          <paper-card heading="Browse Open Access Project Data" class="card-tile" elevation="2" animated-shadow>
-            <div class="card-content">
-              <p>
-                See projects from other users and stuff and things
-              </p>
-            </div>
-            <div class="card-actions">
-              <paper-button class="click" data-href="https://amphibiandisease.org/project.php">View the Project Browser</paper-button>
-            </div>
-          </paper-card>
+          <div class="row">
+            <paper-card heading="Data Collaboration" class="card-tile" elevation="2" animated-shadow>
+              <div class="card-content">
+                <p>
+                  Share your data with whitelisted collaborators, or make it open to the public
+                </p>
+              </div>
+              <div class="card-actions">
+                <paper-button class="click" data-function="foo">Example</paper-button>
+              </div>
+            </paper-card>
+            <paper-card heading="Blog" class="card-tile" elevation="2" animated-shadow>
+              <div class="card-content">
+                <p>
+                  Keep up to date with amphibian diseases
+                </p>
+              </div>
+              <div class="card-actions">
+                <paper-button class="click" data-href="http://updates.amphibiandisease.org/">
+                  <iron-icon icon="icons:update"></iron-icon>
+                  Updates &amp; Blog
+                </paper-button>
+              </div>
+            </paper-card>
+            <paper-card heading="Browse Open Access Project Data" class="card-tile" elevation="2" animated-shadow>
+              <div class="card-content">
+                <p>
+                  See projects from other users and stuff and things
+                </p>
+              </div>
+              <div class="card-actions">
+                <paper-button class="click" data-href="https://amphibiandisease.org/project.php">
+                  <iron-icon icon="icons:language"></iron-icon>
+                  View the Project Browser
+                </paper-button>
+              </div>
+            </paper-card>
+          </div>
         </div>
         <br/><br/>
       </section>
@@ -233,7 +241,7 @@ $loginStatus = getLoginState();
         <copyright-statement copyrightStart="2015">AmphibiaWeb &amp; AmphibianDisease.org</copyright-statement>
       </div>
       <div class="col-md-1 col-xs-4">
-        <paper-icon-button icon="icons:chrome-reader-mode" class="click" data-href="https://amphibian-disease-tracker.rtfd.org" data-toggle="tooltip" title="Documentation" data-newtab="true"></paper-icon-button>
+        <paper-icon-button icon="icons:chrome-reader-mode" class="click" data-href="https://amphibian-disease-tracker.readthedocs.org" data-toggle="tooltip" title="Documentation" data-newtab="true"></paper-icon-button>
       </div>
       <div class="col-md-1 col-xs-4">
         <paper-icon-button icon="glyphicon-social:github" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" data-toggle="tooltip" title="Visit us on GitHub" data-newtab="true"></paper-icon-button>
