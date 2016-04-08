@@ -154,8 +154,10 @@ Parameters:
 |-----------|-------|
 | `action` | `validate` |
 | `genus` |  Genus to validate. Case-insensitive. |
-| `species` | Species to validate. If you only want to check for a genus, the string `sp.`, `sp`, or `nov. sp.` may be used here. |
+| `species` | Species to validate.<sup>\*</sup> |
 | `subspecies` | **Optional:** Reserved for future use; currently not tracked by AmphibiaWeb. |
+
+<sup>\*</sup>**Genus only validation**: You can validate only the genus by providing a species name `sp.` For the purposes of application-based validation, it may also be `nov. sp.`, with or without the `.` after `nov` or `sp`, and may be trailed by up to one space and any number of digits thereafter. That is to say, `nov sp 3`, `sp. 2`, `nov. sp.`, etc. are all "species" that will trigger genus-only validation (as are any other strings [that match the regular expression `/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m`](http://regexr.com/3d1kb)). The "validated species" in the response will be normalized.
 
 Response:  
 
