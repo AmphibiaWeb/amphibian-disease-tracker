@@ -24,7 +24,8 @@ $loginStatus = getLoginState();
 
 $viewUserId = $db->sanitize($_GET['id']);
 if(empty($viewUserId) && $loginStatus["status"]) {
-    $viewuserId = $loginStatus["detail"]["userdetail"]["dblink"];
+    $viewUserId = $loginStatus["detail"]["userdata"]["dblink"];
+    echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
 }
 $setUser = array("dblink" => $viewUserId);
 $viewUser = new UserFunctions();
@@ -185,16 +186,26 @@ try {
       <?php
          if ($validUser) {
              ?>
-      <h1 id="title">User Profile</h1>
+      <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
-        
+        <p>A beautiful cacophony of data and narcissism</p>
       </section>
       <?php 
          } elseif (!$validUser) {
              ?>
       <h1 id="title">Invalid User</h1>
       <section id="main-body" class="row">
-        
+        <blockquote>
+          <p>It's like it's been erased.</p>
+          <p>Erased ... from existence</p>
+          <footer>
+            Marty &amp; Doc Brown, <cite title="Back to the Future">Back to the Future</cite>
+          </footer>
+        </blockquote>
+        <p>
+          No one is here. You can go back to safety
+          and <a href="profile.php">view your own profile</a>.
+        </p>
       </section>
       <?php 
          } ?>
