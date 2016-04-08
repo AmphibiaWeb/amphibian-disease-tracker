@@ -211,7 +211,7 @@ $loginStatus = getLoginState();
               <paper-card heading="Blog" class="card-tile" elevation="2" animated-shadow>
                 <div class="card-content">
                   <p>
-                    Keep up to date with amphibian diseases
+                    Keep up to date with the project
                   </p>
                 </div>
                 <div class="card-actions">
@@ -226,7 +226,7 @@ $loginStatus = getLoginState();
               <paper-card heading="Browse Project Data" class="card-tile" elevation="2" animated-shadow>
                 <div class="card-content">
                   <p>
-                    See projects from other users and stuff and things
+                    See all projects and access datasets
                   </p>
                 </div>
                 <div class="card-actions">
@@ -238,7 +238,7 @@ $loginStatus = getLoginState();
               </paper-card>
             </div>
             <div class="card-container col-xs-12 col-md-6 col-lg-3">
-              <paper-card heading="Amphibiaweb" class="card-tile" elevation="2" animated-shadow>
+              <paper-card heading="AmphibiaWeb" class="card-tile" elevation="2" animated-shadow>
                 <div class="card-content">
                   <p>
                     Visit AmphibiaWeb!
