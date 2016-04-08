@@ -1232,7 +1232,7 @@ class UserFunctions extends DBHelper
         } else {
             $email = $this->getUsername();
         }
-        if($this->isVerified($alternate) === true) {            
+        if($this->isVerified($alternate) === true) {
             return array(
                 "status" => false,
                 "is_good" => true,
@@ -1340,6 +1340,7 @@ class UserFunctions extends DBHelper
     }
 
     public function meetsRestrictionCriteria() {
+        if($this->isAdmin() || $this->isSU()) return true;
         if($this->isVerified() !== true) return false;
         if($this->hasAlternateEmail()) {
             if($this->isVerified(true) === true) {
@@ -1349,7 +1350,26 @@ class UserFunctions extends DBHelper
         }
         return $this->matchEmailAgainstRestrictions($this->getUsername());
     }
+    
+    public function alternateIsAllowed() {
+        if($this->hasAlternateEmail()) {
+            return $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
+        } else return false;
+    }
+    
+    public function emailIsAllowed() {
+        return $this->matchEmailAgainstRestrictions($this->getUsername());
+    }
 
+    public function isAdmin() {
+        $u = $this->getUser();
+        return toBool($u["admin_flag"]);
+    }
+
+    public function isSU() {
+        $u = $this->getUser();
+        return toBool($u["su_flag"]);
+    }
 
     private function matchEmailAgainstRestrictions($email) {
         $domainParts = explode("@", $email);
@@ -1399,10 +1419,11 @@ class UserFunctions extends DBHelper
                 return $response;
             }
         }
-        $query = "UPDATE `".$this->getTable()."` SET `".$key."`='".$email."' ".$this->getUserWhere();
+        $query = "UPDATE `".$this->getTable()."` SET `".$key."`='".$email."' ".$this->getUserWhere() . ", `alternate_email_verified` = 0";
 
         $this->invalidateLink();
         $r = mysqli_query($this->getLink(), $query);
+
         if($r === false) {
             $response["status"] = false;
             $response["error"] = mysqli_error($this->getLink());

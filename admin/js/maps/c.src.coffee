@@ -1578,11 +1578,11 @@ finishChangePassword = ->
 # Verification
 ###################################
 
-unless typeof stopLoad is "function"
+if typeof window.stopLoad is "function"
   stopLoad = window.stopLoad
 unless typeof startLoad is "function"
   startLoad = window.startLoad
-unless typeof stopLoadError is "function"
+if typeof window.stopLoadError is "function"
   stopLoadError = window.stopLoadError
 unless typeof toastStatusMessage is "function"
   toastStatusMessage = window.toastStatusMessage
@@ -1616,11 +1616,13 @@ verifyEmail = (caller) ->
            <span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>
           """
         $(caller).append html
+        $(caller).find(".verify-email").remove()
       else
         try
           stopLoadError result.human_error
         catch
           stopLoadError()
+      stopLoad()
       false
     .fail (result, status) ->
       try

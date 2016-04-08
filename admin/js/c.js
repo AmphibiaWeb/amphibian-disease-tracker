@@ -1710,7 +1710,7 @@
     return false;
   };
 
-  if (typeof stopLoad !== "function") {
+  if (typeof window.stopLoad === "function") {
     stopLoad = window.stopLoad;
   }
 
@@ -1718,7 +1718,7 @@
     startLoad = window.startLoad;
   }
 
-  if (typeof stopLoadError !== "function") {
+  if (typeof window.stopLoadError === "function") {
     stopLoadError = window.stopLoadError;
   }
 
@@ -1758,6 +1758,7 @@
             html += "<span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>";
           }
           $(caller).append(html);
+          $(caller).find(".verify-email").remove();
         } else {
           try {
             stopLoadError(result.human_error);
@@ -1765,6 +1766,7 @@
             stopLoadError();
           }
         }
+        stopLoad();
         return false;
       }).fail(function(result, status) {
         try {

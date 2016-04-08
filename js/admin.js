@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -60,8 +60,9 @@ window.loadAdminUi = function() {
   var e, error1;
   try {
     verifyLoginCredentials(function(data) {
-      var articleHtml;
-      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + "\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
+      var articleHtml, badgeHtml;
+      badgeHtml = data.unrestricted === true ? "<iron-icon icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" : "";
+      articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + " " + badgeHtml + "\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
       $(".fill-user-fullname").text($.cookie(adminParams.domain + "_fullname"));
       checkInitLoad(function() {
@@ -78,7 +79,7 @@ window.loadAdminUi = function() {
 };
 
 populateAdminActions = function() {
-  var adminActions, state, url;
+  var adminActions, createButton, createHtml, createPlaceholder, state, url;
   url = uri.urlString + "admin-page.html";
   state = {
     "do": "home",
@@ -86,7 +87,10 @@ populateAdminActions = function() {
   };
   history.pushState(state, "Admin Home", url);
   $(".hanging-alert").remove();
-  adminActions = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n<paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:create\"></iron-icon>\n    Edit Existing Project\n</paper-button>\n<paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:visibility\"></iron-icon>\n    View All My Projects\n</paper-button>";
+  createButton = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n";
+  createPlaceholder = "<paper-button id=\"create-placeholder\" class=\"admin-action non-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:star-border\"></iron-icon>\n  Unrestrict Account\n</paper-button>";
+  createHtml = _adp.isUnrestricted ? createButton : createPlaceholder;
+  adminActions = createHtml + "\n      <paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n        <iron-icon icon=\"icons:create\"></iron-icon>\n          Edit Existing Project\n      </paper-button>\n      <paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n        <iron-icon icon=\"icons:visibility\"></iron-icon>\n          View All My Projects\n      </paper-button>";
   $("#admin-actions-block").html(adminActions);
   $("#show-actions").remove();
   $("main #main-body").empty();
@@ -99,6 +103,9 @@ populateAdminActions = function() {
   $("#view-project").click(function() {
     return loadProjectBrowser();
   });
+  $("#create-placeholder").click(function() {
+    return showUnrestrictionCriteria();
+  });
   verifyLoginCredentials(function(result) {
     var html, rawSu;
     rawSu = toInt(result.detail.userdata.su_flag);
@@ -110,6 +117,75 @@ populateAdminActions = function() {
         return loadSUProjectBrowser();
       });
     }
+    _adp.isUnrestricted = result.unrestricted;
+    if (result.unrestricted !== true) {
+      $("#new-project").remove();
+      $("#edit-project").before(createPlaceholder);
+      $("#create-placeholder").click(function() {
+        return showUnrestrictionCriteria();
+      });
+    }
+    if (result.unrestricted === true && !$("#new-project").exists()) {
+      $("#create-placeholder").remove();
+      $("#edit-project").before(createButton);
+      $("#new-project").click(function() {
+        return loadCreateNewProject();
+      });
+    }
+    return false;
+  });
+  return false;
+};
+
+showUnrestrictionCriteria = function() {
+  verifyLoginCredentials(function(result) {
+    var accountSettings, allowedEmail, alternateAllowed, completeIcon, dialogContent, dialogHtml, emailAllowed, hasAllowedEmail, hasAlternate, incompleteIcon, isUnrestricted, title, verifiedAlternate, verifiedAlternateEmail, verifiedEmail, verifiedMain;
+    isUnrestricted = result.unrestricted.toBool();
+    hasAlternate = result.has_alternate.toBool();
+    verifiedEmail = result.detail.userdata.email_verified.toBool();
+    emailAllowed = result.email_allowed.toBool();
+    if (hasAlternate) {
+      verifiedAlternateEmail = result.detail.userdata.alternate_email_verified.toBool();
+      alternateAllowed = result.alternate_allowed.toBool();
+      hasAllowedEmail = alternateAllowed || emailAllowed;
+    } else {
+      hasAllowedEmail = emailAllowed;
+    }
+    accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
+    completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
+    incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
+    if (hasAllowedEmail) {
+      allowedEmail = completeIcon + " Have an email in allowed TLDs / domains";
+    } else {
+      if (hasAlternate) {
+        allowedEmail = incompleteIcon + " Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='" + accountSettings + "'>Account Settings</a>";
+      } else {
+        allowedEmail = incompleteIcon + " Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='" + accountSettings + "'>Account Settings</a>";
+      }
+    }
+    if (verifiedEmail) {
+      verifiedMain = completeIcon + " Have a verified username";
+    } else {
+      verifiedMain = incompleteIcon + " Your username isn't verified. <strong>Fix:</strong> Verify it in <a href='" + accountSettings + "'>Account Settings</a>";
+    }
+    if (hasAlternate) {
+      if (verifiedAlternateEmail) {
+        verifiedAlternate = completeIcon + " Your alternate email is verified";
+      } else {
+        if (alternateAllowed) {
+          verifiedAlternate = incompleteIcon + " Your alternate email isn't verified. <strong>Fix:</strong> Verify it in <a href='" + accountSettings + "'>Account Settings</a>";
+        }
+      }
+    }
+    verifiedAlternate = isNull(verifiedAlternate) ? "" : "<li>" + verifiedAlternate + "</li>";
+    dialogContent = "<div>\n  <ul class=\"restriction-criteria\">\n    <li>" + allowedEmail + "</li>\n    <li>" + verifiedMain + "</li>\n    " + verifiedAlternate + "\n  </ul>\n  <p>\n    Restricted accounts can't create projects.\n  </p>\n</div>";
+    title = isUnrestricted ? "Your account is unrestricted" : "Your account is restricted";
+    $("#restriction-summary").remove();
+    dialogHtml = "<paper-dialog id=\"restriction-summary\" modal>\n  <h2>" + title + "</h2>\n  <paper-dialog-scrollable>\n    " + dialogContent + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+    $("body").append(dialogHtml);
+    safariDialogHelper("#restriction-summary", 0, function() {
+      return console.info("Opened restriction summary dialog");
+    });
     return false;
   });
   return false;
@@ -131,6 +207,10 @@ verifyLoginCredentials = function(callback) {
   args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
   $.post(adminParams.loginApiTarget, args, "json").done(function(result) {
     if (result.status === true) {
+      if (typeof _adp === "undefined" || _adp === null) {
+        window._adp = new Object();
+      }
+      _adp.isUnrestricted = result.unrestricted;
       return callback(result);
     } else {
       return goTo(result.login_url);
