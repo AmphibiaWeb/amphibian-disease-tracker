@@ -234,6 +234,18 @@ $loginStatus = getLoginState();
                 </paper-button>
               </div>
             </paper-card>
+            <paper-card heading="Amphibiaweb" class="card-tile col-xs-12 col-md-6 col-lg-3" elevation="2" animated-shadow>
+              <div class="card-content">
+                <p>
+                  Visit AmphibiaWeb!
+                </p>
+              </div>
+              <div class="card-actions">
+                <paper-button class="click" data-href="http://amphibiaweb.org" data-newtab="true">
+                  amphibiaweb.org
+                </paper-button>
+              </div>
+            </paper-card>
           </div>
         </div>
         <br/><br/>
