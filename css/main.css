@@ -7335,6 +7335,10 @@ paper-button[raised].admin-action {
 #restriction-summary paper-dialog-scrollable .restriction-criteria {
   list-style-type: none;
 }
+#restriction-summary paper-dialog-scrollable .allowed-tld-domains {
+  color: #777777;
+  text-indent: 3rem;
+}
 .thumb-img {
   max-width: 150px;
   max-height: 150px;

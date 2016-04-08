@@ -126,13 +126,19 @@ populateAdminActions = ->
     _adp.isUnrestricted = result.unrestricted
     if result.unrestricted isnt true
       $("#new-project").remove()
-      $("#edit-project").before createPlaceholder
-      $("#create-placeholder").click -> showUnrestrictionCriteria()
+      unless $("#create-placeholder").exists()
+        $("#edit-project").before createPlaceholder
+      $("#create-placeholder")
+      .unbind()
+      .click -> showUnrestrictionCriteria()
     if result.unrestricted is true and not $("#new-project").exists()
       # Add the create button
       $("#create-placeholder").remove()
-      $("#edit-project").before createButton
-      $("#new-project").click -> loadCreateNewProject()
+      unless $("#new-project").exists()
+        $("#edit-project").before createButton
+      $("#new-project")
+      .unbind()
+      .click -> loadCreateNewProject()
     false
   false
 
@@ -161,7 +167,7 @@ showUnrestrictionCriteria = ->
     incompleteIcon = """
     <iron-icon icon="icons:verified-user" class="text-muted" data-toggle="tooltip" title="Incomplete"></iron-icon>
     """
-    allowedString = "<small class='text-muted'>Allowed domains: #{result.restriction_criteria.domains}. Allowed TLDs: #{result.restriction_criteria.tlds}</small>"
+    allowedString = "<br/><small class='allowed-tld-domains'>Allowed domains: #{result.restriction_criteria.domains}. Allowed TLDs: #{result.restriction_criteria.tlds}</small>"
     if hasAllowedEmail
       allowedEmail = """
       #{completeIcon} Have an email in allowed TLDs / domains. #{allowedString}
