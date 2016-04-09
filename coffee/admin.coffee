@@ -84,9 +84,9 @@ populateAdminActions = ->
 
   """
   createPlaceholder = """
-  <paper-button id="create-placeholder" class="admin-action non-action col-md-3 col-sm-4 col-xs-12" raised>
+  <paper-button id="create-placeholder" class="admin-action non-action col-md-3 col-sm-4 col-xs-12" raised data-toggle="tooltip" title="Your account is restricted. Click to unrestrict">
     <iron-icon icon="icons:star-border"></iron-icon>
-    Unrestrict Account
+    Create Project <small>(Unrestrict Account)</small>
   </paper-button>
   """
   createHtml = if _adp.isUnrestricted then createButton else createPlaceholder
