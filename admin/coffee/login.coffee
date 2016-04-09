@@ -1138,7 +1138,7 @@ verifyEmail = (caller) ->
         # Put a form to fill
         html = """
         <div id='verify-email-filler' class='form row'>
-          <p class='col-xs-12'>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>
+          <p class='col-xs-12'>We've sent you an email. <strong>Be sure to check your "junk" or "spam" folder for the request</strong>. Please click the link in the email, or paste the code provided into the box below.</p>
           <div class='form-group col-xs-8'>
             <label for='verify-email-code' class='sr-only'>Validation Code:</label>
             <input class='form-control' type='text' maxlength='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>
@@ -1150,6 +1150,15 @@ verifyEmail = (caller) ->
         """
         $(caller).after html
         $("#validate-email-code").click ->
+          code = $("#verify-email-code").val().trim()
+          try
+            isValid = $("#verify-email-code").get(0).checkValidity()
+          catch
+            isValid = true
+          if isNull(code) or not isValid
+            $(this).parent().addClass "has-error"
+            return false
+          $(this).parent().removeClass "has-error"
           validateEmailCode()
         stopLoad()
       else
@@ -1174,20 +1183,29 @@ verifyEmail = (caller) ->
 addAlternateEmail = (caller) ->
   html = """
   <div id='add-alternate-form' class='form row'>
+    <p class='col-xs-12'>An alternative email address can be used to meet verification requirements. We will not use this email for any other purpose.</p>
     <div class='form-group col-xs-8'>
       <label for='alternate-email-value' class='sr-only'>Alternative Email</label>
       <input type='email' class='form-control' placeholder='Alternative email address' id='alternate-email-value' name='alternate-email-value' required/>
     </div>
-    <div class='col-xs-4 text-center'>
+    <div class='col-xs-4'>
       <button class='btn btn-primary' id='submit-alternate-email'>Add</button>
     </div>
   </div>
   """
   $(caller).after html
   $("#submit-alternate-email").click ->
+    email = $("#alternate-email-value").val().trim()
+    try
+      isValid = $("#alternate-email-value").get(0).checkValidity()
+    catch
+      isValid = true
+    if isNull(email) or not isValid
+      $(this).parent().addClass "has-error"
+      return false
+    $(this).parent().removeClass "has-error"
     startLoad()
     # POST, etc
-    email = $("#alternate-email-value").val().trim()
     user = $(caller).attr "data-user"
     args = "action=addalternateemail&email=#{encodeURIComponent(email)}&username=#{encodeURIComponent(user)}"
     $.post apiUri.apiTarget, args, "json"
@@ -1317,6 +1335,11 @@ $ ->
         $(".alert").alert()
       catch e
         console.warn("Couldn't bind alert!")
+      try
+        $("body").tooltip
+          selector: "[data-toggle='tooltip']"
+      catch e
+        console.warn("Tooltips were attempted to be set up, but do not exist")
   catch e
     console.log("Couldn't tooltip icon!")
   try

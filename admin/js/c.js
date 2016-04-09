@@ -1796,9 +1796,21 @@
         }
       } else {
         if (result.status) {
-          html = "<div id='verify-email-filler' class='form row'>\n  <p class='col-xs-12'>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>\n  <div class='form-group col-xs-8'>\n    <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n    <input class='form-control' type='text' maxlength='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>\n  </div>\n  <div class='col-xs-4'>\n    <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n  </div>\n</div>";
+          html = "<div id='verify-email-filler' class='form row'>\n  <p class='col-xs-12'>We've sent you an email. <strong>Be sure to check your \"junk\" or \"spam\" folder for the request</strong>. Please click the link in the email, or paste the code provided into the box below.</p>\n  <div class='form-group col-xs-8'>\n    <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n    <input class='form-control' type='text' maxlength='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>\n  </div>\n  <div class='col-xs-4'>\n    <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n  </div>\n</div>";
           $(caller).after(html);
           $("#validate-email-code").click(function() {
+            var code, isValid;
+            code = $("#verify-email-code").val().trim();
+            try {
+              isValid = $("#verify-email-code").get(0).checkValidity();
+            } catch (_error) {
+              isValid = true;
+            }
+            if (isNull(code) || !isValid) {
+              $(this).parent().addClass("has-error");
+              return false;
+            }
+            $(this).parent().removeClass("has-error");
             return validateEmailCode();
           });
           stopLoad();
@@ -1829,12 +1841,22 @@
 
   addAlternateEmail = function(caller) {
     var html;
-    html = "<div id='add-alternate-form' class='form row'>\n  <div class='form-group col-xs-8'>\n    <label for='alternate-email-value' class='sr-only'>Alternative Email</label>\n    <input type='email' class='form-control' placeholder='Alternative email address' id='alternate-email-value' name='alternate-email-value' required/>\n  </div>\n  <div class='col-xs-4 text-center'>\n    <button class='btn btn-primary' id='submit-alternate-email'>Add</button>\n  </div>\n</div>";
+    html = "<div id='add-alternate-form' class='form row'>\n  <p class='col-xs-12'>An alternative email address can be used to meet verification requirements. We will not use this email for any other purpose.</p>\n  <div class='form-group col-xs-8'>\n    <label for='alternate-email-value' class='sr-only'>Alternative Email</label>\n    <input type='email' class='form-control' placeholder='Alternative email address' id='alternate-email-value' name='alternate-email-value' required/>\n  </div>\n  <div class='col-xs-4'>\n    <button class='btn btn-primary' id='submit-alternate-email'>Add</button>\n  </div>\n</div>";
     $(caller).after(html);
     $("#submit-alternate-email").click(function() {
-      var args, email, user;
-      startLoad();
+      var args, email, isValid, user;
       email = $("#alternate-email-value").val().trim();
+      try {
+        isValid = $("#alternate-email-value").get(0).checkValidity();
+      } catch (_error) {
+        isValid = true;
+      }
+      if (isNull(email) || !isValid) {
+        $(this).parent().addClass("has-error");
+        return false;
+      }
+      $(this).parent().removeClass("has-error");
+      startLoad();
       user = $(caller).attr("data-user");
       args = "action=addalternateemail&email=" + (encodeURIComponent(email)) + "&username=" + (encodeURIComponent(user));
       $.post(apiUri.apiTarget, args, "json").done(function(result) {
@@ -1984,10 +2006,18 @@
           return false;
         });
         try {
-          return $(".alert").alert();
+          $(".alert").alert();
         } catch (_error) {
           e = _error;
-          return console.warn("Couldn't bind alert!");
+          console.warn("Couldn't bind alert!");
+        }
+        try {
+          return $("body").tooltip({
+            selector: "[data-toggle='tooltip']"
+          });
+        } catch (_error) {
+          e = _error;
+          return console.warn("Tooltips were attempted to be set up, but do not exist");
         }
       });
     } catch (_error) {
