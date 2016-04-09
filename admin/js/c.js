@@ -1799,18 +1799,20 @@
           html = "<div id='verify-email-filler' class='form row'>\n  <p class='col-xs-12'>We've sent you an email. <strong>Be sure to check your \"junk\" or \"spam\" folder for the request</strong>. Please click the link in the email, or paste the code provided into the box below.</p>\n  <div class='form-group col-xs-8'>\n    <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n    <input class='form-control' type='text' maxlength='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>\n  </div>\n  <div class='col-xs-4'>\n    <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n  </div>\n</div>";
           $(caller).after(html);
           $("#validate-email-code").click(function() {
-            var code, isValid;
+            var code, isValid, reqLength;
             code = $("#verify-email-code").val().trim();
+            reqLength = $("#verify-email-code").attr("maxlength");
+            reqLength = toInt(reqLength);
             try {
               isValid = $("#verify-email-code").get(0).checkValidity();
             } catch (_error) {
               isValid = true;
             }
-            if (isNull(code) || !isValid) {
-              $(this).parent().addClass("has-error");
+            if (isNull(code) || !isValid || code.length !== reqLength) {
+              $("#verify-email-code").parent().addClass("has-error");
               return false;
             }
-            $(this).parent().removeClass("has-error");
+            $("#verify-email-code").parent().removeClass("has-error");
             return validateEmailCode();
           });
           stopLoad();
@@ -1852,10 +1854,10 @@
         isValid = true;
       }
       if (isNull(email) || !isValid) {
-        $(this).parent().addClass("has-error");
+        $("#alternate-email-value").parent().addClass("has-error");
         return false;
       }
-      $(this).parent().removeClass("has-error");
+      $("#alternate-email-value").parent().removeClass("has-error");
       startLoad();
       user = $(caller).attr("data-user");
       args = "action=addalternateemail&email=" + (encodeURIComponent(email)) + "&username=" + (encodeURIComponent(user));

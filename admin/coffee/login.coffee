@@ -1151,14 +1151,16 @@ verifyEmail = (caller) ->
         $(caller).after html
         $("#validate-email-code").click ->
           code = $("#verify-email-code").val().trim()
+          reqLength = $("#verify-email-code").attr "maxlength"
+          reqLength = toInt reqLength
           try
             isValid = $("#verify-email-code").get(0).checkValidity()
           catch
             isValid = true
-          if isNull(code) or not isValid
-            $(this).parent().addClass "has-error"
+          if isNull(code) or not isValid or code.length isnt reqLength
+            $("#verify-email-code").parent().addClass "has-error"
             return false
-          $(this).parent().removeClass "has-error"
+          $("#verify-email-code").parent().removeClass "has-error"
           validateEmailCode()
         stopLoad()
       else
@@ -1201,9 +1203,9 @@ addAlternateEmail = (caller) ->
     catch
       isValid = true
     if isNull(email) or not isValid
-      $(this).parent().addClass "has-error"
+      $("#alternate-email-value").parent().addClass "has-error"
       return false
-    $(this).parent().removeClass "has-error"
+    $("#alternate-email-value").parent().removeClass "has-error"
     startLoad()
     # POST, etc
     user = $(caller).attr "data-user"
