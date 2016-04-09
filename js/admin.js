@@ -166,20 +166,20 @@ showUnrestrictionCriteria = function() {
     accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
     completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
     incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
-    allowedString = "<br/><small class='allowed-tld-domains'>Verifiable email addresses can be from " + result.restriction_criteria.domains + " institution, but must end in " + result.restriction_criteria.tlds + "</small>";
+    allowedString = "<br/><small class='allowed-tld-domains'>Verifiable email addresses can be from " + result.restriction_criteria.domains + " <span data-toggle='tooltip' title='e.g., your institution'>domains</span>, but must end in: " + result.restriction_criteria.tlds + "</small>";
     if (hasAllowedEmail) {
       allowedEmail = completeIcon + " Have an email in allowed TLDs / domains. " + allowedString;
     } else {
       if (hasAlternate) {
-        allowedEmail = incompleteIcon + " Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
+        allowedEmail = incompleteIcon + " Neither your primary email or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternative email in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
       } else {
-        allowedEmail = incompleteIcon + " To create a new project, you must register with a verifiable email address. <strong>Fix:</strong> Add  an alternative email address in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
+        allowedEmail = incompleteIcon + " To create a new project, you must have a verifiable email address. <strong>Fix:</strong> Add  an alternative email address in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
       }
     }
     if (verifiedEmail) {
       verifiedMain = completeIcon + " Have a verified username";
     } else {
-      verifiedMain = incompleteIcon + " Your username isn't verified. <strong>Fix:</strong> Verify it in <a href='" + accountSettings + "'>Account Settings</a>";
+      verifiedMain = incompleteIcon + " Your primary email isn't verified. <strong>Fix:</strong> Verify it in <a href='" + accountSettings + "'>Account Settings</a>";
     }
     if (hasAlternate) {
       if (verifiedAlternateEmail) {
