@@ -2555,9 +2555,9 @@ class UserFunctions extends DBHelper
         if ($lookup[0] !== true) {
             return array('status' => false,'error' => 'Bad lookup','lookup' => $lookup);
         }
-    # This is the same user the object was called on, and they're
-    # logged in validly
-    $query = 'DELETE FROM `'.$this->getTable().'` '.$where.' LIMIT 1';
+        # This is the same user the object was called on, and they're
+        # logged in validly
+        $query = 'DELETE FROM `'.$this->getTable().'` '.$this->getUserWhere().' LIMIT 1';
         $status = mysqli_query($l, $query);
         if ($status !== true) {
             return array('status' => $status,'error' => mysqli_error($l));
