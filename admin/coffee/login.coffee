@@ -1166,10 +1166,10 @@ verifyEmail = (caller) ->
             .attr "data-toggle", "popover"
             .attr "title", "Error"
             .attr "data-content", message
-            .attr "data-focus", "trigger"
             .attr "data-placement", "top"
             .popover("show")
             return false
+          $(selector).popover("destroy")
           $(selector).parent().removeClass "has-error"
           validateEmailCode()
         stopLoad()
@@ -1221,10 +1221,10 @@ addAlternateEmail = (caller) ->
       .attr "data-toggle", "popover"
       .attr "title", "Error"
       .attr "data-content", message
-      .attr "data-focus", "trigger"
       .attr "data-placement", "top"
       .popover("show")
       return false
+    $(selector).popover("destroy")
     $(selector).parent().removeClass "has-error"
     startLoad()
     # POST, etc

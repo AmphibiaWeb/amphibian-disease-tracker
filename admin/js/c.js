@@ -1812,9 +1812,10 @@
             if (isNull(code) || !isValid || code.length !== reqLength) {
               $(selector).parent().addClass("has-error");
               message = (ref = $(selector).get(0).validationMessage) != null ? ref : "Invalid Value";
-              $(selector).popover("destroy").attr("data-toggle", "popover").attr("title", "Error").attr("data-content", message).attr("data-focus", "trigger").attr("data-placement", "top").popover("show");
+              $(selector).popover("destroy").attr("data-toggle", "popover").attr("title", "Error").attr("data-content", message).attr("data-placement", "top").popover("show");
               return false;
             }
+            $(selector).popover("destroy");
             $(selector).parent().removeClass("has-error");
             return validateEmailCode();
           });
@@ -1860,9 +1861,10 @@
       if (isNull(email) || !isValid) {
         $(selector).parent().addClass("has-error");
         message = (ref = $(selector).get(0).validationMessage) != null ? ref : "Invalid Value";
-        $(selector).popover("destroy").attr("data-toggle", "popover").attr("title", "Error").attr("data-content", message).attr("data-focus", "trigger").attr("data-placement", "top").popover("show");
+        $(selector).popover("destroy").attr("data-toggle", "popover").attr("title", "Error").attr("data-content", message).attr("data-placement", "top").popover("show");
         return false;
       }
+      $(selector).popover("destroy");
       $(selector).parent().removeClass("has-error");
       startLoad();
       user = $(caller).attr("data-user");
