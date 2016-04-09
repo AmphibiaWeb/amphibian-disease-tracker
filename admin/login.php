@@ -312,7 +312,7 @@ if($user->hasAlternateEmail()) {
       $emailHtml = "";
       $alternateEmailHtml = "";
   }
-$settings_blob = "<section id='account_settings' class='panel panel-default clearfix'><div class='panel-heading'><h2 class='panel-title'>Settings</h2></div><div class='panel-body'>".$emailHtml.$alternateEmailHtml."<ul id='settings_list'><li><a href='#' id='showAdvancedOptions' data-domain='$domain' data-user-tfa='".$has2fa."' role='button' class='btn btn-default'>Account Settings</a></li>".$verifyphone_link.$random."</ul></div></section>";
+$settings_blob = "<section id='account_settings' class='panel panel-default clearfix'><div class='panel-heading'><h2 class='panel-title'>Settings</h2></div><div class='panel-body'>".$emailHtml.$alternateEmailHtml."<ul id='settings_list'><li><a href='#' id='showAdvancedOptions' data-domain='$domain' data-user-tfa='".$has2fa."' role='button' class='btn btn-default'>More Options</a></li>".$verifyphone_link.$random."</ul></div></section>";
 
 $login_output.="<div id='login_block'>";
 $alt_forms="<div id='alt_logins'>
