@@ -298,15 +298,15 @@ catch(Exception $e)
   }
 try {
 $emailHtml = "<p class='primary-email' data-alternate='false' data-user='".$user->getUsername()."'>".$user->getUsername();
-$emailVerifiedBadge = $user->isVerified() ? " <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : " <button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
+$emailVerifiedBadge = $user->isVerified() ? " <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : " <button class='btn btn-xs btn-success verify-email'>Verify Now</button>";
 $unrestricted = $user->meetsRestrictionCriteria() ? " <span class='glyphicon glyphicon-star' data-toggle='tooltip' title='Unrestricted User'></span>" : "";
 $emailHtml .= $emailVerifiedBadge . $unrestricted . "</p>";
 if($user->hasAlternateEmail()) {
       $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>" . $user->getAlternateEmail();
-      $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : " <button class='btn btn-xs btn-primary verify-email'>Verify Now</button>";
-      $alternateEmailHtml .= $emailVerifiedBadge . " <button class='btn btn-xs btn-default' id='add-alternate'>Change</button></p>";
+      $emailVerifiedBadge = $user->isVerified(true) ? "  <span class='glyphicon glyphicon-check text-success' data-toggle='tooltip' title='Verified Email'></span>" : " <button class='btn btn-xs btn-success verify-email'>Verify Now</button>";
+      $alternateEmailHtml .= $emailVerifiedBadge . " <button class='btn btn-xs btn-info' id='add-alternate'>Change</button></p>";
   } else {
-      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>No alternate email set <button class='btn btn-xs btn-default' id='add-alternate'>Add One</button></p>";
+      $alternateEmailHtml = "<p class='text-muted alternate-email' data-alternate='true' data-user='".$user->getUsername()."'>No alternate email set <button class='btn btn-xs btn-info' id='add-alternate'>Add One</button></p>";
   }
   } catch (Exception $e) {
       $emailHtml = "";
@@ -963,6 +963,8 @@ else
                 if($result["status"] === true) {
                     $class = "alert-success";
                     $message = "<strong>Success!</strong> You've verified <strong>".$result["email"]."</strong>";
+                    # TODO: Add flag to JS remove the verify and
+                    # replace it
                 } else {
                     $class = "alert-info";
                     $message = "<strong>Notice:</strong> " . $result["human_error"];
