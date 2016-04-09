@@ -1665,17 +1665,27 @@ verifyEmail = (caller) ->
         """
         $(caller).after html
         $("#validate-email-code").click ->
-          code = $("#verify-email-code").val().trim()
-          reqLength = $("#verify-email-code").attr "maxlength"
+          selector = "#verify-email-code"
+          code = $().val().trim()
+          reqLength = $(selector).attr "maxlength"
           reqLength = toInt reqLength
           try
-            isValid = $("#verify-email-code").get(0).checkValidity()
+            isValid = $(selector).get(0).checkValidity()
           catch
             isValid = true
           if isNull(code) or not isValid or code.length isnt reqLength
-            $("#verify-email-code").parent().addClass "has-error"
+            $(selector).parent().addClass "has-error"
+            message = $(selector).get(0).validationMessage ? "Invalid Value"
+            $(selector)
+            .popover("destroy")
+            .attr "data-toggle", "popover"
+            .attr "title", "Error"
+            .attr "data-content", message
+            .attr "data-focus", "trigger"
+            .attr "data-placement", "top"
+            .popover("show")
             return false
-          $("#verify-email-code").parent().removeClass "has-error"
+          $(selector).parent().removeClass "has-error"
           validateEmailCode()
         stopLoad()
       else
@@ -1712,15 +1722,25 @@ addAlternateEmail = (caller) ->
   """
   $(caller).after html
   $("#submit-alternate-email").click ->
-    email = $("#alternate-email-value").val().trim()
+    selector = "#alternate-email-value"
+    email = $(selector).val().trim()
     try
-      isValid = $("#alternate-email-value").get(0).checkValidity()
+      isValid = $(selector).get(0).checkValidity()
     catch
       isValid = true
     if isNull(email) or not isValid
-      $("#alternate-email-value").parent().addClass "has-error"
+      $(selector).parent().addClass "has-error"
+      message = $(selector).get(0).validationMessage ? "Invalid Value"
+      $(selector)
+      .popover("destroy")
+      .attr "data-toggle", "popover"
+      .attr "title", "Error"
+      .attr "data-content", message
+      .attr "data-focus", "trigger"
+      .attr "data-placement", "top"
+      .popover("show")
       return false
-    $("#alternate-email-value").parent().removeClass "has-error"
+    $(selector).parent().removeClass "has-error"
     startLoad()
     # POST, etc
     user = $(caller).attr "data-user"
