@@ -157,7 +157,7 @@ try
   $phone_verify_template = "<form id='verify_phone' onsubmit='event.preventDefault();'>
   <input type='tel' id='phone' name='phone' value='".$user->getPhone()."' readonly='readonly'/>
   <input type='hidden' id='username' name='username' value='".$user->getUsername()."'/>
-  <button id='verify_phone_button'>Verify Phone Now</button>
+  <button id='verify_phone_button' class='btn btn-primary'>Verify Phone Now</button>
   <p>
     <small>
       <a href='#' id='verify_later'>
@@ -361,7 +361,7 @@ if($_REQUEST['q']=='submitlogin')
   <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal clearfix col-xs-12'>
     <fieldset>
       <legend>Two-Factor Authentication</legend>
-      <input type='number' id='totp_code' name='totp_code' placeholder='Code' pattern='[0-9]{6}' size='6' maxlength='6'/>
+      <input type='number' id='totp_code' name='totp_code' placeholder='Code' pattern='[0-9]{6}' size='6' maxlength='6' required/>
       <input type='hidden' id='username' name='username' value='".$_POST['username']."'/>
       <input type='hidden' id='password' name='password' value='".$res["encrypted_password"]."'  class='password-input'/>
       <input type='hidden' id='secret' name='secret' value='".$secret."'/>
@@ -632,6 +632,7 @@ else if($_REQUEST['q']=='create')
                 Phone:
               </label>
 	      <input class='col-sm-5 col-md-3' type='tel' name='phone' id='phone' placeholder='555 123-4567'/>
+<span class='glyphicon glyphicon-info-sign col-xs-1' data-toggle='tooltip' title='We may use this to help verify your account or as an alternate two-factor authentication method'></span>
 	      </div>
 <div class='form-group'>
               <label for='honey' class='hide' >
