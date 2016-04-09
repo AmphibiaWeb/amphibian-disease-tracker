@@ -91,7 +91,7 @@ populateAdminActions = function() {
   history.pushState(state, "Admin Home", url);
   $(".hanging-alert").remove();
   createButton = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n";
-  createPlaceholder = "<paper-button id=\"create-placeholder\" class=\"admin-action non-action col-md-3 col-sm-4 col-xs-12\" raised data-toggle=\"tooltip\" title=\"Your account is restricted. Click to unrestrict\">\n  <iron-icon icon=\"icons:star-border\"></iron-icon>\n  Create Project <small>(Unrestrict Account)</small>\n</paper-button>";
+  createPlaceholder = "<paper-button id=\"create-placeholder\" class=\"admin-action non-action col-md-3 col-sm-4 col-xs-12\" raised data-toggle=\"tooltip\" title=\"Your account is restricted. Click to unrestrict\">\n  <iron-icon icon=\"icons:star-border\"></iron-icon>\n  Create <small>(Unrestrict Account)</small>\n</paper-button>";
   createHtml = _adp.isUnrestricted ? createButton : createPlaceholder;
   adminActions = createHtml + "\n      <paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n        <iron-icon icon=\"icons:create\"></iron-icon>\n          Edit Existing Project\n      </paper-button>\n      <paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n        <iron-icon icon=\"icons:visibility\"></iron-icon>\n          View All My Projects\n      </paper-button>";
   $("#admin-actions-block").html(adminActions);
