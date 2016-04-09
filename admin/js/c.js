@@ -1309,7 +1309,7 @@
     removal_button = "remove_acct_button";
     section_id = "remove_account_section";
     tfaBlock = has2fa ? "\n      <input type='text' id='code' name='code' placeholder='Authenticator Code or Backup Code' size='32' maxlength='32' autocomplete='off'/><br/>" : "";
-    html = "<section id='" + section_id + "'>\n  <p id='remove_message' class='error'>Are you sure you want to remove your account?</p>\n  <form id='account_remove' onsubmit='event.preventDefault();'>\n    <fieldset>\n      <legend>Remove My Account</legend>\n      <input type='email' value='" + username + "' readonly='readonly' id='username' name='username'/><br/>\n      <input type='password' id='password' name='password' placeholder='Password'/><br/>" + tfaBlock + "\n      <button id='" + removal_button + "' class='totpbutton btn btn-danger'>Remove My Account Permanantly</button> <button onclick=\"window.location.href=totpParams.home\" class='btn btn-primary'>Back to Safety</button>\n    </fieldset>\n  </form>\n</section>";
+    html = "<section id='" + section_id + "'>\n  <div id='remove_message' class='alert alert-danger col-xs-12'>Are you sure you want to remove your account?</div>\n  <form id='account_remove' onsubmit='event.preventDefault();' class='form col-xs-12'>\n    <fieldset>\n      <legend>Remove My Account</legend>\n     <label for='username' class='sr-only'>Username</label> <input type='email' value='" + username + "' readonly='readonly' id='username' name='username' class='form-control'/><br/>\n      <label for='password' class='sr-only'>Password:</label><input type='password' id='password' name='password' placeholder='Password' class='form-control'/><br/>" + tfaBlock + "\n      <button id='" + removal_button + "' class='totpbutton btn btn-danger'>Remove My Account Permanantly</button> <button onclick=\"window.location.href=totpParams.home\" class='btn btn-primary'>Back to Safety</button>\n    </fieldset>\n  </form>\n</section>";
     if ($("#login_block").exists()) {
       $("#login_block").replaceWith(html);
     } else {
@@ -1791,15 +1791,17 @@
             toastStatusMessage("You're already verified");
           } catch (_error) {}
         } else {
+          stopLoad();
           false;
         }
       } else {
         if (result.status) {
-          html = "<div id='verify-email-filler' class='form'>\n  <p>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>\n  <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n  <input class='form-control' type='text' length='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>\n  <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n</div>";
+          html = "<div id='verify-email-filler' class='form row'>\n  <p class='col-xs-12'>We've sent you an email. Please click the link in the email, or paste the code provided into the box below.</p>\n  <div class='form-group col-xs-8'>\n    <label for='verify-email-code' class='sr-only'>Validation Code:</label>\n    <input class='form-control' type='text' maxlength='32' placeholder='Verification Code' id='verify-email-code' name='verify-email-code' required/>\n  </div>\n  <div class='col-xs-4'>\n    <button class='btn btn-primary' id='validate-email-code'>Validate Code</button>\n  </div>\n</div>";
           $(caller).after(html);
           $("#validate-email-code").click(function() {
             return validateEmailCode();
           });
+          stopLoad();
         } else {
           console.error(result.error);
           try {
@@ -1812,6 +1814,7 @@
           }
         }
       }
+      stopLoad();
       return false;
     }).fail(function(result, status) {
       try {
@@ -1826,7 +1829,7 @@
 
   addAlternateEmail = function(caller) {
     var html;
-    html = "<div id='add-alternate-form' class='form'>\n  <input type='email' class='form-control' placeholder='Alternate email address' id='alternate-email-value' name='alternate-email-value' required/>\n  <button class='btn btn-primary' id='submit-alternate-email'>Add</button>\n</div>";
+    html = "<div id='add-alternate-form' class='form row'>\n  <div class='form-group col-xs-8'>\n    <label for='alternate-email-value' class='sr-only'>Alternative Email</label>\n    <input type='email' class='form-control' placeholder='Alternative email address' id='alternate-email-value' name='alternate-email-value' required/>\n  </div>\n  <div class='col-xs-4 text-center'>\n    <button class='btn btn-primary' id='submit-alternate-email'>Add</button>\n  </div>\n</div>";
     $(caller).after(html);
     $("#submit-alternate-email").click(function() {
       var args, email, user;
