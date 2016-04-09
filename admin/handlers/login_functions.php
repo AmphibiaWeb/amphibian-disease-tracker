@@ -276,15 +276,15 @@ class UserFunctions extends DBHelper
      * @return array of the user result column
      ***/
 
-    if (empty($this->user) || !empty($user_id)) {
-        $this->setUser($user_id);
-    } elseif (empty($this->user)) {
-        # Try a cookie
-        $cookielink = $this->domain.'_link';
-        $altcookielink = str_replace('.', '_', $this->domain).'_link';
-        $ucookielink = empty($_COOKIE[$cookielink]) ? $altcookielink : $cookielink;
-        $this->setUser($ucookielink);
-    }
+        if (empty($this->user) || !empty($user_id)) {
+            $this->setUser($user_id);
+        } elseif (empty($this->user)) {
+            # Try a cookie
+            $cookielink = $this->domain.'_link';
+            $altcookielink = str_replace('.', '_', $this->domain).'_link';
+            $ucookielink = empty($_COOKIE[$cookielink]) ? $altcookielink : $cookielink;
+            $this->setUser($ucookielink);
+        }
         $userdata = $this->user;
         $userdata['img'] = $this->getUserPicture();
         if (!array($userdata)) {
