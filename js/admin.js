@@ -91,7 +91,7 @@ populateAdminActions = function() {
   history.pushState(state, "Admin Home", url);
   $(".hanging-alert").remove();
   createButton = "<paper-button id=\"new-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n  <iron-icon icon=\"icons:add\"></iron-icon>\n    Create New Project\n</paper-button>\n";
-  createPlaceholder = "<paper-button id=\"create-placeholder\" class=\"admin-action non-action col-md-3 col-sm-4 col-xs-12\" raised data-toggle=\"tooltip\" title=\"Your account is restricted. Click to unrestrict\">\n  <iron-icon icon=\"icons:star-border\"></iron-icon>\n  Create <small>(Unrestrict Account)</small>\n</paper-button>";
+  createPlaceholder = "<paper-button id=\"create-placeholder\" class=\"admin-action non-action col-md-3 col-sm-4 col-xs-12\" raised data-toggle=\"tooltip\" title=\"Your account is restricted. Click to verify account\">\n  <iron-icon icon=\"icons:star-border\"></iron-icon>\n  Create Project\n</paper-button>";
   createHtml = _adp.isUnrestricted ? createButton : createPlaceholder;
   adminActions = createHtml + "\n      <paper-button id=\"edit-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n        <iron-icon icon=\"icons:create\"></iron-icon>\n          Edit Existing Project\n      </paper-button>\n      <paper-button id=\"view-project\" class=\"admin-action col-md-3 col-sm-4 col-xs-12\" raised>\n        <iron-icon icon=\"icons:visibility\"></iron-icon>\n          View All My Projects\n      </paper-button>";
   $("#admin-actions-block").html(adminActions);
@@ -166,14 +166,14 @@ showUnrestrictionCriteria = function() {
     accountSettings = "https://" + adminParams.domain + ".org/" + (adminParams.loginDir.slice(0, -1));
     completeIcon = "<iron-icon icon=\"icons:verified-user\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Completed\"></iron-icon>";
     incompleteIcon = "<iron-icon icon=\"icons:verified-user\" class=\"text-muted\" data-toggle=\"tooltip\" title=\"Incomplete\"></iron-icon>";
-    allowedString = "<br/><small class='allowed-tld-domains'>Allowed domains: " + result.restriction_criteria.domains + ". Allowed TLDs: " + result.restriction_criteria.tlds + "</small>";
+    allowedString = "<br/><small class='allowed-tld-domains'>Verifiable email addresses can be from " + result.restriction_criteria.domains + " institution, but must end in " + result.restriction_criteria.tlds + "</small>";
     if (hasAllowedEmail) {
       allowedEmail = completeIcon + " Have an email in allowed TLDs / domains. " + allowedString;
     } else {
       if (hasAlternate) {
         allowedEmail = incompleteIcon + " Neither your username or alternate email is in an allowed TLD / domain. <strong>Fix:</strong> Change your alternate email in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
       } else {
-        allowedEmail = incompleteIcon + " Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
+        allowedEmail = incompleteIcon + " To create a new project, you must register with a verifiable email address. <strong>Fix:</strong> Add  an alternative email address in <a href='" + accountSettings + "'>Account Settings</a>. " + allowedString;
       }
     }
     if (verifiedEmail) {

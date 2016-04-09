@@ -84,9 +84,9 @@ populateAdminActions = ->
 
   """
   createPlaceholder = """
-  <paper-button id="create-placeholder" class="admin-action non-action col-md-3 col-sm-4 col-xs-12" raised data-toggle="tooltip" title="Your account is restricted. Click to unrestrict">
+  <paper-button id="create-placeholder" class="admin-action non-action col-md-3 col-sm-4 col-xs-12" raised data-toggle="tooltip" title="Your account is restricted. Click to verify account">
     <iron-icon icon="icons:star-border"></iron-icon>
-    Create <small>(Unrestrict Account)</small>
+    Create Project
   </paper-button>
   """
   createHtml = if _adp.isUnrestricted then createButton else createPlaceholder
@@ -167,7 +167,7 @@ showUnrestrictionCriteria = ->
     incompleteIcon = """
     <iron-icon icon="icons:verified-user" class="text-muted" data-toggle="tooltip" title="Incomplete"></iron-icon>
     """
-    allowedString = "<br/><small class='allowed-tld-domains'>Allowed domains: #{result.restriction_criteria.domains}. Allowed TLDs: #{result.restriction_criteria.tlds}</small>"
+    allowedString = "<br/><small class='allowed-tld-domains'>Verifiable email addresses can be from #{result.restriction_criteria.domains} institution, but must end in #{result.restriction_criteria.tlds}</small>"
     if hasAllowedEmail
       allowedEmail = """
       #{completeIcon} Have an email in allowed TLDs / domains. #{allowedString}
@@ -179,7 +179,7 @@ showUnrestrictionCriteria = ->
         """
       else
         allowedEmail = """
-        #{incompleteIcon} Your username isn't in an allowed TLD/domain. <strong>Fix:</strong> Add and verify an alternate email with an allowed TLD or domain in <a href='#{accountSettings}'>Account Settings</a>. #{allowedString}
+        #{incompleteIcon} To create a new project, you must register with a verifiable email address. <strong>Fix:</strong> Add  an alternative email address in <a href='#{accountSettings}'>Account Settings</a>. #{allowedString}
         """
     if verifiedEmail
       verifiedMain = """
