@@ -28,11 +28,15 @@ if(empty($viewUserId) && $loginStatus["status"]) {
     echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
 }
 $setUser = array("dblink" => $viewUserId);
-$viewUser = new UserFunctions();
+echo "<!-- Setting user \n ".print_r($setUser, true) . "\n -->";
+$viewUser = new UserFunctions($viewUserId, "dblink");
 $validUser = true;
 $userdata = array();
 try {
-    $userdata = $viewUser->getUser($setUser);    
+    $userdata = $viewUser->getUser($setUser);
+    if(!is_array($userdata)) $userdata = array();
+    if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
+    else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
     $nameXml = $userdata["name"];
     $xml = new Xml();
     $xml->setXml($nameXml);
@@ -195,14 +199,16 @@ try {
              ?>
       <h1 id="title">Invalid User</h1>
       <section id="main-body" class="row">
-        <blockquote>
-          <p>It's like it's been erased.</p>
-          <p>Erased ... from existence</p>
+        <blockquote class="force-center-block col-xs-12 col-md-8 col-lg-6">
+          <div>
+            <p>It's like it's been erased.</p>
+            <p>Erased ... from existence</p>
+          </div>
           <footer>
             Marty &amp; Doc Brown, <cite title="Back to the Future">Back to the Future</cite>
           </footer>
         </blockquote>
-        <p>
+        <p class="col-xs-12">
           No one is here. You can go back to safety
           and <a href="profile.php">view your own profile</a>.
         </p>
