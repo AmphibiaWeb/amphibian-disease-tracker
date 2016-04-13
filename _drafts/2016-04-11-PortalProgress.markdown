@@ -20,7 +20,11 @@ Here are the highlights:
  - Project editing by PI
 
 _**Projects**_
-Projects are the way we organize data and enable users to find past and future field and lab activities. They can be specific to a region and one-time sampling effort, e.g., "Andean frog chytrid testing in 2014". Or set-up as an ongoing monitoring project, e.g., "Monitoring for Bsal in the Golden Gate National Recreation Area". Basic information on PI and Contacts as well as region and description of purpose are always publicly viewable but they may have all associated datasets declare private and thus masked from public maps or searches.
+Projects are the way we organize data and enable users to find past and future field and lab activities. They can be specific to a region and one-time sampling effort, e.g., "Andean frog chytrid testing in 2014", or set-up as an ongoing monitoring project, e.g., "Monitoring for Bsal in the Golden Gate National Recreation Area" (neither of which are actual projects!). Basic information on PI and contact details as well as region and description of purpose are always publicly viewable but they may have all associated datasets declared private and thus masked from public maps or searches.     
+
+Projects allows PIs to assign other users to upload datasets if students or others are to collate field and lab results.     
+
+Projects also can be associated with publications or other DOI and thus serves as a means to deposit negative and positive results.    
 
 _**Private vs. Public data**_
 Whether datasets, that is the sampling record of species, location and disease status, are publicly viewable or private and masked from the general searches is determined by the Principal Investigator when creating the Project. This allows datasets to be encumbered and private while dissertations are written or publications are in review. Private datasets will likely have a default time span of 1 or 2 years after which time, if not renewed explicitly, will be made automatically public. Once made public, any data cannot be made private again (this is more a function of the nature of the internet and that Google bots do such a good job of scraping the web than anything we can control).
@@ -34,3 +38,4 @@ _Coming soon:_
 More information on **User registration and profiles**, **Data use policy**, and **Uploading data with our XLS template**.
 
 Send us feedback and any suggestions! [Email Michelle Koo](mailto:mkoo@berkeley.edu)
+
