@@ -6,7 +6,7 @@ author: Michelle Koo
 categories: News, Resources
 ---
 
-Spring update on the Amphibian Disease portal: We are in alpha release with core features working and the beta version is in progress. Most importantly we have outlined the framework for the portal, which is sketched out in a user's workflow diagram.
+Spring update on the Amphibian Disease portal: We are in alpha release with core features working! The beta version is in progress now. Most importantly we have outlined the framework for the portal, which is sketched out in a user's workflow diagram.
 
 ![Workflow schema](https://docs.google.com/drawings/d/1dlV446IKjq8GKNJoz0h7aLsCrKDUig0yqrGucEBq-H8/pub?w=960&h=540)
 
@@ -30,6 +30,7 @@ The Project bounding box or area of interest can be defined in multiple ways dur
 
 Users can define the Project areas by either 1) searching on a **Locality Name** so that Google Maps can automatically calculate its bounding box; 2) enter a **list of coordinate pairs** for a bounding box; 3) use the Map interface to drop placemarks by clicking on the map then use the **Build Map** tool to create the footprint; 4) lastly, by uploading a dataset in an XLS spreadsheet where the minimum convex polygon will be automatically calculated.
 
-_More soon:_
+_Coming soon:_
 More information on **User registration and profiles**, **Data use policy**, and **Uploading data with our XLS template**.
 
+Send us feedback and any suggestions! [Email Michelle Koo](mailto:mkoo@berkeley.edu)
