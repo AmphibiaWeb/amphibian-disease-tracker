@@ -45,12 +45,12 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 
-### Our partners     
+###Our partners###     
 - PARC Disease Task Team: [Read more on the _Bsal_ Call to Action](http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
 - USGS Powell Center
 - USDA Forest Service
 
-####Researchers 
+####Researchers#### 
 - San Francisco State University (SFSU) 
 - Southern Illinois University, Carbondale (SIU) 
 - University of California, Berkeley (UCB)
@@ -58,21 +58,18 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - US Forest Service, Pacific Northwest Research Station (PNW)
 - US Geological Survey, Amphibian Research and Monitoring Initiative (ARMI)
    
-####Diagnostic Labs (alphabetical) 
+####Diagnostic Labs#### (alphabetical) 
 - [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
 - [Lips Lab (UM)](http://lipslab.weebly.com/)
 - [Martel and Pasmans Wildlife Population Health Labs (UGent)](http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
 - [Vredenburg Lab (SFSU)](http://www.vredenburglab.com/)
 
 
-### Maps
+###Maps###
 [Example Maps](http://updates.amphibiandisease.org/maps/)
 
-### Upload and Manage your datasets
-_coming soon_
-
     
-###More information
+###More information###
 
 [Salamander Fungus](http://www.salamanderfungus.org/task-force/)    
 [AmphibiaWeb on the Salamander Fungus](http://amphibiaweb.org/chytrid/Bsal.html)     
