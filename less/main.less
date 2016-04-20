@@ -721,9 +721,12 @@ section#notes marked-element{
 
 .card-collapsable-widget {
     transition: all 0.5s ease-out;
-    .header:before {
-        content: "c";
+    .header:not(.collapse):not(.collapsed):before {
+        content: "\u25B2 ";
     }
+}
+paper-card.card-collapsable-widget.collapse {
+    display: block;
 }
 
 .card-collapsable-widget.collapse > div:not(.header),
@@ -736,7 +739,7 @@ section#notes marked-element{
 .card-collapsable-widget.collapse > .header,
 .collapsed-card-header {
     :before {
-        content: "e";
+        content: "\u25BC ";
     }
 }
 
@@ -746,7 +749,7 @@ section#notes marked-element{
         margin-bottom: 2rem;
         .card-collapsable-widget;
     }
-    paper-card.collapse {
+    paper-card.collapse, paper-card.collapsed {
         > div:not(.header) {
             .collapsed-card-div;
         }
