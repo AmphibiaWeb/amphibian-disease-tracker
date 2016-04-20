@@ -555,6 +555,7 @@ function listProjects($unauthenticated = true)
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
                 $pid = $row[0];
+                if(empty($pid)) continue;
                 # All results here are authorized projects
                 $authorizedProjects[$pid] = $row[1];
                 if ($row[2] == $uid) {
