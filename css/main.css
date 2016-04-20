@@ -4440,6 +4440,28 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     float: right !important;
     margin-right: -15px;
   }
+  .navbar-right paper-card {
+    width: 100%;
+    margin-bottom: 2rem;
+    transition: all 0.5s ease-out;
+  }
+  .navbar-right paper-card .header:before {
+    content: "c";
+  }
+  .navbar-right paper-card.collapse > div:not(.header) {
+    transition: all 0.5s ease-out;
+    height: 0;
+    opacity: 0;
+  }
+  .navbar-right paper-card.collapse > div:not(.header) .header:before {
+    content: "c";
+  }
+  .navbar-right paper-card.collapse > .header :before {
+    content: "e";
+  }
+  .navbar-right .paper-card-0 .header.paper-card .title-text.paper-card {
+    color: #009688;
+  }
   .navbar-right ~ .navbar-right {
     margin-right: 0;
   }
@@ -7480,9 +7502,44 @@ section#notes marked-element {
 #data-management.affix {
   right: 0;
 }
+.card-collapsable-widget {
+  transition: all 0.5s ease-out;
+}
+.card-collapsable-widget .header:before {
+  content: "c";
+}
+.card-collapsable-widget.collapse > div:not(.header),
+.collapsed-card-div {
+  transition: all 0.5s ease-out;
+  height: 0;
+  opacity: 0;
+}
+.card-collapsable-widget.collapse > div:not(.header) .header:before,
+.collapsed-card-div .header:before {
+  content: "c";
+}
+.card-collapsable-widget.collapse > .header :before,
+.collapsed-card-header :before {
+  content: "e";
+}
 .pull-right paper-card {
   width: 100%;
   margin-bottom: 2rem;
+  transition: all 0.5s ease-out;
+}
+.pull-right paper-card .header:before {
+  content: "c";
+}
+.pull-right paper-card.collapse > div:not(.header) {
+  transition: all 0.5s ease-out;
+  height: 0;
+  opacity: 0;
+}
+.pull-right paper-card.collapse > div:not(.header) .header:before {
+  content: "c";
+}
+.pull-right paper-card.collapse > .header :before {
+  content: "e";
 }
 .pull-right .paper-card-0 .header.paper-card .title-text.paper-card {
   color: #009688;

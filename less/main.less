@@ -675,7 +675,10 @@ section#notes marked-element{
 }
 
 
-// Editor
+
+///////////////////////
+// Project Viewer
+//////////////////////
 
 #user-setter-dialog, #add-new-user {
 
@@ -715,14 +718,52 @@ section#notes marked-element{
     right: 0;
 }
 
-.pull-right paper-card {
-    width: 100%;
-    margin-bottom: 2rem;
+
+.card-collapsable-widget {
+    transition: all 0.5s ease-out;
+    .header:before {
+        content: "c";
+    }
 }
 
-.pull-right .paper-card-0 .header.paper-card .title-text.paper-card {
-    .materialtealtext;
+.card-collapsable-widget.collapse > div:not(.header),
+.collapsed-card-div {
+    .card-collapsable-widget;
+    height: 0;
+    opacity: 0;
 }
+
+.card-collapsable-widget.collapse > .header,
+.collapsed-card-header {
+    :before {
+        content: "e";
+    }
+}
+
+.pull-right {
+    paper-card {
+        width: 100%;
+        margin-bottom: 2rem;
+        .card-collapsable-widget;
+    }
+    paper-card.collapse {
+        > div:not(.header) {
+            .collapsed-card-div;
+        }
+        > .header {
+            .collapsed-card-header;
+        }
+    }
+    .paper-card-0 {
+        .header.paper-card {
+            .title-text.paper-card {
+                .materialtealtext;
+            }
+        }
+    }
+}
+
+
 
 .card-actions paper-button {
     .materialindigotext;
@@ -763,11 +804,14 @@ google-map {
     height: 60vh;
 }
 
-#project-data p.text-muted .glyphicon,
-#auth-block p.text-muted .glyphicon
-{
-    // Lines it up with iron-icons
-    margin-left: 0.25em;
+
+#project-data, #auth-block {
+    p.text-muted {
+        .glyphicon {
+            // Lines it up with iron-icons
+            margin-left: 0.25em;
+        }
+    }
 }
 
 
