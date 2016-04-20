@@ -1241,7 +1241,7 @@ bootstrapUploader = function(uploadFormId, bsColWidth, callback) {
          * When invoked, it calls the "self" helper methods to actually do
          * the file sending.
          */
-        var e, error2, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+        var checkPath, cp2, e, error2, extension, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
         window.dropperParams.dropzone.removeAllFiles();
         if (typeof result !== "object") {
           console.error("Dropzone returned an error - " + result);
@@ -1279,6 +1279,9 @@ bootstrapUploader = function(uploadFormId, bsColWidth, callback) {
           })();
           $(window.dropperParams.dropTargetSelector).before(previewHtml);
           $("#validator-progress-container").remove();
+          checkPath = linkPath.slice(0);
+          cp2 = linkPath.slice(0);
+          extension = cp2.split(".").pop();
           switch (mediaType) {
             case "application":
               console.info("Checking " + longType + " in application");
@@ -1286,9 +1289,18 @@ bootstrapUploader = function(uploadFormId, bsColWidth, callback) {
                 case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
                 case "vnd.ms-excel":
                   return excelHandler(linkPath);
+                case "vnd.ms-office":
+                  switch (extension) {
+                    case "xls":
+                      return excelHandler(linkPath);
+                    default:
+                      stopLoadError("Sorry, we didn't understand the upload type.");
+                      return false;
+                  }
+                  break;
                 case "zip":
                 case "x-zip-compressed":
-                  if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || linkPath.split(".").pop() === "xlsx") {
+                  if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || extension === "xlsx") {
                     return excelHandler(linkPath);
                   } else {
                     return zipHandler(linkPath);

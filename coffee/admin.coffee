@@ -1333,6 +1333,9 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", ca
           $(window.dropperParams.dropTargetSelector).before previewHtml
           # Finally, execute handlers for different file types
           $("#validator-progress-container").remove()
+          checkPath = linkPath.slice 0
+          cp2 = linkPath.slice 0
+          extension = cp2.split(".").pop()
           switch mediaType
             when "application"
               # Another switch!
@@ -1341,11 +1344,18 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", ca
                 # Fuck you MS, and your terrible MIME types
                 when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
                   excelHandler(linkPath)
-                when "zip", "x-zip-compressed"
+                when "vnd.ms-office"
+                  switch extension
+                    when "xls"
+                      excelHandler linkPath
+                    else
+                      stopLoadError "Sorry, we didn't understand the upload type."
+                      return false
+                when "zip", "x-zip-compressed" 
                   # Some servers won't read it as the crazy MS mime type
                   # But as a zip, instead. So, check the extension.
                   #
-                  if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or linkPath.split(".").pop() is "xlsx"
+                  if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or extension is "xlsx"
                     excelHandler(linkPath)
                   else
                     zipHandler(linkPath)
