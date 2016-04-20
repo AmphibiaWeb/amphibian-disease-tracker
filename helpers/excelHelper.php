@@ -94,7 +94,13 @@ function excelToArray($filePath, $header = true, $sheets = null)
     }
     /*  Load $inputFileName to a PHPExcel Object  **/
     $objPHPExcel = $objReader->load($inputFileName);
-
+    $sheetNames = $objPHPExcel->getSheetNames();
+    if(!in_array($sheets, $sheetNames, true)) {
+        # If the sheet doesn't exist, just read the first one
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objReader->setReadDataOnly(true);
+        $objPHPExcel = $objReader->load($inputFileName);
+    }
     # Get worksheet and built array with first row as header
     $objWorksheet = $objPHPExcel->getActiveSheet();
 
