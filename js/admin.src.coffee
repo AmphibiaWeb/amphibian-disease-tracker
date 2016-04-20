@@ -2878,6 +2878,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       console.warn "Base data source:", cartoData
       console.warn e.stack
       stopLoadError "There was a problem talking to CartoDB. Please try again later"
+      startEditorUploader()
       return false
     cols = new Object()
     for k, v of r.fields
