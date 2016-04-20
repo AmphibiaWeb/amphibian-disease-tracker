@@ -105,7 +105,7 @@ class DBHelper
         return $this->link;
     }
 
-    private function invalidateLink() {
+    public function invalidateLink() {
         $this->setLink(null);
         return $this->openDB();
     }

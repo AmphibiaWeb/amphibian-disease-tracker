@@ -538,6 +538,7 @@ function listProjects($unauthenticated = true)
     $publicProjects = array();
     $queries = array();
     $queries[] = $query;
+    $checkedPermissions = array();
     while ($row = mysqli_fetch_row($r)) {
         $authorizedProjects[$row[0]] = $row[1];
         $publicProjects[] = $row[0];
@@ -561,6 +562,7 @@ function listProjects($unauthenticated = true)
                 } else {
                     # Check permissions
                     $access = checkProjectIdAuthorized($pid);
+                    $checkedPermissions[$pid] = $access;
                     $isEditor = $access["detailed_authorization"]["can_edit"];
                     $isViewer = $access["detailed_authorization"]["can_view"];
                     if($isEditor === true) {
@@ -582,6 +584,7 @@ function listProjects($unauthenticated = true)
         'authored_projects' => $authoredProjects,
         'editable_projects' => $editableProjects,
         'check_authentication' => !$unauthenticated,
+        "permissions" => $checkedPermissions,
     );
 
     return $result;
@@ -692,7 +695,9 @@ function checkProjectAuthorized($projectData, $uid)
 function authorizedProjectAccess($get)
 {
     global $db, $login_status;
-    $project = $db->sanitize($get['project']);
+    $userProject = $get['project'];
+    $db->invalidateLink();
+    $project = $db->sanitize($userProject);
     $projectExists = $db->isEntry($project, 'project_id', true);
     if (!$projectExists) {
         return array(
@@ -700,6 +705,9 @@ function authorizedProjectAccess($get)
             'error' => 'INVALID_PROJECT',
             'human_error' => "This project doesn't exist. Please check your project ID.",
             'project_id' => $project,
+            "provided" => $get,
+            "read" => $userProject,
+            "result" => $db->isEntry($project, 'project_id', true, true),
         );
     }
     $uid = $login_status['detail']['uid'];
