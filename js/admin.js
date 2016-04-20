@@ -2737,8 +2737,15 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
   $.post("api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, filePath, html, k, r, ref, type, v;
-    r = JSON.parse(result.post_response[0]);
+    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, error2, filePath, html, k, r, ref, type, v;
+    try {
+      r = JSON.parse(result.post_response[0]);
+    } catch (error2) {
+      console.error("Couldn't load carto data!", result);
+      console.warn("post_response: (want key 0)", result.post_response);
+      stopLoadError("There was a problem talking to CartoDB. Please try again later");
+      return false;
+    }
     cols = new Object();
     ref = r.fields;
     for (k in ref) {
@@ -2762,7 +2769,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
     $.post("api.php", args, "json").done(function(result) {
-      var base, base1, center, error, error2, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
+      var base, base1, center, error, error3, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
       console.info("Carto query got result:", result);
       if (!result.status) {
         error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -2786,7 +2793,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       truncateLength = 0 - "</google-map>".length;
       try {
         workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
-      } catch (error2) {
+      } catch (error3) {
         workingMap = "<google-map>";
       }
       pointArr = new Array();

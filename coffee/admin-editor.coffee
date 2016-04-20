@@ -872,7 +872,13 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   args = "action=fetch&sql_query=#{post64(getCols)}"
   $.post "api.php", args, "json"
   .done (result) ->
-    r = JSON.parse(result.post_response[0])
+    try
+      r = JSON.parse(result.post_response[0])
+    catch
+      console.error "Couldn't load carto data!", result
+      console.warn "post_response: (want key 0)", result.post_response
+      stopLoadError "There was a problem talking to CartoDB. Please try again later"
+      return false
     cols = new Object()
     for k, v of r.fields
       cols[k] = v
