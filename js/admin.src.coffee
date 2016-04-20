@@ -2494,16 +2494,14 @@ loadEditor = (projectPreload) ->
         </ul>
         """
         $("#main-body").html html
-        publicList = new Array()
-        for k, projectId of result.public_projects
-          publicList.push projectId
-        authoredList = new Array()
-        for k, projectId of result.authored_projects
-          authoredList.push projectId
+        publicList = Object.toArray result.public_projects
+        authoredList = Object.toArray result.authored_projects
+        editableList = Object.toArray result.editable_projects
+        viewOnlyList = new Array()
         for projectId, projectTitle of result.projects
           accessIcon = if projectId in publicList then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
           icon = if projectId in authoredList then """<iron-icon icon="social:person" data-toggle="tooltip" title="Author"></iron-icon>""" else """<iron-icon icon="social:group" data-toggle="tooltip" title="Collaborator"></iron-icon>"""
-          if projectId in authoredList
+          if projectId in editableList
             html = """
             <li>
               <button class="btn btn-primary" data-project="#{projectId}">
@@ -2513,6 +2511,9 @@ loadEditor = (projectPreload) ->
             </li>
             """
             $("#project-list").append html
+          else
+            viewOnlyList.push projectId
+        console.info "Didn't display read-only projects", viewOnlyList
         $("#project-list button")
         .unbind()
         .click ->

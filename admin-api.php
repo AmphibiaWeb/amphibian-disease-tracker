@@ -555,22 +555,21 @@ function listProjects($unauthenticated = true)
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
                 $pid = $row[0];
+                # All results here are authorized projects
                 $authorizedProjects[$pid] = $row[1];
                 if ($row[2] == $uid) {
-                    $authoredProjects[] = $row[0];
-                    $editableProjects[$pid] = $row[1];
+                    $authoredProjects[] = $pid;
+                    $editableProjects[] = $pid;
                 } else {
                     # Check permissions
                     $access = checkProjectIdAuthorized($pid);
-                    $checkedPermissions[$pid] = $access;
+                    $accessCopy = $access;
+                    unset($accessCopy["detail"]);
+                    $checkedPermissions[$pid] = $accessCopy;
                     $isEditor = $access["detailed_authorization"]["can_edit"];
                     $isViewer = $access["detailed_authorization"]["can_view"];
                     if($isEditor === true) {
-                        $editableProjects[$pid] = $row[1];
-                    } else if ($isViewer === true) {
-                        $authorizedProjects[$pid] = $row[1];
-                    } else {
-                        # Should never trigger
+                        $editableProjects[] = $pid;
                     }
                 }
             }
@@ -584,7 +583,7 @@ function listProjects($unauthenticated = true)
         'authored_projects' => $authoredProjects,
         'editable_projects' => $editableProjects,
         'check_authentication' => !$unauthenticated,
-        "permissions" => $checkedPermissions,
+        #"permissions" => $checkedPermissions,
     );
 
     return $result;
@@ -687,6 +686,8 @@ function checkProjectAuthorized($projectData, $uid)
             'is_checked' => $uid == $currentUser,
             'is_su' => $isSu,
         ),
+        "raw_access" => $projectData['access_data'],
+        "parsed_access" => $accessList,
     );
 
     return $response;
@@ -707,11 +708,12 @@ function authorizedProjectAccess($get)
             'project_id' => $project,
             "provided" => $get,
             "read" => $userProject,
-            "result" => $db->isEntry($project, 'project_id', true, true),
         );
     }
     $uid = $login_status['detail']['uid'];
-    $authorizedStatus = checkProjectAuthorized($project, $uid);
+    $projectDataList = $db->getQueryResults(array("project_id"=>$project), "*", "AND", false, true);
+    $projectData = $projectDataList[0];
+    $authorizedStatus = checkProjectAuthorized($projectData, $uid);
     $status = $authorizedStatus['can_view'];
     $results = array(
         'status' => $status,

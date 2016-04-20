@@ -2393,31 +2393,26 @@ loadEditor = function(projectPreload) {
       startLoad();
       args = "perform=list";
       return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-        var accessIcon, authoredList, html, icon, k, projectId, projectTitle, publicList, ref, ref1, ref2;
+        var accessIcon, authoredList, editableList, html, icon, projectId, projectTitle, publicList, ref, viewOnlyList;
         html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
         $("#main-body").html(html);
-        publicList = new Array();
-        ref = result.public_projects;
-        for (k in ref) {
-          projectId = ref[k];
-          publicList.push(projectId);
-        }
-        authoredList = new Array();
-        ref1 = result.authored_projects;
-        for (k in ref1) {
-          projectId = ref1[k];
-          authoredList.push(projectId);
-        }
-        ref2 = result.projects;
-        for (projectId in ref2) {
-          projectTitle = ref2[projectId];
+        publicList = Object.toArray(result.public_projects);
+        authoredList = Object.toArray(result.authored_projects);
+        editableList = Object.toArray(result.editable_projects);
+        viewOnlyList = new Array();
+        ref = result.projects;
+        for (projectId in ref) {
+          projectTitle = ref[projectId];
           accessIcon = indexOf.call(publicList, projectId) >= 0 ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
           icon = indexOf.call(authoredList, projectId) >= 0 ? "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\"></iron-icon>" : "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\"></iron-icon>";
-          if (indexOf.call(authoredList, projectId) >= 0) {
+          if (indexOf.call(editableList, projectId) >= 0) {
             html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + accessIcon + " " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
             $("#project-list").append(html);
+          } else {
+            viewOnlyList.push(projectId);
           }
         }
+        console.info("Didn't display read-only projects", viewOnlyList);
         $("#project-list button").unbind().click(function() {
           var project;
           project = $(this).attr("data-project");
