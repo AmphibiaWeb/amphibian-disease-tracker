@@ -247,6 +247,7 @@ Anura	Brachycephalidae		Brachycephalus		pitanga						BR		7334	http://amphibiaweb
 Anura	Brachycephalidae		Brachycephalus		pombali		Brachycephalus pombali			Data Deficient (DD)	BR		6743	http://amphibiaweb.org/species/6743	
 Anura	Brachycephalidae		Brachycephalus		pulex						BR		7691	http://amphibiaweb.org/species/7691	
 Anura	Brachycephalidae		Brachycephalus		quiririensis						BR		8365	http://amphibiaweb.org/species/8365	
+Anura	Brachycephalidae		Brachycephalus		sulfuratus	Sulferous flea toad					BR		8447	http://amphibiaweb.org/species/8447	
 Anura	Brachycephalidae		Brachycephalus		toby						BR		7590	http://amphibiaweb.org/species/7590	
 Anura	Brachycephalidae		Brachycephalus		tridactylus						BR		7839	http://amphibiaweb.org/species/7839	
 Anura	Brachycephalidae		Brachycephalus		verrucosus						BR		8339	http://amphibiaweb.org/species/8339	
@@ -324,6 +325,7 @@ Anura	Bufonidae		Altiphrynoides		malcolmi	Malcolm’s Ethiopian toad	Altiphrynoi
 Anura	Bufonidae		Altiphrynoides		osgoodi		Altiphrynoides osgoodi		Spinophrynoides osgoodi	Vulnerable (VU)	ET		423	http://amphibiaweb.org/species/423	
 Anura	Bufonidae		Amazophrynella		amazonicola						PE		8331	http://amphibiaweb.org/species/8331	
 Anura	Bufonidae		Amazophrynella		bokermanni		Dendrophryniscus bokermanni			Least Concern (LC)	BR		325	http://amphibiaweb.org/species/325	
+Anura	Bufonidae		Amazophrynella		javierbustamantei						PE		8451	http://amphibiaweb.org/species/8451	
 Anura	Bufonidae		Amazophrynella		manaos						BR		8113	http://amphibiaweb.org/species/8113	
 Anura	Bufonidae		Amazophrynella		matses						PE		8332	http://amphibiaweb.org/species/8332	
 Anura	Bufonidae		Amazophrynella		minuta		Dendrophryniscus minutus		Atelopus minutus	Least Concern (LC)	GF,SR,GY,CO,BR,PE,EC		329	http://amphibiaweb.org/species/329	
@@ -373,6 +375,7 @@ Anura	Bufonidae		Ansonia		muelleri	Mueller's Toad	Ansonia muelleri			Vulnerable 
 Anura	Bufonidae		Ansonia		penangensis						TH,MY		22	http://amphibiaweb.org/species/22	
 Anura	Bufonidae		Ansonia		platysoma		Ansonia platysoma			Endangered (EN)	MY		23	http://amphibiaweb.org/species/23	
 Anura	Bufonidae		Ansonia		siamensis		Ansonia siamensis			Vulnerable (VU)	TH		25	http://amphibiaweb.org/species/25	
+Anura	Bufonidae		Ansonia		smeagol	The Precious Stream-toad					MY		8466	http://amphibiaweb.org/species/8466	
 Anura	Bufonidae		Ansonia		spinulifer		Ansonia spinulifer			Near Threatened (NT)	MY		26	http://amphibiaweb.org/species/26	
 Anura	Bufonidae		Ansonia		thinthinae	Thin Thin's Stream Toad					MM		7767	http://amphibiaweb.org/species/7767	
 Anura	Bufonidae		Ansonia		tiomanica		Ansonia tiomanica			Vulnerable (VU)	MY		27	http://amphibiaweb.org/species/27	
@@ -469,7 +472,7 @@ Anura	Bufonidae		Atelopus		spumarius		Atelopus spumarius			Vulnerable (VU)	BR,CO
 Anura	Bufonidae		Atelopus		spurrelli		Atelopus spurrelli			Vulnerable (VU)	CO		84	http://amphibiaweb.org/species/84	
 Anura	Bufonidae		Atelopus		subornatus		Atelopus subornatus			Critically Endangered (CR)	CO		85	http://amphibiaweb.org/species/85	
 Anura	Bufonidae		Atelopus		tamaensis		Atelopus tamaensis		Atelopus tamaense	Critically Endangered (CR)	VE		86	http://amphibiaweb.org/species/86	
-Anura	Bufonidae		Atelopus		tricolor		Atelopus tricolor		Atelopus rugulosus, Atelopus willimani	Vulnerable (VU)	BO,PE		87	http://amphibiaweb.org/species/87	
+Anura	Bufonidae		Atelopus		tricolor	Tri-Colored Harlequin frog	Atelopus tricolor		Atelopus rugulosus, Atelopus willimani	Vulnerable (VU)	BO,PE		87	http://amphibiaweb.org/species/87	
 Anura	Bufonidae		Atelopus		varius	Harlequin Frog, Clown Frog	Atelopus varius			Critically Endangered (CR)	CO,PA,CR		88	http://amphibiaweb.org/species/88	
 Anura	Bufonidae		Atelopus		vermiculatus						GF		7797	http://amphibiaweb.org/species/7797	
 Anura	Bufonidae		Atelopus		vogli		Atelopus vogli			Extinct (EX)	VE		6268	http://amphibiaweb.org/species/6268	
@@ -1073,6 +1076,7 @@ Anura	Centrolenidae	Hyalinobatrachinae	Hyalinobatrachium		taylori		Hyalinobatrac
 Anura	Centrolenidae	Hyalinobatrachinae	Hyalinobatrachium		tricolor						GF		7747	http://amphibiaweb.org/species/7747	
 Anura	Centrolenidae	Hyalinobatrachinae	Hyalinobatrachium		valerioi	Reticulated Glass Frog, Valerio's Glass Frog, La Palma Glass Frog, Ranita de Vidrio	Hyalinobatrachium valerioi			Least Concern (LC)	EC,CO,PA,CR		1830	http://amphibiaweb.org/species/1830	
 Anura	Centrolenidae	Hyalinobatrachinae	Hyalinobatrachium		vireovittatum	Starrett's Glass Frog	Hyalinobatrachium vireovittatum			Data Deficient (DD)	CR,PA		1831	http://amphibiaweb.org/species/1831	
+Anura	Ceratobatrachidae		Liurana		alpina		Ingerana alpina			Data Deficient (DD)	CN		5665	http://amphibiaweb.org/species/5665	
 Anura	Ceratobatrachidae		Liurana		medogensis		Ingerana medogensis			Data Deficient (DD)	CN		5320	http://amphibiaweb.org/species/5320	
 Anura	Ceratobatrachidae		Liurana		xizangensis		Ingerana xizangensis			Data Deficient (DD)	CN		4739	http://amphibiaweb.org/species/4739	
 Anura	Ceratobatrachidae	Alcalinae	Alcalus		baluensis		Ingerana baluensis			Least Concern (LC)	MY		4732	http://amphibiaweb.org/species/4732	
@@ -1107,6 +1111,7 @@ Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		nakanaiorum		Platymantis nak
 Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		neckeri		Platymantis neckeri		Cornufer neckeri	Least Concern (LC)	PG,SB		4907	http://amphibiaweb.org/species/4907	
 Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		nexipus		Platymantis nexipus			Data Deficient (DD)	PG		4908	http://amphibiaweb.org/species/4908	
 Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		opisthodon		Discodeles opisthodon			Data Deficient (DD)	PG,SB		4697	http://amphibiaweb.org/species/4697	
+Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		paepkei						ID		8450	http://amphibiaweb.org/species/8450	
 Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		papuensis		Platymantis papuensis		Cornufer moszkowskii, Cornufer corrugatus rubristriatus	Least Concern (LC)	PG,ID		4909	http://amphibiaweb.org/species/4909	
 Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		parilis						SB		7189	http://amphibiaweb.org/species/7189	
 Anura	Ceratobatrachidae	Ceratobatrachinae	Cornufer		pelewensis	Palau frog	Platymantis pelewensis		Cornufer pelewensis	Least Concern (LC)	PW		4911	http://amphibiaweb.org/species/4911	
@@ -1344,6 +1349,7 @@ Anura	Cycloramphidae		Thoropa		taophora						BR		7305	http://amphibiaweb.org/spe
 Anura	Dendrobatidae		Allobates		alessandroi		Allobates alessandroi		Colostethus alessandroi	Data Deficient (DD)	PE		5993	http://amphibiaweb.org/species/5993	
 Anura	Dendrobatidae		Allobates		algorei	Spotted nurse frog, Sapito niÃ±era moteado					VE		7407	http://amphibiaweb.org/species/7407	
 Anura	Dendrobatidae		Allobates		amissibilis						GY		8098	http://amphibiaweb.org/species/8098	
+Anura	Dendrobatidae		Allobates		bacurau						BR		8449	http://amphibiaweb.org/species/8449	
 Anura	Dendrobatidae		Allobates		bromelicola		Allobates bromelicola		Colostethus bromelicola	Data Deficient (DD)	VE		1545	http://amphibiaweb.org/species/1545	
 Anura	Dendrobatidae		Allobates		brunneus		Allobates brunneus		Colostethus brunneus	Least Concern (LC)	BO,BR,CO,GF,GY,PE,SR		1546	http://amphibiaweb.org/species/1546	
 Anura	Dendrobatidae		Allobates		caeruleodactylus		Allobates caeruleodactylus		Colostethus caeruleodactylus	Data Deficient (DD)	BR		5829	http://amphibiaweb.org/species/5829	
@@ -1645,7 +1651,6 @@ Anura	Dendrobatidae	Hyloxalinae	Hyloxalus		vergeli		Hyloxalus vergeli		Colosteth
 Anura	Dendrobatidae	Hyloxalinae	Hyloxalus		vertebralis		Hyloxalus vertebralis		Colostethus vertebralis	Critically Endangered (CR)	EC		1620	http://amphibiaweb.org/species/1620	
 Anura	Dendrobatidae	Hyloxalinae	Hyloxalus		whymperi		Hyloxalus whymperi		Colostethus whymperi, Phyllobates whymperi, Colostethus whimperi	Data Deficient (DD)	EC		1621	http://amphibiaweb.org/species/1621	
 Anura	Dendrobatidae	Hyloxalinae	Hyloxalus		yasuni						EC		7592	http://amphibiaweb.org/species/7592	
-Anura	Dicroglossidae		Liurana		alpina		Ingerana alpina			Data Deficient (DD)	CN		5665	http://amphibiaweb.org/species/5665	
 Anura	Dicroglossidae	Alcalinae	Alcalus		tasanae		Ingerana tasanae			Vulnerable (VU)	TH		4737	http://amphibiaweb.org/species/4737	
 Anura	Dicroglossidae	Dicroglossinae	Allopaa		barmoachensis				Paa barmoachensis		IN,PK		7446	http://amphibiaweb.org/species/7446	
 Anura	Dicroglossidae	Dicroglossinae	Allopaa		hazarensis	Hazara torrent frog	Allopaa hazarensis		Paa hazarensis, Nanorana hazarensis, Rana hazarensis	Least Concern (LC)	IN,PK		4867	http://amphibiaweb.org/species/4867	
@@ -1666,6 +1671,7 @@ Anura	Dicroglossidae	Dicroglossinae	Fejervarya		brevipalmata		Fejervarya brevipa
 Anura	Dicroglossidae	Dicroglossinae	Fejervarya		cancrivora	Crab-eating Frog, Mangrove Frog, Asian Brackish Frog	Fejervarya cancrivora			Least Concern (LC)	BN,KH,CN,GU,IN,ID,LA,MY,SG,TH,VN	,GU	4748	http://amphibiaweb.org/species/4748	
 Anura	Dicroglossidae	Dicroglossinae	Fejervarya		caperata						IN		7175	http://amphibiaweb.org/species/7175	
 Anura	Dicroglossidae	Dicroglossinae	Fejervarya	Minervarya	chilapata						IN		7377	http://amphibiaweb.org/species/7377	Some authors place this species in a genus Minervarya.
+Anura	Dicroglossidae	Dicroglossinae	Fejervarya		dhaka						BD		8452	http://amphibiaweb.org/species/8452	
 Anura	Dicroglossidae	Dicroglossinae	Fejervarya		frithi		Fejervarya frithi		Fejervarya frithii	Data Deficient (DD)	BD		6687	http://amphibiaweb.org/species/6687	
 Anura	Dicroglossidae	Dicroglossinae	Fejervarya		gomantaki	goan fejervarya					IN		8357	http://amphibiaweb.org/species/8357	
 Anura	Dicroglossidae	Dicroglossinae	Fejervarya		granosa						IN		7176	http://amphibiaweb.org/species/7176	
@@ -1741,6 +1747,7 @@ Anura	Dicroglossidae	Dicroglossinae	Limnonectes		leporinus		Limnonectes leporinu
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		leytensis		Limnonectes leytensis			Least Concern (LC)	PH		4769	http://amphibiaweb.org/species/4769	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		limborgi		Limnonectes limborgi			Data Deficient (DD)	LA,MM		5195	http://amphibiaweb.org/species/5195	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		liui		Ingerana liui			Vulnerable (VU)	CN		4733	http://amphibiaweb.org/species/4733	
+Anura	Dicroglossidae	Dicroglossinae	Limnonectes		longchuanensis						CN		8465	http://amphibiaweb.org/species/8465	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		macrocephalus		Limnonectes macrocephalus			Near Threatened (NT)	PH		4771	http://amphibiaweb.org/species/4771	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		macrodon		Limnonectes macrodon			Vulnerable (VU)	ID		4772	http://amphibiaweb.org/species/4772	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		macrognathus		Limnonectes macrognathus			Data Deficient (DD)	TH,MY,MM		4773	http://amphibiaweb.org/species/4773	
@@ -1765,7 +1772,7 @@ Anura	Dicroglossidae	Dicroglossinae	Limnonectes		selatan						MY		8255	http://am
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		shompenorum		Limnonectes shompenorum			Least Concern (LC)	IN		4797	http://amphibiaweb.org/species/4797	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		sinuatodorsalis						ID,MY		8376	http://amphibiaweb.org/species/8376	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		sisikdagu						ID		7752	http://amphibiaweb.org/species/7752	
-Anura	Dicroglossidae	Dicroglossinae	Limnonectes		taylori						TH		7553	http://amphibiaweb.org/species/7553	
+Anura	Dicroglossidae	Dicroglossinae	Limnonectes		taylori						CN,LA,MM,TH		7553	http://amphibiaweb.org/species/7553	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		timorensis						ID		4800	http://amphibiaweb.org/species/4800	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		tweediei		Limnonectes tweediei			Near Threatened (NT)	MY		4802	http://amphibiaweb.org/species/4802	
 Anura	Dicroglossidae	Dicroglossinae	Limnonectes		utara						MY		8256	http://amphibiaweb.org/species/8256	
@@ -2479,6 +2486,7 @@ Anura	Hylidae	Hylinae	Hypsiboas		crepitans		Hypsiboas crepitans		Hyla crepitans	
 Anura	Hylidae	Hylinae	Hypsiboas		curupi		Hypsiboas curupi			Least Concern (LC)	AR		7070	http://amphibiaweb.org/species/7070	
 Anura	Hylidae	Hylinae	Hypsiboas		cymbalum		Hypsiboas cymbalum		Hyla cymbalum	Critically Endangered (CR)	BR		779	http://amphibiaweb.org/species/779	
 Anura	Hylidae	Hylinae	Hypsiboas		dentei		Hypsiboas dentei		Hyla dentei	Least Concern (LC)	BR		783	http://amphibiaweb.org/species/783	
+Anura	Hylidae	Hylinae	Hypsiboas		diabolicus						BR,GF		8448	http://amphibiaweb.org/species/8448	
 Anura	Hylidae	Hylinae	Hypsiboas		ericae		Hypsiboas ericae		Hyla ericae	Data Deficient (DD)	BR		6317	http://amphibiaweb.org/species/6317	
 Anura	Hylidae	Hylinae	Hypsiboas		exastis		Hypsiboas exastis			Data Deficient (DD)	BR		6318	http://amphibiaweb.org/species/6318	
 Anura	Hylidae	Hylinae	Hypsiboas		faber		Hypsiboas faber		Hyla faber	Least Concern (LC)	PY,BR,AR		792	http://amphibiaweb.org/species/792	
@@ -3868,6 +3876,7 @@ Anura	Megophryidae		Leptolalax	Lalos	aereus						LA,VN		7755	http://amphibiaweb.
 Anura	Megophryidae		Leptolalax		alpinus		Leptolalax alpinus			Endangered (EN)	CN		2473	http://amphibiaweb.org/species/2473	
 Anura	Megophryidae		Leptolalax		applebyi	Appleby's Asian Toad, Coc may ap-li-bai					VN		7369	http://amphibiaweb.org/species/7369	
 Anura	Megophryidae		Leptolalax		arayai		Leptolalax arayai			Vulnerable (VU)	MY		5648	http://amphibiaweb.org/species/5648	
+Anura	Megophryidae		Leptolalax		ardens						VN		8459	http://amphibiaweb.org/species/8459	
 Anura	Megophryidae		Leptolalax		bidoupensis						VN		7642	http://amphibiaweb.org/species/7642	
 Anura	Megophryidae		Leptolalax		botsfordi						VN		8092	http://amphibiaweb.org/species/8092	
 Anura	Megophryidae		Leptolalax		bourreti		Leptolalax bourreti			Data Deficient (DD)	VN		2474	http://amphibiaweb.org/species/2474	
@@ -3881,11 +3890,13 @@ Anura	Megophryidae		Leptolalax		gracilis		Leptolalax gracilis			Near Threatened 
 Anura	Megophryidae		Leptolalax		hamidi		Leptolalax hamidi			Vulnerable (VU)	MY		5649	http://amphibiaweb.org/species/5649	
 Anura	Megophryidae		Leptolalax		heteropus		Leptolalax heteropus			Least Concern (LC)	MY		2477	http://amphibiaweb.org/species/2477	
 Anura	Megophryidae		Leptolalax		kajangensis		Leptolalax kajangensis			Vulnerable (VU)	MY		6258	http://amphibiaweb.org/species/6258	
+Anura	Megophryidae		Leptolalax		kalonensis						VN		8460	http://amphibiaweb.org/species/8460	
 Anura	Megophryidae		Leptolalax		kecil						MY		7633	http://amphibiaweb.org/species/7633	
 Anura	Megophryidae		Leptolalax		khasiorum						IN		7409	http://amphibiaweb.org/species/7409	
 Anura	Megophryidae		Leptolalax		lateralis						IN		7204	http://amphibiaweb.org/species/7204	
 Anura	Megophryidae		Leptolalax		laui	Lau's Leaf-litter Toad					CN		8201	http://amphibiaweb.org/species/8201	
 Anura	Megophryidae		Leptolalax		liui		Leptolalax liui			Least Concern (LC)	CN		2478	http://amphibiaweb.org/species/2478	
+Anura	Megophryidae		Leptolalax		maculosus						VN		8462	http://amphibiaweb.org/species/8462	
 Anura	Megophryidae		Leptolalax		marmoratus						MY		8254	http://amphibiaweb.org/species/8254	
 Anura	Megophryidae		Leptolalax		maurus		Leptolalax maurus			Near Threatened (NT)	MY		5650	http://amphibiaweb.org/species/5650	
 Anura	Megophryidae		Leptolalax		melanoleucus		Leptolalax melanolecus			Least Concern (LC)	TH		6820	http://amphibiaweb.org/species/6820	
@@ -3894,6 +3905,7 @@ Anura	Megophryidae		Leptolalax	Lalos	minimus						LA,TH		7756	http://amphibiaweb
 Anura	Megophryidae		Leptolalax		nahangensis		Leptolalax nahangensis			Data Deficient (DD)	VN		5478	http://amphibiaweb.org/species/5478	
 Anura	Megophryidae		Leptolalax	Lalos	nyx						VN		7758	http://amphibiaweb.org/species/7758	
 Anura	Megophryidae		Leptolalax		oshanensis		Leptolalax oshanensis			Least Concern (LC)	CN		6175	http://amphibiaweb.org/species/6175	
+Anura	Megophryidae		Leptolalax		pallidus						VN		8461	http://amphibiaweb.org/species/8461	
 Anura	Megophryidae		Leptolalax		pelodytoides		Leptolalax pelodytoides			Least Concern (LC)	MM		2479	http://amphibiaweb.org/species/2479	
 Anura	Megophryidae		Leptolalax		pictus		Leptolalax pictus			Vulnerable (VU)	MY		5651	http://amphibiaweb.org/species/5651	
 Anura	Megophryidae		Leptolalax		platycephalus	Wide-headed Litter Frog					MY		7870	http://amphibiaweb.org/species/7870	
@@ -3902,7 +3914,9 @@ Anura	Megophryidae		Leptolalax		pyrrhops						VN		8314	http://amphibiaweb.org/sp
 Anura	Megophryidae		Leptolalax		sabahmontanus						MY		8116	http://amphibiaweb.org/species/8116	
 Anura	Megophryidae		Leptolalax		solus		Leptolalax solus			Data Deficient (DD)	TH		6821	http://amphibiaweb.org/species/6821	
 Anura	Megophryidae		Leptolalax		sungi		Leptolalax sungi			Data Deficient (DD)	VN		5325	http://amphibiaweb.org/species/5325	
+Anura	Megophryidae		Leptolalax		tadungensis								8463	http://amphibiaweb.org/species/8463	
 Anura	Megophryidae		Leptolalax		tamdil						IN		7472	http://amphibiaweb.org/species/7472	
+Anura	Megophryidae		Leptolalax		tengchongensis	Tengchong Leaf Litter Toad					CN		8464	http://amphibiaweb.org/species/8464	
 Anura	Megophryidae		Leptolalax		tuberosus		Leptolalax tuberosus			Vulnerable (VU)	VN		5479	http://amphibiaweb.org/species/5479	
 Anura	Megophryidae		Leptolalax		ventripunctatus		Leptolalax ventripunctatus			Data Deficient (DD)	CN,LA,VN		2480	http://amphibiaweb.org/species/2480	
 Anura	Megophryidae		Leptolalax		zhangyapingi	Zhang's Asian Toad					TH		8069	http://amphibiaweb.org/species/8069	
@@ -4548,6 +4562,7 @@ Anura	Microhylidae	Microhylinae	Microhyla		fowleri						TH,CN		2173	http://amphi
 Anura	Microhylidae	Microhylinae	Microhyla		fusca		Microhyla fusca			Data Deficient (DD)	VN		2174	http://amphibiaweb.org/species/2174	
 Anura	Microhylidae	Microhylinae	Microhyla		heymonsi		Microhyla heymonsi			Least Concern (LC)	KH,CN,IN,ID,LA,MY,MM,SG,TW,TH,VN		2175	http://amphibiaweb.org/species/2175	
 Anura	Microhylidae	Microhylinae	Microhyla		karunaratnei	Karunaratne's narrow-mouthed frog	Microhyla karunaratnei			Critically Endangered (CR)	LK		2176	http://amphibiaweb.org/species/2176	
+Anura	Microhylidae	Microhylinae	Microhyla		laterite						IN		8456	http://amphibiaweb.org/species/8456	
 Anura	Microhylidae	Microhylinae	Microhyla		maculifera		Microhyla maculifera			Vulnerable (VU)	MY		2177	http://amphibiaweb.org/species/2177	
 Anura	Microhylidae	Microhylinae	Microhyla		malang						ID,MY		7641	http://amphibiaweb.org/species/7641	
 Anura	Microhylidae	Microhylinae	Microhyla		mantheyi		Microhyla mantheyi			Least Concern (LC)	MY,SG		7182	http://amphibiaweb.org/species/7182	
@@ -5290,6 +5305,7 @@ Anura	Ranidae		Odorrana		margaretae		Odorrana margaretae		Rana margaretae	Least 
 Anura	Ranidae		Odorrana		mawphlangensis		Odorrana mawphlangensis	Limnonectes mawphlangensis		Data Deficient (DD)	IN		4777	http://amphibiaweb.org/species/4777	
 Anura	Ranidae		Odorrana		monjerai		Odorrana monjerai			Data Deficient (DD)	MY		6806	http://amphibiaweb.org/species/6806	
 Anura	Ranidae		Odorrana		morafkai	mottled	Odorrana morafkai		Rana morafkai, Huia morafkai	Least Concern (LC)	VN		6229	http://amphibiaweb.org/species/6229	
+Anura	Ranidae		Odorrana		mutschmanni	Mutschmann's Frog, Éch dá mut-x-man (Vietnamese), Mutschmanns Frosch (German					VN		8457	http://amphibiaweb.org/species/8457	
 Anura	Ranidae		Odorrana		nanjiangensis						CN		7088	http://amphibiaweb.org/species/7088	
 Anura	Ranidae		Odorrana		narina	Hanasakigaeru, Okinawa Tip-nosed Frog	Odorrana narina		Rana narina	Endangered (EN)	TW,JP,CN		5105	http://amphibiaweb.org/species/5105	
 Anura	Ranidae		Odorrana		nasica		Odorrana nasica		Huia nasica	Least Concern (LC)	TH,LA,CN,VN		4719	http://amphibiaweb.org/species/4719	
@@ -5763,6 +5779,7 @@ Anura	Rhacophoridae	Rhacophorinae	Raorchestes		glandulosus		Pseudophilautus glan
 Anura	Rhacophoridae	Rhacophorinae	Raorchestes		graminirupes		Pseudophilautus graminirupes			Vulnerable (VU)	IN		6417	http://amphibiaweb.org/species/6417	
 Anura	Rhacophoridae	Rhacophorinae	Raorchestes		griet		Pseudophilautus griet			Critically Endangered (CR)	IN		6525	http://amphibiaweb.org/species/6525	
 Anura	Rhacophoridae	Rhacophorinae	Raorchestes		gryllus		Pseudophilautus gryllus			Data Deficient (DD)	VN		4414	http://amphibiaweb.org/species/4414	
+Anura	Rhacophoridae	Rhacophorinae	Raorchestes		honnametti	Honnametti bush frog					IN		8453	http://amphibiaweb.org/species/8453	
 Anura	Rhacophoridae	Rhacophorinae	Raorchestes		indigo						IN		8270	http://amphibiaweb.org/species/8270	
 Anura	Rhacophoridae	Rhacophorinae	Raorchestes		jayarami						IN		7259	http://amphibiaweb.org/species/7259	
 Anura	Rhacophoridae	Rhacophorinae	Raorchestes		johnceei						IN		7682	http://amphibiaweb.org/species/7682	
@@ -5921,7 +5938,7 @@ Anura	Scaphiopodidae		Spea		bombifrons	Plains Spadefoot	Spea bombifrons		Scaphio
 Anura	Scaphiopodidae		Spea		hammondii	Western Spadefoot	Spea hammondii		Scaphiopus hammondii	Near Threatened (NT)	US,MX		5279	http://amphibiaweb.org/species/5279	
 Anura	Scaphiopodidae		Spea		intermontana	Great Basin Spadefoot	Spea intermontana		Scaphiopus intermontanus, Scaphiopus hammondii intermontanus, Scaphiopus hammondi intermontanus	Least Concern (LC)	US,CA		5280	http://amphibiaweb.org/species/5280	
 Anura	Scaphiopodidae		Spea		multiplicata	Mexican Spadefoot, New Mexico Spadefoot	Spea multiplicata		Scaphiopus multiplicatus	Least Concern (LC)	US,MX		5281	http://amphibiaweb.org/species/5281	
-Anura	Sooglossidae		Sechellophryne		gardineri		Sechellophryne gardineri		Sooglossus gardineri	Vulnerable (VU)	SC		5215	http://amphibiaweb.org/species/5215	
+Anura	Sooglossidae		Sechellophryne		gardineri	Gardiner's Seychelles Frog	Sechellophryne gardineri		Sooglossus gardineri	Vulnerable (VU)	SC		5215	http://amphibiaweb.org/species/5215	
 Anura	Sooglossidae		Sechellophryne		pipilodryas		Sechellophryne pipilodryas		Sooglossus pipilodryas	Vulnerable (VU)	SC		6068	http://amphibiaweb.org/species/6068	
 Anura	Sooglossidae		Sooglossus		sechellensis		Sooglossus sechellensis			Vulnerable (VU)	SC		5216	http://amphibiaweb.org/species/5216	
 Anura	Sooglossidae		Sooglossus		thomasseti		Sooglossus thomasseti		Nesomantis thomasseti	Vulnerable (VU)	SC		5213	http://amphibiaweb.org/species/5213	
@@ -5972,6 +5989,7 @@ Anura	Strabomantidae	Holoadeninae	Psychrophrynella		ankohuma		Psychrophrynella a
 Anura	Strabomantidae	Holoadeninae	Psychrophrynella		bagrecito		Psychrophrynella bagrecitoi		Phrynopus bagrecitoi	Vulnerable (VU)	EC,PE		6295	http://amphibiaweb.org/species/6295	
 Anura	Strabomantidae	Holoadeninae	Psychrophrynella		boettgeri		Psychrophrynella boettgeri			Endangered (EN)	PE		6871	http://amphibiaweb.org/species/6871	
 Anura	Strabomantidae	Holoadeninae	Psychrophrynella		chacaltaya		Psychrophrynella chacaltya			Vulnerable (VU)	BO		7047	http://amphibiaweb.org/species/7047	
+Anura	Strabomantidae	Holoadeninae	Psychrophrynella		chirihampatu	Japumayo Andes frog					PE		8455	http://amphibiaweb.org/species/8455	
 Anura	Strabomantidae	Holoadeninae	Psychrophrynella		condoriri		Psychrophrynella condoriri			Data Deficient (DD)	BO		7048	http://amphibiaweb.org/species/7048	
 Anura	Strabomantidae	Holoadeninae	Psychrophrynella		guillei		Psychrophrynella guillei			Critically Endangered (CR)	BO		7049	http://amphibiaweb.org/species/7049	
 Anura	Strabomantidae	Holoadeninae	Psychrophrynella		harveyi		Psychrophrynella harveyi			Data Deficient (DD)	BO		7050	http://amphibiaweb.org/species/7050	
@@ -6245,6 +6263,7 @@ Anura	Strabomantidae	Strabomantinae	Pristimantis		hoogmoedi	Hoogmoed's Red-Eyed 
 Anura	Strabomantidae	Strabomantinae	Pristimantis		huicundo		Pristimantis huicundo			Data Deficient (DD)	EC		6340	http://amphibiaweb.org/species/6340	
 Anura	Strabomantidae	Strabomantinae	Pristimantis		hybotragus		Pristimantis hybotragus		Eleutherodactylus hybotragus	Vulnerable (VU)	CO		2969	http://amphibiaweb.org/species/2969	
 Anura	Strabomantidae	Strabomantinae	Pristimantis		ignicolor		Pristimantis ignicolor		Eleutherodactylus ignicolor	Endangered (EN)	EC		2973	http://amphibiaweb.org/species/2973	
+Anura	Strabomantidae	Strabomantinae	Pristimantis		iiap						PE		8454	http://amphibiaweb.org/species/8454	
 Anura	Strabomantidae	Strabomantinae	Pristimantis		illotus		Pristimantis illotus		Eleutherodactylus illotus	Near Threatened (NT)	CO,EC		5748	http://amphibiaweb.org/species/5748	
 Anura	Strabomantidae	Strabomantinae	Pristimantis		imitatrix		Pristimantis imitatrix		Eleutherodactylus imitatrix	Least Concern (LC)	PE		2974	http://amphibiaweb.org/species/2974	
 Anura	Strabomantidae	Strabomantinae	Pristimantis		incanus		Pristimantis incanus		Eleutherodactylus incanus	Endangered (EN)	EC		2975	http://amphibiaweb.org/species/2975	
@@ -7204,7 +7223,7 @@ Caudata	Salamandridae	Pleurodelinae	Echinotriton		chinhaiensis	Chinhai Salamande
 Caudata	Salamandridae	Pleurodelinae	Echinotriton		maxiquadratus	Mountain spiny newt; Gao Shan Ji Yuan (Chinese)					CN		8273	http://amphibiaweb.org/species/8273	
 Caudata	Salamandridae	Pleurodelinae	Euproctus		montanus	Corsican brook salamander, Corsican mountain newt, Korsischer Gebirgsmolch, Korsikansk bjergsalamander, Korsika mägivesilik, Tritón de Córsega, Euprocte de Corse, Euprotte de Corse, Tritone Côrso, Euprotto Côrso, Korzikai göte, Corsicaanse beeksalamander,	Euproctus montanus			Least Concern (LC)	FR		4252	http://amphibiaweb.org/species/4252	
 Caudata	Salamandridae	Pleurodelinae	Euproctus		platycephalus	Sardinian brook salamander, Sardinian mountain newt, Hechtkopf-Gebirgsmolch, Sardischer Gebirgsmolch. Sardinsk bjergsalamander, Sardiinia mägivesilik, Tritón de Serdeña, Euprocte de Sardaigne, Tritone Sardo, Euprotto Sardo, Csukafejü göte, Szardiniai heg	Euproctus platycephalus			Endangered (EN)	IT		4253	http://amphibiaweb.org/species/4253	
-Caudata	Salamandridae	Pleurodelinae	Ichthyosaura		alpestris	Alpine Newt	Mesotriton alpestris		Triturus alpestris, Triton alpestris	Least Concern (LC)	AL,AT,BY,BE,BA,BG,HR,CZ,DK,FR,DE,GR,HU,IT,LI,LU,MK,ME,NL,PL,RO,RS,SK,SI,ES,CH,UA,GB	,GB	4292	http://amphibiaweb.org/species/4292	
+Caudata	Salamandridae	Pleurodelinae	Ichthyosaura		alpestris	Alpine Newt	Mesotriton alpestris		Triturus alpestris, Triton alpestris	Least Concern (LC)	AL,AT,BY,BE,BA,BG,HR,CZ,DK,FR,DE,GR,HU,IT,LI,LU,MK,ME,NL,NZ,PL,RO,RS,SK,SI,ES,CH,UA,GB	,GB,NZ	4292	http://amphibiaweb.org/species/4292	
 Caudata	Salamandridae	Pleurodelinae	Laotriton		laoensis	Laos Warty Newt; Laotriton de Laos	Paramesotriton laoensis			Data Deficient (DD)	LA		5980	http://amphibiaweb.org/species/5980	
 Caudata	Salamandridae	Pleurodelinae	Lissotriton	Meinus	boscai	Bosca's newt, Spanischer wassermolch, boscas wassermolch, tritón ibérico, tritón de Boscá, tritão-de-la-ventre-laranja, Boscas vandsalamander, hispaania vesilik, triton de Bosca, tritone di Boscá, spaanse watersalamander, espanjanvesilisko, spansk vattens	Lissotriton boscai		Triturus boscai	Least Concern (LC)	ES,PT		4293	http://amphibiaweb.org/species/4293	
 Caudata	Salamandridae	Pleurodelinae	Lissotriton	Lissotriton	helveticus	Palmate newt, fadenmolch, leistenmolch, tritón palmeado, tritão-palmado, tritão-de-patas-espalmadas, tritó palmat, madfall balmwyddog, trådvandsalamander, niitvesilik, uhandre palmatua, triton palmé, tritone palmato, vinpootsalamander, draadstaartsalamand	Lissotriton helveticus		Triturus helveticus	Least Concern (LC)	BE,CZ,FR,DE,IT,LU,NL,PT,ES,CH,GB		4297	http://amphibiaweb.org/species/4297	
@@ -7229,6 +7248,7 @@ Caudata	Salamandridae	Pleurodelinae	Pachytriton		feii	Fei's Stout Newt; Pachytri
 Caudata	Salamandridae	Pleurodelinae	Pachytriton		granulosus	Northeastern Paddle-Tailed Newt, Spotless Stout Newt; Pachytriton de Zhejiang					CN		7662	http://amphibiaweb.org/species/7662	The genera Pachytriton and Paramesotriton have had a confused taxonomic history,  complicated by the fact that a number of these salamanders have long been in the  pet trade, identified as Paddletailed and Warty Newts, respectively.  In 1985  Frost (Amphibian Species of the World) recognized only one Pachytriton, P.  brevipes, and 5 Paramesotriton.  At present 8 species of Pachytriton and 13  species of Paramesotriton are recognized.  The pet trade long identified the  following biological entities: Phenotypes Pachytriton A, B, C and D, none of  them assignable to P. brevipes.  Eventually Pachytriton labiatus was associated  with phenotype A, but the other phenotypes were of uncertain taxonomy.  In 2011  Nishikawa et al. discovered that the nomen labiatus belongs to a biological  entity that had been recently named Paramesotriton ermizhaoi, and Phenotype A  was assigned to Pachytriton granulosus (which had been in the synonymy of other  taxa).  Raffaelli (Les Urodeles de Monde, 2nd Ed 2013) thinks that Phenotypes A  are taxonomically heterogenous, and include in addition to Pachytriton  granulosus, Pachytriton feii, Pachytriton moi and Pachytriton inexpectatus;  Phenotype B is thought to be Pachytriton changi (and we think also Pachytriton  xanthospilos); Phenotype C is thought to be Paramesotriton labiatus; Phenotype D  is thought to be Paramesotriton archospotus.  No members of the genus  Paramesotriton (Warty Newts) should be called Paddletailed newts; that name  should refer only to Pachytriton (which are also known as Stout Newts).  For  formal taxonomic history see Amphibian Species of the World website.
 Caudata	Salamandridae	Pleurodelinae	Pachytriton		inexpectatus	Yaoshan Stout Newt; Pachytriton de Guangxi					CN		7661	http://amphibiaweb.org/species/7661	
 Caudata	Salamandridae	Pleurodelinae	Pachytriton		moi	Mo's Stout Newt; Pachytriton de Mo					CN		7677	http://amphibiaweb.org/species/7677	
+Caudata	Salamandridae	Pleurodelinae	Pachytriton		wuguanfui						CN		8458	http://amphibiaweb.org/species/8458	
 Caudata	Salamandridae	Pleurodelinae	Pachytriton		xanthospilos								8358	http://amphibiaweb.org/species/8358	This species was described a few days after Pachytriton changi, but with exact  locality data from specimens collected by Wu. Nishikawa et al. (2013, Current  Herpetology 32: 150-158) argue that P. xanthospilos should be considered a  junior synonym of P. changi. However, Wu and Murphy (2015 Molecular  Phylogenetics and Evolution 92: 108-117) recognize P. xanthospilos, arguing that  it differs from the generally unknowable P. changi. 
 Caudata	Salamandridae	Pleurodelinae	Paramesotriton	Allomesotriton	caudopunctatus	Spot-tailed Warty Newt	Paramesotriton caudopunctatus			Near Threatened (NT)	CN		4270	http://amphibiaweb.org/species/4270	
 Caudata	Salamandridae	Pleurodelinae	Paramesotriton	Paramesotriton 	chinensis	Chinese Warty Newt, Hong Kong Warty Newt	Paramesotriton chinensis			Least Concern (LC)	CN		4271	http://amphibiaweb.org/species/4271	
@@ -7256,7 +7276,7 @@ Caudata	Salamandridae	Pleurodelinae	Triturus	Triturus	dobrogicus	Danube Crested 
 Caudata	Salamandridae	Pleurodelinae	Triturus	Triturus	ivanbureschi	Balkan-Anatolian Crested Newt; Buresch's Crested Newt					BG,GR,MK,RS,TR		8024	http://amphibiaweb.org/species/8024	
 Caudata	Salamandridae	Pleurodelinae	Triturus	Triturus	karelinii	Southern Crested Newt	Triturus karelinii			Least Concern (LC)	AZ,GE,IR,RU,TR,UA		4299	http://amphibiaweb.org/species/4299	
 Caudata	Salamandridae	Pleurodelinae	Triturus	Triturus	macedonicus						AL,BA,GR,MK,ME,RS		7200	http://amphibiaweb.org/species/7200	
-Caudata	Salamandridae	Pleurodelinae	Triturus	Pyronicia	marmoratus	Marbeled newt, marmormolch, triton marbré, tritón jaspeado, tritão-marmorado, tritão-verde, tritó verd, marmorsalamander, marmorvesilik, uhandre marmolairea, lagartixa d'agua, tritone marmorato, tritone marmorizzato, marmersalamander, traszka marmurkowana	Triturus marmoratus			Least Concern (LC)	FR,PT,ES		4300	http://amphibiaweb.org/species/4300	
+Caudata	Salamandridae	Pleurodelinae	Triturus	Pyronicia	marmoratus	Marbeled newt, marmormolch, triton marbré, tritón jaspeado, tritão-marmorado, tritão-verde, tritó verd, marmorsalamander, marmorvesilik, uhandre marmolairea, lagartixa d'agua, tritone marmorato, tritone marmorizzato, marmersalamander, traszka marmurkowana	Triturus marmoratus			Least Concern (LC)	FR,NL,PT,ES	,NL	4300	http://amphibiaweb.org/species/4300	
 Caudata	Salamandridae	Pleurodelinae	Triturus	Pyronicia	pygmaeus	Pygmy Marbled Newt, Triton pigmeo, Triton verdinegro, Triton pygmee, Zwer-Marmormolch	Triturus pygmaeus			Near Threatened (NT)	PT,ES		6211	http://amphibiaweb.org/species/6211	
 Caudata	Salamandridae	Pleurodelinae	Tylototriton	Tylototriton	anguliceps	Angular-headed newt					LA,TH,VN		8316	http://amphibiaweb.org/species/8316	
 Caudata	Salamandridae	Pleurodelinae	Tylototriton	Yaotriton	asperrimus	Black Knobby Newt	Tylototriton asperrimus			Near Threatened (NT)	VN,CN		4305	http://amphibiaweb.org/species/4305	Fei, Ye & Jiang 2012 Colored atlas of Chinese amphibians place this species in   what others consider subgenus Yaotriton. Tylototriton hainanensis was placed in  the synonymy of T. asperrimus by Yuan et al 2011 Zool Res 32: 577-584.
@@ -7390,11 +7410,10 @@ Gymnophiona	Ichthyophiidae		Ichthyophis		daribokensis						IN		7422	http://amphi
 Gymnophiona	Ichthyophiidae		Ichthyophis		davidi	Chorla Giant Striped <i>Ichthyophis</i>					IN		7733	http://amphibiaweb.org/species/7733	
 Gymnophiona	Ichthyophiidae		Ichthyophis		dulitensis		Ichthyophis dulitensis			Data Deficient (DD)	MY		1981	http://amphibiaweb.org/species/1981	
 Gymnophiona	Ichthyophiidae		Ichthyophis		elongatus		Ichthyophis elongatus			Data Deficient (DD)	ID		1982	http://amphibiaweb.org/species/1982	
-Gymnophiona	Ichthyophiidae		Ichthyophis		garoensis		Ichthyophis garoensis			Data Deficient (DD)	IN		6475	http://amphibiaweb.org/species/6475	
+Gymnophiona	Ichthyophiidae		Ichthyophis		garoensis		Ichthyophis garoensis	Ichthyophis husaini		Data Deficient (DD)	IN		6475	http://amphibiaweb.org/species/6475	
 Gymnophiona	Ichthyophiidae		Ichthyophis		glandulosus		Ichthyophis glandulosus			Data Deficient (DD)	PH		1983	http://amphibiaweb.org/species/1983	
 Gymnophiona	Ichthyophiidae		Ichthyophis		glutinosus	Common Yellowband Caecilian	Ichthyophis glutinosus			Least Concern (LC)	LK		1984	http://amphibiaweb.org/species/1984	
 Gymnophiona	Ichthyophiidae		Ichthyophis		humphreyi		Ichthyophis humphreyi			Data Deficient (DD)			1985	http://amphibiaweb.org/species/1985	
-Gymnophiona	Ichthyophiidae		Ichthyophis		husaini		Ichthyophis husaini			Data Deficient (DD)	IN		6004	http://amphibiaweb.org/species/6004	
 Gymnophiona	Ichthyophiidae		Ichthyophis		hypocyaneus	Javan Caecilian	Ichthyophis hypocyaneus			Data Deficient (DD)	ID		1986	http://amphibiaweb.org/species/1986	
 Gymnophiona	Ichthyophiidae		Ichthyophis		javanicus		Ichthyophis javanicus			Data Deficient (DD)	ID		1987	http://amphibiaweb.org/species/1987	
 Gymnophiona	Ichthyophiidae		Ichthyophis		khumhzi	Khumhzi striped <i>Ichthyophis</i>					IN		7383	http://amphibiaweb.org/species/7383	
