@@ -828,7 +828,7 @@ showAddUserDialog = (refAccessList) ->
         ++i
         html = """
             <tr class="user-permission-list-row" data-user="#{uid}">
-              <td colspan="5">#{user}</td>
+              <td colspan="5">#{user.outerHTML}</td>
               <td class="text-center user-current-permission">#{icon}</td>
             </tr>
         """
@@ -873,6 +873,10 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
     console.info "Got zoom", zoom
     $("#transect-viewport").attr "zoom", zoom
+  if isNull cartoTable
+    console.warn "There's no assigned table, not pulling carto data"
+    startEditorUploader()
+    return false
   # Ping Carto on this and get the data
   getCols = "SELECT * FROM #{cartoTable} WHERE FALSE"
   args = "action=fetch&sql_query=#{post64(getCols)}"

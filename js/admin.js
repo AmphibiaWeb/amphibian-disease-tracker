@@ -2692,7 +2692,7 @@ showAddUserDialog = function(refAccessList) {
         user = toAddEmails[i];
         console.info("Adding", user);
         ++i;
-        html = "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
+        html = "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + user.outerHTML + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
         $("#permissions-table").append(html);
         userObj = {
           email: user,
@@ -2740,6 +2740,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     console.info("Got zoom", zoom);
     $("#transect-viewport").attr("zoom", zoom);
   } catch (undefined) {}
+  if (isNull(cartoTable)) {
+    console.warn("There's no assigned table, not pulling carto data");
+    startEditorUploader();
+    return false;
+  }
   getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
   $.post("api.php", args, "json").done(function(result) {

@@ -225,6 +225,20 @@ deEscape = (string) ->
   string
 
 
+getElementHtml = (el) ->
+  el.outerHTML
+
+
+jQuery.fn.outerHTML = ->
+  e = $(this).get(0)
+  e.outerHTML
+
+
+jQuery.fn.outerHtml = ->
+  $(this).outerHTML()
+  
+
+
 copyText = (text, zcObj, zcElement) ->
   ###
   #
