@@ -68,4 +68,7 @@ node_modules/
 /admin/oauth/credentials.json
 meta/GABON_Amphibian_Disease2.xlsx
 meta/test*
+meta/*.xlsx
+meta/*.xls
+.dropbox
 info.php
