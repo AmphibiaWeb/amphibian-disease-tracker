@@ -2445,8 +2445,11 @@ loadEditor = (projectPreload) ->
             else
               $(this).find("iron-icon").removeClass("material-red")
           # Load more detailed data from CartoDB
-          console.info "Getting carto data with id #{project.carto_id} and options", createMapOptions
-          getProjectCartoData project.carto_id, createMapOptions
+          unless isNull project.carto_id
+            console.info "Getting carto data with id #{project.carto_id} and options", createMapOptions
+            getProjectCartoData project.carto_id, createMapOptions
+          else
+            console.warn "There is no carto data to load up for the editor"
         catch e
           stopLoadError "There was an error loading your project"
           console.error "Unhandled exception loading project! #{e.message}"
@@ -2811,6 +2814,7 @@ showAddUserDialog = (refAccessList) ->
       i = 0
       for uid in toAddUids
         user = toAddEmails[i]
+        console.info "Adding", user
         ++i
         html = """
             <tr class="user-permission-list-row" data-user="#{uid}">
@@ -2866,9 +2870,11 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   .done (result) ->
     try
       r = JSON.parse(result.post_response[0])
-    catch
+    catch e
       console.error "Couldn't load carto data!", result
       console.warn "post_response: (want key 0)", result.post_response
+      console.warn "Base data source:", cartoData
+      console.warn e.stack
       stopLoadError "There was a problem talking to CartoDB. Please try again later"
       return false
     cols = new Object()

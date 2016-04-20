@@ -2342,8 +2342,12 @@ loadEditor = function(projectPreload) {
               return $(this).find("iron-icon").removeClass("material-red");
             }
           });
-          console.info("Getting carto data with id " + project.carto_id + " and options", createMapOptions);
-          return getProjectCartoData(project.carto_id, createMapOptions);
+          if (!isNull(project.carto_id)) {
+            console.info("Getting carto data with id " + project.carto_id + " and options", createMapOptions);
+            return getProjectCartoData(project.carto_id, createMapOptions);
+          } else {
+            return console.warn("There is no carto data to load up for the editor");
+          }
         } catch (error4) {
           e = error4;
           stopLoadError("There was an error loading your project");
@@ -2685,6 +2689,7 @@ showAddUserDialog = function(refAccessList) {
       for (m = 0, len1 = toAddUids.length; m < len1; m++) {
         uid = toAddUids[m];
         user = toAddEmails[i];
+        console.info("Adding", user);
         ++i;
         html = "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + user + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
         $("#permissions-table").append(html);
@@ -2737,12 +2742,15 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
   $.post("api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, error2, filePath, html, k, r, ref, type, v;
+    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, e, error2, filePath, html, k, r, ref, type, v;
     try {
       r = JSON.parse(result.post_response[0]);
     } catch (error2) {
+      e = error2;
       console.error("Couldn't load carto data!", result);
       console.warn("post_response: (want key 0)", result.post_response);
+      console.warn("Base data source:", cartoData);
+      console.warn(e.stack);
       stopLoadError("There was a problem talking to CartoDB. Please try again later");
       return false;
     }
