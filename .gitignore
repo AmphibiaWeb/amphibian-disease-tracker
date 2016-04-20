@@ -71,4 +71,5 @@ meta/test*
 meta/*.xlsx
 meta/*.xls
 .dropbox
+.dropbox*
 info.php
