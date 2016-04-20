@@ -533,6 +533,7 @@ function listProjects($unauthenticated = true)
     $l = $db->openDB();
     $r = mysqli_query($l, $query);
     $authorizedProjects = array();
+    $editableProjects = array();
     $authoredProjects = array();
     $publicProjects = array();
     $queries = array();
@@ -548,13 +549,27 @@ function listProjects($unauthenticated = true)
             $queries[] = 'UNAUTHORIZED';
         }
         if (!empty($uid)) {
-            $query = 'SELECT `project_id`,`project_title`,`author` FROM '.$db->getTable()." WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
+            $query = 'SELECT `project_id`,`project_title`,`author` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
             $queries[] = $query;
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
-                $authorizedProjects[$row[0]] = $row[1];
+                $pid = $row[0];
+                $authorizedProjects[$pid] = $row[1];
                 if ($row[2] == $uid) {
                     $authoredProjects[] = $row[0];
+                    $editableProjects[$pid] = $row[1];
+                } else {
+                    # Check permissions
+                    $access = checkProjectIdAuthorized($pid);
+                    $isEditor = $access["detailed_authorization"]["can_edit"];
+                    $isViewer = $access["detailed_authorization"]["can_view"];
+                    if($isEditor === true) {
+                        $editableProjects[$pid] = $row[1];
+                    } else if ($isViewer === true) {
+                        $authorizedProjects[$pid] = $row[1];
+                    } else {
+                        # Should never trigger
+                    }
                 }
             }
         }
@@ -565,6 +580,7 @@ function listProjects($unauthenticated = true)
         'projects' => $authorizedProjects,
         'public_projects' => $publicProjects,
         'authored_projects' => $authoredProjects,
+        'editable_projects' => $editableProjects,
         'check_authentication' => !$unauthenticated,
     );
 
@@ -608,6 +624,12 @@ function suListProjects()
             'human_error' => 'The server returned an error: '.$e->message(),
         );
     }
+}
+
+
+function checkProjectIdAuthorized($projectId) {
+    $access = array("project"=>$projectId);
+    return authorizedProjectAccess($access);
 }
 
 function checkProjectAuthorized($projectData, $uid)
