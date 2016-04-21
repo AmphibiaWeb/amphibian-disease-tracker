@@ -4451,6 +4451,9 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-right paper-card > div {
     max-height: 750px;
   }
+  .navbar-right paper-card .header {
+    cursor: pointer;
+  }
   .navbar-right paper-card .header :before {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
@@ -9681,6 +9684,9 @@ section#notes marked-element {
 .card-collapsable-widget > div {
   max-height: 750px;
 }
+.card-collapsable-widget .header {
+  cursor: pointer;
+}
 .card-collapsable-widget .header :before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -9722,6 +9728,9 @@ paper-card.card-collapsable-widget.collapse {
 }
 .pull-right paper-card > div {
   max-height: 750px;
+}
+.pull-right paper-card .header {
+  cursor: pointer;
 }
 .pull-right paper-card .header :before {
   display: inline-block;
