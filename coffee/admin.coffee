@@ -390,10 +390,10 @@ loadCreateNewProject = ->
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.
     </p>
     <div class="alert alert-info" role="alert">
-      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Select "Amphibian Disease" from the dropdown menu, and select your fields for your template. Your data will be validated with the same service.
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Check out the documentation for <a href="https://amphibian-disease-tracker.readthedocs.org/en/latest/Creating%20a%20New%20Project/#with-data" class="newwindow alert-link" data-newtab="true">more instructions <span class="glyphicon glyphicon-new-window"></span></a>
     </div>
     <div class="alert alert-warning" role="alert">
-      <strong>If the data is in Excel</strong>, ensure that it is the first sheet in the workbook. Data across multiple sheets in one workbook may be improperly processed.
+      <strong>If the data are in Excel</strong>, ensure that they are in the first sheet in the workbook, or in a worksheet titled <code>Samples</code>, as per FIMS.
     </div>
   </section>
   <section class="project-inputs clearfix data-section col-xs-12">
@@ -1114,7 +1114,19 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
     args = "action=fetch&sql_query=#{post64(getCols)}"
     $.post "api.php", args, "json"
     .done (result) ->
-      r = JSON.parse(result.post_response[0])
+      try
+        r = JSON.parse(result.post_response[0])
+      catch e
+        console.error "getCanonicalDataCoords couldn't read carto data! Failed to get columns (#{e.message})", result
+        console.warn "Table: '#{table}' for query", getCols
+        console.warn e.stack
+        message = "There was a problem fetching your data back from CartoDB. It should be safe, however."
+        stopLoadError message
+        bsAlert message, "danger"
+        try
+          if typeof callback is "function"
+            callback [], options
+        return false
       cols = new Object()
       for k, v of r.fields
         cols[k] = v
@@ -1164,7 +1176,8 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         dataAttrs.coords = coords
         dataAttrs.markerInfo = info
         console.info "Calling back with", coords, options
-        callback coords, options
+        if typeof callback is "function"
+          callback coords, options
         # callback coords, info
       .fail (result, status) ->
         # On error, return direct from file upload
@@ -1351,7 +1364,7 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", ca
                     else
                       stopLoadError "Sorry, we didn't understand the upload type."
                       return false
-                when "zip", "x-zip-compressed" 
+                when "zip", "x-zip-compressed"
                   # Some servers won't read it as the crazy MS mime type
                   # But as a zip, instead. So, check the extension.
                   #
