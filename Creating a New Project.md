@@ -68,7 +68,7 @@ The file should either have a header row, or use the order presented at BiSciCol
 
 You'll find on the page a box that says "Drop your files here to upload" under the heading "Uploading your project data". You can drag and drop files from your filesystem into that box to upload files to the server. You may also use the blue button with an arrow pointing into a cloud to upload your files.
 
-You may upload more than just a datafile to your project; the system will also accept images (anything with a [MIME type](https://en.wikipedia.org/wiki/Media_type) beginning with "image/"), `zip` files, and `7z` ([7-zip](https://en.wikipedia.org/wiki/7-Zip), open-source compression better than zip) files. At the time of this writing, these are not yet exposed in your project's viewer, but the feature is incoming.
+You may upload more than just a datafile to your project; the system will also accept images (anything with a [MIME type](https://en.wikipedia.org/wiki/Media_type) beginning with `image/`), `zip` files, and `7z` ([7-zip](https://en.wikipedia.org/wiki/7-Zip), open-source compression better than zip) files. At the time of this writing, these are not yet exposed in your project's viewer, but the feature is incoming.
 
 When you upload your data, you'll be given several progress bars that complete sequentially. This will notify you if you have any problems with your data, and where they may occur. Handling your data upload occurs like this:
 
@@ -94,6 +94,6 @@ If your project is public, make sure that the button says public and the symbol 
 
 If you've uploaded data, the save button will state "Save Data", as well. If it does not say that, your data will **not** be saved.
 
-Once you click the save button, your data will be processed and saved to the server. Upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/ANU2`), resolvable by the Name2Thing service (eg, https://n2t.net/ark:/21547/ANU2). The system will then load the project editor immediately. To view your project, click the eye icon next to the project title.
+Once you click the save button, your data will be processed and saved to the server. Upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/ANU2`), resolvable by the Name2Thing service (eg, [https://n2t.net/ark:/21547/ANU2](https://n2t.net/ark:/21547/ANU2)). The system will then load the project editor immediately. To view your project, click the eye icon next to the project title.
 
-If you have a datafile, upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/APH2`), resolvable by the Name2Thing service (eg, https://n2t.net/ark:/21547/APH2). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into a url akin to https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279).
+If you have a datafile, upon project saving, your datafile will also be given an ARK identifier (such as [`ark:/21547/APH2`](https://n2t.net/ark:/21547/APH2)). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into your project url suffixed with something akin to [`#dataset:7f5d6fe37b819da189d99e077aa89279`](https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279)).
