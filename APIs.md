@@ -126,6 +126,8 @@ Queries raw data from the total dataset. **Psuedoauthenticated**.
 
 Be aware that access may be restricted based on your login status. If you're not logged in, only public resources are queryable.  Attempting to access a non-public project will return an `UNAUTHORIZED` error.
 
+Query security checks are case-insensitive.
+
 | Parameter | Value |
 |-----------|-------|
 | `action` | `fetch` |
@@ -141,6 +143,22 @@ Response:
 | `post_response`  | Array of raw responses from CartoDB |
 | `parsed_responses`  | Formatted responses from CartoDB  |
 
+
+In general, most queries are restricted for all projects that are not flagged with `public = true`. For compatibility reasons, if a CartoDB table isn't associated with a `project_id`, then the queries are unrestricted.
+
+For all projects, the query to view columns
+
+```sql
+SELECT * FROM t1234567890 WHERE FALSE;
+```
+
+is permitted, again largely for compatibility reasons.
+
+**Please note**: For security reasons, the name format of the table is **restricted**. The table name **must** start with `t`, then be followed by the hexadecimal character set (`[a-fA-f0-9]`) with up to one underscore (`_`). All your queries will fail as unauthenticated if the table name doesn't match this regular expression:
+
+```regex
+/(?i)(t[0-9a-f]+[_]?[0-9a-f]*)/
+```
 
 ## Validating / Updating Taxa
 
