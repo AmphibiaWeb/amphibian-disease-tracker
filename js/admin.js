@@ -1093,7 +1093,7 @@ getCanonicalDataCoords = function(table, options, callback) {
     getCols = "SELECT * FROM " + table + " WHERE FALSE";
     args = "action=fetch&sql_query=" + (post64(getCols));
     return $.post("api.php", args, "json").done(function(result) {
-      var apiPostSqlQuery, col, colRemap, cols, colsArr, e, error1, k, message, r, ref, sqlQuery, type, v;
+      var apiPostSqlQuery, col, colRemap, cols, colsArr, e, error, error1, k, message, r, ref, ref1, ref2, sqlQuery, type, v;
       try {
         r = JSON.parse(result.post_response[0]);
       } catch (error1) {
@@ -1101,7 +1101,8 @@ getCanonicalDataCoords = function(table, options, callback) {
         console.error("getCanonicalDataCoords couldn't read carto data! Failed to get columns (" + e.message + ")", result);
         console.warn("Table: '" + table + "' for query", getCols);
         console.warn(e.stack);
-        message = "There was a problem fetching your data back from CartoDB. It should be safe, however.";
+        error = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "It should be safe, however.";
+        message = "There was a problem fetching your data back from CartoDB. ";
         stopLoadError(message);
         bsAlert(message, "danger");
         try {
@@ -1112,9 +1113,9 @@ getCanonicalDataCoords = function(table, options, callback) {
         return false;
       }
       cols = new Object();
-      ref = r.fields;
-      for (k in ref) {
-        v = ref[k];
+      ref2 = r.fields;
+      for (k in ref2) {
+        v = ref2[k];
         cols[k] = v;
       }
       _adp.activeCols = cols;
@@ -1133,18 +1134,18 @@ getCanonicalDataCoords = function(table, options, callback) {
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
       args = "action=fetch&sql_query=" + apiPostSqlQuery;
       return $.post("api.php", args, "json").done(function(result) {
-        var cartoResponse, coords, i, info, point, realCol, ref1, ref2, row, textPoint, val;
+        var cartoResponse, coords, i, info, point, realCol, ref3, ref4, row, textPoint, val;
         cartoResponse = result.parsed_responses[0];
         coords = new Array();
         info = new Array();
         _adp.cartoRows = new Object();
-        ref1 = cartoResponse.rows;
-        for (i in ref1) {
-          row = ref1[i];
+        ref3 = cartoResponse.rows;
+        for (i in ref3) {
+          row = ref3[i];
           _adp.cartoRows[i] = new Object();
           for (col in row) {
             val = row[col];
-            realCol = (ref2 = colRemap[col]) != null ? ref2 : col;
+            realCol = (ref4 = colRemap[col]) != null ? ref4 : col;
             _adp.cartoRows[i][realCol] = val;
           }
           textPoint = row.st_astext;

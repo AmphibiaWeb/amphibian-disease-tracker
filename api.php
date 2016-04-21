@@ -238,6 +238,12 @@ function doCartoSqlApiPush($get)
     $unrestrictedActions = array(
         "create" => true,
     );
+    # Looking up the columns is a safe action
+    if (preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $sqlQuery)) {
+        # Successful match
+        unset($restrictedActions["select"]);
+        $unrestrictedActions["select"] = true;
+    }
     if (isset($restrictedActions[$sqlAction])) {
         # Check the user
         # If bad, kick the access out
@@ -248,60 +254,63 @@ function doCartoSqlApiPush($get)
         $r = mysqli_query($l, $accessListLookupQuery);
         $row = mysqli_fetch_assoc($r);
         $pid = $row["project_id"];
-        $requestedPermission = $restrictedActions[$sqlAction];
-        $pArr = explode(",", $row["access_data"]);
-        $permissions = array();
-        foreach($pArr as $access) {
-            $up = explode(":", $access);
-            $permissions[$up[0]] = $up[1];
-        }
-        $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row['access_data']);
-        $users = explode(',', $csvString);
-        $users[] = $row['author'];
-        $isPublic = boolstr($row['public']);
-        $suFlag = $login_status['detail']['userdata']['su_flag'];
-        $isSu = boolstr($suFlag);
-        # Get current user ID
-        if ($login_status['status'] !== true && !$isPublic) {
-            $response = array(
-                'status' => false,
-                'error' => 'NOT_LOGGED_IN',
-                'human_error' => 'Attempted to access private project without being logged in',
-                'args_provided' => $get,
-                "project_id" => $pid,
-                "query_type" => $sqlAction,
-                'is_public_dataset' => $isPublic,
-            );
-            returnAjax($response);
-        }
-        $uid = $login_status['detail']['uid'];
-        if (!in_array($uid, $users) && !$isPublic && $isSu !== true) {
-            $response = array(
-                'status' => false,
-                'error' => 'UNAUTHORIZED_USER',
-                'human_error' => "User $uid isn't authorized to access this dataset",
-                'args_provided' => $get,
-                "project_id" => $pid,
-                'is_public_dataset' => $isPublic,
-            );
-            returnAjax($response);
-        }
-        if ($requestedPermission == "EDIT") {
-            # Editing has an extra filter
-            $hasPermission = $permissions[$uid];
-            if ($hasPermission !== $requestedPermission && $isSu !== true) {
+        # Non-existant projects are fair game
+        if(!empty($pid)) {
+            $requestedPermission = $restrictedActions[$sqlAction];
+            $pArr = explode(",", $row["access_data"]);
+            $permissions = array();
+            foreach($pArr as $access) {
+                $up = explode(":", $access);
+                $permissions[$up[0]] = $up[1];
+            } # End loop
+            $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row['access_data']);
+            $users = explode(',', $csvString);
+            $users[] = $row['author'];
+            $isPublic = boolstr($row['public']);
+            $suFlag = $login_status['detail']['userdata']['su_flag'];
+            $isSu = boolstr($suFlag);
+            # Get current user ID
+            if ($login_status['status'] !== true && !$isPublic) {
                 $response = array(
                     'status' => false,
-                    'error' => 'UNAUTHORIZED_USER',
-                    'human_error' => "User $uid isn't authorized to edit this dataset",
+                    'error' => 'NOT_LOGGED_IN',
+                    'human_error' => 'Attempted to access private project without being logged in',
                     'args_provided' => $get,
                     "project_id" => $pid,
                     "query_type" => $sqlAction,
-                    "user_permissions" => $hasPermission,
+                    'is_public_dataset' => $isPublic,
                 );
                 returnAjax($response);
-            }
-        }
+            } # End login check
+            $uid = $login_status['detail']['uid'];
+            if (!in_array($uid, $users) && !$isPublic && $isSu !== true) {
+                $response = array(
+                    'status' => false,
+                    'error' => 'UNAUTHORIZED_USER',
+                    'human_error' => "User $uid isn't authorized to access this dataset",
+                    'args_provided' => $get,
+                    "project_id" => $pid,
+                    'is_public_dataset' => $isPublic,
+                );
+                returnAjax($response);
+            } # End authorized  user check
+            if ($requestedPermission == "EDIT") {
+                # Editing has an extra filter
+                $hasPermission = $permissions[$uid];
+                if ($hasPermission !== $requestedPermission && $isSu !== true) {
+                    $response = array(
+                        'status' => false,
+                        'error' => 'UNAUTHORIZED_USER',
+                        'human_error' => "User $uid isn't authorized to edit this dataset",
+                        'args_provided' => $get,
+                        "project_id" => $pid,
+                        "query_type" => $sqlAction,
+                        "user_permissions" => $hasPermission,
+                    );
+                    returnAjax($response);
+                } # End edit permission check
+            } # End edit permission case
+        } # End project existence check
     } else if (!isset($unrestrictedActions[$sqlAction])) {
         # Unrecognized query type
         returnAjax(array(
