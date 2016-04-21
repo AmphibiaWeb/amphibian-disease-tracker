@@ -2236,7 +2236,7 @@ loadEditor = function(projectPreload) {
           $("#main-body").html(html);
           $(".pull-right paper-card .header").click(function() {
             console.info("Clicked header, triggering collapse");
-            return $(this).toggleClass("collapsed");
+            return $(this).parent().toggleClass("collapsed");
           });
           if (((ref3 = cartoParsed.bounding_polygon) != null ? ref3.paths : void 0) != null) {
             centerPoint = new Point(project.lat, project.lng);

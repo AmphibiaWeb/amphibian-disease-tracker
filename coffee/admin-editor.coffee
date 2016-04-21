@@ -347,7 +347,7 @@ loadEditor = (projectPreload) ->
           $("#main-body").html html
           $(".pull-right paper-card .header").click ->
             console.info "Clicked header, triggering collapse"
-            $(this).toggleClass "collapsed"
+            $(this).parent().toggleClass "collapsed"
           if cartoParsed.bounding_polygon?.paths?
             # Draw a map web component
             # https://github.com/GoogleWebComponents/google-map/blob/eecb1cc5c03f57439de6b9ada5fafe30117057e6/demo/index.html#L26-L37
