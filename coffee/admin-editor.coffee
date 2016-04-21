@@ -534,7 +534,7 @@ loadEditor = (projectPreload) ->
 popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
   verifyLoginCredentials (credentialResult) ->
     # For each user in the access list, give some toggles
-    console.info "Working with", result, credentialResult
+    console.info "Working with", result, credentialResult, project
     userHtml = ""
     for user in project.access_data.total
       uid = project.access_data.composite[user]["user_id"]
@@ -556,7 +556,6 @@ popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
         theirHtml += """
         <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
         """
-      console.info "Comparing", uid, result.user.user, result.user
       if result.user.has_edit_permissions and not isAuthor and uid isnt result.user.user
         # Delete button
         theirHtml += """
