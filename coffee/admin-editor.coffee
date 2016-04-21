@@ -877,6 +877,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     $("#transect-viewport").attr "zoom", zoom
   if isNull cartoTable
     console.warn "There's no assigned table, not pulling carto data"
+    stopLoad()
     startEditorUploader()
     return false
   # Ping Carto on this and get the data
@@ -1860,6 +1861,7 @@ saveEditorData = (force = false, callback) ->
 
 $ ->
   $(".pull-right paper-card .header").click ->
+    console.info "Clicked header, triggering collapse"
     $(this).toggleClass "collapsed"
   if localStorage._adp?
     window._adp = JSON.parse localStorage._adp

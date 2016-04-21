@@ -4468,6 +4468,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-right paper-card.collapsed > div:not(.header) {
     transition: all 0.5s ease-out;
     max-height: 0;
+    overflow: hidden;
+    padding: 0;
   }
   .navbar-right paper-card.collapse > .header :before,
   .navbar-right paper-card.collapsed > .header :before {
@@ -9697,6 +9699,8 @@ paper-card.card-collapsable-widget.collapse {
 .collapsed-card-div {
   transition: all 0.5s ease-out;
   max-height: 0;
+  overflow: hidden;
+  padding: 0;
 }
 .card-collapsable-widget.collapse > .header :before,
 .card-collapsable-widget.collapsed > .header :before,
@@ -9736,6 +9740,8 @@ paper-card.card-collapsable-widget.collapse {
 .pull-right paper-card.collapsed > div:not(.header) {
   transition: all 0.5s ease-out;
   max-height: 0;
+  overflow: hidden;
+  padding: 0;
 }
 .pull-right paper-card.collapse > .header :before,
 .pull-right paper-card.collapsed > .header :before {
