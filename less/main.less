@@ -718,11 +718,41 @@ section#notes marked-element{
     right: 0;
 }
 
+@fontawesome-version: "4.6.1";
+@fontawesome-cdn: "https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/fonts";
+@fontawesome-eot: replace('../fonts/fontawesome-webfont.eot?v=4.6.1', "\.\.\/fonts", @fontawesome-cdn);
+@fontawesome-ie: replace('../fonts/fontawesome-webfont.eot?#iefix&v=4.6.1', "\.\.\/fonts", @fontawesome-cdn);
+@fontawesome-woff2: replace('../fonts/fontawesome-webfont.woff2?v=4.6.1', "\.\.\/fonts", @fontawesome-cdn);
+@fontawesome-woff: replace('../fonts/fontawesome-webfont.woff?v=4.6.1', "\.\.\/fonts", @fontawesome-cdn);
+@fontawesome-ttf: replace('../fonts/fontawesome-webfont.ttf?v=4.6.1', "\.\.\/fonts", @fontawesome-cdn);
+@fontawesome-svg: replace('../fonts/fontawesome-webfont.svg?v=4.6.1#fontawesomeregular', "\.\.\/fonts", @fontawesome-cdn);
+@font-face {
+  font-family: 'FontAwesome';
+  src: url(@fontawesome-eot);
+  src: url(@fontawesome-ie) format('embedded-opentype'), url(@fontawesome-woff2) format('woff2'), url(@fontawesome-woff) format('woff'), url(@fontawesome-ttf) format('truetype'), url(@fontawesome-svg) format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
+.fontawesome-inherit {
+    .fa;
+
+}
+@import "fontawesome-unicode.less";
 .card-collapsable-widget {
     transition: all 0.5s ease-out;
     .header:not(.collapse):not(.collapsed):before {
+        .fa;
         content: "\u25B2 ";
+        //.fa-expand;
     }
 }
 paper-card.card-collapsable-widget.collapse {
@@ -739,7 +769,9 @@ paper-card.card-collapsable-widget.collapse {
 .card-collapsable-widget.collapse > .header,
 .collapsed-card-header {
     :before {
+        .fa;
         content: "\u25BC ";
+        //.fa-collapse;
     }
 }
 
