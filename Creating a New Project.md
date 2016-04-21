@@ -34,6 +34,14 @@ We have partnered with [BiSciCol.org](http://biscicol.org) to provide a template
 
 If you go to [http://biscicol.org/biocode-fims/templates.jsp](http://biscicol.org/biocode-fims/templates.jsp), and from the dropdown select "Amphibian Disease", you can get a template from which to start working.
 
+The file you get will be an Excel 2007+ format (`.xlsx`) file. All your sample data should be in the worksheet title `Samples`. If you wish to use a different worksheet name, please be sure that it is the first worksheet in the notebook. **If you do not do this, your validation will always fail, and you will not be able to upload data to the system**.
+
+If you would like to save your data in a non-proprietary format, saving it as a `.csv` file is also accepted.
+
+The file should either have a header row, or use the order presented at BiSciCol.org.
+
+Upon project saving, your datafile will be given an ARK identifier (such as `ark:/1547/APH2`), resolvable by the Name2Thing service (eg, https://n2t.net/ark:/21547/APH2). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into a url akin to https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279).
+
 # Without Data
 
 First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
