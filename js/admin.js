@@ -2442,6 +2442,7 @@ popManageUserAccess = function(project, result) {
   }
   return verifyLoginCredentials(function(credentialResult) {
     var authorDisabled, currentPermission, currentRole, dialogHtml, editDisabled, isAuthor, isEditor, isViewer, l, len, ref, theirHtml, uid, userHtml, viewerDisabled;
+    console.info("Working with", result, credentialResult);
     userHtml = "";
     ref = project.access_data.total;
     for (l = 0, len = ref.length; l < len; l++) {
@@ -2460,8 +2461,8 @@ popManageUserAccess = function(project, result) {
       if (result.user.is_author) {
         theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
       }
-      console.info("Comparing", user, result.user.user, result.user);
-      if (result.user.has_edit_permissions && !isAuthor && user !== result.user.user) {
+      console.info("Comparing", uid, result.user.user, result.user);
+      if (result.user.has_edit_permissions && !isAuthor && uid !== result.user.user) {
         theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\" " + currentPermission + ">\n</paper-icon-button>";
       }
       userHtml += "<li>" + theirHtml + "</span></li>";
