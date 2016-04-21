@@ -1120,7 +1120,8 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
         console.error "getCanonicalDataCoords couldn't read carto data! Failed to get columns (#{e.message})", result
         console.warn "Table: '#{table}' for query", getCols
         console.warn e.stack
-        message = "There was a problem fetching your data back from CartoDB. It should be safe, however."
+        error = result.human_error ? result.error ? "It should be safe, however."
+        message = "There was a problem fetching your data back from CartoDB. "
         stopLoadError message
         bsAlert message, "danger"
         try
