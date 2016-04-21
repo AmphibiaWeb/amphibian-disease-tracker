@@ -747,12 +747,21 @@ section#notes marked-element{
   -moz-osx-font-smoothing: grayscale;
 
 }
+
+.fa-before {
+    .fontawesome-inherit;
+    margin-right: 1rem;
+}
+
+@collapse-animation: "all 0.5s ease-out";
 .card-collapsable-widget {
-    transition: all 0.5s ease-out;
-    .header:not(.collapse):not(.collapsed):before {
-        .fontawesome-inherit;
-        //content: "\u25B2 ";
-        content: @fa-var-expand;
+    transition: @collapse-animation;
+    max-height: 1000px;
+    .header:not(.collapse):not(.collapsed) {
+        :before {
+            .fa-before;
+            content: @fa-var-compress;
+        }
     }
 }
 paper-card.card-collapsable-widget.collapse {
@@ -760,17 +769,20 @@ paper-card.card-collapsable-widget.collapse {
 }
 
 .card-collapsable-widget.collapse > div:not(.header),
+.card-collapsable-widget.collapsed > div:not(.header),
 .collapsed-card-div {
-    .card-collapsable-widget;
-    height: 0;
+    //.card-collapsable-widget;
+    //height: 0;
+    transition: @collapse-animation;
+    max-height: 0;
     opacity: 0;
 }
 
 .card-collapsable-widget.collapse > .header,
+.card-collapsable-widget.collapsed > .header,
 .collapsed-card-header {
     :before {
-        .fontawesome-inherit;
-        //content: "\u25BC ";
+        .fa-before;
         content: @fa-var-expand;
     }
 }
@@ -780,6 +792,9 @@ paper-card.card-collapsable-widget.collapse {
         width: 100%;
         margin-bottom: 2rem;
         .card-collapsable-widget;
+    }
+    paper-card div {
+        transition: @collapse-animation;
     }
     paper-card.collapse, paper-card.collapsed {
         > div:not(.header) {

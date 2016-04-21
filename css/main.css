@@ -4445,32 +4445,27 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-right paper-card {
     width: 100%;
     margin-bottom: 2rem;
-    transition: all 0.5s ease-out;
+    transition: "all 0.5s ease-out";
+    max-height: 1000px;
   }
-  .navbar-right paper-card .header:not(.collapse):not(.collapsed):before {
+  .navbar-right paper-card .header:not(.collapse):not(.collapsed) :before {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    content: "\f065";
+    margin-right: 1rem;
+    content: "\f066";
+  }
+  .navbar-right paper-card div {
+    transition: "all 0.5s ease-out";
   }
   .navbar-right paper-card.collapse > div:not(.header),
   .navbar-right paper-card.collapsed > div:not(.header) {
-    transition: all 0.5s ease-out;
-    height: 0;
+    transition: "all 0.5s ease-out";
+    max-height: 0;
     opacity: 0;
-  }
-  .navbar-right paper-card.collapse > div:not(.header) .header:not(.collapse):not(.collapsed):before,
-  .navbar-right paper-card.collapsed > div:not(.header) .header:not(.collapse):not(.collapsed):before {
-    display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    content: "\f065";
   }
   .navbar-right paper-card.collapse > .header :before,
   .navbar-right paper-card.collapsed > .header :before {
@@ -4480,6 +4475,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin-right: 1rem;
     content: "\f065";
   }
   .navbar-right .paper-card-0 .header.paper-card .title-text.paper-card {
@@ -9665,38 +9661,41 @@ section#notes marked-element {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.card-collapsable-widget {
-  transition: all 0.5s ease-out;
-}
-.card-collapsable-widget .header:not(.collapse):not(.collapsed):before {
+.fa-before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\f065";
+  margin-right: 1rem;
+}
+.card-collapsable-widget {
+  transition: "all 0.5s ease-out";
+  max-height: 1000px;
+}
+.card-collapsable-widget .header:not(.collapse):not(.collapsed) :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f066";
 }
 paper-card.card-collapsable-widget.collapse {
   display: block;
 }
 .card-collapsable-widget.collapse > div:not(.header),
+.card-collapsable-widget.collapsed > div:not(.header),
 .collapsed-card-div {
-  transition: all 0.5s ease-out;
-  height: 0;
+  transition: "all 0.5s ease-out";
+  max-height: 0;
   opacity: 0;
 }
-.card-collapsable-widget.collapse > div:not(.header) .header:not(.collapse):not(.collapsed):before,
-.collapsed-card-div .header:not(.collapse):not(.collapsed):before {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  content: "\f065";
-}
 .card-collapsable-widget.collapse > .header :before,
+.card-collapsable-widget.collapsed > .header :before,
 .collapsed-card-header :before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -9704,37 +9703,33 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
   content: "\f065";
 }
 .pull-right paper-card {
   width: 100%;
   margin-bottom: 2rem;
-  transition: all 0.5s ease-out;
+  transition: "all 0.5s ease-out";
+  max-height: 1000px;
 }
-.pull-right paper-card .header:not(.collapse):not(.collapsed):before {
+.pull-right paper-card .header:not(.collapse):not(.collapsed) :before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\f065";
+  margin-right: 1rem;
+  content: "\f066";
+}
+.pull-right paper-card div {
+  transition: "all 0.5s ease-out";
 }
 .pull-right paper-card.collapse > div:not(.header),
 .pull-right paper-card.collapsed > div:not(.header) {
-  transition: all 0.5s ease-out;
-  height: 0;
+  transition: "all 0.5s ease-out";
+  max-height: 0;
   opacity: 0;
-}
-.pull-right paper-card.collapse > div:not(.header) .header:not(.collapse):not(.collapsed):before,
-.pull-right paper-card.collapsed > div:not(.header) .header:not(.collapse):not(.collapsed):before {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  content: "\f065";
 }
 .pull-right paper-card.collapse > .header :before,
 .pull-right paper-card.collapsed > .header :before {
@@ -9744,6 +9739,7 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
   content: "\f065";
 }
 .pull-right .paper-card-0 .header.paper-card .title-text.paper-card {
