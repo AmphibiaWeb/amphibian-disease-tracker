@@ -2262,7 +2262,7 @@ loadEditor = (projectPreload) ->
                 </table>
               </div>
               <div class="card-actions">
-                <paper-button class="manage-users" id="manage-users">Manage Users</paper-button>
+                <paper-button class="manage-users" id="manage-users-button">Manage Users</paper-button>
               </div>
             </paper-card>
           </section>
@@ -2450,7 +2450,7 @@ loadEditor = (projectPreload) ->
             target: window
           # $("#data-management").affix affixOptions
           # console.info "Affixed at #{topPosition}px", affixOptions
-          $("#manage-users").click ->
+          $("paper-button#manage-users-button").click ->
             popManageUserAccess(_adp.projectData)
           $(".danger-toggle").on "iron-change", ->
             if $(this).get(0).checked
