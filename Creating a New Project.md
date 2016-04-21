@@ -72,7 +72,12 @@ You may upload more than just a datafile to your project; the system will also a
 
 When you upload your data, you'll be given several progress bars that complete sequentially. This will notify you if you have any problems with your data, and where they may occur. Handling your data upload occurs like this:
 
-
+| Step | Relative Speed | Action | Possible Errors |
+|------|----------------|--------|-----------------|
+| Data Parsing | Fast | Does a quick check for most important attributes of datafile before slower steps | Missing columns, no rows, bad data types for obvious columns from a random row. An error summary will be provided in a hanging alert from the top of the screen. |
+| Data Validation | Moderate | Does a full row-by-row data validatation with BiSciCol.org | Many. A full table of errors will be provided if any are found, as well as a short summary hanging from the top of the screen |
+| Taxa Validation | Moderate-Slow | For each distinct species, validates against our [API](https://amphibian-disease-tracker.readthedocs.org/en/latest/APIs/#validating-updating-taxa). | See our [API documentation](https://amphibian-disease-tracker.readthedocs.org/en/latest/APIs/#validating-updating-taxa) for all possible errors. Taxa replacements will generate a (non-fatal) notice above the species list in the "Project Data Summary" later in the page. |
+| Data Sync | Slow | Formats your data for CartoDB and uploads it to CartoDB. Scales roughly linearly with rows, and largely dependent on the connection from our servers to CartoDB. | Upload failure, if CartoDB rejects the data for any reason. |
 
 
 You are allowed only one active datafile per project, and only one datafile at creation time. If you try to upload another, you'll be prompted to either keep your existing one or to replace it.
