@@ -3777,6 +3777,9 @@ saveEditorData = function(force, callback) {
 
 $(function() {
   var alertHtml, d;
+  $(".pull-right paper-card .header").click(function() {
+    return $(this).toggleClass("collapsed");
+  });
   if (localStorage._adp != null) {
     window._adp = JSON.parse(localStorage._adp);
     d = new Date(_adp.postedSaveTimestamp);
