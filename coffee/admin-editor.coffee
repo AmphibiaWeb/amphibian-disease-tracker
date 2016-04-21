@@ -892,7 +892,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     try
       r = JSON.parse(result.post_response[0])
     catch e
-      console.error "Couldn't load carto data!", result
+      console.error "Couldn't load carto data! (#{e.message})", result
       console.warn "post_response: (want key 0)", result.post_response
       console.warn "Base data source:", cartoData
       console.warn e.stack
