@@ -7,7 +7,7 @@ Restricted users have access to most of the system:
 - You can view project contacts without answering the captcha
 - You can be added to an existing project as a viewer, editor, or even as a new owner
 - You have access to the administration panel, with lists of projects you have access to
-- [API hits](/APIs) will work for you
+- Most [API hits](/APIs) will work for you
 
 The only thing you cannot do is create a new project.
 

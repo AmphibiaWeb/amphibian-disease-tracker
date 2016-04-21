@@ -308,6 +308,7 @@ Response:
 | `projects` | Array of projects, as `projectId: "projectName"` key:value pairs. |
 | `public_projects` | Array of project IDs for public projects in this list |
 | `authored_projects` | Array of project IDs for projects authored by the checking user |
+| `editable_projects` | Array of project IDs for projects editable by the checking user |
 | `check_authentication` | `true` or `false` if the authentication status of the user was checked |
 
 
