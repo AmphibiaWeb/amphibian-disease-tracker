@@ -27,8 +27,32 @@ At this time, to have a unrestricted user, you must meet the following criteria:
 
 Once you've met those criteria, you can create a project at any time. Until you do, clicking on the badge by your name in Administration, or clicking the unrestriction button that is first in the admin panel.
 
-# With Data
-## Getting your Template
+
+# Creating a Project
+
+First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
+
+From there, you'll be confronted with this page:
+
+PAGE SCREENSHOT
+
+Click "Create Project", and you'll get the project creator page.
+
+Fields with a red underline are invalid (or empty and mandatory) entries.
+
+TODO
+
+## Without Data
+
+After the "Build Map" option and map interface, find the checkbox that says "My project already has data", and uncheck it.
+
+If you leave this button checked, the system will not let you save the project until you've uploaded a dataset.
+
+## With Data
+
+All the steps above, in "[Without Data](#without-data)", are still valid -- there are now just more options.
+
+### Getting your Template
 
 We have partnered with [BiSciCol.org](http://biscicol.org) to provide a template generator for your project.
 
@@ -40,16 +64,18 @@ If you would like to save your data in a non-proprietary format, saving it as a 
 
 The file should either have a header row, or use the order presented at BiSciCol.org.
 
-Upon project saving, your datafile will be given an ARK identifier (such as `ark:/1547/APH2`), resolvable by the Name2Thing service (eg, https://n2t.net/ark:/21547/APH2). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into a url akin to https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279).
+Upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/APH2`), resolvable by the Name2Thing service (eg, https://n2t.net/ark:/21547/APH2). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into a url akin to https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279).
 
-# Without Data
+**IMPORTANT**: Uploading your data does NOT save your data to the system. If you quit before saving your project, your dataset will live on CartoDB, but not be associated with a project and inaccessible. You will have to upload it again to associate it with a new project.
 
-First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
+## Saving
 
-From there, you'll be confronted with this page:
+Before you click the save button, read it! It will give you feedback on what it thinks your project creation parameters are.
 
-PAGE SCREENSHOT
+If your project is private, make sure that the button says you're creating a private project, and the symbol is of a lock. Remember, once a project is made public it can never be made private.
 
-Click "Create Project", and you'll get the project creator page.
+If your project is public, make sure that the button says public and the symbol is that of a globe. If you accidentally make a project private, you can easily make it public via a toggle on the editor.
 
-TODO
+If you've uploaded data, the save button will state "Save Data", as well. If it does not say that, your data will **not** be saved.
+
+Once you click the save button, your data will be processed and saved to the server. Upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/ANU2`), resolvable by the Name2Thing service (eg, https://n2t.net/ark:/21547/ANU2).
