@@ -311,6 +311,7 @@ Response:
 | `editable_projects` | Array of project IDs for projects editable by the checking user |
 | `check_authentication` | `true` or `false` if the authentication status of the user was checked |
 
+Private, view-only projects are not returned as their own entry. They are the entries in `response.projects` that are not in `response.public_projects`, `response.authored_projects`, or `response.editable_projects`.
 
 ## Create a new project
 
