@@ -2557,6 +2557,7 @@ popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
         theirHtml += """
         <paper-icon-button icon="social:person" #{authorDisabled} class="set-permission" data-permission="author" data-user="#{uid}" #{currentPermission}> </paper-icon-button>
         """
+      console.info "Comparing", user, result.user.user, result.user
       if result.user.has_edit_permissions and not isAuthor and user isnt result.user.user
         # Delete button
         theirHtml += """
