@@ -1375,8 +1375,8 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", ca
                     zipHandler(linkPath)
                 when "x-7z-compressed"
                   _7zHandler(linkPath)
-            when "text" then csvHandler()
-            when "image" then imageHandler()
+            when "text" then csvHandler(linkPath)
+            when "image" then imageHandler(linkPath)
         catch e
           toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
       # Callback if exists
@@ -1423,6 +1423,15 @@ singleDataFileHelper = (newFile, callback) ->
 
 
 excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
+  ###
+  # Handle the upload for excel documents.
+  # Handles both 97-2007 documents (xls), and 2007+ documents (xlsx)
+  #
+  # @param string path -> the path to the uploaded excel document.
+  # @parm bool hasHeaders -> does the data file have headers? Default true
+  # @param function callbackSkipsGeoHandler -> A callback function to
+  #   run in the place of geoDataHandler()
+  ###
   startLoad()
   $("#validator-progress-container").remove()
   renderValidateProgress()
@@ -1472,12 +1481,27 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
     stopLoadError()
   false
 
-csvHandler = (path) ->
-  nameArr = path.split "/"
-  dataFileParams.hasDataFile = true
-  dataFileParams.fileName = nameArr.pop()
-  dataFileParams.filePath = correctedPath
-  geoDataHandler()
+csvHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
+  ###
+  # Handle the upload for CSV datafiles
+  #
+  # @param string path -> the upload path to the file
+  # @parm bool hasHeaders -> does the data file have headers? Default true
+  # @param function callbackSkipsGeoHandler -> A callback function to
+  #   run in the place of geoDataHandler()
+  ###
+  if path.search(helperDir) isnt -1
+    # The helper file lives in /helpers/ so we want to remove that
+    console.info "removing '#{helperDir}'"
+    correctedPath = path.slice helperDir.length
+  singleDataFileHelper path, ->
+    $("#upload-data").attr "disabled", "disabled"
+    nameArr = path.split "/"
+    dataFileParams.hasDataFile = true
+    dataFileParams.fileName = nameArr.pop()
+    dataFileParams.filePath = correctedPath
+    # Parse out the CSV here
+    geoDataHandler()
   false
 
 
