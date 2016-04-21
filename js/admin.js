@@ -2750,6 +2750,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   } catch (undefined) {}
   if (isNull(cartoTable)) {
     console.warn("There's no assigned table, not pulling carto data");
+    stopLoad();
     startEditorUploader();
     return false;
   }
@@ -3778,6 +3779,7 @@ saveEditorData = function(force, callback) {
 $(function() {
   var alertHtml, d;
   $(".pull-right paper-card .header").click(function() {
+    console.info("Clicked header, triggering collapse");
     return $(this).toggleClass("collapsed");
   });
   if (localStorage._adp != null) {
