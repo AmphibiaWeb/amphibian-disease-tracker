@@ -753,8 +753,10 @@ section#notes marked-element{
     margin-right: 1rem;
 }
 
+@collapse-animation: "all 0.5s ease-out";
 .card-collapsable-widget {
-    transition: all 0.5s ease-out;
+    transition: @collapse-animation;
+    max-height: 1000px;
     .header:not(.collapse):not(.collapsed) {
         :before {
             .fa-before;
@@ -767,13 +769,17 @@ paper-card.card-collapsable-widget.collapse {
 }
 
 .card-collapsable-widget.collapse > div:not(.header),
+.card-collapsable-widget.collapsed > div:not(.header),
 .collapsed-card-div {
-    .card-collapsable-widget;
-    height: 0;
+    //.card-collapsable-widget;
+    //height: 0;
+    transition: @collapse-animation;
+    max-height: 0;
     opacity: 0;
 }
 
 .card-collapsable-widget.collapse > .header,
+.card-collapsable-widget.collapsed > .header,
 .collapsed-card-header {
     :before {
         .fa-before;
@@ -786,6 +792,9 @@ paper-card.card-collapsable-widget.collapse {
         width: 100%;
         margin-bottom: 2rem;
         .card-collapsable-widget;
+    }
+    paper-card div {
+        transition: @collapse-animation;
     }
     paper-card.collapse, paper-card.collapsed {
         > div:not(.header) {

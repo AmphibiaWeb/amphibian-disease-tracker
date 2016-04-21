@@ -1859,6 +1859,8 @@ saveEditorData = (force = false, callback) ->
 
 
 $ ->
+  $(".pull-right paper-card .header").click ->
+    $(this).toggleClass "collapsed"
   if localStorage._adp?
     window._adp = JSON.parse localStorage._adp
     d = new Date _adp.postedSaveTimestamp
