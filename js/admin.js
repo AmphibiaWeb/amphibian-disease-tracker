@@ -2460,7 +2460,7 @@ popManageUserAccess = function(project, result) {
       if (result.user.is_author) {
         theirHtml += "<paper-icon-button icon=\"social:person\" " + authorDisabled + " class=\"set-permission\" data-permission=\"author\" data-user=\"" + uid + "\" " + currentPermission + "> </paper-icon-button>";
       }
-      if (result.user.has_edit_permissions && user !== isAuthor && user !== result.user) {
+      if (result.user.has_edit_permissions && !isAuthor && user !== result.user.user) {
         theirHtml += "<paper-icon-button icon=\"icons:delete\" class=\"set-permission\" data-permission=\"delete\" data-user=\"" + uid + "\" " + currentPermission + ">\n</paper-icon-button>";
       }
       userHtml += "<li>" + theirHtml + "</span></li>";
