@@ -747,12 +747,19 @@ section#notes marked-element{
   -moz-osx-font-smoothing: grayscale;
 
 }
+
+.fa-before {
+    .fontawesome-inherit;
+    margin-right: 1rem;
+}
+
 .card-collapsable-widget {
     transition: all 0.5s ease-out;
-    .header:not(.collapse):not(.collapsed):before {
-        .fontawesome-inherit;
-        //content: "\u25B2 ";
-        content: @fa-var-expand;
+    .header:not(.collapse):not(.collapsed) {
+        :before {
+            .fa-before;
+            content: @fa-var-compress;
+        }
     }
 }
 paper-card.card-collapsable-widget.collapse {
@@ -769,8 +776,7 @@ paper-card.card-collapsable-widget.collapse {
 .card-collapsable-widget.collapse > .header,
 .collapsed-card-header {
     :before {
-        .fontawesome-inherit;
-        //content: "\u25BC ";
+        .fa-before;
         content: @fa-var-expand;
     }
 }
