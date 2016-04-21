@@ -718,12 +718,45 @@ section#notes marked-element{
     right: 0;
 }
 
+// FA stuff
+// From font-awesome.less
+@import "fa/less/variables.less";
+@import "fa/less/mixins.less";
+@import "fa/less/path.less";
+@import "fa/less/core.less";
+@import "fa/less/larger.less";
+@import "fa/less/fixed-width.less";
+@import "fa/less/list.less";
+@import "fa/less/bordered-pulled.less";
+@import "fa/less/animated.less";
+@import "fa/less/rotated-flipped.less";
+@import "fa/less/stacked.less";
+@import "fa/less/icons.less";
+//@import "screen-reader.less";
+// for referencing Bootstrap CDN font files directly
+//@fa-font-path: "https://netdna.bootstrapcdn.com/font-awesome/4.6.1/fonts";
+@fa-font-path: "https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/fonts";
 
+
+.fontawesome-inherit {
+    display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+}
 .card-collapsable-widget {
     transition: all 0.5s ease-out;
-    .header:before {
-        content: "c";
+    .header:not(.collapse):not(.collapsed):before {
+        .fontawesome-inherit;
+        //content: "\u25B2 ";
+        content: @fa-var-expand;
     }
+}
+paper-card.card-collapsable-widget.collapse {
+    display: block;
 }
 
 .card-collapsable-widget.collapse > div:not(.header),
@@ -736,7 +769,9 @@ section#notes marked-element{
 .card-collapsable-widget.collapse > .header,
 .collapsed-card-header {
     :before {
-        content: "e";
+        .fontawesome-inherit;
+        //content: "\u25BC ";
+        content: @fa-var-expand;
     }
 }
 
@@ -746,7 +781,7 @@ section#notes marked-element{
         margin-bottom: 2rem;
         .card-collapsable-widget;
     }
-    paper-card.collapse {
+    paper-card.collapse, paper-card.collapsed {
         > div:not(.header) {
             .collapsed-card-div;
         }
