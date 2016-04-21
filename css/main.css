@@ -4445,10 +4445,13 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-right paper-card {
     width: 100%;
     margin-bottom: 2rem;
-    transition: "all 0.5s ease-out";
-    max-height: 1000px;
+    transition: all 0.5s ease-out;
+    max-height: 750px;
   }
-  .navbar-right paper-card .header:not(.collapse):not(.collapsed) :before {
+  .navbar-right paper-card > div {
+    max-height: 750px;
+  }
+  .navbar-right paper-card .header :before {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
@@ -4459,13 +4462,12 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     content: "\f066";
   }
   .navbar-right paper-card div {
-    transition: "all 0.5s ease-out";
+    transition: all 0.5s ease-out;
   }
   .navbar-right paper-card.collapse > div:not(.header),
   .navbar-right paper-card.collapsed > div:not(.header) {
-    transition: "all 0.5s ease-out";
+    transition: all 0.5s ease-out;
     max-height: 0;
-    opacity: 0;
   }
   .navbar-right paper-card.collapse > .header :before,
   .navbar-right paper-card.collapsed > .header :before {
@@ -4476,7 +4478,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin-right: 1rem;
-    content: "\f065";
+    content: "\f065" !important;
   }
   .navbar-right .paper-card-0 .header.paper-card .title-text.paper-card {
     color: #009688;
@@ -9671,10 +9673,13 @@ section#notes marked-element {
   margin-right: 1rem;
 }
 .card-collapsable-widget {
-  transition: "all 0.5s ease-out";
-  max-height: 1000px;
+  transition: all 0.5s ease-out;
+  max-height: 750px;
 }
-.card-collapsable-widget .header:not(.collapse):not(.collapsed) :before {
+.card-collapsable-widget > div {
+  max-height: 750px;
+}
+.card-collapsable-widget .header :before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -9690,9 +9695,8 @@ paper-card.card-collapsable-widget.collapse {
 .card-collapsable-widget.collapse > div:not(.header),
 .card-collapsable-widget.collapsed > div:not(.header),
 .collapsed-card-div {
-  transition: "all 0.5s ease-out";
+  transition: all 0.5s ease-out;
   max-height: 0;
-  opacity: 0;
 }
 .card-collapsable-widget.collapse > .header :before,
 .card-collapsable-widget.collapsed > .header :before,
@@ -9704,15 +9708,18 @@ paper-card.card-collapsable-widget.collapse {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin-right: 1rem;
-  content: "\f065";
+  content: "\f065" !important;
 }
 .pull-right paper-card {
   width: 100%;
   margin-bottom: 2rem;
-  transition: "all 0.5s ease-out";
-  max-height: 1000px;
+  transition: all 0.5s ease-out;
+  max-height: 750px;
 }
-.pull-right paper-card .header:not(.collapse):not(.collapsed) :before {
+.pull-right paper-card > div {
+  max-height: 750px;
+}
+.pull-right paper-card .header :before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -9723,13 +9730,12 @@ paper-card.card-collapsable-widget.collapse {
   content: "\f066";
 }
 .pull-right paper-card div {
-  transition: "all 0.5s ease-out";
+  transition: all 0.5s ease-out;
 }
 .pull-right paper-card.collapse > div:not(.header),
 .pull-right paper-card.collapsed > div:not(.header) {
-  transition: "all 0.5s ease-out";
+  transition: all 0.5s ease-out;
   max-height: 0;
-  opacity: 0;
 }
 .pull-right paper-card.collapse > .header :before,
 .pull-right paper-card.collapsed > .header :before {
@@ -9740,7 +9746,7 @@ paper-card.card-collapsable-widget.collapse {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin-right: 1rem;
-  content: "\f065";
+  content: "\f065" !important;
 }
 .pull-right .paper-card-0 .header.paper-card .title-text.paper-card {
   color: #009688;

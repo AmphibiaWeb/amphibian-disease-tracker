@@ -753,11 +753,14 @@ section#notes marked-element{
     margin-right: 1rem;
 }
 
-@collapse-animation: "all 0.5s ease-out";
+@collapse-animation: all 0.5s ease-out;
 .card-collapsable-widget {
     transition: @collapse-animation;
-    max-height: 1000px;
-    .header:not(.collapse):not(.collapsed) {
+    max-height: 750px;
+    > div {
+        max-height: 750px;
+    }
+    .header {
         :before {
             .fa-before;
             content: @fa-var-compress;
@@ -775,7 +778,7 @@ paper-card.card-collapsable-widget.collapse {
     //height: 0;
     transition: @collapse-animation;
     max-height: 0;
-    opacity: 0;
+    //opacity: 0;
 }
 
 .card-collapsable-widget.collapse > .header,
@@ -783,7 +786,7 @@ paper-card.card-collapsable-widget.collapse {
 .collapsed-card-header {
     :before {
         .fa-before;
-        content: @fa-var-expand;
+        content: @fa-var-expand !important;
     }
 }
 
