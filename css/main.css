@@ -4454,7 +4454,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    content: "\u25B2 ";
+    content: "\f065";
   }
   .navbar-right paper-card.collapse > div:not(.header),
   .navbar-right paper-card.collapsed > div:not(.header) {
@@ -4470,7 +4470,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    content: "\u25B2 ";
+    content: "\f065";
   }
   .navbar-right paper-card.collapse > .header :before,
   .navbar-right paper-card.collapsed > .header :before {
@@ -4480,7 +4480,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    content: "\u25BC ";
+    content: "\f065";
   }
   .navbar-right .paper-card-0 .header.paper-card .title-text.paper-card {
     color: #009688;
@@ -7525,6 +7525,8 @@ section#notes marked-element {
 #data-management.affix {
   right: 0;
 }
+/* FONT PATH
+ * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
   src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/fonts/fontawesome-webfont.eot?v=4.6.1');
@@ -7540,21 +7542,10 @@ section#notes marked-element {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.fontawesome-inherit {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-/*!
- *  Font Awesome 4.6.1 by @davegandy - http://fontawesome.io - @fontawesome
- *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
- */
+/* makes the font 33% larger relative to the icon container */
 .fa-lg {
   font-size: 1.33333333em;
-  line-height: .75em;
+  line-height: 0.75em;
   vertical-align: -15%;
 }
 .fa-2x {
@@ -7585,7 +7576,7 @@ section#notes marked-element {
   position: absolute;
   left: -2.14285714em;
   width: 2.14285714em;
-  top: .14285714em;
+  top: 0.14285714em;
   text-align: center;
 }
 .fa-li.fa-lg {
@@ -7593,8 +7584,8 @@ section#notes marked-element {
 }
 .fa-border {
   padding: .2em .25em .15em;
-  border: solid .08em #eee;
-  border-radius: 0.1em;
+  border: solid 0.08em #eee;
+  border-radius: .1em;
 }
 .fa-pull-left {
   float: left;
@@ -7603,11 +7594,12 @@ section#notes marked-element {
   float: right;
 }
 .fa.fa-pull-left {
-  margin-right: 0.3em;
+  margin-right: .3em;
 }
 .fa.fa-pull-right {
-  margin-left: 0.3em;
+  margin-left: .3em;
 }
+/* Deprecated as of 4.4.0 */
 .pull-right {
   float: right;
 }
@@ -7615,10 +7607,10 @@ section#notes marked-element {
   float: left;
 }
 .fa.pull-left {
-  margin-right: 0.3em;
+  margin-right: .3em;
 }
 .fa.pull-right {
-  margin-left: 0.3em;
+  margin-left: .3em;
 }
 .fa-spin {
   animation: fa-spin 2s infinite linear;
@@ -7686,6 +7678,8 @@ section#notes marked-element {
 .fa-inverse {
   color: #fff;
 }
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
 .fa-glass:before {
   content: "\f000";
 }
@@ -9663,14 +9657,13 @@ section#notes marked-element {
 .fa-snapchat-square:before {
   content: "\f2ad";
 }
-.sr-only-focusable:active,
-.sr-only-focusable:focus {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  clip: auto;
+.fontawesome-inherit {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .card-collapsable-widget {
   transition: all 0.5s ease-out;
@@ -9682,7 +9675,7 @@ section#notes marked-element {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\u25B2 ";
+  content: "\f065";
 }
 paper-card.card-collapsable-widget.collapse {
   display: block;
@@ -9701,7 +9694,7 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\u25B2 ";
+  content: "\f065";
 }
 .card-collapsable-widget.collapse > .header :before,
 .collapsed-card-header :before {
@@ -9711,7 +9704,7 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\u25BC ";
+  content: "\f065";
 }
 .pull-right paper-card {
   width: 100%;
@@ -9725,7 +9718,7 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\u25B2 ";
+  content: "\f065";
 }
 .pull-right paper-card.collapse > div:not(.header),
 .pull-right paper-card.collapsed > div:not(.header) {
@@ -9741,7 +9734,7 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\u25B2 ";
+  content: "\f065";
 }
 .pull-right paper-card.collapse > .header :before,
 .pull-right paper-card.collapsed > .header :before {
@@ -9751,7 +9744,7 @@ paper-card.card-collapsable-widget.collapse {
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "\u25BC ";
+  content: "\f065";
 }
 .pull-right .paper-card-0 .header.paper-card .title-text.paper-card {
   color: #009688;
