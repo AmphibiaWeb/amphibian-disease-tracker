@@ -1,4 +1,46 @@
-# Restricted vs. Unrestricted Profiles
+# Logging In and User Creation
+
+<!--
+Images reference
+-->
+[login_page]: https://amphibiandisease.org/assets/documentation/dummy.png
+[creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png
+[password_requirements]: https://amphibiandisease.org/assets/documentation/dummy.png
+[admin_page_unverified]: https://amphibiandisease.org/assets/documentation/dummy.png
+[admin_page]: https://amphibiandisease.org/assets/documentation/dummy.png
+[projects_creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png
+[upload_progress]: https://amphibiandisease.org/assets/documentation/dummy.png
+[bad_data_error_validation]: https://amphibiandisease.org/assets/documentation/dummy.png
+[map_building]: https://amphibiandisease.org/assets/documentation/dummy.png
+[dataset_ark]: https://amphibiandisease.org/assets/documentation/dummy.png
+
+First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
+
+![Login landing page][login_page]
+
+## Creating a user
+
+If you don't have an account, you can create one. Clicking on the link to "Create Now" will present you with this page:
+
+![User Creation page][creation_page]
+
+When creating a password, your password either needs to be **complex** or **long**.
+
+A complex password must be at least 8 characters long, with at least one uppercase letter, at least one lowercase letter, and at least one number or symbol.
+
+For a long password, all other requirements are waived. A long password is any password of 20+ characters.
+
+When you're creating your password, the bar on the right hand side will indicate the relative strength of your password, as well as a "standard" cracking time. The boxes above the bar indicate which character class requirements have been met.
+
+![Password security meter][password_requirements]
+
+As you're typing, the first password box will remain red until a password meeting security requirements has been entered.
+
+The second password box will be green so long as the confirmed password matches the first password.
+
+The maximum password length is 8191 characters (8 kiB - 1 B).
+
+## Restricted vs. Unrestricted Profiles
 
 When you create an account, your default account access is **restricted**.
 
@@ -11,7 +53,7 @@ Restricted users have access to most of the system:
 
 The only thing you cannot do is create a new project.
 
-## Getting your user unrestricted
+### Getting your user unrestricted
 
 To get your user unrestricted, you must:
 
@@ -28,25 +70,33 @@ At this time, to have a unrestricted user, you must meet the following criteria:
 Once you've met those criteria, you can create a project at any time. Until you do, clicking on the badge by your name in Administration, or clicking the unrestriction button that is first in the admin panel.
 
 
+
 # Creating a Project
 
-First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
+Once you've logged in, you'll be confronted with this page:
 
-From there, you'll be confronted with this page:
+![Administration Dashboard][admin_page]
 
-PAGE SCREENSHOT
+If you don't see "Create Project", see ["Verifying your User" above](#getting-your-user-unrestricted).
 
 Click "Create Project", and you'll get the project creator page.
 
+![Project creation page][projects_creation_page]
+
 Fields with a red underline are invalid (or empty and mandatory) entries.
 
-TODO
+In the notes area, you're welcome to use [Markdown](https://help.github.com/articles/basic-writing-and-formatting-syntax/). The rendering uses the [marked library](https://github.com/chjj/marked) via [the Polymer element](https://elements.polymer-project.org/elements/marked-element), which fully supports Github-Flavored Markdown.
+
 
 ## Without Data
 
 After the "Build Map" option and map interface, find the checkbox that says "My project already has data", and uncheck it.
 
 If you leave this button checked, the system will not let you save the project until you've uploaded a dataset.
+
+TODO MAPS
+
+![Map Building][map_building]
 
 ## With Data
 
@@ -70,7 +120,11 @@ You'll find on the page a box that says "Drop your files here to upload" under t
 
 You may upload more than just a datafile to your project; the system will also accept images (anything with a [MIME type](https://en.wikipedia.org/wiki/Media_type) beginning with `image/`), `zip` files, and `7z` ([7-zip](https://en.wikipedia.org/wiki/7-Zip), open-source compression better than zip) files. At the time of this writing, these are not yet exposed in your project's viewer, but the feature is incoming.
 
-When you upload your data, you'll be given several progress bars that complete sequentially. This will notify you if you have any problems with your data, and where they may occur. Handling your data upload occurs like this:
+When you upload your data, you'll be given several progress bars that complete sequentially. This will notify you if you have any problems with your data, and where they may occur.
+
+![Upload progress indicators][upload_progress]
+
+Handling your data upload occurs like this:
 
 | Step | Relative Speed | Action | Possible Errors |
 |------|----------------|--------|-----------------|
@@ -78,6 +132,7 @@ When you upload your data, you'll be given several progress bars that complete s
 | Data Validation | Moderate | Does a full row-by-row data validatation with BiSciCol.org | Many. A full table of errors will be provided if any are found, as well as a short summary hanging from the top of the screen |
 | Taxa Validation | Moderate-Slow | For each distinct species, validates against our [API](https://amphibian-disease-tracker.readthedocs.org/en/latest/APIs/#validating-updating-taxa). | See our [API documentation](https://amphibian-disease-tracker.readthedocs.org/en/latest/APIs/#validating-updating-taxa) for all possible errors. Taxa replacements will generate a (non-fatal) notice above the species list in the "Project Data Summary" later in the page. |
 | Data Sync | Slow | Formats your data for CartoDB and uploads it to CartoDB. Scales roughly linearly with rows, and largely dependent on the connection from our servers to CartoDB. | Upload failure, if CartoDB rejects the data for any reason. |
+
 
 
 You are allowed only one active datafile per project, and only one datafile at creation time. If you try to upload another, you'll be prompted to either keep your existing one or to replace it.
@@ -94,6 +149,8 @@ If your project is public, make sure that the button says public and the symbol 
 
 If you've uploaded data, the save button will state "Save Data", as well. If it does not say that, your data will **not** be saved.
 
-Once you click the save button, your data will be processed and saved to the server. Upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/ANU2`), resolvable by the Name2Thing service (eg, [https://n2t.net/ark:/21547/ANU2](https://n2t.net/ark:/21547/ANU2)). The system will then load the project editor immediately. To view your project, click the eye icon next to the project title.
+Once you click the save button, your data will be processed and saved to the server. Upon project saving, your datafile will be given an ARK identifier (such as `ark:/21547/ANU2`), resolvable by the Name2Thing service (eg, [https://n2t.net/ark:/21547/ANU2](https://n2t.net/ark:/21547/ANU2)). The system will then load the project editor immediately. To view your project, click the eye icon next to the project title. The URL you arrive at will always be a valid permalink for your project, in addition to the ARK url.
 
 If you have a datafile, upon project saving, your datafile will also be given an ARK identifier (such as [`ark:/21547/APH2`](https://n2t.net/ark:/21547/APH2)). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into your project url suffixed with something akin to [`#dataset:7f5d6fe37b819da189d99e077aa89279`](https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279)).
+
+![ARK dataset resolution][dataset_ark]
