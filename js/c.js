@@ -1832,10 +1832,13 @@ getPointsFromBoundingBox = function(obj) {
   return realCoords;
 };
 
-getMapZoom = function(bb, selector) {
+getMapZoom = function(bb, selector, zoomIt) {
   var adjAngle, angle, coords, eastMost, k, lat, lng, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
+  }
+  if (zoomIt == null) {
+    zoomIt = true;
   }
 
   /*
@@ -1895,6 +1898,13 @@ getMapZoom = function(bb, selector) {
     }
   } else {
     zoomCalc = 7;
+  }
+  if (zoomIt) {
+    if ($(selector).exists()) {
+      if ($(selector).get(0).tagName.toLowerCase() === "google-map") {
+        p$(selector).zoom = zoomCalc;
+      }
+    }
   }
   return zoomCalc;
 };

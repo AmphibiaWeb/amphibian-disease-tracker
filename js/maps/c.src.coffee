@@ -1398,7 +1398,7 @@ getPointsFromBoundingBox = (obj) ->
     realCoords.push canonicalizePoint coords
   realCoords
 
-getMapZoom = (bb, selector = geo.mapSelector) ->
+getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
   ###
   # Get the zoom factor for Google Maps
   ###
@@ -1450,6 +1450,10 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
     #   zoomCalc = 7
   else
     zoomCalc = 7
+  if zoomIt
+    if $(selector).exists()
+      if $(selector).get(0).tagName.toLowerCase() is "google-map"
+        p$(selector).zoom = zoomCalc
   zoomCalc
 
 geo.getMapZoom = getMapZoom
