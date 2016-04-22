@@ -704,7 +704,7 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
       behavior: "smooth",
       block: "start"
     };
-    $(selector).get(0).scrollIntoView(true);
+    $(selector).get(0).scrollIntoView(false);
   }
   return selector;
 };

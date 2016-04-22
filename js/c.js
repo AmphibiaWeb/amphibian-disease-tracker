@@ -1908,7 +1908,7 @@ getMapZoom = function(bb, selector, zoomIt) {
     }
     zoomBasis = nsZoomRaw < zoomRaw ? nsZoomRaw : zoomRaw;
     if (zoomOutThreshold > zoomBasis || zoomBasis > 20) {
-      zoomBasis = 7;
+      zoomBasis = 7.5;
     }
     zoomCalc = toInt(zoomBasis);
     console.log("Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc);
