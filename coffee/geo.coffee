@@ -150,7 +150,20 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
   if zoomIt
     if $(selector).exists()
       if $(selector).get(0).tagName.toLowerCase() is "google-map"
-        p$(selector).zoom = zoomCalc
+        console.log "Trying to assign zoom"
+        try
+          map = p$(selector)
+          if map.isAttached
+            console.info "Setting zoom on #{selector} to #{zoomCalc}"
+            map.zoom = zoomCalc
+            map.ready = ->
+              map.zoom = zoomCalc
+          else
+            console.info "Deferring till ready"
+            $(selector).on "google-map-ready", ->
+              map.zoom = zoomCalc
+        catch
+          console.warn "Zoom setting failed!"
   zoomCalc
 
 geo.getMapZoom = getMapZoom

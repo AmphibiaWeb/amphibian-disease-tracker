@@ -1833,7 +1833,7 @@ getPointsFromBoundingBox = function(obj) {
 };
 
 getMapZoom = function(bb, selector, zoomIt) {
-  var adjAngle, angle, coords, eastMost, k, lat, lng, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomRaw;
+  var adjAngle, angle, coords, eastMost, error2, k, lat, lng, map, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1902,7 +1902,24 @@ getMapZoom = function(bb, selector, zoomIt) {
   if (zoomIt) {
     if ($(selector).exists()) {
       if ($(selector).get(0).tagName.toLowerCase() === "google-map") {
-        p$(selector).zoom = zoomCalc;
+        console.log("Trying to assign zoom");
+        try {
+          map = p$(selector);
+          if (map.isAttached) {
+            console.info("Setting zoom on " + selector + " to " + zoomCalc);
+            map.zoom = zoomCalc;
+            map.ready = function() {
+              return map.zoom = zoomCalc;
+            };
+          } else {
+            console.info("Deferring till ready");
+            $(selector).on("google-map-ready", function() {
+              return map.zoom = zoomCalc;
+            });
+          }
+        } catch (error2) {
+          console.warn("Zoom setting failed!");
+        }
       }
     }
   }
