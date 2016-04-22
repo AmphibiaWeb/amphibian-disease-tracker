@@ -3,16 +3,16 @@
 <!--
 Images reference
 -->
-[login_page]: https://amphibiandisease.org/assets/documentation/dummy.png "The administrative login page"
-[creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png "The user creation page"
-[password_requirements]: https://amphibiandisease.org/assets/documentation/dummy.png "Password requirements block"
+[login_page]: https://amphibiandisease.org/assets/documentation/login_page.png "The administrative login page"
+[creation_page]: https://amphibiandisease.org/assets/documentation/creation_page.png "The user creation page"
+[password_requirements]: https://amphibiandisease.org/assets/documentation/password.png "Password requirements block"
 [admin_page_unverified]: https://amphibiandisease.org/assets/documentation/dummy.png "The administration view when unverified"
-[admin_page]: https://amphibiandisease.org/assets/documentation/dummy.png "The verified user administrative dashboard"
-[projects_creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png "Project creation view"
-[upload_progress]: https://amphibiandisease.org/assets/documentation/dummy.png "Upload progress indicators"
-[bad_data_error_validation]: https://amphibiandisease.org/assets/documentation/dummy.png "Example table shown for a FIMS error"
-[map_building]: https://amphibiandisease.org/assets/documentation/dummy.png "Map builder interface"
-[dataset_ark]: https://amphibiandisease.org/assets/documentation/dummy.png "ARK resolving to a dataset"
+[admin_page]: https://amphibiandisease.org/assets/documentation/admin.png "The verified user administrative dashboard"
+[projects_creation_page]: https://amphibiandisease.org/assets/documentation/proj_creation.png "Project creation view"
+[upload_progress]: https://amphibiandisease.org/assets/documentation/upload.png "Upload progress indicators"
+[bad_data_error_validation]: https://amphibiandisease.org/assets/documentation/badval.png "Example table shown for a FIMS error"
+[map_building]: https://amphibiandisease.org/assets/documentation/mapbuilder.png "Map builder interface"
+[dataset_ark]: https://amphibiandisease.org/assets/documentation/d_ark.png "ARK resolving to a dataset"
 
 First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
 
@@ -83,7 +83,11 @@ Click "Create Project", and you'll get the project creator page.
 
 ![Project creation page][projects_creation_page]
 
-Fields with a red underline are invalid (or empty and mandatory) entries.
+Fields with a red underline are invalid (or empty and mandatory) entries. At any time, you can mouse over the information icons to get a helpful tooltip.
+
+You'll note that you're prepopulated as the default project contact.
+
+Next to the primary pathogen field, the "Bd" and "Bsal" buttons will fill the pathogen field with the full scientific name of the respective pathogen.
 
 In the notes area, you're welcome to use [Markdown](https://help.github.com/articles/basic-writing-and-formatting-syntax/). The rendering uses the [marked library](https://github.com/chjj/marked) via [the Polymer element](https://elements.polymer-project.org/elements/marked-element), which fully supports Github-Flavored Markdown.
 
@@ -95,12 +99,12 @@ After the "Build Map" option and map interface, find the checkbox that says "My 
 If you leave this button checked, the system will not let you save the project until you've uploaded a dataset.
 
 TODO MAPS
-
+<!--
 ![Map Building][map_building]
-
+-->
 ## With Data
 
-All the steps above, in "[Without Data](#without-data)", are still valid -- there are now just more options.
+When you have data, you don't need to specify a locality like without data; it will be calculated for you from your dataset.
 
 ### Getting your Template
 
