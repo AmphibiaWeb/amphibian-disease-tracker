@@ -3,16 +3,16 @@
 <!--
 Images reference
 -->
-[login_page]: https://amphibiandisease.org/assets/documentation/dummy.png
-[creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png
-[password_requirements]: https://amphibiandisease.org/assets/documentation/dummy.png
-[admin_page_unverified]: https://amphibiandisease.org/assets/documentation/dummy.png
-[admin_page]: https://amphibiandisease.org/assets/documentation/dummy.png
-[projects_creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png
-[upload_progress]: https://amphibiandisease.org/assets/documentation/dummy.png
-[bad_data_error_validation]: https://amphibiandisease.org/assets/documentation/dummy.png
-[map_building]: https://amphibiandisease.org/assets/documentation/dummy.png
-[dataset_ark]: https://amphibiandisease.org/assets/documentation/dummy.png
+[login_page]: https://amphibiandisease.org/assets/documentation/dummy.png "The administrative login page"
+[creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png "The user creation page"
+[password_requirements]: https://amphibiandisease.org/assets/documentation/dummy.png "Password requirements block"
+[admin_page_unverified]: https://amphibiandisease.org/assets/documentation/dummy.png "The administration view when unverified"
+[admin_page]: https://amphibiandisease.org/assets/documentation/dummy.png "The verified user administrative dashboard"
+[projects_creation_page]: https://amphibiandisease.org/assets/documentation/dummy.png "Project creation view"
+[upload_progress]: https://amphibiandisease.org/assets/documentation/dummy.png "Upload progress indicators"
+[bad_data_error_validation]: https://amphibiandisease.org/assets/documentation/dummy.png "Example table shown for a FIMS error"
+[map_building]: https://amphibiandisease.org/assets/documentation/dummy.png "Map builder interface"
+[dataset_ark]: https://amphibiandisease.org/assets/documentation/dummy.png "ARK resolving to a dataset"
 
 First, visit [https://amphibiandisease.org/admin](https://amphibiandisease.org/admin) to log in or create a user.
 
