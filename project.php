@@ -312,7 +312,11 @@ $loginStatus = getLoginState();
             }
             $authorData = json_decode($project['author_data'], true);
             $icon = boolstr($project['public']) ? '<iron-icon icon="social:public"></iron-icon>' : '<iron-icon icon="icons:lock"></iron-icon>';
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='Project #".substr($project['project_id'], 0, 8)."...'>".$icon.' '.$project['project_title'].'</button> by '.$authorData['name'].' at '.$authorData['affiliation'];
+            $shortProjectTitle = $project['project_title'];
+            if ( strlen($shortProjectTitle) > 64 ) {
+                $shortProjectTitle = substr($shortProjectTitle, 0, 64) . "...";
+            }
+            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='Project #".substr($project['project_id'], 0, 8)."...'>".$icon.' '.$shortProjectTitle.'</button> by '.$authorData['name'].' at '.$authorData['affiliation'];
             $html .= '<li>'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
