@@ -1826,13 +1826,14 @@ getPointsFromBoundingBox = function(obj) {
   realCoords = new Array();
   for (l = 0, len = corners.length; l < len; l++) {
     coords = corners[l];
-    realCoords.push(canonicalizePoint(realCoords));
+    console.log("Pushing corner", coords);
+    realCoords.push(canonicalizePoint(coords));
   }
   return realCoords;
 };
 
 getMapZoom = function(bb, selector) {
-  var adjAngle, angle, coords, eastMost, k, lng, mapScale, mapWidth, ref, westMost, zoomCalc, zoomRaw;
+  var adjAngle, angle, coords, eastMost, k, lat, lng, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1843,35 +1844,55 @@ getMapZoom = function(bb, selector) {
   if (bb != null) {
     eastMost = -180;
     westMost = 180;
+    northMost = -90;
+    southMost = 90;
     if (isArray(bb)) {
       bb = toObject(bb);
     }
     for (k in bb) {
       coords = bb[k];
       lng = coords.lng != null ? coords.lng : coords[1];
+      lat = coords.lat != null ? coords.lat : coords[0];
       if (lng < westMost) {
         westMost = lng;
       }
       if (lng > eastMost) {
         eastMost = lng;
       }
+      if (lat < southMost) {
+        southMost = lat;
+      }
+      if (lat > northMost) {
+        northMost = lat;
+      }
     }
     angle = eastMost - westMost;
-    if (angle < 0) {
+    nsAngle = northMost - southMost;
+    while (angle < 0) {
       angle += 360;
     }
+    while (nsAngle < 0) {
+      nsAngle += 360;
+    }
     if (!$(selector).exists()) {
-      console.warn("Can't find '" + selector + "' - will use 650");
+      console.warn("Can't find '" + selector + "' - will use 480x650");
     }
     mapWidth = (ref = $(selector).width()) != null ? ref : 650;
+    mapHeight = (ref1 = $(selector).height()) != null ? ref1 : 480;
     adjAngle = 360 / angle;
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE;
+    nsAdjAngle = 360 / nsAngle;
+    nsMapScale = nsAdjAngle / geo.GLOBE_WIDTH_GOOGLE;
     zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2;
-    console.info("Calculated raw zoom", zoomRaw);
-    if (zoomRaw - zoomCalc < .5) {
+    nsZoomRaw = Math.log(mapHeight * nsMapScale) / Math.LN2;
+    console.info("Calculated raw zoom", zoomRaw, nsZoomRaw);
+    console.info("Sources", mapWidth, mapScale, Math.LN2);
+    zoomBasis = nsZoomRaw < zoomRaw ? nsZoomRaw : zoomRaw;
+    zoomCalc = toInt(zoomBasis);
+    console.log("Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc);
+    if (zoomBasis - zoomCalc < .5) {
       --zoomCalc;
     }
-    zoomCalc = toInt(zoomRaw);
   } else {
     zoomCalc = 7;
   }
@@ -2823,7 +2844,7 @@ canonicalizePoint = function(point) {
       tempLat = toFloat(point[0]);
       if (tempLat.toString() === point[0]) {
         point[0] = toFloat(point[0]);
-        point[0] = toFloat(point[1]);
+        point[1] = toFloat(point[1]);
       }
     }
   } catch (undefined) {}

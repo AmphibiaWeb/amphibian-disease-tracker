@@ -91,7 +91,8 @@ getPointsFromBoundingBox = (obj) ->
     ]
   realCoords = new Array()
   for coords in corners
-    realCoords.push canonicalizePoint realCoords
+    console.log "Pushing corner", coords
+    realCoords.push canonicalizePoint coords
   realCoords
 
 getMapZoom = (bb, selector = geo.mapSelector) ->
@@ -101,29 +102,47 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
   if bb?
     eastMost = -180
     westMost = 180
+    northMost = -90
+    southMost = 90
     if isArray bb
       bb = toObject bb
     for k, coords of bb
       lng = if coords.lng? then coords.lng else coords[1]
+      lat = if coords.lat? then coords.lat else coords[0]
       if lng < westMost
         westMost = lng
       if lng > eastMost
         eastMost = lng
+      if lat < southMost
+        southMost = lat
+      if lat > northMost
+        northMost = lat
     angle = eastMost - westMost
-    if angle < 0
+    nsAngle = northMost - southMost
+    while angle < 0
       angle += 360
+    while nsAngle < 0
+      nsAngle += 360
     unless $(selector).exists()
-      console.warn "Can't find '#{selector}' - will use 650"
+      console.warn "Can't find '#{selector}' - will use 480x650"
     mapWidth = $(selector).width() ? 650
+    mapHeight = $(selector).height() ? 480
     adjAngle = 360 / angle
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE
+    nsAdjAngle = 360 / nsAngle
+    nsMapScale = nsAdjAngle / geo.GLOBE_WIDTH_GOOGLE
     # Calculate the zoom factor
     # http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
     zoomRaw = Math.log(mapWidth * mapScale) / Math.LN2
-    console.info "Calculated raw zoom", zoomRaw
-    if zoomRaw - zoomCalc < .5
+    nsZoomRaw = Math.log(mapHeight * nsMapScale) / Math.LN2
+    console.info "Calculated raw zoom", zoomRaw, nsZoomRaw
+    console.info "Sources", mapWidth, mapScale, Math.LN2
+    # Use the one most zoomed out, eg, lowed number
+    zoomBasis = if nsZoomRaw < zoomRaw then nsZoomRaw else zoomRaw
+    zoomCalc = toInt zoomBasis
+    console.log "Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc
+    if zoomBasis - zoomCalc < .5
       --zoomCalc # Zoom out one point, less tight fit
-    zoomCalc = toInt zoomRaw
     # if zoomCalc < 1
     #   zoomCalc = 7
   else
@@ -1006,7 +1025,7 @@ canonicalizePoint = (point) ->
       tempLat = toFloat point[0]
       if tempLat.toString() is point[0]
         point[0] = toFloat point[0]
-        point[0] = toFloat point[1]
+        point[1] = toFloat point[1]
   # Tests
   if typeof point?.lat is "number"
     pointObj = point
