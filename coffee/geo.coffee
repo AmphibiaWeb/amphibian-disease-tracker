@@ -154,7 +154,7 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
     # Use the one most zoomed out, eg, lowed number
     zoomBasis = if nsZoomRaw < zoomRaw then nsZoomRaw else zoomRaw
     if zoomOutThreshold > zoomBasis or zoomBasis > 20
-      zoomBasis = 6
+      zoomBasis = 7.5
     zoomCalc = toInt zoomBasis
     console.log "Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc
     if zoomBasis - zoomCalc < .5
