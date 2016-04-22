@@ -1833,7 +1833,7 @@ getPointsFromBoundingBox = function(obj) {
 };
 
 getMapZoom = function(bb, selector, zoomIt) {
-  var adjAngle, angle, coords, eastMost, error2, k, lat, lng, map, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomRaw;
+  var adjAngle, angle, coords, eastMost, error2, k, lat, lng, map, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomOutThreshold, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1843,7 +1843,13 @@ getMapZoom = function(bb, selector, zoomIt) {
 
   /*
    * Get the zoom factor for Google Maps
+   *
+   * @param array|object bb -> Collection of Point objects
+   * @param selector -> The map to reference
+   * @param bool zoomIt -> if selector is a Google Map element, then
+   *   apply zoom to it
    */
+  zoomOutThreshold = 2;
   if (bb != null) {
     eastMost = -180;
     westMost = 180;
@@ -1851,6 +1857,10 @@ getMapZoom = function(bb, selector, zoomIt) {
     southMost = 90;
     if (isArray(bb)) {
       bb = toObject(bb);
+    }
+    console.info("Working with dataset", bb);
+    if (Object.size(bb) < 3) {
+      console.warn("Danger: Very small dataset");
     }
     for (k in bb) {
       coords = bb[k];
@@ -1890,7 +1900,16 @@ getMapZoom = function(bb, selector, zoomIt) {
     nsZoomRaw = Math.log(mapHeight * nsMapScale) / Math.LN2;
     console.info("Calculated raw zoom", zoomRaw, nsZoomRaw);
     console.info("Sources", mapWidth, mapScale, Math.LN2);
+    if (nsZoomRaw < zoomOutThreshold) {
+      nsZoomRaw = 100;
+    }
+    if (zoomRaw < zoomOutThreshold) {
+      zoomRaw = 100;
+    }
     zoomBasis = nsZoomRaw < zoomRaw ? nsZoomRaw : zoomRaw;
+    if (zoomOutThreshold > zoomBasis || zoomBasis > 20) {
+      zoomBasis = 7;
+    }
     zoomCalc = toInt(zoomBasis);
     console.log("Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc);
     if (zoomBasis - zoomCalc < .5) {
