@@ -162,11 +162,14 @@ renderMapWithData = (projectData, force = false) ->
       return false
     rows = result.parsed_responses[0].rows
     points = new Array()
+    pointPoints = new Array()
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       lat = geoJson.coordinates[0]
       lng = geoJson.coordinates[1]
       points.push [lat,lng]
+      try
+        pointPoints.push canonicalizePoint [lat, lng]
       # Fill the points as markers
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
@@ -288,6 +291,7 @@ renderMapWithData = (projectData, force = false) ->
       $(".ark-context-wrapper").remove()
       # Append to DOM
       $("body").append html
+      getMapZoom(pointPoints, "#transect-viewport")
       # Create copy event
       ZeroClipboard.config _adp.zcConfig
       zcClientInitial = new ZeroClipboard $(".copy-ark-context").get 0

@@ -1398,6 +1398,8 @@ getPointsFromBoundingBox = (obj) ->
     realCoords.push canonicalizePoint coords
   realCoords
 
+geo.mapSelector ?= "#transect-viewport"
+
 getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
   ###
   # Get the zoom factor for Google Maps

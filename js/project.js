@@ -173,7 +173,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, points, ref1, ref2, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, pointPoints, points, ref1, ref2, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -189,12 +189,16 @@ renderMapWithData = function(projectData, force) {
     }
     rows = result.parsed_responses[0].rows;
     points = new Array();
+    pointPoints = new Array();
     for (k in rows) {
       row = rows[k];
       geoJson = JSON.parse(row.st_asgeojson);
       lat = geoJson.coordinates[0];
       lng = geoJson.coordinates[1];
       points.push([lat, lng]);
+      try {
+        pointPoints.push(canonicalizePoint([lat, lng]));
+      } catch (undefined) {}
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
@@ -295,6 +299,7 @@ renderMapWithData = function(projectData, force) {
       html = "<paper-material class=\"ark-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"copy-ark-context\">\n      Copy ARK to clipboard\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".ark-context-wrapper").remove();
       $("body").append(html);
+      getMapZoom(pointPoints, "#transect-viewport");
       ZeroClipboard.config(_adp.zcConfig);
       zcClientInitial = new ZeroClipboard($(".copy-ark-context").get(0));
       ark = $(this).attr("data-ark");
