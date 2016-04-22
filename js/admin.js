@@ -1442,6 +1442,8 @@ csvHandler = function(path, hasHeaders, callbackSkipsGeoHandler) {
 
   /*
    * Handle the upload for CSV datafiles
+   * Treats them as per RFC4180
+   * https://tools.ietf.org/html/rfc4180
    *
    * @param string path -> the upload path to the file
    * @parm bool hasHeaders -> does the data file have headers? Default true

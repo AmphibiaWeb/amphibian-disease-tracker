@@ -559,7 +559,7 @@ setPublicData = function(projectData) {
 };
 
 renderPublicMap = function(projectData) {
-  var cartoData, e, error, error1, error2, error3, error4, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  var cartoData, coordArr, e, error, error1, error2, error3, error4, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
   if (projectData == null) {
     projectData = publicData;
   }
@@ -606,8 +606,9 @@ renderPublicMap = function(projectData) {
       lng: projectData.bounding_box_w
     };
     paths = [nw, ne, se, sw];
+    coordArr = getPointsFromBoundingBox(projectData);
     try {
-      zoom = getMapZoom(paths, "#transect-viewport");
+      zoom = getMapZoom(coordArr, "#transect-viewport");
       console.info("Got zoom", zoom);
     } catch (error2) {
       zoom = "";

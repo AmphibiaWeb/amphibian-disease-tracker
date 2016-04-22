@@ -82,6 +82,18 @@ getMapCenter = (bb = geo.canonicalBoundingBox) ->
   center
 
 
+getPointsFromBoundingBox = (obj) ->
+  corners = [
+    [obj.bounding_box_n, obj.bounding_box_w]
+    [obj.bounding_box_n, obj.bounding_box_e]
+    [obj.bounding_box_s, obj.bounding_box_e]
+    [obj.bounding_box_s, obj.bounding_box_w]
+    ]
+  realCoords = new Array()
+  for coords in corners
+    realCoords.push canonicalizePoint realCoords
+  realCoords
+
 getMapZoom = (bb, selector = geo.mapSelector) ->
   ###
   # Get the zoom factor for Google Maps
@@ -100,6 +112,8 @@ getMapZoom = (bb, selector = geo.mapSelector) ->
     angle = eastMost - westMost
     if angle < 0
       angle += 360
+    unless $(selector).exists()
+      console.warn "Can't find '#{selector}' - will use 650"
     mapWidth = $(selector).width() ? 650
     adjAngle = 360 / angle
     mapScale = adjAngle / geo.GLOBE_WIDTH_GOOGLE

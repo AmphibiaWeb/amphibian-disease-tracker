@@ -564,8 +564,9 @@ renderPublicMap = (projectData = publicData) ->
       se
       sw
       ]
+    coordArr = getPointsFromBoundingBox(projectData)
     try
-      zoom = getMapZoom paths, "#transect-viewport"
+      zoom = getMapZoom coordArr, "#transect-viewport"
       console.info "Got zoom", zoom
     catch
       zoom = ""
