@@ -1833,7 +1833,7 @@ getPointsFromBoundingBox = function(obj) {
 };
 
 getMapZoom = function(bb, selector, zoomIt) {
-  var adjAngle, angle, coords, eastMost, error2, k, lat, lng, map, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, southMost, westMost, zoomBasis, zoomCalc, zoomOutThreshold, zoomRaw;
+  var adjAngle, angle, coords, eastMost, error2, k, lat, lng, map, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, refTight, refZoom, southMost, westMost, zoomBasis, zoomCalc, zoomCalcBoundaryScale, zoomComfy, zoomOutThreshold, zoomRaw;
   if (selector == null) {
     selector = geo.mapSelector;
   }
@@ -1912,7 +1912,11 @@ getMapZoom = function(bb, selector, zoomIt) {
     }
     zoomCalc = toInt(zoomBasis);
     console.log("Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc);
-    if (zoomBasis - zoomCalc < .5) {
+    refTight = .6;
+    refZoom = 16;
+    zoomCalcBoundaryScale = refTight / refZoom;
+    zoomComfy = zoomCalcBoundaryScale * zoomBasis;
+    if (zoomBasis - zoomCalc < zoomComfy) {
       --zoomCalc;
     }
   } else {

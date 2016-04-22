@@ -655,7 +655,7 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
       block: "start"
     # http://caniuse.com/#feat=scrollintoview
     # All major browsers support it, but can't do much fancy yet
-    # Use options instead of true when that changes
+    # Use options instead of false when that changes
     $(selector).get(0).scrollIntoView(false) # Bottom
   selector
 

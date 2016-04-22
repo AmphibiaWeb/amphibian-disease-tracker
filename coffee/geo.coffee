@@ -157,7 +157,13 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
       zoomBasis = 7.5
     zoomCalc = toInt zoomBasis
     console.log "Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc
-    if zoomBasis - zoomCalc < .5
+    # At high zooms, .6 can be tight, at low zooms, almost nothing is
+    # comfy
+    refTight = .6
+    refZoom = 16
+    zoomCalcBoundaryScale = refTight / refZoom
+    zoomComfy = zoomCalcBoundaryScale * zoomBasis
+    if zoomBasis - zoomCalc < zoomComfy
       --zoomCalc # Zoom out one point, less tight fit
     # if zoomCalc < 1
     #   zoomCalc = 7
