@@ -1401,7 +1401,14 @@ getPointsFromBoundingBox = (obj) ->
 getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
   ###
   # Get the zoom factor for Google Maps
+  #
+  # @param array|object bb -> Collection of Point objects
+  # @param selector -> The map to reference
+  # @param bool zoomIt -> if selector is a Google Map element, then
+  #   apply zoom to it
   ###
+  # Minimum zoom out, any more doesn't make sense for the project
+  zoomOutThreshold = 2
   if bb?
     eastMost = -180
     westMost = 180
@@ -1409,6 +1416,9 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
     southMost = 90
     if isArray bb
       bb = toObject bb
+    console.info "Working with dataset", bb
+    if Object.size(bb) < 3
+      console.warn "Danger: Very small dataset"
     for k, coords of bb
       lng = if coords.lng? then coords.lng else coords[1]
       lat = if coords.lat? then coords.lat else coords[0]
@@ -1440,8 +1450,14 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
     nsZoomRaw = Math.log(mapHeight * nsMapScale) / Math.LN2
     console.info "Calculated raw zoom", zoomRaw, nsZoomRaw
     console.info "Sources", mapWidth, mapScale, Math.LN2
+    if nsZoomRaw < zoomOutThreshold
+      nsZoomRaw = 100
+    if zoomRaw < zoomOutThreshold
+      zoomRaw = 100
     # Use the one most zoomed out, eg, lowed number
     zoomBasis = if nsZoomRaw < zoomRaw then nsZoomRaw else zoomRaw
+    if zoomOutThreshold > zoomBasis or zoomBasis > 20
+      zoomBasis = 7
     zoomCalc = toInt zoomBasis
     console.log "Diff between zoomBasis vs zoomCalc", zoomBasis - zoomCalc
     if zoomBasis - zoomCalc < .5
