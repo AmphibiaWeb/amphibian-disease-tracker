@@ -1,3 +1,7 @@
+---
+title: Features
+---
+
 Features
 ==========
 

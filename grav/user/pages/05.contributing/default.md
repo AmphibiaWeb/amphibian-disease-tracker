@@ -1,3 +1,7 @@
+---
+title: Contributing
+---
+
 # Patches, etc.
 If you'd like to contribute to the project, please create a fork of [the repository](https://github.com/AmphibiaWeb/amphibian-disease-tracker), then submit a pull request once you've made the changes you'd like to patch in.
 

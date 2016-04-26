@@ -1,3 +1,7 @@
+---
+title: Creating a New Project
+---
+
 # Logging In and User Creation
 
 <!--

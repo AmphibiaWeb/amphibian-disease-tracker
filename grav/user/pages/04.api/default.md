@@ -1,3 +1,7 @@
+---
+title: APIs
+---
+
 # General API information
 
 All responses are as `application/json`.

@@ -1,3 +1,7 @@
+---
+title: Cloning
+---
+
 # Data Storage
 
 You can view  a [CSON](https://github.com/bevry/cson) representation of the data storage of the system at [`./meta/data-storage.coffee` here](https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-storage.coffee)
