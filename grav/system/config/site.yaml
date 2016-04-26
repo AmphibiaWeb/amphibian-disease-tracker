@@ -1,13 +1,13 @@
-title: Grav                                 # Name of the site
+title: Amphibian Disease Portal Documentation                                 # Name of the site
 
 author:
-  name: John Appleseed                      # Default author name
-  email: 'john@email.com'                   # Default author email
+  name: Philip Kahn                      # Default author name
+  email: 'tigerhawkvok@gmail.com'                   # Default author email
 
 taxonomies: [category,tag]                  # Arbitrary list of taxonomy types
 
 metadata:
-  description: 'My Grav Site'               # Site description
+  description: 'Documentation for https://amphibiandisease.org'               # Site description
 
 summary:
   enabled: true                             # enable or disable summary of page
