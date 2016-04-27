@@ -3643,6 +3643,7 @@ enableDebugLogging = function() {
     try {
       logHistory = JSON.parse(localStorage.debugLog);
       window._debug = logHistory;
+      console.info("Restored log history to local object");
     } catch (error2) {
       window._debug = new Array();
     }
@@ -3650,10 +3651,10 @@ enableDebugLogging = function() {
     window._debug = new Array();
   }
   window.sysConsole = console;
-  window.sysLog = sysConsole.log;
-  window.sysInfo = sysConsole.info;
-  window.sysWarn = sysConsole.warn;
-  window.sysError = sysConsole.error;
+  window.sysLog = console.log;
+  window.sysInfo = console.info;
+  window.sysWarn = console.warn;
+  window.sysError = console.error;
   console.log = function() {
     var args, messageObject;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
@@ -3662,7 +3663,7 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysConsole.log.apply(sysConsole, args);
+    return sysLog.apply(console, arguments);
   };
   console.info = function() {
     var args, messageObject;
@@ -3672,7 +3673,7 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysConsole.info.apply(sysConsole, args);
+    return sysInfo.apply(console, arguments);
   };
   console.warn = function() {
     var args, messageObject;
@@ -3682,7 +3683,7 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysConsole.warn.apply(sysConsole, args);
+    return sysWarn.apply(console, arguments);
   };
   console.error = function() {
     var args, messageObject;
@@ -3692,10 +3693,15 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysConsole.error.apply(sysConsole, args);
+    return sysError(console, arguments);
   };
   $(window).on("popstate", function(ev) {
     sysConsole.log("Navigation event", ev);
+    backupDebugLog();
+    return false;
+  });
+  $(window).unload(function(ev) {
+    sysConsole.log("unload event", ev);
     backupDebugLog();
     return false;
   });
