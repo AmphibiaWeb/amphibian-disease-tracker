@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -3638,7 +3638,7 @@ enableDebugLogging = function() {
   /*
    * Overwrite console logs with custom events
    */
-  var error2, logHistory, sysConsole;
+  var error2, logHistory;
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     try {
       logHistory = JSON.parse(localStorage.debugLog);
@@ -3649,11 +3649,11 @@ enableDebugLogging = function() {
   } else {
     window._debug = new Array();
   }
-  sysConsole = console;
-  window.sysLog = console.log;
-  window.sysInfo = console.info;
-  window.sysWarn = console.warn;
-  window.sysError = console.error;
+  window.sysConsole = console;
+  window.sysLog = sysConsole.log;
+  window.sysInfo = sysConsole.info;
+  window.sysWarn = sysConsole.warn;
+  window.sysError = sysConsole.error;
   console.log = function() {
     var args, messageObject;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
@@ -3696,13 +3696,20 @@ enableDebugLogging = function() {
   };
   $(window).on("popstate", function(ev) {
     sysConsole.log("Navigation event", ev);
-    if (typeof localStorage !== "undefined" && localStorage !== null) {
-      logHistory = JSON.stringify(_debug);
-      localStorage.debugLog = logHistory;
-    }
+    backupDebugLog();
     return false;
   });
   window.debugLoggingEnabled = true;
+  return false;
+};
+
+backupDebugLog = function() {
+  var logHistory;
+  if (typeof localStorage !== "undefined" && localStorage !== null) {
+    console.info("Saving backup of debug log");
+    logHistory = JSON.stringify(_debug);
+    localStorage.debugLog = logHistory;
+  }
   return false;
 };
 

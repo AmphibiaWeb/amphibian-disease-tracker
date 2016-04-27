@@ -14,11 +14,11 @@ enableDebugLogging = ->
       window._debug = new Array()
   else
     window._debug = new Array()
-  sysConsole = console
-  window.sysLog = console.log
-  window.sysInfo = console.info
-  window.sysWarn = console.warn
-  window.sysError = console.error
+  window.sysConsole = console
+  window.sysLog = sysConsole.log
+  window.sysInfo = sysConsole.info
+  window.sysWarn = sysConsole.warn
+  window.sysError = sysConsole.error
   console.log = (args...) ->
     messageObject =
       callType: "log"
@@ -46,11 +46,17 @@ enableDebugLogging = ->
   # Page navigation event
   $(window).on "popstate", (ev) ->
     sysConsole.log "Navigation event", ev
-    if localStorage?
-      logHistory = JSON.stringify _debug
-      localStorage.debugLog = logHistory
+    backupDebugLog()
     false
   window.debugLoggingEnabled = true
+  false
+
+
+backupDebugLog = ->
+  if localStorage?
+    console.info "Saving backup of debug log"
+    logHistory = JSON.stringify _debug
+    localStorage.debugLog = logHistory
   false
 
 window.enableDebugLogging = enableDebugLogging
