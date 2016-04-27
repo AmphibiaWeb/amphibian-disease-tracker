@@ -3667,7 +3667,8 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysLog.apply(console, arguments);
+    sysLog.apply(console, arguments);
+    return backupDebugLog(true);
   };
   console.info = function() {
     var args, messageObject;
@@ -3677,7 +3678,8 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysInfo.apply(console, arguments);
+    sysInfo.apply(console, arguments);
+    return backupDebugLog(true);
   };
   console.warn = function() {
     var args, messageObject;
@@ -3687,7 +3689,8 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysWarn.apply(console, arguments);
+    sysWarn.apply(console, arguments);
+    return backupDebugLog(true);
   };
   console.error = function() {
     var args, messageObject;
@@ -3697,7 +3700,8 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysError.apply(console, arguments);
+    sysError.apply(console, arguments);
+    return backupDebugLog(true);
   };
   $(window).on("popstate", function(ev) {
     console.log("Navigation event", ev);
@@ -3722,10 +3726,15 @@ enableDebugLogging = function() {
   return false;
 };
 
-backupDebugLog = function() {
+backupDebugLog = function(suppressMessage) {
   var error2, logHistory;
+  if (suppressMessage == null) {
+    suppressMessage = false;
+  }
   if ((typeof localStorage !== "undefined" && localStorage !== null) && (window._debug != null)) {
-    console.info("Saving backup of debug log");
+    if (!suppressMessage) {
+      console.info("Saving backup of debug log");
+    }
     try {
       logHistory = JSON.stringify(window._debug);
       localStorage.debugLog = logHistory;
