@@ -29,6 +29,8 @@ loadSUProfileBrowser = ->
       list = Object.toArray list
       listElements = new Array()
       for user in list
+        if isNull user.full_name
+          continue
         entry = """
         #{user.full_name} / #{user.handle} / #{user.email}
         """
