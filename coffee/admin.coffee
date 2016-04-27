@@ -86,7 +86,7 @@ populateAdminActions = ->
   createPlaceholder = """
   <paper-button id="create-placeholder" class="admin-action non-action col-md-3 col-sm-4 col-xs-12" raised data-toggle="tooltip" title="Your account is restricted. Click to verify account">
     <iron-icon icon="icons:star-border"></iron-icon>
-    Create Project
+    Verify &amp; Create Project
   </paper-button>
   """
   createHtml = if _adp.isUnrestricted then createButton else createPlaceholder
