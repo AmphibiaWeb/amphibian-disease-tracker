@@ -3704,13 +3704,11 @@ enableDebugLogging = function() {
     return backupDebugLog(true);
   };
   $(window).on("popstate", function(ev) {
-    console.log("Navigation event", ev);
-    backupDebugLog();
+    console.log("Navigation event");
     return false;
   });
   $(window).unload(function(ev) {
-    console.log("unload event", ev);
-    backupDebugLog();
+    console.log("unload event");
     return false;
   });
   $("#debug-reporter").remove();

@@ -3050,12 +3050,10 @@ enableDebugLogging = ->
     backupDebugLog true
   # Page navigation event
   $(window).on "popstate", (ev) ->
-    console.log "Navigation event", ev
-    backupDebugLog()
+    console.log "Navigation event"
     false
   $(window).unload (ev) ->
-    console.log "unload event", ev
-    backupDebugLog()
+    console.log "unload event"
     false
   $("#debug-reporter").remove()
   html =  """
