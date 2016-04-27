@@ -7400,6 +7400,13 @@ paper-button[raised].admin-action {
   background: #4CAF50;
   color: #fff;
 }
+#debug-reporter {
+  background: #F44336;
+  color: #fff!important;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+}
 #restriction-badge {
   cursor: pointer;
 }

@@ -54,6 +54,13 @@ enableDebugLogging = ->
     sysConsole.log "unload event", ev
     backupDebugLog()
     false
+  $("#debug-reporter").remove()
+  html =  """
+  <paper-fab id="debug-reporter" icon="icons:send" data-toggle="tooltip" title="Send Debug Report">
+  </paper-fab>
+  """
+  $("body").append html
+  safariDialogHelper("#debug-reporter")
   window.debugLoggingEnabled = true
   false
 
@@ -80,6 +87,8 @@ disableDebugLogging = ->
     console.info = sysInfo
     console.warn = sysWarn
     console.error = sysError
+  $("#debug-reporter").remove()
+  window.debugLoggingEnabled = false
   false
 
 
@@ -99,20 +108,20 @@ reportDebugLog = ->
       <paper-dialog-scrollable>
         <div>
           <p>Copy the text below</p>
-          <textarea readonly rows="10">
+          <textarea readonly rows="10" class="form-control">
             #{localStorage.debugLog}
           </textarea>
           <p>And email it to <a href="mailto:support@velociraptorsystems.com?subject=Debug%20Log">support@velociraptorsystems.com</a></p>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button>Close</paper-button>
+        <paper-button dialog-dismiss>Close</paper-button>
       </div>
     </paper-dialog-modal>
     """
     $("#report-bug-modal").remove()
     $("body").append html
-    p$("#report-bug-modal").open()
+    safariDialogHelper("#report-bug-modal")
   false
 
 window.reportDebugLog = reportDebugLog
