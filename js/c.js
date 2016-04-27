@@ -1832,6 +1832,10 @@ getPointsFromBoundingBox = function(obj) {
   return realCoords;
 };
 
+if (geo.mapSelector == null) {
+  geo.mapSelector = "#transect-viewport";
+}
+
 getMapZoom = function(bb, selector, zoomIt) {
   var adjAngle, angle, coords, eastMost, error2, k, lat, lng, map, mapHeight, mapScale, mapWidth, northMost, nsAdjAngle, nsAngle, nsMapScale, nsZoomRaw, ref, ref1, refTight, refZoom, southMost, westMost, zoomBasis, zoomCalc, zoomCalcBoundaryScale, zoomComfy, zoomOutThreshold, zoomRaw;
   if (selector == null) {
