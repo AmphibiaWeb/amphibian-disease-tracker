@@ -3056,13 +3056,13 @@ enableDebugLogging = ->
 
 
 backupDebugLog = ->
-  if localStorage?
+  if localStorage? and window._debug?
     console.info "Saving backup of debug log"
     try
       logHistory = JSON.stringify window._debug
-    catch
-      console.error "Unable to backup debug log!"
-    localStorage.debugLog = logHistory
+      localStorage.debugLog = logHistory
+    catch e
+      console.error "Unable to backup debug log! #{e.message}", window._debug
   false
 
 window.enableDebugLogging = enableDebugLogging
@@ -3071,6 +3071,7 @@ window.enableDebugLogging = enableDebugLogging
 disableDebugLogging = ->
   if localStorage?.debugLog?
     delete localStorage.debugLog
+    delete _debug
   if typeof window.sysLog is "function"
     console.log = sysLog
     console.info = sysInfo
@@ -3084,8 +3085,31 @@ window.disableDebugLogging = disableDebugLogging
 
 reportDebugLog = ->
   if window._debug?
-    disableDebugLogging()
-    console.info "Your log history:", _debug
+    # disableDebugLogging()
+    backupDebugLog()
+    logOutput = JSON.stringify _debug
+    # console.info "Your log history:", _debug
+    # Show an email dialog
+    html = """
+    <paper-dialog modal id="report-bug-modal">
+      <h2>Bug Report</h2>
+      <paper-dialog-scrollable>
+        <div>
+          <p>Copy the text below</p>
+          <textarea readonly rows="10">
+            #{localStorage.debugLog}
+          </textarea>
+          <p>And email it to <a href="mailto:support@velociraptorsystems.com?subject=Debug%20Log">support@velociraptorsystems.com</a></p>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button>Close</paper-button>
+      </div>
+    </paper-dialog-modal>
+    """
+    $("#report-bug-modal").remove()
+    $("body").append html
+    p$("#report-bug-modal").open()
   false
 
 window.reportDebugLog = reportDebugLog

@@ -3712,14 +3712,15 @@ enableDebugLogging = function() {
 
 backupDebugLog = function() {
   var error2, logHistory;
-  if (typeof localStorage !== "undefined" && localStorage !== null) {
+  if ((typeof localStorage !== "undefined" && localStorage !== null) && (window._debug != null)) {
     console.info("Saving backup of debug log");
     try {
       logHistory = JSON.stringify(window._debug);
+      localStorage.debugLog = logHistory;
     } catch (error2) {
-      console.error("Unable to backup debug log!");
+      e = error2;
+      console.error("Unable to backup debug log! " + e.message, window._debug);
     }
-    localStorage.debugLog = logHistory;
   }
   return false;
 };
@@ -3729,6 +3730,7 @@ window.enableDebugLogging = enableDebugLogging;
 disableDebugLogging = function() {
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     delete localStorage.debugLog;
+    delete _debug;
   }
   if (typeof window.sysLog === "function") {
     console.log = sysLog;
@@ -3742,9 +3744,14 @@ disableDebugLogging = function() {
 window.disableDebugLogging = disableDebugLogging;
 
 reportDebugLog = function() {
+  var html, logOutput;
   if (window._debug != null) {
-    disableDebugLogging();
-    console.info("Your log history:", _debug);
+    backupDebugLog();
+    logOutput = JSON.stringify(_debug);
+    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p>Copy the text below</p>\n      <textarea readonly rows=\"10\">\n        " + localStorage.debugLog + "\n      </textarea>\n      <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
+    $("#report-bug-modal").remove();
+    $("body").append(html);
+    p$("#report-bug-modal").open();
   }
   return false;
 };
