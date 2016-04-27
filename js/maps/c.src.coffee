@@ -3079,7 +3079,7 @@ backupDebugLog = (suppressMessage = false)->
       logHistory = JSON.stringify window._debug
       localStorage.debugLog = logHistory
     catch e
-      console.error "Unable to backup debug log! #{e.message}", window._debug
+      sysError.apply console, ["Unable to backup debug log! #{e.message}", window._debug]
   false
 
 window.enableDebugLogging = enableDebugLogging
