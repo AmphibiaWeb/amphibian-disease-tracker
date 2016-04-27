@@ -17,6 +17,35 @@ loadSUProfileBrowser = ->
       stopLoadError "Sorry, you must be an admin to do this"
       return false
     # Show list of users
+    args = "action=search_users&q="
+    dest = "#{uri.urlString}api.php"
+    $.post dest, args
+    .done (result) ->
+      unless result.status is true
+        message = result.human_error ? result.error ? "There was a problem loading the user list"
+        stopLoadError message
+        return false
+      list = result.result
+      list = Object.toArray list
+      listElements = new Array()
+      for user in list
+        entry = """
+        #{user.full_name} / #{user.handle} / #{user.email}
+        """
+        listElements.push entry
+      listInterior = listElements.join "</li><li class='su-user-list'>"
+      html = """
+      <ul class='su-total-list' id="su-management-list">
+        <li class='su-user-list'>#{listInterior}</li>
+      </ul>
+      """
+      $("#main-body").html html
+      foo()
+      stopLoad()
+      false
+    .fail (result, status) ->
+      console.error "Couldn't load user list", result, status
+      stopLoadError "Sorry, can't load user list"
   false
 
 

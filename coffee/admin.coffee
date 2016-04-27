@@ -116,13 +116,20 @@ populateAdminActions = ->
       html = """
       <paper-button id="su-view-projects" class="admin-action su-action col-md-3 col-sm-4 col-xs-12">
         <iron-icon icon="icons:supervisor-account"></iron-icon>
-         <iron-icon icon="icons:create"></iron-icon>
+         <iron-icon icon="icons:add"></iron-icon>
         (SU) Administrate All Projects
+      </paper-button>
+      <paper-button id="su-manage-users" class="admin-action su-action col-md-3 col-sm-4 col-xs-12">
+        <iron-icon icon="icons:supervisor-account"></iron-icon>
+         <iron-icon icon="icons:create"></iron-icon>
+        (SU) Manage All Users
       </paper-button>
       """
       $("#admin-actions-block").append html
       $("#su-view-projects").click ->
         loadSUProjectBrowser()
+      $("#su-manage-users").click ->
+        loadSUProfileBrowser()
     _adp.isUnrestricted = result.unrestricted
     if result.unrestricted isnt true
       $("#new-project").remove()
