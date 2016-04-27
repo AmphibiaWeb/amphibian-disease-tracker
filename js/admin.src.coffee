@@ -2388,7 +2388,7 @@ loadEditor = (projectPreload) ->
             <h3>Project Meta Parameters</h3>
               <h4>Project funding status</h4>
                 #{fundingHtml}
-                <div class="row">
+                <div class="row markdown-pair" id="preview-funding">
                   <span class="pull-left" style="margin-top:1.75em;vertical-align:bottom;padding-left:15px">$</span><paper-input #{conditionalReadonly} class="project-param col-xs-11" label="Additional Funding Request" value="#{project.more_analysis_funding_request}" id="more-analysis-funding" data-field="more_analysis_funding_request" type="number"></paper-input>
                 </div>
           </section>
