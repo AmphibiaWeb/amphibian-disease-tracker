@@ -53,7 +53,6 @@ style this element.
 
 @group Gold Elements
 @hero hero.svg
-@class gold-cc-cvc-input
 @demo demo/index.html
 -->
 
@@ -68,6 +67,10 @@ style this element.
         margin-left: 10px;
       }
 
+      iron-icon[hidden] {
+        display: none !important;
+      }
+      
       .container {
         @apply(--layout-horizontal);
       }
@@ -150,6 +153,7 @@ style this element.
           },
 
           value: {
+            type: String,
             observer: '_onValueChanged'
           }
         },
