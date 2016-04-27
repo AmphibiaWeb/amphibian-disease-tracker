@@ -146,10 +146,10 @@ $ ->
       html = """
       <paper-material class="bug-report-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
         <paper-menu class=context-menu">
-          <paper-item class="debug-enable-context">
+          <paper-item class="debug-enable-context" data-fn="enableDebugLogging">
             Enable debug reporting
           </paper-item>
-          <paper-item class="debug-disable-context">
+          <paper-item class="debug-disable-context" data-fn="disableDebugLogging">
             Disable debug reporting
           </paper-item>
         </paper-menu>
@@ -157,6 +157,18 @@ $ ->
       """
       $(".bug-report-context-wrapper").remove()
       $("body").append html
+      inFn = (el) ->
+        $(this).addClass "iron-selected"
+        false
+      outFn = (el) ->
+        $(this).removeClass "iron-selected"
+        false
+      $(".bug-report-context-wrapper paper-item")
+      .hover inFn, outFn
+      .click ->
+        fn = $(this).attr "data-fn"
+        # window[fn]()
+        false
       $(".debug-enable-context").click ->
         enableDebugLogging()
       $(".debug-disable-context").click ->

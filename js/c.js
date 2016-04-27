@@ -3786,12 +3786,25 @@ $(function() {
   window.debugLoggingEnabled = false;
   delay(1500, function() {
     return $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
-      var html;
+      var html, inFn, outFn;
       event.preventDefault();
       console.info("Showing bug report context menu");
-      html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+      html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\" data-fn=\"enableDebugLogging\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\" data-fn=\"disableDebugLogging\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".bug-report-context-wrapper").remove();
       $("body").append(html);
+      inFn = function(el) {
+        $(this).addClass("iron-selected");
+        return false;
+      };
+      outFn = function(el) {
+        $(this).removeClass("iron-selected");
+        return false;
+      };
+      $(".bug-report-context-wrapper paper-item").hover(inFn, outFn).click(function() {
+        var fn;
+        fn = $(this).attr("data-fn");
+        return false;
+      });
       $(".debug-enable-context").click(function() {
         return enableDebugLogging();
       });
