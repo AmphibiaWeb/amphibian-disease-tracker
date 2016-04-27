@@ -3009,6 +3009,7 @@ enableDebugLogging = ->
       window._debug = logHistory
       console.info "Restored log history to local object"
     catch
+      console.warn "Unable to restore log history"
       window._debug = new Array()
   else
     window._debug = new Array()
@@ -3057,7 +3058,10 @@ enableDebugLogging = ->
 backupDebugLog = ->
   if localStorage?
     console.info "Saving backup of debug log"
-    logHistory = JSON.stringify _debug
+    try
+      logHistory = JSON.stringify window._debug
+    catch
+      console.error "Unable to backup debug log!"
     localStorage.debugLog = logHistory
   false
 

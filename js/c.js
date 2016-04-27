@@ -3645,6 +3645,7 @@ enableDebugLogging = function() {
       window._debug = logHistory;
       console.info("Restored log history to local object");
     } catch (error2) {
+      console.warn("Unable to restore log history");
       window._debug = new Array();
     }
   } else {
@@ -3710,10 +3711,14 @@ enableDebugLogging = function() {
 };
 
 backupDebugLog = function() {
-  var logHistory;
+  var error2, logHistory;
   if (typeof localStorage !== "undefined" && localStorage !== null) {
     console.info("Saving backup of debug log");
-    logHistory = JSON.stringify(_debug);
+    try {
+      logHistory = JSON.stringify(window._debug);
+    } catch (error2) {
+      console.error("Unable to backup debug log!");
+    }
     localStorage.debugLog = logHistory;
   }
   return false;
