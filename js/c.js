@@ -3712,7 +3712,7 @@ enableDebugLogging = function() {
     return false;
   });
   $("#debug-reporter").remove();
-  html = "<paper-fab id=\"debug-reporter\" icon=\"icons:send\" data-toggle=\"tooltip\" title=\"Send Debug Report\">\n</paper-fab>";
+  html = "<paper-fab id=\"debug-reporter\" icon=\"icons:send\" data-toggle=\"tooltip\" title=\"Send Debug Report\" elevation=\"5\">\n</paper-fab>";
   $("body").append(html);
   $("#debug-reporter").click(function() {
     return reportDebugLog();

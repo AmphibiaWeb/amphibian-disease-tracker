@@ -3057,7 +3057,7 @@ enableDebugLogging = ->
     false
   $("#debug-reporter").remove()
   html =  """
-  <paper-fab id="debug-reporter" icon="icons:send" data-toggle="tooltip" title="Send Debug Report">
+  <paper-fab id="debug-reporter" icon="icons:send" data-toggle="tooltip" title="Send Debug Report" elevation="5">
   </paper-fab>
   """
   $("body").append html
