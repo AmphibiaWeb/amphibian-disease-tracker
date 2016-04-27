@@ -318,7 +318,7 @@ $loginStatus = getLoginState();
             }
             $affilEncode = htmlspecialchars($authorData["affiliation"]);
             $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='Project #".substr($project['project_id'], 0, 8)."...'>".$icon.' '.$shortProjectTitle.'</button> by '.$authorData['name'].' at '.$affiliationIcon;
+            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='Project #".substr($project['project_id'], 0, 8)."...'>".$icon.' '.$shortProjectTitle.'</button> by '.$authorData['name'] . $affiliationIcon;
             $html .= '<li>'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
