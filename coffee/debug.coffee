@@ -24,27 +24,28 @@ enableDebugLogging = ->
       callType: "log"
       arguments: args
     _debug.push messageObject
-    sysLog args...
+    sysConsole.log args...
   console.info = (args...) ->
     messageObject =
       callType: "info"
       arguments: args
     _debug.push messageObject
-    sysInfo args...
+    sysConsole.info args...
   console.warn = (args...) ->
     messageObject =
       callType: "warn"
       arguments: args
     _debug.push messageObject
-    sysWarn args...
+    sysConsole.warn args...
   console.error = (args...) ->
     messageObject =
       callType: "error"
       arguments: args
     _debug.push messageObject
-    sysError args...
+    sysConsole.error args...
   # Page navigation event
-  $(window).on "popstate", ->
+  $(window).on "popstate", (ev) ->
+    sysConsole.log "Navigation event", ev
     if localStorage?
       logHistory = JSON.stringify _debug
       localStorage.debugLog = logHistory
@@ -71,6 +72,7 @@ window.disableDebugLogging = disableDebugLogging
 
 reportDebugLog = ->
   if window._debug?
+    disableDebugLogging()
     console.info "Your log history:", _debug
   false
 
