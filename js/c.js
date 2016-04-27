@@ -3697,15 +3697,15 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysError(console, arguments);
+    return sysError.apply(console, arguments);
   };
   $(window).on("popstate", function(ev) {
-    sysConsole.log("Navigation event", ev);
+    console.log("Navigation event", ev);
     backupDebugLog();
     return false;
   });
   $(window).unload(function(ev) {
-    sysConsole.log("unload event", ev);
+    console.log("unload event", ev);
     backupDebugLog();
     return false;
   });
@@ -3781,6 +3781,7 @@ $(function() {
     return $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
       var html;
       event.preventDefault();
+      console.info("Showing bug report context menu");
       html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".bug-report-context-wrapper").remove();
       $("body").append(html);
