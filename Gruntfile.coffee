@@ -138,7 +138,7 @@ module.exports = (grunt) ->
           sourceMap: true
         files:
           "js/c.js":["coffee/core.coffee", "coffee/geo.coffee", "coffee/debug.coffee"]
-          "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee"]
+          "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee", "coffee/admin-su.coffee"]
           "js/project.js":["coffee/project.coffee"]
     phpcsfixer:
       app:

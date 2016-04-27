@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -114,10 +114,13 @@ populateAdminActions = function() {
     rawSu = toInt(result.detail.userdata.su_flag);
     if (rawSu.toBool()) {
       console.info("NOTICE: This is an SUPERUSER Admin");
-      html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>";
+      html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:add\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>\n<paper-button id=\"su-manage-users\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Manage All Users\n</paper-button>";
       $("#admin-actions-block").append(html);
       $("#su-view-projects").click(function() {
         return loadSUProjectBrowser();
+      });
+      $("#su-manage-users").click(function() {
+        return loadSUProfileBrowser();
       });
     }
     _adp.isUnrestricted = result.unrestricted;
@@ -3907,58 +3910,6 @@ loadProject = function(projectId, message) {
   return false;
 };
 
-loadSUProjectBrowser = function() {
-  var state, url;
-  url = uri.urlString + "admin-page.html#action:show-su-viewable";
-  state = {
-    "do": "action",
-    prop: "show-su-viewable"
-  };
-  history.pushState(state, "Viewing Superuser Project List", url);
-  startAdminActionHelper();
-  startLoad();
-  verifyLoginCredentials(function(result) {
-    var args, rawSu;
-    rawSu = toInt(result.detail.userdata.su_flag);
-    if (!rawSu.toBool()) {
-      stopLoadError("Sorry, you must be an admin to do this");
-      return false;
-    }
-    args = "perform=sulist";
-    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-      var error, html, icon, list, projectDetails, projectId, ref, ref1;
-      if (result.status !== true) {
-        error = (ref = result.human_error) != null ? ref : "Sorry, you can't do that right now";
-        stopLoadError(error);
-        console.error("Can't do SU listing!");
-        console.warn(result);
-        populateAdminActions();
-        return false;
-      }
-      html = "<h2 class=\"new-title col-xs-12\">All Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
-      $("#main-body").html(html);
-      list = new Array();
-      ref1 = result.projects;
-      for (projectId in ref1) {
-        projectDetails = ref1[projectId];
-        list.push(projectId);
-        icon = projectDetails["public"].toBool() ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-        html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectDetails.title + "\n  </button>\n</li>";
-        $("#project-list").append(html);
-      }
-      $("#project-list button").unbind().click(function() {
-        var project;
-        project = $(this).attr("data-project");
-        return loadEditor(project);
-      });
-      return stopLoad();
-    }).fail(function(result, status) {
-      return stopLoadError("There was a problem loading projects");
-    });
-  });
-  return false;
-};
-
 
 /*
  * Split-out coffeescript file for data validation.
@@ -4435,6 +4386,111 @@ validateAWebTaxon = function(taxonObj, callback) {
     prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
     bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
     return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
+  });
+  return false;
+};
+
+
+/*
+ *
+ */
+
+loadSUProfileBrowser = function() {
+  var state, url;
+  url = uri.urlString + "admin-page.html#action:show-su-profiles";
+  state = {
+    "do": "action",
+    prop: "show-su-profiles"
+  };
+  history.pushState(state, "Viewing Superuser Profile List", url);
+  startAdminActionHelper();
+  startLoad();
+  verifyLoginCredentials(function(result) {
+    var args, dest, rawSu;
+    rawSu = toInt(result.detail.userdata.su_flag);
+    if (!rawSu.toBool()) {
+      stopLoadError("Sorry, you must be an admin to do this");
+      return false;
+    }
+    args = "action=search_users&q=";
+    dest = uri.urlString + "api.php";
+    return $.post(dest, args).done(function(result) {
+      var entry, html, l, len, list, listElements, listInterior, message, ref, ref1;
+      if (result.status !== true) {
+        message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "There was a problem loading the user list";
+        stopLoadError(message);
+        return false;
+      }
+      list = result.result;
+      list = Object.toArray(list);
+      listElements = new Array();
+      for (l = 0, len = list.length; l < len; l++) {
+        user = list[l];
+        entry = user.full_name + " / " + user.handle + " / " + user.email;
+        listElements.push(entry);
+      }
+      listInterior = listElements.join("</li><li class='su-user-list'>");
+      html = "<ul class='su-total-list' id=\"su-management-list\">\n  <li class='su-user-list'>" + listInterior + "</li>\n</ul>";
+      $("#main-body").html(html);
+      foo();
+      stopLoad();
+      return false;
+    }).fail(function(result, status) {
+      console.error("Couldn't load user list", result, status);
+      return stopLoadError("Sorry, can't load user list");
+    });
+  });
+  return false;
+};
+
+loadSUProjectBrowser = function() {
+  var state, url;
+  url = uri.urlString + "admin-page.html#action:show-su-viewable";
+  state = {
+    "do": "action",
+    prop: "show-su-viewable"
+  };
+  history.pushState(state, "Viewing Superuser Project List", url);
+  startAdminActionHelper();
+  startLoad();
+  verifyLoginCredentials(function(result) {
+    var args, rawSu;
+    rawSu = toInt(result.detail.userdata.su_flag);
+    if (!rawSu.toBool()) {
+      stopLoadError("Sorry, you must be an admin to do this");
+      return false;
+    }
+    args = "perform=sulist";
+    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
+      var error, html, icon, list, projectDetails, projectId, ref, ref1;
+      if (result.status !== true) {
+        error = (ref = result.human_error) != null ? ref : "Sorry, you can't do that right now";
+        stopLoadError(error);
+        console.error("Can't do SU listing!");
+        console.warn(result);
+        populateAdminActions();
+        return false;
+      }
+      html = "<h2 class=\"new-title col-xs-12\">All Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
+      $("#main-body").html(html);
+      list = new Array();
+      ref1 = result.projects;
+      for (projectId in ref1) {
+        projectDetails = ref1[projectId];
+        list.push(projectId);
+        icon = projectDetails["public"].toBool() ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+        html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectDetails.title + "\n  </button>\n</li>";
+        $("#project-list").append(html);
+      }
+      $("#project-list button").unbind().click(function() {
+        var project;
+        project = $(this).attr("data-project");
+        return loadEditor(project);
+      });
+      return stopLoad();
+    }).fail(function(result, status) {
+      return stopLoadError("There was a problem loading projects");
+    });
   });
   return false;
 };
