@@ -178,9 +178,9 @@ function searchUsers($get)
         $nameXml = $entry['name'];
         $xml = new Xml();
         $xml->setXml($nameXml);
-        $clean['first_name'] = $xml->getTagContents('fname');
-        $clean['last_name'] = $xml->getTagContents('lname');
-        $clean['full_name'] = $xml->getTagContents('name');
+        $clean['first_name'] = htmlspecialchars_decode($xml->getTagContents('fname'));
+        $clean['last_name'] = htmlspecialchars_decode($xml->getTagContents('lname'));
+        $clean['full_name'] = htmlspecialchars_decode($xml->getTagContents('name'));
         $clean['handle'] = $xml->getTagContents('dname');
         $result[$k] = $clean;
     }
