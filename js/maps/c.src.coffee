@@ -3057,8 +3057,11 @@ enableDebugLogging = ->
   </paper-fab>
   """
   $("body").append html
-  safariDialogHelper("#debug-reporter")
+  $("#debug-reporter").click ->
+    reportDebugLog()
   window.debugLoggingEnabled = true
+  try
+    p$(".debug-enable-context").disabled = true
   false
 
 
@@ -3086,6 +3089,8 @@ disableDebugLogging = ->
     console.error = sysError
   $("#debug-reporter").remove()
   window.debugLoggingEnabled = false
+  try
+    p$(".debug-disable-context").disabled = true
   false
 
 
@@ -3096,8 +3101,7 @@ reportDebugLog = ->
   if window._debug?
     # disableDebugLogging()
     backupDebugLog()
-    logOutput = JSON.stringify _debug
-    # console.info "Your log history:", _debug
+    console.info "Opening debug reporter"
     # Show an email dialog
     html = """
     <paper-dialog modal id="report-bug-modal">
@@ -3108,6 +3112,7 @@ reportDebugLog = ->
           <textarea readonly rows="10" class="form-control">
             #{localStorage.debugLog}
           </textarea>
+          <br/><br/>
           <p>And email it to <a href="mailto:support@velociraptorsystems.com?subject=Debug%20Log">support@velociraptorsystems.com</a></p>
         </div>
       </paper-dialog-scrollable>
@@ -3126,5 +3131,31 @@ window.reportDebugLog = reportDebugLog
 
 $ ->
   window.debugLoggingEnabled = false
+  $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->
+    event.preventDefault()
+    html = """
+    <paper-material class="bug-report-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
+      <paper-menu class=context-menu">
+        <paper-item class="debug-enable-context">
+          Enable debug reporting
+        </paper-item>
+        <paper-item class="debug-disable-context">
+          Disable debug reporting
+        </paper-item>
+      </paper-menu>
+    </paper-material>
+    """
+    $(".bug-report-context-wrapper").remove()
+    $("body").append html
+    $(".debug-enable-context").click ->
+      enableDebugLogging()
+    $(".debug-disable-context").click ->
+      disableDebugLogging()
+    if window.debugLoggingIsEnabled
+      try
+        p$(".debug-enable-context").disabled = true
+    else
+      try
+        p$(".debug-disable-context").disabled = true
   if localStorage?.debugLog?
     enableDebugLogging()

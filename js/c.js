@@ -3709,8 +3709,13 @@ enableDebugLogging = function() {
   $("#debug-reporter").remove();
   html = "<paper-fab id=\"debug-reporter\" icon=\"icons:send\" data-toggle=\"tooltip\" title=\"Send Debug Report\">\n</paper-fab>";
   $("body").append(html);
-  safariDialogHelper("#debug-reporter");
+  $("#debug-reporter").click(function() {
+    return reportDebugLog();
+  });
   window.debugLoggingEnabled = true;
+  try {
+    p$(".debug-enable-context").disabled = true;
+  } catch (undefined) {}
   return false;
 };
 
@@ -3744,17 +3749,20 @@ disableDebugLogging = function() {
   }
   $("#debug-reporter").remove();
   window.debugLoggingEnabled = false;
+  try {
+    p$(".debug-disable-context").disabled = true;
+  } catch (undefined) {}
   return false;
 };
 
 window.disableDebugLogging = disableDebugLogging;
 
 reportDebugLog = function() {
-  var html, logOutput;
+  var html;
   if (window._debug != null) {
     backupDebugLog();
-    logOutput = JSON.stringify(_debug);
-    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p>Copy the text below</p>\n      <textarea readonly rows=\"10\" class=\"form-control\">\n        " + localStorage.debugLog + "\n      </textarea>\n      <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
+    console.info("Opening debug reporter");
+    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p>Copy the text below</p>\n      <textarea readonly rows=\"10\" class=\"form-control\">\n        " + localStorage.debugLog + "\n      </textarea>\n      <br/><br/>\n      <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
     $("#report-bug-modal").remove();
     $("body").append(html);
     safariDialogHelper("#report-bug-modal");
@@ -3766,6 +3774,28 @@ window.reportDebugLog = reportDebugLog;
 
 $(function() {
   window.debugLoggingEnabled = false;
+  $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
+    var html;
+    event.preventDefault();
+    html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+    $(".bug-report-context-wrapper").remove();
+    $("body").append(html);
+    $(".debug-enable-context").click(function() {
+      return enableDebugLogging();
+    });
+    $(".debug-disable-context").click(function() {
+      return disableDebugLogging();
+    });
+    if (window.debugLoggingIsEnabled) {
+      try {
+        return p$(".debug-enable-context").disabled = true;
+      } catch (undefined) {}
+    } else {
+      try {
+        return p$(".debug-disable-context").disabled = true;
+      } catch (undefined) {}
+    }
+  });
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     return enableDebugLogging();
   }
