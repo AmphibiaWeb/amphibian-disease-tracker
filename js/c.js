@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -3638,13 +3638,22 @@ enableDebugLogging = function() {
   /*
    * Overwrite console logs with custom events
    */
-  var sysConsole, sysError, sysInfo, sysLog, sysWarn;
-  window._debug = new Array();
+  var error2, logHistory, sysConsole;
+  if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
+    try {
+      logHistory = JSON.parse(localStorage.debugLog);
+      window._debug = logHistory;
+    } catch (error2) {
+      window._debug = new Array();
+    }
+  } else {
+    window._debug = new Array();
+  }
   sysConsole = console;
-  sysLog = console.log;
-  sysInfo = console.info;
-  sysWarn = console.warn;
-  sysError = console.error;
+  window.sysLog = console.log;
+  window.sysInfo = console.info;
+  window.sysWarn = console.warn;
+  window.sysError = console.error;
   console.log = function() {
     var args, messageObject;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
@@ -3653,7 +3662,7 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysLog(args);
+    return sysLog.apply(null, args);
   };
   console.info = function() {
     var args, messageObject;
@@ -3663,7 +3672,7 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysInfo(args);
+    return sysInfo.apply(null, args);
   };
   console.warn = function() {
     var args, messageObject;
@@ -3673,7 +3682,7 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysWarn(args);
+    return sysWarn.apply(null, args);
   };
   console.error = function() {
     var args, messageObject;
@@ -3683,11 +3692,50 @@ enableDebugLogging = function() {
       "arguments": args
     };
     _debug.push(messageObject);
-    return sysError(args);
+    return sysError.apply(null, args);
   };
+  $(window).on("popstate", function() {
+    if (typeof localStorage !== "undefined" && localStorage !== null) {
+      logHistory = JSON.stringify(_debug);
+      localStorage.debugLog = logHistory;
+    }
+    return false;
+  });
+  window.debugLoggingEnabled = true;
   return false;
 };
 
 window.enableDebugLogging = enableDebugLogging;
+
+disableDebugLogging = function() {
+  if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
+    delete localStorage.debugLog;
+  }
+  if (typeof window.sysLog === "function") {
+    console.log = sysLog;
+    console.info = sysInfo;
+    console.warn = sysWarn;
+    console.error = sysError;
+  }
+  return false;
+};
+
+window.disableDebugLogging = disableDebugLogging;
+
+reportDebugLog = function() {
+  if (window._debug != null) {
+    console.info("Your log history:", _debug);
+  }
+  return false;
+};
+
+window.reportDebugLog = reportDebugLog;
+
+$(function() {
+  window.debugLoggingEnabled = false;
+  if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
+    return enableDebugLogging();
+  }
+});
 
 //# sourceMappingURL=maps/c.js.map
