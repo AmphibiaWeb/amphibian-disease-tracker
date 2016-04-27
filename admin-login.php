@@ -19,6 +19,10 @@
     <link rel="import" href="bower_components/iron-icons/iron-icons.html"/>
     <link rel="import" href="polymer-elements/copyright-statement.html"/>
     <link rel="import" href="polymer-elements/glyphicon-social-icons.html"/>
+    <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
+    <link rel="import" href="bower_components/paper-fab/paper-fab.html"/>
+    <link rel="import" href="bower_components/paper-item/paper-item.html"/>
+    <link rel="import" href="bower_components/paper-material/paper-material.html"/>
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
