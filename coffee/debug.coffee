@@ -53,12 +53,10 @@ enableDebugLogging = ->
     backupDebugLog true
   # Page navigation event
   $(window).on "popstate", (ev) ->
-    console.log "Navigation event", ev
-    backupDebugLog()
+    console.log "Navigation event"
     false
   $(window).unload (ev) ->
-    console.log "unload event", ev
-    backupDebugLog()
+    console.log "unload event"
     false
   $("#debug-reporter").remove()
   html =  """
@@ -82,7 +80,7 @@ backupDebugLog = (suppressMessage = false)->
       logHistory = JSON.stringify window._debug
       localStorage.debugLog = logHistory
     catch e
-      console.error "Unable to backup debug log! #{e.message}", window._debug
+      sysError.apply console, ["Unable to backup debug log! #{e.message}", window._debug]
   false
 
 window.enableDebugLogging = enableDebugLogging

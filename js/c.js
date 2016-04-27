@@ -3704,13 +3704,11 @@ enableDebugLogging = function() {
     return backupDebugLog(true);
   };
   $(window).on("popstate", function(ev) {
-    console.log("Navigation event", ev);
-    backupDebugLog();
+    console.log("Navigation event");
     return false;
   });
   $(window).unload(function(ev) {
-    console.log("unload event", ev);
-    backupDebugLog();
+    console.log("unload event");
     return false;
   });
   $("#debug-reporter").remove();
@@ -3740,7 +3738,7 @@ backupDebugLog = function(suppressMessage) {
       localStorage.debugLog = logHistory;
     } catch (error2) {
       e = error2;
-      console.error("Unable to backup debug log! " + e.message, window._debug);
+      sysError.apply(console, ["Unable to backup debug log! " + e.message, window._debug]);
     }
   }
   return false;
