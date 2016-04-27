@@ -3057,7 +3057,8 @@ enableDebugLogging = ->
   </paper-fab>
   """
   $("body").append html
-  safariDialogHelper("#debug-reporter")
+  $("#debug-reporter").click ->
+    reportDebugLog()
   window.debugLoggingEnabled = true
   false
 
@@ -3096,8 +3097,7 @@ reportDebugLog = ->
   if window._debug?
     # disableDebugLogging()
     backupDebugLog()
-    logOutput = JSON.stringify _debug
-    # console.info "Your log history:", _debug
+    console.info "Opening debug reporter"
     # Show an email dialog
     html = """
     <paper-dialog modal id="report-bug-modal">
@@ -3108,6 +3108,7 @@ reportDebugLog = ->
           <textarea readonly rows="10" class="form-control">
             #{localStorage.debugLog}
           </textarea>
+          <br/><br/>
           <p>And email it to <a href="mailto:support@velociraptorsystems.com?subject=Debug%20Log">support@velociraptorsystems.com</a></p>
         </div>
       </paper-dialog-scrollable>
