@@ -3026,24 +3026,28 @@ enableDebugLogging = ->
       arguments: args
     _debug.push messageObject
     sysLog.apply console, arguments
+    backupDebugLog true
   console.info = (args...) ->
     messageObject =
       callType: "info"
       arguments: args
     _debug.push messageObject
     sysInfo.apply console, arguments
+    backupDebugLog true
   console.warn = (args...) ->
     messageObject =
       callType: "warn"
       arguments: args
     _debug.push messageObject
     sysWarn.apply console, arguments
+    backupDebugLog true
   console.error = (args...) ->
     messageObject =
       callType: "error"
       arguments: args
     _debug.push messageObject
     sysError.apply console, arguments
+    backupDebugLog true
   # Page navigation event
   $(window).on "popstate", (ev) ->
     console.log "Navigation event", ev
@@ -3067,9 +3071,10 @@ enableDebugLogging = ->
   false
 
 
-backupDebugLog = ->
+backupDebugLog = (suppressMessage = false)->
   if localStorage? and window._debug?
-    console.info "Saving backup of debug log"
+    unless suppressMessage
+      console.info "Saving backup of debug log"
     try
       logHistory = JSON.stringify window._debug
       localStorage.debugLog = logHistory
@@ -3163,6 +3168,6 @@ $ ->
           p$(".debug-disable-context").disabled = true
       delay 5000, ->
         $(".bug-report-context-wrapper").remove()
-      
+
   if localStorage?.debugLog?
     enableDebugLogging()
