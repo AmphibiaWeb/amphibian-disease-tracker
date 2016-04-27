@@ -46,14 +46,14 @@ enableDebugLogging = ->
       callType: "error"
       arguments: args
     _debug.push messageObject
-    sysError console, arguments
+    sysError.apply console, arguments
   # Page navigation event
   $(window).on "popstate", (ev) ->
-    sysConsole.log "Navigation event", ev
+    console.log "Navigation event", ev
     backupDebugLog()
     false
   $(window).unload (ev) ->
-    sysConsole.log "unload event", ev
+    console.log "unload event", ev
     backupDebugLog()
     false
   $("#debug-reporter").remove()
@@ -139,6 +139,7 @@ $ ->
   delay 1500, ->
     $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->
       event.preventDefault()
+      console.info "Showing bug report context menu"
       html = """
       <paper-material class="bug-report-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
         <paper-menu class=context-menu">
