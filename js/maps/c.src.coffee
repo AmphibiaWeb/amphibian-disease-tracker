@@ -3003,6 +3003,8 @@ enableDebugLogging = ->
   ###
   # Overwrite console logs with custom events
   ###
+  if window.debugLoggingEnabled
+    return false
   if localStorage?.debugLog?
     try
       logHistory = JSON.parse localStorage.debugLog
@@ -3131,31 +3133,35 @@ window.reportDebugLog = reportDebugLog
 
 $ ->
   window.debugLoggingEnabled = false
-  $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->
-    event.preventDefault()
-    html = """
-    <paper-material class="bug-report-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
-      <paper-menu class=context-menu">
-        <paper-item class="debug-enable-context">
-          Enable debug reporting
-        </paper-item>
-        <paper-item class="debug-disable-context">
-          Disable debug reporting
-        </paper-item>
-      </paper-menu>
-    </paper-material>
-    """
-    $(".bug-report-context-wrapper").remove()
-    $("body").append html
-    $(".debug-enable-context").click ->
-      enableDebugLogging()
-    $(".debug-disable-context").click ->
-      disableDebugLogging()
-    if window.debugLoggingIsEnabled
-      try
-        p$(".debug-enable-context").disabled = true
-    else
-      try
-        p$(".debug-disable-context").disabled = true
+  delay 1500, ->
+    $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->
+      event.preventDefault()
+      html = """
+      <paper-material class="bug-report-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
+        <paper-menu class=context-menu">
+          <paper-item class="debug-enable-context">
+            Enable debug reporting
+          </paper-item>
+          <paper-item class="debug-disable-context">
+            Disable debug reporting
+          </paper-item>
+        </paper-menu>
+      </paper-material>
+      """
+      $(".bug-report-context-wrapper").remove()
+      $("body").append html
+      $(".debug-enable-context").click ->
+        enableDebugLogging()
+      $(".debug-disable-context").click ->
+        disableDebugLogging()
+      if window.debugLoggingEnabled
+        try
+          p$(".debug-enable-context").disabled = true
+      else
+        try
+          p$(".debug-disable-context").disabled = true
+      delay 5000, ->
+        $(".bug-report-context-wrapper").remove()
+      
   if localStorage?.debugLog?
     enableDebugLogging()

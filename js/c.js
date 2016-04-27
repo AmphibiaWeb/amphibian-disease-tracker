@@ -3639,6 +3639,9 @@ enableDebugLogging = function() {
    * Overwrite console logs with custom events
    */
   var error2, html, logHistory;
+  if (window.debugLoggingEnabled) {
+    return false;
+  }
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     try {
       logHistory = JSON.parse(localStorage.debugLog);
@@ -3774,27 +3777,32 @@ window.reportDebugLog = reportDebugLog;
 
 $(function() {
   window.debugLoggingEnabled = false;
-  $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
-    var html;
-    event.preventDefault();
-    html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
-    $(".bug-report-context-wrapper").remove();
-    $("body").append(html);
-    $(".debug-enable-context").click(function() {
-      return enableDebugLogging();
+  delay(1500, function() {
+    return $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
+      var html;
+      event.preventDefault();
+      html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+      $(".bug-report-context-wrapper").remove();
+      $("body").append(html);
+      $(".debug-enable-context").click(function() {
+        return enableDebugLogging();
+      });
+      $(".debug-disable-context").click(function() {
+        return disableDebugLogging();
+      });
+      if (window.debugLoggingEnabled) {
+        try {
+          p$(".debug-enable-context").disabled = true;
+        } catch (undefined) {}
+      } else {
+        try {
+          p$(".debug-disable-context").disabled = true;
+        } catch (undefined) {}
+      }
+      return delay(5000, function() {
+        return $(".bug-report-context-wrapper").remove();
+      });
     });
-    $(".debug-disable-context").click(function() {
-      return disableDebugLogging();
-    });
-    if (window.debugLoggingIsEnabled) {
-      try {
-        return p$(".debug-enable-context").disabled = true;
-      } catch (undefined) {}
-    } else {
-      try {
-        return p$(".debug-disable-context").disabled = true;
-      } catch (undefined) {}
-    }
   });
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     return enableDebugLogging();
