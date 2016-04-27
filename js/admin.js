@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -3904,58 +3904,6 @@ loadProject = function(projectId, message) {
     message = "";
   }
   goTo(uri.urlString + "project.php?id=" + projectId);
-  return false;
-};
-
-loadSUProjectBrowser = function() {
-  var state, url;
-  url = uri.urlString + "admin-page.html#action:show-su-viewable";
-  state = {
-    "do": "action",
-    prop: "show-su-viewable"
-  };
-  history.pushState(state, "Viewing Superuser Project List", url);
-  startAdminActionHelper();
-  startLoad();
-  verifyLoginCredentials(function(result) {
-    var args, rawSu;
-    rawSu = toInt(result.detail.userdata.su_flag);
-    if (!rawSu.toBool()) {
-      stopLoadError("Sorry, you must be an admin to do this");
-      return false;
-    }
-    args = "perform=sulist";
-    return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-      var error, html, icon, list, projectDetails, projectId, ref, ref1;
-      if (result.status !== true) {
-        error = (ref = result.human_error) != null ? ref : "Sorry, you can't do that right now";
-        stopLoadError(error);
-        console.error("Can't do SU listing!");
-        console.warn(result);
-        populateAdminActions();
-        return false;
-      }
-      html = "<h2 class=\"new-title col-xs-12\">All Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
-      $("#main-body").html(html);
-      list = new Array();
-      ref1 = result.projects;
-      for (projectId in ref1) {
-        projectDetails = ref1[projectId];
-        list.push(projectId);
-        icon = projectDetails["public"].toBool() ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-        html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\" data-toggle=\"tooltip\" title=\"Project #" + (projectId.substring(0, 8)) + "...\">\n    " + icon + " " + projectDetails.title + "\n  </button>\n</li>";
-        $("#project-list").append(html);
-      }
-      $("#project-list button").unbind().click(function() {
-        var project;
-        project = $(this).attr("data-project");
-        return loadEditor(project);
-      });
-      return stopLoad();
-    }).fail(function(result, status) {
-      return stopLoadError("There was a problem loading projects");
-    });
-  });
   return false;
 };
 
