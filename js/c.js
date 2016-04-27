@@ -3638,7 +3638,7 @@ enableDebugLogging = function() {
   /*
    * Overwrite console logs with custom events
    */
-  var error2, logHistory;
+  var error2, html, logHistory;
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     try {
       logHistory = JSON.parse(localStorage.debugLog);
@@ -3706,6 +3706,10 @@ enableDebugLogging = function() {
     backupDebugLog();
     return false;
   });
+  $("#debug-reporter").remove();
+  html = "<paper-fab id=\"debug-reporter\" icon=\"icons:send\" data-toggle=\"tooltip\" title=\"Send Debug Report\">\n</paper-fab>";
+  $("body").append(html);
+  safariDialogHelper("#debug-reporter");
   window.debugLoggingEnabled = true;
   return false;
 };
@@ -3738,6 +3742,8 @@ disableDebugLogging = function() {
     console.warn = sysWarn;
     console.error = sysError;
   }
+  $("#debug-reporter").remove();
+  window.debugLoggingEnabled = false;
   return false;
 };
 
@@ -3748,10 +3754,10 @@ reportDebugLog = function() {
   if (window._debug != null) {
     backupDebugLog();
     logOutput = JSON.stringify(_debug);
-    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p>Copy the text below</p>\n      <textarea readonly rows=\"10\">\n        " + localStorage.debugLog + "\n      </textarea>\n      <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
+    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p>Copy the text below</p>\n      <textarea readonly rows=\"10\" class=\"form-control\">\n        " + localStorage.debugLog + "\n      </textarea>\n      <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
     $("#report-bug-modal").remove();
     $("body").append(html);
-    p$("#report-bug-modal").open();
+    safariDialogHelper("#report-bug-modal");
   }
   return false;
 };
