@@ -3060,6 +3060,8 @@ enableDebugLogging = ->
   $("#debug-reporter").click ->
     reportDebugLog()
   window.debugLoggingEnabled = true
+  try
+    p$(".debug-enable-context").disabled = true
   false
 
 
@@ -3087,6 +3089,8 @@ disableDebugLogging = ->
     console.error = sysError
   $("#debug-reporter").remove()
   window.debugLoggingEnabled = false
+  try
+    p$(".debug-disable-context").disabled = true
   false
 
 
@@ -3127,5 +3131,31 @@ window.reportDebugLog = reportDebugLog
 
 $ ->
   window.debugLoggingEnabled = false
+  $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->
+    event.preventDefault()
+    html = """
+    <paper-material class="bug-report-context-wrapper" style="top:#{event.pageY}px;left:#{event.pageX}px;position:absolute">
+      <paper-menu class=context-menu">
+        <paper-item class="debug-enable-context">
+          Enable debug reporting
+        </paper-item>
+        <paper-item class="debug-disable-context">
+          Disable debug reporting
+        </paper-item>
+      </paper-menu>
+    </paper-material>
+    """
+    $(".bug-report-context-wrapper").remove()
+    $("body").append html
+    $(".debug-enable-context").click ->
+      enableDebugLogging()
+    $(".debug-disable-context").click ->
+      disableDebugLogging()
+    if window.debugLoggingIsEnabled
+      try
+        p$(".debug-enable-context").disabled = true
+    else
+      try
+        p$(".debug-disable-context").disabled = true
   if localStorage?.debugLog?
     enableDebugLogging()

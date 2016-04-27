@@ -3713,6 +3713,9 @@ enableDebugLogging = function() {
     return reportDebugLog();
   });
   window.debugLoggingEnabled = true;
+  try {
+    p$(".debug-enable-context").disabled = true;
+  } catch (undefined) {}
   return false;
 };
 
@@ -3746,6 +3749,9 @@ disableDebugLogging = function() {
   }
   $("#debug-reporter").remove();
   window.debugLoggingEnabled = false;
+  try {
+    p$(".debug-disable-context").disabled = true;
+  } catch (undefined) {}
   return false;
 };
 
@@ -3768,6 +3774,28 @@ window.reportDebugLog = reportDebugLog;
 
 $(function() {
   window.debugLoggingEnabled = false;
+  $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
+    var html;
+    event.preventDefault();
+    html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
+    $(".bug-report-context-wrapper").remove();
+    $("body").append(html);
+    $(".debug-enable-context").click(function() {
+      return enableDebugLogging();
+    });
+    $(".debug-disable-context").click(function() {
+      return disableDebugLogging();
+    });
+    if (window.debugLoggingIsEnabled) {
+      try {
+        return p$(".debug-enable-context").disabled = true;
+      } catch (undefined) {}
+    } else {
+      try {
+        return p$(".debug-disable-context").disabled = true;
+      } catch (undefined) {}
+    }
+  });
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     return enableDebugLogging();
   }
