@@ -396,7 +396,7 @@ loadEditor = (projectPreload) ->
             p$("#preview-funding").markdown = $(this).val()
           $("#markdown-switcher-funding li").click ->
             $("#markdown-switcher-funding li").removeClass "active"
-            $("#markdown-switcher-funding".parent().find(".markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher-funding").parent().find(".markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
             targetView = $(this).attr "data-view"
             console.info "Switching to target view", targetView

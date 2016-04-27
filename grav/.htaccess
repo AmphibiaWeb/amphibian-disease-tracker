@@ -60,6 +60,6 @@ RewriteRule ^(LICENSE.txt|composer.lock|composer.json|\.htaccess)$ error [F]
 </IfModule>
 
 # Begin - Prevent Browsing and Set Default Resources
-# Options -Indexes
+Options -Indexes
 DirectoryIndex index.php index.html index.htm
 # End - Prevent Browsing and Set Default Resources

@@ -2423,31 +2423,39 @@ loadEditor = (projectPreload) ->
             p$("#project-funding").bindValue = project.extended_funding_reach_goals.unescape()
           # Watch for changes and toggle save watcher state
           # Events
+          ## Events for notes
           ta = p$("#project-notes").textarea
           $(ta).keyup ->
             p$("#note-preview").markdown = $(this).val()
           $("#markdown-switcher li").click ->
             $("#markdown-switcher li").removeClass "active"
-            $("#markdown-switcher .markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher").parent().find(".markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
-            switch $(this).attr "data-view"
+            targetView = $(this).attr "data-view"
+            console.info "Switching to target view", targetView
+            switch targetView
               when "md"
                 $("#project-notes").attr "hidden", "hidden"
               when "edit"
                 $("#note-preview").attr "hidden", "hidden"
+            false
+          ## Events for funding
           ta = p$("#project-funding").textarea
           $(ta).keyup ->
             p$("#preview-funding").markdown = $(this).val()
           $("#markdown-switcher-funding li").click ->
             $("#markdown-switcher-funding li").removeClass "active"
-            $("#markdown-switcher-funding .markdown-pair").removeAttr "hidden"
+            $("#markdown-switcher-funding").parent().find(".markdown-pair").removeAttr "hidden"
             $(this).addClass "active"
-            switch $(this).attr "data-view"
+            targetView = $(this).attr "data-view"
+            console.info "Switching to target view", targetView
+            switch targetView
               when "md"
                 $("#project-funding").attr "hidden", "hidden"
               when "edit"
                 $("#preview-funding").attr "hidden", "hidden"
-
+            false
+          ##  Events for deletion
           $("#delete-project").click ->
             confirmButton = """
             <paper-button id="confirm-delete-project" class="materialred">

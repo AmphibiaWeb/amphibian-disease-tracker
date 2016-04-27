@@ -2326,30 +2326,40 @@ loadEditor = function(projectPreload) {
             return p$("#note-preview").markdown = $(this).val();
           });
           $("#markdown-switcher li").click(function() {
+            var targetView;
             $("#markdown-switcher li").removeClass("active");
-            $("#markdown-switcher .markdown-pair").removeAttr("hidden");
+            $("#markdown-switcher").parent().find(".markdown-pair").removeAttr("hidden");
             $(this).addClass("active");
-            switch ($(this).attr("data-view")) {
+            targetView = $(this).attr("data-view");
+            console.info("Switching to target view", targetView);
+            switch (targetView) {
               case "md":
-                return $("#project-notes").attr("hidden", "hidden");
+                $("#project-notes").attr("hidden", "hidden");
+                break;
               case "edit":
-                return $("#note-preview").attr("hidden", "hidden");
+                $("#note-preview").attr("hidden", "hidden");
             }
+            return false;
           });
           ta = p$("#project-funding").textarea;
           $(ta).keyup(function() {
             return p$("#preview-funding").markdown = $(this).val();
           });
           $("#markdown-switcher-funding li").click(function() {
+            var targetView;
             $("#markdown-switcher-funding li").removeClass("active");
-            $("#markdown-switcher-funding .markdown-pair").removeAttr("hidden");
+            $("#markdown-switcher-funding").parent().find(".markdown-pair").removeAttr("hidden");
             $(this).addClass("active");
-            switch ($(this).attr("data-view")) {
+            targetView = $(this).attr("data-view");
+            console.info("Switching to target view", targetView);
+            switch (targetView) {
               case "md":
-                return $("#project-funding").attr("hidden", "hidden");
+                $("#project-funding").attr("hidden", "hidden");
+                break;
               case "edit":
-                return $("#preview-funding").attr("hidden", "hidden");
+                $("#preview-funding").attr("hidden", "hidden");
             }
+            return false;
           });
           $("#delete-project").click(function() {
             var confirmButton;
