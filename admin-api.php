@@ -1525,7 +1525,7 @@ function superuserEditUser($get) {
             return array(
                 "status" => false,
                 "error" => "INVALID_TARGET_IS_SU",
-                "human_error" => "You can not delete Superusers through this interface. Please contact your system administrator",
+                "human_error" => "You can not edit Superusers through this interface. Please contact your system administrator",
             );
         }
         $adminFlag = $userData['userdata']['admin_flag'];
@@ -1534,23 +1534,37 @@ function superuserEditUser($get) {
             return array(
                 "status" => false,
                 "error" => "INVALID_TARGET_ADMIN_VS_ADMIN",
-                "human_error" => "Sorry, only Superusers can delete adminstrators"
+                "human_error" => "Sorry, only Superusers can edit adminstrators"
             );
         }
         # Permission check complete.
-        $dryRun = $udb->forceDeleteCurrentUser();
-        $targetUid = $dryRun["target_user"];
-        if($targetUid != $target) {
-            # Should never happen
+        $editAction = $get["change_type"];
+        switch($editAction) {
+        case "delete":
+            $dryRun = $udb->forceDeleteCurrentUser();
+            $targetUid = $dryRun["target_user"];
+            if($targetUid != $target) {
+                # Should never happen
+                return array(
+                    "status" => false,
+                    "error" => "MISMATCHED_TARGETS",
+                    "human_error" => "The system encountered an error confirming targets",
+                    "obj_target" => $targetUid,
+                    "post_target" => $target,
+                );
+            }        
+            return $udb->forceDeleteCurrentUser(true);
+            break;
+        case "reset":
+            break;
+        default:
             return array(
                 "status" => false,
-                "error" => "MISMATCHED_TARGETS",
-                "human_error" => "The system encountered an error confirming targets",
-                "obj_target" => $targetUid,
-                "post_target" => $target,
+                "error" => "INVALID_CHANGE_TYPE",
+                "human_error" => "We didn't recognize this change type",
+                "change_type_provided" => $editAction,
             );
-        }        
-        return $udb->forceDeleteCurrentUser(true);
+        }
     } catch (Exception $e) {
         return array(
             "status" => false,
