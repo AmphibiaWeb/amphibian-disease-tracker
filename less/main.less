@@ -582,11 +582,18 @@ paper-button[raised].admin-action {
     li.su-user-list:hover {
         background: #ccc;
     }
-    .su-user-list {
+    .su-user-list {        
         .clearfix;
+        transition: background .2s ease-out;
+        vertical-align: middle;
+        padding: .5rem;
+        display: flex;
+        align-items: center;
         div {
-            display: inline-block;
-            .pull-right;
+            align-self: flex-end
+        }
+        span {
+            flex-grow: 1;
         }
     }
 }
