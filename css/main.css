@@ -7430,8 +7430,75 @@ paper-button[raised].admin-action {
 #su-management-list {
   list-style-type: none;
 }
-#su-management-list li.su-user-list :hover {
+#su-management-list li.su-user-list:hover {
   background: #ccc;
+}
+#su-management-list .su-user-list:before,
+#su-management-list .su-user-list:after {
+  content: " ";
+  display: table;
+}
+#su-management-list .su-user-list:after {
+  clear: both;
+}
+#su-management-list .su-user-list:before,
+#su-management-list .su-user-list:after {
+  content: " ";
+  display: table;
+}
+#su-management-list .su-user-list:after {
+  clear: both;
+}
+#su-management-list .su-user-list div {
+  display: inline-block;
+  float: right !important;
+  float: right;
+}
+#su-management-list .su-user-list div paper-card {
+  width: 100%;
+  margin-bottom: 2rem;
+  transition: all 0.5s ease-out;
+  max-height: 750px;
+}
+#su-management-list .su-user-list div paper-card > div {
+  max-height: 750px;
+}
+#su-management-list .su-user-list div paper-card .header {
+  cursor: pointer;
+}
+#su-management-list .su-user-list div paper-card .header :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f066";
+}
+#su-management-list .su-user-list div paper-card div {
+  transition: all 0.5s ease-out;
+}
+#su-management-list .su-user-list div paper-card.collapse > div:not(.header),
+#su-management-list .su-user-list div paper-card.collapsed > div:not(.header) {
+  transition: all 0.5s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+#su-management-list .su-user-list div paper-card.collapse > .header :before,
+#su-management-list .su-user-list div paper-card.collapsed > .header :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f065" !important;
+}
+#su-management-list .su-user-list div .paper-card-0 .header.paper-card .title-text.paper-card {
+  color: #009688;
 }
 #restriction-badge {
   cursor: pointer;

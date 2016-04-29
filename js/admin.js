@@ -2046,6 +2046,9 @@ checkInitLoad = function(callback) {
               break;
             case "show-su-viewable":
               loadSUProjectBrowser();
+              break;
+            case "show-su-profiles":
+              loadSUProfileBrowser();
           }
           break;
         case "home":
@@ -4440,7 +4443,7 @@ loadSUProfileBrowser = function() {
         if (isNull(user.full_name)) {
           continue;
         }
-        entry = user.full_name + " / " + user.handle + " / " + user.email + "\n<button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n  <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n  Find Projects\n</button>\n<button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n  <iron-icon icon=\"av:replay\"></iron-icon>\n  Reset Password\n</button>\n<button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n  <iron-icon icon=\"icons:delete\"></iron-icon>\n  Delete User\n</button>";
+        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");

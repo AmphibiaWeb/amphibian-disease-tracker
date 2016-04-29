@@ -2015,6 +2015,8 @@ checkInitLoad = (callback) ->
               loadProjectBrowser()
             when "show-su-viewable"
               loadSUProjectBrowser()
+            when "show-su-profiles"
+              loadSUProfileBrowser()
         when "home"
           populateAdminActions()
     else if typeof callback is "function"
