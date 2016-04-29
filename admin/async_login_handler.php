@@ -193,7 +193,7 @@ function getLoginState($get, $default = false)
       $userDetail = $e->getMessage();
     }
 
-    return array(
+    $response = array(
         'status' => $loginStatus,
         'defaulted' => $default,
         'login_url' => $login_url,
@@ -204,6 +204,10 @@ function getLoginState($get, $default = false)
         "alternate_allowed" => $u->alternateIsAllowed(),
         "restriction_criteria" => $u->getRestrictionCriteria(),
     );
+    if($default) {
+        $response["provided_arguments"] = $_REQUEST;
+    }
+    return $response;
 }
 
 function hasTOTP($get)

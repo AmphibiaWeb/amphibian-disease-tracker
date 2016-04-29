@@ -4463,7 +4463,8 @@ loadSUProfileBrowser = function() {
           var uid;
           startLoad();
           uid = $(this).attr("data-uid");
-          args = "action=su_manipulate_user&user=" + uid + "&change_type=delete";
+          args = "perform=su_manipulate_user&user=" + uid + "&change_type=delete";
+          console.info("Posting to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
           $.post(adminParams.apiTarget, args, "json").done(function(result) {
             var listElement, ref2, ref3, systemError;
             console.info("Click to delete returned", result);
