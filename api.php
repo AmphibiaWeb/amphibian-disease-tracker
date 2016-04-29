@@ -157,7 +157,7 @@ function searchUsers($get)
     /***
      *
      ***/
-    global $udb;
+    global $udb, $loginStatus;
     $q = $udb->sanitize($get['q']);
     $response = array(
         'search' => $q,
@@ -170,11 +170,19 @@ function searchUsers($get)
     $cols = array('username', 'name', 'dblink');
     $response['status'] = true;
     $result = $udb->getQueryResults($search, $cols, 'OR', true, true);
+    $suFlag = $login_status['detail']['userdata']['su_flag'];
+    $isSu = boolstr($suFlag);
+    $adminFlag = $login_status['detail']['userdata']['admin_flag'];
+    $isAdmin = boolstr($adminFlag);
     foreach ($result as $k => $entry) {
         $clean = array(
             'email' => $entry['username'],
             'uid' => $entry['dblink'],
+            "has_verified_email" => boolstr($entry["email_verified"]) || boolstr($entry["alternate_email_verified"]),
         );
+        if($isAdmin) {
+            $clean["is_admin"] = boolstr($entry["admin_flag"]);
+        }
         $nameXml = $entry['name'];
         $xml = new Xml();
         $xml->setXml($nameXml);
