@@ -7132,6 +7132,26 @@ html >>> .capitalize {
     box-shadow: 0 0 9px #333;
   }
 }
+.danger-glow {
+  background-color: #F44336;
+  animation-name: dangerPulse;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+@keyframes dangerPulse {
+  from {
+    background-color: #F44336;
+    box-shadow: 0 0 9px #333;
+  }
+  50% {
+    background-color: #cc3214;
+    box-shadow: 0 0 18px #cc3214;
+  }
+  to {
+    background-color: #F44336;
+    box-shadow: 0 0 9px #333;
+  }
+}
 .fixed-bar {
   position: fixed;
   margin-top: 0px !important;

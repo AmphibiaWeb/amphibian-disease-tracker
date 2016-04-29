@@ -258,6 +258,31 @@ paper-dialog-scrollable {
   }
 }
 
+.danger-glow {
+    background-color: @material-red;
+    //box-shadow: 0 0 2em .25em @success;
+    animation-name: dangerPulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@danger-glowdown: @material-red - #281122;
+
+@keyframes dangerPulse {
+  from {
+      background-color: @material-red;
+      box-shadow: 0 0 9px #333;
+  }
+  50% {
+      background-color: @danger-glowdown;
+      box-shadow: 0 0 18px @danger-glowdown;
+  }
+  to {
+      background-color: @material-red;
+      box-shadow: 0 0 9px #333;
+  }
+}
+
 // Home Page
 
 .fixed-bar {
