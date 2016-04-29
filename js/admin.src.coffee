@@ -2015,6 +2015,8 @@ checkInitLoad = (callback) ->
               loadProjectBrowser()
             when "show-su-viewable"
               loadSUProjectBrowser()
+            when "show-su-profiles"
+              loadSUProfileBrowser()
         when "home"
           populateAdminActions()
     else if typeof callback is "function"
@@ -4445,19 +4447,23 @@ loadSUProfileBrowser = ->
         if isNull user.full_name
           continue
         entry = """
-        #{user.full_name} / #{user.handle} / #{user.email}
-        <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
-          <iron-icon icon="icons:find-in-page"></iron-icon>
-          Find Projects
-        </button>
-        <button class="#{classPrefix}-reset btn btn-warning" data-uid="#{user.uid}">
-          <iron-icon icon="av:replay"></iron-icon>
-          Reset Password
-        </button>
-        <button class="#{classPrefix}-delete btn btn-danger" data-uid="#{user.uid}">
-          <iron-icon icon="icons:delete"></iron-icon>
-          Delete User
-        </button>
+        <span class="#{classPrefix}-user-details">
+          #{user.full_name} / #{user.handle} / #{user.email}
+        </span>
+        <div>
+          <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
+            <iron-icon icon="icons:find-in-page"></iron-icon>
+            Find Projects
+          </button>
+          <button class="#{classPrefix}-reset btn btn-warning" data-uid="#{user.uid}">
+            <iron-icon icon="av:replay"></iron-icon>
+            Reset Password
+          </button>
+          <button class="#{classPrefix}-delete btn btn-danger" data-uid="#{user.uid}">
+            <iron-icon icon="icons:delete"></iron-icon>
+            Delete User
+          </button>
+        </div>
         """
         listElements.push entry
       listInterior = listElements.join "</li><li class='su-user-list'>"

@@ -579,8 +579,15 @@ paper-button[raised].admin-action {
 
 #su-management-list {
     list-style-type: none;
-    li.su-user-list :hover {
+    li.su-user-list:hover {
         background: #ccc;
+    }
+    .su-user-list {
+        .clearfix;
+        div {
+            display: inline-block;
+            .pull-right;
+        }
     }
 }
 
