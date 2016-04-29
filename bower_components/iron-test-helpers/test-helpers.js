@@ -10,8 +10,7 @@
 (function(global) {
   'use strict';
 
-
-  /**
+  /*
    * Forces distribution of light children, and lifecycle callbacks on the
    * Custom Elements polyfill. Used when testing elements that rely on their
    * distributed children.
@@ -23,7 +22,7 @@
     window.CustomElements && window.CustomElements.takeRecords();
   };
 
-  /**
+  /*
    * Stamps and renders a `dom-if` template.
    *
    * @param {HTMLElement} node The node containing the template,
@@ -37,10 +36,10 @@
     global.flushAsynchronousOperations();
   };
 
-  /**
+  /*
    * Fires a custom event on a specific node. This event bubbles and is cancellable.
    *
-   * @param {string} type The type of event.
+   * @param {String} type The type of event.
    * @param {Object} props Any custom properties the event contains.
    * @param {HTMLElement} node The node to fire the event on.
    */
@@ -55,7 +54,7 @@
     node.dispatchEvent(event);
   };
 
-  /**
+  /*
    * Skips a test unless a condition is met. Sample use:
    *    function isNotIE() {
    *      return !navigator.userAgent.match(/MSIE/i);
@@ -64,7 +63,7 @@
    *      ...
    *    });
    *
-   * @param {Function} condition The name of a Boolean function determining if the test should be run.
+   * @param {String} condition The name of a Boolean function determining if the test should be run.
    * @param {Function} test The test to be run.
    */
 
@@ -86,12 +85,5 @@
 
       return result;
     };
-  };
-
-  global.TestHelpers = {
-    flushAsynchronousOperations: global.flushAsynchronousOperations,
-    forceXIfStamp: global.forceXIfStamp,
-    fireEvent: global.fireEvent,
-    skipUnless: global.skipUnless
   };
 })(this);
