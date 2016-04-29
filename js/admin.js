@@ -4416,12 +4416,13 @@ loadSUProfileBrowser = function() {
   startAdminActionHelper();
   startLoad();
   verifyLoginCredentials(function(result) {
-    var args, dest, rawSu;
+    var args, classPrefix, dest, rawSu;
     rawSu = toInt(result.detail.userdata.su_flag);
     if (!rawSu.toBool()) {
       stopLoadError("Sorry, you must be an admin to do this");
       return false;
     }
+    classPrefix = "su-admin-users";
     args = "action=search_users&q=";
     dest = uri.urlString + "api.php";
     return $.post(dest, args).done(function(result) {
@@ -4439,12 +4440,55 @@ loadSUProfileBrowser = function() {
         if (isNull(user.full_name)) {
           continue;
         }
-        entry = user.full_name + " / " + user.handle + " / " + user.email;
+        entry = user.full_name + " / " + user.handle + " / " + user.email + "\n<button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n  <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n  Find Projects\n</button>\n<button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n  <iron-icon icon=\"av:replay\"></iron-icon>\n  Reset Password\n</button>\n<button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n  <iron-icon icon=\"icons:delete\"></iron-icon>\n  Delete User\n</button>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");
-      html = "<ul class='su-total-list' id=\"su-management-list\">\n  <li class='su-user-list'>" + listInterior + "</li>\n</ul>";
+      html = "<ul class='su-total-list col-xs-12' id=\"su-management-list\">\n  <li class='su-user-list'>" + listInterior + "</li>\n</ul>";
       $("#main-body").html(html);
+      $("." + classPrefix + "-view-projects").click(function() {
+        foo();
+        return false;
+      });
+      $("." + classPrefix + "-reset").click(function() {
+        foo();
+        return false;
+      });
+      $("." + classPrefix + "-delete").click(function() {
+        startLoad();
+        html = "<iron-icon icon=\"icons:warning\" class=\"\">\n</iron-icon>\nConfirm Deletion";
+        $(this).addClass("danger-glow").html(html).unbind().click(function() {
+          var uid;
+          startLoad();
+          uid = $(this).attr("data-uid");
+          args = "action=&user=" + uid + "&change_type=delete";
+          $.post(adminParams.apiTarget, args, "json").done(function(result) {
+            var listElement, ref2, ref3, systemError;
+            console.info("Click to delete returned", result);
+            if (result.status !== true) {
+              message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was an error executing the action";
+              systemError = result.error;
+              switch (systemError) {
+                case systemError.search("INVALID_TARGET") !== -1:
+                  $(this).attr("disabled", "disabled");
+              }
+              stopLoadError(message);
+              return false;
+            }
+            listElement = $(this).parent();
+            listElement.slideUp("slow", function() {
+              return listElement.remove();
+            });
+            return false;
+          }).fail(function(result, status) {
+            stopLoadError("Couldn't execute action");
+            return false;
+          });
+          stopLoad();
+          return false;
+        });
+        return false;
+      });
       foo();
       stopLoad();
       return false;
