@@ -4451,7 +4451,7 @@ loadSUProfileBrowser = function() {
       $("#main-body").html(html);
       $("." + classPrefix + "-view-projects").click(function() {
         var listElement;
-        listElement = $(this).parent().parent();
+        listElement = $(this).parents(".su-user-list");
         console.log("Got li of ", listElement);
         foo();
         return false;
@@ -4481,10 +4481,16 @@ loadSUProfileBrowser = function() {
               stopLoadError(message);
               return false;
             }
-            listElement = $(this).parent().parent();
+            listElement = $(this).parents(".su-user-list");
             console.log("Got li of ", listElement);
             listElement.slideUp("slow", function() {
               return listElement.remove();
+            });
+            delay(1000, function() {
+              if (listElement.exists()) {
+                console.warn("Trying to force removal of element");
+                return listElement.remove();
+              }
             });
             return false;
           }).fail(function(result, status) {
