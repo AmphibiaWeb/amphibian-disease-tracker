@@ -4475,7 +4475,7 @@ loadSUProfileBrowser = ->
       $("#main-body").html html
       # Events
       $(".#{classPrefix}-view-projects").click ->
-        listElement = $(this).parent().parent()
+        listElement = $(this).parents(".su-user-list")
         console.log "Got li of ", listElement
         foo()
         false
@@ -4515,10 +4515,14 @@ loadSUProfileBrowser = ->
               stopLoadError message
               return false
             # The request succeeded
-            listElement = $(this).parent().parent()
+            listElement = $(this).parents(".su-user-list")
             console.log "Got li of ", listElement
             listElement.slideUp "slow", ->
               listElement.remove()
+            delay 1000, ->
+              if listElement.exists()
+                console.warn "Trying to force removal of element"
+                listElement.remove()
             false
           .fail (result, status) ->
             console.error "AJAX error", result, status
