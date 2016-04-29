@@ -136,6 +136,9 @@ if ($as_include !== true) {
     case 'check_access':
         returnAjax(authorizedProjectAccess($_REQUEST));
         break;
+    case 'su_manipulate_user':
+        returnAjax(superuserEditUser($_REQUEST));
+        break;
     default:
         returnAjax(getLoginState($_REQUEST, true));
     }
@@ -1481,4 +1484,79 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             'human_error' => 'There was a problem communicating with the FIMS project. Please try again later.',
         );
     }
+}
+
+
+function superuserEditUser($get) {
+    /***
+     *
+     ***/
+    global $login_status,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols;
+    $udb = new DBHelper($default_user_database, $default_sql_user, $default_sql_password, $sql_url, $default_user_table, $db_cols);
+    $uid = $login_status['detail']['uid'];
+    # is caller an SU or admin?
+    $suFlag = $login_status['detail']['userdata']['su_flag'];
+    $isSu = boolstr($suFlag);
+    $adminFlag = $login_status['detail']['userdata']['admin_flag'];
+    $isAdmin = boolstr($adminFlag);
+    if(!($isSu || $isAdmin)) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_USER_PERMISSIONS",
+            "human_error" => "You do not have enough permission to perform this action",
+        );
+    }
+    # Check the target
+    $target = $get["user"];
+    # Do they exist?
+    if (!$udb->isEntry($target, 'dblink')) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_TARGET_DOES_NOT_EXIST",
+            "human_error" => "The requested user does not exist",
+        );        
+    }
+    $userData = $udb->getUser($target);
+    try {
+        # Is the target an SU or admin?
+        $suFlag = $userData['userdata']['su_flag'];
+        $targetIsSu = boolstr($suFlag);
+        if($targetIsSu) {
+            return array(
+                "status" => false,
+                "error" => "INVALID_TARGET_IS_SU",
+                "human_error" => "You can not delete Superusers through this interface. Please contact your system administrator",
+            );
+        }
+        $adminFlag = $userData['userdata']['admin_flag'];
+        $targetIsAdmin = boolstr($adminFlag);        
+        if($targetIsAdmin && !$isSu) {
+            return array(
+                "status" => false,
+                "error" => "INVALID_TARGET_ADMIN_VS_ADMIN",
+                "human_error" => "Sorry, only Superusers can delete adminstrators"
+            );
+        }
+        # Permission check complete.
+        $dryRun = $udb->forceDeleteCurrentUser();
+        $targetUid = $dryRun["target_user"];
+        if($targetUid != $target) {
+            # Should never happen
+            return array(
+                "status" => false,
+                "error" => "MISMATCHED_TARGETS",
+                "human_error" => "The system encountered an error confirming targets",
+                "obj_target" => $targetUid,
+                "post_target" => $target,
+            );
+        }        
+        return $udb->forceDeleteCurrentUser(true);
+    } catch (Exception $e) {
+        return array(
+            "status" => false,
+            "error" => $e->getMessage(),
+            "human_error" => "Application error",
+        );
+    }
+
 }

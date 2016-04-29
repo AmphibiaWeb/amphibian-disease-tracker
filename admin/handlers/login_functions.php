@@ -2524,14 +2524,14 @@ class UserFunctions extends DBHelper
     public function removeThisAccount($username, $password, $totp = false)
     {
         /***
-     * Remove a user account
-     *
-     * @param string username the same username as this object's
-     * @param string password the user's password
-     * @param int totp the TOTP code
-     * @return array
-     ***/
-    $userdata = $this->getUser();
+         * Remove a user account
+         *
+         * @param string username the same username as this object's
+         * @param string password the user's password
+         * @param int totp the TOTP code
+         * @return array
+         ***/
+        $userdata = $this->getUser();
         if ($this->getUsername() != $username) {
             return array('status' => false,'error' => 'Nonmatching names');
         }
@@ -2563,6 +2563,31 @@ class UserFunctions extends DBHelper
             return array('status' => $status,'error' => mysqli_error($l));
         } else {
             return array('status' => $status);
+        }
+    }
+
+    public function forceDeleteCurrentUser($confirm = false) {
+        /***
+         * Deletes a user. Does no checks in the process.
+         *
+         * @param bool $confirm -> must be true to execute
+         ***/
+        if(!$confirm) {
+            return array(
+                "status" => false,
+                "error" => "CONFIRM_FLAG_NOT_SET",
+                "target_user" => $this->getHardlink(),
+            );
+        }
+        $l = $this->openDB();
+        $targetHardlink = $this->getHardlink();
+        $userWhere = $this->getUserWhere();
+        $query = 'DELETE FROM `'.$this->getTable().'` '.$userWhere.' LIMIT 1';
+        $status = mysqli_query($l, $query);
+        if ($status !== true) {
+            return array('status' => $status,'error' => mysqli_error($l), "target_user" => $targetHardlink, "selector" => $userWhere);
+        } else {
+            return array('status' => $status, "deleted_user" => $targetHardlink, "selector" => $userWhere);
         }
     }
 
