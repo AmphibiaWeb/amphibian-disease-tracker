@@ -17,6 +17,7 @@ loadSUProfileBrowser = ->
       stopLoadError "Sorry, you must be an admin to do this"
       return false
     # Show list of users
+    classPrefix = "su-admin-users"
     args = "action=search_users&q="
     dest = "#{uri.urlString}api.php"
     $.post dest, args
@@ -33,15 +34,76 @@ loadSUProfileBrowser = ->
           continue
         entry = """
         #{user.full_name} / #{user.handle} / #{user.email}
+        <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
+          <iron-icon icon="icons:find-in-page"></iron-icon>
+          Find Projects
+        </button>
+        <button class="#{classPrefix}-reset btn btn-warning" data-uid="#{user.uid}">
+          <iron-icon icon="av:replay"></iron-icon>
+          Reset Password
+        </button>
+        <button class="#{classPrefix}-delete btn btn-danger" data-uid="#{user.uid}">
+          <iron-icon icon="icons:delete"></iron-icon>
+          Delete User
+        </button>
         """
         listElements.push entry
       listInterior = listElements.join "</li><li class='su-user-list'>"
       html = """
-      <ul class='su-total-list' id="su-management-list">
+      <ul class='su-total-list col-xs-12' id="su-management-list">
         <li class='su-user-list'>#{listInterior}</li>
       </ul>
       """
       $("#main-body").html html
+      # Events
+      $(".#{classPrefix}-view-projects").click ->
+        false
+      $(".#{classPrefix}-reset").click ->
+        false
+      $(".#{classPrefix}-delete").click ->
+        startLoad()
+        # Verify the clicker is OK to perform ation,
+        # and user is elegible
+        html = """
+        <iron-icon icon="icons:warning" class="">
+        </iron-icon>
+        Confirm Deletion
+        """
+        $(this)
+        .addClass "danger-glow"
+        .html html
+        .unbind()
+        .click ->
+          # Post the deletion. Confirmation occurs server-side.
+          # See
+          # https://github.com/AmphibiaWeb/amphibian-disease-tracker/commit/4d9f060777290fb6d9a1b6ebbc54575da7ecdf89
+          startLoad()
+          uid = $(this).attr "data-uid"
+          args = "action=&user=#{uid}&change_type=delete"
+          $.post adminParams.apiTarget, args, "json"
+          .done (result) ->
+            console.info "Click to delete returned", result
+            unless result.status is true
+              message = result.human_error ? result.error ? "There was an error executing the action"
+              systemError = result.error
+              switch systemError
+                # Reserving a switch for future other actions
+                when systemError.search("INVALID_TARGET") isnt -1
+                  # This was in invalid action
+                  $(this).attr "disabled", "disabled"
+              stopLoadError message
+              return false
+            # The request succeeded
+            listElement = $(this).parent()
+            listElement.slideUp "slow", ->
+              listElement.remove()
+            false
+          .fail (result, status) ->
+            stopLoadError "Couldn't execute action"
+            false
+          stopLoad()
+          false
+        false
       foo()
       stopLoad()
       false

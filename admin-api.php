@@ -1490,6 +1490,13 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
 function superuserEditUser($get) {
     /***
      *
+     * $get is the $_REQUEST superglobal.
+     * Expects keys:
+     *
+     * @param string user -> The dblink/hardlink of the target user
+     * @param string change_type -> The type of change to
+     * enact. Available: delete | reset
+     * 
      ***/
     global $login_status,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols;
     $udb = new DBHelper($default_user_database, $default_sql_user, $default_sql_password, $sql_url, $default_user_table, $db_cols);
@@ -1538,7 +1545,7 @@ function superuserEditUser($get) {
             );
         }
         # Permission check complete.
-        $editAction = $get["change_type"];
+        $editAction = strtolower($get["change_type"]);
         switch($editAction) {
         case "delete":
             $dryRun = $udb->forceDeleteCurrentUser();
@@ -1548,7 +1555,7 @@ function superuserEditUser($get) {
                 return array(
                     "status" => false,
                     "error" => "MISMATCHED_TARGETS",
-                    "human_error" => "The system encountered an error confirming targets",
+                    "human_error" => "The system encountered an error confirming target for deletion",
                     "obj_target" => $targetUid,
                     "post_target" => $target,
                 );
@@ -1570,6 +1577,7 @@ function superuserEditUser($get) {
             "status" => false,
             "error" => $e->getMessage(),
             "human_error" => "Application error",
+            "args" => $get,
         );
     }
 
