@@ -4481,9 +4481,7 @@ loadSUProfileBrowser = ->
         foo()
         false
       $(".#{classPrefix}-delete").click ->
-        startLoad()
-        # Verify the clicker is OK to perform ation,
-        # and user is elegible
+        # Change to a confirmation button
         html = """
         <iron-icon icon="icons:warning" class="">
         </iron-icon>
@@ -4499,7 +4497,7 @@ loadSUProfileBrowser = ->
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/commit/4d9f060777290fb6d9a1b6ebbc54575da7ecdf89
           startLoad()
           uid = $(this).attr "data-uid"
-          args = "action=&user=#{uid}&change_type=delete"
+          args = "action=su_manipulate_user&user=#{uid}&change_type=delete"
           $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             console.info "Click to delete returned", result
