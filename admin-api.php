@@ -1575,7 +1575,7 @@ function superuserEditUser($get) {
                     "post_target" => $target,
                 );
             }
-            return $udb->forceDeleteCurrentUser(true);
+            return $uf->forceDeleteCurrentUser(true);
             break;
         case "reset":
             return array(
