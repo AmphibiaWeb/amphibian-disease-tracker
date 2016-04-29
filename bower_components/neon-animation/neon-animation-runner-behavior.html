@@ -1,5 +1,4 @@
 <!--
-@license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -22,6 +21,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     properties: {
 
+      _animationMeta: {
+        type: Object,
+        value: function() {
+          return new Polymer.IronMeta({type: 'animation'});
+        }
+      },
+
       /** @type {?Object} */
       _player: {
         type: Object
@@ -33,9 +39,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var allAnimations = [];
       if (allConfigs.length > 0) {
         for (var config, index = 0; config = allConfigs[index]; index++) {
-          var animation = document.createElement(config.name);
-          // is this element actually a neon animation?
-          if (animation.isNeonAnimation) {
+          var animationConstructor = this._animationMeta.byKey(config.name);
+          if (animationConstructor) {
+            var animation = animationConstructor && new animationConstructor();
             var effect = animation.configure(config);
             if (effect) {
               allAnimations.push({
@@ -45,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               });
             }
           } else {
-            Polymer.Base._warn(this.is + ':', config.name, 'not found!');
+            console.warn(this.is + ':', config.name, 'not found!');
           }
         }
       }

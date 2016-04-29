@@ -1345,11 +1345,7 @@ get localTarget() {
 return this.event.target;
 },
 get path() {
-var path = this.event.path;
-if (!Array.isArray(path)) {
-path = Array.prototype.slice.call(path);
-}
-return path;
+return this.event.path;
 }
 };
 } else {
