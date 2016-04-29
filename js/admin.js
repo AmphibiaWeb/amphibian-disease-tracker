@@ -4484,7 +4484,9 @@ loadSUProfileBrowser = function() {
             });
             return false;
           }).fail(function(result, status) {
-            stopLoadError("Couldn't execute action");
+            console.error("AJAX error", result, status);
+            message = status + " " + result.status + ": " + result.statusText;
+            stopLoadError("Couldn't execute action (" + message + ")");
             return false;
           });
           stopLoad();

@@ -1496,7 +1496,7 @@ function superuserEditUser($get) {
      * @param string user -> The dblink/hardlink of the target user
      * @param string change_type -> The type of change to
      * enact. Available: delete | reset
-     * 
+     *
      ***/
     global $login_status,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$db_cols;
     $udb = new DBHelper($default_user_database, $default_sql_user, $default_sql_password, $sql_url, $default_user_table, $db_cols);
@@ -1528,9 +1528,10 @@ function superuserEditUser($get) {
             "status" => false,
             "error" => "INVALID_TARGET_DOES_NOT_EXIST",
             "human_error" => "The requested user does not exist",
-        );        
+        );
     }
-    $userData = $udb->getUser($target);
+    $uf = new UserFunctions($target, "dblink");
+    $userData = $uf->getUser($target);
     try {
         # Is the target an SU or admin?
         $suFlag = $userData['userdata']['su_flag'];
@@ -1543,7 +1544,7 @@ function superuserEditUser($get) {
             );
         }
         $adminFlag = $userData['userdata']['admin_flag'];
-        $targetIsAdmin = boolstr($adminFlag);        
+        $targetIsAdmin = boolstr($adminFlag);
         if($targetIsAdmin && !$isSu) {
             return array(
                 "status" => false,
@@ -1562,7 +1563,7 @@ function superuserEditUser($get) {
         }
         switch($editAction) {
         case "delete":
-            $dryRun = $udb->forceDeleteCurrentUser();
+            $dryRun = $uf->forceDeleteCurrentUser();
             $targetUid = $dryRun["target_user"];
             if($targetUid != $target) {
                 # Should never happen
@@ -1573,7 +1574,7 @@ function superuserEditUser($get) {
                     "obj_target" => $targetUid,
                     "post_target" => $target,
                 );
-            }        
+            }
             return $udb->forceDeleteCurrentUser(true);
             break;
         case "reset":
