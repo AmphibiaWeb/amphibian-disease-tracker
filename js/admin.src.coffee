@@ -4497,7 +4497,8 @@ loadSUProfileBrowser = ->
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/commit/4d9f060777290fb6d9a1b6ebbc54575da7ecdf89
           startLoad()
           uid = $(this).attr "data-uid"
-          args = "action=su_manipulate_user&user=#{uid}&change_type=delete"
+          args = "perform=su_manipulate_user&user=#{uid}&change_type=delete"
+          console.info "Posting to", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
           $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             console.info "Click to delete returned", result

@@ -1515,6 +1515,13 @@ function superuserEditUser($get) {
     }
     # Check the target
     $target = $get["user"];
+    if(empty($target)) {
+        return array(
+            "status" => false,
+            "error" => "INVALID_TARGET_NO_USER_PROVIDED",
+            "human_error" => "You must provide argument 'user'",
+        );
+    }
     # Do they exist?
     if (!$udb->isEntry($target, 'dblink')) {
         return array(
@@ -1546,6 +1553,13 @@ function superuserEditUser($get) {
         }
         # Permission check complete.
         $editAction = strtolower($get["change_type"]);
+        if(empty($editAction)) {
+            return array(
+                "status" => false,
+                "error" => "INVALID_CHANGE_TYPE_EMPTY",
+                "human_error" => "You must provide an argument 'change_type'"
+            );
+        }
         switch($editAction) {
         case "delete":
             $dryRun = $udb->forceDeleteCurrentUser();
@@ -1563,6 +1577,10 @@ function superuserEditUser($get) {
             return $udb->forceDeleteCurrentUser(true);
             break;
         case "reset":
+            return array(
+                "status" => false,
+                "error" => "Incomplete"
+            );
             break;
         default:
             return array(
