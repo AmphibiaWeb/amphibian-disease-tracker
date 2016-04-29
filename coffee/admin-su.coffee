@@ -99,7 +99,7 @@ loadSUProfileBrowser = ->
               stopLoadError message
               return false
             # The request succeeded
-            listElement = $(this).parent()
+            listElement = $(this).parent().parent()
             listElement.slideUp "slow", ->
               listElement.remove()
             false
