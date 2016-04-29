@@ -4469,8 +4469,10 @@ loadSUProfileBrowser = ->
       $("#main-body").html html
       # Events
       $(".#{classPrefix}-view-projects").click ->
+        foo()
         false
       $(".#{classPrefix}-reset").click ->
+        foo()
         false
       $(".#{classPrefix}-delete").click ->
         startLoad()

@@ -7427,6 +7427,13 @@ paper-button[raised].admin-action {
   right: 1rem;
   bottom: 1rem;
 }
+#su-management-list {
+  padding-left: 0;
+  list-style: none;
+}
+#su-management-list li.su-user-list :hover {
+  background: #ccc;
+}
 #restriction-badge {
   cursor: pointer;
 }

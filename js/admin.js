@@ -4447,9 +4447,11 @@ loadSUProfileBrowser = function() {
       html = "<ul class='su-total-list col-xs-12' id=\"su-management-list\">\n  <li class='su-user-list'>" + listInterior + "</li>\n</ul>";
       $("#main-body").html(html);
       $("." + classPrefix + "-view-projects").click(function() {
+        foo();
         return false;
       });
       $("." + classPrefix + "-reset").click(function() {
+        foo();
         return false;
       });
       $("." + classPrefix + "-delete").click(function() {
