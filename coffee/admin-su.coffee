@@ -104,7 +104,9 @@ loadSUProfileBrowser = ->
               listElement.remove()
             false
           .fail (result, status) ->
-            stopLoadError "Couldn't execute action"
+            console.error "AJAX error", result, status
+            message = "#{status} #{result.status}: #{result.statusText}"
+            stopLoadError "Couldn't execute action (#{message})"
             false
           stopLoad()
           false
