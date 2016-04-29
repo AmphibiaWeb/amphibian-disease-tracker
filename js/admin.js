@@ -4478,7 +4478,7 @@ loadSUProfileBrowser = function() {
               stopLoadError(message);
               return false;
             }
-            listElement = $(this).parent();
+            listElement = $(this).parent().parent();
             listElement.slideUp("slow", function() {
               return listElement.remove();
             });
