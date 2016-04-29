@@ -4450,6 +4450,9 @@ loadSUProfileBrowser = function() {
       html = "<ul class='su-total-list col-xs-12' id=\"su-management-list\">\n  <li class='su-user-list'>" + listInterior + "</li>\n</ul>";
       $("#main-body").html(html);
       $("." + classPrefix + "-view-projects").click(function() {
+        var listElement;
+        listElement = $(this).parent().parent();
+        console.log("Got li of ", listElement);
         foo();
         return false;
       });
@@ -4479,6 +4482,7 @@ loadSUProfileBrowser = function() {
               return false;
             }
             listElement = $(this).parent().parent();
+            console.log("Got li of ", listElement);
             listElement.slideUp("slow", function() {
               return listElement.remove();
             });
