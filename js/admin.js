@@ -4458,13 +4458,12 @@ loadSUProfileBrowser = function() {
         return false;
       });
       $("." + classPrefix + "-delete").click(function() {
-        startLoad();
         html = "<iron-icon icon=\"icons:warning\" class=\"\">\n</iron-icon>\nConfirm Deletion";
         $(this).addClass("danger-glow").html(html).unbind().click(function() {
           var uid;
           startLoad();
           uid = $(this).attr("data-uid");
-          args = "action=&user=" + uid + "&change_type=delete";
+          args = "action=su_manipulate_user&user=" + uid + "&change_type=delete";
           $.post(adminParams.apiTarget, args, "json").done(function(result) {
             var listElement, ref2, ref3, systemError;
             console.info("Click to delete returned", result);
