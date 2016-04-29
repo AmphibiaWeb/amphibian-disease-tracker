@@ -7428,8 +7428,7 @@ paper-button[raised].admin-action {
   bottom: 1rem;
 }
 #su-management-list {
-  padding-left: 0;
-  list-style: none;
+  list-style-type: none;
 }
 #su-management-list li.su-user-list :hover {
   background: #ccc;
