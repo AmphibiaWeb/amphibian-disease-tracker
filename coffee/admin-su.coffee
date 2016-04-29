@@ -61,6 +61,8 @@ loadSUProfileBrowser = ->
       $("#main-body").html html
       # Events
       $(".#{classPrefix}-view-projects").click ->
+        listElement = $(this).parent().parent()
+        console.log "Got li of ", listElement
         foo()
         false
       $(".#{classPrefix}-reset").click ->
@@ -100,6 +102,7 @@ loadSUProfileBrowser = ->
               return false
             # The request succeeded
             listElement = $(this).parent().parent()
+            console.log "Got li of ", listElement
             listElement.slideUp "slow", ->
               listElement.remove()
             false
