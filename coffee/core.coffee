@@ -618,7 +618,7 @@ stopLoad = (elId = "loader", fadeOut = 1000) ->
     console.log('Could not stop load animation', e.message)
 
 
-stopLoadError = (message, elId = "loader", fadeOut = 5000) ->
+stopLoadError = (message, elId = "loader", fadeOut = 10000) ->
   if elId.slice(0,1) is "#"
     selector = elId
     elId = elId.slice(1)
