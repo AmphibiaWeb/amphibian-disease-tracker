@@ -666,9 +666,14 @@ toastStatusMessage = (message, className = "", duration = 3000, selector = "#sta
     p$(selector).show()
   delay duration + 500, ->
     # A short time after it hides, clean it up
-    $(selector).empty()
-    $(selector).removeClass(className)
-    $(selector).attr("text","")
+    try
+      isOpen = p$(selector).opened
+    catch
+      isOpen = false
+    unless isOpen
+      $(selector).empty()
+      $(selector).removeClass(className)
+      $(selector).attr("text","")
     window.metaTracker.isToasting = false
 
 

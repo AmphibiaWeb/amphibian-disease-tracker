@@ -4444,7 +4444,7 @@ loadSUProfileBrowser = function() {
           continue;
         }
         if (user.has_verified_email) {
-          verifiedHtml = "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>";
+          verifiedHtml = "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='At least one verified email'></iron-icon>";
         } else {
           verifiedHtml = "";
         }
@@ -4453,7 +4453,7 @@ loadSUProfileBrowser = function() {
         } else {
           adminHtml = "";
         }
-        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
+        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");
@@ -4470,48 +4470,88 @@ loadSUProfileBrowser = function() {
         return false;
       });
       $("." + classPrefix + "-reset").click(function() {
-        foo();
+        var email;
+        startLoad();
+        email = $(this).attr("data-email");
+        args = "action=startpasswordreset&username=" + email + "&method=email";
+        $(this).attr("disabled", "disabled");
+        $.post(adminParams.apiTarget, args, "json").done(function(result) {
+          var ref2, ref3;
+          if (!result.status) {
+            message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "Couldn't initiate password reset for " + email;
+            if (result.action === "GET_TOTP") {
+              message = "User has two-factor authentication. They have to reset themselves.";
+            } else {
+              if (!isNull(result.action)) {
+                message += " (" + result.action + ")";
+              }
+            }
+            stopLoadError(message);
+            return false;
+          }
+          stopLoad();
+          message = "Successfully prompted '" + email + "' to reset their password (method: " + result.method + ")";
+          toastStatusMessage(message, "", 7000);
+          return false;
+        }).fail((function(_this) {
+          return function(result, status) {
+            console.error("AJAX error trying to initiate password reset", result, status);
+            message = status + " " + result.status + ": " + result.statusText;
+            stopLoadError("Couldn't initiate password reset (" + message + ")");
+            $(_this).removeAttr("disabled");
+            return false;
+          };
+        })(this));
         return false;
       });
       $("." + classPrefix + "-delete").click(function() {
         html = "<iron-icon icon=\"icons:warning\" class=\"\">\n</iron-icon>\nConfirm Deletion";
         $(this).addClass("danger-glow").html(html).unbind().click(function() {
-          var uid;
+          var listElement, uid;
           startLoad();
+          listElement = $(this).parents(".su-user-list");
           uid = $(this).attr("data-uid");
+          $(this).attr("disabled", "disabled");
           args = "perform=su_manipulate_user&user=" + uid + "&change_type=delete";
           console.info("Posting to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
-          $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            var listElement, ref2, ref3, systemError;
-            console.info("Click to delete returned", result);
-            if (result.status !== true) {
-              message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was an error executing the action";
-              systemError = result.error;
-              switch (systemError) {
-                case systemError.search("INVALID_TARGET") !== -1:
-                  $(this).attr("disabled", "disabled");
+          $.post(adminParams.apiTarget, args, "json").done((function(_this) {
+            return function(result) {
+              var ref2, ref3, systemError;
+              console.info("Click to delete returned", result);
+              if (result.status !== true) {
+                message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was an error executing the action";
+                systemError = result.error;
+                switch (systemError) {
+                  case systemError.search("INVALID_TARGET") !== -1:
+                    $(_this).attr("disabled", "disabled");
+                }
+                stopLoadError(message);
+                return false;
               }
-              stopLoadError(message);
-              return false;
-            }
-            listElement = $(this).parents(".su-user-list");
-            console.log("Got li of ", listElement);
-            listElement.slideUp("slow", function() {
-              return listElement.remove();
-            });
-            delay(1000, function() {
-              if (listElement.exists()) {
-                console.warn("Trying to force removal of element");
+              console.log("Got li of ", listElement);
+              listElement.slideUp("slow", function() {
                 return listElement.remove();
-              }
-            });
-            return false;
-          }).fail(function(result, status) {
+              });
+              delay(1000, function() {
+                if (listElement.exists()) {
+                  console.warn("Trying to force removal of element");
+                  return listElement.remove();
+                }
+              });
+              return false;
+            };
+          })(this)).fail(function(result, status) {
             console.error("AJAX error", result, status);
             message = status + " " + result.status + ": " + result.statusText;
             stopLoadError("Couldn't execute action (" + message + ")");
             return false;
-          });
+          }).always((function(_this) {
+            return function() {
+              return delay(300, function() {
+                return $(_this).removeAttr("disabled");
+              });
+            };
+          })(this));
           stopLoad();
           return false;
         });
@@ -4521,8 +4561,10 @@ loadSUProfileBrowser = function() {
       stopLoad();
       return false;
     }).fail(function(result, status) {
+      var message;
       console.error("Couldn't load user list", result, status);
-      return stopLoadError("Sorry, can't load user list");
+      message = status + " " + result.status + ": " + result.statusText;
+      return stopLoadError("Sorry, can't load user list (" + message + ")");
     });
   });
   return false;
