@@ -167,7 +167,7 @@ function searchUsers($get)
         'name' => $q,
         'dblink' => $q, #?
     );
-    $cols = array('username', 'name', 'dblink');
+    $cols = array('username', 'name', 'dblink', "email_verified", "alternate_email_verified", "is_admin");
     $response['status'] = true;
     $result = $udb->getQueryResults($search, $cols, 'OR', true, true);
     $suFlag = $login_status['detail']['userdata']['su_flag'];

@@ -46,7 +46,7 @@ loadSUProfileBrowser = ->
           adminHtml = ""
         entry = """
         <span class="#{classPrefix}-user-details">
-          #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml}
+          #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml} #{adminHtml}
         </span>
         <div>
           <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
