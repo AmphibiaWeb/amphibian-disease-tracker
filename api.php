@@ -157,7 +157,7 @@ function searchUsers($get)
     /***
      *
      ***/
-    global $udb, $loginStatus;
+    global $udb, $login_status;
     $q = $udb->sanitize($get['q']);
     $response = array(
         'search' => $q,
