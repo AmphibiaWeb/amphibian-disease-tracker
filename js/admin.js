@@ -4444,7 +4444,7 @@ loadSUProfileBrowser = function() {
           continue;
         }
         if (user.has_verified_email) {
-          verifiedHtml("<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>");
+          verifiedHtml = "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>";
         } else {
           verifiedHtml = "";
         }
@@ -4453,7 +4453,7 @@ loadSUProfileBrowser = function() {
         } else {
           adminHtml = "";
         }
-        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
+        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");
