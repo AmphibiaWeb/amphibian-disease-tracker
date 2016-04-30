@@ -4453,7 +4453,7 @@ loadSUProfileBrowser = function() {
         } else {
           adminHtml = "";
         }
-        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
+        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");
@@ -4464,43 +4464,53 @@ loadSUProfileBrowser = function() {
         /*
          * Handler to search projects
          */
-        var cols, search, uid;
+        var cols, email, search, uid;
         startLoad();
         uid = $(this).attr("data-uid");
+        email = $(this).attr("data-email");
         search = uid;
-        cols = "access_data,author_data";
+        cols = "access_data,author_data,author";
         console.info("Searching on " + search + " ... in " + cols);
         args = "action=search_project&q=" + search + "&cols=" + cols;
-        $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-          var button, icon, len1, m, project, projects, publicState, ref2, s, showList;
-          console.info(result);
-          html = "";
-          showList = new Array();
-          projects = Object.toArray(result.result);
-          if (projects.length > 0) {
-            html = "<ul class='project-search-su'>";
-            for (m = 0, len1 = projects.length; m < len1; m++) {
-              project = projects[m];
-              showList.push(project.project_id);
-              publicState = project["public"].toBool();
-              icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-              button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
-              html += "<li class='project-search-result'>" + button + "</li>";
+        $.post(uri.urlString + "api.php", args, "json").done((function(_this) {
+          return function(result) {
+            var button, icon, len1, m, project, projects, publicState, ref2, ref3, s, showList;
+            console.info(result);
+            html = "";
+            showList = new Array();
+            projects = Object.toArray(result.result);
+            if (projects.length > 0) {
+              html = "<ul class='project-search-su col-xs-12'>";
+              for (m = 0, len1 = projects.length; m < len1; m++) {
+                project = projects[m];
+                showList.push(project.project_id);
+                publicState = project["public"].toBool();
+                icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+                button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+                html += "<li class='project-search-result'>" + button + "</li>";
+              }
+              html += "</ul>";
+            } else {
+              s = (ref2 = (ref3 = email != null ? email : $(_this).attr("data-email")) != null ? ref3 : result.search) != null ? ref2 : search;
+              html = "<p class='col-xs-12'><em>No results found for user \"<strong>" + s + "</strong>\"";
             }
-            html += "</ul>";
-          } else {
-            s = (ref2 = result.search) != null ? ref2 : search;
-            html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
-          }
-          $("#main-body").html(html);
-          bindClicks(".search-proj-link");
-          return false;
-        }).fail(function(result, status) {
-          console.error("AJAX error trying to search on user projects", result, status);
-          message = status + " " + result.status + ": " + result.statusText;
-          stopLoadError("Couldn't search projects (" + message + ")");
-          return false;
-        });
+            html += "<div class=\"col-xs-12\">\n  <button class=\"btn btn-default go-back-button\">\n    <iron-icon icon=\"icons:arrow-back\"></iron-icon>\n    Back\n  </button>\n</div>";
+            $("#main-body").html(html);
+            bindClicks(".search-proj-link");
+            $(".go-back-button").click(function() {
+              window.history.back();
+              return false;
+            });
+            return false;
+          };
+        })(this)).fail((function(_this) {
+          return function(result, status) {
+            console.error("AJAX error trying to search on user projects", result, status);
+            message = status + " " + result.status + ": " + result.statusText;
+            stopLoadError("Couldn't search projects (" + message + ")");
+            return false;
+          };
+        })(this));
         stopLoad();
         return false;
       });

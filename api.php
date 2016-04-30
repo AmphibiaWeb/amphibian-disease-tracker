@@ -135,7 +135,10 @@ function searchProject($get)
             $search = array();
             foreach ($colList as $col) {
                 $col = trim($col);
+                # If the column exists, we don't have to sanitize it
+                # $col = $db->sanitize($col);
                 $search[$col] = $q;
+                $cols[] = $col;
             }
         } else {
             $response['notice'] = 'Invalid columns; defaults used';

@@ -49,7 +49,7 @@ loadSUProfileBrowser = ->
           #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml} #{adminHtml}
         </span>
         <div>
-          <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
+          <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}" data-email="#{user.email}">
             <iron-icon icon="icons:find-in-page"></iron-icon>
             Find Projects
           </button>
@@ -79,19 +79,20 @@ loadSUProfileBrowser = ->
         ###
         startLoad()
         uid = $(this).attr "data-uid"
+        email = $(this).attr "data-email"
         search = uid
-        cols = "access_data,author_data"
+        cols = "access_data,author_data,author"
         console.info "Searching on #{search} ... in #{cols}"
         # POST a request to the server for projects matching this
         args = "action=search_project&q=#{search}&cols=#{cols}"
         $.post "#{uri.urlString}api.php", args, "json"
-        .done (result) ->
+        .done (result) =>
           console.info result
           html = ""
           showList = new Array()
           projects = Object.toArray result.result
           if projects.length > 0
-            html = "<ul class='project-search-su'>"
+            html = "<ul class='project-search-su col-xs-12'>"
             for project in projects
               showList.push project.project_id
               publicState = project.public.toBool()
@@ -104,12 +105,24 @@ loadSUProfileBrowser = ->
               html += "<li class='project-search-result'>#{button}</li>"
             html += "</ul>"
           else
-            s = result.search ? search
-            html = "<p><em>No results found for \"<strong>#{s}</strong>\""
+            s = email ? $(this).attr("data-email") ? result.search ? search
+            html = "<p class='col-xs-12'><em>No results found for user \"<strong>#{s}</strong>\""
+          # Always provide a back button
+          html += """
+          <div class="col-xs-12">
+            <button class="btn btn-default go-back-button">
+              <iron-icon icon="icons:arrow-back"></iron-icon>
+              Back
+            </button>
+          </div>
+          """          
           $("#main-body").html html
           bindClicks(".search-proj-link")
+          $(".go-back-button").click ->
+            window.history.back()
+            false
           false
-        .fail (result, status) ->
+        .fail (result, status) =>
           console.error "AJAX error trying to search on user projects", result, status
           message = "#{status} #{result.status}: #{result.statusText}"
           stopLoadError "Couldn't search projects (#{message})"
