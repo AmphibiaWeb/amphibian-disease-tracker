@@ -832,7 +832,7 @@ stopLoadError = function(message, elId, fadeOut) {
     elId = "loader";
   }
   if (fadeOut == null) {
-    fadeOut = 5000;
+    fadeOut = 10000;
   }
   if (elId.slice(0, 1) === "#") {
     selector = elId;
@@ -902,9 +902,17 @@ toastStatusMessage = function(message, className, duration, selector) {
     p$(selector).show();
   } catch (undefined) {}
   return delay(duration + 500, function() {
-    $(selector).empty();
-    $(selector).removeClass(className);
-    $(selector).attr("text", "");
+    var error2, isOpen;
+    try {
+      isOpen = p$(selector).opened;
+    } catch (error2) {
+      isOpen = false;
+    }
+    if (!isOpen) {
+      $(selector).empty();
+      $(selector).removeClass(className);
+      $(selector).attr("text", "");
+    }
     return window.metaTracker.isToasting = false;
   });
 };

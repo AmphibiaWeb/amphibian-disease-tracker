@@ -34,7 +34,7 @@ loadSUProfileBrowser = ->
           continue
         if user.has_verified_email
           verifiedHtml = """
-<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>
+<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='At least one verified email'></iron-icon>
           """
         else
           verifiedHtml = ""
@@ -53,7 +53,7 @@ loadSUProfileBrowser = ->
             <iron-icon icon="icons:find-in-page"></iron-icon>
             Find Projects
           </button>
-          <button class="#{classPrefix}-reset btn btn-warning" data-uid="#{user.uid}">
+          <button class="#{classPrefix}-reset btn btn-warning" data-uid="#{user.uid}" data-email="#{user.email}">
             <iron-icon icon="av:replay"></iron-icon>
             Reset Password
           </button>
@@ -80,7 +80,32 @@ loadSUProfileBrowser = ->
         foo()
         false
       $(".#{classPrefix}-reset").click ->
-        foo()
+        startLoad()
+        email = $(this).attr "data-email"
+        args = "action=startpasswordreset&username=#{email}&method=email"
+        $(this).attr "disabled", "disabled"
+        $.post adminParams.apiTarget, args, "json"
+        .done (result) ->
+          unless result.status
+            message = result.human_error ? result.error ? "Couldn't initiate password reset for #{email}"
+            if result.action is "GET_TOTP"
+              message = "User has two-factor authentication. They have to reset themselves."
+            else
+              unless isNull result.action
+                message += " (#{result.action})"
+            stopLoadError message
+            return false
+          # It worked
+          stopLoad()
+          message = "Successfully prompted '#{email}' to reset their password (method: #{result.method})"
+          toastStatusMessage message, "", 7000
+          false
+        .fail (result, status) =>
+          console.error "AJAX error trying to initiate password reset", result, status
+          message = "#{status} #{result.status}: #{result.statusText}"
+          stopLoadError "Couldn't initiate password reset (#{message})"
+          $(this).removeAttr "disabled"
+          false
         false
       $(".#{classPrefix}-delete").click ->
         # Change to a confirmation button
@@ -98,11 +123,14 @@ loadSUProfileBrowser = ->
           # See
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/commit/4d9f060777290fb6d9a1b6ebbc54575da7ecdf89
           startLoad()
+          listElement = $(this).parents(".su-user-list")
           uid = $(this).attr "data-uid"
+          # Disable the button until the POST is done
+          $(this).attr "disabled", "disabled"
           args = "perform=su_manipulate_user&user=#{uid}&change_type=delete"
           console.info "Posting to", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
           $.post adminParams.apiTarget, args, "json"
-          .done (result) ->
+          .done (result) =>
             console.info "Click to delete returned", result
             unless result.status is true
               message = result.human_error ? result.error ? "There was an error executing the action"
@@ -115,7 +143,6 @@ loadSUProfileBrowser = ->
               stopLoadError message
               return false
             # The request succeeded
-            listElement = $(this).parents(".su-user-list")
             console.log "Got li of ", listElement
             listElement.slideUp "slow", ->
               listElement.remove()
@@ -129,6 +156,11 @@ loadSUProfileBrowser = ->
             message = "#{status} #{result.status}: #{result.statusText}"
             stopLoadError "Couldn't execute action (#{message})"
             false
+          .always =>
+            # Time out 300ms so someone doesn't accidentally delete a
+            # user by double-clicking
+            delay 300, =>
+              $(this).removeAttr "disabled"
           stopLoad()
           false
         false
@@ -137,7 +169,8 @@ loadSUProfileBrowser = ->
       false
     .fail (result, status) ->
       console.error "Couldn't load user list", result, status
-      stopLoadError "Sorry, can't load user list"
+      message = "#{status} #{result.status}: #{result.statusText}"
+      stopLoadError "Sorry, can't load user list (#{message})"
   false
 
 

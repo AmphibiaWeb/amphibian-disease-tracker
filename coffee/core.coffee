@@ -618,7 +618,7 @@ stopLoad = (elId = "loader", fadeOut = 1000) ->
     console.log('Could not stop load animation', e.message)
 
 
-stopLoadError = (message, elId = "loader", fadeOut = 5000) ->
+stopLoadError = (message, elId = "loader", fadeOut = 10000) ->
   if elId.slice(0,1) is "#"
     selector = elId
     elId = elId.slice(1)
@@ -666,9 +666,14 @@ toastStatusMessage = (message, className = "", duration = 3000, selector = "#sta
     p$(selector).show()
   delay duration + 500, ->
     # A short time after it hides, clean it up
-    $(selector).empty()
-    $(selector).removeClass(className)
-    $(selector).attr("text","")
+    try
+      isOpen = p$(selector).opened
+    catch
+      isOpen = false
+    unless isOpen
+      $(selector).empty()
+      $(selector).removeClass(className)
+      $(selector).attr("text","")
     window.metaTracker.isToasting = false
 
 
