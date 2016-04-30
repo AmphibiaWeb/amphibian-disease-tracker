@@ -9931,6 +9931,7 @@ paper-button[raised].admin-action {
 }
 #su-management-list .su-user-list div {
   align-self: flex-end;
+  margin-left: 1rem;
 }
 #su-management-list .su-user-list span {
   flex-grow: 1;

@@ -4486,13 +4486,51 @@ loadSUProfileBrowser = ->
       """
       $("#main-body").html html
       # Events
+      ## View links
       $(".#{classPrefix}-view-projects").click ->
-        listElement = $(this).parents(".su-user-list")
-        console.log "Got li of ", listElement, "testing removal"
-        listElement.slideUp "slow", ->
-          listElement.remove()
-        foo()
+        ###
+        # Handler to search projects
+        ###
+        startLoad()
+        uid = $(this).attr "data-uid"
+        search = uid
+        cols = "access_data,author_data"
+        console.info "Searching on #{search} ... in #{cols}"
+        # POST a request to the server for projects matching this
+        args = "action=search_project&q=#{search}&cols=#{cols}"
+        $.post "#{uri.urlString}api.php", args, "json"
+        .done (result) ->
+          console.info result
+          html = ""
+          showList = new Array()
+          projects = Object.toArray result.result
+          if projects.length > 0
+            html = "<ul class='project-search-su'>"
+            for project in projects
+              showList.push project.project_id
+              publicState = project.public.toBool()
+              icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
+              button = """
+              <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
+                #{icon} #{project.project_title}
+              </button>
+              """
+              html += "<li class='project-search-result'>#{button}</li>"
+            html += "</ul>"
+          else
+            s = result.search ? search
+            html = "<p><em>No results found for \"<strong>#{s}</strong>\""
+          $("#main-body").html html
+          bindClicks(".search-proj-link")
+          false
+        .fail (result, status) ->
+          console.error "AJAX error trying to search on user projects", result, status
+          message = "#{status} #{result.status}: #{result.statusText}"
+          stopLoadError "Couldn't search projects (#{message})"
+          false
+        stopLoad()
         false
+      ## Reset
       $(".#{classPrefix}-reset").click ->
         startLoad()
         email = $(this).attr "data-email"
@@ -4522,6 +4560,7 @@ loadSUProfileBrowser = ->
           $(this).removeAttr "disabled"
           false
         false
+      ## Delete
       $(".#{classPrefix}-delete").click ->
         # Change to a confirmation button
         html = """

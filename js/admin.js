@@ -3574,7 +3574,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 p$("#taxa-validation").indeterminate = false;
               } catch (undefined) {}
               validateTaxonData(faux, function(taxa) {
-                var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref20, rowLat, rowLng, s, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, uDate, uTime, years;
+                var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref20, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, u, uDate, uTime, years;
                 validatedData.validated_taxa = taxa.validated_taxa;
                 _adp.projectData.includes_anura = false;
                 _adp.projectData.includes_caudata = false;
@@ -3653,8 +3653,8 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 dispositions = new Array();
                 sampleMethods = new Array();
                 ref15 = Object.toArray(_adp.cartoRows);
-                for (s = 0, len4 = ref15.length; s < len4; s++) {
-                  row = ref15[s];
+                for (u = 0, len4 = ref15.length; u < len4; u++) {
+                  row = ref15[u];
                   date = row.dateidentified;
                   uTime = excelDateToUnixTime(date);
                   dates.push(uTime);
@@ -4460,13 +4460,48 @@ loadSUProfileBrowser = function() {
       html = "<ul class='su-total-list col-xs-12' id=\"su-management-list\">\n  <li class='su-user-list'>" + listInterior + "</li>\n</ul>";
       $("#main-body").html(html);
       $("." + classPrefix + "-view-projects").click(function() {
-        var listElement;
-        listElement = $(this).parents(".su-user-list");
-        console.log("Got li of ", listElement, "testing removal");
-        listElement.slideUp("slow", function() {
-          return listElement.remove();
+
+        /*
+         * Handler to search projects
+         */
+        var cols, search, uid;
+        startLoad();
+        uid = $(this).attr("data-uid");
+        search = uid;
+        cols = "access_data,author_data";
+        console.info("Searching on " + search + " ... in " + cols);
+        args = "action=search_project&q=" + search + "&cols=" + cols;
+        $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+          var button, icon, len1, m, project, projects, publicState, ref2, s, showList;
+          console.info(result);
+          html = "";
+          showList = new Array();
+          projects = Object.toArray(result.result);
+          if (projects.length > 0) {
+            html = "<ul class='project-search-su'>";
+            for (m = 0, len1 = projects.length; m < len1; m++) {
+              project = projects[m];
+              showList.push(project.project_id);
+              publicState = project["public"].toBool();
+              icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
+              button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+              html += "<li class='project-search-result'>" + button + "</li>";
+            }
+            html += "</ul>";
+          } else {
+            s = (ref2 = result.search) != null ? ref2 : search;
+            html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
+          }
+          $("#main-body").html(html);
+          bindClicks(".search-proj-link");
+          return false;
+        }).fail(function(result, status) {
+          console.error("AJAX error trying to search on user projects", result, status);
+          message = status + " " + result.status + ": " + result.statusText;
+          stopLoadError("Couldn't search projects (" + message + ")");
+          return false;
         });
-        foo();
+        stopLoad();
         return false;
       });
       $("." + classPrefix + "-reset").click(function() {
