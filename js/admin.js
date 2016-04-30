@@ -4483,6 +4483,9 @@ loadSUProfileBrowser = function() {
               html = "<ul class='project-search-su col-xs-12'>";
               for (m = 0, len1 = projects.length; m < len1; m++) {
                 project = projects[m];
+                if (isNull(project.project_id)) {
+                  continue;
+                }
                 showList.push(project.project_id);
                 publicState = project["public"].toBool();
                 icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
@@ -4494,7 +4497,7 @@ loadSUProfileBrowser = function() {
               s = (ref2 = (ref3 = email != null ? email : $(_this).attr("data-email")) != null ? ref3 : result.search) != null ? ref2 : search;
               html = "<p class='col-xs-12'><em>No results found for user \"<strong>" + s + "</strong>\"";
             }
-            html += "<div class=\"col-xs-12\">\n  <button class=\"btn btn-default go-back-button\">\n    <iron-icon icon=\"icons:arrow-back\"></iron-icon>\n    Back\n  </button>\n</div>";
+            html += "<div class=\"col-xs-12\">\n  <button class=\"btn btn-default go-back-button\">\n    <iron-icon icon=\"icons:arrow-back\"></iron-icon>\n    Back to Profile Browser\n  </button>\n</div>";
             $("#main-body").html(html);
             bindClicks(".search-proj-link");
             $(".go-back-button").click(function() {

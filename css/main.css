@@ -9936,6 +9936,9 @@ paper-button[raised].admin-action {
 #su-management-list .su-user-list span {
   flex-grow: 1;
 }
+ul.project-search-su {
+  list-style-type: none;
+}
 #restriction-badge {
   cursor: pointer;
 }

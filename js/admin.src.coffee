@@ -4508,6 +4508,8 @@ loadSUProfileBrowser = ->
           if projects.length > 0
             html = "<ul class='project-search-su col-xs-12'>"
             for project in projects
+              if isNull project.project_id
+                continue
               showList.push project.project_id
               publicState = project.public.toBool()
               icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
@@ -4526,7 +4528,7 @@ loadSUProfileBrowser = ->
           <div class="col-xs-12">
             <button class="btn btn-default go-back-button">
               <iron-icon icon="icons:arrow-back"></iron-icon>
-              Back
+              Back to Profile Browser
             </button>
           </div>
           """          
