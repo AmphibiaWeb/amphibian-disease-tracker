@@ -33,7 +33,7 @@ loadSUProfileBrowser = ->
         if isNull user.full_name
           continue
         if user.has_verified_email
-          verifiedHtml  """
+          verifiedHtml = """
 <iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>
           """
         else

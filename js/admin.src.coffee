@@ -4447,7 +4447,7 @@ loadSUProfileBrowser = ->
         if isNull user.full_name
           continue
         if user.has_verified_email
-          verifiedHtml  """
+          verifiedHtml = """
 <iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>
           """
         else
@@ -4460,7 +4460,7 @@ loadSUProfileBrowser = ->
           adminHtml = ""
         entry = """
         <span class="#{classPrefix}-user-details">
-          #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml}
+          #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml} #{adminHtml}
         </span>
         <div>
           <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
