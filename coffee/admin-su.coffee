@@ -84,8 +84,9 @@ loadSUProfileBrowser = ->
         email = $(this).attr "data-email"
         args = "action=startpasswordreset&username=#{email}&method=email"
         $(this).attr "disabled", "disabled"
-        $.post adminParams.apiTarget, args, "json"
+        $.post "admin/async_login_handler.php", args, "json"
         .done (result) ->
+          console.info "Reset prompt returned", result
           unless result.status
             message = result.human_error ? result.error ? "Couldn't initiate password reset for #{email}"
             if result.action is "GET_TOTP"
