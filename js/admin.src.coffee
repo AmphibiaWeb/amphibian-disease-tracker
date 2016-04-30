@@ -4446,9 +4446,21 @@ loadSUProfileBrowser = ->
       for user in list
         if isNull user.full_name
           continue
+        if user.has_verified_email
+          verifiedHtml  """
+<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>
+          """
+        else
+          verifiedHtml = ""
+        if user.is_admin
+          adminHtml = """
+          <span class="glyphicons glyphicons-user-key" data-toggle="tooltip" title="Adminstrator"></span>
+          """
+        else
+          adminHtml = ""
         entry = """
         <span class="#{classPrefix}-user-details">
-          #{user.full_name} / #{user.handle} / #{user.email}
+          #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml}
         </span>
         <div>
           <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}">
@@ -4476,7 +4488,9 @@ loadSUProfileBrowser = ->
       # Events
       $(".#{classPrefix}-view-projects").click ->
         listElement = $(this).parents(".su-user-list")
-        console.log "Got li of ", listElement
+        console.log "Got li of ", listElement, "testing removal"
+        listElement.slideUp "slow", ->
+          listElement.remove()
         foo()
         false
       $(".#{classPrefix}-reset").click ->

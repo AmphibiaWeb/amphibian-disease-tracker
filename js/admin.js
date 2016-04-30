@@ -4429,7 +4429,7 @@ loadSUProfileBrowser = function() {
     args = "action=search_users&q=";
     dest = uri.urlString + "api.php";
     return $.post(dest, args).done(function(result) {
-      var entry, html, l, len, list, listElements, listInterior, message, ref, ref1;
+      var adminHtml, entry, html, l, len, list, listElements, listInterior, message, ref, ref1, verifiedHtml;
       if (result.status !== true) {
         message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "There was a problem loading the user list";
         stopLoadError(message);
@@ -4443,7 +4443,17 @@ loadSUProfileBrowser = function() {
         if (isNull(user.full_name)) {
           continue;
         }
-        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
+        if (user.has_verified_email) {
+          verifiedHtml("<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>");
+        } else {
+          verifiedHtml = "";
+        }
+        if (user.is_admin) {
+          adminHtml = "<span class=\"glyphicons glyphicons-user-key\" data-toggle=\"tooltip\" title=\"Adminstrator\"></span>";
+        } else {
+          adminHtml = "";
+        }
+        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");
@@ -4452,7 +4462,10 @@ loadSUProfileBrowser = function() {
       $("." + classPrefix + "-view-projects").click(function() {
         var listElement;
         listElement = $(this).parents(".su-user-list");
-        console.log("Got li of ", listElement);
+        console.log("Got li of ", listElement, "testing removal");
+        listElement.slideUp("slow", function() {
+          return listElement.remove();
+        });
         foo();
         return false;
       });
