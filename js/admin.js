@@ -4475,8 +4475,9 @@ loadSUProfileBrowser = function() {
         email = $(this).attr("data-email");
         args = "action=startpasswordreset&username=" + email + "&method=email";
         $(this).attr("disabled", "disabled");
-        $.post(adminParams.apiTarget, args, "json").done(function(result) {
+        $.post("admin/async_login_handler.php", args, "json").done(function(result) {
           var ref2, ref3;
+          console.info("Reset prompt returned", result);
           if (!result.status) {
             message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "Couldn't initiate password reset for " + email;
             if (result.action === "GET_TOTP") {
