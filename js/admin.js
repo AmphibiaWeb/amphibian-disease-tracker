@@ -4498,7 +4498,7 @@ loadSUProfileBrowser = function() {
             $("#main-body").html(html);
             bindClicks(".search-proj-link");
             $(".go-back-button").click(function() {
-              window.history.back();
+              loadSUProfileBrowser();
               return false;
             });
             return false;

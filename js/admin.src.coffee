@@ -4533,7 +4533,7 @@ loadSUProfileBrowser = ->
           $("#main-body").html html
           bindClicks(".search-proj-link")
           $(".go-back-button").click ->
-            window.history.back()
+            loadSUProfileBrowser()
             false
           false
         .fail (result, status) =>
