@@ -9907,6 +9907,7 @@ paper-button[raised].admin-action {
   background: #ccc;
 }
 #su-management-list .su-user-list {
+  border-radius: 5px;
   transition: background 0.2s ease-out;
   vertical-align: middle;
   padding: .5rem;

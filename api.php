@@ -124,7 +124,7 @@ function searchProject($get)
         'project_id' => $q,
         'project_title' => $q,
     );
-    $cols = array('project_id', 'project_title');
+    $cols = array('project_id', 'project_title', "dataset_arks");
     $response = array(
         'search' => $q,
     );
