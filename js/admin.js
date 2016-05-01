@@ -4495,7 +4495,7 @@ loadSUProfileBrowser = function() {
                 } else {
                   matchStatus = "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\">\n</iron-icon>";
                 }
-                hasData = !isNull(result.dataset_arks);
+                hasData = !isNull(project.dataset_arks);
                 if (hasData) {
                   dataAttached = "<iron-icon icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Data Attached\">\n</iron-icon>";
                 } else {
