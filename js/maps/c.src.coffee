@@ -3143,7 +3143,7 @@ $ ->
   window.debugLoggingEnabled = false
   
   do setupContext = ->
-    unless Polymer.RenderStatus._ready
+    unless Polymer?.RenderStatus?._ready
       console.warn "Delaying context until Polymer.RenderStatus is ready"
       delay 500, ->
         setupContext()
