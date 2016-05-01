@@ -98,11 +98,30 @@ loadSUProfileBrowser = ->
                 continue
               showList.push project.project_id
               publicState = project.public.toBool()
+              isAuthor = uid is result.author
+              if isAuthor
+                matchStatus = """
+                <iron-icon icon="social:person" data-toggle="tooltip" title="Author">
+                </iron-icon>
+                """
+              else
+                matchStatus = """
+                <iron-icon icon="social:group" data-toggle="tooltip" title="Collaborator">
+                </iron-icon>
+                """
+              hasData = not isNull result.dataset_arks
+              if hasData
+                dataAttached = """
+                <iron-icon icon="editor:insert-chart" data-toggle="tooltip" title="Data Attached">
+                </iron-icon>
+                """
+              else
+                dataAttached = ""
               icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
               button = """
               <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
                 #{icon} #{project.project_title}
-              </button>
+              </button> #{matchStatus} #{dataAttached}
               """
               html += "<li class='project-search-result'>#{button}</li>"
             html += "</ul>"
@@ -117,7 +136,7 @@ loadSUProfileBrowser = ->
               Back to Profile Browser
             </button>
           </div>
-          """          
+          """
           $("#main-body").html html
           bindClicks(".search-proj-link")
           $(".go-back-button").click ->
@@ -219,7 +238,6 @@ loadSUProfileBrowser = ->
           stopLoad()
           false
         false
-      foo()
       stopLoad()
       false
     .fail (result, status) ->

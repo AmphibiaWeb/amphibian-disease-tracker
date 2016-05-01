@@ -4474,7 +4474,7 @@ loadSUProfileBrowser = function() {
         args = "action=search_project&q=" + search + "&cols=" + cols;
         $.post(uri.urlString + "api.php", args, "json").done((function(_this) {
           return function(result) {
-            var button, icon, len1, m, project, projects, publicState, ref2, ref3, s, showList;
+            var button, dataAttached, hasData, icon, isAuthor, len1, m, matchStatus, project, projects, publicState, ref2, ref3, s, showList;
             console.info(result);
             html = "";
             showList = new Array();
@@ -4488,8 +4488,20 @@ loadSUProfileBrowser = function() {
                 }
                 showList.push(project.project_id);
                 publicState = project["public"].toBool();
+                isAuthor = uid === result.author;
+                if (isAuthor) {
+                  matchStatus = "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\">\n</iron-icon>";
+                } else {
+                  matchStatus = "<iron-icon icon=\"social:group\" data-toggle=\"tooltip\" title=\"Collaborator\">\n</iron-icon>";
+                }
+                hasData = !isNull(result.dataset_arks);
+                if (hasData) {
+                  dataAttached = "<iron-icon icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Data Attached\">\n</iron-icon>";
+                } else {
+                  dataAttached = "";
+                }
                 icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-                button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+                button = "<button class=\"btn btn-primary search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button> " + matchStatus + " " + dataAttached;
                 html += "<li class='project-search-result'>" + button + "</li>";
               }
               html += "</ul>";
@@ -4606,7 +4618,6 @@ loadSUProfileBrowser = function() {
         });
         return false;
       });
-      foo();
       stopLoad();
       return false;
     }).fail(function(result, status) {
