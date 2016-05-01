@@ -321,7 +321,8 @@ loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
-  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-12" required auto-validate data-field="project_title"></paper-input>
+  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-11" required auto-validate data-field="project_title"></paper-input>
+  #{getInfoTooltip("A descriptive title is most useful. Tell us the main focus of the project and whether a monitoring effort or project that just occurred in the Spring of 2015.")}
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
     <div class="row">
@@ -329,7 +330,7 @@ loadCreateNewProject = ->
         #{getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")}
         <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium dendrobatidis">Bd</button>
         <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium salamandrivorans ">Bsal</button>
-      <paper-input label="Pathogen Strain" id="project-disease-strain" class="project-field col-md-6 col-xs-11" data-field="disease_strain"></paper-input>#{getInfoTooltip("For example, Hepatitus A, B, C would enter the appropriate letter here")}
+      <paper-input label="Pathogen Strain" id="project-disease-strain" class="project-field col-md-6 col-xs-11" data-field="disease_strain"></paper-input>#{getInfoTooltip("For example, specific Bd strains which have been sequenced JEL423, JAM81, if known")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11" data-field="reference_id"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
       <paper-input label="Publication DOI" id="pub-doi" class="project-field col-md-6 col-xs-11" data-field="publication"></paper-input>
@@ -337,7 +338,8 @@ loadCreateNewProject = ->
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate data-field="pi_lab"></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
-      <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-12"  required auto-validate></paper-input>
+      <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input>
+      #{getInfoTooltip("Name or PI responsible for lab results")}
       <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
       <h2 class="new-title col-xs-12">Project Notes</h2>
       <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
@@ -348,7 +350,9 @@ loadCreateNewProject = ->
       <div class="col-xs-12">
         <span class="toggle-off-label iron-label">Private Dataset</span>
         <paper-toggle-button id="data-encumbrance-toggle" class="red">Public Dataset</paper-toggle-button>
+        #{getInfoTooltip("this will be the setting for all data uploaded to this Project")}
       </div>
+
       <h2 class="new-title col-xs-12">Project Area of Interest</h2>
       <div class="col-xs-12">
         <p>
