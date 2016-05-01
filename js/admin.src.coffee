@@ -4506,11 +4506,15 @@ loadSUProfileBrowser = ->
         $.post "#{uri.urlString}api.php", args, "json"
         .done (result) =>
           console.info result
-          html = ""
+          html = """
+          <h3 class="col-xs-12">
+            Projects with "#{email}" as a participant
+          </h3>
+          """
           showList = new Array()
           projects = Object.toArray result.result
           if projects.length > 0
-            html = "<ul class='project-search-su col-xs-12'>"
+            html += "<ul class='project-search-su col-xs-12'>"
             for project in projects
               if isNull project.project_id
                 continue
