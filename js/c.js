@@ -1724,13 +1724,16 @@ $(function() {
   try {
     checkAdmin();
     if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.loadAdminUi : void 0) === true) {
-      return loadJS("js/admin.js", function() {
+      loadJS("js/admin.js", function() {
         console.info("Loaded admin file");
         return loadAdminUi();
       });
     } else {
-      return console.info("No admin setup requested");
+      console.info("No admin setup requested");
     }
+    return $("header .header-bar-user-name").click(function() {
+      return goTo(uri.urlString + "profile.php");
+    });
   } catch (undefined) {}
 });
 

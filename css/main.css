@@ -9635,15 +9635,23 @@ html >>> .capitalize {
 header#header-bar {
   background: #5677fc;
   color: #fff;
+  position: fixed;
+  margin-top: 0px !important;
+  top: 0px;
+  width: 100%;
+  z-index: 999;
   padding: .5rem;
   margin-top: -10px;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
+header#header-bar paper-button {
+  font-size: 60%;
+}
+header#header-bar .header-bar-user-name {
+  cursor: pointer;
+}
 #header-bar > p {
   margin-bottom: 0;
-}
-#header-bar paper-button {
-  font-size: 60%;
 }
 header#header-bar + main {
   margin-top: 5rem;

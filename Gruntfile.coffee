@@ -140,9 +140,10 @@ module.exports = (grunt) ->
           "js/c.js":["coffee/core.coffee", "coffee/geo.coffee", "coffee/debug.coffee"]
           "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee", "coffee/admin-su.coffee"]
           "js/project.js":["coffee/project.coffee"]
+          "js/profile.js":["coffee/profile.coffee"]
     phpcsfixer:
       app:
-        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "home.php", "helpers/excelHelper.php"]
+        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "home.php", "helpers/excelHelper.php", "profile.php"]
       options:
         ignoreExitCode: true
         verbose: true
