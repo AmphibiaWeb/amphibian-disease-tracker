@@ -3141,7 +3141,14 @@ window.reportDebugLog = reportDebugLog
 
 $ ->
   window.debugLoggingEnabled = false
-  delay 1500, ->
+  
+  do setupContext = ->
+    unless Polymer.RenderStatus._ready
+      console.warn "Delaying context until Polymer.RenderStatus is ready"
+      delay 500, ->
+        setupContext()
+      return false
+    console.info "Setting up context events"
     $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->
       event.preventDefault()
       console.info "Showing bug report context menu"

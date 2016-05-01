@@ -3791,8 +3791,17 @@ reportDebugLog = function() {
 window.reportDebugLog = reportDebugLog;
 
 $(function() {
+  var setupContext;
   window.debugLoggingEnabled = false;
-  delay(1500, function() {
+  (setupContext = function() {
+    if (!Polymer.RenderStatus._ready) {
+      console.warn("Delaying context until Polymer.RenderStatus is ready");
+      delay(500, function() {
+        return setupContext();
+      });
+      return false;
+    }
+    console.info("Setting up context events");
     return $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
       var html, inFn, outFn;
       event.preventDefault();
@@ -3832,7 +3841,7 @@ $(function() {
         return $(".bug-report-context-wrapper").remove();
       });
     });
-  });
+  })();
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     return enableDebugLogging();
   }
