@@ -4524,7 +4524,7 @@ loadSUProfileBrowser = ->
                 <iron-icon icon="social:group" data-toggle="tooltip" title="Collaborator">
                 </iron-icon>
                 """
-              hasData = not isNull(result.dataset_arks)
+              hasData = not isNull(project.dataset_arks)
               if hasData
                 dataAttached = """
                 <iron-icon icon="editor:insert-chart" data-toggle="tooltip" title="Data Attached">
