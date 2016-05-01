@@ -927,7 +927,13 @@ finishPasswordResetHandler = ->
     html = """
     <div class="alert alert-success">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <strong>Your password has been successfully reset</strong> Your new password is <input type="text" value="#{result.new_password}" class="form-control form-inline code" readonly />. Write this down! You will NOT be able to generate or see this password again.<br/><br/>When you're done, <a href="#{apiUri.urlString}" class="alert-link">return to the login page</a> and log in with your new password.
+      <strong>Your password has been successfully reset</strong> Your new password is
+      <br/><br/>
+      <input type="text" value="#{result.new_password}" class="form-control form-inline code" readonly />
+      <br/><br/>
+      Write this down! You will NOT be able to generate or see this password again.<br/><br/>When you're done, <a href="#{apiUri.urlString}" class="alert-link">click here to return to the login page</a> and log in with your new password.
+      <br/><br/>
+      We highly recommend changing your password in Account Settings once you've logged in.
     </div>
     """
     $("#login").replaceWith(html)
