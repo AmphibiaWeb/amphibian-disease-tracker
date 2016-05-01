@@ -98,7 +98,8 @@ loadSUProfileBrowser = ->
                 continue
               showList.push project.project_id
               publicState = project.public.toBool()
-              isAuthor = uid is result.author
+              isAuthor = search is result.author
+              console.log search, result.author, isAuthor, result
               if isAuthor
                 matchStatus = """
                 <iron-icon icon="social:person" data-toggle="tooltip" title="Author">
@@ -109,7 +110,7 @@ loadSUProfileBrowser = ->
                 <iron-icon icon="social:group" data-toggle="tooltip" title="Collaborator">
                 </iron-icon>
                 """
-              hasData = not isNull result.dataset_arks
+              hasData = not isNull(result.dataset_arks)
               if hasData
                 dataAttached = """
                 <iron-icon icon="editor:insert-chart" data-toggle="tooltip" title="Data Attached">

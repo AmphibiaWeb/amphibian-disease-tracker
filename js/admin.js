@@ -4488,7 +4488,8 @@ loadSUProfileBrowser = function() {
                 }
                 showList.push(project.project_id);
                 publicState = project["public"].toBool();
-                isAuthor = uid === result.author;
+                isAuthor = search === result.author;
+                console.log(search, result.author, isAuthor, result);
                 if (isAuthor) {
                   matchStatus = "<iron-icon icon=\"social:person\" data-toggle=\"tooltip\" title=\"Author\">\n</iron-icon>";
                 } else {
