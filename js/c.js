@@ -3794,7 +3794,8 @@ $(function() {
   var setupContext;
   window.debugLoggingEnabled = false;
   (setupContext = function() {
-    if (!Polymer.RenderStatus._ready) {
+    var ref;
+    if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
       console.warn("Delaying context until Polymer.RenderStatus is ready");
       delay(500, function() {
         return setupContext();
