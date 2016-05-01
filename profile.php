@@ -143,7 +143,7 @@ try {
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
     <script type="text/javascript" src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="js/c.min.js"></script>
-    <script type="text/javascript" src="js/project.js"></script>
+    <script type="text/javascript" src="js/profile.js"></script>
     <script type="text/javascript">
       // Initial script
     </script>
@@ -168,8 +168,8 @@ try {
            $test = $loginStatus['status'];
            if ($test) {
                ?>
-        Logged in as <?php echo $user;
-               ?>
+        Logged in as <span class='header-bar-user-name'><?php echo $user;
+               ?></span>
         <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
@@ -192,7 +192,7 @@ try {
              ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
-        <p>A beautiful cacophony of data and narcissism</p>
+        <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
       </section>
       <?php 
          } elseif (!$validUser) {

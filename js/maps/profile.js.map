@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "profile.js",
+  "sourceRoot": "../../coffee/",
+  "sources": [
+    "profile.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;;;AAMA,CAAA,CAAE,SAAA;SAEA;AAFA,CAAF"
+}

@@ -1305,6 +1305,9 @@ $ ->
         loadAdminUi()
     else
       console.info "No admin setup requested"
+    # Let clicking on username load up profile page
+    $("header .header-bar-user-name").click ->
+      goTo "#{uri.urlString}profile.php"
 
 ###
 # Do Georeferencing from data

@@ -286,8 +286,12 @@ paper-dialog-scrollable {
   }
 }
 
-// Home Page
 
+
+
+////////////////
+// Home Page
+////////////////
 .fixed-bar {
     position: fixed; //sticky;
     margin-top: 0px !important; // You can remove this when sticky is working again
@@ -299,18 +303,26 @@ paper-dialog-scrollable {
 
 header#header-bar {
     .materialblue;
+    .fixed-bar;
     padding: .5rem;
     margin-top: -10px;
-    box-shadow: 5px 5px 5px rgba(0,0,0,.5)
+    box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+    paper-button {
+        // Shrink this to work inline with paper-icon-buttons
+        font-size: 60%;
+    }
+    .header-bar-user-name:hover {
+        
+    }
+    .header-bar-user-name {
+        // Styles for the user name identifier
+        cursor: pointer;
+    }
 }
 #header-bar > p {
     margin-bottom: 0;
 }
 
-#header-bar paper-button {
-    // Shrink this to work inline with paper-icon-buttons
-    font-size: 60%;
-}
 
 header#header-bar + main {
     margin-top: 5rem;
@@ -585,7 +597,7 @@ paper-button[raised].admin-action {
     li.su-user-list:hover {
         background: #ccc;
     }
-    .su-user-list {        
+    .su-user-list {
         .clearfix;
         border-radius: 5px;
         transition: background .2s ease-out;
@@ -608,7 +620,7 @@ ul.project-search-su {
     list-style-type: none;
     .project-search-result {
         .search-proj-link {
-            
+
         }
     }
 }
