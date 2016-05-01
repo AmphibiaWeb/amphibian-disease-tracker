@@ -4476,11 +4476,11 @@ loadSUProfileBrowser = function() {
           return function(result) {
             var button, dataAttached, hasData, icon, isAuthor, len1, m, matchStatus, project, projects, publicState, ref2, ref3, s, showList;
             console.info(result);
-            html = "";
+            html = "<h3 class=\"col-xs-12\">\n  Projects with \"" + email + "\" as a participant\n</h3>";
             showList = new Array();
             projects = Object.toArray(result.result);
             if (projects.length > 0) {
-              html = "<ul class='project-search-su col-xs-12'>";
+              html += "<ul class='project-search-su col-xs-12'>";
               for (m = 0, len1 = projects.length; m < len1; m++) {
                 project = projects[m];
                 if (isNull(project.project_id)) {
