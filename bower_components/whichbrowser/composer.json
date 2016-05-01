@@ -1,5 +1,5 @@
 {
-    "name": "whichbrowser/parser",
+    "name": "whichbrowser/whichbrowser",
     "description": "User agent sniffing gone too far",
     "keywords": ["useragent","browser"],
     "homepage": "http://whichbrowser.net",
