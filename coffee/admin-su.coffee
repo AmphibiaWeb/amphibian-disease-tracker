@@ -98,8 +98,8 @@ loadSUProfileBrowser = ->
                 continue
               showList.push project.project_id
               publicState = project.public.toBool()
-              isAuthor = search is result.author
-              console.log search, result.author, isAuthor, result
+              isAuthor = search is project.author
+              console.log search, project.author, isAuthor, project
               if isAuthor
                 matchStatus = """
                 <iron-icon icon="social:person" data-toggle="tooltip" title="Author">
