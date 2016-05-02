@@ -1635,7 +1635,7 @@ class UserFunctions extends DBHelper
         # Are they logging in from the same IP?
         if ($userdata[$this->ipColumn] != $current_ip) {
             if ($detail) {
-                return array('state' => false,'status' => false,'error' => 'Different IP address on login','uid' => $userid,'salt' => $salt,'calc_conf' => $conf,'basis_conf' => $hash,'have_secret' => self::strbool(!empty($secret)),'from_cookie' => self::strbool($from_cookie),'stored_ip' => $userdata[$this->ipColumn],'current_ip' => $current_ip);
+                return array('state' => false,'status' => false,'error' => 'Different IP address on login','uid' => $userid,'salt' => $salt,'calc_conf' => $conf,'basis_conf' => $hash,'have_secret' => self::strbool(!empty($secret)),'from_cookie' => self::strbool($from_cookie),'stored_ip' => $userdata[$this->ipColumn],'current_ip' => $current_ip, "full_current_ip" => $_SERVER['REMOTE_ADDR']);
             }
 
             return false;

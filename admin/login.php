@@ -356,6 +356,11 @@ if($_REQUEST['q']=='submitlogin')
             $is_encrypted = empty($res["encrypted_hash"]) || empty($res["encrypted_secret"]);
             $hash =  $is_encrypted ? $_COOKIE[$cookieauth]:$res["encrypted_hash"];
             $secret =  $is_encrypted ? $_COOKIE[$cookiekey]:$res["encrypted_secret"];
+            $current_ip = $_SERVER['REMOTE_ADDR'];
+            $ipArray = explode(".", $current_ip);
+            array_pop($ipArray);
+            $ipTop = implode(".", $ipArray);
+            $current_ip = $ipTop;
             $totp_buffer = "<section id='totp_prompt' class='row'>
   <div class='$totp_class alert alert-danger col-xs-12 col-md-6 force-center' id='totp_message'>".$res["human_error"]."</div>
   <form id='totp_submit' onsubmit='event.preventDefault();' class='form-horizontal clearfix col-xs-12'>
@@ -366,7 +371,7 @@ if($_REQUEST['q']=='submitlogin')
       <input type='hidden' id='password' name='password' value='".$res["encrypted_password"]."'  class='password-input'/>
       <input type='hidden' id='secret' name='secret' value='".$secret."'/>
       <input type='hidden' id='hash' name='hash' value='".$hash."'/>
-      <input type='hidden' id='remote' name='remote' value='".$_SERVER['REMOTE_ADDR']."'/>
+      <input type='hidden' id='remote' name='remote' value='".$current_ip."'/>
       <input type='hidden' id='encrypted' name='encrypted' value='".$user->strbool($is_encrypted)."'/>
       <br/>
       <br/>
@@ -435,8 +440,12 @@ if($_REQUEST['q']=='submitlogin')
                         $salt=$cookie_result['source'][1];
                         $otsalt=$cookie_result['source'][2];
                         $cookie_secret=$cookie_result['source'][0]; // won't grab new data until refresh, use passed
-
-                        $value_create=array($cookie_secret,$salt,$otsalt,$_SERVER['REMOTE_ADDR'],$site_security_token);
+                        $current_ip = $_SERVER['REMOTE_ADDR'];
+                        $ipArray = explode(".", $current_ip);
+                        array_pop($ipArray);
+                        $ipTop = implode(".", $ipArray);
+                        $current_ip = $ipTop;
+                        $value_create=array($cookie_secret,$salt,$otsalt,$current_ip,$site_security_token);
                         $value=sha1(implode('',$value_create));
                         if($value==$cookie_result['raw_auth'])
                           {
@@ -521,8 +530,8 @@ if($_REQUEST['q']=='submitlogin')
           {
             ob_end_flush();
             $login_output.=$login_preamble;
-            $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p><strong>Whoops!</strong> " . $res['message'] . "</p><aside class='ssmall'>Did you mean to <a href='?q=create' class='alert-link'>create a new account instead?</a> Or did you need to <a href='#' class='alert-link do-password-reset'>reset your password?</a></aside>              
-<p class='small'>As a reminder, we require a password of at least $minimum_password_length characters with at least <strong>one upper case</strong> letter, at least <strong>one lower case</strong> letter, and at least <strong>one digit or special character</strong>.</p>              
+            $login_output.="<div class='alert alert-warning'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button><p><strong>Whoops!</strong> " . $res['message'] . "</p><aside class='ssmall'>Did you mean to <a href='?q=create' class='alert-link'>create a new account instead?</a> Or did you need to <a href='#' class='alert-link do-password-reset'>reset your password?</a></aside>
+<p class='small'>As a reminder, we require a password of at least $minimum_password_length characters with at least <strong>one upper case</strong> letter, at least <strong>one lower case</strong> letter, and at least <strong>one digit or special character</strong>.</p>
               </div>";
             $failcount=intval($_POST['failcount'])+1;
             $loginform_whole = $loginform."
