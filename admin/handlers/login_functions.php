@@ -1627,6 +1627,10 @@ class UserFunctions extends DBHelper
             }
 
             $current_ip = $_SERVER['REMOTE_ADDR'];
+            $ipArray = explode(".", $current_ip);
+            array_pop($ipArray);
+            $ipTop = implode(".", $ipArray);
+            $current_ip = $ipTop;
 
         # Are they logging in from the same IP?
         if ($userdata[$this->ipColumn] != $current_ip) {
@@ -1713,6 +1717,10 @@ class UserFunctions extends DBHelper
             $pw_characters = json_decode($userdata[$this->pwColumn], true);
             $salt = $pw_characters['salt'];
             $current_ip = empty($current_ip) ? $_SERVER['REMOTE_ADDR'] : $remote;
+            $ipArray = explode(".", $current_ip);
+            array_pop($ipArray);
+            $ipTop = implode(".", $ipArray);
+            $current_ip = $ipTop;
 
         # store it
         $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->cookieColumn."`='$otsalt', `".$this->ipColumn."`='$current_ip', `last_login`='".microtime_float()."' WHERE id='$id'";
