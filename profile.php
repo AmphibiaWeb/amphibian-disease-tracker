@@ -193,8 +193,21 @@ try {
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
+        <div id="basic-profile" class="col-xs-12 col-md-6">
+        </div>
+        <div id="institution-profile" class="col-xs-12 col-md-6">
+        </div>
+        <div id="bio-profile" class="col-xs-12">
+          
+        </div>
+        <?php
+           # Section for self
+           ?>
+        <?php
+           # End self section
+           ?>
       </section>
-      <?php 
+      <?php
          } elseif (!$validUser) {
              ?>
       <h1 id="title">Invalid User</h1>
@@ -213,7 +226,7 @@ try {
           and <a href="profile.php">view your own profile</a>.
         </p>
       </section>
-      <?php 
+      <?php
          } ?>
     </main>
     <footer class="row">

@@ -43,13 +43,21 @@ constructProfileJson = (encodeForPosting = false)->
   # @param bool encodeForPosting -> when true, returns a URI-encoded
   #   base64 string, rather than an actual object.
   ###
-  false
+  response = false
+  # Build it
+  if encodeForPosting
+    response = post64 response
+  response
 
 saveProfileChanges = ->
   ###
   # Post the appropriate JSON to the server and give user feedback
   # based on the response
   ###
+  foo()
+  return false
+  args = "perform=#{profileAction}&data="
+  $.post apiTarget, args, "json"
   false
 
 

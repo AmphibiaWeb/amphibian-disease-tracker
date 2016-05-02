@@ -1618,6 +1618,13 @@ function updateOwnProfile($get, $col = "public_profile") {
     # Verify the JSON integrity of the file
     $structuredData = smart_decode64($get["data"]);
     //check nullness objectness etc
+    if(!is_array($structuredData)) {
+        return array(
+            "status" => false,
+            "error" => "BAD_DATA",
+            "human_error" => "Provided data should be a Base-64 representation of a JSON object.",
+        );
+    }
     # Check required keys
     $requiredKeys = array(
         "place",
@@ -1638,7 +1645,20 @@ function updateOwnProfile($get, $col = "public_profile") {
     $data = json_encode($structuredData, $jsonOptions);
     $u = new UserFunctions();
     # We'll use writeToUser and use default cookie-based validation.
-    # $u->writeToUser($data, $col);
+    return $structuredData;
+    # $writeResult = $u->writeToUser($data, $col);
+    $rStatus = $writeResult["status"];
+    if (!is_bool($rStatus)) {
+        $rStatus = false;
+    }
+    $response = array(
+        "status" => $rStatus,
+        "write_response" => $writeResult,
+        "provided" => array(
+            "raw" => $get["data"],
+            "decoded" => $structuredData
+        ),
+    );
     return false;
 }
 
