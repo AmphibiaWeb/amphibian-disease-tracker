@@ -9625,6 +9625,21 @@ html >>> .capitalize {
     box-shadow: 0 0 9px #333;
   }
 }
+.genus,
+.species,
+.sciname {
+  font-style: italic;
+}
+.genus {
+  text-transform: capitalize !important;
+}
+.species,
+.sciname {
+  text-transform: lowercase;
+}
+.sciname:first-letter {
+  text-transform: uppercase;
+}
 .fixed-bar {
   position: fixed;
   margin-top: 0px !important;
