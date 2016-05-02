@@ -565,7 +565,7 @@ function doAWebValidate($get)
             }
             # Nope, just failed
             $response['error'] = 'INVALID_GENUS';
-            $response['human_error'] = "'$providedGenus' isn't a valid AmphibiaWeb genus (checked ".sizeof($genusList)." genera), nor is '$testSpecies' a recognized synonym.";
+            $response['human_error'] = "'<span class='genus'>$providedGenus</span>' isn't a valid AmphibiaWeb genus (checked ".sizeof($genusList)." genera), nor is '<span class='sciname'>$testSpecies</span>' a recognized synonym.";
             returnAjax($response);
         }
         # Ah, a synonym eh?
@@ -693,6 +693,7 @@ function doAWebValidate($get)
             # Nope, just failed
             $response['error'] = 'INVALID_SPECIES';
             $response['human_error'] = "'$providedSpecies' isn't a valid AmphibiaWeb species in the genus '$providedGenus', nor is '$testSpecies' a recognized synonym.";
+            $response['human_error_html'] = "'<span class='species'>$providedSpecies</span>' isn't a valid AmphibiaWeb species in the genus '<span class='genus'>$providedGenus</span>', nor is '<span class='sciname'>$testSpecies</span>' a recognized synonym.";
             returnAjax($response);
         }
         # Let's play the synonym game again!

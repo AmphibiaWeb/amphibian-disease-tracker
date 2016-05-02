@@ -4292,12 +4292,13 @@ validateTaxonData = function(dataObject, callback) {
       taxaString += " " + taxonArray[key].subspecies;
     }
     return validateAWebTaxon(taxonArray[key], function(result) {
-      var e, error1, l, len, message, replaceRows;
+      var e, error1, l, len, message, ref3, ref4, ref5, replaceRows;
       if (result.invalid === true) {
         cleanupToasts();
-        stopLoadError(result.response.human_error);
+        message = (ref3 = (ref4 = (ref5 = result.response.human_error_html) != null ? ref5 : result.response.human_error) != null ? ref4 : result.response.error) != null ? ref3 : "Unknown error.";
+        stopLoadError(message);
         console.error(result.response.error);
-        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + result.response.human_error + " We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + message + " The error occured while we were checking taxon <span class='sciname'>\"" + taxaString + "\"</span>, which occurs at rows " + taxaPerRow[taxaString] + ". We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
         bsAlert(message);
         removeDataFile();
         stopLoadBarsError();
