@@ -235,13 +235,17 @@ class DBHelper
             if (!$dirty_entities && json_encode(json_decode($input,true)) != $input) {
                 $input = htmlentities(self::cleanInput($input));
                 $input = str_replace('_', '&#95;', $input); // Fix _ potential wildcard
-            $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
-            $input = str_replace("'", '&#39;', $input);
+                $input = str_replace('%', '&#37;', $input); // Fix % potential wildcard
+                $input = str_replace("'", '&#39;', $input);
                 $input = str_replace('"', '&#34;', $input);
             }
             $output = mysqli_real_escape_string($this->getLink(), $input);
         }
-
+        # Some happy underscores
+        if (preg_match('/^([a-zA-Z](\&#95;)?)+$/', $output)) {
+            # Successful match
+            $output = str_replace("&#95;", "_", $output);
+        } 
         return $output;
     }
 
