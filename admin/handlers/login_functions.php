@@ -1627,6 +1627,10 @@ class UserFunctions extends DBHelper
             }
 
             $current_ip = $_SERVER['REMOTE_ADDR'];
+            $ipArray = explode(".", $current_ip);
+            array_pop($ipArray);
+            $ipTop = implode(".", $ipArray);
+            $current_ip = $ipTop;
 
         # Are they logging in from the same IP?
         if ($userdata[$this->ipColumn] != $current_ip) {
@@ -1713,6 +1717,10 @@ class UserFunctions extends DBHelper
             $pw_characters = json_decode($userdata[$this->pwColumn], true);
             $salt = $pw_characters['salt'];
             $current_ip = empty($current_ip) ? $_SERVER['REMOTE_ADDR'] : $remote;
+            $ipArray = explode(".", $current_ip);
+            array_pop($ipArray);
+            $ipTop = implode(".", $ipArray);
+            $current_ip = $ipTop;
 
         # store it
         $query = 'UPDATE `'.$this->getTable().'` SET `'.$this->cookieColumn."`='$otsalt', `".$this->ipColumn."`='$current_ip', `last_login`='".microtime_float()."' WHERE id='$id'";
@@ -1927,21 +1935,21 @@ class UserFunctions extends DBHelper
     public function writeToUser($data, $col, $validation_data = null, $replace = true, $alert_forbidden_column = true)
     {
 
-    /***
-     * Write data to a user column.
-     *
-     * @param string $data the data to be written
-     * @param string $col the database column to be written to
-     * @param array $validation_data data to verify access to the
-     * user. An array of "password"=>$password or manually provided
-     * cookie data with $this->linkColumn as the key. If this isn't
-     * provided, cookies are used.
-     * @param bool $replace whether to replace existing
-     * data. Otherwise, it appends. Default: true.
-     * @return
-     ***/
+        /***
+         * Write data to a user column.
+         *
+         * @param string $data the data to be written
+         * @param string $col the database column to be written to
+         * @param array $validation_data data to verify access to the
+         * user. An array of "password"=>$password or manually provided
+         * cookie data with $this->linkColumn as the key. If this isn't
+         * provided, cookies are used.
+         * @param bool $replace whether to replace existing
+         * data. Otherwise, it appends. Default: true.
+         * @return
+         ***/
 
-    $vmeta = false;
+        $vmeta = false;
         $error = false;
         if (empty($data) || empty($col)) {
             return array('status' => false,'error' => 'Bad request');
@@ -1950,14 +1958,14 @@ class UserFunctions extends DBHelper
         if (is_array($validation_data)) {
             if (array_key_exists($this->linkColumn, $validation_data) && !empty($validation_data[$this->linkColumn])) {
                 // confirm with validateUser();
-            $validated = $this->validateUser($validation_data[$this->linkColumn], $validation_data['hash'], $validation_data['secret']);
+                $validated = $this->validateUser($validation_data[$this->linkColumn], $validation_data['hash'], $validation_data['secret']);
                 $method = 'Confirmation token';
                 $where_col = $this->linkColumn;
                 $user = $validation_data[$this->linkColumn];
             } elseif (array_key_exists('password', $validation_data)) {
                 # confirm with lookupUser();
-            # If TOTP is enabled, this lookup will always fail ...
-            $vmeta = $this->lookupUser($validation_data['username'], $validation_data['password']);
+                # If TOTP is enabled, this lookup will always fail ...
+                $vmeta = $this->lookupUser($validation_data['username'], $validation_data['password']);
                 $validated = $vmeta[0];
                 if ($validated) {
                     $this->getUser(array('username' => $validation_data['username']));
@@ -1965,11 +1973,11 @@ class UserFunctions extends DBHelper
                 $method = 'Password';
             } elseif (array_key_exists('application_verification', $validation_data)) {
                 # The user is accessing through an app. Check the
-          # verification chain.
-          $status = $this->verifyApp($validation_data['application_verification']);
+                # verification chain.
+                $status = $this->verifyApp($validation_data['application_verification']);
                 if ($status['status'] !== true) {
                     // array("status"=>false,"error"=>"Bad application verification","human_error"=>"There was a problem verifying the application","app_error_code"=>106);
-              return $status;
+                    return $status;
                 }
             } else {
                 return array('status' => false,'error' => 'Bad validation data');
@@ -1985,21 +1993,21 @@ class UserFunctions extends DBHelper
             if (empty($user)) {
                 return array('status' => false,'error' => 'Problem assigning user');
             }
-        // write it to the db
-        // replace or append based on flag
-        $real_col = $this->sanitize($col, true);
+            // write it to the db
+            // replace or append based on flag
+            $real_col = $this->sanitize($col, true);
             if (!$replace) {
                 # pull the existing data ...
-            $l = $this->openDB();
+                $l = $this->openDB();
                 $prequery = "SELECT `$real_col` FROM `".$this->getTable()."` WHERE `$where_col`='$user'";
-            # Look for relevent JSON entries or XML entries and replace them
-            $r = mysqli_query($l, $prequery);
+                # Look for relevent JSON entries or XML entries and replace them
+                $r = mysqli_query($l, $prequery);
                 $row = mysqli_fetch_row($r);
                 $d = $row[0];
                 $jd = json_decode($d, true);
                 if ($jd == null) {
                     # XML -- only takes one tag in!!
-                $xml_data = explode('</', $data);
+                    $xml_data = explode('</', $data);
                     $tag = array_pop($xml_data);
                     $tag = $this->sanitize(substr($tag, 0, -1));
                     $tag = '<'.$tag.'>';

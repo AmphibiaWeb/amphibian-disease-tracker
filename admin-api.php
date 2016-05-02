@@ -139,6 +139,9 @@ if ($as_include !== true) {
     case 'su_manipulate_user':
         returnAjax(superuserEditUser($_REQUEST));
         break;
+    case "update_profile":
+        returnAjax(updateOwnProfile($_REQUEST));
+        break;
     default:
         returnAjax(getLoginState($_REQUEST, true));
     }
@@ -1600,4 +1603,74 @@ function superuserEditUser($get) {
         );
     }
 
+}
+
+
+
+
+function updateOwnProfile($get, $col = "public_profile") {
+    /***
+     * Update the self-profile of a user
+     *
+     *
+     *
+     ***/
+    # Verify the JSON integrity of the file
+    $structuredData = smart_decode64($get["data"]);
+    //check nullness objectness etc
+    if(!is_array($structuredData)) {
+        return array(
+            "status" => false,
+            "error" => "BAD_DATA",
+            "human_error" => "Provided data should be a Base-64 representation of a JSON object.",
+        );
+    }
+    # Check required keys
+    $requiredKeys = array(
+        "place",
+        "social",
+        "privacy",
+        "profile",
+    );
+    foreach($requiredKeys as $key) {
+        if(!array_key_exists($key, $structuredData)) {
+            return array(
+                "status" => false,
+                "error" => "MISSING_REQUIRED_KEY",
+                "human_error" => "Required key '$key' cannot be found in the posted dataset",
+            );
+        }
+    }
+    $jsonOptions = JSON_NUMERIC_CHECK | JSON_HEX_QUOT | JSON_HEX_APOS;
+    $data = json_encode($structuredData, $jsonOptions);
+    $u = new UserFunctions();
+    # We'll use writeToUser and use default cookie-based validation.
+    return $structuredData;
+    # $writeResult = $u->writeToUser($data, $col);
+    $rStatus = $writeResult["status"];
+    if (!is_bool($rStatus)) {
+        $rStatus = false;
+    }
+    $response = array(
+        "status" => $rStatus,
+        "write_response" => $writeResult,
+        "provided" => array(
+            "raw" => $get["data"],
+            "decoded" => $structuredData
+        ),
+    );
+    return false;
+}
+
+
+function sendUserMessage($get) {
+    return false;
+}
+
+function getConversationWithUser($get) {
+    return false;
+}
+
+function getTotalConversationsSummary($get) {
+    return false;
 }
