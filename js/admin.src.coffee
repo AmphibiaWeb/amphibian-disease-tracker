@@ -4330,9 +4330,10 @@ validateTaxonData = (dataObject, callback = null) ->
     validateAWebTaxon taxonArray[key], (result) ->
       if result.invalid is true
         cleanupToasts()
-        stopLoadError result.response.human_error
+        message = result.response.human_error_html ? result.response.human_error ? result.response.error ? "Unknown error."
+        stopLoadError message
         console.error result.response.error
-        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{result.response.human_error} We stopped validation at that point. Please correct taxonomy issues and try uploading again."
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{message} The error occured while we were checking taxon <span class='sciname'>\"#{taxaString}\"</span>, which occurs at rows #{taxaPerRow[taxaString]}. We stopped validation at that point. Please correct taxonomy issues and try uploading again."
         bsAlert(message)
         removeDataFile()
         stopLoadBarsError()
