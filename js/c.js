@@ -3267,7 +3267,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
     location: ll
   };
   return geocoder.geocode(request, function(result, status) {
-    var east, googleBounds, l, len, locality, mustContain, north, south, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
+    var east, googleBounds, l, len, locality, mustContain, ne, north, south, sw, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
     if (status === google.maps.GeocoderStatus.OK) {
       console.info("Google said:", result);
       mustContain = geo.getBoundingRectangle(boundingBox);
@@ -3279,10 +3279,12 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
         if (googleBounds == null) {
           continue;
         }
-        north = googleBounds.R.j;
-        south = googleBounds.R.R;
-        east = googleBounds.j.R;
-        west = googleBounds.j.j;
+        ne = googleBounds.getNorthEast();
+        sw = googleBounds.getSouthWest();
+        north = ne.lat();
+        south = sw.lat();
+        east = ne.lng();
+        west = sw.lng();
         if (north < mustContain.north) {
           continue;
         }
