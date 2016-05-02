@@ -2670,10 +2670,12 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
         googleBounds = view.geometry.bounds
         unless googleBounds?
           continue
-        north = googleBounds.R.j
-        south = googleBounds.R.R
-        east = googleBounds.j.R
-        west = googleBounds.j.j
+        ne = googleBounds.getNorthEast()
+        sw = googleBounds.getSouthWest()
+        north = ne.lat()
+        south = sw.lat()
+        east = ne.lng()
+        west = sw.lng()
         # Check the coords
         if north < mustContain.north then continue
         if south > mustContain.south then continue
