@@ -323,10 +323,30 @@ validateTaxonData = (dataObject, callback = null) ->
     validateAWebTaxon taxonArray[key], (result) ->
       if result.invalid is true
         cleanupToasts()
-        message = result.response.human_error_html ? result.response.human_error ? result.response.error ? "Unknown error."
+        specificEpithetRegex = /^([a-zA-Z]+) +[a-zA-Z\. ]+$/im
+        match = specificEpithetRegex.exec(taxonArray[key].species)
+        sspMatch = specificEpithetRegex.exec(taxonArray[key].subspecies)
+        if match? or sspMatch?
+          which = if match? then "species" else "subspecies"
+          extraMessage = """
+          (We noticed your #{which} looks like the full species name. <a href="https://tdwg.github.io/dwc/terms/index.htm#specificEpithet" class="alert-link newwindow" data-newtab="true">Double check the definition <span class="glyphicon glyphicon-new-window"></span></a> and your entry &#8212; that may help!)
+          """
+        else
+          extraMessage = "Please correct taxonomy issues and try uploading again. If you're confused by this message, please check <a href='https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/#validating-updating-taxa' data-newtab='true' class='newwindow alert-link'>our documentation  <span class='glyphicon glyphicon-new-window'></span></a>."
+        message = result.response.human_error ? result.response.error ? "Unknown error."
         stopLoadError message
+        message = result.response.human_error_html ? message
         console.error result.response.error
-        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{message} The error occured while we were checking taxon <span class='sciname'>\"#{taxaString}\"</span>, which occurs at rows #{taxaPerRow[taxaString]}. We stopped validation at that point. Please correct taxonomy issues and try uploading again."
+        taxaRow = taxaPerRow[taxaString].slice 0
+        n = 0
+        for row in taxaRow
+          row++
+          taxaRow[n] = row
+          n++
+        if taxaRow.length > 5
+          taxaRow = taxaRow.slice 0, 5
+          taxaRow = taxaRow.toString() + "..."
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. #{message} The error occured while we were checking taxon <span class='sciname'>\"#{taxaString}\"</span>, which occurs at rows #{taxaRow}. We stopped validation at that point. #{extraMessage}"
         bsAlert(message)
         removeDataFile()
         stopLoadBarsError()

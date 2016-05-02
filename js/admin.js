@@ -4292,13 +4292,35 @@ validateTaxonData = function(dataObject, callback) {
       taxaString += " " + taxonArray[key].subspecies;
     }
     return validateAWebTaxon(taxonArray[key], function(result) {
-      var e, error1, l, len, message, ref3, ref4, ref5, replaceRows;
+      var e, error1, extraMessage, l, len, len1, m, match, message, ref3, ref4, ref5, replaceRows, specificEpithetRegex, sspMatch, taxaRow, which;
       if (result.invalid === true) {
         cleanupToasts();
-        message = (ref3 = (ref4 = (ref5 = result.response.human_error_html) != null ? ref5 : result.response.human_error) != null ? ref4 : result.response.error) != null ? ref3 : "Unknown error.";
+        specificEpithetRegex = /^([a-zA-Z]+) +[a-zA-Z\. ]+$/im;
+        match = specificEpithetRegex.exec(taxonArray[key].species);
+        sspMatch = specificEpithetRegex.exec(taxonArray[key].subspecies);
+        if ((match != null) || (sspMatch != null)) {
+          which = match != null ? "species" : "subspecies";
+          extraMessage = "(We noticed your " + which + " looks like the full species name. <a href=\"https://tdwg.github.io/dwc/terms/index.htm#specificEpithet\" class=\"alert-link newwindow\" data-newtab=\"true\">Double check the definition <span class=\"glyphicon glyphicon-new-window\"></span></a> and your entry &#8212; that may help!)";
+        } else {
+          extraMessage = "Please correct taxonomy issues and try uploading again. If you're confused by this message, please check <a href='https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/#validating-updating-taxa' data-newtab='true' class='newwindow alert-link'>our documentation  <span class='glyphicon glyphicon-new-window'></span></a>.";
+        }
+        message = (ref3 = (ref4 = result.response.human_error) != null ? ref4 : result.response.error) != null ? ref3 : "Unknown error.";
         stopLoadError(message);
+        message = (ref5 = result.response.human_error_html) != null ? ref5 : message;
         console.error(result.response.error);
-        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + message + " The error occured while we were checking taxon <span class='sciname'>\"" + taxaString + "\"</span>, which occurs at rows " + taxaPerRow[taxaString] + ". We stopped validation at that point. Please correct taxonomy issues and try uploading again.";
+        taxaRow = taxaPerRow[taxaString].slice(0);
+        n = 0;
+        for (l = 0, len = taxaRow.length; l < len; l++) {
+          row = taxaRow[l];
+          row++;
+          taxaRow[n] = row;
+          n++;
+        }
+        if (taxaRow.length > 5) {
+          taxaRow = taxaRow.slice(0, 5);
+          taxaRow = taxaRow.toString() + "...";
+        }
+        message = "<strong>Taxonomy Error</strong>: There was a taxon error in your file. " + message + " The error occured while we were checking taxon <span class='sciname'>\"" + taxaString + "\"</span>, which occurs at rows " + taxaRow + ". We stopped validation at that point. " + extraMessage;
         bsAlert(message);
         removeDataFile();
         stopLoadBarsError();
@@ -4307,8 +4329,8 @@ validateTaxonData = function(dataObject, callback) {
       try {
         replaceRows = taxaPerRow[taxaString];
         console.info("Replacing rows @ " + taxaString, replaceRows, taxonArray[key]);
-        for (l = 0, len = replaceRows.length; l < len; l++) {
-          row = replaceRows[l];
+        for (m = 0, len1 = replaceRows.length; m < len1; m++) {
+          row = replaceRows[m];
           dataObject.data[row].genus = result.genus;
           dataObject.data[row].specificEpithet = result.species;
           if (result.subspecies == null) {

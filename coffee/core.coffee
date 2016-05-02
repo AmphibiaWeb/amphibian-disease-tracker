@@ -1090,6 +1090,9 @@ bsAlert = (message, type = "warning", fallbackContainer = "body", selector = "#b
     $(selector).removeClass "alert-warning alert-info alert-danger alert-success"
     $(selector).addClass "alert-#{type}"
   $("#{selector} .alert-message").html(message)
+  bindClicks()
+  mapNewWindows()
+  false
 
 
 animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, raisedElevation = 4) ->

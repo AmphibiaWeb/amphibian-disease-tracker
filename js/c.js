@@ -1464,7 +1464,10 @@ bsAlert = function(message, type, fallbackContainer, selector) {
     $(selector).removeClass("alert-warning alert-info alert-danger alert-success");
     $(selector).addClass("alert-" + type);
   }
-  return $(selector + " .alert-message").html(message);
+  $(selector + " .alert-message").html(message);
+  bindClicks();
+  mapNewWindows();
+  return false;
 };
 
 animateHoverShadows = function(selector, defaultElevation, raisedElevation) {
