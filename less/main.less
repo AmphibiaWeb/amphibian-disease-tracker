@@ -1105,7 +1105,7 @@ section.conversations {
 
     .conversation-list {
         .well;
-        .well-lg;
+        .well-sm;
 
         ul {
             .list-unstyled;
@@ -1115,6 +1115,7 @@ section.conversations {
                 background: lighten(desaturate(@material-blue-grey, 25% ), 25% );
                 border-radius: 5px;
                 box-shadow: 3px 3px 3px rgba(0,0,0,.5);
+                cursor: pointer;
                 transition: .2s ease-out;
                 img {
                     .pull-left;
@@ -1150,7 +1151,7 @@ section.conversations {
                 .clearfix;
                 .clear;
                 border-radius: 7px;
-                box-shadow: 3px 3px 3px rgba(0,0,0,.5);
+                box-shadow: 3px 3px 6px rgba(0,0,0,.5);
                 .timestamp {
                     .text-muted;
                     display: block;
@@ -1170,6 +1171,11 @@ section.conversations {
 
         .chat-entry-container {
             height: 3rem;
+            
+            .form-group {
+                margin-left: 0;
+                margin-right: 0;
+            }
         }
     }
 }

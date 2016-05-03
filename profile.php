@@ -191,20 +191,27 @@ try {
     <main>
       <?php
          if ($validUser) {
+             $isViewingSelf = $viewUserId == $selfUserId;
+             # Fetch the structured data for the profile
+             if($isViewingSelf) {
+               $title = "You ($title)";
+               $titlePossessive = "Your"
+             }
+             else {
+               $titlePossessive = $title . "'s";
+             }
              ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
-      <?php
-         $isViewingSelf = $viewUserId == $selfUserId;
-         # Fetch the structured data for the profile
-         ?>
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
-        <div id="basic-profile" class="col-xs-12 col-md-6">
+        <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
+          <h3>Basic Profile</h3>
         </div>
-        <div id="institution-profile" class="col-xs-12 col-md-6">
+        <div id="institution-profile" class="col-xs-12 col-md-6 profile-region">
+          <h3>Institution Information</h3>
         </div>
-        <div id="bio-profile" class="col-xs-12">
-
+        <div id="bio-profile" class="col-xs-12 profile-region">
+          <h3><?php echo $titlePossessive; ?> Bio</h3>
         </div>
       </section>
         <?php
@@ -306,11 +313,11 @@ try {
             </div>
             <div class="chat-entry-container form-horizontal">
               <div class="form-group">
-                <div class="col-xs-8">
+                <div class="col-xs-10">
                   <input type="text" class="form-control" placeholder="Type your message ..." />
                 </div>
-                <div class="col-xs-4 text-center">
-                  <paper-icon-button icon="icons:send" class="send-chat"></paper-icon-button>
+                <div class="col-xs-2 text-center">
+                  <paper-icon-button icon="icons:send" class="send-chat" data-toggle="tooltip" title="Send Message"></paper-icon-button>
                 </div>
               </div>
             </div>
