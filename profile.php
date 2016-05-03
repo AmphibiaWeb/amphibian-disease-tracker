@@ -306,11 +306,11 @@ try {
             </div>
             <div class="chat-entry-container form-horizontal">
               <div class="form-group">
-                <div class="col-xs-8">
+                <div class="col-xs-10">
                   <input type="text" class="form-control" placeholder="Type your message ..." />
                 </div>
-                <div class="col-xs-4 text-center">
-                  <paper-icon-button icon="icons:send" class="send-chat"></paper-icon-button>
+                <div class="col-xs-2 text-center">
+                  <paper-icon-button icon="icons:send" class="send-chat" data-toggle="tooltip" title="Send Message"></paper-icon-button>
                 </div>
               </div>
             </div>

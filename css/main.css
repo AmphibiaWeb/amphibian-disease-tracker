@@ -12499,6 +12499,7 @@ section.conversations .conversation-list ul li {
   background: #b5b5b5;
   border-radius: 5px;
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
   transition: 0.2s ease-out;
 }
 section.conversations .conversation-list ul li img {
@@ -12545,7 +12546,7 @@ section.conversations .user-conversation ol li {
   display: inline;
   clear: both;
   border-radius: 7px;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
 }
 section.conversations .user-conversation ol li:before,
 section.conversations .user-conversation ol li:after {
