@@ -1098,11 +1098,30 @@ section.conversations {
     > div {
         max-height: 33vh;
         overflow-y: scroll;
+        margin: 1rem;
     }
 
     .conversation-list {
         .well;
         .well-lg;
+        
+        ul {
+            .list-unstyled;
+            li {
+                padding: 1rem;
+                margin: 1rem;
+                background: lighten(desaturate(@material-blue-grey, 25% ), 25% );
+                img {
+                    .pull-left;
+                    max-height: 3em;
+                    margin: .5rem;
+                }
+            }
+            li.unread {
+                font-weight: bold;
+                background: @material-blue-grey;
+            }
+        }
     }
 
     .user-conversation {

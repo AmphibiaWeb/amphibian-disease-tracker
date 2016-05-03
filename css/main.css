@@ -12472,6 +12472,7 @@ google-map.center-block:after {
 section.conversations > div {
   max-height: 33vh;
   overflow-y: scroll;
+  margin: 1rem;
 }
 section.conversations .conversation-list {
   min-height: 20px;
@@ -12487,6 +12488,25 @@ section.conversations .conversation-list {
 section.conversations .conversation-list blockquote {
   border-color: #ddd;
   border-color: rgba(0, 0, 0, 0.15);
+}
+section.conversations .conversation-list ul {
+  padding-left: 0;
+  list-style: none;
+}
+section.conversations .conversation-list ul li {
+  padding: 1rem;
+  margin: 1rem;
+  background: #b5b5b5;
+}
+section.conversations .conversation-list ul li img {
+  float: left !important;
+  float: left;
+  max-height: 3em;
+  margin: .5rem;
+}
+section.conversations .conversation-list ul li.unread {
+  font-weight: bold;
+  background: #607d8b;
 }
 section.conversations .user-conversation {
   min-height: 20px;
