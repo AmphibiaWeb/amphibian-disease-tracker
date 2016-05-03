@@ -218,88 +218,92 @@ try {
           <h3>
             Conversations
           </h3>
-          <div class="conversation-list col-xs-12 col-md-6 col-lg-3">
-            <ul>
-              <li>
-                User
-              </li>
-              <li>
-                Conversation
-              </li>
-              <li>
-                List
-              </li>
-              <li>
-                User
-              </li>
-              <li>
-                Conversation
-              </li>
-              <li>
-                List
-              </li>
-              <li>
-                User
-              </li>
-              <li>
-                Conversation
-              </li>
-              <li>
-                List
-              </li>
-            </ul>
+          <div class="conversation-part-container col-xs-12 col-md-6 col-lg-3">
+            <div class="conversation-list">
+              <ul>
+                <li>
+                  User
+                </li>
+                <li>
+                  Conversation
+                </li>
+                <li>
+                  List
+                </li>
+                <li>
+                  User
+                </li>
+                <li>
+                  Conversation
+                </li>
+                <li>
+                  List
+                </li>
+                <li>
+                  User
+                </li>
+                <li>
+                  Conversation
+                </li>
+                <li>
+                  List
+                </li>
+              </ul>
+            </div>
           </div>
-          <div class="user-conversation col-xs-12 col-md-6 col-lg-9">
-            <ol>
-              <li class="from-me">
-                Hello, how are you
-              </li>
-              <li class="to-me">
-                I am fine how are you?
-              </li>
-              <li class="from-me">
-                quite well
-              </li>
-              <li class="from-me">
-                I like to respond
-              </li>
-              <li class="from-me">
-                Hello, how are you
-              </li>
-              <li class="to-me">
-                I am fine how are you?
-              </li>
-              <li class="from-me">
-                quite well
-              </li>
-              <li class="from-me">
-                I like to respond
-              </li>
-              <li class="from-me">
-                Hello, how are you
-              </li>
-              <li class="to-me">
-                I am fine how are you?
-              </li>
-              <li class="from-me">
-                quite well
-              </li>
-              <li class="from-me">
-                I like to respond
-              </li>
-              <li class="from-me">
-                Hello, how are you
-              </li>
-              <li class="to-me">
-                I am fine how are you?
-              </li>
-              <li class="from-me">
-                quite well
-              </li>
-              <li class="from-me">
-                I like to respond
-              </li>
-            </ol>
+          <div class="conversation-part-container col-xs-12 col-md-6 col-lg-9">
+            <div class="user-conversation">
+              <ol>
+                <li class="from-me">
+                  Hello, how are you
+                </li>
+                <li class="to-me">
+                  I am fine how are you?
+                </li>
+                <li class="from-me">
+                  quite well
+                </li>
+                <li class="from-me">
+                  I like to respond
+                </li>
+                <li class="from-me">
+                  Hello, how are you
+                </li>
+                <li class="to-me">
+                  I am fine how are you?
+                </li>
+                <li class="from-me">
+                  quite well
+                </li>
+                <li class="from-me">
+                  I like to respond
+                </li>
+                <li class="from-me">
+                  Hello, how are you
+                </li>
+                <li class="to-me">
+                  I am fine how are you?
+                </li>
+                <li class="from-me">
+                  quite well
+                </li>
+                <li class="from-me">
+                  I like to respond
+                </li>
+                <li class="from-me">
+                  Hello, how are you
+                </li>
+                <li class="to-me">
+                  I am fine how are you?
+                </li>
+                <li class="from-me">
+                  quite well
+                </li>
+                <li class="from-me">
+                  I like to respond
+                </li>
+              </ol>
+            </div>
             <div class="chat-entry-container row form">
               <input type="text" class="form-control col-xs-8" placeholder="Type your message ..." />
               <div class="col-xs-4 text-center">

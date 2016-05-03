@@ -12469,7 +12469,7 @@ google-map.center-block:after {
 .card-container paper-card {
   width: 100%;
 }
-section.conversations > div {
+section.conversations .conversation-part-container > div:not(.row) {
   height: calc(33vh - 3rem);
   overflow-y: scroll;
   margin: 1rem;
