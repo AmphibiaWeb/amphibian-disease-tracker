@@ -1087,3 +1087,45 @@ google-map.public-fuzzy-map,  google-map.center-block {
         width: 100%;
     }
 }
+
+
+//////////////////////////////////////
+// Profile Page
+//////////////////////////////////////
+
+section.conversations {
+    
+    > div {
+        max-height: 33vh;
+        overflow-y: scroll;
+    }
+    
+    .conversation-list {
+        
+    }
+    
+    .user-conversation {        
+        ol {
+            .list-unstyled;
+            li {
+                padding: 1rem;
+                display:inline;
+                .clearfix;
+                .clear;
+                
+                .timestamp {
+                    .text-muted;
+                    display: block;
+                }
+            }
+            .from-me {
+                .text-right;
+                .pull-right;
+            }
+            .to-me {
+                .text-left;
+                .pull-left;
+            }
+        }
+    }
+}

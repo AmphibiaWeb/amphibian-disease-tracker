@@ -12469,3 +12469,92 @@ google-map.center-block:after {
 .card-container paper-card {
   width: 100%;
 }
+section.conversations > div {
+  max-height: 33vh;
+  overflow-y: scroll;
+}
+section.conversations .user-conversation ol {
+  padding-left: 0;
+  list-style: none;
+}
+section.conversations .user-conversation ol li {
+  padding: 1rem;
+  display: inline;
+  clear: both;
+}
+section.conversations .user-conversation ol li:before,
+section.conversations .user-conversation ol li:after {
+  content: " ";
+  display: table;
+}
+section.conversations .user-conversation ol li:after {
+  clear: both;
+}
+section.conversations .user-conversation ol li:before,
+section.conversations .user-conversation ol li:after {
+  content: " ";
+  display: table;
+}
+section.conversations .user-conversation ol li:after {
+  clear: both;
+}
+section.conversations .user-conversation ol li .timestamp {
+  color: #777777;
+  display: block;
+}
+section.conversations .user-conversation ol .from-me {
+  text-align: right;
+  float: right !important;
+  float: right;
+}
+section.conversations .user-conversation ol .from-me paper-card {
+  width: 100%;
+  margin-bottom: 2rem;
+  transition: all 0.5s ease-out;
+  max-height: 750px;
+}
+section.conversations .user-conversation ol .from-me paper-card > div {
+  max-height: 750px;
+}
+section.conversations .user-conversation ol .from-me paper-card .header {
+  cursor: pointer;
+}
+section.conversations .user-conversation ol .from-me paper-card .header :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f066";
+}
+section.conversations .user-conversation ol .from-me paper-card div {
+  transition: all 0.5s ease-out;
+}
+section.conversations .user-conversation ol .from-me paper-card.collapse > div:not(.header),
+section.conversations .user-conversation ol .from-me paper-card.collapsed > div:not(.header) {
+  transition: all 0.5s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+section.conversations .user-conversation ol .from-me paper-card.collapse > .header :before,
+section.conversations .user-conversation ol .from-me paper-card.collapsed > .header :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f065" !important;
+}
+section.conversations .user-conversation ol .from-me .paper-card-0 .header.paper-card .title-text.paper-card {
+  color: #009688;
+}
+section.conversations .user-conversation ol .to-me {
+  text-align: left;
+  float: left !important;
+  float: left;
+}
