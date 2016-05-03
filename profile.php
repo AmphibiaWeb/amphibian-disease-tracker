@@ -195,7 +195,7 @@ try {
              # Fetch the structured data for the profile
              if($isViewingSelf) {
                $title = "You ($title)";
-               $titlePossessive = "Your"
+               $titlePossessive = "Your";
              }
              else {
                $titlePossessive = $title . "'s";
