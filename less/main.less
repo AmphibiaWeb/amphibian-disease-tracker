@@ -1100,19 +1100,22 @@ section.conversations {
         overflow-y: scroll;
         margin: 1rem;
     }
-    
-    
+
+
 
     .conversation-list {
         .well;
         .well-lg;
-        
+
         ul {
             .list-unstyled;
             li {
                 padding: 1rem;
                 margin: 1rem;
                 background: lighten(desaturate(@material-blue-grey, 25% ), 25% );
+                border-radius: 5px;
+                box-shadow: 3px 3px 3px rgba(0,0,0,.5);
+                transition: .2s ease-out;
                 img {
                     .pull-left;
                     max-height: 3em;
@@ -1123,11 +1126,14 @@ section.conversations {
                 font-weight: bold;
                 background: @material-blue-grey;
             }
+            li:hover {
+                box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+            }
             li.unread:hover {
-                background: saturate(@material-blue-grey, 10%);
+                background: saturate(@material-blue-grey, 20%);
             }
             li:not(.unread):hover {
-                background: lighten(desaturate(@material-blue-grey, 15% ), 25% );
+                background: lighten(desaturate(@material-blue-grey, 5% ), 25% );
             }
         }
     }
@@ -1144,6 +1150,7 @@ section.conversations {
                 .clearfix;
                 .clear;
                 border-radius: 7px;
+                box-shadow: 3px 3px 3px rgba(0,0,0,.5);
                 .timestamp {
                     .text-muted;
                     display: block;
@@ -1160,7 +1167,7 @@ section.conversations {
                 background: desaturate(@material-blue, 80% )
             }
         }
-        
+
         .chat-entry-container {
             height: 3rem;
         }
