@@ -29,6 +29,8 @@ if(empty($viewUserId) && $loginStatus["status"]) {
 }
 $setUser = array("dblink" => $viewUserId);
 echo "<!-- Setting user \n ".print_r($setUser, true) . "\n -->";
+$selfUser = new UserFunctions();
+$selfUserId = $selfUser->getHardlink();
 $viewUser = new UserFunctions($viewUserId, "dblink");
 $validUser = true;
 $userdata = array();
@@ -191,6 +193,10 @@ try {
          if ($validUser) {
              ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
+      <?php
+         $isViewingSelf = $viewUserId == $selfUserId;
+         # Fetch the structured data for the profile
+         ?>
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
         <div id="basic-profile" class="col-xs-12 col-md-6">
@@ -198,15 +204,116 @@ try {
         <div id="institution-profile" class="col-xs-12 col-md-6">
         </div>
         <div id="bio-profile" class="col-xs-12">
-          
+
         </div>
+      </section>
         <?php
            # Section for self
+             if($isViewingSelf) {
            ?>
+        <section class="row conversations">
+          <p class="col-xs-12">
+            SELF-VEIWING! Conversations, etc.
+          </p>
+          <h3>
+            Conversations
+          </h3>
+          <div class="conversation-list col-xs-12 col-md-6 col-lg-3">
+            <ul>
+              <li>
+                User
+              </li>
+              <li>
+                Conversation
+              </li>
+              <li>
+                List
+              </li>
+              <li>
+                User
+              </li>
+              <li>
+                Conversation
+              </li>
+              <li>
+                List
+              </li>
+              <li>
+                User
+              </li>
+              <li>
+                Conversation
+              </li>
+              <li>
+                List
+              </li>
+            </ul>
+          </div>
+          <div class="user-conversation col-xs-12 col-md-6 col-lg-9">
+            <ol>
+              <li class="from-me">
+                Hello, how are you
+              </li>
+              <li class="to-me">
+                I am fine how are you?
+              </li>
+              <li class="from-me">
+                quite well
+              </li>
+              <li class="from-me">
+                I like to respond
+              </li>
+              <li class="from-me">
+                Hello, how are you
+              </li>
+              <li class="to-me">
+                I am fine how are you?
+              </li>
+              <li class="from-me">
+                quite well
+              </li>
+              <li class="from-me">
+                I like to respond
+              </li>
+              <li class="from-me">
+                Hello, how are you
+              </li>
+              <li class="to-me">
+                I am fine how are you?
+              </li>
+              <li class="from-me">
+                quite well
+              </li>
+              <li class="from-me">
+                I like to respond
+              </li>
+              <li class="from-me">
+                Hello, how are you
+              </li>
+              <li class="to-me">
+                I am fine how are you?
+              </li>
+              <li class="from-me">
+                quite well
+              </li>
+              <li class="from-me">
+                I like to respond
+              </li>
+            </ol>
+          </div>
+        </section>
         <?php
-           # End self section
+             } # End self section
+             else {
            ?>
-      </section>
+        <section class="row misc">
+          <p class="col-xs-12">
+            Viewing Other
+          </p>
+        </section>
+           <?php
+             }
+           ?>
       <?php
          } elseif (!$validUser) {
              ?>
