@@ -300,6 +300,12 @@ try {
                 I like to respond
               </li>
             </ol>
+            <div class="chat-entry-container row form">
+              <input type="text" class="form-control col-xs-8" placeholder="Type your message ..." />
+              <div class="col-xs-4 text-center">
+                <paper-icon-button icon="icons:send" class="send-chat"></paper-icon-button>
+              </div>
+            </div>
           </div>
         </section>
         <?php
