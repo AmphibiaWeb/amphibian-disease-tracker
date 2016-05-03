@@ -304,10 +304,12 @@ try {
                 </li>
               </ol>
             </div>
-            <div class="chat-entry-container row form">
-              <input type="text" class="form-control col-xs-8" placeholder="Type your message ..." />
-              <div class="col-xs-4 text-center">
-                <paper-icon-button icon="icons:send" class="send-chat"></paper-icon-button>
+            <div class="chat-entry-container form-horizontal">
+              <div class="form-group">
+                <input type="text" class="form-control col-xs-8" placeholder="Type your message ..." />
+                <div class="col-xs-4 text-center">
+                  <paper-icon-button icon="icons:send" class="send-chat"></paper-icon-button>
+                </div>
               </div>
             </div>
           </div>
