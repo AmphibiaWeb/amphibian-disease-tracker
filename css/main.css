@@ -12469,7 +12469,7 @@ google-map.center-block:after {
 .card-container paper-card {
   width: 100%;
 }
-section.conversations .conversation-part-container > div:not(.row) {
+section.conversations .conversation-part-container > div:not(.row):not(.form-horizontal) {
   height: calc(33vh - 3rem);
   overflow-y: scroll;
   margin: 1rem;
@@ -12507,6 +12507,12 @@ section.conversations .conversation-list ul li img {
 section.conversations .conversation-list ul li.unread {
   font-weight: bold;
   background: #607d8b;
+}
+section.conversations .conversation-list ul li.unread:hover {
+  background: #548197;
+}
+section.conversations .conversation-list ul li:not(.unread):hover {
+  background: #b3b6b8;
 }
 section.conversations .user-conversation {
   min-height: 20px;
