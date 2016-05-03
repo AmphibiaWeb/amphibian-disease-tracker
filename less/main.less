@@ -289,7 +289,7 @@ paper-dialog-scrollable {
 
 .genus, .species, .sciname {
     // Defaults
-    .italic;    
+    .italic;
 }
 .genus {
     text-transform: capitalize !important;
@@ -327,7 +327,7 @@ header#header-bar {
         font-size: 60%;
     }
     .header-bar-user-name:hover {
-        
+
     }
     .header-bar-user-name {
         // Styles for the user name identifier
@@ -1094,17 +1094,20 @@ google-map.public-fuzzy-map,  google-map.center-block {
 //////////////////////////////////////
 
 section.conversations {
-    
+
     > div {
         max-height: 33vh;
         overflow-y: scroll;
     }
-    
+
     .conversation-list {
-        
+        .well;
+        .well-lg;
     }
-    
-    .user-conversation {        
+
+    .user-conversation {
+        .well;
+        .well-lg;
         ol {
             .list-unstyled;
             li {
@@ -1112,7 +1115,7 @@ section.conversations {
                 display:inline;
                 .clearfix;
                 .clear;
-                
+                border-radius: 7px;
                 .timestamp {
                     .text-muted;
                     display: block;
@@ -1121,10 +1124,12 @@ section.conversations {
             .from-me {
                 .text-right;
                 .pull-right;
+                background: desaturate(@material-teal, 60% )
             }
             .to-me {
                 .text-left;
                 .pull-left;
+                background: desaturate(@material-blue, 80% )
             }
         }
     }
