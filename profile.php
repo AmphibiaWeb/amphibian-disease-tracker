@@ -218,11 +218,16 @@ try {
            # Section for self
              if($isViewingSelf) {
            ?>
+        <div class="row">
+          <div class="col-xs-12">
+            <button class="btn btn-success pull-right" id="save-profile" disabled>
+              <iron-icon icon="icons:save"></iron-icon>
+              Save Changes to Profile
+            </button>
+          </div>
+        </div>
         <section class="row conversations">
-          <p class="col-xs-12">
-            SELF-VEIWING! Conversations, etc.
-          </p>
-          <h3>
+          <h3 class="col-xs-12">
             Conversations
           </h3>
           <div class="conversation-part-container col-xs-12 col-md-6 col-lg-3">
