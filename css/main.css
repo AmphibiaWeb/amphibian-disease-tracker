@@ -12497,6 +12497,9 @@ section.conversations .conversation-list ul li {
   padding: 1rem;
   margin: 1rem;
   background: #b5b5b5;
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  transition: 0.2s ease-out;
 }
 section.conversations .conversation-list ul li img {
   float: left !important;
@@ -12508,11 +12511,14 @@ section.conversations .conversation-list ul li.unread {
   font-weight: bold;
   background: #607d8b;
 }
+section.conversations .conversation-list ul li:hover {
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
 section.conversations .conversation-list ul li.unread:hover {
-  background: #548197;
+  background: #4985a3;
 }
 section.conversations .conversation-list ul li:not(.unread):hover {
-  background: #b3b6b8;
+  background: #abb9bf;
 }
 section.conversations .user-conversation {
   min-height: 20px;
@@ -12539,6 +12545,7 @@ section.conversations .user-conversation ol li {
   display: inline;
   clear: both;
   border-radius: 7px;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 section.conversations .user-conversation ol li:before,
 section.conversations .user-conversation ol li:after {
