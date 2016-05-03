@@ -12470,7 +12470,7 @@ google-map.center-block:after {
   width: 100%;
 }
 section.conversations > div {
-  max-height: 33vh;
+  height: calc(33vh - 3rem);
   overflow-y: scroll;
   margin: 1rem;
 }
@@ -12611,4 +12611,7 @@ section.conversations .user-conversation ol .to-me {
   float: left !important;
   float: left;
   background: #9ba0b7;
+}
+section.conversations .user-conversation .chat-entry-container {
+  height: 3rem;
 }
