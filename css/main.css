@@ -12509,6 +12509,7 @@ section.conversations .user-conversation ol {
 }
 section.conversations .user-conversation ol li {
   padding: 1rem;
+  margin: .5rem;
   display: inline;
   clear: both;
   border-radius: 7px;
@@ -12537,7 +12538,7 @@ section.conversations .user-conversation ol .from-me {
   text-align: right;
   float: right !important;
   float: right;
-  background: #2d6963;
+  background: #74bbb4;
 }
 section.conversations .user-conversation ol .from-me paper-card {
   width: 100%;
