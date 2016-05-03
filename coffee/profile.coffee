@@ -72,4 +72,8 @@ $ ->
   $("#save-profile").click ->
     saveProfileChanges()
     false
+  $("#main-body input").keyup ->
+    $("#main-body input").unbind()
+    $("#save-profile").removeAttr "disabled"
+    false
   false

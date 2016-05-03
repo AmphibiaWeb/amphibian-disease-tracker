@@ -89,6 +89,11 @@ $(function() {
     saveProfileChanges();
     return false;
   });
+  $("#main-body input").keyup(function() {
+    $("#main-body input").unbind();
+    $("#save-profile").removeAttr("disabled");
+    return false;
+  });
   return false;
 });
 

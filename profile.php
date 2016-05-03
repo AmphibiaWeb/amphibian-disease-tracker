@@ -220,7 +220,7 @@ try {
            ?>
         <div class="row">
           <div class="col-xs-12">
-            <button class="btn btn-success pull-right disabled" id="save-profile">
+            <button class="btn btn-success pull-right" id="save-profile" disabled>
               <iron-icon icon="icons:save"></iron-icon>
               Save Changes to Profile
             </button>
