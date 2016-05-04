@@ -6,7 +6,7 @@ author: Michelle Koo
 categories: News Resources
 ---
 
-Spring update on the Amphibian Disease portal: We are in alpha release with core features working! The beta version is in progress now. Most importantly we have outlined the framework for the portal, which is sketched out in a user's workflow diagram.
+Spring update on the [Amphibian Disease portal](https://amphibiandisease.org/): We are in alpha release with core features working! The beta version is in progress now. Most importantly we have outlined the framework for the portal, which is sketched out in a user's workflow diagram.
 
 ![Workflow schema](https://docs.google.com/drawings/d/1dlV446IKjq8GKNJoz0h7aLsCrKDUig0yqrGucEBq-H8/pub?w=960&h=540)
 
@@ -26,6 +26,8 @@ Projects allows PIs to assign other users to upload datasets if students or othe
 
 Projects also can be associated with publications or other DOI and thus serves as a means to deposit negative and positive results.
 
+All Projects can be viewed, searched or mapped on the [Project Browser](https://amphibiandisease.org/project.php)
+
 _**Private vs. Public data**_
 Whether datasets, that is the sampling record of species, location and disease status, are publicly viewable or private and masked from the general searches is determined by the Principal Investigator when creating the Project. This allows datasets to be encumbered and private while dissertations are written or publications are in review. Private datasets will likely have a default time span of 1 or 2 years after which time, if not renewed explicitly, will be made automatically public. Once made public, any data cannot be made private again (this is more a function of the nature of the internet and that Google bots do such a good job of scraping the web than anything we can control).
 
@@ -35,7 +37,7 @@ The Project bounding box or area of effort can be defined in multiple ways durin
 Users can define the Project areas by either: 1) searching on a **Locality Name** so that Google Map can automatically calculate its bounding box; 2) enter a **list of coordinate pairs** to define a bounding box; 3) use the Map interface to drop pins to define an area by clicking on the map then use the **Build Map** tool to create the footprint; 4) lastly, by uploading a dataset in an XLS spreadsheet where the minimum convex polygon will be automatically calculated.
 
 _Coming soon:_
-More information on **User registration and profiles**, **Data use policy**, and **Uploading data with our XLS template**.
+More information on **User registration and profiles**, **Data use policy**, and **Uploading data with our XLS template**, and **DOIs and Publications**.
 
 Send us feedback and any suggestions! [Email Michelle Koo](mailto:mkoo@berkeley.edu)
 

@@ -45,7 +45,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - USGS Powell Center
 - USDA Forest Service
 
-####Researchers (alphabetical)
+#### Researchers (alphabetical)
 - San Francisco State University (SFSU) 
 - Southern Illinois University, Carbondale (SIU) 
 - University of California, Berkeley (UCB)
@@ -53,7 +53,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - US Forest Service, Pacific Northwest Research Station (PNW)
 - US Geological Survey, Amphibian Research and Monitoring Initiative (ARMI)
    
-####Diagnostic Labs (alphabetical) 
+#### Diagnostic Labs (alphabetical) 
 - [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
 - [Lips Lab (UM)](http://lipslab.weebly.com/)
 - [Martel and Pasmans Wildlife Population Health Labs (UGent)](http://www.ugent.be/di/di05/nl/dienstverlening/kliniek/amfibie.htm)
@@ -61,10 +61,11 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 ### Maps
-_coming soon_
+ [Examples] (http://updates.amphibiandisease.org/maps/)
 
-### Upload and Manage your datasets
-_coming soon_
+### [The Portal] (https://amphibiandisease.org/)
+- [View Projects, Datasets, PI's etc](https://amphibiandisease.org/projects.php)
+- [Register or log in] (https://amphibiandisease.org/admin-login.php)
 
     
 For more information, see the resources below:
