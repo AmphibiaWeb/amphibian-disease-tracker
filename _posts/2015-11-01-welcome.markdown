@@ -61,11 +61,11 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 ### Maps
- [Examples] (http://updates.amphibiandisease.org/maps/)
+ [Examples](http://updates.amphibiandisease.org/maps/)
 
-### [The Portal] (https://amphibiandisease.org/)
+### [The Portal](https://amphibiandisease.org/)
 - [View Projects, Datasets, PI's etc](https://amphibiandisease.org/projects.php)
-- [Register or log in] (https://amphibiandisease.org/admin-login.php)
+- [Register or log in](https://amphibiandisease.org/admin-login.php)
 
     
 For more information, see the resources below:
