@@ -235,7 +235,7 @@ try {
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
                  $fillType = ucwords($fillType);
-                 $addClass = str_replace(" ", "-", strtolower($fillType));
+                 $addClass = " " . str_replace(" ", "-", strtolower($fillType));
                  if(empty($fill)) {
                      if(!$isViewingSelf) $fill = "Not Provided";
                      $class .= " no-data-provided";
@@ -276,9 +276,15 @@ try {
           <div class="form-group">
             <div class="col-xs-10 col-sm-8 col-md-6">
               <div class="input-group">
-                <span class="input-group-addon"><iron-icon icon="icons:link"></iron-icon></span>
-                <input type="text" class="form-control" readonly value="https://amphibiandisease.org/profile.php?id=<?php echo $viewUser->getHardlink(); ?>"/>
+                <iron-icon icon="icons:link"></iron-icon>
+                <?php
+                   $profileLink = "https://amphibiandisease.org/profile.php?id=" . $viewUser->getHardlink();
+                   ?>
+                <paper-input label="Profile Link" readonly value="<?php echo $profileLink; ?>"/>
               </div>
+            </div>
+            <div class="fab-wrapper col-xs-2">
+              <paper-fab icon="icons:content-copy" class="materialblue" id="copy-profile-link" data-clipboard-text="<?php echo $profileLink; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
             </div>
           </div>
         </div>
