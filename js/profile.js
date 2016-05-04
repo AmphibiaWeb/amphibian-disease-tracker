@@ -67,10 +67,11 @@ saveProfileChanges = function() {
    * Post the appropriate JSON to the server and give user feedback
    * based on the response
    */
-  var args;
+  var args, data;
   foo();
   return false;
-  args = "perform=" + profileAction + "&data=";
+  data = constructProfileJson(true);
+  args = "perform=" + profileAction + "&data=" + data;
   $.post(apiTarget, args, "json");
   return false;
 };

@@ -56,7 +56,8 @@ saveProfileChanges = ->
   ###
   foo()
   return false
-  args = "perform=#{profileAction}&data="
+  data = constructProfileJson(true)
+  args = "perform=#{profileAction}&data=#{data}"
   $.post apiTarget, args, "json"
   false
 
