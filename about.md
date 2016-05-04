@@ -15,7 +15,7 @@ In this rapidly developing area of science, making information more quickly and 
 
 We aim to be a repository for _Bd_ and _Bsal_ data from field and biocollection samples. Only by the community coming together to aggregate data will we be able to understand the disease dynamics of this major cause of amphibian declines worldwide.
      
-### New Posts
+### New Posts     
 
 We will add relevant news and resources to our posts. Please let us know if you have news or information you would like to share.     
 
@@ -45,12 +45,12 @@ Currently you can read Posts from two categories: Bsal News and Resources
 
 
 
-###Our partners###
+### Our partners    
 - PARC Disease Task Team: [Read more on the _Bsal_ Call to Action](http://www.parcplace.org/parcplace/images/stories/pdf/BsalBrief.pdf)
 - USGS Powell Center
 - USDA Forest Service
 
-####Researchers####
+#### Researchers    
 - San Francisco State University (SFSU) 
 - Southern Illinois University, Carbondale (SIU) 
 - University of California, Berkeley (UCB)
@@ -58,7 +58,7 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - US Forest Service, Pacific Northwest Research Station (PNW)
 - US Geological Survey, Amphibian Research and Monitoring Initiative (ARMI)
    
-####Diagnostic Labs####
+#### Diagnostic Labs    
  (alphabetical) 
 - [Catenazzi Lab (SIU)](http://catenazzi.weebly.com/)
 - [Lips Lab (UM)](http://lipslab.weebly.com/)
@@ -66,11 +66,11 @@ Currently you can read Posts from two categories: Bsal News and Resources
 - [Vredenburg Lab (SFSU)](http://www.vredenburglab.com/)
 
 
-###Maps###
+### Maps    
 [Example Maps](http://updates.amphibiandisease.org/maps/)
 
     
-###More information###
+### More information     
 
 [Salamander Fungus](http://www.salamanderfungus.org/task-force/)    
 [AmphibiaWeb on the Salamander Fungus](http://amphibiaweb.org/chytrid/Bsal.html)     
