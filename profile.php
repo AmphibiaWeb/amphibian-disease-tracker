@@ -192,7 +192,58 @@ try {
       <?php
          if ($validUser) {
              $isViewingSelf = $viewUserId == $selfUserId;
+             # Helper setup
+             $baseStructuredData = array(
+                 "place" => array(
+                     "name" => "",
+                     "street_number" => "",
+                     "street" => "",
+                     "country_code" => "",
+                     "zip" => "",
+                     "department" => "",
+                     "department_phone" => "",
+                 ),
+                 "social" => array(
+                     "twitter" => "",
+                     "google_plus" => "",
+                     "linkedin" => "",
+                     "facebook" => "",
+                     "other" => array(),
+                 ),
+                 "profile" => "",
+                 "privacy" => array(
+                     "phone" => array(
+                         "public" => false,
+                         "members" => false,
+                         "collaborators" => false,
+                     ),
+                     "department_phone" => array(
+                         "public" => false,
+                         "members" => false,
+                         "collaborators" => false,
+                     ),
+                     "email" => array(
+                         "public" => false,
+                         "members" => false,
+                         "collaborators" => false,
+                     ),
+                 ),
+             
+             );
+             function getElement($fillType, $fill = "", $class = "row") {
+                 global $isViewingSelf;
+                 # Title case and replace _ with " " on fillType
+                 if($isViewingSelf) {
+                     $element = "<paper-input class='user-input $class' value='$fill' label='$fillType'></paper-input>";
+                 } else {
+                     $element = "<div class='profile-bio-group $class'><label class='col-xs-4'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                 }
+                 return $element;
+             }
              # Fetch the structured data for the profile
+             $structuredData = $baseStructuredData;
+             # Fetch and overwrite keys
+             # Set up terms
              if($isViewingSelf) {
                $title = "You ($title)";
                $titlePossessive = "Your";
