@@ -243,9 +243,9 @@ try {
                  $class .= $addClass;
                  if($isViewingSelf && !$forceReadOnly) {
                      $elType = "paper-input";
-                     if(strpos("phone", $addClass) !== false) $elType = "gold-phone-input";
-                     if(strpos("zip", $addClass) !== false) $elType = "gold-zip-input";
-                     if(strpos("address", $addClass) === false) {
+                     if(strpos($addClass, "phone") !== false) $elType = "gold-phone-input";
+                     if(strpos($addClass, "zip") !== false) $elType = "gold-zip-input";
+                     if(strpos($addClass, "address") === false) {
                          $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate></$elType></div>";
                      } else {
                          # Address input
