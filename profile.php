@@ -242,7 +242,35 @@ try {
                  }
                  $class .= $addClass;
                  if($isViewingSelf && !$forceReadOnly) {
-                     $element = "<div class='profile-input profile-data $class'><paper-input class='user-input col-xs-12' value='$fill' label='$fillType'></paper-input></div>";
+                     $elType = "paper-input";
+                     if(strpos("phone", $addClass) !== false) $elType = "gold-phone-input";
+                     if(strpos("zip", $addClass) !== false) $elType = "gold-zip-input";
+                     if(strpos("address", $addClass) === false) {
+                         $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate></$elType></div>";
+                     } else {
+                         # Address input
+                         $element = "<div class='profile-input profile-data row address street-number'>
+  <paper-input class='user-input col-xs-12'
+               type='number'
+               label='Street Number'
+               auto-validate></paper-input>
+</div>
+<div class='profile-input profile-data row address street'>
+  <paper-input class='user-input col-xs-12'
+               label='Street Name'
+               auto-validate></paper-input>
+</div>
+<div class='profile-input profile-data row address country-code'>
+  <paper-input class='user-input col-xs-12'
+               label='Country'
+               auto-validate></paper-input>
+</div>
+<div class='profile-input profile-data row address zip'>
+  <gold-zip-input class='user-input col-xs-12'
+               label='ZIP code' 
+               auto-validate></gold-zip-input>
+</div>";
+                     }
                  } else {
                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
                  }
@@ -272,7 +300,7 @@ try {
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
         <?php if($isViewingSelf) { ?>
-        <div class="col-xs-12">
+        <div class="col-xs-12 self-link">
           <div class="form-group">
             <div class="col-xs-10 col-sm-8 col-md-6">
               <div class="input-group">
@@ -292,7 +320,7 @@ try {
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
           <h3>Basic Profile</h3>
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
-          <?php 
+          <?php
              $dateCreated = date("d F Y", $userdata["creation"]);
              echo getElement("user since", $dateCreated, "row", true); ?>
           <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
