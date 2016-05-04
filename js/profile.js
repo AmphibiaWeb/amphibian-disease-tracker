@@ -40,7 +40,7 @@ conditionalLoadAccountSettingsOptions = function() {
 };
 
 constructProfileJson = function(encodeForPosting) {
-  var response;
+  var el, i, inputs, key, len, parentKey, response, tmp, val;
   if (encodeForPosting == null) {
     encodeForPosting = false;
   }
@@ -55,6 +55,16 @@ constructProfileJson = function(encodeForPosting) {
    *   base64 string, rather than an actual object.
    */
   response = false;
+  tmp = new Object();
+  inputs = $(".profile-data:not(.from-base-profile) .user-input");
+  for (i = 0, len = inputs.length; i < len; i++) {
+    el = inputs[i];
+    val = p$(el).value;
+    key = $(el).attr("data-source");
+    parentKey = $(el).parents("[data-source]").attr("data-source");
+    tmp[parentKey][key] = val;
+  }
+  response = tmp;
   if (encodeForPosting) {
     response = post64(response);
   }
@@ -70,9 +80,17 @@ saveProfileChanges = function() {
   var args, data;
   foo();
   return false;
+  startLoad();
   data = constructProfileJson(true);
   args = "perform=" + profileAction + "&data=" + data;
-  $.post(apiTarget, args, "json");
+  $.post(apiTarget, args, "json").done(function(result) {
+    $("#save-profile").attr("disabled", "disabled");
+    stopLoad();
+    return false;
+  }).fail(function(result, status) {
+    stopLoadError();
+    return false;
+  });
   return false;
 };
 
@@ -91,7 +109,6 @@ $(function() {
     return false;
   });
   $("#main-body input").keyup(function() {
-    $("#main-body input").unbind();
     $("#save-profile").removeAttr("disabled");
     return false;
   });

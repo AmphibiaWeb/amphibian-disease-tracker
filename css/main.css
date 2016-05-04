@@ -12659,3 +12659,10 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   margin-left: 0;
   margin-right: 0;
 }
+#bio-profile marked-element,
+#bio-profile paper-textarea {
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
