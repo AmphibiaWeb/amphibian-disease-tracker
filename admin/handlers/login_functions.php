@@ -380,6 +380,27 @@ class UserFunctions extends DBHelper
         return $link;
     }
 
+    protected function getNameTag($tag = "name") {
+        $userdata = $this->getUser();
+        if(!is_array($userdata)) return false;
+        $nameXml = $userdata["name"];
+        $xml = new Xml();
+        $xml->setXml($nameXml);
+        return $xml->getTagContents($tag);
+    }
+    
+    public function getName() {
+        return $this->getNameTag("name");
+    }
+    
+    public function getFirstName() {
+        return $this->getNameTag("fname");
+    }
+    
+    public function getLastName() {
+        return $this->getNameTag("lname");
+    }
+    
     public function getProfile() {
         /***
          * Returns the public_profile of the userdata

@@ -39,10 +39,11 @@ try {
     if(!is_array($userdata)) $userdata = array();
     if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
     else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
-    $nameXml = $userdata["name"];
-    $xml = new Xml();
-    $xml->setXml($nameXml);
-    $title = $xml->getTagContents("name");
+    #$nameXml = $userdata["name"];
+    #$xml = new Xml();
+    #$xml->setXml($nameXml);
+    #$title = $xml->getTagContents("name");
+    $title = $viewUser->getName();
 } catch (Exception $e) {
     $validUser = false;
     $title = "No Such User";
@@ -228,15 +229,20 @@ try {
                          "collaborators" => false,
                      ),
                  ),
-             
+
              );
-             function getElement($fillType, $fill = "", $class = "row") {
+             function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false) {
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
-                 if($isViewingSelf) {
-                     $element = "<paper-input class='user-input $class' value='$fill' label='$fillType'></paper-input>";
+                 $fillType = ucwords($fillType);
+                 if(empty($fill)) {
+                     $fill = "Not Provided";
+                     $class .= " no-data-provided";
+                 }
+                 if($isViewingSelf && !$forceReadOnly) {
+                     $element = "<div class='profile-input profile-data $class'><paper-input class='user-input' value='$fill' label='$fillType'></paper-input></div>";
                  } else {
-                     $element = "<div class='profile-bio-group $class'><label class='col-xs-4'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
                  }
                  return $element;
              }
@@ -245,8 +251,12 @@ try {
              # Fetch and overwrite keys
              $profile = $viewUser->getProfile();
              if(is_array($profile)) {
-             $structuredData = array_merge_recursive($structuredData, $profile);             
+               $structuredData = array_merge_recursive($structuredData, $profile);
              }
+             $place = $structuredData["place"];
+             $social = $structuredData["social"];
+             $bio = $structuredData["profile"];
+             $privacyConfig = $structuredData["privacy"];
              # Set up terms
              if($isViewingSelf) {
                $title = "You ($title)";
@@ -261,9 +271,31 @@ try {
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
           <h3>Basic Profile</h3>
+          <?php echo getElement("name", $viewUser->getName(), null, true); ?>
+          <?php echo getElement("user since", $userdata["creation"], null, true); ?>
+          <?php echo getElement("email", $viewUser->getUsername(), null, true); ?>
+          <?php echo getElement("phone", $viewUser->getPhone(), null, true); ?>
+          <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
+          <?php echo getElement("google plus", $social["google_plus"], "row social google_plus"); ?>
+          <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
+          <?php echo getElement("facebook", $social["facebook"], "row social facebook"); ?>
         </div>
         <div id="institution-profile" class="col-xs-12 col-md-6 profile-region">
           <h3>Institution Information</h3>
+          <?php echo getElement("institution", $place["name"]); ?>
+          <?php echo getElement("department", $place["department"]); ?>
+          <div class="profile-data address">
+            <address
+               data-number="<?php echo $place['street_number']; ?>"
+               data-street="<?php echo $place['street']; ?>"
+               data-country="<?php echo $place['country_code']; ?>"
+               data-zip="<?php echo $place['zip']; ?>"
+               >
+              <?php echo getElement("address", $place["street_number"] . $place["street"]); ?>
+            </address>
+          </div>
+          <?php echo getElement("department phone", $place["department_phone"]); ?>
+
         </div>
         <div id="bio-profile" class="col-xs-12 profile-region">
           <h3><?php echo $titlePossessive; ?> Bio</h3>
