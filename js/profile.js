@@ -64,6 +64,7 @@ constructProfileJson = function(encodeForPosting) {
     parentKey = $(el).parents("[data-source]").attr("data-source");
     tmp[parentKey][key] = val;
   }
+  response = tmp;
   if (encodeForPosting) {
     response = post64(response);
   }

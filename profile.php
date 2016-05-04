@@ -250,7 +250,7 @@ try {
                      if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
                      if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
                      if(strpos($class, "address") === false) {
-                         $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source="$dataSource"></$elType></div>";
+                         $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource'></$elType></div>";
                      } else {
                          # Address input
                          $element = "<div class='profile-input profile-data row address street-number'>
@@ -379,7 +379,7 @@ try {
           </marked-element>
           <?php } else { ?> 
           <paper-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5"></paper-textarea>
-          <?php}?>
+          <?php } ?>
         </div>
       </section>
         <?php
