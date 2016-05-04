@@ -380,6 +380,41 @@ class UserFunctions extends DBHelper
         return $link;
     }
 
+    protected function getNameTag($tag = "name") {
+        $userdata = $this->getUser();
+        if(!is_array($userdata)) return false;
+        $nameXml = $userdata["name"];
+        $xml = new Xml();
+        $xml->setXml($nameXml);
+        return $xml->getTagContents($tag);
+    }
+    
+    public function getName() {
+        return $this->getNameTag("name");
+    }
+    
+    public function getFirstName() {
+        return $this->getNameTag("fname");
+    }
+    
+    public function getLastName() {
+        return $this->getNameTag("lname");
+    }
+    
+    public function getProfile() {
+        /***
+         * Returns the public_profile of the userdata
+         ***/
+        # Are profiles configured?
+        if(!$this->columnExists("public_profile")) {
+            return false;
+        }
+        $userdata = $this->getUser();
+        $profile = $userdata["public_profile"];
+        $jProfile = json_decode($profile, true);
+        return is_array($jProfile) ? $jProfile : false;
+    }
+
     private function getUserWhere() {
         return " WHERE `".$this->linkColumn."`='".$this->getHardlink()."'";
     }
