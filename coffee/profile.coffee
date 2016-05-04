@@ -45,6 +45,14 @@ constructProfileJson = (encodeForPosting = false)->
   ###
   response = false
   # Build it
+  tmp = new Object()
+  inputs = $(".profile-data:not(.from-base-profile) .user-input")
+  for el in inputs
+    val = p$(el).value
+    key = $(el).attr "data-source"
+    parentKey = $(el).parents("[data-source]").attr "data-source"
+    tmp[parentKey][key] = val
+  response = tmp
   if encodeForPosting
     response = post64 response
   response
@@ -56,9 +64,17 @@ saveProfileChanges = ->
   ###
   foo()
   return false
+  startLoad()
   data = constructProfileJson(true)
   args = "perform=#{profileAction}&data=#{data}"
   $.post apiTarget, args, "json"
+  .done (result) ->
+    $("#save-profile").attr "disabled", "disabled"
+    stopLoad()
+    false
+  .fail (result, status) ->
+    stopLoadError()
+    false
   false
 
 
@@ -74,7 +90,6 @@ $ ->
     saveProfileChanges()
     false
   $("#main-body input").keyup ->
-    $("#main-body input").unbind()
     $("#save-profile").removeAttr "disabled"
     false
   false

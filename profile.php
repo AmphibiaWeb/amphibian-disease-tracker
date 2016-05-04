@@ -236,6 +236,7 @@ try {
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
                  $fillType = ucwords($fillType);
+                 $dataSource = str_replace(" ", "_", strtolower($fillType));
                  $addClass = " " . str_replace(" ", "-", strtolower($fillType));
                  $emptyFill = false;
                  if(empty($fill)) {
@@ -249,7 +250,7 @@ try {
                      if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
                      if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
                      if(strpos($class, "address") === false) {
-                         $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate></$elType></div>";
+                         $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source="$dataSource"></$elType></div>";
                      } else {
                          # Address input
                          $element = "<div class='profile-input profile-data row address street-number'>
@@ -337,7 +338,7 @@ try {
           </div>
         </div>
         <?php } ?>
-        <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
+        <div id="basic-profile" class="col-xs-12 col-md-6 profile-region" data-source="social">
           <h3>Basic Profile</h3>
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
           <?php
@@ -350,7 +351,7 @@ try {
           <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
           <?php echo getElement("facebook", $social["facebook"], "row social facebook"); ?>
         </div>
-        <div id="institution-profile" class="col-xs-12 col-md-6 profile-region">
+        <div id="institution-profile" class="col-xs-12 col-md-6 profile-region" data-source="institution">
           <h3>Institution Information</h3>
           <?php echo getElement("institution", $place["name"]); ?>
           <?php echo getElement("department", $place["department"]); ?>
@@ -367,14 +368,27 @@ try {
           <?php echo getElement("department phone", $place["department_phone"]); ?>
 
         </div>
-        <div id="bio-profile" class="col-xs-12 profile-region">
+        <div id="bio-profile" class="col-xs-12 profile-region" data-source="profile">
           <h3><?php echo $titlePossessive; ?> Bio</h3>
+          <?php if(!$isViewingSelf) { 
+                if(empty($bio)) $bio = "*No profile provided*";
+                ?> 
+          <marked-element>
+            <div class="markdown-html"></div>
+            <script type="text/markdown"><?php echo $bio; ?>></script>
+          </marked-element>
+          <?php } else { ?> 
+          <paper-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5"></paper-textarea>
+          <?php}?>
         </div>
       </section>
         <?php
            # Section for self
              if($isViewingSelf) {
            ?>
+        <section class="row" data-source="privacy">
+          <h3>Privacy Settings</h3>
+        </section>
         <div class="row">
           <div class="col-xs-12">
             <button class="btn btn-success pull-right" id="save-profile" disabled>
