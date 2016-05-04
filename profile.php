@@ -235,12 +235,14 @@ try {
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
                  $fillType = ucwords($fillType);
+                 $addClass = str_replace(" ", "-", strtolower($fillType));
                  if(empty($fill)) {
-                     $fill = "Not Provided";
+                     if(!$isViewingSelf) $fill = "Not Provided";
                      $class .= " no-data-provided";
                  }
+                 $class .= $addClass;
                  if($isViewingSelf && !$forceReadOnly) {
-                     $element = "<div class='profile-input profile-data $class'><paper-input class='user-input' value='$fill' label='$fillType'></paper-input></div>";
+                     $element = "<div class='profile-input profile-data $class'><paper-input class='user-input col-xs-12' value='$fill' label='$fillType'></paper-input></div>";
                  } else {
                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
                  }
@@ -271,10 +273,10 @@ try {
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
           <h3>Basic Profile</h3>
-          <?php echo getElement("name", $viewUser->getName(), null, true); ?>
-          <?php echo getElement("user since", $userdata["creation"], null, true); ?>
-          <?php echo getElement("email", $viewUser->getUsername(), null, true); ?>
-          <?php echo getElement("phone", $viewUser->getPhone(), null, true); ?>
+          <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
+          <?php echo getElement("user since", $userdata["creation"], "row", true); ?>
+          <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
+          <?php echo getElement("phone", $viewUser->getPhone(), "row", true); ?>
           <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
           <?php echo getElement("google plus", $social["google_plus"], "row social google_plus"); ?>
           <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
