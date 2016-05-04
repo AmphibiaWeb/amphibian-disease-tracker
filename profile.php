@@ -292,7 +292,9 @@ try {
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
           <h3>Basic Profile</h3>
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
-          <?php echo getElement("user since", $userdata["creation"], "row", true); ?>
+          <?php 
+             $dateCreated = date("d F Y", $userdata["creation"]);
+             echo getElement("user since", $dateCreated, "row", true); ?>
           <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
           <?php echo getElement("phone", $viewUser->getPhone(), "row", true); ?>
           <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
