@@ -380,6 +380,20 @@ class UserFunctions extends DBHelper
         return $link;
     }
 
+    public function getProfile() {
+        /***
+         * Returns the public_profile of the userdata
+         ***/
+        # Are profiles configured?
+        if(!$this->columnExists("public_profile")) {
+            return false;
+        }
+        $userdata = $this->getUser();
+        $profile = $userdata["public_profile"];
+        $jProfile = json_decode($profile, true);
+        return is_array($jProfile) ? $jProfile : false;
+    }
+
     private function getUserWhere() {
         return " WHERE `".$this->linkColumn."`='".$this->getHardlink()."'";
     }

@@ -243,6 +243,10 @@ try {
              # Fetch the structured data for the profile
              $structuredData = $baseStructuredData;
              # Fetch and overwrite keys
+             $profile = $viewUser->getProfile();
+             if(is_array($profile)) {
+             $structuredData = array_merge_recursive($structuredData, $profile);             
+             }
              # Set up terms
              if($isViewingSelf) {
                $title = "You ($title)";
