@@ -97,6 +97,7 @@ try {
 
     <link rel="import" href="bower_components/gold-email-input/gold-email-input.html"/>
     <link rel="import" href="bower_components/gold-phone-input/gold-phone-input.html"/>
+    <link rel="import" href="bower_components/gold-zip-input/gold-zip-input.html"/>
 
     <link rel="import" href="bower_components/iron-form/iron-form.html"/>
     <link rel="import" href="bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"/>
@@ -267,7 +268,7 @@ try {
 </div>
 <div class='profile-input profile-data row address zip'>
   <gold-zip-input class='user-input col-xs-12'
-               label='ZIP code' 
+               label='ZIP code'
                auto-validate></gold-zip-input>
 </div>";
                      }
@@ -324,7 +325,7 @@ try {
              $dateCreated = date("d F Y", $userdata["creation"]);
              echo getElement("user since", $dateCreated, "row", true); ?>
           <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
-          <?php echo getElement("phone", $viewUser->getPhone(), "row", true); ?>
+          <?php echo getElement("phone", $viewUser->getPhone(), "row from-base-profile"); ?>
           <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
           <?php echo getElement("google plus", $social["google_plus"], "row social google_plus"); ?>
           <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
