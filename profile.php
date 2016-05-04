@@ -271,6 +271,18 @@ try {
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
+        <?php if($isViewingSelf) { ?>
+        <div class="col-xs-12">
+          <div class="form-group">
+            <div class="col-xs-10 col-sm-8 col-md-6">
+              <div class="input-group">
+                <span class="input-group-addon"><iron-icon icon="icons:link"></iron-icon></span>
+                <input type="text" class="form-control" readonly value="https://amphibiandisease.org/profile.php?id=<?php echo $viewUser->getHardlink(); ?>"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php } ?>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region">
           <h3>Basic Profile</h3>
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
