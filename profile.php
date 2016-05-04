@@ -97,6 +97,7 @@ try {
 
     <link rel="import" href="bower_components/gold-email-input/gold-email-input.html"/>
     <link rel="import" href="bower_components/gold-phone-input/gold-phone-input.html"/>
+    <link rel="import" href="bower_components/gold-zip-input/gold-zip-input.html"/>
 
     <link rel="import" href="bower_components/iron-form/iron-form.html"/>
     <link rel="import" href="bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"/>
@@ -236,16 +237,18 @@ try {
                  # Title case and replace _ with " " on fillType
                  $fillType = ucwords($fillType);
                  $addClass = " " . str_replace(" ", "-", strtolower($fillType));
+                 $emptyFill = false;
                  if(empty($fill)) {
+                     $emptyFill = true;
                      if(!$isViewingSelf) $fill = "Not Provided";
                      $class .= " no-data-provided";
                  }
                  $class .= $addClass;
                  if($isViewingSelf && !$forceReadOnly) {
                      $elType = "paper-input";
-                     if(strpos($addClass, "phone") !== false) $elType = "gold-phone-input";
-                     if(strpos($addClass, "zip") !== false) $elType = "gold-zip-input";
-                     if(strpos($addClass, "address") === false) {
+                     if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
+                     if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
+                     if(strpos($class, "address") === false) {
                          $element = "<div class='profile-input profile-data $class'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate></$elType></div>";
                      } else {
                          # Address input
@@ -267,12 +270,29 @@ try {
 </div>
 <div class='profile-input profile-data row address zip'>
   <gold-zip-input class='user-input col-xs-12'
-               label='ZIP code' 
+               label='ZIP code'
                auto-validate></gold-zip-input>
 </div>";
                      }
                  } else {
-                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                     if(strpos($class, "social") !== false) {
+                         if(!$emptyFill) {
+                             if(strpos($class, "facebook") !== false) {
+                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                             } else if(strpos($class, "google-plus") !== false) {
+                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:google-plus" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                             } else if(strpos($class, "twitter") !== false) {
+                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:twitter" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                             } else if(strpos($class, "linkedin") !== false) {
+                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:linkedin" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                             } else {
+                                 $icon = "";
+                             }
+                             $element = "<div class='profile-bio-group profile-data $class'>$icon</div>";
+                         }
+                     } else {
+                         $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                     }
                  }
                  return $element;
              }
@@ -324,7 +344,7 @@ try {
              $dateCreated = date("d F Y", $userdata["creation"]);
              echo getElement("user since", $dateCreated, "row", true); ?>
           <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
-          <?php echo getElement("phone", $viewUser->getPhone(), "row", true); ?>
+          <?php echo getElement("phone", $viewUser->getPhone(), "row from-base-profile"); ?>
           <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
           <?php echo getElement("google plus", $social["google_plus"], "row social google_plus"); ?>
           <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
