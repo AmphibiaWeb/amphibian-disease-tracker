@@ -12469,6 +12469,15 @@ google-map.center-block:after {
 .card-container paper-card {
   width: 100%;
 }
+.self-link .input-group iron-icon {
+  float: left;
+  margin-top: 1em;
+  margin-right: 1rem;
+}
+.self-link .input-group paper-input {
+  width: calc(100% - 2em);
+  float: left;
+}
 section.conversations .conversation-part-container > div:not(.row):not(.form-horizontal) {
   height: calc(33vh - 3rem);
   overflow-y: scroll;
