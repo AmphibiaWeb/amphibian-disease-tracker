@@ -94,6 +94,7 @@ try {
     <link rel="import" href="bower_components/paper-fab/paper-fab.html"/>
     <link rel="import" href="bower_components/paper-item/paper-item.html"/>
     <link rel="import" href="bower_components/paper-material/paper-material.html"/>
+    <link rel="import" href="bower_components/paper-textarea/paper-textarea.html"/>
 
     <link rel="import" href="bower_components/gold-email-input/gold-email-input.html"/>
     <link rel="import" href="bower_components/gold-phone-input/gold-phone-input.html"/>
@@ -284,13 +285,13 @@ try {
                      if(strpos($class, "social") !== false) {
                          if(!$emptyFill) {
                              if(strpos($class, "facebook") !== false) {
-                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else if(strpos($class, "google-plus") !== false) {
-                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:google-plus" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:google-plus" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else if(strpos($class, "twitter") !== false) {
-                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:twitter" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:twitter" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else if(strpos($class, "linkedin") !== false) {
-                                 $icon = '    <paper-icon-button class="click glyphicon" icon="glyphicon-social:linkedin" data-href="'.$link.'" newtab="true"></paper-icon-button>';
+                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:linkedin" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else {
                                  $icon = "";
                              }
