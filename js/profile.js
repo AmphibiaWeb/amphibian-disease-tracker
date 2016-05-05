@@ -852,7 +852,7 @@ formatSocial = function() {
     fab = ref[i];
     icon = $(fab).attr("icon");
     network = icon.split(":").pop();
-    link = $(fab).attr(data - href);
+    link = $(fab).attr("data-href");
     realHref = link;
     switch (network) {
       case "twitter":
