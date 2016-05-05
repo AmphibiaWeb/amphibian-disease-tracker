@@ -640,6 +640,15 @@ saveProfileChanges = ->
   # based on the response
   ###
   startLoad()
+  isGood = true
+  for input in $("paper-input")
+    try
+      result = p$(input).validate()
+      if result is false
+        isGood = false
+  unless isGood
+    stopLoadError "Please check all required fields are completed"
+    return false
   constructProfileJson true, ->
     args = "perform=#{profileAction}&data=#{data}"
     $.post apiTarget, args, "json"

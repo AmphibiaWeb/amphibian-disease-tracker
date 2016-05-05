@@ -912,7 +912,23 @@ saveProfileChanges = function() {
    * Post the appropriate JSON to the server and give user feedback
    * based on the response
    */
+  var i, input, isGood, len, ref, result;
   startLoad();
+  isGood = true;
+  ref = $("paper-input");
+  for (i = 0, len = ref.length; i < len; i++) {
+    input = ref[i];
+    try {
+      result = p$(input).validate();
+      if (result === false) {
+        isGood = false;
+      }
+    } catch (undefined) {}
+  }
+  if (!isGood) {
+    stopLoadError("Please check all required fields are completed");
+    return false;
+  }
   constructProfileJson(true, function() {
     var args;
     args = "perform=" + profileAction + "&data=" + data;
