@@ -960,7 +960,7 @@ $(function() {
       gpi = ref1[i];
       value = $(gpi).parent().attr("data-value");
       if (!isNull(value)) {
-        results.push(p$(gpi).value = value);
+        results.push(p$(gpi).value = toInt(value));
       } else {
         results.push(void 0);
       }

@@ -675,6 +675,6 @@ $ ->
       value = $(gpi).parent().attr "data-value"
       unless isNull value
         # Fix the formatting of the display
-        p$(gpi).value = value
+        p$(gpi).value = toInt value
   checkFileVersion false, "js/profile.js"
   false
