@@ -888,6 +888,7 @@ formatSocial = function() {
     }
     $(fab).attr("data-href", realHref);
   }
+  bindClicks();
   return false;
 };
 
@@ -950,7 +951,7 @@ cleanupAddressDisplay = function() {
     addressObj = publicProfile.place;
     if (addressObj.human_html != null) {
       labelHtml = "<label class=\"col-xs-4 capitalize\">\n  Address\n</label>";
-      $("address").html(addressObj.human_html.replace("\\n", "<br/>")).addClass("col-xs-8").before(labelHtml);
+      $("address").html(addressObj.human_html.replace("\\n", "<br/>")).addClass("col-xs-8").before(labelHtml).parent().addClass("row clearfix");
     } else {
       console.warn("Human HTML not yet defined for this user");
     }
@@ -1081,9 +1082,9 @@ $(function() {
   })();
   if (window.isViewingSelf === false) {
     cleanupAddressDisplay();
+    formatSocial();
   } else {
     setupUserChat();
-    formatSocial();
   }
   checkFileVersion(false, "js/profile.js");
   return false;

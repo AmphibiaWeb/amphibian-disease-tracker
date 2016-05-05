@@ -232,6 +232,18 @@ try {
                  ),
 
              );
+             # Fetch the structured data for the profile
+             $structuredData = $baseStructuredData;
+             # Fetch and overwrite keys
+             $profile = $viewUser->getProfile();
+             if(is_array($profile)) {
+                 $structuredData = array_merge($structuredData, $profile);
+             }
+             $place = $structuredData["place"];
+             $social = $structuredData["social"];
+             $bio = $structuredData["profile"];
+             $privacyConfig = $structuredData["privacy"];
+             # Helper function
              function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false) {
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
@@ -254,21 +266,25 @@ try {
                          $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource' $requiredText></$elType></div>";
                      } else {
                          # Address input
+                         global $place;
                          $element = "<div class='profile-input profile-data row address street-number'>
   <paper-input class='user-input col-xs-12'
                type='number'
+value='".$place["street_number"]."'
                label='Street Number' data-source='street-number'
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address street'>
   <paper-input class='user-input col-xs-12'
                label='Street Name' data-source='street'
+value='".$place["street"]."'
                required
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address country-code'>
   <paper-input class='user-input col-xs-12'
                label='Country Code' data-source='country-code'
+value='".$place["country_code"]."'
                maxlength='2'
                required
                auto-validate></paper-input>
@@ -276,6 +292,7 @@ try {
 <div class='profile-input profile-data row address zip'>
   <gold-zip-input class='user-input col-xs-12'
                label='ZIP code' data-source='zip'
+value='".$place["zip"]."'
                required
                auto-validate></gold-zip-input>
 </div>";
@@ -303,17 +320,7 @@ try {
                  }
                  return $element;
              }
-             # Fetch the structured data for the profile
-             $structuredData = $baseStructuredData;
-             # Fetch and overwrite keys
-             $profile = $viewUser->getProfile();
-             if(is_array($profile)) {
-               $structuredData = array_merge($structuredData, $profile);
-             }
-             $place = $structuredData["place"];
-             $social = $structuredData["social"];
-             $bio = $structuredData["profile"];
-             $privacyConfig = $structuredData["privacy"];
+
              # Set up terms
              if($isViewingSelf) {
                $title = "You ($title)";
