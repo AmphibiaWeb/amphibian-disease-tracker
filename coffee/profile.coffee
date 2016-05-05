@@ -560,11 +560,13 @@ constructProfileJson = (encodeForPosting = false, callback)->
       callback response
     else
       console.warn "No callback function! Profile construction got", response
+    publicProfile = tmp
     false
   if encodeForPosting
     response = post64 tmp
   else
     response = tmp
+  publicProfile = tmp
   console.log "Non-validated response object:"
   response
 
@@ -591,6 +593,13 @@ validateAddress = (addressObject, callback) ->
   geo.geocode addressString, filter, (result) ->
     console.log "Address validator got", result
     newAddressObject.parsed = result
+    newAddressObject.state = result.google.administrative_area_level_1 ? ""
+    newAddressObject.city = result.google.locality ? ""
+    humanHtml = """
+    #{addressString}<br/>
+    #{newAddressObject.city}, #{newAddressObject.state} #{newAddressObject.zip}
+    """
+    newAddressObject.human_html = humanHtml
     if typeof callback is "function"
       callback newAddressObject
     else
@@ -602,6 +611,10 @@ cleanupAddressDisplay = ->
   ###
   # Display human-helpful address information, like city/state
   ###
+  if publicProfile?
+    addressObj = publicProfile.institution
+  else
+    console.warn "Public profile not set up"
   false
 
 saveProfileChanges = ->

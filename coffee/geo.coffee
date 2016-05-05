@@ -1346,30 +1346,76 @@ geo.geocode = (address, filter, callback) ->
     console.error "Couldn't instance a google map geocoder - #{e.message}"
     console.warn e.stack
     return false
-  geocoderData =
-    address: address
-    componentRestrictions: filter
-  geocoder.geocode geocoderData, (result, status) ->
-    console.log "Geocoder fetched", result, status
-    console.log "Provided", geocoderData
-    if status isnt google.maps.GeocoderStatus.OK
-      console.warn "Geocoder failed -- Google said", status
-      return false
-    mainResult = result[0]
-    tmp = new Object()
-    tmp.google = new Object()
-    tmp.human = mainResult.formatted_address
-    try
-      for part in mainResult.address_components
-        try
-          type = part.types[0]
-          tmp.google[type] = part.long_name
-        catch
-          continue
-    if typeof callback is "function"
-      callback tmp
-    else
-      console.warn "No callback provided! Got address object", tmp
+  # Function for geocoder
+  doGeocoder = ->
+    # https://developers.google.com/maps/documentation/javascript/geocoding#Geocoding
+    geocoderData =
+      address: address
+      componentRestrictions: filter
+    geocoder.geocode geocoderData, (result, status) ->
+      console.log "Geocoder fetched", result, status
+      console.log "Provided", geocoderData
+      if status isnt google.maps.GeocoderStatus.OK
+        console.warn "Geocoder failed -- Google said", status
+        return false
+      mainResult = result[0]
+      tmp = new Object()
+      tmp.google = new Object()
+      tmp.human = mainResult.formatted_address
+      try
+        for part in mainResult.address_components
+          try
+            type = part.types[0]
+            tmp.google[type] = part.long_name
+          catch
+            continue
+      if typeof callback is "function"
+        callback tmp
+      else
+        console.warn "No callback provided! Got address object", tmp
+  # Well-defined addresses should use this API
+  # https://developers.google.com/maps/documentation/geocoding/intro#geocoding
+  restrictionlessApiKey = null # See API console to enable this
+  if address? and restrictionlessApiKey?
+    url = "https://maps.googleapis.com/maps/api/geocode/json"
+    componentsArr = new Array()
+    for key, val of filter
+      str = "#{key}:#{encodeURIComponent(val)}"
+      componentsArr.push str
+    componentsString = componentsArr.join "|"
+    # Using the other key here returns
+    # "Browser API keys cannot have referer restrictions when used with this API."
+    args = "address=#{encodeURIComponent(address)}&components=#{componentsString}&key=#{restrictionlessApiKey}"
+    console.log "Trying", "#{url}?#{args}"
+    $.get url, args, "json"
+    .done (result) ->
+      console.log "API hit fetched", result
+      mainResult = result.results[0]
+      status = result.status
+      if status isnt google.maps.GeocoderStatus.OK
+        console.warn "Geocoder failed -- Google said", status
+        doGeocoder()
+        return false
+      tmp = new Object()
+      tmp.google = new Object()
+      tmp.human = mainResult.formatted_address
+      try
+        for part in mainResult.address_components
+          try
+            type = part.types[0]
+            tmp.google[type] = part.long_name
+          catch
+            continue
+      if typeof callback is "function"
+        callback tmp
+      else
+        console.warn "No callback provided! Got address object", tmp
+    .fail (result, status) ->
+      console.error "Error (#{status}): Couldn't post to Google, trying geocoder"
+      doGeocoder()
+  # For fuzzy data ...
+  else
+    doGeocoder()
   false
 
 geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->

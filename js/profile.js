@@ -778,7 +778,7 @@ conditionalLoadAccountSettingsOptions = function() {
 };
 
 constructProfileJson = function(encodeForPosting, callback) {
-  var el, i, inputs, key, len, parentKey, response, tmp, val;
+  var el, i, inputs, key, len, parentKey, publicProfile, response, tmp, val;
   if (encodeForPosting == null) {
     encodeForPosting = false;
   }
@@ -807,6 +807,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     tmp[parentKey][key] = val;
   }
   validateAddress(tmp.institution, function(newAddressObj) {
+    var publicProfile;
     tmp.institution = newAddressObj;
     if (encodeForPosting) {
       response = post64(tmp);
@@ -818,6 +819,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     } else {
       console.warn("No callback function! Profile construction got", response);
     }
+    publicProfile = tmp;
     return false;
   });
   if (encodeForPosting) {
@@ -825,6 +827,7 @@ constructProfileJson = function(encodeForPosting, callback) {
   } else {
     response = tmp;
   }
+  publicProfile = tmp;
   console.log("Non-validated response object:");
   return response;
 };
@@ -852,8 +855,13 @@ validateAddress = function(addressObject, callback) {
   addressString = addressObject.street_number + " " + addressObject.street;
   console.log("Attempting validation with", addressString, filter);
   geo.geocode(addressString, filter, function(result) {
+    var humanHtml, ref1, ref2;
     console.log("Address validator got", result);
     newAddressObject.parsed = result;
+    newAddressObject.state = (ref1 = result.google.administrative_area_level_1) != null ? ref1 : "";
+    newAddressObject.city = (ref2 = result.google.locality) != null ? ref2 : "";
+    humanHtml = addressString + "<br/>\n" + newAddressObject.city + ", " + newAddressObject.state + " " + newAddressObject.zip;
+    newAddressObject.human_html = humanHtml;
     if (typeof callback === "function") {
       callback(newAddressObject);
     } else {
@@ -869,6 +877,12 @@ cleanupAddressDisplay = function() {
   /*
    * Display human-helpful address information, like city/state
    */
+  var addressObj;
+  if (typeof publicProfile !== "undefined" && publicProfile !== null) {
+    addressObj = publicProfile.institution;
+  } else {
+    console.warn("Public profile not set up");
+  }
   return false;
 };
 
