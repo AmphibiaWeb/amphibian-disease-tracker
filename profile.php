@@ -257,7 +257,6 @@ try {
   <paper-input class='user-input col-xs-12'
                type='number'
                label='Street Number' data-source='street-number'
-               required
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address street'>

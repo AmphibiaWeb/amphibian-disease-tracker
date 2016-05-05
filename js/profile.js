@@ -848,6 +848,8 @@ validateAddress = function(addressObject, callback) {
    */
   var addressString, filter, newAddressObject, ref;
   newAddressObject = addressObject;
+  newAddressObject.validated = false;
+  newAddressObject.partially_validated = false;
   filter = {
     country: (ref = addressObject.country_code) != null ? ref : "US",
     postalCode: addressObject.zip
@@ -855,11 +857,21 @@ validateAddress = function(addressObject, callback) {
   addressString = addressObject.street_number + " " + addressObject.street;
   console.log("Attempting validation with", addressString, filter);
   geo.geocode(addressString, filter, function(result) {
-    var humanHtml, ref1, ref2;
+    var humanHtml, ref1, ref2, ref3, ref4;
     console.log("Address validator got", result);
+    newAddressObject.validated = result.partial_match !== true;
+    newAddressObject.partially_validated = result.partial_match;
     newAddressObject.parsed = result;
     newAddressObject.state = (ref1 = result.google.administrative_area_level_1) != null ? ref1 : "";
     newAddressObject.city = (ref2 = result.google.locality) != null ? ref2 : "";
+    if (newAddressObject.validated) {
+      newAddressObject.street_number = (ref3 = result.google.street_number) != null ? ref3 : addressObject.street_number;
+      newAddressObject.street = (ref4 = result.google.route) != null ? ref4 : addressObject.street;
+      if (result.google.postal_code_suffix != null) {
+        newAddressObject.zip += "-" + result.google.postal_code_suffix;
+      }
+      addressString = newAddressObject.street_number + " " + newAddressObject.street;
+    }
     humanHtml = addressString + "<br/>\n" + newAddressObject.city + ", " + newAddressObject.state + " " + newAddressObject.zip;
     newAddressObject.human_html = humanHtml;
     if (typeof callback === "function") {

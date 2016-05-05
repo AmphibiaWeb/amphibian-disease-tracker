@@ -585,6 +585,8 @@ validateAddress = (addressObject, callback) ->
   #
   ###
   newAddressObject = addressObject
+  newAddressObject.validated = false
+  newAddressObject.partially_validated = false
   filter =
     country: addressObject.country_code ? "US"
     postalCode: addressObject.zip
@@ -592,9 +594,17 @@ validateAddress = (addressObject, callback) ->
   console.log "Attempting validation with", addressString, filter
   geo.geocode addressString, filter, (result) ->
     console.log "Address validator got", result
+    newAddressObject.validated = result.partial_match isnt true
+    newAddressObject.partially_validated = result.partial_match
     newAddressObject.parsed = result
     newAddressObject.state = result.google.administrative_area_level_1 ? ""
     newAddressObject.city = result.google.locality ? ""
+    if newAddressObject.validated
+      newAddressObject.street_number = result.google.street_number ? addressObject.street_number
+      newAddressObject.street = result.google.route ? addressObject.street
+      if result.google.postal_code_suffix?
+        newAddressObject.zip += "-#{result.google.postal_code_suffix}"
+      addressString = "#{newAddressObject.street_number} #{newAddressObject.street}"
     humanHtml = """
     #{addressString}<br/>
     #{newAddressObject.city}, #{newAddressObject.state} #{newAddressObject.zip}
