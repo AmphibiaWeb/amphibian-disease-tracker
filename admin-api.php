@@ -1665,7 +1665,7 @@ function updateOwnProfile($get, $col = "public_profile") {
             "decoded" => $structuredData
         ),
     );
-    return false;
+    return $response;
 }
 
 
