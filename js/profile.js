@@ -1026,8 +1026,10 @@ $(function() {
     }
     return results;
   })();
-  if (window.isViewingSelf === true) {
+  if (window.isViewingSelf === false) {
     cleanupAddressDisplay();
+  } else {
+    setupUserChat();
   }
   checkFileVersion(false, "js/profile.js");
   return false;

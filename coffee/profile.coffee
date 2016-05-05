@@ -719,7 +719,9 @@ $ ->
       unless isNull value
         # Fix the formatting of the display
         p$(gpi).value = toInt value
-  if window.isViewingSelf is true
+  if window.isViewingSelf is false
     cleanupAddressDisplay()
+  else
+    setupUserChat()
   checkFileVersion false, "js/profile.js"
   false
