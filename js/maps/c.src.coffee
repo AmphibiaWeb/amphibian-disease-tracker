@@ -2663,15 +2663,23 @@ geo.geocode = (address, filter, callback) ->
   geocoderData =
     address: address
     componentRestrictions: filter
-  geocoder.geocode geocoderData, (result) ->
-    console.log "Geocoder fetched", result
+  geocoder.geocode geocoderData, (result, status) ->
+    console.log "Geocoder fetched", result, status
+    console.log "Provided", geocoderData
+    if status isnt google.maps.GeocoderStatus.OK
+      console.warn "Geocoder failed -- Google said", status
+      return false
     mainResult = result[0]
     tmp = new Object()
     tmp.google = new Object()
     tmp.human = mainResult.formatted_address
-    for part in mainResult.addressComponents
-      type = part.types[0]
-      tmp.google[type] = part.long_name
+    try
+      for part in mainResult.address_components
+        try
+          type = part.types[0]
+          tmp.google[type] = part.long_name
+        catch
+          continue
     if typeof callback is "function"
       callback tmp
     else

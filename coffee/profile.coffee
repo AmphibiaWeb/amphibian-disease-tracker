@@ -587,6 +587,7 @@ validateAddress = (addressObject, callback) ->
     country: addressObject.country_code ? "US"
     postalCode: addressObject.zip
   addressString = "#{addressObject.street_number} #{addressObject.street}"
+  console.log "Attempting validation with", addressString, filter
   geo.geocode addressString, filter, (result) ->
     console.log "Address validator got", result
     newAddressObject.parsed = result
@@ -650,4 +651,5 @@ $ ->
       unless isNull value
         # Fix the formatting of the display
         p$(gpi).value = value
+  checkFileVersion false, "js/profile.js"
   false

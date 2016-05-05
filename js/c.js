@@ -3265,19 +3265,30 @@ geo.geocode = function(address, filter, callback) {
     address: address,
     componentRestrictions: filter
   };
-  geocoder.geocode(geocoderData, function(result) {
-    var l, len, mainResult, part, ref, tmp, type;
-    console.log("Geocoder fetched", result);
+  geocoder.geocode(geocoderData, function(result, status) {
+    var error3, l, len, mainResult, part, ref, tmp, type;
+    console.log("Geocoder fetched", result, status);
+    console.log("Provided", geocoderData);
+    if (status !== google.maps.GeocoderStatus.OK) {
+      console.warn("Geocoder failed -- Google said", status);
+      return false;
+    }
     mainResult = result[0];
     tmp = new Object();
     tmp.google = new Object();
     tmp.human = mainResult.formatted_address;
-    ref = mainResult.addressComponents;
-    for (l = 0, len = ref.length; l < len; l++) {
-      part = ref[l];
-      type = part.types[0];
-      tmp.google[type] = part.long_name;
-    }
+    try {
+      ref = mainResult.address_components;
+      for (l = 0, len = ref.length; l < len; l++) {
+        part = ref[l];
+        try {
+          type = part.types[0];
+          tmp.google[type] = part.long_name;
+        } catch (error3) {
+          continue;
+        }
+      }
+    } catch (undefined) {}
     if (typeof callback === "function") {
       return callback(tmp);
     } else {

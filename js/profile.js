@@ -850,6 +850,7 @@ validateAddress = function(addressObject, callback) {
     postalCode: addressObject.zip
   };
   addressString = addressObject.street_number + " " + addressObject.street;
+  console.log("Attempting validation with", addressString, filter);
   geo.geocode(addressString, filter, function(result) {
     console.log("Address validator got", result);
     newAddressObject.parsed = result;
@@ -936,6 +937,7 @@ $(function() {
     }
     return results;
   })();
+  checkFileVersion(false, "js/profile.js");
   return false;
 });
 
