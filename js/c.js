@@ -3291,6 +3291,7 @@ geo.geocode = function(address, filter, callback) {
           }
         }
       } catch (undefined) {}
+      tmp.partial_match = mainResult.partial_match;
       if (typeof callback === "function") {
         return callback(tmp);
       } else {

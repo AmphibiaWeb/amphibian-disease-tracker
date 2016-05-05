@@ -846,6 +846,48 @@ constructProfileJson = function(encodeForPosting, callback) {
 };
 
 formatSocial = function() {
+  var fab, i, icon, len, link, network, realHref, ref;
+  ref = $(".social paper-fab");
+  for (i = 0, len = ref.length; i < len; i++) {
+    fab = ref[i];
+    icon = $(fab).attr("icon");
+    network = icon.split(":").pop();
+    link = $(fab).attr(data - href);
+    realHref = link;
+    switch (network) {
+      case "twitter":
+        if (link.search("@") === 0) {
+          realHref = "https://twitter.com/" + (link.slice(1));
+        } else if (link.match(/^https?:\/\/(www\.)?twitter.com\/\w+$/m)) {
+          realHref = link;
+        } else if (link.match(/^\w+$/m)) {
+          realHref = "https://twitter.com/" + link;
+        } else {
+          realHref = "";
+        }
+        break;
+      case "google-plus":
+        if (link.search("+") === 0) {
+          realHref = "https://google.com/" + link;
+        } else if (link.match(/^https?:\/\/((plus|www)\.)?google.com\/(\+\w+|\d+)$/m)) {
+          realHref = link;
+        } else if (link.match(/^\w+$/m)) {
+          realHref = "https://google.com/+" + link;
+        } else {
+          realHref = "";
+        }
+        break;
+      case "facebook":
+        if (link.match(/^https?:\/\/((www)\.)?facebook.com\/\w+$/m)) {
+          realHref = link;
+        } else if (link.match(/^\w+$/m)) {
+          realHref = "https://facebook.com/" + link;
+        } else {
+          realHref = "";
+        }
+    }
+    $(fab).attr("data-href", realHref);
+  }
   return false;
 };
 
@@ -903,11 +945,12 @@ cleanupAddressDisplay = function() {
   /*
    * Display human-helpful address information, like city/state
    */
-  var addressObj;
+  var addressObj, labelHtml;
   if (typeof publicProfile !== "undefined" && publicProfile !== null) {
     addressObj = publicProfile.place;
     if (addressObj.human_html != null) {
-      $("address").html(addressObj.human_html.replace("\\n", "<br/>"));
+      labelHtml = "<label class=\"col-xs-4 capitalize\">\n  Address\n</label>";
+      $("address").html(addressObj.human_html.replace("\\n", "<br/>")).addClass("col-xs-8").before(labelHtml);
     } else {
       console.warn("Human HTML not yet defined for this user");
     }
@@ -1040,6 +1083,7 @@ $(function() {
     cleanupAddressDisplay();
   } else {
     setupUserChat();
+    formatSocial();
   }
   checkFileVersion(false, "js/profile.js");
   return false;
