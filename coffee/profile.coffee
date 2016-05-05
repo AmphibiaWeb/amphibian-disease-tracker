@@ -640,6 +640,15 @@ saveProfileChanges = ->
   # based on the response
   ###
   startLoad()
+  isGood = true
+  for input in $("paper-input")
+    try
+      result = p$(input).validate()
+      if result is false
+        isGood = false
+  unless isGood
+    stopLoadError "Please check all required fields are completed"
+    return false
   constructProfileJson true, ->
     args = "perform=#{profileAction}&data=#{data}"
     $.post apiTarget, args, "json"
@@ -652,6 +661,26 @@ saveProfileChanges = ->
       console.error "Error!", result, status
       stopLoadError()
       false
+  false
+
+
+setupUserChat = ->
+  $(".conversation-list li").click ->
+    # Load that user's chat
+    chattingWith = $(this).attr "data-uid"
+    foo()
+    false
+  $("#compose-message").keyup (e) ->
+    kc = if e.keyCode then e.keyCode else e.which
+    if kc is 13
+      sendChat()
+    false
+  $(".send-chat").click ->
+    sendChat()
+    false
+  sendChat = ->
+    toastStatusMessage "Would send message"
+    false
   false
 
 

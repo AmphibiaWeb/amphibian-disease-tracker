@@ -232,7 +232,7 @@ try {
                  ),
 
              );
-             function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false) {
+             function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false) {
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
                  $fillType = ucwords($fillType);
@@ -245,12 +245,13 @@ try {
                      $class .= " no-data-provided";
                  }
                  $class .= $addClass;
+                 $requiredText = $required ? "required" : "";
                  if($isViewingSelf && !$forceReadOnly) {
                      $elType = "paper-input";
                      if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
                      if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
                      if(strpos($class, "address") === false) {
-                         $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource'></$elType></div>";
+                         $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource' $requiredText></$elType></div>";
                      } else {
                          # Address input
                          $element = "<div class='profile-input profile-data row address street-number'>
@@ -395,7 +396,10 @@ try {
              if($isViewingSelf) {
            ?>
         <section class="row" data-source="privacy">
-          <h3>Privacy Settings</h3>
+          <h3 class="col-xs-12">Privacy Settings</h3>
+          <p class="col-xs-12">
+            Privacy toggles here
+          </p>
         </section>
         <div class="row">
           <div class="col-xs-12">
@@ -407,7 +411,7 @@ try {
         </div>
         <section class="row conversations">
           <h3 class="col-xs-12">
-            Conversations
+            Conversations (maybe tabbed with profile view?)
           </h3>
           <div class="conversation-part-container col-xs-12 col-md-6 col-lg-3">
             <div class="conversation-list">
@@ -498,7 +502,7 @@ try {
             <div class="chat-entry-container form-horizontal">
               <div class="form-group">
                 <div class="col-xs-10">
-                  <input type="text" class="form-control" placeholder="Type your message ..." />
+                  <input id="compose-message" type="text" class="form-control" placeholder="Type your message ..." />
                 </div>
                 <div class="col-xs-2 text-center">
                   <paper-icon-button icon="icons:send" class="send-chat" data-toggle="tooltip" title="Send Message"></paper-icon-button>
@@ -521,6 +525,15 @@ try {
            ?>
       <?php
          } elseif (!$validUser) {
+             if ( empty( $viewUserId ) ) {
+                 ?>
+      <h1 id="title">User Search</h1>
+      <section id="main-body" class="row">
+        <p class="col-xs-12">Search like the wind, Bullseye!</p>
+        <p> Search like project page, async, on person or institution</p>
+      </section>
+                 <?php
+             } else {
              ?>
       <h1 id="title">Invalid User</h1>
       <section id="main-body" class="row">
@@ -539,7 +552,8 @@ try {
         </p>
       </section>
       <?php
-         } ?>
+             } # / Bad user id, not empty
+         } # / not valid user ?>
     </main>
     <footer class="row">
       <div class="col-md-7 col-xs-12">
