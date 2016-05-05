@@ -559,6 +559,7 @@ constructProfileJson = (encodeForPosting = false, callback)->
       response = post64 tmp
     else
       response = tmp
+    console.info "Sending back response", response
     if typeof callback is "function"
       callback response
     else
@@ -570,7 +571,7 @@ constructProfileJson = (encodeForPosting = false, callback)->
   else
     response = tmp
   window.publicProfile = tmp
-  console.log "Non-validated response object:"
+  console.log "Non-validated response object:", response
   response
 
 
@@ -649,8 +650,10 @@ saveProfileChanges = ->
   unless isGood
     stopLoadError "Please check all required fields are completed"
     return false
-  constructProfileJson true,  (data) ->
-    args = "perform=#{profileAction}&data=#{data}"
+  constructProfileJson false,  (data) ->
+    console.log "Going to save", data
+    pdata = post64 data
+    args = "perform=#{profileAction}&data=#{pdata}"
     $("#save-profile").attr "disabled", "disabled"
     $.post apiTarget, args, "json"
     .done (result) ->
