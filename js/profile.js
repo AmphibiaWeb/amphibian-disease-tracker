@@ -793,7 +793,10 @@ constructProfileJson = function(encodeForPosting, callback) {
    *   base64 string, rather than an actual object.
    */
   response = false;
-  tmp = new Object();
+  if (typeof publicProfile !== "object") {
+    delete publicProfile;
+  }
+  tmp = typeof publicProfile !== "undefined" && publicProfile !== null ? publicProfile : new Object();
   inputs = $(".profile-data:not(.from-base-profile) .user-input");
   for (i = 0, len = inputs.length; i < len; i++) {
     el = inputs[i];
@@ -904,19 +907,20 @@ saveProfileChanges = function() {
    * Post the appropriate JSON to the server and give user feedback
    * based on the response
    */
-  var args, data;
   foo();
   return false;
   startLoad();
-  data = constructProfileJson(true);
-  args = "perform=" + profileAction + "&data=" + data;
-  $.post(apiTarget, args, "json").done(function(result) {
-    $("#save-profile").attr("disabled", "disabled");
-    stopLoad();
-    return false;
-  }).fail(function(result, status) {
-    stopLoadError();
-    return false;
+  constructProfileJson(true, function() {
+    var args;
+    args = "perform=" + profileAction + "&data=" + data;
+    return $.post(apiTarget, args, "json").done(function(result) {
+      $("#save-profile").attr("disabled", "disabled");
+      stopLoad();
+      return false;
+    }).fail(function(result, status) {
+      stopLoadError();
+      return false;
+    });
   });
   return false;
 };
