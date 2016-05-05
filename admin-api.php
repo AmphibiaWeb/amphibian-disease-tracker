@@ -1617,12 +1617,17 @@ function updateOwnProfile($get, $col = "public_profile") {
      ***/
     # Verify the JSON integrity of the file
     $structuredData = smart_decode64($get["data"]);
+    if(!is_array($structuredData)) {
+        $raw = base64_decode($get["data"]);
+        $structuredData = json_decode($raw, true);
+    }
     //check nullness objectness etc
     if(!is_array($structuredData)) {
         return array(
             "status" => false,
             "error" => "BAD_DATA",
             "human_error" => "Provided data should be a Base-64 representation of a JSON object.",
+            "provided" => $get,
         );
     }
     # Check required keys
@@ -1638,6 +1643,7 @@ function updateOwnProfile($get, $col = "public_profile") {
                 "status" => false,
                 "error" => "MISSING_REQUIRED_KEY",
                 "human_error" => "Required key '$key' cannot be found in the posted dataset",
+                "provided" => $get,
             );
         }
     }

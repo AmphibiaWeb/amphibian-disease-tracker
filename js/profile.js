@@ -932,14 +932,22 @@ saveProfileChanges = function() {
   constructProfileJson(true, function(data) {
     var args;
     args = "perform=" + profileAction + "&data=" + data;
+    $("#save-profile").attr("disabled", "disabled");
     return $.post(apiTarget, args, "json").done(function(result) {
+      var message, ref1, ref2;
       console.log("Save got", result);
+      if (result.status !== true) {
+        $("#save-profile").removeAttr("disabled");
+        message = (ref1 = (ref2 = result.human_error) != null ? ref2 : result.error) != null ? ref1 : "Unknown error";
+        stopLoadError("There was an error saving - " + message + ". Please try again later.");
+        return false;
+      }
       $("#save-profile").attr("disabled", "disabled");
       stopLoad();
       return false;
     }).fail(function(result, status) {
       console.error("Error!", result, status);
-      stopLoadError();
+      stopLoadError("There was a problem saving to the server.");
       return false;
     });
   });
