@@ -778,7 +778,7 @@ conditionalLoadAccountSettingsOptions = function() {
 };
 
 constructProfileJson = function(encodeForPosting, callback) {
-  var el, i, inputs, key, len, parentKey, publicProfile, response, tmp, val;
+  var el, i, inputs, key, len, parentKey, response, tmp, val;
   if (encodeForPosting == null) {
     encodeForPosting = false;
   }
@@ -793,10 +793,11 @@ constructProfileJson = function(encodeForPosting, callback) {
    *   base64 string, rather than an actual object.
    */
   response = false;
-  if (typeof publicProfile !== "object") {
-    delete publicProfile;
+  if (typeof window.publicProfile === "object") {
+    tmp = window.publicProfile;
+  } else {
+    tmp = new Object();
   }
-  tmp = typeof publicProfile !== "undefined" && publicProfile !== null ? publicProfile : new Object();
   inputs = $(".profile-data:not(.from-base-profile) .user-input");
   for (i = 0, len = inputs.length; i < len; i++) {
     el = inputs[i];
@@ -810,7 +811,6 @@ constructProfileJson = function(encodeForPosting, callback) {
     tmp[parentKey][key] = val;
   }
   validateAddress(tmp.institution, function(newAddressObj) {
-    var publicProfile;
     tmp.institution = newAddressObj;
     if (encodeForPosting) {
       response = post64(tmp);
@@ -822,7 +822,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     } else {
       console.warn("No callback function! Profile construction got", response);
     }
-    publicProfile = tmp;
+    window.publicProfile = tmp;
     return false;
   });
   if (encodeForPosting) {
@@ -830,7 +830,7 @@ constructProfileJson = function(encodeForPosting, callback) {
   } else {
     response = tmp;
   }
-  publicProfile = tmp;
+  window.publicProfile = tmp;
   console.log("Non-validated response object:");
   return response;
 };
@@ -895,6 +895,11 @@ cleanupAddressDisplay = function() {
   var addressObj;
   if (typeof publicProfile !== "undefined" && publicProfile !== null) {
     addressObj = publicProfile.institution;
+    if (addressObj.human_html != null) {
+      $("address").html(addressObj.human_html);
+    } else {
+      console.warn("Human HTML not yet defined for this user");
+    }
   } else {
     console.warn("Public profile not set up");
   }
@@ -907,17 +912,17 @@ saveProfileChanges = function() {
    * Post the appropriate JSON to the server and give user feedback
    * based on the response
    */
-  foo();
-  return false;
   startLoad();
   constructProfileJson(true, function() {
     var args;
     args = "perform=" + profileAction + "&data=" + data;
     return $.post(apiTarget, args, "json").done(function(result) {
+      console.log("Save got", result);
       $("#save-profile").attr("disabled", "disabled");
       stopLoad();
       return false;
     }).fail(function(result, status) {
+      console.error("Error!", result, status);
       stopLoadError();
       return false;
     });
@@ -967,6 +972,9 @@ $(function() {
     }
     return results;
   })();
+  if (window.isViewingSelf === true) {
+    cleanupAddressDisplay();
+  }
   checkFileVersion(false, "js/profile.js");
   return false;
 });

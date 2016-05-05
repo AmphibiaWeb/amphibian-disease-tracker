@@ -539,9 +539,10 @@ constructProfileJson = (encodeForPosting = false, callback)->
   ###
   response = false
   # Build it
-  unless typeof publicProfile is "object"
-    delete publicProfile
-  tmp = publicProfile ? new Object()
+  if typeof window.publicProfile is "object"
+    tmp = window.publicProfile
+  else
+    tmp = new Object()
   inputs = $(".profile-data:not(.from-base-profile) .user-input")
   for el in inputs
     val = p$(el).value
@@ -562,13 +563,13 @@ constructProfileJson = (encodeForPosting = false, callback)->
       callback response
     else
       console.warn "No callback function! Profile construction got", response
-    publicProfile = tmp
+    window.publicProfile = tmp
     false
   if encodeForPosting
     response = post64 tmp
   else
     response = tmp
-  publicProfile = tmp
+  window.publicProfile = tmp
   console.log "Non-validated response object:"
   response
 
@@ -625,6 +626,10 @@ cleanupAddressDisplay = ->
   ###
   if publicProfile?
     addressObj = publicProfile.institution
+    if addressObj.human_html?
+      $("address").html addressObj.human_html
+    else
+      console.warn "Human HTML not yet defined for this user"
   else
     console.warn "Public profile not set up"
   false
@@ -634,17 +639,17 @@ saveProfileChanges = ->
   # Post the appropriate JSON to the server and give user feedback
   # based on the response
   ###
-  foo()
-  return false
   startLoad()
   constructProfileJson true, ->
     args = "perform=#{profileAction}&data=#{data}"
     $.post apiTarget, args, "json"
     .done (result) ->
+      console.log "Save got", result
       $("#save-profile").attr "disabled", "disabled"
       stopLoad()
       false
     .fail (result, status) ->
+      console.error "Error!", result, status
       stopLoadError()
       false
   false
@@ -676,5 +681,7 @@ $ ->
       unless isNull value
         # Fix the formatting of the display
         p$(gpi).value = toInt value
+  if window.isViewingSelf is true
+    cleanupAddressDisplay()
   checkFileVersion false, "js/profile.js"
   false
