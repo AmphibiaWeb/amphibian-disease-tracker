@@ -505,7 +505,7 @@ isoCountries =
 
 loadUserBadges = ->
   ###
-  # 
+  #
   ###
   false
 
@@ -527,7 +527,7 @@ conditionalLoadAccountSettingsOptions = ->
   false
 
 
-constructProfileJson = (encodeForPosting = false)->
+constructProfileJson = (encodeForPosting = false, callback)->
   ###
   # Read all the fields and return a JSON formatted for the database
   # field
@@ -544,20 +544,63 @@ constructProfileJson = (encodeForPosting = false)->
   for el in inputs
     val = p$(el).value
     key = $(el).attr "data-source"
+    key = key.replace "-", "_"
     parentKey = $(el).parents("[data-source]").attr "data-source"
-    unless tmp[parentKey]?
+    unless typeof tmp[parentKey] is "object"
       tmp[parentKey] = new Object()
     tmp[parentKey][key] = val
-  response = tmp
+  # Prep it
+  validateAddress tmp.institution, (newAddressObj) ->
+    tmp.institution = newAddressObj
+    if encodeForPosting
+      response = post64 tmp
+    else
+      response = tmp
+    if typeof callback is "function"
+      callback response
+    else
+      console.warn "No callback function! Profile construction got", response
+    false
   if encodeForPosting
-    response = post64 response
+    response = post64 tmp
+  else
+    response = tmp
+  console.log "Non-validated response object:"
   response
 
 
-validateAddress = ->
+formatSocial = ->
+  false
+
+
+prettySocial = ->
+  false
+
+
+validateAddress = (addressObject, callback) ->
+  ###
+  # Get extra address validation information and save it
+  #
+  ###
+  newAddressObject = addressObject
+  filter =
+    country: addressObject.country_code ? "US"
+    postalCode: addressObject.zip
+  addressString = "#{addressObject.street_number} #{addressObject.street}"
+  geo.geocode addressString, filter, (result) ->
+    console.log "Address validator got", result
+    newAddressObject.parsed = result
+    if typeof callback is "function"
+      callback newAddressObject
+    else
+      console.warn "No callback fucntion! Address validation got", newAddressObject
+    false
   false
 
 cleanupAddressDisplay = ->
+  ###
+  # Display human-helpful address information, like city/state
+  ###
   false
 
 saveProfileChanges = ->
@@ -595,4 +638,9 @@ $ ->
   $("#main-body input").keyup ->
     $("#save-profile").removeAttr "disabled"
     false
+  for gpi in $("gold-phone-input")
+    value = $(gpi).parent().attr "data-value"
+    unless isNull value
+      # Fix the formatting of the display
+      p$(gpi).value = value
   false

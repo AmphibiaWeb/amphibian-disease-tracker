@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, isoCountries, loadUserBadges, profileAction, saveProfileChanges, setupProfileImageUpload, validateAddress;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, formatSocial, isoCountries, loadUserBadges, prettySocial, profileAction, saveProfileChanges, setupProfileImageUpload, validateAddress;
 
 profileAction = "update_profile";
 
@@ -777,7 +777,7 @@ conditionalLoadAccountSettingsOptions = function() {
   return false;
 };
 
-constructProfileJson = function(encodeForPosting) {
+constructProfileJson = function(encodeForPosting, callback) {
   var el, i, inputs, key, len, parentKey, response, tmp, val;
   if (encodeForPosting == null) {
     encodeForPosting = false;
@@ -799,24 +799,75 @@ constructProfileJson = function(encodeForPosting) {
     el = inputs[i];
     val = p$(el).value;
     key = $(el).attr("data-source");
+    key = key.replace("-", "_");
     parentKey = $(el).parents("[data-source]").attr("data-source");
-    if (tmp[parentKey] == null) {
+    if (typeof tmp[parentKey] !== "object") {
       tmp[parentKey] = new Object();
     }
     tmp[parentKey][key] = val;
   }
-  response = tmp;
+  validateAddress(tmp.institution, function(newAddressObj) {
+    tmp.institution = newAddressObj;
+    if (encodeForPosting) {
+      response = post64(tmp);
+    } else {
+      response = tmp;
+    }
+    if (typeof callback === "function") {
+      callback(response);
+    } else {
+      console.warn("No callback function! Profile construction got", response);
+    }
+    return false;
+  });
   if (encodeForPosting) {
-    response = post64(response);
+    response = post64(tmp);
+  } else {
+    response = tmp;
   }
+  console.log("Non-validated response object:");
   return response;
 };
 
-validateAddress = function() {
+formatSocial = function() {
+  return false;
+};
+
+prettySocial = function() {
+  return false;
+};
+
+validateAddress = function(addressObject, callback) {
+
+  /*
+   * Get extra address validation information and save it
+   *
+   */
+  var addressString, filter, newAddressObject, ref;
+  newAddressObject = addressObject;
+  filter = {
+    country: (ref = addressObject.country_code) != null ? ref : "US",
+    postalCode: addressObject.zip
+  };
+  addressString = addressObject.street_number + " " + addressObject.street;
+  geo.geocode(addressString, filter, function(result) {
+    console.log("Address validator got", result);
+    newAddressObject.parsed = result;
+    if (typeof callback === "function") {
+      callback(newAddressObject);
+    } else {
+      console.warn("No callback fucntion! Address validation got", newAddressObject);
+    }
+    return false;
+  });
   return false;
 };
 
 cleanupAddressDisplay = function() {
+
+  /*
+   * Display human-helpful address information, like city/state
+   */
   return false;
 };
 
@@ -844,6 +895,7 @@ saveProfileChanges = function() {
 };
 
 $(function() {
+  var gpi, i, len, ref, value;
   try {
     loadUserBadges();
   } catch (undefined) {}
@@ -861,6 +913,14 @@ $(function() {
     $("#save-profile").removeAttr("disabled");
     return false;
   });
+  ref = $("gold-phone-input");
+  for (i = 0, len = ref.length; i < len; i++) {
+    gpi = ref[i];
+    value = $(gpi).parent().attr("data-value");
+    if (!isNull(value)) {
+      p$(gpi).value = value;
+    }
+  }
   return false;
 });
 
