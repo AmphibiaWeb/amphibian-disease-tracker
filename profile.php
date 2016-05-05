@@ -284,6 +284,7 @@ try {
                  } else {
                      if(strpos($class, "social") !== false) {
                          if(!$emptyFill) {
+                             $link = $fill;
                              if(strpos($class, "facebook") !== false) {
                                  $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else if(strpos($class, "google-plus") !== false) {
