@@ -256,22 +256,27 @@ try {
                          $element = "<div class='profile-input profile-data row address street-number'>
   <paper-input class='user-input col-xs-12'
                type='number'
-               label='Street Number'
+               label='Street Number' data-source='street-number'
+               required
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address street'>
   <paper-input class='user-input col-xs-12'
-               label='Street Name'
+               label='Street Name' data-source='street'
+               required
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address country-code'>
   <paper-input class='user-input col-xs-12'
-               label='Country'
+               label='Country Code' data-source='country-code'
+               maxlength='2'
+               required
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address zip'>
   <gold-zip-input class='user-input col-xs-12'
-               label='ZIP code'
+               label='ZIP code' data-source='zip'
+               required
                auto-validate></gold-zip-input>
 </div>";
                      }
@@ -370,14 +375,14 @@ try {
         </div>
         <div id="bio-profile" class="col-xs-12 profile-region" data-source="profile">
           <h3><?php echo $titlePossessive; ?> Bio</h3>
-          <?php if(!$isViewingSelf) { 
+          <?php if(!$isViewingSelf) {
                 if(empty($bio)) $bio = "*No profile provided*";
-                ?> 
+                ?>
           <marked-element>
             <div class="markdown-html"></div>
             <script type="text/markdown"><?php echo $bio; ?>></script>
           </marked-element>
-          <?php } else { ?> 
+          <?php } else { ?>
           <paper-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5"></paper-textarea>
           <?php } ?>
         </div>
