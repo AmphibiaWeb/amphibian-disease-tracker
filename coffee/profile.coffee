@@ -597,7 +597,7 @@ validateAddress = (addressObject, callback) ->
   geo.geocode addressString, filter, (result) ->
     console.log "Address validator got", result
     newAddressObject.validated = result.partial_match isnt true
-    newAddressObject.partially_validated = result.partial_match
+    newAddressObject.partially_validated = result.partial_match is true
     newAddressObject.parsed = result
     newAddressObject.state = result.google.administrative_area_level_1 ? ""
     newAddressObject.city = result.google.locality ? ""

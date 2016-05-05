@@ -1406,6 +1406,7 @@ geo.geocode = (address, filter, callback) ->
             tmp.google[type] = part.long_name
           catch
             continue
+      tmp.partial_match = mainResult.partial_match
       if typeof callback is "function"
         callback tmp
       else
