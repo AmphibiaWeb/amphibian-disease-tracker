@@ -584,7 +584,7 @@ formatSocial = ->
   for fab in $(".social paper-fab")
     icon = $(fab).attr "icon"
     network = icon.split(":").pop()
-    link = $(fab).attr data-href
+    link = $(fab).attr "data-href"
     realHref = link
     switch network
       when "twitter"
