@@ -817,6 +817,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     } else {
       response = tmp;
     }
+    console.info("Sending back response", response);
     if (typeof callback === "function") {
       callback(response);
     } else {
@@ -831,7 +832,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     response = tmp;
   }
   window.publicProfile = tmp;
-  console.log("Non-validated response object:");
+  console.log("Non-validated response object:", response);
   return response;
 };
 
@@ -929,9 +930,11 @@ saveProfileChanges = function() {
     stopLoadError("Please check all required fields are completed");
     return false;
   }
-  constructProfileJson(true, function(data) {
-    var args;
-    args = "perform=" + profileAction + "&data=" + data;
+  constructProfileJson(false, function(data) {
+    var args, pdata;
+    console.log("Going to save", data);
+    pdata = post64(data);
+    args = "perform=" + profileAction + "&data=" + pdata;
     $("#save-profile").attr("disabled", "disabled");
     return $.post(apiTarget, args, "json").done(function(result) {
       var message, ref1, ref2;
@@ -1023,8 +1026,10 @@ $(function() {
     }
     return results;
   })();
-  if (window.isViewingSelf === true) {
+  if (window.isViewingSelf === false) {
     cleanupAddressDisplay();
+  } else {
+    setupUserChat();
   }
   checkFileVersion(false, "js/profile.js");
   return false;
