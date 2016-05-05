@@ -929,7 +929,7 @@ saveProfileChanges = function() {
     stopLoadError("Please check all required fields are completed");
     return false;
   }
-  constructProfileJson(true, function() {
+  constructProfileJson(true, function(data) {
     var args;
     args = "perform=" + profileAction + "&data=" + data;
     return $.post(apiTarget, args, "json").done(function(result) {
