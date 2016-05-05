@@ -581,6 +581,38 @@ constructProfileJson = (encodeForPosting = false, callback)->
 
 
 formatSocial = ->
+  for fab in $(".social paper-fab")
+    icon = $(fab).attr "icon"
+    network = icon.split(":").pop()
+    link = $(fab).attr data-href
+    realHref = link
+    switch network
+      when "twitter"
+        if link.search("@") is 0
+          realHref = "https://twitter.com/#{link.slice(1)}"
+        else if link.match(/^https?:\/\/(www\.)?twitter.com\/\w+$/m)
+          realHref = link
+        else if link.match(/^\w+$/m)
+          realHref = "https://twitter.com/#{link}"
+        else
+          realHref = ""
+      when "google-plus"
+        if link.search("+") is 0
+          realHref = "https://google.com/#{link}"
+        else if link.match(/^https?:\/\/((plus|www)\.)?google.com\/(\+\w+|\d+)$/m)
+          realHref = link
+        else if link.match(/^\w+$/m)
+          realHref = "https://google.com/+#{link}"
+        else
+          realHref = ""
+      when "facebook"
+        if link.match(/^https?:\/\/((www)\.)?facebook.com\/\w+$/m)
+          realHref = link
+        else if link.match(/^\w+$/m)
+          realHref = "https://facebook.com/#{link}"
+        else
+          realHref = ""
+    $(fab).attr "data-href", realHref
   false
 
 
@@ -633,8 +665,16 @@ cleanupAddressDisplay = ->
   ###
   if publicProfile?
     addressObj = publicProfile.place
-    if addressObj.human_html?      
-      $("address").html addressObj.human_html.replace "\\n", "<br/>"
+    if addressObj.human_html?
+      labelHtml = """
+      <label class="col-xs-4 capitalize">
+        Address
+      </label>
+      """
+      $("address")
+      .html addressObj.human_html.replace "\\n", "<br/>"
+      .addClass "col-xs-8"
+      .before labelHtml
     else
       console.warn "Human HTML not yet defined for this user"
   else
@@ -729,5 +769,6 @@ $ ->
     cleanupAddressDisplay()
   else
     setupUserChat()
+    formatSocial()
   checkFileVersion false, "js/profile.js"
   false
