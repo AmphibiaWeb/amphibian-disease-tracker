@@ -12643,15 +12643,15 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   margin-left: 0;
   margin-right: 0;
 }
-.facebook paper-icon-button {
+.facebook paper-fab {
   background: #3B5998 !important;
   color: white;
 }
-.twitter paper-icon-button {
+.twitter paper-fab {
   background: #28AAE1 !important;
   color: white;
 }
-.google-plus paper-icon-button {
+.google-plus paper-fab {
   background: #DD4B39 !important;
   color: white;
 }
@@ -12660,7 +12660,7 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   margin-left: 0;
   margin-right: 0;
 }
-.profile-bio-group.social paper-icon-button {
+.profile-bio-group.social paper-fab {
   color: white;
 }
 #bio-profile marked-element,
