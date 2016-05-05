@@ -2641,6 +2641,43 @@ doMapBuilder = (builder = window.mapBuilder, createMapOptions, callback)->
       false
 
 
+geo.geocode = (address, filter, callback) ->
+  ###
+  #
+  #
+  # @param string address -> Text address
+  # @param obj filter -> A componentRestrictions object. See
+  #   https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
+  # @param func callback
+  ###
+  try
+    if geo.geocoder?
+      geocoder = geo.geocoder
+    else
+      geocoder = new google.maps.Geocoder
+      geo.geocoder = geocoder
+  catch e
+    console.error "Couldn't instance a google map geocoder - #{e.message}"
+    console.warn e.stack
+    return false
+  geocoderData =
+    address: address
+    componentRestrictions: filter
+  geocoder.geocode geocoderData, (result) ->
+    console.log "Geocoder fetched", result
+    mainResult = result[0]
+    tmp = new Object()
+    tmp.google = new Object()
+    tmp.human = mainResult.formatted_address
+    for part in mainResult.addressComponents
+      type = part.types[0]
+      tmp.google[type] = part.long_name
+    if typeof callback is "function"
+      callback tmp
+    else
+      console.warn "No callback provided! Got address object", tmp
+  false
+
 geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
   ###
   # https://developers.google.com/maps/documentation/javascript/examples/geocoding-reverse

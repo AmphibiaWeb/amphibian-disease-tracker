@@ -638,9 +638,16 @@ $ ->
   $("#main-body input").keyup ->
     $("#save-profile").removeAttr "disabled"
     false
-  for gpi in $("gold-phone-input")
-    value = $(gpi).parent().attr "data-value"
-    unless isNull value
-      # Fix the formatting of the display
-      p$(gpi).value = value
+  do cleanInputFormat = ->
+    unless Polymer?.RenderStatus?._ready
+      console.warn "Delaying input setup until Polymer.RenderStatus is ready"
+      delay 500, ->
+        cleanInputFormat()
+      return false
+    console.info "Setting up input values"
+    for gpi in $("gold-phone-input")
+      value = $(gpi).parent().attr "data-value"
+      unless isNull value
+        # Fix the formatting of the display
+        p$(gpi).value = value
   false
