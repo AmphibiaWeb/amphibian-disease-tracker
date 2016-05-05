@@ -539,7 +539,9 @@ constructProfileJson = (encodeForPosting = false, callback)->
   ###
   response = false
   # Build it
-  tmp = new Object()
+  unless typeof publicProfile is "object"
+    delete publicProfile
+  tmp = publicProfile ? new Object()
   inputs = $(".profile-data:not(.from-base-profile) .user-input")
   for el in inputs
     val = p$(el).value
@@ -635,16 +637,16 @@ saveProfileChanges = ->
   foo()
   return false
   startLoad()
-  data = constructProfileJson(true)
-  args = "perform=#{profileAction}&data=#{data}"
-  $.post apiTarget, args, "json"
-  .done (result) ->
-    $("#save-profile").attr "disabled", "disabled"
-    stopLoad()
-    false
-  .fail (result, status) ->
-    stopLoadError()
-    false
+  constructProfileJson true, ->
+    args = "perform=#{profileAction}&data=#{data}"
+    $.post apiTarget, args, "json"
+    .done (result) ->
+      $("#save-profile").attr "disabled", "disabled"
+      stopLoad()
+      false
+    .fail (result, status) ->
+      stopLoadError()
+      false
   false
 
 
