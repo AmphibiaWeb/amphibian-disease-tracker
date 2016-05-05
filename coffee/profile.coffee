@@ -554,7 +554,7 @@ constructProfileJson = (encodeForPosting = false, callback)->
     tmp[parentKey][key] = val
   # Prep it
   validateAddress tmp.institution, (newAddressObj) ->
-    tmp.institution = newAddressObj
+    tmp.place = newAddressObj
     if encodeForPosting
       response = post64 tmp
     else
@@ -564,6 +564,7 @@ constructProfileJson = (encodeForPosting = false, callback)->
       callback response
     else
       console.warn "No callback function! Profile construction got", response
+    delete tmp.institution
     window.publicProfile = tmp
     false
   if encodeForPosting

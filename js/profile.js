@@ -811,7 +811,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     tmp[parentKey][key] = val;
   }
   validateAddress(tmp.institution, function(newAddressObj) {
-    tmp.institution = newAddressObj;
+    tmp.place = newAddressObj;
     if (encodeForPosting) {
       response = post64(tmp);
     } else {
@@ -823,6 +823,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     } else {
       console.warn("No callback function! Profile construction got", response);
     }
+    delete tmp.institution;
     window.publicProfile = tmp;
     return false;
   });
