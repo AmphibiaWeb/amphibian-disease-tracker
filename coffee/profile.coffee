@@ -613,6 +613,7 @@ formatSocial = ->
         else
           realHref = ""
     $(fab).attr "data-href", realHref
+  bindClicks()
   false
 
 
@@ -675,6 +676,7 @@ cleanupAddressDisplay = ->
       .html addressObj.human_html.replace "\\n", "<br/>"
       .addClass "col-xs-8"
       .before labelHtml
+      .parent().addClass("row clearfix")
     else
       console.warn "Human HTML not yet defined for this user"
   else
@@ -767,8 +769,8 @@ $ ->
         p$(gpi).value = toInt value
   if window.isViewingSelf is false
     cleanupAddressDisplay()
+    formatSocial()
   else
     setupUserChat()
-    formatSocial()
   checkFileVersion false, "js/profile.js"
   false
