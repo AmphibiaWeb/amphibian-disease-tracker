@@ -863,7 +863,7 @@ validateAddress = function(addressObject, callback) {
     var humanHtml, ref1, ref2, ref3, ref4;
     console.log("Address validator got", result);
     newAddressObject.validated = result.partial_match !== true;
-    newAddressObject.partially_validated = result.partial_match;
+    newAddressObject.partially_validated = result.partial_match === true;
     newAddressObject.parsed = result;
     newAddressObject.state = (ref1 = result.google.administrative_area_level_1) != null ? ref1 : "";
     newAddressObject.city = (ref2 = result.google.locality) != null ? ref2 : "";
@@ -960,7 +960,7 @@ $(function() {
       gpi = ref1[i];
       value = $(gpi).parent().attr("data-value");
       if (!isNull(value)) {
-        results.push(p$(gpi).value = value);
+        results.push(p$(gpi).value = toInt(value));
       } else {
         results.push(void 0);
       }
