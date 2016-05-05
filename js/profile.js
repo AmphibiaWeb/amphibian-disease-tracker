@@ -804,6 +804,14 @@ constructProfileJson = function(encodeForPosting, callback) {
     val = p$(el).value;
     key = $(el).attr("data-source");
     key = key.replace("-", "_");
+    key = (function() {
+      switch (key) {
+        case "institution":
+          return "name";
+        default:
+          return key;
+      }
+    })();
     parentKey = $(el).parents("[data-source]").attr("data-source");
     if (typeof tmp[parentKey] !== "object") {
       tmp[parentKey] = new Object();
@@ -879,6 +887,7 @@ validateAddress = function(addressObject, callback) {
     }
     humanHtml = addressString + "<br/>\n" + newAddressObject.city + ", " + newAddressObject.state + " " + newAddressObject.zip;
     newAddressObject.human_html = humanHtml;
+    console.info("New address object", newAddressObject);
     if (typeof callback === "function") {
       callback(newAddressObject);
     } else {
@@ -898,7 +907,7 @@ cleanupAddressDisplay = function() {
   if (typeof publicProfile !== "undefined" && publicProfile !== null) {
     addressObj = publicProfile.institution;
     if (addressObj.human_html != null) {
-      $("address").html(addressObj.human_html);
+      $("address").html(addressObj.human_html.replace("\n", "<br/>"));
     } else {
       console.warn("Human HTML not yet defined for this user");
     }
