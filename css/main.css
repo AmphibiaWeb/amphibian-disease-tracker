@@ -9626,15 +9626,13 @@ html >>> .capitalize {
   }
 }
 .genus,
-.species,
-.sciname {
+.species {
   font-style: italic;
 }
 .genus {
   text-transform: capitalize !important;
 }
-.species,
-.sciname {
+.species {
   text-transform: lowercase;
 }
 .sciname:first-letter {

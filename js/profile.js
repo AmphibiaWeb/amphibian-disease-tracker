@@ -811,7 +811,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     tmp[parentKey][key] = val;
   }
   validateAddress(tmp.institution, function(newAddressObj) {
-    tmp.institution = newAddressObj;
+    tmp.place = newAddressObj;
     if (encodeForPosting) {
       response = post64(tmp);
     } else {
@@ -823,6 +823,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     } else {
       console.warn("No callback function! Profile construction got", response);
     }
+    delete tmp.institution;
     window.publicProfile = tmp;
     return false;
   });
@@ -933,7 +934,7 @@ saveProfileChanges = function() {
   constructProfileJson(false, function(data) {
     var args, pdata;
     console.log("Going to save", data);
-    pdata = post64(data);
+    pdata = jsonTo64(data);
     args = "perform=" + profileAction + "&data=" + pdata;
     $("#save-profile").attr("disabled", "disabled");
     return $.post(apiTarget, args, "json").done(function(result) {
