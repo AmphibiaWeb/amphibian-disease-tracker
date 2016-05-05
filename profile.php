@@ -502,7 +502,7 @@ try {
             <div class="chat-entry-container form-horizontal">
               <div class="form-group">
                 <div class="col-xs-10">
-                  <input type="text" class="form-control" placeholder="Type your message ..." />
+                  <input id="compose-message" type="text" class="form-control" placeholder="Type your message ..." />
                 </div>
                 <div class="col-xs-2 text-center">
                   <paper-icon-button icon="icons:send" class="send-chat" data-toggle="tooltip" title="Send Message"></paper-icon-button>

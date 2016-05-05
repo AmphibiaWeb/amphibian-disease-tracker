@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, formatSocial, isoCountries, loadUserBadges, prettySocial, profileAction, saveProfileChanges, setupProfileImageUpload, validateAddress;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, formatSocial, isoCountries, loadUserBadges, prettySocial, profileAction, saveProfileChanges, setupProfileImageUpload, setupUserChat, validateAddress;
 
 profileAction = "update_profile";
 
@@ -943,6 +943,33 @@ saveProfileChanges = function() {
       return false;
     });
   });
+  return false;
+};
+
+setupUserChat = function() {
+  var sendChat;
+  $(".conversation-list li").click(function() {
+    var chattingWith;
+    chattingWith = $(this).attr("data-uid");
+    foo();
+    return false;
+  });
+  $("#compose-message").keyup(function(e) {
+    var kc;
+    kc = e.keyCode ? e.keyCode : e.which;
+    if (kc === 13) {
+      sendChat();
+    }
+    return false;
+  });
+  $(".send-chat").click(function() {
+    sendChat();
+    return false;
+  });
+  sendChat = function() {
+    toastStatusMessage("Would send message");
+    return false;
+  };
   return false;
 };
 

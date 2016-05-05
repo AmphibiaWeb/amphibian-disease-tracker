@@ -664,6 +664,26 @@ saveProfileChanges = ->
   false
 
 
+setupUserChat = ->
+  $(".conversation-list li").click ->
+    # Load that user's chat
+    chattingWith = $(this).attr "data-uid"
+    foo()
+    false
+  $("#compose-message").keyup (e) ->
+    kc = if e.keyCode then e.keyCode else e.which
+    if kc is 13
+      sendChat()
+    false
+  $(".send-chat").click ->
+    sendChat()
+    false
+  sendChat = ->
+    toastStatusMessage "Would send message"
+    false
+  false
+
+
 $ ->
   # On load page events
   try
