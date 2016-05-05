@@ -905,9 +905,9 @@ cleanupAddressDisplay = function() {
    */
   var addressObj;
   if (typeof publicProfile !== "undefined" && publicProfile !== null) {
-    addressObj = publicProfile.institution;
+    addressObj = publicProfile.place;
     if (addressObj.human_html != null) {
-      $("address").html(addressObj.human_html.replace("\n", "<br/>"));
+      $("address").html(addressObj.human_html.replace("\\n", "<br/>"));
     } else {
       console.warn("Human HTML not yet defined for this user");
     }
