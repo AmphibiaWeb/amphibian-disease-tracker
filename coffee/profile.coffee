@@ -548,6 +548,10 @@ constructProfileJson = (encodeForPosting = false, callback)->
     val = p$(el).value
     key = $(el).attr "data-source"
     key = key.replace "-", "_"
+    key = switch key
+      when "institution"
+        "name"
+      else key
     parentKey = $(el).parents("[data-source]").attr "data-source"
     unless typeof tmp[parentKey] is "object"
       tmp[parentKey] = new Object()
@@ -615,6 +619,7 @@ validateAddress = (addressObject, callback) ->
     #{newAddressObject.city}, #{newAddressObject.state} #{newAddressObject.zip}
     """
     newAddressObject.human_html = humanHtml
+    console.info "New address object", newAddressObject
     if typeof callback is "function"
       callback newAddressObject
     else
@@ -628,8 +633,8 @@ cleanupAddressDisplay = ->
   ###
   if publicProfile?
     addressObj = publicProfile.institution
-    if addressObj.human_html?
-      $("address").html addressObj.human_html
+    if addressObj.human_html?      
+      $("address").html addressObj.human_html.replace "\n", "<br/>"
     else
       console.warn "Human HTML not yet defined for this user"
   else
