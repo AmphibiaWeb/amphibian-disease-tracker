@@ -257,7 +257,6 @@ try {
   <paper-input class='user-input col-xs-12'
                type='number'
                label='Street Number' data-source='street-number'
-               required
                auto-validate></paper-input>
 </div>
 <div class='profile-input profile-data row address street'>
@@ -325,6 +324,9 @@ try {
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
+        <script type="text/javascript">
+          var publicProfile = <?php echo json_encode($structuredData); ?>;
+        </script>
         <?php if($isViewingSelf) { ?>
         <div class="col-xs-12 self-link">
           <div class="form-group">

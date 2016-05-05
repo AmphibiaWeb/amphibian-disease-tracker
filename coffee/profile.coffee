@@ -560,11 +560,13 @@ constructProfileJson = (encodeForPosting = false, callback)->
       callback response
     else
       console.warn "No callback function! Profile construction got", response
+    publicProfile = tmp
     false
   if encodeForPosting
     response = post64 tmp
   else
     response = tmp
+  publicProfile = tmp
   console.log "Non-validated response object:"
   response
 
@@ -583,13 +585,31 @@ validateAddress = (addressObject, callback) ->
   #
   ###
   newAddressObject = addressObject
+  newAddressObject.validated = false
+  newAddressObject.partially_validated = false
   filter =
     country: addressObject.country_code ? "US"
     postalCode: addressObject.zip
   addressString = "#{addressObject.street_number} #{addressObject.street}"
+  console.log "Attempting validation with", addressString, filter
   geo.geocode addressString, filter, (result) ->
     console.log "Address validator got", result
+    newAddressObject.validated = result.partial_match isnt true
+    newAddressObject.partially_validated = result.partial_match
     newAddressObject.parsed = result
+    newAddressObject.state = result.google.administrative_area_level_1 ? ""
+    newAddressObject.city = result.google.locality ? ""
+    if newAddressObject.validated
+      newAddressObject.street_number = result.google.street_number ? addressObject.street_number
+      newAddressObject.street = result.google.route ? addressObject.street
+      if result.google.postal_code_suffix?
+        newAddressObject.zip += "-#{result.google.postal_code_suffix}"
+      addressString = "#{newAddressObject.street_number} #{newAddressObject.street}"
+    humanHtml = """
+    #{addressString}<br/>
+    #{newAddressObject.city}, #{newAddressObject.state} #{newAddressObject.zip}
+    """
+    newAddressObject.human_html = humanHtml
     if typeof callback is "function"
       callback newAddressObject
     else
@@ -601,6 +621,10 @@ cleanupAddressDisplay = ->
   ###
   # Display human-helpful address information, like city/state
   ###
+  if publicProfile?
+    addressObj = publicProfile.institution
+  else
+    console.warn "Public profile not set up"
   false
 
 saveProfileChanges = ->
@@ -650,4 +674,5 @@ $ ->
       unless isNull value
         # Fix the formatting of the display
         p$(gpi).value = value
+  checkFileVersion false, "js/profile.js"
   false

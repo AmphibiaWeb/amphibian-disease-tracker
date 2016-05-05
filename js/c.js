@@ -3247,7 +3247,7 @@ geo.geocode = function(address, filter, callback) {
    *   https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
    * @param func callback
    */
-  var error2, geocoder, geocoderData;
+  var args, componentsArr, componentsString, doGeocoder, error2, geocoder, key, restrictionlessApiKey, str, url, val;
   try {
     if (geo.geocoder != null) {
       geocoder = geo.geocoder;
@@ -3261,29 +3261,92 @@ geo.geocode = function(address, filter, callback) {
     console.warn(e.stack);
     return false;
   }
-  geocoderData = {
-    address: address,
-    componentRestrictions: filter
+  doGeocoder = function() {
+    var geocoderData;
+    geocoderData = {
+      address: address,
+      componentRestrictions: filter
+    };
+    return geocoder.geocode(geocoderData, function(result, status) {
+      var error3, l, len, mainResult, part, ref, tmp, type;
+      console.log("Geocoder fetched", result, status);
+      console.log("Provided", geocoderData);
+      if (status !== google.maps.GeocoderStatus.OK) {
+        console.warn("Geocoder failed -- Google said", status);
+        return false;
+      }
+      mainResult = result[0];
+      tmp = new Object();
+      tmp.google = new Object();
+      tmp.human = mainResult.formatted_address;
+      try {
+        ref = mainResult.address_components;
+        for (l = 0, len = ref.length; l < len; l++) {
+          part = ref[l];
+          try {
+            type = part.types[0];
+            tmp.google[type] = part.long_name;
+          } catch (error3) {
+            continue;
+          }
+        }
+      } catch (undefined) {}
+      if (typeof callback === "function") {
+        return callback(tmp);
+      } else {
+        return console.warn("No callback provided! Got address object", tmp);
+      }
+    });
   };
-  geocoder.geocode(geocoderData, function(result) {
-    var l, len, mainResult, part, ref, tmp, type;
-    console.log("Geocoder fetched", result);
-    mainResult = result[0];
-    tmp = new Object();
-    tmp.google = new Object();
-    tmp.human = mainResult.formatted_address;
-    ref = mainResult.addressComponents;
-    for (l = 0, len = ref.length; l < len; l++) {
-      part = ref[l];
-      type = part.types[0];
-      tmp.google[type] = part.long_name;
+  restrictionlessApiKey = null;
+  if ((address != null) && (restrictionlessApiKey != null)) {
+    url = "https://maps.googleapis.com/maps/api/geocode/json";
+    componentsArr = new Array();
+    for (key in filter) {
+      val = filter[key];
+      str = key + ":" + (encodeURIComponent(val));
+      componentsArr.push(str);
     }
-    if (typeof callback === "function") {
-      return callback(tmp);
-    } else {
-      return console.warn("No callback provided! Got address object", tmp);
-    }
-  });
+    componentsString = componentsArr.join("|");
+    args = "address=" + (encodeURIComponent(address)) + "&components=" + componentsString + "&key=" + restrictionlessApiKey;
+    console.log("Trying", url + "?" + args);
+    $.get(url, args, "json").done(function(result) {
+      var error3, l, len, mainResult, part, ref, status, tmp, type;
+      console.log("API hit fetched", result);
+      mainResult = result.results[0];
+      status = result.status;
+      if (status !== google.maps.GeocoderStatus.OK) {
+        console.warn("Geocoder failed -- Google said", status);
+        doGeocoder();
+        return false;
+      }
+      tmp = new Object();
+      tmp.google = new Object();
+      tmp.human = mainResult.formatted_address;
+      try {
+        ref = mainResult.address_components;
+        for (l = 0, len = ref.length; l < len; l++) {
+          part = ref[l];
+          try {
+            type = part.types[0];
+            tmp.google[type] = part.long_name;
+          } catch (error3) {
+            continue;
+          }
+        }
+      } catch (undefined) {}
+      if (typeof callback === "function") {
+        return callback(tmp);
+      } else {
+        return console.warn("No callback provided! Got address object", tmp);
+      }
+    }).fail(function(result, status) {
+      console.error("Error (" + status + "): Couldn't post to Google, trying geocoder");
+      return doGeocoder();
+    });
+  } else {
+    doGeocoder();
+  }
   return false;
 };
 
