@@ -649,7 +649,7 @@ saveProfileChanges = ->
   unless isGood
     stopLoadError "Please check all required fields are completed"
     return false
-  constructProfileJson true, ->
+  constructProfileJson true,  (data) ->
     args = "perform=#{profileAction}&data=#{data}"
     $.post apiTarget, args, "json"
     .done (result) ->
