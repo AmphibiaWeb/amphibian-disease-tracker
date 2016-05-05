@@ -1651,8 +1651,8 @@ function updateOwnProfile($get, $col = "public_profile") {
     $data = json_encode($structuredData, $jsonOptions);
     $u = new UserFunctions();
     # We'll use writeToUser and use default cookie-based validation.
-    return $structuredData;
-    # $writeResult = $u->writeToUser($data, $col);
+    #return $structuredData;
+    $writeResult = $u->writeToUser($data, $col);
     $rStatus = $writeResult["status"];
     if (!is_bool($rStatus)) {
         $rStatus = false;
