@@ -326,6 +326,7 @@ try {
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
         <script type="text/javascript">
           var publicProfile = <?php echo json_encode($structuredData); ?>;
+          var isViewingSelf = <?php echo strbool($isViewingSelf); ?>;
         </script>
         <?php if($isViewingSelf) { ?>
         <div class="col-xs-12 self-link">
