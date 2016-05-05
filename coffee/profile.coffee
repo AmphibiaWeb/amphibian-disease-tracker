@@ -632,9 +632,9 @@ cleanupAddressDisplay = ->
   # Display human-helpful address information, like city/state
   ###
   if publicProfile?
-    addressObj = publicProfile.institution
+    addressObj = publicProfile.place
     if addressObj.human_html?      
-      $("address").html addressObj.human_html.replace "\n", "<br/>"
+      $("address").html addressObj.human_html.replace "\\n", "<br/>"
     else
       console.warn "Human HTML not yet defined for this user"
   else

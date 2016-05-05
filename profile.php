@@ -307,7 +307,7 @@ try {
              # Fetch and overwrite keys
              $profile = $viewUser->getProfile();
              if(is_array($profile)) {
-               $structuredData = array_merge_recursive($structuredData, $profile);
+               $structuredData = array_merge($structuredData, $profile);
              }
              $place = $structuredData["place"];
              $social = $structuredData["social"];

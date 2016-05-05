@@ -12645,17 +12645,23 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 }
 .facebook paper-icon-button {
   background: #3B5998 !important;
+  color: white;
 }
 .twitter paper-icon-button {
   background: #28AAE1 !important;
+  color: white;
 }
 .google-plus paper-icon-button {
   background: #DD4B39 !important;
+  color: white;
 }
 .profile-bio-group.social {
   display: inline-block;
   margin-left: 0;
   margin-right: 0;
+}
+.profile-bio-group.social paper-icon-button {
+  color: white;
 }
 #bio-profile marked-element,
 #bio-profile paper-textarea {
