@@ -3237,6 +3237,56 @@ doMapBuilder = function(builder, createMapOptions, callback) {
   });
 };
 
+geo.geocode = function(address, filter, callback) {
+
+  /*
+   *
+   *
+   * @param string address -> Text address
+   * @param obj filter -> A componentRestrictions object. See
+   *   https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
+   * @param func callback
+   */
+  var error2, geocoder, geocoderData;
+  try {
+    if (geo.geocoder != null) {
+      geocoder = geo.geocoder;
+    } else {
+      geocoder = new google.maps.Geocoder;
+      geo.geocoder = geocoder;
+    }
+  } catch (error2) {
+    e = error2;
+    console.error("Couldn't instance a google map geocoder - " + e.message);
+    console.warn(e.stack);
+    return false;
+  }
+  geocoderData = {
+    address: address,
+    componentRestrictions: filter
+  };
+  geocoder.geocode(geocoderData, function(result) {
+    var l, len, mainResult, part, ref, tmp, type;
+    console.log("Geocoder fetched", result);
+    mainResult = result[0];
+    tmp = new Object();
+    tmp.google = new Object();
+    tmp.human = mainResult.formatted_address;
+    ref = mainResult.addressComponents;
+    for (l = 0, len = ref.length; l < len; l++) {
+      part = ref[l];
+      type = part.types[0];
+      tmp.google[type] = part.long_name;
+    }
+    if (typeof callback === "function") {
+      return callback(tmp);
+    } else {
+      return console.warn("No callback provided! Got address object", tmp);
+    }
+  });
+  return false;
+};
+
 geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
   var error2, geocoder, ll, request;
   if (boundingBox == null) {

@@ -895,7 +895,7 @@ saveProfileChanges = function() {
 };
 
 $(function() {
-  var gpi, i, len, ref, value;
+  var cleanInputFormat;
   try {
     loadUserBadges();
   } catch (undefined) {}
@@ -913,14 +913,29 @@ $(function() {
     $("#save-profile").removeAttr("disabled");
     return false;
   });
-  ref = $("gold-phone-input");
-  for (i = 0, len = ref.length; i < len; i++) {
-    gpi = ref[i];
-    value = $(gpi).parent().attr("data-value");
-    if (!isNull(value)) {
-      p$(gpi).value = value;
+  (cleanInputFormat = function() {
+    var gpi, i, len, ref, ref1, results, value;
+    if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
+      console.warn("Delaying input setup until Polymer.RenderStatus is ready");
+      delay(500, function() {
+        return cleanInputFormat();
+      });
+      return false;
     }
-  }
+    console.info("Setting up input values");
+    ref1 = $("gold-phone-input");
+    results = [];
+    for (i = 0, len = ref1.length; i < len; i++) {
+      gpi = ref1[i];
+      value = $(gpi).parent().attr("data-value");
+      if (!isNull(value)) {
+        results.push(p$(gpi).value = value);
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  })();
   return false;
 });
 
