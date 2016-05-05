@@ -653,7 +653,7 @@ saveProfileChanges = ->
     return false
   constructProfileJson false,  (data) ->
     console.log "Going to save", data
-    pdata = post64 data
+    pdata = jsonTo64 data
     args = "perform=#{profileAction}&data=#{pdata}"
     $("#save-profile").attr "disabled", "disabled"
     $.post apiTarget, args, "json"

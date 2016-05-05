@@ -934,7 +934,7 @@ saveProfileChanges = function() {
   constructProfileJson(false, function(data) {
     var args, pdata;
     console.log("Going to save", data);
-    pdata = post64(data);
+    pdata = jsonTo64(data);
     args = "perform=" + profileAction + "&data=" + pdata;
     $("#save-profile").attr("disabled", "disabled");
     return $.post(apiTarget, args, "json").done(function(result) {
