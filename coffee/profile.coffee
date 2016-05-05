@@ -651,15 +651,21 @@ saveProfileChanges = ->
     return false
   constructProfileJson true,  (data) ->
     args = "perform=#{profileAction}&data=#{data}"
+    $("#save-profile").attr "disabled", "disabled"
     $.post apiTarget, args, "json"
     .done (result) ->
       console.log "Save got", result
+      unless result.status is true
+        $("#save-profile").removeAttr "disabled"
+        message = result.human_error ? result.error ? "Unknown error"
+        stopLoadError "There was an error saving - #{message}. Please try again later."
+        return false
       $("#save-profile").attr "disabled", "disabled"
       stopLoad()
       false
     .fail (result, status) ->
       console.error "Error!", result, status
-      stopLoadError()
+      stopLoadError "There was a problem saving to the server."
       false
   false
 
