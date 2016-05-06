@@ -396,12 +396,14 @@ value='".$place["zip"]."'
         </div>
         <div id="bio-profile" class="col-xs-12 profile-region" data-source="profile">
           <h3><?php echo $titlePossessive; ?> Bio</h3>
-          <?php if(!$isViewingSelf) {
+          <?php 
+             $bio = str_replace("\\n", "\n", $bio);
+             if(!$isViewingSelf) {
                 if(empty($bio)) $bio = "*No profile provided*";
                 ?>
           <marked-element>
             <div class="markdown-html"></div>
-            <script type="text/markdown"><?php echo $bio; ?>></script>
+            <script type="text/markdown"><?php echo $bio; ?></script>
           </marked-element>
           <?php } else { ?>
           <iron-autogrow-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5" class="user-input"></iron-autogrow-textarea>

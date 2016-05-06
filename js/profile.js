@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, setupProfileImageUpload, setupUserChat, validateAddress;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, setupProfileImageUpload, setupUserChat, validateAddress;
 
 profileAction = "update_profile";
 
@@ -1135,6 +1135,7 @@ constructProfileJson = function(encodeForPosting, callback) {
     }
     tmp[parentKey][key] = val;
   }
+  tmp.profile = p$("#bio-profile .user-input").value;
   validateAddress(tmp.institution, function(newAddressObj) {
     tmp.place = newAddressObj;
     if (encodeForPosting) {
@@ -1354,6 +1355,13 @@ setupUserChat = function() {
     return false;
   };
   return false;
+};
+
+forceUpdateMarked = function() {
+  var val, valReal;
+  val = $("marked-element script").text();
+  valReal = val.replace(/\\n/g, "\n");
+  return p$("marked-element").markdown = valReal;
 };
 
 $(function() {
