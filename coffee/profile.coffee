@@ -882,10 +882,19 @@ constructProfileJson = (encodeForPosting = false, callback)->
 
 formatSocial = ->
   isGood = true
-  for fab in $(".social paper-fab")
-    icon = $(fab).attr "icon"
-    network = icon.split(":").pop()
-    link = $(fab).attr "data-href"
+  el = if window.isViewingSelf then "paper-input" else "paper-fab"
+  for fab in $(".social #{el}")
+    try
+      icon = $(fab).attr "icon"
+      network = icon.split(":").pop()
+      link = $(fab).attr "data-href"
+    catch
+      try
+        network = $(fab).attr "data-source"
+        network = network.replace /_/g, "-"
+        link = p$(fab).value
+      catch
+        console.error "borkedy"
     realHref = link
     switch network
       when "twitter"
