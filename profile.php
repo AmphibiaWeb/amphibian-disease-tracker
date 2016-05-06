@@ -108,6 +108,7 @@ try {
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/communication-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/editor-icons.html"/>
+    <link rel="import" href="bower_components/iron-icons/maps-icons.html"/>
 
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
 
@@ -396,7 +397,7 @@ value='".$place["zip"]."'
         </div>
         <div id="bio-profile" class="col-xs-12 profile-region" data-source="profile">
           <h3><?php echo $titlePossessive; ?> Bio</h3>
-          <?php 
+          <?php
              $bio = str_replace("\\n", "\n", $bio);
              if(!$isViewingSelf) {
                 if(empty($bio)) $bio = "*No profile provided*";

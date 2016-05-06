@@ -990,7 +990,7 @@ cleanupAddressDisplay = ->
       mapsSearch = encodeURIComponent addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " ")
       postHtml = """
       <div class="col-xs-12 col-md-3 col-lg-4">
-        <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue">
+        <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue newwindow" data-newtab="true">
         </paper-fab>
       </div>
       """
@@ -1116,8 +1116,8 @@ $ ->
       if isNumber plainValue
         value = "+#{callingCode}#{plainValue}"
         html = """
-        <iron-icon icon="communication:phone"></iron-icon> 
         <a href="tel:#{value}" class="phone-number-parsed">
+          <iron-icon icon="communication:phone"></iron-icon> 
           #{plainValue}
         </a>
         """
