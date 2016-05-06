@@ -547,6 +547,28 @@ value='".$place["zip"]."'
       <section id="main-body" class="row">
         <p class="col-xs-12">Search like the wind, Bullseye!</p>
         <p> Search like project page, async, on person or institution</p>
+        <div class="col-xs-12 col-md-3 pull-right">
+          <div class="form-horizontal">
+            <div class="search-profile form-group">
+              <label for="profile-search" class="col-xs-12 col-md-5 col-lg-3 control-label">Search Profiles</label>
+              <div class="col-xs-12 col-md-7 col-lg-9">
+                <input type="text" class="form-control" placeholder="Profile ID or name..." name="profile-search" id="profile-search"/>
+              </div>
+            </div>
+          </div>
+          <paper-radio-group selected="names" id="search-filter">
+            <paper-radio-button name="names" data-cols="name,username,alternate_email" data-cue="Name, handle, or email...">
+              Name / Email
+            </paper-radio-button>
+            <paper-radio-button name="institution" data-cols="public_profile" data-cue="Institution name">
+              Institution
+            </paper-radio-button>
+
+          </paper-radio-group>
+        </div>
+        <ul id="profile-result-container" class="col-xs-12 col-md-9">
+
+        </ul>
       </section>
       <?php } elseif (!$validUser) { ?>
 

@@ -990,7 +990,7 @@ cleanupAddressDisplay = ->
       mapsSearch = encodeURIComponent addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " ")
       postHtml = """
       <div class="col-xs-12 col-md-3 col-lg-4">
-        <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue newwindow" data-newtab="true">
+        <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue newwindow" data-newtab="true" data-toggle="tooltip" title="View in Google Maps">
         </paper-fab>
       </div>
       """
@@ -1076,6 +1076,57 @@ forceUpdateMarked = ->
   p$("marked-element").markdown = valReal
 
 
+
+
+searchProfiles = ->
+  ###
+  # Handler to search profiles
+  ###
+  search = $("#profile-search").val()
+  if isNull search
+    $("#profile-result-container").empty()
+    return false
+  item = p$("#search-filter").selectedItem
+  cols = $(item).attr "data-cols"
+  console.info "Searching on #{search} ... in #{cols}"
+  # POST a request to the server for profiles matching this
+  args = "action=search_profile&q=#{search}&cols=#{cols}"
+  $.post "#{uri.urlString}api.php", args, "json"
+  .done (result) ->
+    console.info result
+    if result.status isnt true
+      console.error "Problem searching profiles!"
+      html = """
+      <div class="alert alert-warning">
+        <p>There was an error searching profiles.</p>
+      </div>
+      """
+      $("#profile-result-container").html html
+      return false
+    html = ""
+    showList = new Array()
+    profiles = Object.toArray result.result
+    if profiles.length > 0
+      for profile in profiles
+        showList.push profile.name
+        button = """
+        <button class="btn btn-primary search-profile-link" data-href="#{uri.urlString}profile.php?id=#{profile.profile_id}">
+          #{profile.name}
+        </button>
+        """
+        html += "<li class='profile-search-result'>#{button}</li>"
+    else
+      s = result.search ? search
+      html = "<p><em>No results found for \"<strong>#{s}</strong>\""
+    $("#profile-result-container").html html
+    bindClicks(".search-profile-link")
+  .fail (result, status) ->
+    console.error result, status
+  false
+
+
+
+
 $ ->
   # On load page events
   try
@@ -1117,7 +1168,7 @@ $ ->
         value = "+#{callingCode}#{plainValue}"
         html = """
         <a href="tel:#{value}" class="phone-number-parsed">
-          <iron-icon icon="communication:phone"></iron-icon> 
+          <iron-icon icon="communication:phone" data-toggle="tooltip" title="Click to call"></iron-icon>
           #{plainValue}
         </a>
         """

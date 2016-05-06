@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, setupProfileImageUpload, setupUserChat, validateAddress;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress;
 
 profileAction = "update_profile";
 
@@ -1291,7 +1291,7 @@ cleanupAddressDisplay = function() {
     addressObj = publicProfile.place;
     if (addressObj.human_html != null) {
       mapsSearch = encodeURIComponent(addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " "));
-      postHtml = "<div class=\"col-xs-12 col-md-3 col-lg-4\">\n  <paper-fab mini icon=\"maps:map\" data-href=\"https://www.google.com/maps/search/" + mapsSearch + "\" class=\"click materialblue newwindow\" data-newtab=\"true\">\n  </paper-fab>\n</div>";
+      postHtml = "<div class=\"col-xs-12 col-md-3 col-lg-4\">\n  <paper-fab mini icon=\"maps:map\" data-href=\"https://www.google.com/maps/search/" + mapsSearch + "\" class=\"click materialblue newwindow\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"View in Google Maps\">\n  </paper-fab>\n</div>";
       labelHtml = "<label class=\"col-xs-4 capitalize\">\n  Address\n</label>";
       $("address").html(addressObj.human_html.replace(/\\n/g, "<br/>")).addClass("col-xs-8 col-md-5 col-lg-4").before(labelHtml).after(postHtml).parent().addClass("row clearfix");
     } else {
@@ -1388,6 +1388,52 @@ forceUpdateMarked = function() {
   return p$("marked-element").markdown = valReal;
 };
 
+searchProfiles = function() {
+
+  /*
+   * Handler to search profiles
+   */
+  var args, cols, item, search;
+  search = $("#profile-search").val();
+  if (isNull(search)) {
+    $("#profile-result-container").empty();
+    return false;
+  }
+  item = p$("#search-filter").selectedItem;
+  cols = $(item).attr("data-cols");
+  console.info("Searching on " + search + " ... in " + cols);
+  args = "action=search_profile&q=" + search + "&cols=" + cols;
+  $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+    var button, html, i, len, profile, profiles, ref, s, showList;
+    console.info(result);
+    if (result.status !== true) {
+      console.error("Problem searching profiles!");
+      html = "<div class=\"alert alert-warning\">\n  <p>There was an error searching profiles.</p>\n</div>";
+      $("#profile-result-container").html(html);
+      return false;
+    }
+    html = "";
+    showList = new Array();
+    profiles = Object.toArray(result.result);
+    if (profiles.length > 0) {
+      for (i = 0, len = profiles.length; i < len; i++) {
+        profile = profiles[i];
+        showList.push(profile.name);
+        button = "<button class=\"btn btn-primary search-profile-link\" data-href=\"" + uri.urlString + "profile.php?id=" + profile.profile_id + "\">\n  " + profile.name + "\n</button>";
+        html += "<li class='profile-search-result'>" + button + "</li>";
+      }
+    } else {
+      s = (ref = result.search) != null ? ref : search;
+      html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
+    }
+    $("#profile-result-container").html(html);
+    return bindClicks(".search-profile-link");
+  }).fail(function(result, status) {
+    return console.error(result, status);
+  });
+  return false;
+};
+
 $(function() {
   var cleanInputFormat;
   try {
@@ -1444,7 +1490,7 @@ $(function() {
       plainValue = $(phone).text();
       if (isNumber(plainValue)) {
         value = "+" + callingCode + plainValue;
-        html = "<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  <iron-icon icon=\"communication:phone\"></iron-icon> \n  " + plainValue + "\n</a>";
+        html = "<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  <iron-icon icon=\"communication:phone\" data-toggle=\"tooltip\" title=\"Click to call\"></iron-icon>\n  " + plainValue + "\n</a>";
         results.push($(phone).replaceWith(html));
       } else {
         results.push(void 0);
