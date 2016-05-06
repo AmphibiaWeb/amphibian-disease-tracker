@@ -340,7 +340,6 @@ value='".$place["zip"]."'
              ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
-        <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
         <paper-fab id="enter-search" icon="icons:search" class="click" data-href="?mode=search" data-toggle="tooltip" title="Search Profiles"></paper-fab>
         <script type="text/javascript">
           var publicProfile = <?php echo json_encode($structuredData); ?>;
@@ -535,9 +534,6 @@ value='".$place["zip"]."'
              else {
            ?>
         <section class="row misc">
-          <p class="col-xs-12">
-            Viewing Other
-          </p>
         </section>
            <?php
              }

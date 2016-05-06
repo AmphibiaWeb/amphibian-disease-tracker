@@ -1164,7 +1164,8 @@ constructProfileJson = function(encodeForPosting, callback) {
 };
 
 formatSocial = function() {
-  var fab, i, icon, len, link, network, realHref, ref;
+  var fab, i, icon, isGood, len, link, network, networkCss, realHref, ref;
+  isGood = true;
   ref = $(".social paper-fab");
   for (i = 0, len = ref.length; i < len; i++) {
     fab = ref[i];
@@ -1204,10 +1205,18 @@ formatSocial = function() {
           realHref = "";
         }
     }
+    if (isNull(realHref) && !isNull(link)) {
+      try {
+        networkCss = network.replace(/-/g, "_");
+        p$("." + networkCss + " paper-input").errorMessage = "We couldn't understand this profile";
+        p$("." + networkCss + " paper-input").invalid = true;
+        isGood = false;
+      } catch (undefined) {}
+    }
     $(fab).unbind().attr("data-href", realHref);
   }
   bindClicks("paper-fab");
-  return false;
+  return isGood;
 };
 
 validateAddress = function(addressObject, callback) {
@@ -1299,6 +1308,7 @@ saveProfileChanges = function() {
       }
     } catch (undefined) {}
   }
+  isGood = isGood && formatSocial();
   if (!isGood) {
     stopLoadError("Please check all required fields are completed");
     return false;
