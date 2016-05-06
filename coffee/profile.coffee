@@ -897,7 +897,7 @@ formatSocial = ->
         else
           realHref = ""
       when "google-plus"
-        if link.search("+") is 0
+        if link.search(/\+/) is 0
           realHref = "https://google.com/#{link}"
         else if link.match(/^https?:\/\/((plus|www)\.)?google.com\/(\+\w+|\d+)$/m)
           realHref = link
@@ -951,7 +951,7 @@ validateAddress = (addressObject, callback) ->
     humanHtml = """
     #{addressString}<br/>
     #{newAddressObject.city}, #{newAddressObject.state} #{newAddressObject.zip}<br/>
-    #{isoCountry}
+    #{isoCountry.name}
     """
     newAddressObject.human_html = humanHtml
     console.info "New address object", newAddressObject
@@ -1048,7 +1048,7 @@ forceUpdateMarked = ->
   valReal = val.replace /\\n/g, "\n"
   p$("marked-element").markdown = valReal
 
-  
+
 $ ->
   # On load page events
   try
@@ -1071,6 +1071,9 @@ $ ->
       return false
     console.info "Setting up input values"
     try
+      formatSocial()
+      forceUpdateMarked()
+    try
       isoCC = window.publicProfile.place.country_code
       callingCode = isoCountries[isoCC].code
     unless isNumber callingCode
@@ -1081,7 +1084,6 @@ $ ->
         # Fix the formatting of the display
         p$(gpi).value = toInt value
         p$(gpi).countryCode = toInt callingCode
-    formatSocial()
   if window.isViewingSelf is false
     cleanupAddressDisplay()
   else
