@@ -987,6 +987,13 @@ cleanupAddressDisplay = ->
   if publicProfile?
     addressObj = publicProfile.place
     if addressObj.human_html?
+      mapsSearch = encodeURIComponent addressObj.human_html(/(<br\/>|\n|\\n)/g, " ")
+      postHtml = """
+      <div class="col-xs-12 col-md-3 col-lg-4">
+        <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue">
+        </paper-fab>
+      </div>
+      """
       labelHtml = """
       <label class="col-xs-4 capitalize">
         Address
@@ -994,8 +1001,9 @@ cleanupAddressDisplay = ->
       """
       $("address")
       .html addressObj.human_html.replace /\\n/g, "<br/>"
-      .addClass "col-xs-8"
+      .addClass "col-xs-8 col-md-5 col-lg-4"
       .before labelHtml
+      .after postHtml
       .parent().addClass("row clearfix")
     else
       console.warn "Human HTML not yet defined for this user"
@@ -1079,7 +1087,7 @@ $ ->
   $("#save-profile").click ->
     saveProfileChanges()
     false
-  $("#main-body .user-input").keyup ->
+  $(".user-input").keyup ->
     $("#save-profile").removeAttr "disabled"
     false
   do cleanInputFormat = ->
@@ -1102,7 +1110,16 @@ $ ->
       unless isNull value
         # Fix the formatting of the display
         p$(gpi).value = toInt value
-        p$(gpi).countryCode = toInt callingCode
+        p$(gpi).countryCode = callingCode
+    for phone in $(".phone-number")
+      plainValue = $(phone).text()
+      value = "+#{callingCode} #{plainValue}"
+      html = """
+      <a href="tel:#{value}" class="phone-number-parsed">
+        #{plainValue}
+      </a>
+      """
+      $(phone).replaceWith html
   if window.isViewingSelf is false
     cleanupAddressDisplay()
   else
