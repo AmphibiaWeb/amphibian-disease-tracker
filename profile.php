@@ -43,7 +43,7 @@ try {
     #$xml = new Xml();
     #$xml->setXml($nameXml);
     #$title = $xml->getTagContents("name");
-    $title = $viewUser->getName();
+    $title =  (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":$viewUser->getName();
 } catch (Exception $e) {
     $validUser = false;
     $title = (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":"No Such User";
