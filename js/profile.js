@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1434,6 +1434,45 @@ searchProfiles = function() {
   return false;
 };
 
+verifyLoginCredentials = function(callback) {
+
+  /*
+   * Checks the login credentials against the server.
+   * This should not be used in place of sending authentication
+   * information alongside a restricted action, as a malicious party
+   * could force the local JS check to succeed.
+   * SECURE AUTHENTICATION MUST BE WHOLLY SERVER SIDE.
+   */
+  var adminParams, args, hash, link, secret;
+  adminParams = new Object();
+  adminParams.domain = "amphibiandisease";
+  adminParams.apiTarget = "admin-api.php";
+  adminParams.adminPageUrl = "https://" + adminParams.domain + ".org/admin-page.html";
+  adminParams.loginDir = "admin/";
+  adminParams.loginApiTarget = adminParams.loginDir + "async_login_handler.php";
+  hash = $.cookie(adminParams.domain + "_auth");
+  secret = $.cookie(adminParams.domain + "_secret");
+  link = $.cookie(adminParams.domain + "_link");
+  args = "hash=" + hash + "&secret=" + secret + "&dblink=" + link;
+  $.post(adminParams.loginApiTarget, args, "json").done(function(result) {
+    if (result.status === true) {
+      if (typeof _adp === "undefined" || _adp === null) {
+        window._adp = new Object();
+      }
+      _adp.isUnrestricted = result.unrestricted;
+      if (typeof callback === "function") {
+        return callback(result);
+      }
+    } else {
+      return document.location.reload(true);
+    }
+  }).fail(function(result, status) {
+    console.error("There was a problem verifying your login state");
+    return false;
+  });
+  return false;
+};
+
 $(function() {
   var cleanInputFormat;
   try {
@@ -1502,6 +1541,7 @@ $(function() {
     cleanupAddressDisplay();
   } else {
     setupUserChat();
+    verifyLoginCredentials();
   }
   checkFileVersion(false, "js/profile.js");
   return false;

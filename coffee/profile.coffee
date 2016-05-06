@@ -1124,7 +1124,41 @@ searchProfiles = ->
     console.error result, status
   false
 
-
+verifyLoginCredentials = (callback) ->
+  ###
+  # Checks the login credentials against the server.
+  # This should not be used in place of sending authentication
+  # information alongside a restricted action, as a malicious party
+  # could force the local JS check to succeed.
+  # SECURE AUTHENTICATION MUST BE WHOLLY SERVER SIDE.
+  ###
+  adminParams = new Object()
+  adminParams.domain = "amphibiandisease"
+  adminParams.apiTarget = "admin-api.php"
+  adminParams.adminPageUrl = "https://#{adminParams.domain}.org/admin-page.html"
+  adminParams.loginDir = "admin/"
+  adminParams.loginApiTarget = "#{adminParams.loginDir}async_login_handler.php"
+  hash = $.cookie("#{adminParams.domain}_auth")
+  secret = $.cookie("#{adminParams.domain}_secret")
+  link = $.cookie("#{adminParams.domain}_link")
+  args = "hash=#{hash}&secret=#{secret}&dblink=#{link}"
+  $.post adminParams.loginApiTarget, args, "json"
+  .done (result) ->
+    if result.status is true
+      unless _adp?
+        window._adp = new Object()
+      _adp.isUnrestricted = result.unrestricted
+      if typeof callback is "function"
+        callback(result)
+    else
+      # Refresh it
+      document.location.reload(true)
+  .fail (result,status) ->
+    # Throw up some warning here
+    #$("main #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p></div>")
+    console.error "There was a problem verifying your login state"
+    false
+  false
 
 
 $ ->
@@ -1177,5 +1211,6 @@ $ ->
     cleanupAddressDisplay()
   else
     setupUserChat()
+    verifyLoginCredentials()
   checkFileVersion false, "js/profile.js"
   false
