@@ -1164,14 +1164,25 @@ constructProfileJson = function(encodeForPosting, callback) {
 };
 
 formatSocial = function() {
-  var fab, i, icon, isGood, len, link, network, networkCss, realHref, ref;
+  var el, error, error1, fab, i, icon, isGood, len, link, network, networkCss, realHref, ref;
   isGood = true;
-  ref = $(".social paper-fab");
+  el = window.isViewingSelf ? "paper-input" : "paper-fab";
+  ref = $(".social " + el);
   for (i = 0, len = ref.length; i < len; i++) {
     fab = ref[i];
-    icon = $(fab).attr("icon");
-    network = icon.split(":").pop();
-    link = $(fab).attr("data-href");
+    try {
+      icon = $(fab).attr("icon");
+      network = icon.split(":").pop();
+      link = $(fab).attr("data-href");
+    } catch (error) {
+      try {
+        network = $(fab).attr("data-source");
+        network = network.replace(/_/g, "-");
+        link = p$(fab).value;
+      } catch (error1) {
+        console.error("borkedy");
+      }
+    }
     realHref = link;
     switch (network) {
       case "twitter":
