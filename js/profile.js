@@ -1290,7 +1290,7 @@ cleanupAddressDisplay = function() {
   if (typeof publicProfile !== "undefined" && publicProfile !== null) {
     addressObj = publicProfile.place;
     if (addressObj.human_html != null) {
-      mapsSearch = encodeURIComponent(addressObj.human_html(/(<br\/>|\n|\\n)/g, " "));
+      mapsSearch = encodeURIComponent(addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " "));
       postHtml = "<div class=\"col-xs-12 col-md-3 col-lg-4\">\n  <paper-fab mini icon=\"maps:map\" data-href=\"https://www.google.com/maps/search/" + mapsSearch + "\" class=\"click materialblue\">\n  </paper-fab>\n</div>";
       labelHtml = "<label class=\"col-xs-4 capitalize\">\n  Address\n</label>";
       $("address").html(addressObj.human_html.replace(/\\n/g, "<br/>")).addClass("col-xs-8 col-md-5 col-lg-4").before(labelHtml).after(postHtml).parent().addClass("row clearfix");
@@ -1442,9 +1442,13 @@ $(function() {
     for (j = 0, len1 = ref2.length; j < len1; j++) {
       phone = ref2[j];
       plainValue = $(phone).text();
-      value = "+" + callingCode + " " + plainValue;
-      html = "<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  " + plainValue + "\n</a>";
-      results.push($(phone).replaceWith(html));
+      if (isNumber(plainValue)) {
+        value = "+" + callingCode + plainValue;
+        html = "<iron-icon icon=\"communication:phone\"></iron-icon> \n<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  " + plainValue + "\n</a>";
+        results.push($(phone).replaceWith(html));
+      } else {
+        results.push(void 0);
+      }
     }
     return results;
   })();
