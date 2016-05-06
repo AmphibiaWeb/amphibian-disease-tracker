@@ -301,6 +301,7 @@ value='".$place["zip"]."'
                      if(strpos($class, "social") !== false) {
                          if(!$emptyFill) {
                              $link = $fill;
+                             $link = str_replace(" ", "+", $link);
                              if(strpos($class, "facebook") !== false) {
                                  $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else if(strpos($class, "google-plus") !== false) {
