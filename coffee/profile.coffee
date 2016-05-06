@@ -1110,8 +1110,8 @@ searchProfiles = ->
       for profile in profiles
         showList.push profile.name
         button = """
-        <button class="btn btn-primary search-profile-link" data-href="#{uri.urlString}profile.php?id=#{profile.profile_id}">
-          #{profile.name}
+        <button class="btn btn-primary search-profile-link" data-href="#{uri.urlString}profile.php?id=#{profile.uid}" data-uid="#{profile.uid}">
+          #{profile.full_name} / #{profile.handle}
         </button>
         """
         html += "<li class='profile-search-result'>#{button}</li>"
@@ -1214,6 +1214,6 @@ $ ->
     verifyLoginCredentials()
   $("#profile-search").keyup (e) ->
     unless isNull $(this).val()
-      searchProfiles()
+      searchProfiles.debounce()
   checkFileVersion false, "js/profile.js"
   false

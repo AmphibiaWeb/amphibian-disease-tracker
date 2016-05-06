@@ -545,8 +545,6 @@ value='".$place["zip"]."'
              ?>
       <h1 id="title">User Search</h1>
       <section id="main-body" class="row">
-        <p class="col-xs-12">Search like the wind, Bullseye!</p>
-        <p> Search like project page, async, on person or institution</p>
         <div class="col-xs-12 col-md-4 pull-right">
           <div class="form-horizontal">
             <div class="search-profile form-group">
@@ -567,7 +565,7 @@ value='".$place["zip"]."'
           </paper-radio-group>
         </div>
         <ul id="profile-result-container" class="col-xs-12 col-md-8">
-
+          <li>Enter a search to the right to find users</li>
         </ul>
       </section>
       <?php } elseif (!$validUser) { ?>

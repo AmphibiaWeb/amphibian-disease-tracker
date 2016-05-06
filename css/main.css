@@ -12680,3 +12680,6 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   background: #009688;
   z-index: 750;
 }
+#profile-result-container {
+  list-style-type: none;
+}
