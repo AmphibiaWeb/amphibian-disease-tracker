@@ -1090,7 +1090,7 @@ searchProfiles = ->
   cols = $(item).attr "data-cols"
   console.info "Searching on #{search} ... in #{cols}"
   # POST a request to the server for profiles matching this
-  args = "action=search_profile&q=#{search}&cols=#{cols}"
+  args = "action=search_users&q=#{search}&cols=#{cols}"
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
     console.info result
@@ -1212,5 +1212,8 @@ $ ->
   else
     setupUserChat()
     verifyLoginCredentials()
+  $("#profile-search").keyup (e) ->
+    unless isNull $(this).val()
+      searchProfiles()
   checkFileVersion false, "js/profile.js"
   false

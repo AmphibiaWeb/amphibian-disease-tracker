@@ -1402,7 +1402,7 @@ searchProfiles = function() {
   item = p$("#search-filter").selectedItem;
   cols = $(item).attr("data-cols");
   console.info("Searching on " + search + " ... in " + cols);
-  args = "action=search_profile&q=" + search + "&cols=" + cols;
+  args = "action=search_users&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
     var button, html, i, len, profile, profiles, ref, s, showList;
     console.info(result);
@@ -1543,6 +1543,11 @@ $(function() {
     setupUserChat();
     verifyLoginCredentials();
   }
+  $("#profile-search").keyup(function(e) {
+    if (!isNull($(this).val())) {
+      return searchProfiles();
+    }
+  });
   checkFileVersion(false, "js/profile.js");
   return false;
 });
