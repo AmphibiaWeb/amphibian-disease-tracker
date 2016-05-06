@@ -987,7 +987,7 @@ cleanupAddressDisplay = ->
   if publicProfile?
     addressObj = publicProfile.place
     if addressObj.human_html?
-      mapsSearch = encodeURIComponent addressObj.human_html(/(<br\/>|\n|\\n)/g, " ")
+      mapsSearch = encodeURIComponent addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " ")
       postHtml = """
       <div class="col-xs-12 col-md-3 col-lg-4">
         <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue">
@@ -1113,13 +1113,14 @@ $ ->
         p$(gpi).countryCode = callingCode
     for phone in $(".phone-number")
       plainValue = $(phone).text()
-      value = "+#{callingCode} #{plainValue}"
-      html = """
-      <a href="tel:#{value}" class="phone-number-parsed">
-        #{plainValue}
-      </a>
-      """
-      $(phone).replaceWith html
+      if isNumber plainValue
+        value = "+#{callingCode}#{plainValue}"
+        html = """
+        <a href="tel:#{value}" class="phone-number-parsed">
+          #{plainValue}
+        </a>
+        """
+        $(phone).replaceWith html
   if window.isViewingSelf is false
     cleanupAddressDisplay()
   else
