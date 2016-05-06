@@ -1185,7 +1185,7 @@ formatSocial = function() {
         }
         break;
       case "google-plus":
-        if (link.search("+") === 0) {
+        if (link.search(/\+/) === 0) {
           realHref = "https://google.com/" + link;
         } else if (link.match(/^https?:\/\/((plus|www)\.)?google.com\/(\+\w+|\d+)$/m)) {
           realHref = link;
@@ -1247,7 +1247,7 @@ validateAddress = function(addressObject, callback) {
       }
       addressString = newAddressObject.street_number + " " + newAddressObject.street;
     }
-    humanHtml = addressString + "<br/>\n" + newAddressObject.city + ", " + newAddressObject.state + " " + newAddressObject.zip + "<br/>\n" + isoCountry;
+    humanHtml = addressString + "<br/>\n" + newAddressObject.city + ", " + newAddressObject.state + " " + newAddressObject.zip + "<br/>\n" + isoCountry.name;
     newAddressObject.human_html = humanHtml;
     console.info("New address object", newAddressObject);
     if (typeof callback === "function") {
@@ -1384,7 +1384,7 @@ $(function() {
     return false;
   });
   (cleanInputFormat = function() {
-    var callingCode, gpi, i, isoCC, len, ref, ref1, value;
+    var callingCode, gpi, i, isoCC, len, ref, ref1, results, value;
     if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
       console.warn("Delaying input setup until Polymer.RenderStatus is ready");
       delay(500, function() {
@@ -1394,6 +1394,10 @@ $(function() {
     }
     console.info("Setting up input values");
     try {
+      formatSocial();
+      forceUpdateMarked();
+    } catch (undefined) {}
+    try {
       isoCC = window.publicProfile.place.country_code;
       callingCode = isoCountries[isoCC].code;
     } catch (undefined) {}
@@ -1401,15 +1405,18 @@ $(function() {
       callingCode = 1;
     }
     ref1 = $("gold-phone-input");
+    results = [];
     for (i = 0, len = ref1.length; i < len; i++) {
       gpi = ref1[i];
       value = $(gpi).parent().attr("data-value");
       if (!isNull(value)) {
         p$(gpi).value = toInt(value);
-        p$(gpi).countryCode = toInt(callingCode);
+        results.push(p$(gpi).countryCode = toInt(callingCode));
+      } else {
+        results.push(void 0);
       }
     }
-    return formatSocial();
+    return results;
   })();
   if (window.isViewingSelf === false) {
     cleanupAddressDisplay();
