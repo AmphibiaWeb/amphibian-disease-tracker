@@ -1444,7 +1444,7 @@ $(function() {
       plainValue = $(phone).text();
       if (isNumber(plainValue)) {
         value = "+" + callingCode + plainValue;
-        html = "<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  " + plainValue + "\n</a>";
+        html = "<iron-icon icon=\"communication:phone\"></iron-icon> \n<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  " + plainValue + "\n</a>";
         results.push($(phone).replaceWith(html));
       } else {
         results.push(void 0);

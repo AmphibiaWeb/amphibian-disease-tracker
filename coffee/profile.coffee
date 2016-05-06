@@ -1116,6 +1116,7 @@ $ ->
       if isNumber plainValue
         value = "+#{callingCode}#{plainValue}"
         html = """
+        <iron-icon icon="communication:phone"></iron-icon> 
         <a href="tel:#{value}" class="phone-number-parsed">
           #{plainValue}
         </a>

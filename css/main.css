@@ -12671,6 +12671,9 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   margin-left: auto;
   margin-right: auto;
 }
+.phone-number-parsed:before {
+  content: "\E443";
+}
 #enter-search {
   position: fixed;
   bottom: 1rem;
