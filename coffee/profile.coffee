@@ -855,6 +855,7 @@ constructProfileJson = (encodeForPosting = false, callback)->
     unless typeof tmp[parentKey] is "object"
       tmp[parentKey] = new Object()
     tmp[parentKey][key] = val
+  tmp.profile = p$("#bio-profile .user-input").value
   # Prep it
   validateAddress tmp.institution, (newAddressObj) ->
     tmp.place = newAddressObj
@@ -1042,6 +1043,12 @@ setupUserChat = ->
   false
 
 
+forceUpdateMarked = ->
+  val = $("marked-element script").text()
+  valReal = val.replace /\\n/g, "\n"
+  p$("marked-element").markdown = valReal
+
+  
 $ ->
   # On load page events
   try

@@ -12676,4 +12676,5 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   bottom: 1rem;
   right: 1rem;
   background: #009688;
+  z-index: 750;
 }
