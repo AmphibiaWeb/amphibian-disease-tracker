@@ -6763,6 +6763,8 @@ button.close {
 }
 body {
   padding: 1rem;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 /* Combinators */
 html >>> .text-right {

@@ -547,11 +547,11 @@ value='".$place["zip"]."'
       <section id="main-body" class="row">
         <p class="col-xs-12">Search like the wind, Bullseye!</p>
         <p> Search like project page, async, on person or institution</p>
-        <div class="col-xs-12 col-md-3 pull-right">
+        <div class="col-xs-12 col-md-4 pull-right">
           <div class="form-horizontal">
             <div class="search-profile form-group">
-              <label for="profile-search" class="col-xs-12 col-md-5 col-lg-3 control-label">Search Profiles</label>
-              <div class="col-xs-12 col-md-7 col-lg-9">
+              <label for="profile-search" class="col-xs-12 col-md-5 col-lg-4 control-label">Search Profiles</label>
+              <div class="col-xs-12 col-md-7 col-lg-8">
                 <input type="text" class="form-control" placeholder="Profile ID or name..." name="profile-search" id="profile-search"/>
               </div>
             </div>
@@ -566,7 +566,7 @@ value='".$place["zip"]."'
 
           </paper-radio-group>
         </div>
-        <ul id="profile-result-container" class="col-xs-12 col-md-9">
+        <ul id="profile-result-container" class="col-xs-12 col-md-8">
 
         </ul>
       </section>

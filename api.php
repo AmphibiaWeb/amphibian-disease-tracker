@@ -165,12 +165,30 @@ function searchUsers($get)
     $response = array(
         'search' => $q,
     );
+    
     $search = array(
         'username' => $q,
         'name' => $q,
         'dblink' => $q, #?
     );
     $cols = array('username', 'name', 'dblink', "email_verified", "alternate_email_verified", "admin_flag");
+    if (!empty($get['cols'])) {
+        if (checkColumnExists($get['cols'], false)) {
+            # Replace the defaults
+            $colList = explode(',', $get['cols']);
+            $search = array();
+            foreach ($colList as $col) {
+                $col = trim($col);
+                # If the column exists, we don't have to sanitize it
+                # $col = $db->sanitize($col);
+                $search[$col] = $q;
+                $cols[] = $col;
+            }
+        } else {
+            $response['notice'] = 'Invalid columns; defaults used';
+        }
+    }
+
     $response['status'] = true;
     $result = $udb->getQueryResults($search, $cols, 'OR', true, true);
     $suFlag = $login_status['detail']['userdata']['su_flag'];
