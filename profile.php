@@ -193,7 +193,7 @@ try {
     </header>
     <main>
       <?php
-         if ($validUser) {
+         if ($validUser && !( !empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" )) {
              $isViewingSelf = $viewUserId == $selfUserId;
              # Helper setup
              $baseStructuredData = array(
