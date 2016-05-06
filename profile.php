@@ -262,6 +262,9 @@ try {
                      $elType = "paper-input";
                      if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
                      if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
+                     if(strpos($class, "google_plus") !== false) {
+                         $fill = str_replace(" ", "+", $fill);
+                     }
                      if(strpos($class, "address") === false) {
                          $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource' $requiredText></$elType></div>";
                      } else {
