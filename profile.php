@@ -544,7 +544,7 @@ value='".$place["zip"]."'
         <p class="col-xs-12">Search like the wind, Bullseye!</p>
         <p> Search like project page, async, on person or institution</p>
       </section>
-      <?php } elseif (!$validUser) {
+      <?php } elseif (!$validUser) { ?>
 
 
       <h1 id="title">Invalid User</h1>
