@@ -173,7 +173,7 @@ function searchUsers($get)
     );
     $cols = array('username', 'name', 'dblink', "email_verified", "alternate_email_verified", "admin_flag");
     if (!empty($get['cols'])) {
-        if (checkColumnExists($get['cols'], false)) {
+        if (checkUserColumnExists($get['cols'], false)) {
             # Replace the defaults
             $colList = explode(',', $get['cols']);
             $search = array();
@@ -186,6 +186,7 @@ function searchUsers($get)
             }
         } else {
             $response['notice'] = 'Invalid columns; defaults used';
+            $response["detail"] = checkUserColumnExists($get["cols"], false, true);
         }
     }
 
@@ -218,7 +219,7 @@ function searchUsers($get)
     returnAjax($response);
 }
 
-function checkColumnExists($column_list, $userReturn = true)
+function checkColumnExists($column_list, $userReturn = true, $detailReturn = false)
 {
     /***
      * Check if a comma-seperated list of columns exists in the
@@ -233,8 +234,42 @@ function checkColumnExists($column_list, $userReturn = true)
     $cols = $db->getCols();
     foreach (explode(',', $column_list) as $column) {
         if (!array_key_exists($column, $cols)) {
-            if ($userReturn) {
-                returnAjax(array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column));
+            if ($userReturn || $detailReturn) {
+                $response = array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column);
+                if ($userReturn) returnAjax($response);
+                return $response;
+            } else {
+                return false;
+            }
+        }
+    }
+    if ($userReturn) {
+        returnAjax(array('status' => true));
+    } else {
+        return true;
+    }
+}
+
+
+function checkUserColumnExists($column_list, $userReturn = true, $detailReturn = false)
+{
+    /***
+     * Check if a comma-seperated list of columns exists in the
+     * database.
+     * @param string $column_list (comma-sep)
+     * @return array
+     ***/
+    if (empty($column_list)) {
+        return true;
+    }
+    global $udb;
+    $cols = $udb->getCols();
+    foreach (explode(',', $column_list) as $column) {
+        if (!array_key_exists($column, $cols)) {
+            if ($userReturn || $detailReturn) {
+                $response = array('status' => false, 'error' => 'INVALID_OR_PROTECTED_COLUMN', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist, or is protected. Please try again.", 'columns' => $column_list, 'bad_column' => $column, "available_columns" => $cols);
+                if ($userReturn) returnAjax($response);
+                return $response;
             } else {
                 return false;
             }
