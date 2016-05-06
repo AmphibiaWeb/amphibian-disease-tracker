@@ -46,7 +46,7 @@ try {
     $title = $viewUser->getName();
 } catch (Exception $e) {
     $validUser = false;
-    $title = "No Such User";
+    $title = (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search") ? "User Search":"No Such User";
 }
 
 
