@@ -322,7 +322,7 @@ value='".$place["zip"]."'
                          # Some special cases
                          if(strpos($class, "phone") !== false) {
                              # Wrap in phone wrapper
-                             $fill = "<span class='phone-number'>$fill</span>"
+                             $fill = "<span class='phone-number'>$fill</span>";
                          }
                          $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
                      }
