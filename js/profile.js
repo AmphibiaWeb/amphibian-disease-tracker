@@ -1419,7 +1419,7 @@ searchProfiles = function() {
       for (i = 0, len = profiles.length; i < len; i++) {
         profile = profiles[i];
         showList.push(profile.name);
-        button = "<button class=\"btn btn-primary search-profile-link\" data-href=\"" + uri.urlString + "profile.php?id=" + profile.profile_id + "\">\n  " + profile.name + "\n</button>";
+        button = "<button class=\"btn btn-primary search-profile-link\" data-href=\"" + uri.urlString + "profile.php?id=" + profile.uid + "\" data-uid=\"" + profile.uid + "\">\n  " + profile.full_name + " / " + profile.handle + "\n</button>";
         html += "<li class='profile-search-result'>" + button + "</li>";
       }
     } else {
@@ -1545,7 +1545,7 @@ $(function() {
   }
   $("#profile-search").keyup(function(e) {
     if (!isNull($(this).val())) {
-      return searchProfiles();
+      return searchProfiles.debounce();
     }
   });
   checkFileVersion(false, "js/profile.js");
