@@ -315,6 +315,10 @@ value='".$place["zip"]."'
                              $element = "<div class='profile-bio-group profile-data $class'>$icon</div>";
                          }
                      } else {
+                         # Some special cases
+                         if(strpos($class, "phone") !== false) {
+                             # Wrap in phone wrapper
+                         }
                          $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
                      }
                  }
@@ -333,6 +337,7 @@ value='".$place["zip"]."'
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
         <p class='col-xs-12'>A beautiful cacophony of data and narcissism</p>
+        <paper-fab id="enter-search" icon="icons:search" class="click" data-href="?mode=search" data-toggle="tooltip" title="Search Profiles"></paper-fab>
         <script type="text/javascript">
           var publicProfile = <?php echo json_encode($structuredData); ?>;
           var isViewingSelf = <?php echo strbool($isViewingSelf); ?>;
@@ -395,7 +400,7 @@ value='".$place["zip"]."'
             <script type="text/markdown"><?php echo $bio; ?>></script>
           </marked-element>
           <?php } else { ?>
-          <paper-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5"></paper-textarea>
+          <iron-autogrow-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5" class="user-input"></iron-autogrow-textarea>
           <?php } ?>
         </div>
       </section>
@@ -532,17 +537,16 @@ value='".$place["zip"]."'
              }
            ?>
       <?php
-         } elseif (!$validUser) {
-             if ( empty( $viewUserId ) ) {
-                 ?>
+         } elseif ( empty( $viewUserId ) || !empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search") {
+             ?>
       <h1 id="title">User Search</h1>
       <section id="main-body" class="row">
         <p class="col-xs-12">Search like the wind, Bullseye!</p>
         <p> Search like project page, async, on person or institution</p>
       </section>
-                 <?php
-             } else {
-             ?>
+      <?php } elseif (!$validUser) {
+
+
       <h1 id="title">Invalid User</h1>
       <section id="main-body" class="row">
         <blockquote class="force-center-block col-xs-12 col-md-8 col-lg-6">
@@ -560,8 +564,8 @@ value='".$place["zip"]."'
         </p>
       </section>
       <?php
-             } # / Bad user id, not empty
-         } # / not valid user ?>
+         } # / not valid user
+         ?>
     </main>
     <footer class="row">
       <div class="col-md-7 col-xs-12">

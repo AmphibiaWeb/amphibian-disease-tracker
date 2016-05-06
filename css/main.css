@@ -12664,9 +12664,15 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   color: white;
 }
 #bio-profile marked-element,
-#bio-profile paper-textarea {
+#bio-profile paper-textarea,
+#bio-profile iron-autogrow-textarea {
   width: 80%;
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+#enter-search {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
 }
