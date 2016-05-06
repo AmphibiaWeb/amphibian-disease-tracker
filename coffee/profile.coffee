@@ -881,6 +881,7 @@ constructProfileJson = (encodeForPosting = false, callback)->
 
 
 formatSocial = ->
+  isGood = true
   for fab in $(".social paper-fab")
     icon = $(fab).attr "icon"
     network = icon.split(":").pop()
@@ -912,11 +913,18 @@ formatSocial = ->
           realHref = "https://facebook.com/#{link}"
         else
           realHref = ""
+    if isNull(realHref) and not isNull(link)
+      try
+        networkCss = network.replace /-/g, "_"
+        p$(".#{networkCss} paper-input").errorMessage = "We couldn't understand this profile"
+        p$(".#{networkCss} paper-input").invalid = true
+        isGood = false
+
     $(fab)
     .unbind()
     .attr "data-href", realHref
   bindClicks("paper-fab")
-  false
+  isGood
 
 validateAddress = (addressObject, callback) ->
   ###
@@ -997,6 +1005,7 @@ saveProfileChanges = ->
       result = p$(input).validate()
       if result is false
         isGood = false
+  isGood = isGood and formatSocial()
   unless isGood
     stopLoadError "Please check all required fields are completed"
     return false
