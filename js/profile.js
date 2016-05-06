@@ -1286,12 +1286,14 @@ cleanupAddressDisplay = function() {
   /*
    * Display human-helpful address information, like city/state
    */
-  var addressObj, labelHtml;
+  var addressObj, labelHtml, mapsSearch, postHtml;
   if (typeof publicProfile !== "undefined" && publicProfile !== null) {
     addressObj = publicProfile.place;
     if (addressObj.human_html != null) {
+      mapsSearch = encodeURIComponent(addressObj.human_html(/(<br\/>|\n|\\n)/g, " "));
+      postHtml = "<div class=\"col-xs-12 col-md-3 col-lg-4\">\n  <paper-fab mini icon=\"maps:map\" data-href=\"https://www.google.com/maps/search/" + mapsSearch + "\" class=\"click materialblue\">\n  </paper-fab>\n</div>";
       labelHtml = "<label class=\"col-xs-4 capitalize\">\n  Address\n</label>";
-      $("address").html(addressObj.human_html.replace(/\\n/g, "<br/>")).addClass("col-xs-8").before(labelHtml).parent().addClass("row clearfix");
+      $("address").html(addressObj.human_html.replace(/\\n/g, "<br/>")).addClass("col-xs-8 col-md-5 col-lg-4").before(labelHtml).after(postHtml).parent().addClass("row clearfix");
     } else {
       console.warn("Human HTML not yet defined for this user");
     }
@@ -1401,12 +1403,12 @@ $(function() {
     saveProfileChanges();
     return false;
   });
-  $("#main-body .user-input").keyup(function() {
+  $(".user-input").keyup(function() {
     $("#save-profile").removeAttr("disabled");
     return false;
   });
   (cleanInputFormat = function() {
-    var callingCode, gpi, i, isoCC, len, ref, ref1, results, value;
+    var callingCode, gpi, html, i, isoCC, j, len, len1, phone, plainValue, ref, ref1, ref2, results, value;
     if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
       console.warn("Delaying input setup until Polymer.RenderStatus is ready");
       delay(500, function() {
@@ -1427,16 +1429,22 @@ $(function() {
       callingCode = 1;
     }
     ref1 = $("gold-phone-input");
-    results = [];
     for (i = 0, len = ref1.length; i < len; i++) {
       gpi = ref1[i];
       value = $(gpi).parent().attr("data-value");
       if (!isNull(value)) {
         p$(gpi).value = toInt(value);
-        results.push(p$(gpi).countryCode = toInt(callingCode));
-      } else {
-        results.push(void 0);
+        p$(gpi).countryCode = callingCode;
       }
+    }
+    ref2 = $(".phone-number");
+    results = [];
+    for (j = 0, len1 = ref2.length; j < len1; j++) {
+      phone = ref2[j];
+      plainValue = $(phone).text();
+      value = "+" + callingCode + " " + plainValue;
+      html = "<a href=\"tel:" + value + "\" class=\"phone-number-parsed\">\n  " + plainValue + "\n</a>";
+      results.push($(phone).replaceWith(html));
     }
     return results;
   })();
