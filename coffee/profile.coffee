@@ -914,6 +914,7 @@ formatSocial = ->
         else
           realHref = ""
     if isNull(realHref) and not isNull(link)
+      console.warn "#{network} has a questionable link", link, realHref
       try
         networkCss = network.replace /-/g, "_"
         p$(".#{networkCss} paper-input").errorMessage = "We couldn't understand this profile"
