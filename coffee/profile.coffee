@@ -1078,6 +1078,7 @@ forceUpdateMarked = ->
 
 copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
   url = p$("#profile-link-field").value
+  successMessage = "Profile URL copied to clipboard"
   if html5
     # http://caniuse.com/#feat=clipboard
     try
@@ -1087,7 +1088,7 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
         "text/plain": url
       clip = new ClipboardEvent("copy", clipboardData)
       document.dispatchEvent(clip)
-      toastStatusMessage "ARK resolver path copied to clipboard"
+      toastStatusMessage successMessage
       return false
     catch e
       console.error "Error creating copy: #{e.message}"
@@ -1101,7 +1102,7 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
       zeroClipEvent.setData clipboardData
     zeroClipObj.on "aftercopy", (e) ->
       if e.data["text/plain"]
-        toastStatusMessage "ARK resolver path copied to clipboard"
+        toastStatusMessage successMessage
       else
         toastStatusMessage "Error copying to clipboard"
     zeroClipObj.on "error", (e) ->
