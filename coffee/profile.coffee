@@ -1261,7 +1261,7 @@ $ ->
         </a>
         """
         $(phone).replaceWith html
-  if window.isViewingSelf is false
+  if window.isViewingSelf isnt true
     cleanupAddressDisplay()
   else
     setupUserChat()

@@ -1603,7 +1603,7 @@ $(function() {
     }
     return results;
   })();
-  if (window.isViewingSelf === false) {
+  if (window.isViewingSelf !== true) {
     cleanupAddressDisplay();
   } else {
     setupUserChat();
