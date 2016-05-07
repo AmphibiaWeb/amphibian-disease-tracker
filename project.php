@@ -161,8 +161,9 @@ $loginStatus = getLoginState();
            if (!empty($pid)) {
                ?>
         <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
-        <?php 
+        <?php
            } ?>
+        <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.php" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
     </header>
@@ -255,11 +256,11 @@ $loginStatus = getLoginState();
              ?>;
         </script>
       </section>
-      <?php 
+      <?php
          } elseif (!$validProject) {
              ?>
       <h1 id="title">Invalid Project</h1>
-      <?php 
+      <?php
          } else {
              $search = array('project_id' => $pid);
              $result = $db->getQueryResults($search, '*', 'AND', false, true);
@@ -269,7 +270,7 @@ $loginStatus = getLoginState();
         <?php echo $project['project_title'];
              ?>
       </h1>
-      <?php 
+      <?php
          } ?>
       <section id="main-body" class="row">
         <?php if (empty($pid)) {
@@ -392,12 +393,12 @@ $loginStatus = getLoginState();
             </li>
           </ul>
         </nav>
-        <?php 
+        <?php
 } elseif (!$validProject) {
     ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
-        <?php 
+        <?php
 } else {
     ?>
         <h2 class="col-xs-12"><span class="text-muted small">Project #<?php echo $pid;
@@ -538,7 +539,7 @@ $loginStatus = getLoginState();
     ?>;
           </script>
         </div>
-        <?php 
+        <?php
 } ?>
       </section>
     </main>

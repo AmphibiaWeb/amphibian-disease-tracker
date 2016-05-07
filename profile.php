@@ -43,7 +43,7 @@ try {
     #$xml = new Xml();
     #$xml->setXml($nameXml);
     #$title = $xml->getTagContents("name");
-    $title = $viewUser->getName();
+    $title =  (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":$viewUser->getName();
 } catch (Exception $e) {
     $validUser = false;
     $title = (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":"No Such User";
@@ -187,6 +187,7 @@ try {
            }
                ?>
         <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
+        <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
 
         <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org/home.php" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
       </p>
@@ -356,7 +357,7 @@ value='".$place["zip"]."'
                 <?php
                    $profileLink = "https://amphibiandisease.org/profile.php?id=" . $viewUser->getHardlink();
                    ?>
-                <paper-input label="Profile Link" readonly value="<?php echo $profileLink; ?>"/>
+                <paper-input label="Profile Link" id="profile-link-field" readonly value="<?php echo $profileLink; ?>"/>
               </div>
             </div>
             <div class="fab-wrapper col-xs-2">

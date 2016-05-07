@@ -1076,6 +1076,59 @@ forceUpdateMarked = ->
   p$("marked-element").markdown = valReal
 
 
+copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
+  url = p$("#profile-link-field").value
+  if html5
+    # http://caniuse.com/#feat=clipboard
+    try
+      clipboardData =
+        dataType: "text/plain"
+        data: url
+        "text/plain": url
+      clip = new ClipboardEvent("copy", clipboardData)
+      document.dispatchEvent(clip)
+      toastStatusMessage "ARK resolver path copied to clipboard"
+      return false
+    catch e
+      console.error "Error creating copy: #{e.message}"
+      console.warn e.stack
+  console.warn "Can't use HTML5"
+  # http://zeroclipboard.org/
+  # https://github.com/zeroclipboard/zeroclipboard
+  if zeroClipObj?
+    zeroClipObj.setData clipboardData
+    if zeroClipEvent?
+      zeroClipEvent.setData clipboardData
+    zeroClipObj.on "aftercopy", (e) ->
+      if e.data["text/plain"]
+        toastStatusMessage "ARK resolver path copied to clipboard"
+      else
+        toastStatusMessage "Error copying to clipboard"
+    zeroClipObj.on "error", (e) ->
+      #https://github.com/zeroclipboard/zeroclipboard/blob/master/docs/api/ZeroClipboard.md#error
+      console.error "Error copying to clipboard"
+      console.warn "Got", e
+      if e.name is "flash-overdue"
+        # ZeroClipboard.destroy()
+        if _adp.resetClipboard is true
+          console.error "Resetting ZeroClipboard didn't work!"
+          return false
+        ZeroClipboard.on "ready", ->
+          # Re-call
+          _adp.resetClipboard = true
+          copyLink()
+        _adp.zcClient = new ZeroClipboard $("#copy-profile-link").get 0
+      # Case for no flash at all
+      if e.name is "flash-disabled"
+        # stuff
+        console.info "No flash on this system"
+        ZeroClipboard.destroy()
+        $("#copy-profile-link")
+        .tooltip("destroy") # Otherwise stays on click: http://getbootstrap.com/javascript/#tooltipdestroy
+        toastStatusMessage "Clipboard copying isn't available on your system"
+  else
+    console.error "Can't use HTML, and ZeroClipboard wasn't passed"
+  false
 
 
 searchProfiles = ->
@@ -1177,7 +1230,7 @@ $ ->
     false
   do cleanInputFormat = ->
     unless Polymer?.RenderStatus?._ready
-      console.warn "Delaying input setup until Polymer.RenderStatus is ready"
+      #console.warn "Delaying input setup until Polymer.RenderStatus is ready"
       delay 500, ->
         cleanInputFormat()
       return false
@@ -1215,5 +1268,14 @@ $ ->
   $("#profile-search").keyup (e) ->
     unless isNull $(this).val()
       searchProfiles.debounce()
+  zcConfig =
+    swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+  _adp.zcConfig = zcConfig
+  ZeroClipboard.config zcConfig
+  _adp.zcClient = new ZeroClipboard $("#copy-profile-link").get 0
+  # client.on "copy", (e) =>
+  #   copyLink(this, e)
+  $("#copy-profile-link").click ->
+    copyLink _adp.zcClient
   checkFileVersion false, "js/profile.js"
   false
