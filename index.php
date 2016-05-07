@@ -125,6 +125,7 @@ $loginStatus = getLoginState();
          } ?>
         <paper-icon-button icon="icons:update" class="click" data-toggle="tooltip" title="News &amp; Updates" data-href="http://updates.amphibiandisease.org" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
+        <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
         </p>
     </header>
     <main>
