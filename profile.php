@@ -357,7 +357,7 @@ value='".$place["zip"]."'
                 <?php
                    $profileLink = "https://amphibiandisease.org/profile.php?id=" . $viewUser->getHardlink();
                    ?>
-                <paper-input label="Profile Link" readonly value="<?php echo $profileLink; ?>"/>
+                <paper-input label="Profile Link" id="profile-link-field" readonly value="<?php echo $profileLink; ?>"/>
               </div>
             </div>
             <div class="fab-wrapper col-xs-2">

@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1388,6 +1388,72 @@ forceUpdateMarked = function() {
   return p$("marked-element").markdown = valReal;
 };
 
+copyLink = function(zeroClipObj, zeroClipEvent, html5) {
+  var clip, clipboardData, e, error, url;
+  if (zeroClipObj == null) {
+    zeroClipObj = _adp.zcClient;
+  }
+  if (html5 == null) {
+    html5 = true;
+  }
+  url = p$("#profile-link-field").value;
+  if (html5) {
+    try {
+      clipboardData = {
+        dataType: "text/plain",
+        data: url,
+        "text/plain": url
+      };
+      clip = new ClipboardEvent("copy", clipboardData);
+      document.dispatchEvent(clip);
+      toastStatusMessage("ARK resolver path copied to clipboard");
+      return false;
+    } catch (error) {
+      e = error;
+      console.error("Error creating copy: " + e.message);
+      console.warn(e.stack);
+    }
+  }
+  console.warn("Can't use HTML5");
+  if (zeroClipObj != null) {
+    zeroClipObj.setData(clipboardData);
+    if (zeroClipEvent != null) {
+      zeroClipEvent.setData(clipboardData);
+    }
+    zeroClipObj.on("aftercopy", function(e) {
+      if (e.data["text/plain"]) {
+        return toastStatusMessage("ARK resolver path copied to clipboard");
+      } else {
+        return toastStatusMessage("Error copying to clipboard");
+      }
+    });
+    zeroClipObj.on("error", function(e) {
+      console.error("Error copying to clipboard");
+      console.warn("Got", e);
+      if (e.name === "flash-overdue") {
+        if (_adp.resetClipboard === true) {
+          console.error("Resetting ZeroClipboard didn't work!");
+          return false;
+        }
+        ZeroClipboard.on("ready", function() {
+          _adp.resetClipboard = true;
+          return copyLink();
+        });
+        _adp.zcClient = new ZeroClipboard($("#copy-profile-link").get(0));
+      }
+      if (e.name === "flash-disabled") {
+        console.info("No flash on this system");
+        ZeroClipboard.destroy();
+        $("#copy-profile-link").tooltip("destroy");
+        return toastStatusMessage("Clipboard copying isn't available on your system");
+      }
+    });
+  } else {
+    console.error("Can't use HTML, and ZeroClipboard wasn't passed");
+  }
+  return false;
+};
+
 searchProfiles = function() {
 
   /*
@@ -1474,7 +1540,7 @@ verifyLoginCredentials = function(callback) {
 };
 
 $(function() {
-  var cleanInputFormat;
+  var cleanInputFormat, zcConfig;
   try {
     loadUserBadges();
   } catch (undefined) {}
@@ -1495,7 +1561,6 @@ $(function() {
   (cleanInputFormat = function() {
     var callingCode, gpi, html, i, isoCC, j, len, len1, phone, plainValue, ref, ref1, ref2, results, value;
     if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
-      console.warn("Delaying input setup until Polymer.RenderStatus is ready");
       delay(500, function() {
         return cleanInputFormat();
       });
@@ -1547,6 +1612,15 @@ $(function() {
     if (!isNull($(this).val())) {
       return searchProfiles.debounce();
     }
+  });
+  zcConfig = {
+    swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
+  };
+  _adp.zcConfig = zcConfig;
+  ZeroClipboard.config(zcConfig);
+  _adp.zcClient = new ZeroClipboard($("#copy-profile-link").get(0));
+  $("#copy-profile-link").click(function() {
+    return copyLink(_adp.zcClient);
   });
   checkFileVersion(false, "js/profile.js");
   return false;
