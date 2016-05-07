@@ -1389,7 +1389,7 @@ forceUpdateMarked = function() {
 };
 
 copyLink = function(zeroClipObj, zeroClipEvent, html5) {
-  var clip, clipboardData, e, error, url;
+  var clip, clipboardData, e, error, successMessage, url;
   if (zeroClipObj == null) {
     zeroClipObj = _adp.zcClient;
   }
@@ -1397,6 +1397,7 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
     html5 = true;
   }
   url = p$("#profile-link-field").value;
+  successMessage = "Profile URL copied to clipboard";
   if (html5) {
     try {
       clipboardData = {
@@ -1406,7 +1407,7 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
       };
       clip = new ClipboardEvent("copy", clipboardData);
       document.dispatchEvent(clip);
-      toastStatusMessage("ARK resolver path copied to clipboard");
+      toastStatusMessage(successMessage);
       return false;
     } catch (error) {
       e = error;
@@ -1422,7 +1423,7 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
     }
     zeroClipObj.on("aftercopy", function(e) {
       if (e.data["text/plain"]) {
-        return toastStatusMessage("ARK resolver path copied to clipboard");
+        return toastStatusMessage(successMessage);
       } else {
         return toastStatusMessage("Error copying to clipboard");
       }
