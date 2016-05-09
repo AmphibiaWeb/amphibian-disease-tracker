@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
+var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1083,6 +1083,30 @@ setupProfileImageUpload = function() {
   return false;
 };
 
+getProfilePrivacy = function() {
+
+  /*
+   *
+   */
+  var i, j, len, len1, privacyGroup, privacyParams, privacyScope, privacyTarget, ref, toggle, toggles;
+  privacyParams = new Object();
+  ref = $(".privacy-group");
+  for (i = 0, len = ref.length; i < len; i++) {
+    privacyGroup = ref[i];
+    privacyTarget = $(privacyGroup).attr("data-group");
+    toggles = $(privacyGroup).find("paper-toggle-button");
+    for (j = 0, len1 = toggles.length; j < len1; j++) {
+      toggle = toggles[j];
+      privacyScope = $(toggle).attr("data-scope");
+      if (privacyParams[privacyTarget] == null) {
+        privacyParams[privacyTarget] = new Object();
+      }
+      privacyParams[privacyTarget][privacyScope] = p$(toggle).checked;
+    }
+  }
+  return privacyParams;
+};
+
 conditionalLoadAccountSettingsOptions = function() {
 
   /*
@@ -1095,7 +1119,7 @@ conditionalLoadAccountSettingsOptions = function() {
 };
 
 constructProfileJson = function(encodeForPosting, callback) {
-  var el, i, inputs, key, len, parentKey, response, tmp, val;
+  var el, i, inputs, key, len, parentKey, privacy, response, tmp, val;
   if (encodeForPosting == null) {
     encodeForPosting = false;
   }
@@ -1136,6 +1160,8 @@ constructProfileJson = function(encodeForPosting, callback) {
     tmp[parentKey][key] = val;
   }
   tmp.profile = p$("#bio-profile .user-input").value;
+  privacy = getProfilePrivacy();
+  tmp.privacy = privacy;
   validateAddress(tmp.institution, function(newAddressObj) {
     tmp.place = newAddressObj;
     if (encodeForPosting) {
