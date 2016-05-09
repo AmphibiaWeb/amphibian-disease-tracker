@@ -422,7 +422,7 @@ value='".$place["zip"]."'
           <p class="col-xs-12">
             Privacy toggles here
           </p>
-          <div class="privacy-group" data-group="email">
+          <div class="privacy-group col-xs-12 col-md-4" data-group="email">
             <h4>Email Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
@@ -443,7 +443,7 @@ value='".$place["zip"]."'
               </iron-label>
             </div>
           </div>
-          <div class="privacy-group" data-group="phone">
+          <div class="privacy-group col-xs-12 col-md-4" data-group="phone">
             <h4>Phone Number Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
@@ -464,7 +464,7 @@ value='".$place["zip"]."'
               </iron-label>
             </div>
           </div>
-          <div class="privacy-group" data-group="dept-phone">
+          <div class="privacy-group col-xs-12 col-md-4" data-group="dept-phone">
             <h4>Department Phone Number Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
