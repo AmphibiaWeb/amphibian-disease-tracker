@@ -103,6 +103,7 @@ try {
     <link rel="import" href="bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"/>
 
     <link rel="import" href="bower_components/font-roboto/roboto.html"/>
+    <link rel="import" href="bower_components/iron-label/iron-label.html"/>
     <link rel="import" href="bower_components/iron-icons/iron-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/image-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
@@ -421,6 +422,69 @@ value='".$place["zip"]."'
           <p class="col-xs-12">
             Privacy toggles here
           </p>
+          <div class="privacy-group" data-group="email">
+            <h4>Email Visibility</h4>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility">Visible</paper-toggle-button>
+                <span>Public Visibility</span>
+              </iron-label>
+            </div>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <span>ADP Member Visibility</span>
+              </iron-label>
+            </div>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <span>Collaborator Visibility</span>
+              </iron-label>
+            </div>
+          </div>
+          <div class="privacy-group" data-group="phone">
+            <h4>Phone Number Visibility</h4>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility">Visible</paper-toggle-button>
+                <span>Public Visibility</span>
+              </iron-label>
+            </div>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <span>ADP Member Visibility</span>
+              </iron-label>
+            </div>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <span>Collaborator Visibility</span>
+              </iron-label>
+            </div>
+          </div>
+          <div class="privacy-group" data-group="dept-phone">
+            <h4>Department Phone Number Visibility</h4>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility">Visible</paper-toggle-button>
+                <span>Public Visibility</span>
+              </iron-label>
+            </div>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <span>ADP Member Visibility</span>
+              </iron-label>
+            </div>
+            <div class="privacy-toggle">
+              <iron-label>
+                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <span>Collaborator Visibility</span>
+              </iron-label>
+            </div>
+          </div>
         </section>
         <div class="row">
           <div class="col-xs-12">
