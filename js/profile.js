@@ -1585,6 +1585,10 @@ $(function() {
     $("#save-profile").removeAttr("disabled");
     return false;
   });
+  $("paper-toggle-button").on("change", function() {
+    $("#save-profile").removeAttr("disabled");
+    return false;
+  });
   (cleanInputFormat = function() {
     var callingCode, gpi, html, i, isoCC, j, len, len1, phone, plainValue, ref, ref1, ref2, results, value;
     if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
