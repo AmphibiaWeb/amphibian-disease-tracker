@@ -419,9 +419,6 @@ value='".$place["zip"]."'
            ?>
         <section class="row" data-source="privacy">
           <h3 class="col-xs-12">Privacy Settings</h3>
-          <p class="col-xs-12">
-            Privacy toggles here
-          </p>
           <div class="privacy-group col-xs-12 col-md-4" data-group="email">
             <h4>Email Visibility</h4>
             <div class="privacy-toggle">
@@ -494,7 +491,7 @@ value='".$place["zip"]."'
             </button>
           </div>
         </div>
-        <section class="row conversations">
+        <section class="row conversations" hidden>
           <h3 class="col-xs-12">
             Conversations (maybe tabbed with profile view?)
           </h3>

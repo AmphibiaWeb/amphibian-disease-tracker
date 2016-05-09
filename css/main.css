@@ -12683,3 +12683,26 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 #profile-result-container {
   list-style-type: none;
 }
+.privacy-toggle:before,
+.privacy-toggle:after {
+  content: " ";
+  display: table;
+}
+.privacy-toggle:after {
+  clear: both;
+}
+.privacy-toggle:before,
+.privacy-toggle:after {
+  content: " ";
+  display: table;
+}
+.privacy-toggle:after {
+  clear: both;
+}
+.privacy-toggle iron-label paper-toggle-button,
+.privacy-toggle iron-label span {
+  float: left;
+}
+.privacy-toggle iron-label span {
+  width: 33%;
+}
