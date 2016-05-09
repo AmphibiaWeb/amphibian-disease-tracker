@@ -816,6 +816,22 @@ setupProfileImageUpload = ->
   false
 
 
+getProfilePrivacy = ->
+  ###
+  #
+  ###
+  privacyParams = new Object()
+  for privacyGroup in $(".privacy-group")
+    privacyTarget = $(privacyGroup).attr "data-group"
+    toggles = $(privacyGroup).find("paper-toggle-button")
+    for toggle in toggles
+      privacyScope = $(toggle).attr "data-scope"
+      unless privacyParams[privacyTarget]?
+        privacyParams[privacyTarget] = new Object()
+      privacyParams[privacyTarget][privacyScope] = p$(toggle).checked
+  privacyParams
+
+
 conditionalLoadAccountSettingsOptions = ->
   ###
   # Verify the account ownership, and if true, provide options for
@@ -856,6 +872,8 @@ constructProfileJson = (encodeForPosting = false, callback)->
       tmp[parentKey] = new Object()
     tmp[parentKey][key] = val
   tmp.profile = p$("#bio-profile .user-input").value
+  privacy = getProfilePrivacy()
+  tmp.privacy = privacy
   # Prep it
   validateAddress tmp.institution, (newAddressObj) ->
     tmp.place = newAddressObj

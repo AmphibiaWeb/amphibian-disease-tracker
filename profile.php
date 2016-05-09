@@ -423,19 +423,19 @@ value='".$place["zip"]."'
             <h4>Email Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility">Visible</paper-toggle-button>
+                <paper-toggle-button class="public-visibility" data-scope="public">Visible</paper-toggle-button>
                 <span>Public Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <paper-toggle-button class="member-visibility" data-scope="member" checked>Visible</paper-toggle-button>
                 <span>ADP Member Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" checked>Visible</paper-toggle-button>
                 <span>Collaborator Visibility</span>
               </iron-label>
             </div>
@@ -444,19 +444,19 @@ value='".$place["zip"]."'
             <h4>Phone Number Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility">Visible</paper-toggle-button>
+                <paper-toggle-button class="public-visibility" data-scope="public">Visible</paper-toggle-button>
                 <span>Public Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <paper-toggle-button class="member-visibility" data-scope="member" checked>Visible</paper-toggle-button>
                 <span>ADP Member Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" checked>Visible</paper-toggle-button>
                 <span>Collaborator Visibility</span>
               </iron-label>
             </div>
@@ -465,19 +465,19 @@ value='".$place["zip"]."'
             <h4>Department Phone Number Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility">Visible</paper-toggle-button>
+                <paper-toggle-button class="public-visibility" data-scope="public">Visible</paper-toggle-button>
                 <span>Public Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <paper-toggle-button class="member-visibility" data-scope="member" checked>Visible</paper-toggle-button>
                 <span>ADP Member Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" checked>Visible</paper-toggle-button>
+                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" checked>Visible</paper-toggle-button>
                 <span>Collaborator Visibility</span>
               </iron-label>
             </div>

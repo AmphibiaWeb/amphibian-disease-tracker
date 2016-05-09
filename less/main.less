@@ -1254,13 +1254,22 @@ section.conversations {
 
 .privacy-toggle {
     .clearfix;
+    padding: .5rem;
+    border-radius: 5px;
     
     iron-label {
-        paper-toggle-button,  span {
+        paper-toggle-button {
+            float: right;
+        }
+        span {
             float: left;
         }
         span {
             width: 33%;
         }
     }
+}
+
+.privacy-toggle:hover {
+    background: #ccc;
 }
