@@ -1247,6 +1247,9 @@ $ ->
   $(".user-input").keyup ->
     $("#save-profile").removeAttr "disabled"
     false
+  $("paper-toggle-button").on "change", ->
+    $("#save-profile").removeAttr "disabled"
+    false
   do cleanInputFormat = ->
     unless Polymer?.RenderStatus?._ready
       #console.warn "Delaying input setup until Polymer.RenderStatus is ready"
