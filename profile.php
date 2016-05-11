@@ -356,6 +356,7 @@ value='".$place["zip"]."'
                              $fill = "<span class='phone-number'>$fill</span>";
                          }
                          $fillKey = strtolower(str_replace(" ", "_", $fillType));
+                         global $privacyConfig;
                          if(array_key_exists($fillKey, $privacyConfig)) {
                              # We need to respect privacy settings
                              if ($isCollaborator) {
