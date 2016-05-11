@@ -25,10 +25,10 @@ $loginStatus = getLoginState();
 $viewUserId = $db->sanitize($_GET['id']);
 if(empty($viewUserId) && $loginStatus["status"]) {
     $viewUserId = $loginStatus["detail"]["userdata"]["dblink"];
-    echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
+    # echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
 }
 $setUser = array("dblink" => $viewUserId);
-echo "<!-- Setting user \n ".print_r($setUser, true) . "\n -->";
+# echo "<!-- Setting user \n ".print_r($setUser, true) . "\n -->";
 $selfUser = new UserFunctions();
 $selfUserId = $selfUser->getHardlink();
 $viewUser = new UserFunctions($viewUserId, "dblink");
@@ -38,7 +38,7 @@ try {
     $userdata = $viewUser->getUser($setUser);
     if(!is_array($userdata)) $userdata = array();
     if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
-    else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
+    # else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
     #$nameXml = $userdata["name"];
     #$xml = new Xml();
     #$xml->setXml($nameXml);
@@ -356,7 +356,7 @@ value='".$place["zip"]."'
                              $fill = "<span class='phone-number'>$fill</span>";
                          }
                          $fillKey = strtolower(str_replace(" ", "_", $fillType));
-                         global $privacyConfig;
+                         global $privacyConfig, $isCollaborator, $isMember, $isPublic;
                          if(array_key_exists($fillKey, $privacyConfig)) {
                              # We need to respect privacy settings
                              if ($isCollaborator) {
@@ -401,6 +401,24 @@ value='".$place["zip"]."'
              else {
                $titlePossessive = $title . "'s";
              }
+             function getPublishableData() {
+                 global $structuredData, $privacyConfig, $isCollaborator, $isMember, $isPublic;
+                 $publishedStructuredData = $structuredData;
+                 foreach($privacyConfig as $category=>$config) {
+                     # Check permissions
+                     if($isCollaborator) {
+                         $willShare = $config["collaborator"];
+                     } else if ($isMember) {
+                         $willShare = $config["member"];
+                     } else {
+                         $willShare = $config["public"];
+                     }
+                     if(!$willShare) {
+                         unset($publishedStructuredData["place"][$category]);
+                     }
+                 }
+                 return $publishedStructuredData;
+             }
              ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
@@ -408,6 +426,7 @@ value='".$place["zip"]."'
         <script type="text/javascript">
           var publicProfile = <?php echo json_encode($structuredData); ?>;
           var isViewingSelf = <?php echo strbool($isViewingSelf); ?>;
+          var profileUid = <?php echo $viewUserId; ?>;
         </script>
         <?php if($isViewingSelf) { ?>
         <div class="col-xs-12 self-link">
