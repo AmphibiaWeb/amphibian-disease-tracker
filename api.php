@@ -829,18 +829,40 @@ function validateCaptcha($get)
             ),
         );
     } else {
-        global $db;
-        $project = $db->sanitize($get['project']);
-        $query = array(
-            'project_id' => $project,
-        );
-        $result = $db->getQueryResults($query, 'author_data', 'AND', false, true);
-        $author_data = json_decode($result[0]['author_data'], true);
-        $a = array(
-            'status' => true,
-            'author_data' => $author_data,
-            'raw_result' => $result[0],
-        );
+        if(!empty($get["project"])) {
+            global $db;
+            $project = $db->sanitize($get['project']);
+            $query = array(
+                'project_id' => $project,
+            );
+            $result = $db->getQueryResults($query, 'author_data', 'AND', false, true);
+            $author_data = json_decode($result[0]['author_data'], true);
+            $a = array(
+                'status' => true,
+                'author_data' => $author_data,
+                'raw_result' => $result[0],
+            );
+        }
+        if(!empty($get["user"])) {
+            global $udb;
+            $viewUser = $udb->sanitize($get["user"]);
+            $cols = array(
+                "username",
+                "phone",
+                "alternate_email",
+                "public_profile",
+            );
+            $query = array(
+                "dblink" => $viewUser,
+            );
+            $result = $udb->getQueryResults($query, $cols, "AND", false, true);
+            $response = json_decode($result[0], true);
+            $a = array(
+                "status" => true,
+                "response" => $response,
+                "raw_result" => $result,
+            );
+        }
     }
     returnAjax($a);
 }

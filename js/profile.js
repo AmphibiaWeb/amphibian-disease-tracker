@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, initialCascadeSetup, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
+var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, initialCascadeSetup, isoCountries, loadUserBadges, profileAction, renderCaptchas, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1619,6 +1619,27 @@ initialCascadeSetup = function() {
       cascadePrivacyToggledState(element, false);
     }
   }
+  return false;
+};
+
+renderCaptchas = function() {
+
+  /*
+   * Renders the captchas into their respective elements
+   */
+  var args, dest;
+  animateLoad();
+  dest = uri.urlString + "api.php";
+  args = "action=is_human&recaptcha_response=" + response + "&user=" + window.profileUid;
+  $.post(dest, args, "json").done(function(result) {
+    console.info("Checked response");
+    console.log(result);
+    stopLoad();
+    return false;
+  }).fail(function(result, status) {
+    stopLoadError("Sorry, there was a problem getting the contact email");
+    return false;
+  });
   return false;
 };
 

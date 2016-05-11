@@ -1283,14 +1283,25 @@ initialCascadeSetup = ->
 ######################################
 
 
-renderemail = ->
+renderCaptchas = ->
+  ###
+  # Renders the captchas into their respective elements
+  ###
+  animateLoad()
+  dest = "#{uri.urlString}api.php"
+  args = "action=is_human&recaptcha_response=#{response}&user=#{window.profileUid}"
+  $.post dest, args, "json"
+  .done (result) ->
+    console.info "Checked response"
+    console.log result
+    # Replace the things
+    stopLoad()
+    false
+  .fail (result, status) ->
+    stopLoadError "Sorry, there was a problem getting the contact email"
+    false
   false
 
-renderphone = ->
-  false
-
-renderdepartment_phone = ->
-  false
 
 
 
