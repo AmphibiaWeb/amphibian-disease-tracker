@@ -1018,7 +1018,7 @@ cleanupAddressDisplay = ->
       </label>
       """
       $("address")
-      .html addressObj.human_html.replace /\\n/g, "<br/>"
+      .html addressObj.human_html.replace /\\n/g, "<br/> "
       .addClass "col-xs-8 col-md-5 col-lg-4"
       .before labelHtml
       .after postHtml
@@ -1283,7 +1283,7 @@ initialCascadeSetup = ->
 ######################################
 
 
-renderCaptchas = ->
+renderCaptchas = (response) ->
   ###
   # Renders the captchas into their respective elements
   ###
@@ -1298,7 +1298,7 @@ renderCaptchas = ->
     stopLoad()
     false
   .fail (result, status) ->
-    stopLoadError "Sorry, there was a problem getting the contact email"
+    stopLoadError "Sorry, there was a problem getting the contact information"
     false
   false
 

@@ -51,7 +51,7 @@ checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthoriz
   false
 
 renderEmail = (response) ->
-  stopLoad()
+  animateLoad()
   dest = "#{uri.urlString}api.php"
   args = "action=is_human&recaptcha_response=#{response}&project=#{_adp.projectId}"
   $.post dest, args, "json"
