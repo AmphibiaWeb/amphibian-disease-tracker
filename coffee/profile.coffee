@@ -1289,7 +1289,8 @@ renderCaptchas = (response) ->
   ###
   animateLoad()
   dest = "#{uri.urlString}api.php"
-  args = "action=is_human&recaptcha_response=#{response}&user=#{window.profileUid}"
+  profile = window.profileUid ? uri.o.param("id")
+  args = "action=is_human&recaptcha_response=#{response}&user=#{profile}"
   $.post dest, args, "json"
   .done (result) ->
     console.info "Checked response"

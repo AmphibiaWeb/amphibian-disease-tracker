@@ -1627,10 +1627,11 @@ renderCaptchas = function(response) {
   /*
    * Renders the captchas into their respective elements
    */
-  var args, dest;
+  var args, dest, profile, ref;
   animateLoad();
   dest = uri.urlString + "api.php";
-  args = "action=is_human&recaptcha_response=" + response + "&user=" + window.profileUid;
+  profile = (ref = window.profileUid) != null ? ref : uri.o.param("id");
+  args = "action=is_human&recaptcha_response=" + response + "&user=" + profile;
   $.post(dest, args, "json").done(function(result) {
     console.info("Checked response");
     console.log(result);
