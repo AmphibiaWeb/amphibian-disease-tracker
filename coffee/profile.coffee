@@ -1250,13 +1250,13 @@ cascadePrivacyToggledState = (el) ->
         if toggleLevel > level
           p$(toggle).checked = isChecked
           p$(toggle).disabled = true
-        else
+        else if toggleLevel < level
           p$(toggle).checked = not isChecked
           p$(toggle).disabled = false
     else
       for toggle in toggles
         toggleLevel = toInt $(toggle).attr "data-level"
-        if toggleLevel < level
+        if toggleLevel > level
           p$(toggle).disabled = false          
   catch
     console.error "An invalid element was passed cascading privacy toggles"
