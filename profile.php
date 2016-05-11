@@ -50,6 +50,10 @@ try {
 }
 
 
+$isLoggedIn = $loginStatus['status'];
+$isPublic = !$isLoggedIn;
+$isMember = $isLoggedIn;
+$isCollaborator = false;
 
        ?>
     <title>Profile - <?php echo $title; ?></title>
@@ -171,8 +175,8 @@ try {
       <p class="col-xs-12 login-status-bar text-right">
         <?php
            $user = $_COOKIE['amphibiandisease_fullname'];
-           $test = $loginStatus['status'];
-           if ($test) {
+
+           if ($isLoggedIn) {
                ?>
         Logged in as <span class='header-bar-user-name'><?php echo $user;
                ?></span>
@@ -246,8 +250,29 @@ try {
              $social = $structuredData["social"];
              $bio = $structuredData["profile"];
              $privacyConfig = $structuredData["privacy"];
+             # Helper captcha function
+             $hasIncludedCaptcha = false;
+             function captchaData($callbackFn = "renderEmail") {
+                 /***
+                  *
+                  ***/
+                 global $hasIncludedCaptcha;
+                 if(!$hasIncludedCaptcha) {
+                     echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
+                     $hasIncludedCaptcha = true;
+                 }
+                 require_once 'admin/CONFIG.php';
+                 $html = '<div class="g-recaptcha col-xs-8" data-sitekey="'.$recaptcha_public_key.'" data-callback="'.$callbackFn.'"></div>';
+                 return $html;                 
+                 
+             }
+             
              # Helper function
              function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false) {
+                 /***
+                  * Get a given public_profile element type and return
+                  * it, based on context.
+                  ***/
                  global $isViewingSelf;
                  # Title case and replace _ with " " on fillType
                  $fillType = ucwords($fillType);
@@ -262,6 +287,7 @@ try {
                  $class .= $addClass;
                  $requiredText = $required ? "required" : "";
                  if($isViewingSelf && !$forceReadOnly) {
+                     # Should be an editable field
                      $elType = "paper-input";
                      if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
                      if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
@@ -304,6 +330,7 @@ value='".$place["zip"]."'
 </div>";
                      }
                  } else {
+                     # Not viewing self
                      if(strpos($class, "social") !== false) {
                          if(!$emptyFill) {
                              $link = $fill;
@@ -322,12 +349,43 @@ value='".$place["zip"]."'
                              $element = "<div class='profile-bio-group profile-data $class'>$icon</div>";
                          }
                      } else {
+                         # Not social
                          # Some special cases
                          if(strpos($class, "phone") !== false) {
                              # Wrap in phone wrapper
                              $fill = "<span class='phone-number'>$fill</span>";
                          }
-                         $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                         $fillKey = strtolower(str_replace(" ", "_", $fillType));
+                         if(array_key_exists($fillKey, $privacyConfig)) {
+                             # We need to respect privacy settings
+                             if ($isCollaborator) {
+                                 $willShare = $privacyConfig[$fillKey]["collaborator"];
+                                 if($willShare) {
+                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                                 }
+                             } else if ($isMember) {
+                                 $willShare = $privacyConfig[$fillKey]["member"];
+                                 if($willShare) {
+                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                                 }
+                             } else {
+                                 # Public
+                                 $willShare = $privacyConfig[$fillKey]["public"];
+                                 if($willShare) {
+                                     # Hide behind a captcha
+                                     $renderFn = "render" . $fillKey;
+                                     $fill = getCaptchaData($renderFn);
+                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label>$fill</div>";
+                                 }
+                             }
+                             if(!$willShare) {
+                                 $element = "";
+                             }
+
+                         } else {
+                             # General case, not a special element
+                             $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                         }
                      }
                  }
                  return $element;
@@ -420,7 +478,7 @@ value='".$place["zip"]."'
                $boolValueStr = $privacyConfig[$group][$privacyKey];
                $bool = toBool($boolValueStr);
                return $bool ? "checked" : "";
-               
+
            }
              if($isViewingSelf) {
            ?>
