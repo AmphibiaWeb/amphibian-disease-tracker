@@ -430,19 +430,19 @@ value='".$place["zip"]."'
             <h4>Email Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" data-scope="public" <?php echo boolToChecked("email", "public"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="public-visibility" data-scope="public" <?php echo boolToChecked("email", "public"); ?> data-level="0">Visible</paper-toggle-button>
                 <span>Public Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="member-visibility" data-scope="member" <?php echo boolToChecked("email", "member"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="member-visibility" data-scope="member" <?php echo boolToChecked("email", "member"); ?> data-level="1">Visible</paper-toggle-button>
                 <span>ADP Member Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" <?php echo boolToChecked("email", "collaborator"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" <?php echo boolToChecked("email", "collaborator"); ?> data-level="2">Visible</paper-toggle-button>
                 <span>Collaborator Visibility</span>
               </iron-label>
             </div>
@@ -451,19 +451,19 @@ value='".$place["zip"]."'
             <h4>Phone Number Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" data-scope="public" <?php echo boolToChecked("phone", "public"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="public-visibility" data-scope="public" <?php echo boolToChecked("phone", "public"); ?> data-level="0">Visible</paper-toggle-button>
                 <span>Public Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="member-visibility" data-scope="member" <?php echo boolToChecked("phone", "member"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="member-visibility" data-scope="member" <?php echo boolToChecked("phone", "member"); ?> data-level="1">Visible</paper-toggle-button>
                 <span>ADP Member Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" <?php echo boolToChecked("phone", "collaborator"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" <?php echo boolToChecked("phone", "collaborator"); ?> data-level="2">Visible</paper-toggle-button>
                 <span>Collaborator Visibility</span>
               </iron-label>
             </div>
@@ -472,19 +472,19 @@ value='".$place["zip"]."'
             <h4>Department Phone Number Visibility</h4>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="public-visibility" data-scope="public"  <?php echo boolToChecked("department_phone", "public"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="public-visibility" data-scope="public"  <?php echo boolToChecked("department_phone", "public"); ?> data-level="0">Visible</paper-toggle-button>
                 <span>Public Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="member-visibility" data-scope="member" <?php echo boolToChecked("department_phone", "member"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="member-visibility" data-scope="member" <?php echo boolToChecked("department_phone", "member"); ?> data-level="1">Visible</paper-toggle-button>
                 <span>ADP Member Visibility</span>
               </iron-label>
             </div>
             <div class="privacy-toggle">
               <iron-label>
-                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" <?php echo boolToChecked("department_phone", "collaborator"); ?>>Visible</paper-toggle-button>
+                <paper-toggle-button class="collaborator-visibility" data-scope="collaborator" <?php echo boolToChecked("department_phone", "collaborator"); ?> data-level="2">Visible</paper-toggle-button>
                 <span>Collaborator Visibility</span>
               </iron-label>
             </div>

@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
+var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1563,6 +1563,44 @@ verifyLoginCredentials = function(callback) {
     console.error("There was a problem verifying your login state");
     return false;
   });
+  return false;
+};
+
+cascadePrivacyToggledState = function(el) {
+
+  /*
+   *
+   */
+  var container, error, i, isChecked, j, len, len1, level, toggle, toggleLevel, toggles;
+  try {
+    isChecked = p$(el).checked;
+    level = toInt($(el).attr("data-level"));
+    container = $(el).parents(".privacy-group[data-group]");
+    toggles = $(container).find("[data-scope]");
+    if (isChecked) {
+      for (i = 0, len = toggles.length; i < len; i++) {
+        toggle = toggles[i];
+        toggleLevel = toInt($(toggle).attr("data-level"));
+        if (toggleLevel > level) {
+          p$(toggle).checked = isChecked;
+          p$(toggle).disabled = true;
+        } else {
+          p$(toggle).checked = !isChecked;
+          p$(toggle).disabled = false;
+        }
+      }
+    } else {
+      for (j = 0, len1 = toggles.length; j < len1; j++) {
+        toggle = toggles[j];
+        toggleLevel = toInt($(toggle).attr("data-level"));
+        if (toggleLevel < level) {
+          p$(toggle).disabled = false;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("An invalid element was passed cascading privacy toggles");
+  }
   return false;
 };
 
