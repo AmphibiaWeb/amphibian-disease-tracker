@@ -1233,6 +1233,35 @@ verifyLoginCredentials = (callback) ->
   false
 
 
+cascadePrivacyToggledState = (el) ->
+  ###
+  #
+  ###
+  # Look at toggle
+  # If visible, all more restrictive criteria are also visible
+  try
+    isChecked = p$(el).checked
+    level = toInt $(el).attr "data-level"
+    container = $(el).parents(".privacy-group[data-group]")      
+    toggles = $(container).find("[data-scope]")
+    if isChecked
+      for toggle in toggles
+        toggleLevel = toInt $(toggle).attr "data-level"
+        if toggleLevel > level
+          p$(toggle).checked = isChecked
+          p$(toggle).disabled = true
+        else
+          p$(toggle).checked = not isChecked
+          p$(toggle).disabled = false
+    else
+      for toggle in toggles
+        toggleLevel = toInt $(toggle).attr "data-level"
+        if toggleLevel < level
+          p$(toggle).disabled = false          
+  catch
+    console.error "An invalid element was passed cascading privacy toggles"
+  false
+
 $ ->
   # On load page events
   try
