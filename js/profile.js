@@ -1584,7 +1584,7 @@ cascadePrivacyToggledState = function(el) {
         if (toggleLevel > level) {
           p$(toggle).checked = isChecked;
           p$(toggle).disabled = true;
-        } else {
+        } else if (toggleLevel < level) {
           p$(toggle).checked = !isChecked;
           p$(toggle).disabled = false;
         }
@@ -1593,7 +1593,7 @@ cascadePrivacyToggledState = function(el) {
       for (j = 0, len1 = toggles.length; j < len1; j++) {
         toggle = toggles[j];
         toggleLevel = toInt($(toggle).attr("data-level"));
-        if (toggleLevel < level) {
+        if (toggleLevel > level) {
           p$(toggle).disabled = false;
         }
       }
