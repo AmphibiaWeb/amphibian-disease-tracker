@@ -855,12 +855,17 @@ function validateCaptcha($get)
             $query = array(
                 "dblink" => $viewUser,
             );
-            $result = $udb->getQueryResults($query, $cols, "AND", false, true);
-            $response = json_decode($result[0], true);
+            $result = $udb->getQueryResults($query, $cols, "OR", false, true);
+            if(empty($result)) {
+                $response = $udb->getQueryResults($query, $cols, "OR", false, true, false, true);
+            } else {
+                $response = json_decode($result[0], true);
+            }
             $a = array(
                 "status" => true,
                 "response" => $response,
                 "raw_result" => $result,
+                "query" => $get,
             );
         }
     }
