@@ -1278,6 +1278,22 @@ initialCascadeSetup = ->
   false
 
 
+######################################
+# Profile Captcha Fill Helpers
+######################################
+
+
+renderemail = ->
+  false
+
+renderphone = ->
+  false
+
+renderdepartment_phone = ->
+  false
+
+
+
 $ ->
   # On load page events
   try

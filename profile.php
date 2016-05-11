@@ -7,7 +7,7 @@ $debug = false;
 if ($debug) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-    error_log('Project Browser is running in debug mode!');
+    error_log('Profile Browser is running in debug mode!');
 }
 
 $print_login_state = false;
@@ -252,21 +252,21 @@ $isCollaborator = false;
              $privacyConfig = $structuredData["privacy"];
              # Helper captcha function
              $hasIncludedCaptcha = false;
-             function captchaData($callbackFn = "renderEmail") {
+             require_once 'admin/CONFIG.php';
+             function getCaptchaData($dataType = "email") {
                  /***
                   *
                   ***/
-                 global $hasIncludedCaptcha;
+                 global $hasIncludedCaptcha, $recaptcha_public_key;
                  if(!$hasIncludedCaptcha) {
                      echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
                      $hasIncludedCaptcha = true;
                  }
-                 require_once 'admin/CONFIG.php';
-                 $html = '<div class="g-recaptcha col-xs-8" data-sitekey="'.$recaptcha_public_key.'" data-callback="'.$callbackFn.'"></div>';
-                 return $html;                 
-                 
+                 $html = '<div class="g-recaptcha col-xs-8" data-sitekey="'.$recaptcha_public_key.'" data-callback="renderCaptchas" data-type="'.$dataType.'"></div>';
+                 return $html;
+
              }
-             
+
              # Helper function
              function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false) {
                  /***
@@ -374,8 +374,9 @@ value='".$place["zip"]."'
                                  $willShare = $privacyConfig[$fillKey]["public"];
                                  if($willShare) {
                                      # Hide behind a captcha
-                                     $renderFn = "render" . $fillKey;
-                                     $fill = getCaptchaData($renderFn);
+                                     if(!empty($fill)) {
+                                         $fill = getCaptchaData($fillKey);
+                                     }
                                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label>$fill</div>";
                                  }
                              }
