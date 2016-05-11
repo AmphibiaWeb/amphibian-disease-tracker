@@ -859,7 +859,8 @@ function validateCaptcha($get)
             if(empty($result)) {
                 $response = $udb->getQueryResults($query, $cols, "OR", false, true, false, true);
             } else {
-                $response = json_decode($result[0], true);
+                $response = $result[0];
+                $response["public_profile"] = json_decode($response["public_profile"], true);
             }
             $a = array(
                 "status" => true,

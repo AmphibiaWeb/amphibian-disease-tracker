@@ -374,7 +374,7 @@ value='".$place["zip"]."'
                                  $willShare = $privacyConfig[$fillKey]["public"];
                                  if($willShare) {
                                      # Hide behind a captcha
-                                     if(!empty($fill)) {
+                                     if(!$emptyFill) {
                                          $fill = getCaptchaData($fillKey);
                                      }
                                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label>$fill</div>";
