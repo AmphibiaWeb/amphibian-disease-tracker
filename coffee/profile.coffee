@@ -1233,34 +1233,50 @@ verifyLoginCredentials = (callback) ->
   false
 
 
-cascadePrivacyToggledState = (el) ->
+cascadePrivacyToggledState = (el, cascadeDown = true) ->
   ###
   #
   ###
-  # Look at toggle
-  # If visible, all more restrictive criteria are also visible
   try
+    # Look at toggle
     isChecked = p$(el).checked
     level = toInt $(el).attr "data-level"
-    container = $(el).parents(".privacy-group[data-group]")      
+    container = $(el).parents(".privacy-group[data-group]")
     toggles = $(container).find("[data-scope]")
     if isChecked
+      # If visible, all more restrictive criteria are also visible
       for toggle in toggles
         toggleLevel = toInt $(toggle).attr "data-level"
         if toggleLevel > level
           p$(toggle).checked = isChecked
           p$(toggle).disabled = true
-        else if toggleLevel < level
+        else if toggleLevel < level and cascadeDown
+          # Less restrictive criteria should be made editable
           p$(toggle).checked = not isChecked
           p$(toggle).disabled = false
-    else
+    else if cascadeDown
+      # Unchecked item (eg, "not visible")
       for toggle in toggles
         toggleLevel = toInt $(toggle).attr "data-level"
         if toggleLevel > level
-          p$(toggle).disabled = false          
+          p$(toggle).disabled = false
   catch
     console.error "An invalid element was passed cascading privacy toggles"
   false
+
+
+initialCascadeSetup = ->
+  scopesInOrder = [
+    "collaborators"
+    "members"
+    "public"
+    ]
+  for scope in scopesInOrder
+    selector = ".privacy-toggle [data-scope='#{scope}']"
+    for element in $(selector)
+      cascadePrivacyToggledState(element, false)
+  false
+
 
 $ ->
   # On load page events
@@ -1277,6 +1293,7 @@ $ ->
     $("#save-profile").removeAttr "disabled"
     false
   $("paper-toggle-button").on "change", ->
+    cascadePrivacyToggledState(this)
     $("#save-profile").removeAttr "disabled"
     false
   do cleanInputFormat = ->
@@ -1289,6 +1306,8 @@ $ ->
     try
       formatSocial()
       forceUpdateMarked()
+    try
+      initialCascadeSetup()
     try
       isoCC = window.publicProfile.place.country_code
       callingCode = isoCountries[isoCC].code

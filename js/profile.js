@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
+var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, initialCascadeSetup, isoCountries, loadUserBadges, profileAction, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1566,12 +1566,15 @@ verifyLoginCredentials = function(callback) {
   return false;
 };
 
-cascadePrivacyToggledState = function(el) {
+cascadePrivacyToggledState = function(el, cascadeDown) {
+  var container, error, i, isChecked, j, len, len1, level, toggle, toggleLevel, toggles;
+  if (cascadeDown == null) {
+    cascadeDown = true;
+  }
 
   /*
    *
    */
-  var container, error, i, isChecked, j, len, len1, level, toggle, toggleLevel, toggles;
   try {
     isChecked = p$(el).checked;
     level = toInt($(el).attr("data-level"));
@@ -1584,12 +1587,12 @@ cascadePrivacyToggledState = function(el) {
         if (toggleLevel > level) {
           p$(toggle).checked = isChecked;
           p$(toggle).disabled = true;
-        } else if (toggleLevel < level) {
+        } else if (toggleLevel < level && cascadeDown) {
           p$(toggle).checked = !isChecked;
           p$(toggle).disabled = false;
         }
       }
-    } else {
+    } else if (cascadeDown) {
       for (j = 0, len1 = toggles.length; j < len1; j++) {
         toggle = toggles[j];
         toggleLevel = toInt($(toggle).attr("data-level"));
@@ -1600,6 +1603,21 @@ cascadePrivacyToggledState = function(el) {
     }
   } catch (error) {
     console.error("An invalid element was passed cascading privacy toggles");
+  }
+  return false;
+};
+
+initialCascadeSetup = function() {
+  var element, i, j, len, len1, ref, scope, scopesInOrder, selector;
+  scopesInOrder = ["collaborators", "members", "public"];
+  for (i = 0, len = scopesInOrder.length; i < len; i++) {
+    scope = scopesInOrder[i];
+    selector = ".privacy-toggle [data-scope='" + scope + "']";
+    ref = $(selector);
+    for (j = 0, len1 = ref.length; j < len1; j++) {
+      element = ref[j];
+      cascadePrivacyToggledState(element, false);
+    }
   }
   return false;
 };
@@ -1624,6 +1642,7 @@ $(function() {
     return false;
   });
   $("paper-toggle-button").on("change", function() {
+    cascadePrivacyToggledState(this);
     $("#save-profile").removeAttr("disabled");
     return false;
   });
@@ -1639,6 +1658,9 @@ $(function() {
     try {
       formatSocial();
       forceUpdateMarked();
+    } catch (undefined) {}
+    try {
+      initialCascadeSetup();
     } catch (undefined) {}
     try {
       isoCC = window.publicProfile.place.country_code;
