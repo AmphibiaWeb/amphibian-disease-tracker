@@ -424,9 +424,9 @@ value='".$place["zip"]."'
       <section id="main-body" class="row">
         <paper-fab id="enter-search" icon="icons:search" class="click" data-href="?mode=search" data-toggle="tooltip" title="Search Profiles"></paper-fab>
         <script type="text/javascript">
-          var publicProfile = <?php echo json_encode($structuredData); ?>;
-          var isViewingSelf = <?php echo strbool($isViewingSelf); ?>;
-          var profileUid = <?php echo $viewUserId; ?>;
+          window.publicProfile = <?php echo json_encode($structuredData); ?>;
+          window.isViewingSelf = <?php echo strbool($isViewingSelf); ?>;
+          window.profileUid = "<?php echo $viewUserId; ?>";
         </script>
         <?php if($isViewingSelf) { ?>
         <div class="col-xs-12 self-link">
@@ -470,7 +470,7 @@ value='".$place["zip"]."'
                data-country="<?php echo $place['country_code']; ?>"
                data-zip="<?php echo $place['zip']; ?>"
                >
-              <?php echo getElement("address", $place["street_number"] . $place["street"]); ?>
+              <?php echo getElement("address", $place["street_number"] ." ". $place["street"]); ?>
             </address>
           </div>
           <?php echo getElement("department phone", $place["department_phone"]); ?>
