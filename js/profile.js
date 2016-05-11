@@ -1313,8 +1313,8 @@ cleanupAddressDisplay = function() {
    * Display human-helpful address information, like city/state
    */
   var addressObj, labelHtml, mapsSearch, postHtml;
-  if (typeof publicProfile !== "undefined" && publicProfile !== null) {
-    addressObj = publicProfile.place;
+  if (window.publicProfile != null) {
+    addressObj = window.publicProfile.place;
     if (addressObj.human_html != null) {
       mapsSearch = encodeURIComponent(addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " "));
       postHtml = "<div class=\"col-xs-12 col-md-3 col-lg-4\">\n  <paper-fab mini icon=\"maps:map\" data-href=\"https://www.google.com/maps/search/" + mapsSearch + "\" class=\"click materialblue newwindow\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"View in Google Maps\">\n  </paper-fab>\n</div>";
@@ -1633,8 +1633,23 @@ renderCaptchas = function(response) {
   profile = (ref = window.profileUid) != null ? ref : uri.o.param("id");
   args = "action=is_human&recaptcha_response=" + response + "&user=" + profile;
   $.post(dest, args, "json").done(function(result) {
+    var data, element, html, i, len, lookup, ref1, replaceMap;
     console.info("Checked response");
     console.log(result);
+    replaceMap = {
+      email: result.response.username,
+      phone: result.response.phone,
+      department_phone: result.response.public_profile.place.department_phone
+    };
+    ref1 = $(".g-recaptcha");
+    for (i = 0, len = ref1.length; i < len; i++) {
+      element = ref1[i];
+      $(element).removeClass("g-recaptcha");
+      lookup = $(element).attr("data-type");
+      data = replaceMap[lookup];
+      html = "<p class=\"col-xs-8\">\n  " + data + "\n</p>";
+      $(element).replaceWith(html);
+    }
     stopLoad();
     return false;
   }).fail(function(result, status) {

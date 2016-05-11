@@ -1002,8 +1002,8 @@ cleanupAddressDisplay = ->
   ###
   # Display human-helpful address information, like city/state
   ###
-  if publicProfile?
-    addressObj = publicProfile.place
+  if window.publicProfile?
+    addressObj = window.publicProfile.place
     if addressObj.human_html?
       mapsSearch = encodeURIComponent addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " ")
       postHtml = """
@@ -1296,6 +1296,22 @@ renderCaptchas = (response) ->
     console.info "Checked response"
     console.log result
     # Replace the things
+    replaceMap =
+      email: result.response.username
+      phone: result.response.phone
+      department_phone: result.response.public_profile.place.department_phone
+    for element in $(".g-recaptcha")
+      $(element).removeClass "g-recaptcha"
+      lookup = $(element).attr "data-type"
+      data = replaceMap[lookup]
+      # Format it based on lookup type
+      # Fill the replacement
+      html = """
+      <p class="col-xs-8">
+        #{data}
+      </p>
+      """
+      $(element).replaceWith html
     stopLoad()
     false
   .fail (result, status) ->
