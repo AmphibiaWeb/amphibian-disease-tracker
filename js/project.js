@@ -66,7 +66,7 @@ checkProjectAuthorization = function(projectId, callback) {
 
 renderEmail = function(response) {
   var args, dest;
-  stopLoad();
+  animateLoad();
   dest = uri.urlString + "api.php";
   args = "action=is_human&recaptcha_response=" + response + "&project=" + _adp.projectId;
   $.post(dest, args, "json").done(function(result) {

@@ -1319,7 +1319,7 @@ cleanupAddressDisplay = function() {
       mapsSearch = encodeURIComponent(addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " "));
       postHtml = "<div class=\"col-xs-12 col-md-3 col-lg-4\">\n  <paper-fab mini icon=\"maps:map\" data-href=\"https://www.google.com/maps/search/" + mapsSearch + "\" class=\"click materialblue newwindow\" data-newtab=\"true\" data-toggle=\"tooltip\" title=\"View in Google Maps\">\n  </paper-fab>\n</div>";
       labelHtml = "<label class=\"col-xs-4 capitalize\">\n  Address\n</label>";
-      $("address").html(addressObj.human_html.replace(/\\n/g, "<br/>")).addClass("col-xs-8 col-md-5 col-lg-4").before(labelHtml).after(postHtml).parent().addClass("row clearfix");
+      $("address").html(addressObj.human_html.replace(/\\n/g, "<br/> ")).addClass("col-xs-8 col-md-5 col-lg-4").before(labelHtml).after(postHtml).parent().addClass("row clearfix");
     } else {
       console.warn("Human HTML not yet defined for this user");
     }
@@ -1622,7 +1622,7 @@ initialCascadeSetup = function() {
   return false;
 };
 
-renderCaptchas = function() {
+renderCaptchas = function(response) {
 
   /*
    * Renders the captchas into their respective elements
@@ -1637,7 +1637,7 @@ renderCaptchas = function() {
     stopLoad();
     return false;
   }).fail(function(result, status) {
-    stopLoadError("Sorry, there was a problem getting the contact email");
+    stopLoadError("Sorry, there was a problem getting the contact information");
     return false;
   });
   return false;
