@@ -1372,7 +1372,7 @@ searchProfiles = ->
     console.error result, status
   false
 
-verifyLoginCredentials = (callback) ->
+verifyLoginCredentials = (callback, skip) ->
   ###
   # Checks the login credentials against the server.
   # This should not be used in place of sending authentication
@@ -1553,6 +1553,7 @@ $ ->
   if window.isViewingSelf isnt true
     cleanupAddressDisplay()
   else
+    console.info "Doing self-profile checks"
     setupUserChat()
     verifyLoginCredentials()
   $("#profile-search").keyup (e) ->
