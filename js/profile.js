@@ -1078,7 +1078,7 @@ loadUserBadges = function() {
 };
 
 setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
-  var author, html, projectIdentifier, selector, uploadIdentifier;
+  var author, html, placeIntoSelector, projectIdentifier, selector, uploadIdentifier;
   if (uploadFormId == null) {
     uploadFormId = "profile-image-uploader";
   }
@@ -1094,9 +1094,11 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
   uploadIdentifier = window.profileUid;
   projectIdentifier = _adp.projectIdentifierString;
   if (!$(selector).exists()) {
+    console.info("Creating uploader to append");
     html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
-    $("main #uploader-container-section").append(html);
-    console.info("Appended upload form");
+    placeIntoSelector = "main #uploader-container-section";
+    $(placeIntoSelector).append(html);
+    console.info("Appended upload form", $(placeIntoSelector).exists());
     $(selector).submit(function(e) {
       e.preventDefault();
       e.stopPropagation();

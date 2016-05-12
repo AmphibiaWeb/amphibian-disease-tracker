@@ -823,6 +823,7 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
   projectIdentifier = _adp.projectIdentifierString
   unless $(selector).exists()
     # Create it
+    console.info "Creating uploader to append"
     html = """
     <form id="#{uploadFormId}-form" class="#{bsColWidth} clearfix">
       <p class="visible-xs-block">Tap the button to upload a file</p>
@@ -833,8 +834,9 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
       </fieldset>
     </form>
     """
-    $("main #uploader-container-section").append html
-    console.info "Appended upload form"
+    placeIntoSelector = "main #uploader-container-section"
+    $(placeIntoSelector).append html
+    console.info "Appended upload form", $(placeIntoSelector).exists()
     $(selector).submit (e) ->
       e.preventDefault()
       e.stopPropagation()
