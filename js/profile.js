@@ -1083,7 +1083,7 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
     uploadFormId = "profile-image-uploader";
   }
   if (bsColWidth == null) {
-    bsColWidth = "col-md-4";
+    bsColWidth = "";
   }
 
   /*
@@ -1095,9 +1095,12 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
   projectIdentifier = _adp.projectIdentifierString;
   if (!$(selector).exists()) {
     console.info("Creating uploader to append");
-    html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
+    html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend class=\"sr-only\">Profile Image</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
     placeIntoSelector = "main #upload-container-section";
     $(placeIntoSelector).append(html);
+    if (!isNull(bsColWidth)) {
+      $(placeIntoSelector).addClass("row");
+    }
     console.info("Appended upload form", $(placeIntoSelector).exists());
     $(selector).submit(function(e) {
       e.preventDefault();
@@ -1111,7 +1114,8 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
       window.dropperParams = new Object();
     }
     window.dropperParams.dropTargetSelector = selector;
-    window.dropperParams.uploadPath = "../../users/profiles/" + window.profileUid + "/";
+    window.dropperParams.uploadPath = "../../users/profiles/";
+    window.dropperParams.uploadText = "Drop your image here to set a new profile picture";
     needsInit = window.dropperParams.hasInitialized === true;
     loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
       var error;

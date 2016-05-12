@@ -811,7 +811,7 @@ loadUserBadges = ->
   false
 
 
-setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth = "col-md-4", callback) ->
+setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth = "", callback) ->
   ###
   # Bootstrap an uploader for images
   ###
@@ -828,7 +828,7 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
     <form id="#{uploadFormId}-form" class="#{bsColWidth} clearfix">
       <p class="visible-xs-block">Tap the button to upload a file</p>
       <fieldset class="hidden-xs">
-        <legend>Upload Files</legend>
+        <legend class="sr-only">Profile Image</legend>
         <div id="#{uploadFormId}" class="media-uploader outline media-upload-target">
         </div>
       </fieldset>
@@ -836,6 +836,8 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
     """
     placeIntoSelector = "main #upload-container-section"
     $(placeIntoSelector).append html
+    unless isNull bsColWidth
+      $(placeIntoSelector).addClass "row"
     console.info "Appended upload form", $(placeIntoSelector).exists()
     $(selector).submit (e) ->
       e.preventDefault()
@@ -845,7 +847,8 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
   verifyLoginCredentials ->
     window.dropperParams ?= new Object()
     window.dropperParams.dropTargetSelector = selector
-    window.dropperParams.uploadPath = "../../users/profiles/#{window.profileUid}/"
+    window.dropperParams.uploadPath = "../../users/profiles/"
+    window.dropperParams.uploadText = "Drop your image here to set a new profile picture"
     # Need to make this re-initialize ...
     needsInit = window.dropperParams.hasInitialized is true
     loadJS "helpers/js-dragdrop/client-upload.min.js", ->
