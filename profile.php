@@ -448,6 +448,9 @@ value='".$place["zip"]."'
         <?php } ?>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region" data-source="social">
           <h3>Basic Profile</h3>
+          <div id="upload-container-section">
+            
+          </div>
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
           <?php
              $dateCreated = date("d F Y", $userdata["creation"]);

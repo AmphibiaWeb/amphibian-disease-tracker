@@ -12,6 +12,8 @@ profileAction = "update_profile";
 
 apiTarget = uri.urlString + "/admin-api.php";
 
+window._adp = new Object();
+
 
 /*
  * Country codes:
@@ -1075,11 +1077,153 @@ loadUserBadges = function() {
   return false;
 };
 
-setupProfileImageUpload = function() {
+setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
+  var author, html, projectIdentifier, selector, uploadIdentifier;
+  if (uploadFormId == null) {
+    uploadFormId = "profile-image-uploader";
+  }
+  if (bsColWidth == null) {
+    bsColWidth = "col-md-4";
+  }
 
   /*
    * Bootstrap an uploader for images
    */
+  selector = "#" + uploadFormId;
+  author = $.cookie(adminParams.domain + "_link");
+  uploadIdentifier = getUploadIdentifier();
+  projectIdentifier = _adp.projectIdentifierString;
+  if (!$(selector).exists()) {
+    html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
+    $("main #uploader-container-section").append(html);
+    console.info("Appended upload form");
+    $(selector).submit(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
+  }
+  verifyLoginCredentials(function() {
+    var needsInit;
+    if (window.dropperParams == null) {
+      window.dropperParams = new Object();
+    }
+    window.dropperParams.dropTargetSelector = selector;
+    window.dropperParams.uploadPath = "../../users/profiles/" + window.profileUid + "/";
+    needsInit = window.dropperParams.hasInitialized === true;
+    loadJS("helpers/js-dragdrop/client-upload.min.js", function() {
+      var error;
+      window.dropperParams.mimeTypes = "image/*";
+      console.info("Loaded drag drop helper");
+      if (needsInit) {
+        console.info("Reinitialized dropper");
+        try {
+          window.dropperParams.initialize();
+        } catch (error) {
+          console.warn("Couldn't reinitialize dropper!");
+        }
+      }
+      window.dropperParams.postUploadHandler = function(file, result) {
+
+        /*
+         * The callback function for handleDragDropImage
+         *
+         * The "file" object contains information about the uploaded file,
+         * such as name, height, width, size, type, and more. Check the
+         * console logs in the demo for a full output.
+         *
+         * The result object contains the results of the upload. The "status"
+         * key is true or false depending on the status of the upload, and
+         * the other most useful keys will be "full_path" and "thumb_path".
+         *
+         * When invoked, it calls the "self" helper methods to actually do
+         * the file sending.
+         */
+        var checkPath, cp2, e, error1, extension, fileName, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+        window.dropperParams.dropzone.removeAllFiles();
+        if (typeof result !== "object") {
+          console.error("Dropzone returned an error - " + result);
+          toastStatusMessage("There was a problem with the server handling your image. Please try again.");
+          return false;
+        }
+        if (result.status !== true) {
+          if (result.human_error == null) {
+            result.human_error = "There was a problem uploading your image.";
+          }
+          toastStatusMessage("" + result.human_error);
+          console.error("Error uploading!", result);
+          return false;
+        }
+        try {
+          console.info("Server returned the following result:", result);
+          console.info("The script returned the following file information:", file);
+          pathPrefix = window.dropperParams.uploadPath;
+          fileName = result.full_path.split("/").pop();
+          thumbPath = result.wrote_thumb;
+          mediaType = result.mime_provided.split("/")[0];
+          longType = result.mime_provided.split("/")[1];
+          linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.wrote_file : "" + pathPrefix + thumbPath;
+          previewHtml = (function() {
+            switch (mediaType) {
+              case "image":
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\" data-link-path=\"" + linkPath + "\">\n  <img src=\"" + linkPath + "\" alt='Uploaded Image' class=\"img-circle thumb-img img-responsive\"/>\n    <p class=\"text-muted\">\n      " + file.name + " -> " + fileName + "\n      (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n        Original Image\n      </a>)\n    </p>\n</div>";
+              case "audio":
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <audio src=\"" + linkPath + "\" controls preload=\"auto\">\n    <span class=\"glyphicon glyphicon-music\"></span>\n    <p>\n      Your browser doesn't support the HTML5 <code>audio</code> element.\n      Please download the file below.\n    </p>\n  </audio>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+              case "video":
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\">\n  <video src=\"" + linkPath + "\" controls preload=\"auto\">\n    <img src=\"" + pathPrefix + thumbPath + "\" alt=\"Video Thumbnail\" class=\"img-responsive\" />\n    <p>\n      Your browser doesn't support the HTML5 <code>video</code> element.\n      Please download the file below.\n    </p>\n  </video>\n  <p class=\"text-muted\">\n    " + file.name + " -> " + fileName + "\n    (<a href=\"" + linkPath + "\" class=\"newwindow\" download=\"" + file.name + "\">\n      Original Media\n    </a>)\n  </p>\n</div>";
+              default:
+                return "<div class=\"uploaded-media center-block\" data-system-file=\"" + fileName + "\" data-link-path=\"" + linkPath + "\">\n  <span class=\"glyphicon glyphicon-file\"></span>\n  <p class=\"text-muted\">" + file.name + " -> " + fileName + "</p>\n</div>";
+            }
+          })();
+          $(window.dropperParams.dropTargetSelector).before(previewHtml);
+          $("#validator-progress-container").remove();
+          checkPath = linkPath.slice(0);
+          cp2 = linkPath.slice(0);
+          extension = cp2.split(".").pop();
+          switch (mediaType) {
+            case "application":
+              console.info("Checking " + longType + " in application");
+              switch (longType) {
+                case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                case "vnd.ms-excel":
+                  return excelHandler(linkPath);
+                case "vnd.ms-office":
+                  switch (extension) {
+                    case "xls":
+                      return excelHandler(linkPath);
+                    default:
+                      stopLoadError("Sorry, we didn't understand the upload type.");
+                      return false;
+                  }
+                  break;
+                case "zip":
+                case "x-zip-compressed":
+                  if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || extension === "xlsx") {
+                    return excelHandler(linkPath);
+                  } else {
+                    return zipHandler(linkPath);
+                  }
+                  break;
+                case "x-7z-compressed":
+                  return _7zHandler(linkPath);
+              }
+              break;
+            case "text":
+              return csvHandler(linkPath);
+            case "image":
+              return imageHandler(linkPath);
+          }
+        } catch (error1) {
+          e = error1;
+          return toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
+        }
+      };
+      if (typeof callback === "function") {
+        return callback();
+      }
+    });
+    return false;
+  });
   return false;
 };
 
