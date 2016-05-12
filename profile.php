@@ -448,6 +448,11 @@ value='".$place["zip"]."'
         <?php } ?>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region" data-source="social">
           <h3>Basic Profile</h3>
+          <style type="text/css">
+            #profile-image-uploader {
+            background: url('<?php echo $viewUser->getuserPicture(); ?>');
+            }
+          </style>
           <div id="upload-container-section">
             
           </div>

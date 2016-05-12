@@ -12716,3 +12716,8 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .privacy-toggle:hover {
   background: #ccc;
 }
+#profile-image-uploader-form #profile-image-uploader {
+  border-radius: 100px;
+  width: 150px;
+  text-shadow: 2px 2px 2px #fff;
+}
