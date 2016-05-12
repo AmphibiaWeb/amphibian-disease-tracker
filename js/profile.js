@@ -1671,7 +1671,7 @@ searchProfiles = function() {
   return false;
 };
 
-verifyLoginCredentials = function(callback) {
+verifyLoginCredentials = function(callback, skip) {
 
   /*
    * Checks the login credentials against the server.
@@ -1877,6 +1877,7 @@ $(function() {
   if (window.isViewingSelf !== true) {
     cleanupAddressDisplay();
   } else {
+    console.info("Doing self-profile checks");
     setupUserChat();
     verifyLoginCredentials();
   }
