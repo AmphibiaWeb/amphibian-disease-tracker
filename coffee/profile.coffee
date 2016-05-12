@@ -1503,8 +1503,6 @@ $ ->
   try
     loadUserBadges()
   try
-    setupProfileImageUpload()
-  try
     conditionalLoadAccountSettingsOptions()
   $("#save-profile").click ->
     saveProfileChanges()
@@ -1556,6 +1554,8 @@ $ ->
     console.info "Doing self-profile checks"
     setupUserChat()
     verifyLoginCredentials()
+    try
+      setupProfileImageUpload()
   $("#profile-search").keyup (e) ->
     unless isNull $(this).val()
       searchProfiles.debounce()
