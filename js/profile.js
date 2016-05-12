@@ -1096,7 +1096,7 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
   if (!$(selector).exists()) {
     console.info("Creating uploader to append");
     html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";
-    placeIntoSelector = "main #uploader-container-section";
+    placeIntoSelector = "main #upload-container-section";
     $(placeIntoSelector).append(html);
     console.info("Appended upload form", $(placeIntoSelector).exists());
     $(selector).submit(function(e) {

@@ -834,7 +834,7 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
       </fieldset>
     </form>
     """
-    placeIntoSelector = "main #uploader-container-section"
+    placeIntoSelector = "main #upload-container-section"
     $(placeIntoSelector).append html
     console.info "Appended upload form", $(placeIntoSelector).exists()
     $(selector).submit (e) ->
