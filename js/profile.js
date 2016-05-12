@@ -1809,9 +1809,6 @@ $(function() {
     loadUserBadges();
   } catch (undefined) {}
   try {
-    setupProfileImageUpload();
-  } catch (undefined) {}
-  try {
     conditionalLoadAccountSettingsOptions();
   } catch (undefined) {}
   $("#save-profile").click(function() {
@@ -1880,6 +1877,9 @@ $(function() {
     console.info("Doing self-profile checks");
     setupUserChat();
     verifyLoginCredentials();
+    try {
+      setupProfileImageUpload();
+    } catch (undefined) {}
   }
   $("#profile-search").keyup(function(e) {
     if (!isNull($(this).val())) {
