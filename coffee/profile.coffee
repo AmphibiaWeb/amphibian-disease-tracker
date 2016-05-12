@@ -1400,7 +1400,10 @@ verifyLoginCredentials = (callback, skip) ->
         callback(result)
     else
       # Refresh it
-      document.location.reload(true)
+      if window.isViewingSelf is true
+        document.location.reload(true)
+      else
+        console.info "Bad credentials, but not self-viewing"
   .fail (result,status) ->
     # Throw up some warning here
     #$("main #main-body").html("<div class='bs-callout-danger bs-callout'><h4>Couldn't verify login</h4><p>There's currently a server problem. Try back again soon.</p></div>")
@@ -1549,6 +1552,7 @@ $ ->
         """
         $(phone).replaceWith html
   if window.isViewingSelf isnt true
+    console.info "Foreign profile"
     cleanupAddressDisplay()
   else
     console.info "Doing self-profile checks"
