@@ -1091,7 +1091,7 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
    */
   selector = "#" + uploadFormId;
   author = $.cookie(adminParams.domain + "_link");
-  uploadIdentifier = getUploadIdentifier();
+  uploadIdentifier = window.profileUid;
   projectIdentifier = _adp.projectIdentifierString;
   if (!$(selector).exists()) {
     html = "<form id=\"" + uploadFormId + "-form\" class=\"" + bsColWidth + " clearfix\">\n  <p class=\"visible-xs-block\">Tap the button to upload a file</p>\n  <fieldset class=\"hidden-xs\">\n    <legend>Upload Files</legend>\n    <div id=\"" + uploadFormId + "\" class=\"media-uploader outline media-upload-target\">\n    </div>\n  </fieldset>\n</form>";

@@ -819,7 +819,7 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
   # create it
   selector = "##{uploadFormId}"
   author = $.cookie("#{adminParams.domain}_link")
-  uploadIdentifier = getUploadIdentifier()
+  uploadIdentifier = window.profileUid
   projectIdentifier = _adp.projectIdentifierString
   unless $(selector).exists()
     # Create it
