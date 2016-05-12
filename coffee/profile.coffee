@@ -9,6 +9,8 @@
 profileAction = "update_profile"
 apiTarget = "#{uri.urlString}/admin-api.php"
 
+window._adp = new Object()
+
 ###
 # Country codes:
 # https://raw.githubusercontent.com/OpenBookPrices/country-data/master/data/countries.json
@@ -809,10 +811,184 @@ loadUserBadges = ->
   false
 
 
-setupProfileImageUpload = ->
+setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth = "col-md-4", callback) ->
   ###
   # Bootstrap an uploader for images
   ###
+  # Check for the existence of the uploader form; if it's not there,
+  # create it
+  selector = "##{uploadFormId}"
+  author = $.cookie("#{adminParams.domain}_link")
+  uploadIdentifier = getUploadIdentifier()
+  projectIdentifier = _adp.projectIdentifierString
+  unless $(selector).exists()
+    # Create it
+    html = """
+    <form id="#{uploadFormId}-form" class="#{bsColWidth} clearfix">
+      <p class="visible-xs-block">Tap the button to upload a file</p>
+      <fieldset class="hidden-xs">
+        <legend>Upload Files</legend>
+        <div id="#{uploadFormId}" class="media-uploader outline media-upload-target">
+        </div>
+      </fieldset>
+    </form>
+    """
+    $("main #uploader-container-section").append html
+    console.info "Appended upload form"
+    $(selector).submit (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+  # Validate the user before guessing
+  verifyLoginCredentials ->
+    window.dropperParams ?= new Object()
+    window.dropperParams.dropTargetSelector = selector
+    window.dropperParams.uploadPath = "../../users/profiles/#{window.profileUid}/"
+    # Need to make this re-initialize ...
+    needsInit = window.dropperParams.hasInitialized is true
+    loadJS "helpers/js-dragdrop/client-upload.min.js", ->
+      window.dropperParams.mimeTypes = "image/*"
+      # Successfully loaded the file
+      console.info "Loaded drag drop helper"
+      if needsInit
+        console.info "Reinitialized dropper"
+        try
+          window.dropperParams.initialize()
+        catch
+          console.warn "Couldn't reinitialize dropper!"
+      window.dropperParams.postUploadHandler = (file, result) ->
+        ###
+        # The callback function for handleDragDropImage
+        #
+        # The "file" object contains information about the uploaded file,
+        # such as name, height, width, size, type, and more. Check the
+        # console logs in the demo for a full output.
+        #
+        # The result object contains the results of the upload. The "status"
+        # key is true or false depending on the status of the upload, and
+        # the other most useful keys will be "full_path" and "thumb_path".
+        #
+        # When invoked, it calls the "self" helper methods to actually do
+        # the file sending.
+        ###
+        # Clear out the file uploader
+        window.dropperParams.dropzone.removeAllFiles()
+
+        if typeof result isnt "object"
+          console.error "Dropzone returned an error - #{result}"
+          toastStatusMessage "There was a problem with the server handling your image. Please try again."
+          return false
+        unless result.status is true
+          # Yikes! Didn't work
+          result.human_error ?= "There was a problem uploading your image."
+          toastStatusMessage "#{result.human_error}"
+          console.error("Error uploading!",result)
+          return false
+        try
+          console.info "Server returned the following result:", result
+          console.info "The script returned the following file information:", file
+          pathPrefix = window.dropperParams.uploadPath
+          # path = "helpers/js-dragdrop/#{result.full_path}"
+          # Replace full_path and thumb_path with "wrote"
+          fileName = result.full_path.split("/").pop()
+          thumbPath = result.wrote_thumb
+          mediaType = result.mime_provided.split("/")[0]
+          longType = result.mime_provided.split("/")[1]
+          linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
+          previewHtml = switch mediaType
+            when "image"
+              """
+              <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
+                <img src="#{linkPath}" alt='Uploaded Image' class="img-circle thumb-img img-responsive"/>
+                  <p class="text-muted">
+                    #{file.name} -> #{fileName}
+                    (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                      Original Image
+                    </a>)
+                  </p>
+              </div>
+              """
+            when "audio" then """
+            <div class="uploaded-media center-block" data-system-file="#{fileName}">
+              <audio src="#{linkPath}" controls preload="auto">
+                <span class="glyphicon glyphicon-music"></span>
+                <p>
+                  Your browser doesn't support the HTML5 <code>audio</code> element.
+                  Please download the file below.
+                </p>
+              </audio>
+              <p class="text-muted">
+                #{file.name} -> #{fileName}
+                (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                  Original Media
+                </a>)
+              </p>
+            </div>
+            """
+            when "video" then """
+            <div class="uploaded-media center-block" data-system-file="#{fileName}">
+              <video src="#{linkPath}" controls preload="auto">
+                <img src="#{pathPrefix}#{thumbPath}" alt="Video Thumbnail" class="img-responsive" />
+                <p>
+                  Your browser doesn't support the HTML5 <code>video</code> element.
+                  Please download the file below.
+                </p>
+              </video>
+              <p class="text-muted">
+                #{file.name} -> #{fileName}
+                (<a href="#{linkPath}" class="newwindow" download="#{file.name}">
+                  Original Media
+                </a>)
+              </p>
+            </div>
+            """
+            else
+              """
+              <div class="uploaded-media center-block" data-system-file="#{fileName}" data-link-path="#{linkPath}">
+                <span class="glyphicon glyphicon-file"></span>
+                <p class="text-muted">#{file.name} -> #{fileName}</p>
+              </div>
+              """
+          # Append the preview HTML
+          $(window.dropperParams.dropTargetSelector).before previewHtml
+          # Finally, execute handlers for different file types
+          $("#validator-progress-container").remove()
+          checkPath = linkPath.slice 0
+          cp2 = linkPath.slice 0
+          extension = cp2.split(".").pop()
+          switch mediaType
+            when "application"
+              # Another switch!
+              console.info "Checking #{longType} in application"
+              switch longType
+                # Fuck you MS, and your terrible MIME types
+                when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
+                  excelHandler(linkPath)
+                when "vnd.ms-office"
+                  switch extension
+                    when "xls"
+                      excelHandler linkPath
+                    else
+                      stopLoadError "Sorry, we didn't understand the upload type."
+                      return false
+                when "zip", "x-zip-compressed"
+                  # Some servers won't read it as the crazy MS mime type
+                  # But as a zip, instead. So, check the extension.
+                  #
+                  if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or extension is "xlsx"
+                    excelHandler(linkPath)
+                  else
+                    zipHandler(linkPath)
+                when "x-7z-compressed"
+                  _7zHandler(linkPath)
+            when "text" then csvHandler(linkPath)
+            when "image" then imageHandler(linkPath)
+        catch e
+          toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
+      # Callback if exists
+      if typeof callback is "function"
+        callback()
+    false
   false
 
 
