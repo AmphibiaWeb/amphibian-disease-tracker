@@ -1701,7 +1701,11 @@ verifyLoginCredentials = function(callback, skip) {
         return callback(result);
       }
     } else {
-      return document.location.reload(true);
+      if (window.isViewingSelf === true) {
+        return document.location.reload(true);
+      } else {
+        return console.info("Bad credentials, but not self-viewing");
+      }
     }
   }).fail(function(result, status) {
     console.error("There was a problem verifying your login state");
@@ -1872,6 +1876,7 @@ $(function() {
     return results;
   })();
   if (window.isViewingSelf !== true) {
+    console.info("Foreign profile");
     cleanupAddressDisplay();
   } else {
     console.info("Doing self-profile checks");
