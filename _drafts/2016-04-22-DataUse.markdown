@@ -6,34 +6,28 @@ author: Michelle Koo
 categories: News, Resources
 ---
 
-**Data Use Policy and Information**
+# Data Use Policy and Information
 
 A necessary part of a project that solicits, stores and shares data is a clear understanding of the data sharing and use policy.
 
-*Goals*:     
+### Goals     
 The aim of the Amphibian Disease portal is to facilitate data sharing of chytrid disease presence and absence from field and lab studies, which we view as the first step to effectively address the global amphibian crisis. We aim to encourage collaboration and facilitate coordination among researchers and agencies involved in amphibian disease studies, particularly chytridiomycosis. 
 
-*Data*:      
-1) Ownership of Data     
-The Amphibian Disease Portal (http://amphibiandisease.org) is developed and maintained by the AmphibiaWeb Project, Museum of Vertebrate Zoology, University of California, Berkeley. As a non-profit, educational and research entity, this is a public domain database and website that supplies data freely. We offer no guarantees or warranty, implied or explicit, about the completeness or accuracy of data nor its most appropriate use. We provide data for use in research and education only requesting attribution to the Contributor. We appreciate acknowledgement to the Amphibian Disease Portal and AmphibiaWeb.
-
-2) Contributor and User Information    
+### Data   
+1) **Contributors and Users**    
 We refer to individuals who upload datasets and project information as Contributors. We refer to individuals who download or otherwise use data on the portal and the website as Users. We will never share Contributor information that is not public on the site. 
 
-3) Accuracy     
+2) **Ownership of Data**     
+The Amphibian Disease Portal (http://amphibiandisease.org) is developed and maintained by the AmphibiaWeb Project, Museum of Vertebrate Zoology, University of California, Berkeley. As a non-profit, educational and research entity, this is a public domain database and website that supplies data freely. We offer no guarantees or warranty, implied or explicit, about the completeness or accuracy of data nor its most appropriate use. We provide data for use in research and education only requesting attribution to the Contributor. We appreciate acknowledgement to the Amphibian Disease Portal and AmphibiaWeb.
+
+3) **Accuracy**     
 To the best of their abilities, Contributors will provide accurate and complete data. The expectation is one of good faith representation of data that you fully own and control to be uploaded to the Amphibian Disease Portal. Geocoordinates for sensitive species or sites may not be purposely obscured. If there are legitimate reasons to protect localities, it is preferred to encumber data, i.e., keep private (see Embargo Policy).
 
-4) Data Licensing     
+4) **Data Licensing**     
 Contributors upon uploading data to the Portal agrees to these terms and specifically allowing us to assign unique digital object identifiers to projects and datasets under Creative Commons Attribution 3.0 (http://creativecommons.org/licenses/by/3.0/)
 
-5) Public Availability and Embargo Policy     
-We recognize that data on some point records may be deemed premature for public use, such as graduate student dissertation or other active research projects. We need to balance that with the intent of the Portal to facilitate collaborations and aggregated data to study disease. Thus,  basic information on Projects will be publicly viewable (e.g., Principal Investigator, Contact name, basic abstract, generalized area of interest to be determined by Contributor) and will be accessible on the portal without user registration and be subject to search engine results, that is 'public'.  Datasets (point records) associated with projects are private by default until the Contributor chooses to make those data public. Once public, it may not be revoked. We recommend projects and datasets be made fully public within 2 years or whenever the datasets are first published (including dissertations). If Contributors have not made their data public within 2 years and have not explicitly requested a continuance, we reserve the right to make these data public  after we have made good faith attempts to contact and confirm.
-
-
-
-
-
-
+5) **Public Availability and Embargo Policy**     
+We recognize that data on some point records may be deemed premature for public use, such as graduate student dissertation or other active research projects. We need to balance that with the intent of the Portal to facilitate collaborations and aggregated data to study disease. Thus,  basic information on Projects will be publicly viewable (e.g., Principal Investigator, Contact name, basic abstract, generalized area of interest to be determined by Contributor) and will be accessible on the portal without user registration and be subject to search engine results, that is 'public'.  Datasets (point records) associated with projects are private by default until the Contributor chooses to make those data public. Once public, it may not be revoked. We recommend projects and datasets be made fully public within 2 years or whenever the datasets are first published (including dissertations). If Contributors have not made their data public within 2 years and have not requested a continuance, we reserve the right to make these data public  after we have made good faith attempts to contact and confirm.
 
 
 
