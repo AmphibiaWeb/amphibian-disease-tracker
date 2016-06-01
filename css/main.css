@@ -12718,6 +12718,7 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 }
 #profile-image-uploader-form #profile-image-uploader {
   border-radius: 100px;
-  width: 150px;
-  text-shadow: 2px 2px 2px #fff;
+  width: 175px;
+  text-shadow: 0px 1px 0px #fff;
+  color: #555;
 }

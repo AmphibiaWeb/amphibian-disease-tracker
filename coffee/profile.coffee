@@ -989,6 +989,8 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
             when "text" then csvHandler(linkPath)
             when "image" then imageHandler(linkPath)
         catch e
+          console.errror "There was a post-processing error: #{e.message}"
+          console.warn e.stack
           toastStatusMessage "Your file uploaded successfully, but there was a problem in the post-processing."
       # Callback if exists
       if typeof callback is "function"

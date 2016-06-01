@@ -450,7 +450,7 @@ value='".$place["zip"]."'
           <h3>Basic Profile</h3>
           <style type="text/css">
             #profile-image-uploader {
-            background: url('<?php echo $viewUser->getuserPicture(); ?>');
+            background: url('<?php echo $viewUser->getuserPicture(); ?>') no-repeat center center;
             }
           </style>
           <div id="upload-container-section">

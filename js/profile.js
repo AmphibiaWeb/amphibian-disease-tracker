@@ -1221,6 +1221,8 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
           }
         } catch (error1) {
           e = error1;
+          console.errror("There was a post-processing error: " + e.message);
+          console.warn(e.stack);
           return toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
         }
       };
