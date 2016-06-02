@@ -987,7 +987,7 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
                 when "x-7z-compressed"
                   _7zHandler(linkPath)
             when "text" then csvHandler(linkPath)
-            when "image" then imageHandler(linkPath)
+            when "image" then imageHandler(linkPath, result)
         catch e
           console.error "There was a post-processing error: #{e.message}"
           console.warn e.stack
@@ -997,6 +997,44 @@ setupProfileImageUpload = (uploadFormId = "profile-image-uploader", bsColWidth =
         callback()
     false
   false
+
+
+imageHandler = (path, ajaxResult = null) ->
+  ###
+  # Take the image path provided and associate that with the user
+  # profile iamge
+  ###
+  # Remove other preview images
+  # Associate the path with the user
+  toastStatusMessage "Test Mode: Your user image has not been saved"
+  return false
+  startLoad()
+  # Build a JSON to post over
+  # TODO CHECK FORMAT
+  data =
+    profile_image_path: path
+  console.log "Going to save", data
+  pdata = jsonTo64 data
+  # TODO CHECK PROFILE ACTION APPLICABILITY
+  args = "perform=write_profile_image&data=#{pdata}"
+  $.post apiTarget, args, "json"
+  .done (result) ->
+    console.log "Save got", result
+    unless result.status is true
+      message = result.human_error ? result.error ? "Unknown error"
+      stopLoadError "There was an error saving your profile image - #{message}. Please try again later."
+      return false
+    toastStatusMessage "Successfully updated your profile image"
+    stopLoad()
+    false
+  .fail (result, status) ->
+    console.error "Error!", result, status
+    stopLoadError "There was a problem saving to the server."
+    false
+  false
+
+
+
 
 
 getProfilePrivacy = ->

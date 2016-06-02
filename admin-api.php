@@ -142,6 +142,9 @@ if ($as_include !== true) {
     case "update_profile":
         returnAjax(updateOwnProfile($_REQUEST));
         break;
+    case "write_profile_image":
+        returnAjax(saveProfileImage($_REQUEST));
+        break;
     default:
         returnAjax(getLoginState($_REQUEST, true));
     }
@@ -1668,6 +1671,17 @@ function updateOwnProfile($get, $col = "public_profile") {
     return $response;
 }
 
+
+function saveProfileImage($get) {
+    /***
+     * For a given image, set it as the profile picture for a user.
+     ***/
+    $data = smart_decode64($get["data"]);
+    $imagePath = $data["profile_image_path"];
+    # Verify file exists
+    $u = new UserFunctions();
+    return $u->setImageAsUserPicture($imagePath);
+}
 
 function sendUserMessage($get) {
     return false;
