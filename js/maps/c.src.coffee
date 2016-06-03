@@ -1313,6 +1313,11 @@ linkUsers = (selector = ".is-user") ->
     if isNull setEmail
       # Try the contents of the tag
       searchRaw = $(this).text()
+      if isNull searchRaw
+        searchRaw = $(this).attr "data-name"
+        if isNull searchRaw
+          console.error "Unable to find a search criterion!"
+          return false
       cols = "name"
     else
       searchRaw = setEmail
