@@ -65,7 +65,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
   ###
   startLoad()
   data = jsonTo64 search
-  args = "action=advanced_project_search&q=#{data}"
+  args = "perform=advanced_project_search&q=#{data}"
   $.post "#{uri.urlString}admin-api.php", args, "json"
   .done (result) ->
     console.info "Adv. search result", result

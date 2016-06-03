@@ -91,7 +91,7 @@ doSearch = function(search, goDeep) {
    */
   startLoad();
   data = jsonTo64(search);
-  args = "action=advanced_project_search&q=" + data;
+  args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
     var i, j, len, len1, posSamples, project, results, spArr, species, speciesCount, totalSamples, totalSpecies;
     console.info("Adv. search result", result);
