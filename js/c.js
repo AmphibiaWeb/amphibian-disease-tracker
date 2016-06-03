@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1706,6 +1706,65 @@ downloadCSVFile = function(data, options) {
   } else {
     $(selector).attr("download", options.downloadFile).attr("href", file);
   }
+  return false;
+};
+
+linkUsers = function(selector) {
+  var profilePageArg, profilePageUri;
+  if (selector == null) {
+    selector = ".is-user";
+  }
+
+  /*
+   * Links users to user profiles
+   *
+   * See #107 for description
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/107
+   */
+  profilePageUri = "https://amphibiandisease.org/profile.php";
+  profilePageArg = "?id=";
+  $(selector).click(function() {
+    var args, dest, search, setEmail, setUid;
+    setUid = $(this).attr("data-uid");
+    setEmail = $(this).attr("data-email");
+    if (!isNull(setUid)) {
+      dest = "" + profilePageUri + profilePageArg + setUid;
+      document.location.href = dest;
+      return false;
+    }
+    if (isNull(setEmail)) {
+      toastStatusMessage("Sorry, we couldn't find that user");
+      return false;
+    }
+    startLoad();
+    search = encodeURIComponent(setEmail);
+    args = "action=search_users&q=" + search + "&cols=username";
+    $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+      var defaultProfile, profiles, uid;
+      console.info("Found", result);
+      if (result.status !== true) {
+        console.error("Error searching for profile");
+        stopLoadError("There was an error looking up the user. Please try again later.");
+        return false;
+      }
+      profiles = Object.toArray(result.result);
+      if (profiles.length < 1) {
+        stopLoadError("Couldn't find user '" + setEmail + "'");
+        return false;
+      }
+      stopLoad();
+      defaultProfile = profiles[0];
+      uid = defaultProfile.uid;
+      dest = "" + profilePageUri + profilePageArg + uid;
+      document.location.href = dest;
+      return false;
+    }).fail(function(result, status) {
+      console.error(result, status);
+      stopLoadError("Error communicating with server. Please try again later.");
+      return false;
+    });
+    return false;
+  });
   return false;
 };
 
