@@ -25,6 +25,7 @@ $loginStatus = getLoginState();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
+    <link rel="prerender" href="https://amphibiandisease.org/project.php" />
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Roboto:400,100,300,500,700,100italic,300italic,400italic,500italic,700italic" rel='stylesheet' type='text/css'/>
 
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon16.png" />

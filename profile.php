@@ -79,6 +79,7 @@ $isCollaborator = false;
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/json-human/css/json.human.css" />
+    <link rel="prerender" href="https://amphibiandisease.org/project.php" />
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Roboto:400,100,300,500,700,100italic,300italic,400italic,500italic,700italic" rel='stylesheet' type='text/css'/>
 
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon16.png" />
@@ -475,7 +476,7 @@ value='".$place["zip"]."'
             <img class="profile-image img-responsive"
                  id="user-profile-image"
                  src="<?php echo $realProfileImagePathXS; ?>"
-                 srcset="<?php echo $realProfileImagePath; ?> 1024w, <?php echo $realProfileImagePathSM; ?> 512w, <?php echo $realProfileImagePathXS; ?> 128w" 
+                 srcset="<?php echo $realProfileImagePath; ?> 1024w, <?php echo $realProfileImagePathSM; ?> 512w, <?php echo $realProfileImagePathXS; ?> 128w"
                  alt="Profile image" />
             <?php if($isViewingSelf) { ?>
             <button class="btn btn-default col-xs-12 col-md-6 col-lg-3" id="expose-uploader">
