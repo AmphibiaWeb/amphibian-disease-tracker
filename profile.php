@@ -375,15 +375,17 @@ value='".$place["zip"]."'
                          global $privacyConfig, $isCollaborator, $isMember, $isPublic;
                          if(array_key_exists($fillKey, $privacyConfig)) {
                              # We need to respect privacy settings
+                             $dataClass = $fillType == "email" ? "col-xs-6":"col-xs-8";
+                             $button = $fillType == "email" ? "<paper-fab mini icon='' class='materialblue do-mailto' data-email='$fill'></paper-fab>":"";
                              if ($isCollaborator) {
                                  $willShare = $privacyConfig[$fillKey]["collaborator"];
                                  if($willShare) {
-                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
                                  }
                              } else if ($isMember) {
                                  $willShare = $privacyConfig[$fillKey]["member"];
                                  if($willShare) {
-                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
                                  }
                              } else {
                                  # Public

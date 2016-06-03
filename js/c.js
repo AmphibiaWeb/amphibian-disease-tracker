@@ -1787,6 +1787,14 @@ $(function() {
   checkFileVersion();
   linkUsers();
   try {
+    $(".do-mailto").click(function() {
+      var email;
+      email = $(this).attr("data-email");
+      document.location.href = "mailto:" + email;
+      return false;
+    });
+  } catch (undefined) {}
+  try {
     $("body").tooltip({
       selector: "[data-toggle='tooltip']"
     });

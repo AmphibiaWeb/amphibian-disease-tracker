@@ -1359,6 +1359,11 @@ $ ->
   checkFileVersion()
   linkUsers()
   try
+    $(".do-mailto").click ->
+      email = $(this).attr "data-email"
+      document.location.href = "mailto:#{email}"
+      false
+  try
     $("body").tooltip
       selector: "[data-toggle='tooltip']"
   catch e
