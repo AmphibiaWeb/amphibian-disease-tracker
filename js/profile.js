@@ -1869,7 +1869,7 @@ renderCaptchas = function(response) {
       if (lookup !== "email") {
         html = "<p class=\"col-xs-8\">\n  " + data + "\n</p>";
       } else {
-        html = "<p class=\"col-xs-6\">\n  " + data + "\n</p>\n<paper-fab mini icon=\"communication:email\" class=\"materialblue do-mailto col-xs-2\" data-email=\"" + data + "\"></paper-fab>";
+        html = "<p class=\"col-xs-5\">\n  " + data + "\n</p>\n<paper-fab mini icon=\"communication:email\" class=\"materialblue do-mailto col-xs-3\" data-email=\"" + data + "\"></paper-fab>";
       }
       $(element).replaceWith(html);
     }
