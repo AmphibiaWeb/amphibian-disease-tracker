@@ -1738,7 +1738,7 @@ linkUsers = function(selector) {
     }
     startLoad();
     search = encodeURIComponent(setEmail);
-    args = "action=search_users&q=" + search + "&cols=username";
+    args = "action=search_users&q=" + search + "&cols=username,alternate_email";
     $.post(uri.urlString + "api.php", args, "json").done(function(result) {
       var defaultProfile, profiles, uid;
       console.info("Found", result);
