@@ -1723,7 +1723,7 @@ linkUsers = function(selector) {
    */
   profilePageUri = "https://amphibiandisease.org/profile.php";
   profilePageArg = "?id=";
-  $(selector).click(function() {
+  $(selector).addClass("linked-user-profile").attr("title", "Visit Profile").attr("data-toggle", "tooltip").click(function() {
     var args, dest, search, setEmail, setUid;
     setUid = $(this).attr("data-uid");
     setEmail = $(this).attr("data-email");
@@ -1775,6 +1775,7 @@ $(function() {
   lightboxImages();
   animateHoverShadows();
   checkFileVersion();
+  linkUsers();
   try {
     $("body").tooltip({
       selector: "[data-toggle='tooltip']"
