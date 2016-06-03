@@ -1296,7 +1296,11 @@ linkUsers = (selector = ".is-user") ->
   ###
   profilePageUri = "https://amphibiandisease.org/profile.php"
   profilePageArg = "?id="
-  $(selector).click ->
+  $(selector)
+  .addClass "linked-user-profile"
+  .attr "title", "Visit Profile"
+  .attr "data-toggle", "tooltip"
+  .click ->
     # Check the attrs set
     setUid = $(this).attr "data-uid"
     setEmail = $(this).attr "data-email"
@@ -1344,6 +1348,7 @@ $ ->
   lightboxImages()
   animateHoverShadows()
   checkFileVersion()
+  linkUsers()
   try
     $("body").tooltip
       selector: "[data-toggle='tooltip']"

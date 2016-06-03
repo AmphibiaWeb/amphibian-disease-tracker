@@ -593,6 +593,15 @@ paper-radio-button #radioContainer, paper-radio-button #radioContainer div {
     clear:both;
 }
 
+span.linked-user-profile:before {
+    .fa-before;
+    content: @fa-var-user;
+}
+
+span.linked-user-profile {
+    cursor: pointer;
+}
+
 
 //////////////////
 // Admin
@@ -1249,10 +1258,10 @@ section.conversations {
 
 .phone {
     .phone-number-parsed {
-        
+
     }
     .phone-number {
-        
+
     }
 }
 
@@ -1274,7 +1283,7 @@ section.conversations {
     padding: .5rem;
     border-radius: 5px;
     transition: .2s ease-out;
-    
+
     iron-label {
         paper-toggle-button {
             float: right;
@@ -1293,12 +1302,12 @@ section.conversations {
 }
 
 #profile-image-uploader-form {
-    
+
     #profile-image-uploader {
         border-radius: 100px;
         width: 175px;
         text-shadow: 0px 1px 0px #fff;
         color: #555
     }
-    
+
 }

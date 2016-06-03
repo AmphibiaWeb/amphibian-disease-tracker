@@ -9912,6 +9912,19 @@ paper-radio-button #radioContainer div {
 .force-center-block:after {
   clear: both;
 }
+span.linked-user-profile:before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f007";
+}
+span.linked-user-profile {
+  cursor: pointer;
+}
 paper-button[raised].admin-action {
   background: #4CAF50;
   color: #fff;
