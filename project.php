@@ -429,13 +429,13 @@ $loginStatus = getLoginState();
     ?>"></paper-input>
           <div class="row">
             <paper-input readonly label="Project PI" class="col-xs-9 col-md-11" value="<?php echo $project['pi_lab']; ?>"></paper-input>
-            <paper-fab icon="social:person" class="materialblue is-user"><?php echo $authorData['name']; ?></paper-fab>
+            <paper-fab icon="social:person" class="materialblue is-user" data-name="<?php echo $project['pi_lab']; ?>"></paper-fab>
           </div>
           <paper-input readonly label="DOI" value="<?php echo $project['publication'];
     ?>"></paper-input>
           <div class="row">
             <paper-input readonly label="Project Contact" value="<?php echo $authorData['name']; ?>" class="col-xs-9 col-md-11"></paper-input>
-            <paper-fab icon="social:person" class="materialblue is-user"><?php echo $authorData['name']; ?></paper-fab>
+            <paper-fab icon="social:person" class="materialblue is-user" data-name="<?php echo $authorData['name']; ?>"></paper-fab>
           </div>
           <paper-input readonly label="Diagnostic Lab" value="<?php echo $authorData['diagnostic_lab'];
     ?>"></paper-input>

@@ -1734,6 +1734,13 @@ linkUsers = function(selector) {
     }
     if (isNull(setEmail)) {
       searchRaw = $(this).text();
+      if (isNull(searchRaw)) {
+        searchRaw = $(this).attr("data-name");
+        if (isNull(searchRaw)) {
+          console.error("Unable to find a search criterion!");
+          return false;
+        }
+      }
       cols = "name";
     } else {
       searchRaw = setEmail;
