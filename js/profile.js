@@ -1267,6 +1267,7 @@ imageHandler = function(path, ajaxResult) {
       return false;
     }
     toastStatusMessage("Successfully updated your profile image");
+    $(".profile-image").attr("src", relativePath);
     stopLoad();
     return false;
   }).fail(function(result, status) {

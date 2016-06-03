@@ -1550,6 +1550,8 @@ class UserFunctions extends DBHelper
             $path = $this->picture_path;
         }
         $imageData = file_get_contents($path . $image);
+        $iParts = explode(".", $image);
+        $extension = array_pop($iParts);
         $imgUri = $path.$this->getHardlink().'.'.$extension;
         $imgSmallUri = $path.$this->getHardlink().'-sm.'.$extension;
         $imgTinyUri = $path.$this->getHardlink().'-xs.'.$extension;
