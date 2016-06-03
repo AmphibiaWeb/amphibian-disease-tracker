@@ -1557,11 +1557,19 @@ renderCaptchas = (response) ->
       data = replaceMap[lookup]
       # Format it based on lookup type
       # Fill the replacement
-      html = """
-      <p class="col-xs-8">
-        #{data}
-      </p>
-      """
+      if lookup isnt "email"
+        html = """
+        <p class="col-xs-8">
+          #{data}
+        </p>
+        """
+      else
+        html = """
+        <p class="col-xs-6">
+          #{data}
+        </p>
+        <paper-fab mini icon="communication:email" class="materialblue do-mailto col-xs-2" data-email="#{data}"></paper-fab>
+        """
       $(element).replaceWith html
     stopLoad()
     false
