@@ -1682,7 +1682,7 @@ function saveProfileImage($get) {
     if(!file_exists($imagePath)) {
         return array(
             "status" => false,
-            "error" => "Invalid path"
+            "error" => "Invalid path",
             "args" => $get,
             "parsed" => $data,
         );

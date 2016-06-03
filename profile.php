@@ -41,7 +41,7 @@ try {
     if(!is_array($userdata)) $userdata = array();
     if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
     $profileImagePath = "users/profiles/" . $viewUser->getHardlink();
-    $extensions = ["bmp", "jpg", "jpeg", "png", "gif"];
+    $extensions = array("bmp", "jpg", "jpeg", "png", "gif");
     foreach($extension as $ext) {
         if(file_exists($profileImagePath . "." . $ext)) {
             $realProfileImagePath = $profileImagePath . "." . $ext;
