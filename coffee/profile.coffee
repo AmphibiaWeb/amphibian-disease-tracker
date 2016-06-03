@@ -1565,10 +1565,10 @@ renderCaptchas = (response) ->
         """
       else
         html = """
-        <p class="col-xs-6">
+        <p class="col-xs-5">
           #{data}
         </p>
-        <paper-fab mini icon="communication:email" class="materialblue do-mailto col-xs-2" data-email="#{data}"></paper-fab>
+        <paper-fab mini icon="communication:email" class="materialblue do-mailto col-xs-3" data-email="#{data}"></paper-fab>
         """
       $(element).replaceWith html
     stopLoad()

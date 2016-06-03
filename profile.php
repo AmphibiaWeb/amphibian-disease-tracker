@@ -375,8 +375,8 @@ value='".$place["zip"]."'
                          global $privacyConfig, $isCollaborator, $isMember, $isPublic;
                          if(array_key_exists($fillKey, $privacyConfig)) {
                              # We need to respect privacy settings
-                             $dataClass = $fillType == "email" ? "col-xs-6":"col-xs-8";
-                             $button = $fillType == "email" ? "<paper-fab mini icon='communication:email' class='materialblue do-mailto col-xs-2' data-email='$fill'></paper-fab>":"";
+                             $dataClass = strtolower($fillType) == "email" ? "col-xs-5":"col-xs-8";
+                             $button = strtolower($fillType) == "email" ? "<paper-fab mini icon='communication:email' class='materialblue do-mailto col-xs-3' data-email='$fill'></paper-fab>":"";
                              if ($isCollaborator) {
                                  $willShare = $privacyConfig[$fillKey]["collaborator"];
                                  if($willShare) {

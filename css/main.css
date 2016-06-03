@@ -12678,6 +12678,14 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .profile-bio-group.social paper-fab {
   color: white;
 }
+.profile-region .profile-data {
+  display: flex;
+  align-items: center;
+}
+.profile-region .profile-data * {
+  margin-bottom: 2.5px;
+  margin-top: 2.5px;
+}
 .profile-region .profile-image-container {
   display: flex;
   align-items: center;
