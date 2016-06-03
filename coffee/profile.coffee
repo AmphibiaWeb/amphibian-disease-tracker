@@ -1006,16 +1006,14 @@ imageHandler = (path, ajaxResult = null) ->
   ###
   # Remove other preview images
   # Associate the path with the user
-  toastStatusMessage "Test Mode: Your user image has not been saved"
-  return false
+  #toastStatusMessage "Test Mode: Your user image has not been saved"
+  #return false
   startLoad()
   # Build a JSON to post over
-  # TODO CHECK FORMAT
   data =
     profile_image_path: path
   console.log "Going to save", data
   pdata = jsonTo64 data
-  # TODO CHECK PROFILE ACTION APPLICABILITY
   args = "perform=write_profile_image&data=#{pdata}"
   $.post apiTarget, args, "json"
   .done (result) ->

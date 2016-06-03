@@ -1245,8 +1245,6 @@ imageHandler = function(path, ajaxResult) {
    * Take the image path provided and associate that with the user
    * profile iamge
    */
-  toastStatusMessage("Test Mode: Your user image has not been saved");
-  return false;
   startLoad();
   data = {
     profile_image_path: path

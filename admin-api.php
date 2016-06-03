@@ -1679,6 +1679,14 @@ function saveProfileImage($get) {
     $data = smart_decode64($get["data"]);
     $imagePath = $data["profile_image_path"];
     # Verify file exists
+    if(!file_exists($imagePath)) {
+        return array(
+            "status" => false,
+            "error" => "Invalid path"
+            "args" => $get,
+            "parsed" => $data,
+        );
+    }
     $u = new UserFunctions();
     return $u->setImageAsUserPicture($imagePath);
 }
