@@ -35,7 +35,8 @@ $viewUser = new UserFunctions($viewUserId, "dblink");
 $validUser = true;
 $userdata = array();
 $realProfileImagePath = "users/profiles/default.png";
-$realProfileImagePathThumb = "users/profiles/default.png";
+$realProfileImagePathXS = "users/profiles/default.png";
+$realProfileImagePathSM = "users/profiles/default.png";
 try {
     $userdata = $viewUser->getUser($setUser);
     if(!is_array($userdata)) $userdata = array();
@@ -45,7 +46,8 @@ try {
     foreach($extension as $ext) {
         if(file_exists($profileImagePath . "." . $ext)) {
             $realProfileImagePath = $profileImagePath . "." . $ext;
-            $realProfileImagePathThumb = $profileImagePath . "-xs." . $ext;
+            $realProfileImagePathXS = $profileImagePath . "-xs." . $ext;
+            $realProfileImagePathSM = $profileImagePath . "-sm." . $ext;
             break;
         }
     }
@@ -468,7 +470,10 @@ value='".$place["zip"]."'
 
           </div>
           <div class="row profile-image-container">
-            <img class="profile-image img-responsive" src="<?php echo $realProfileImagePathThumb; ?>" />
+            <img class="profile-image img-responsive"
+                 src="<?php echo $realProfileImagePathXS; ?>"
+                 srcset="<?php echo $realProfileImagePath; ?> 10x, <?php echo $realProfileImagePathSM; ?> 4x, <?php echo $realProfileImagePathXS; ?> 1x"
+                 />
           </div>
 
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
