@@ -376,7 +376,7 @@ value='".$place["zip"]."'
                          if(array_key_exists($fillKey, $privacyConfig)) {
                              # We need to respect privacy settings
                              $dataClass = $fillType == "email" ? "col-xs-6":"col-xs-8";
-                             $button = $fillType == "email" ? "<paper-fab mini icon='' class='materialblue do-mailto' data-email='$fill'></paper-fab>":"";
+                             $button = $fillType == "email" ? "<paper-fab mini icon='communication:email' class='materialblue do-mailto col-xs-2' data-email='$fill'></paper-fab>":"";
                              if ($isCollaborator) {
                                  $willShare = $privacyConfig[$fillKey]["collaborator"];
                                  if($willShare) {
