@@ -41,10 +41,12 @@ try {
     $userdata = $viewUser->getUser($setUser);
     if(!is_array($userdata)) $userdata = array();
     if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
-    $profileImagePath = "users/profiles/" . $viewUser->getHardlink();
+    $profileImagePath = "users/profiles/" . $viewUserId;
     $extensions = array("bmp", "jpg", "jpeg", "png", "gif");
-    foreach($extension as $ext) {
-        if(file_exists($profileImagePath . "." . $ext)) {
+    foreach($extensions as $ext) {
+        $testPath = realpath($profileImagePath . "." . $ext);
+        echo "\n\n<!-- Testing path '" . $testPath . "' --> ";
+        if(file_exists($testPath)) {
             $realProfileImagePath = $profileImagePath . "." . $ext;
             $realProfileImagePathXS = $profileImagePath . "-xs." . $ext;
             $realProfileImagePathSM = $profileImagePath . "-sm." . $ext;
@@ -466,13 +468,19 @@ value='".$place["zip"]."'
             background: url('<?php echo $viewUser->getuserPicture(); ?>') no-repeat center center;
             }
           </style>
-          <div id="upload-container-section">
+          <div id="upload-container-section" hidden>
 
           </div>
           <div class="row profile-image-container">
             <img class="profile-image img-responsive"
                  src="<?php echo $realProfileImagePathXS; ?>"
-                 srcset="<?php echo $realProfileImagePath; ?> 10x, <?php echo $realProfileImagePathSM; ?> 4x, <?php echo $realProfileImagePathXS; ?> 1x" />
+                 srcset="<?php echo $realProfileImagePath; ?> 1024w, <?php echo $realProfileImagePathSM; ?> 512w, <?php echo $realProfileImagePathXS; ?> 128w" 
+                 alt="Profile image" />
+            <?php if($isViewingSelf) { ?>
+            <button class="btn btn-default col-xs-12 col-md-6 col-lg-3" id="expose-uploader">
+              Change Profile Image
+            </button>
+            <?php } ?>
           </div>
 
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
