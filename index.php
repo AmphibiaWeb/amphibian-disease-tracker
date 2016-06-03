@@ -95,6 +95,7 @@ $loginStatus = getLoginState();
     <script type="text/javascript" src="bower_components/imagelightbox/dist/imagelightbox.min.js"></script>
 
     <script type="text/javascript" src="js/c.js"></script>
+    <script type="text/javascript" src="js/global-search.js"></script>
 
   </head>
   <body class="container-fluid">
@@ -189,6 +190,69 @@ $loginStatus = getLoginState();
         </div>
         <br/>
         <br/>
+        <!--
+        Search for global stuff
+        See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/104
+        -->
+        <div class="form form-horizontal">
+          <div class="form-group">
+            <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
+            <span class="glyphicon col-xs-2" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
+            <div class="col-xs-6 col-sm-8">
+              <input type="text" id="taxa-input" class="form-control" placeholder="e.g., Batrachoseps attenuatus"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
+            <div class="col-xs-8 col-sm-10">
+              <paper-radio-group id="disease-status" selected="any">
+                <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
+                <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+              </paper-radio-group>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="morbidity-status" class="col-xs-4 col-sm-2 control-label">Morbidity Status</label>
+            <div class="col-xs-8 col-sm-10">
+              <paper-radio-group id="morbidity-status" selected="any">
+                <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
+                <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+              </paper-radio-group>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
+            <div class="col-xs-8 col-sm-10 table-responsive">
+              <table class="table table-bordered">
+                <tr>
+                  <th>Point</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                </tr>
+                <tr>
+                  <td>NW</td>
+                  <td>
+                    <input type="number" id="north-coordinate" placeholder="37.872483" class="form-control coord-input lat-input" value="90"/>
+                  </td>
+                  <td>
+                    <input type="number" id="west-coordinate" placeholder="-122.258922" class="form-control coord-input lng-input" value="-180"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>SE</td>
+                  <td>
+                    <input type="number" id="south-coordinate" placeholder="-37.7963646" class="form-control coord-input lat-input" value="-90"/>
+                  </td>
+                  <td>                    
+                    <input type="number" id="east-coordinate" placeholder="144.9589851" class="form-control coord-input lng-input" value="180"/>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
       <section id="landing-blurb" class="row">
         <div class="subcontainer col-xs-12">

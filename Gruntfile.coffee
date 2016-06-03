@@ -70,7 +70,7 @@ module.exports = (grunt) ->
           sourceMapIncludeSources:true
           sourceMapIn:"js/maps/c.js.map"
         files:
-          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js", "js/profile.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
+          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js", "js/profile.js", "js/global-search.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
           "js/app.min.js":["js/c.js","js/admin.js","js/project.js"]
       dist:
         options:
@@ -96,6 +96,7 @@ module.exports = (grunt) ->
           "js/admin.min.js":["js/admin.js"]
           "js/project.min.js":["js/project.js"]
           "js/profile.min.js":["js/profile.js"]
+          "js/global-search.min.js":["js/global-search.js"]
       minpurl:
         options:
           sourceMap:true
@@ -142,6 +143,7 @@ module.exports = (grunt) ->
           "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee", "coffee/admin-su.coffee"]
           "js/project.js":["coffee/project.coffee"]
           "js/profile.js":["coffee/profile.coffee"]
+          "js/global-search.js":["coffee/global-search.coffee"]
     phpcsfixer:
       app:
         dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "home.php", "helpers/excelHelper.php", "profile.php"]
