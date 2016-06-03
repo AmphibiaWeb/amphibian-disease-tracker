@@ -12665,6 +12665,11 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .profile-bio-group.social paper-fab {
   color: white;
 }
+.profile-region .profile-image-container .img-responsive {
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 6px;
+}
 #bio-profile marked-element,
 #bio-profile paper-textarea,
 #bio-profile iron-autogrow-textarea {
