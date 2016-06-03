@@ -468,7 +468,7 @@ value='".$place["zip"]."'
 
           </div>
           <div class="row profile-image-container">
-            <img class="profile-image col-xs-12" src="<?php echo $realProfileImagePathThumb; ?>" />
+            <img class="profile-image img-responsive" src="<?php echo $realProfileImagePathThumb; ?>" />
           </div>
 
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
