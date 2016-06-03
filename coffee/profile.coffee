@@ -1003,11 +1003,9 @@ imageHandler = (path, ajaxResult = null) ->
   ###
   # Take the image path provided and associate that with the user
   # profile iamge
+  #
+  #
   ###
-  # Remove other preview images
-  # Associate the path with the user
-  #toastStatusMessage "Test Mode: Your user image has not been saved"
-  #return false
   startLoad()
   # Get a canonical path
   relativePath = path.replace(/^(\.\.\/)*([\w\/]+\.(jpg|jpeg|png|bmp|gif|webp|pnga))$/img, "$2")
@@ -1028,14 +1026,20 @@ imageHandler = (path, ajaxResult = null) ->
       message = result.human_error ? result.error ? "Unknown error"
       stopLoadError "There was an error saving your profile image - #{message}. Please try again later."
       return false
-    toastStatusMessage "Successfully updated your profile image"
     # Replace the profile image
-    $(".profile-image").attr "src", relativePath
+    imagePath = result.image_uri
+    imageSrcSet = "#{result.image_uri} 10x, #{result.small_image_uri} 4x, #{result.tiny_image_uri} 1x"
+    $(".profile-image")
+    .attr "src", imagePath
+    .attr "srcset", imageSrcSet
+    $(".uploaded-media").remove()
     stopLoad()
+    toastStatusMessage "Successfully updated your profile image"
     false
   .fail (result, status) ->
     console.error "Error!", result, status
     stopLoadError "There was a problem saving to the server."
+    $(".uploaded-media").remove()
     false
   false
 

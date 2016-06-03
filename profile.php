@@ -472,8 +472,7 @@ value='".$place["zip"]."'
           <div class="row profile-image-container">
             <img class="profile-image img-responsive"
                  src="<?php echo $realProfileImagePathXS; ?>"
-                 srcset="<?php echo $realProfileImagePath; ?> 10x, <?php echo $realProfileImagePathSM; ?> 4x, <?php echo $realProfileImagePathXS; ?> 1x"
-                 />
+                 srcset="<?php echo $realProfileImagePath; ?> 10x, <?php echo $realProfileImagePathSM; ?> 4x, <?php echo $realProfileImagePathXS; ?> 1x" />
           </div>
 
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
