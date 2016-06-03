@@ -96,6 +96,9 @@ switch ($do) {
   case 'search_project':
       searchProject($_REQUEST);
       break;
+  case 'advanced_project_search':
+    advancedSearchProject($_REQUEST);
+    break;
   case 'search_users':
   case 'search_user':
     searchUsers($_REQUEST);
@@ -155,6 +158,86 @@ function searchProject($get)
     returnAjax($response);
 }
 
+
+
+function advancedSearchProject($get)
+{
+    /***
+     *
+     ***/
+    global $db;
+    $searchParams = smart_decode64($get["q"], false);
+    $search = array();
+    $response = array(
+        "notices" => array(),
+    );
+    foreach($searchParams as $col=>$searchQuery) {
+        if(checkColumnExists($col, false)) {
+            if($searchQuery["data"] != "*") {
+                $searchQuery["data"] = $db->sanitize($searchQuery["data"]);
+                $search[$col] = $searchQuery;
+            }
+        } else {
+            $response["notices"][] = "'$col' is an invalid column and was ignored.";
+        }
+    }
+    $response["search"] =$searchParams;
+    $response['status'] = true;
+    # The API hit returns data from these columns
+    $returnCols = array(
+        "public",
+        "project_id",
+        "disease",
+        "project_title",
+        "bounding_box_n",
+        "bounding_box_e",
+        "bounding_box_w",
+        "bounding_box_s",
+        "disease_morbidity",
+        "disease_mortality",
+        "includes_anura",
+        "includes_caudata",
+        "includes_gymnophiona",
+    );
+    # For numerical comparisons, we have to allow a type specification
+    $allowedSearchTypes = array(
+        "<",
+        ">",
+        "<=",
+        ">=",
+        "=",
+    );
+    $loose = isset($get["loose"]) ? toBool($get["loose"]) : true;
+    $boolean_type = "AND";
+    $where_arr = array();
+    foreach ($search as $col => $searchQuery) {
+        $crit = $searchQuery["data"];
+        $validSearchType = empty($searchQuery["search_type"]) ? true : in_array($searchQuery["search_type"], $allowedSearchTypes);
+        if($validSearchType || !is_numeric($crit)) {
+            $where_arr[] = $loose ? 'LOWER(`'.$col."`) LIKE '%".$crit."%'" : '`'.$col."`='".$crit."'";
+        } else {
+            # The query is numeric AND we have a search type specified
+            $where_arr[] = "`".$col."` ".$searchQuery["search_type"]." ".$crit;
+        }
+    }
+    $where = '('.implode(' '.strtoupper($boolean_type).' ', $where_arr).')';
+    $query = "SELECT ".implode(",", $returnCols)." FROM `".$db->getTable()."` WHERE $where";
+    $response["query"] = $query;
+    $db->invalidateLink();
+    $r = mysqli_query($db->getLink(), $query);
+    $queryResult = array();
+    while($row = mysqli_fetch_assoc($result)) {
+        $queryResult[] = $row;
+    }
+    $response['result'] = $queryResult;
+    foreach ($response['result'] as $k => $projectResult) {
+        $response['result'][$k]['public'] = boolstr($projectResult['public']);
+    }
+    $response['count'] = sizeof($response['result']);
+    returnAjax($response);
+}
+
+
 function searchUsers($get)
 {
     /***
@@ -165,7 +248,7 @@ function searchUsers($get)
     $response = array(
         'search' => $q,
     );
-    
+
     $search = array(
         'username' => $q,
         'name' => $q,

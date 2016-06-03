@@ -196,15 +196,17 @@ $loginStatus = getLoginState();
         Search for global stuff
         See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/104
         -->
-        <div class="form form-horizontal">
+        <div class="form form-horizontal" id="global-records-search">
           <div class="form-group">
             <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
-            <span class="glyphicon col-xs-2 col-sm-1 glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
             <div class="col-xs-6 col-sm-9">
-              <input type="text" id="taxa-input" class="form-control" placeholder="e.g., Batrachoseps attenuatus"/>
+              <input type="text" id="taxa-input" class="form-control" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
+            </div>
+            <div class="col-xs-2 col-sm-1">
+              <span class="glyphicon glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group paper-elements">
             <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
             <div class="col-xs-8 col-sm-10">
               <paper-radio-group id="disease-status" selected="any">
@@ -214,7 +216,7 @@ $loginStatus = getLoginState();
               </paper-radio-group>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group paper-elements">
             <label for="morbidity-status" class="col-xs-4 col-sm-2 control-label">Morbidity Status</label>
             <div class="col-xs-8 col-sm-10">
               <paper-radio-group id="morbidity-status" selected="any">
@@ -227,7 +229,7 @@ $loginStatus = getLoginState();
           <div class="form-group">
             <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
             <div class="col-xs-8 col-sm-10 table-responsive">
-              <table class="table table-bordered">
+              <table class="table table-bordered margin-table" id="bounds-container">
                 <tr>
                   <th>Point</th>
                   <th>Latitude</th>
