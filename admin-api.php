@@ -146,7 +146,7 @@ if ($as_include !== true) {
         returnAjax(saveProfileImage($_REQUEST));
         break;
     case 'advanced_project_search':
-        advancedSearchProject($_REQUEST);
+        returnAjax(advancedSearchProject($_REQUEST));
         break;
     default:
         returnAjax(getLoginState($_REQUEST, true));
@@ -1817,4 +1817,37 @@ function advancedSearchProject($get)
     $response['count'] = sizeof($response['result']);
     $response['base_count'] = $baseRows;
     returnAjax($response);
+}
+
+
+
+function checkColumnExists($column_list, $userReturn = true, $detailReturn = false)
+{
+    /***
+     * Check if a comma-seperated list of columns exists in the
+     * database.
+     * @param string $column_list (comma-sep)
+     * @return array
+     ***/
+    if (empty($column_list)) {
+        return true;
+    }
+    global $db;
+    $cols = $db->getCols();
+    foreach (explode(',', $column_list) as $column) {
+        if (!array_key_exists($column, $cols)) {
+            if ($userReturn || $detailReturn) {
+                $response = array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column);
+                if ($userReturn) returnAjax($response);
+                return $response;
+            } else {
+                return false;
+            }
+        }
+    }
+    if ($userReturn) {
+        returnAjax(array('status' => true));
+    } else {
+        return true;
+    }
 }

@@ -69,7 +69,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
   $.post "#{uri.urlString}admin-api.php", args, "json"
   .done (result) ->
     console.info "Adv. search result", result
-    results = result.result
+    results = Object.toArray result.result
     if goDeep
       # If we're going deep, we'll let the deep take care of the rest
       doDeepSearch(results)
