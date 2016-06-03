@@ -1549,16 +1549,21 @@ class UserFunctions extends DBHelper
         if (empty($path)) {
             $path = $this->picture_path;
         }
-        $imageData = file_get_contents($path . $image);
+        if(strpos($image, $path) === 0) {
+           $image = str_replace($path, "", $image);
+        }
+        $sourceImage = $path . $image;
+        $imageData = file_get_contents($sourceImage);
         $iParts = explode(".", $image);
         $extension = array_pop($iParts);
         $imgUri = $path.$this->getHardlink().'.'.$extension;
         $imgSmallUri = $path.$this->getHardlink().'-sm.'.$extension;
         $imgTinyUri = $path.$this->getHardlink().'-xs.'.$extension;
         try {
-            file_put_contents($imgUri, $imageData);
+            #file_put_contents($imgUri, $imageData);
+            rename($sourceImage, $imageUri);
         } catch (Exception $e) {
-            return array('status' => false,'error' => $e->getMessage(),'human_error' => 'There was an error in processing your image','app_error_code' => 119,'path' => $path,'img_path' => $imgUri);
+            return array('status' => false,'error' => $e->getMessage(),'human_error' => 'There was an error in processing your image','app_error_code' => 119,'path' => $path,'img_path' => $imgUri, "source" => $sourceImage);
         }
         try {
             # Shrinkify image
@@ -1566,9 +1571,9 @@ class UserFunctions extends DBHelper
             @resizeImage($imgUri, $imgSmallUri, 512, 512);
             @resizeImage($imgUri, $imgTinyUri, 128, 128);
 
-            return array('status' => true, 'image_uri' => $imgUri, 'small_image_uri' => $imgSmallUri, 'tiny_image_uri' => $imgTinyUri);
+            return array('status' => true, 'image_uri' => $imgUri, 'small_image_uri' => $imgSmallUri, 'tiny_image_uri' => $imgTinyUri, "source" => $sourceImage);
         } catch (Exception $e) {
-            return array('status' => true,'image_uri' => $imgUri,'error' => $e->getMessage(),'human_error' => 'There was an error in shrinking your image','app_error_code' => 122,'path' => $path);
+            return array('status' => true,'image_uri' => $imgUri,'error' => $e->getMessage(),'human_error' => 'There was an error in shrinking your image','app_error_code' => 122,'path' => $path, "source" => $sourceImage);
         }
     }
 
