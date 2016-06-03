@@ -1316,7 +1316,7 @@ linkUsers = (selector = ".is-user") ->
     # An email is set, look it up
     startLoad()
     search = encodeURIComponent setEmail
-    args = "action=search_users&q=#{search}&cols=username"
+    args = "action=search_users&q=#{search}&cols=username,alternate_email"
     $.post "#{uri.urlString}api.php", args, "json"
     .done (result) ->
       console.info "Found", result
