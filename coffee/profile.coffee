@@ -1009,9 +1009,15 @@ imageHandler = (path, ajaxResult = null) ->
   #toastStatusMessage "Test Mode: Your user image has not been saved"
   #return false
   startLoad()
+  # Get a canonical path
+  relativePath = path.replace(/^(\.\.\/)*([\w\/]+\.(jpg|jpeg|png|bmp|gif|webp|pnga))$/img, "$2")
+  if isNull relativePath
+    console.error "Invalid path '#{path}' parsed to invalid canonical path", relativePath
+    stopLoadError "Processing error. Please try again."
+    return false
   # Build a JSON to post over
   data =
-    profile_image_path: path
+    profile_image_path: relativePath
   console.log "Going to save", data
   pdata = jsonTo64 data
   args = "perform=write_profile_image&data=#{pdata}"

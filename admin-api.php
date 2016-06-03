@@ -1676,7 +1676,8 @@ function saveProfileImage($get) {
     /***
      * For a given image, set it as the profile picture for a user.
      ***/
-    $data = smart_decode64($get["data"]);
+    # We don't need to clean the decoded data since we're checking for existence
+    $data = smart_decode64($get["data"], false);
     $imagePath = $data["profile_image_path"];
     # Verify file exists
     if(!file_exists($imagePath)) {
@@ -1685,6 +1686,7 @@ function saveProfileImage($get) {
             "error" => "Invalid path",
             "args" => $get,
             "parsed" => $data,
+            "canonical_path" => realpath($imagePath);
         );
     }
     $u = new UserFunctions();
