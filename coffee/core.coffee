@@ -236,7 +236,7 @@ jQuery.fn.outerHTML = ->
 
 jQuery.fn.outerHtml = ->
   $(this).outerHTML()
-  
+
 
 
 copyText = (text, zcObj, zcElement) ->
@@ -1286,6 +1286,56 @@ downloadCSVFile = (data, options) ->
     .attr("href",file)
   false
 
+
+linkUsers = (selector = ".is-user") ->
+  ###
+  # Links users to user profiles
+  #
+  # See #107 for description
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/107
+  ###
+  profilePageUri = "https://amphibiandisease.org/profile.php"
+  profilePageArg = "?id="
+  $(selector).click ->
+    # Check the attrs set
+    setUid = $(this).attr "data-uid"
+    setEmail = $(this).attr "data-email"
+    # Preferred case: go directly by UID
+    unless isNull setUid
+      dest = "#{profilePageUri}#{profilePageArg}#{setUid}"
+      document.location.href = dest
+      return false
+    # Do we have an email to check?
+    if isNull setEmail
+      toastStatusMessage "Sorry, we couldn't find that user"
+      return false
+    # An email is set, look it up
+    startLoad()
+    search = encodeURIComponent setEmail
+    args = "action=search_users&q=#{search}&cols=username"
+    $.post "#{uri.urlString}api.php", args, "json"
+    .done (result) ->
+      console.info "Found", result
+      if result.status isnt true
+        console.error "Error searching for profile"
+        stopLoadError "There was an error looking up the user. Please try again later."
+        return false
+      profiles = Object.toArray result.result
+      if profiles.length < 1
+        stopLoadError "Couldn't find user '#{setEmail}'"
+        return false
+      stopLoad()
+      defaultProfile = profiles[0]
+      uid = defaultProfile.uid
+      dest = "#{profilePageUri}#{profilePageArg}#{uid}"
+      document.location.href = dest
+      false
+    .fail (result, status) ->
+      console.error result, status
+      stopLoadError "Error communicating with server. Please try again later."
+      false
+    false
+  false
 
 
 $ ->
