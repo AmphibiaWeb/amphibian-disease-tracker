@@ -256,8 +256,10 @@ $loginStatus = getLoginState();
               </table>
             </div>
           </div>
-          <button class="btn btn-primary do-search" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all results from projects containing at least one matching sample, with the project contained in the bounds"><iron-icon icon="icons:search"></iron-icon> Search Projects</button>
-          <button class="btn btn-default do-search" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> Search Samples</button>
+          <div class="form-group">
+            <button class="btn btn-primary do-search col-xs-6 col-sm-4 col-md-3 col-lg-2" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all results from projects containing at least one matching sample, with the project contained in the bounds"><iron-icon icon="icons:search"></iron-icon> Search Projects</button>
+            <button class="btn btn-default do-search col-xs-6 col-sm-4 col-md-3 col-lg-2" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> Search Samples</button>
+          </div>
         </div>
       </section>
       <section id="landing-blurb" class="row">
