@@ -1029,13 +1029,23 @@ imageHandler = (path, ajaxResult = null) ->
     # Replace the profile image
     try
       imagePath = result.image_uri
+      ts = "?v=#{Date.now()}"
       imageNew = """
       <img class="profile-image img-responsive"
         id="user-profile-image"
-        src="#{result.tiny_image_uri}"
-        srcset="#{imagePath} 10x, #{result.small_image_uri} 4x, #{result.tiny_image_uri} 1x" alt="Profile image" />
+        src="#{result.tiny_image_uri}#{ts}"
+        srcset="#{imagePath}#{ts} 10x, #{result.small_image_uri}#{ts} 4x, #{result.tiny_image_uri}#{ts} 1x" alt="Profile image" />
       """
       $("#user-profile-image").replaceWith imageNew
+      html = """
+      <div class="alert alert-info col-xs-12">
+        <a href="#" class="alert-link hard-refresh-page">Click here to refresh</a> and see your new profile image. Be sure to save any changes first.
+      </div>
+      """
+      # $(".profile-image-container").html html
+      $(".hard-refresh-page").click ->
+        document.location.reload(true)
+      console.info "Replaced #user-profile-image", html
     catch e
       console.warn "Couldn't replace old profile image - #{e.message}"
       console.warn e.stack

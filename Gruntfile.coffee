@@ -70,7 +70,7 @@ module.exports = (grunt) ->
           sourceMapIncludeSources:true
           sourceMapIn:"js/maps/c.js.map"
         files:
-          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
+          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js", "js/profile.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
           "js/app.min.js":["js/c.js","js/admin.js","js/project.js"]
       dist:
         options:
@@ -95,6 +95,7 @@ module.exports = (grunt) ->
           "js/c.min.js":["js/c.js"]
           "js/admin.min.js":["js/admin.js"]
           "js/project.min.js":["js/project.js"]
+          "js/profile.min.js":["js/profile.js"]
       minpurl:
         options:
           sourceMap:true

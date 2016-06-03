@@ -1261,7 +1261,7 @@ imageHandler = function(path, ajaxResult) {
   pdata = jsonTo64(data);
   args = "perform=write_profile_image&data=" + pdata;
   $.post(apiTarget, args, "json").done(function(result) {
-    var e, error, imageNew, imagePath, message, ref, ref1;
+    var e, error, html, imageNew, imagePath, message, ref, ref1, ts;
     console.log("Save got", result);
     if (result.status !== true) {
       message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
@@ -1270,8 +1270,14 @@ imageHandler = function(path, ajaxResult) {
     }
     try {
       imagePath = result.image_uri;
-      imageNew = "<img class=\"profile-image img-responsive\"\n  id=\"user-profile-image\"\n  src=\"" + result.tiny_image_uri + "\"\n  srcset=\"" + imagePath + " 10x, " + result.small_image_uri + " 4x, " + result.tiny_image_uri + " 1x\" alt=\"Profile image\" />";
+      ts = "?v=" + (Date.now());
+      imageNew = "<img class=\"profile-image img-responsive\"\n  id=\"user-profile-image\"\n  src=\"" + result.tiny_image_uri + ts + "\"\n  srcset=\"" + imagePath + ts + " 10x, " + result.small_image_uri + ts + " 4x, " + result.tiny_image_uri + ts + " 1x\" alt=\"Profile image\" />";
       $("#user-profile-image").replaceWith(imageNew);
+      html = "<div class=\"alert alert-info col-xs-12\">\n  <a href=\"#\" class=\"alert-link hard-refresh-page\">Click here to refresh</a> and see your new profile image. Be sure to save any changes first.\n</div>";
+      $(".hard-refresh-page").click(function() {
+        return document.location.reload(true);
+      });
+      console.info("Replaced #user-profile-image", html);
     } catch (error) {
       e = error;
       console.warn("Couldn't replace old profile image - " + e.message);
