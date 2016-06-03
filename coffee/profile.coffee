@@ -1031,10 +1031,14 @@ imageHandler = (path, ajaxResult = null) ->
       imagePath = result.image_uri
       imageNew = """
       <img class="profile-image img-responsive"
+        id="user-profile-image"
         src="#{result.tiny_image_uri}"
         srcset="#{imagePath} 10x, #{result.small_image_uri} 4x, #{result.tiny_image_uri} 1x" alt="Profile image" />
       """
-      $(".profile-image").replaceWith imageNew
+      $("#user-profile-image").replaceWith imageNew
+    catch e
+      console.warn "Couldn't replace old profile image - #{e.message}"
+      console.warn e.stack
     $(".uploaded-media").remove()
     stopLoad()
     toastStatusMessage "Successfully updated your profile image"
