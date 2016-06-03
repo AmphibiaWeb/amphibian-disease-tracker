@@ -1311,11 +1311,15 @@ linkUsers = (selector = ".is-user") ->
       return false
     # Do we have an email to check?
     if isNull setEmail
-      toastStatusMessage "Sorry, we couldn't find that user"
-      return false
+      # Try the contents of the tag
+      searchRaw = $(this).text()
+      cols = "name"
+    else
+      searchRaw = setEmail
+      cols = "username,alternate_email"
     # An email is set, look it up
     startLoad()
-    search = encodeURIComponent setEmail
+    search = encodeURIComponent searchRaw
     args = "action=search_users&q=#{search}&cols=username,alternate_email"
     $.post "#{uri.urlString}api.php", args, "json"
     .done (result) ->
@@ -1326,7 +1330,7 @@ linkUsers = (selector = ".is-user") ->
         return false
       profiles = Object.toArray result.result
       if profiles.length < 1
-        stopLoadError "Couldn't find user '#{setEmail}'"
+        stopLoadError "Couldn't find user '#{searchRaw}'"
         return false
       stopLoad()
       defaultProfile = profiles[0]

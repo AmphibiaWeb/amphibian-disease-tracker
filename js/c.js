@@ -1724,7 +1724,7 @@ linkUsers = function(selector) {
   profilePageUri = "https://amphibiandisease.org/profile.php";
   profilePageArg = "?id=";
   $(selector).addClass("linked-user-profile").attr("title", "Visit Profile").attr("data-toggle", "tooltip").click(function() {
-    var args, dest, search, setEmail, setUid;
+    var args, cols, dest, search, searchRaw, setEmail, setUid;
     setUid = $(this).attr("data-uid");
     setEmail = $(this).attr("data-email");
     if (!isNull(setUid)) {
@@ -1733,11 +1733,14 @@ linkUsers = function(selector) {
       return false;
     }
     if (isNull(setEmail)) {
-      toastStatusMessage("Sorry, we couldn't find that user");
-      return false;
+      searchRaw = $(this).text();
+      cols = "name";
+    } else {
+      searchRaw = setEmail;
+      cols = "username,alternate_email";
     }
     startLoad();
-    search = encodeURIComponent(setEmail);
+    search = encodeURIComponent(searchRaw);
     args = "action=search_users&q=" + search + "&cols=username,alternate_email";
     $.post(uri.urlString + "api.php", args, "json").done(function(result) {
       var defaultProfile, profiles, uid;
@@ -1749,7 +1752,7 @@ linkUsers = function(selector) {
       }
       profiles = Object.toArray(result.result);
       if (profiles.length < 1) {
-        stopLoadError("Couldn't find user '" + setEmail + "'");
+        stopLoadError("Couldn't find user '" + searchRaw + "'");
         return false;
       }
       stopLoad();
