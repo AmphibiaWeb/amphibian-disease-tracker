@@ -213,7 +213,13 @@ function advancedSearchProject($get)
     foreach ($search as $col => $searchQuery) {
         $crit = $searchQuery["data"];
         $validSearchType = empty($searchQuery["search_type"]) ? true : in_array($searchQuery["search_type"], $allowedSearchTypes);
-        if($validSearchType || !is_numeric($crit)) {
+        if(!empty($searchQuery["search_type"]) && !$validSearchType) {
+            $response["notices"][] = "'".$searchQuery["search_type"]."' isn't a valid search type";
+        }
+        if($validSearchType && !is_numeric($crit)) {
+            $response["notices"][] = "Search types may only be specified for numeric data ('".$searchQuery["search_type"]."' tried to be specified for '$crit')";
+        }
+        if(!$validSearchType || !is_numeric($crit)) {
             $where_arr[] = $loose ? 'LOWER(`'.$col."`) LIKE '%".$crit."%'" : '`'.$col."`='".$crit."'";
         } else {
             # The query is numeric AND we have a search type specified
