@@ -49,6 +49,8 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/paper-slider/paper-slider.html"/>
     <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
     <link rel="import" href="bower_components/paper-dialog/paper-dialog.html"/>
+    <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html"/>
+    <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html"/>
     <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"/>
     <link rel="import" href="bower_components/paper-button/paper-button.html"/>
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
@@ -197,8 +199,8 @@ $loginStatus = getLoginState();
         <div class="form form-horizontal">
           <div class="form-group">
             <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
-            <span class="glyphicon col-xs-2" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
-            <div class="col-xs-6 col-sm-8">
+            <span class="glyphicon col-xs-2 col-sm-1 glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
+            <div class="col-xs-6 col-sm-9">
               <input type="text" id="taxa-input" class="form-control" placeholder="e.g., Batrachoseps attenuatus"/>
             </div>
           </div>
@@ -245,7 +247,7 @@ $loginStatus = getLoginState();
                   <td>
                     <input type="number" id="south-coordinate" placeholder="-37.7963646" class="form-control coord-input lat-input" value="-90"/>
                   </td>
-                  <td>                    
+                  <td>
                     <input type="number" id="east-coordinate" placeholder="144.9589851" class="form-control coord-input lng-input" value="180"/>
                   </td>
                 </tr>
