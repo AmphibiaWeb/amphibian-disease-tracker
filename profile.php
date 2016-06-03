@@ -473,6 +473,7 @@ value='".$place["zip"]."'
           </div>
           <div class="row profile-image-container">
             <img class="profile-image img-responsive"
+                 id="user-profile-image"
                  src="<?php echo $realProfileImagePathXS; ?>"
                  srcset="<?php echo $realProfileImagePath; ?> 1024w, <?php echo $realProfileImagePathSM; ?> 512w, <?php echo $realProfileImagePathXS; ?> 128w" 
                  alt="Profile image" />
