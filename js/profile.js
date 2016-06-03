@@ -1244,6 +1244,8 @@ imageHandler = function(path, ajaxResult) {
   /*
    * Take the image path provided and associate that with the user
    * profile iamge
+   *
+   *
    */
   startLoad();
   relativePath = path.replace(/^(\.\.\/)*([\w\/]+\.(jpg|jpeg|png|bmp|gif|webp|pnga))$/img, "$2");
@@ -1259,20 +1261,24 @@ imageHandler = function(path, ajaxResult) {
   pdata = jsonTo64(data);
   args = "perform=write_profile_image&data=" + pdata;
   $.post(apiTarget, args, "json").done(function(result) {
-    var message, ref, ref1;
+    var imagePath, imageSrcSet, message, ref, ref1;
     console.log("Save got", result);
     if (result.status !== true) {
       message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
       stopLoadError("There was an error saving your profile image - " + message + ". Please try again later.");
       return false;
     }
-    toastStatusMessage("Successfully updated your profile image");
-    $(".profile-image").attr("src", relativePath);
+    imagePath = result.image_uri;
+    imageSrcSet = result.image_uri + " 10x, " + result.small_image_uri + " 4x, " + result.tiny_image_uri + " 1x";
+    $(".profile-image").attr("src", imagePath).attr("srcset", imageSrcSet);
+    $(".uploaded-media").remove();
     stopLoad();
+    toastStatusMessage("Successfully updated your profile image");
     return false;
   }).fail(function(result, status) {
     console.error("Error!", result, status);
     stopLoadError("There was a problem saving to the server.");
+    $(".uploaded-media").remove();
     return false;
   });
   return false;
