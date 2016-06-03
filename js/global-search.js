@@ -95,7 +95,7 @@ doSearch = function(search, goDeep) {
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
     var i, j, len, len1, posSamples, project, results, spArr, species, speciesCount, totalSamples, totalSpecies;
     console.info("Adv. search result", result);
-    results = result.result;
+    results = Object.toArray(result.result);
     if (goDeep) {
       doDeepSearch(results);
       return false;
