@@ -87,7 +87,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           totalSpecies.push species
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species"
-    toastStatusMessage "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species"
+    toastStatusMessage "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", "", 7500
     # Visualize it
     foo()
     stopLoad()
@@ -111,7 +111,7 @@ doDeepSearch = (shallowResults) ->
 $ ->
   $(".coord-input").keyup ->
     checkCoordinateSanity()
-  $("#do-global-search").click ->
+  $(".do-search").click ->
     ok = checkCoordinateSanity()
     unless ok
       toastStatusMessage "Please check your coordinates"

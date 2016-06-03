@@ -118,7 +118,7 @@ doSearch = function(search, goDeep) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species");
-    toastStatusMessage("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species");
+    toastStatusMessage("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", "", 7500);
     foo();
     stopLoad();
     return false;
@@ -144,7 +144,7 @@ $(function() {
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();
   });
-  return $("#do-global-search").click(function() {
+  return $(".do-search").click(function() {
     var deep, ok;
     ok = checkCoordinateSanity();
     if (!ok) {
