@@ -1560,8 +1560,8 @@ class UserFunctions extends DBHelper
         $imgSmallUri = $path.$this->getHardlink().'-sm.'.$extension;
         $imgTinyUri = $path.$this->getHardlink().'-xs.'.$extension;
         try {
-            #file_put_contents($imgUri, $imageData);
-            rename($sourceImage, $imageUri);
+            file_put_contents($imgUri, $imageData);
+            #rename($sourceImage, $imageUri);
         } catch (Exception $e) {
             return array('status' => false,'error' => $e->getMessage(),'human_error' => 'There was an error in processing your image','app_error_code' => 119,'path' => $path,'img_path' => $imgUri, "source" => $sourceImage);
         }
