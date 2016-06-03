@@ -1571,6 +1571,13 @@ renderCaptchas = (response) ->
         <paper-fab mini icon="communication:email" class="materialblue do-mailto col-xs-3" data-email="#{data}"></paper-fab>
         """
       $(element).replaceWith html
+    try
+      $(".do-mailto")
+      .unbind()
+      .click ->
+        email = $(this).attr "data-email"
+        document.location.href = "mailto:#{email}"
+        false
     stopLoad()
     false
   .fail (result, status) ->
