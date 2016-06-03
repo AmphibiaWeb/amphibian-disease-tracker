@@ -1031,7 +1031,7 @@ imageHandler = (path, ajaxResult = null) ->
     false
   false
 
-
+window.imageHandler = imageHandler
 
 
 
