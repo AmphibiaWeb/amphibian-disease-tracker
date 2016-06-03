@@ -34,10 +34,21 @@ $selfUserId = $selfUser->getHardlink();
 $viewUser = new UserFunctions($viewUserId, "dblink");
 $validUser = true;
 $userdata = array();
+$realProfileImagePath = "users/profiles/default.png";
+$realProfileImagePathThumb = "users/profiles/default.png";
 try {
     $userdata = $viewUser->getUser($setUser);
     if(!is_array($userdata)) $userdata = array();
     if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
+    $profileImagePath = "users/profiles/" . $viewUser->getHardlink();
+    $extensions = ["bmp", "jpg", "jpeg", "png", "gif"];
+    foreach($extension as $ext) {
+        if(file_exists($profileImagePath . "." . $ext)) {
+            $realProfileImagePath = $profileImagePath . "." . $ext;
+            $realProfileImagePathThumb = $profileImagePath . "-xs." . $ext;
+            break;
+        }
+    }
     # else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
     #$nameXml = $userdata["name"];
     #$xml = new Xml();
@@ -454,8 +465,12 @@ value='".$place["zip"]."'
             }
           </style>
           <div id="upload-container-section">
-            
+
           </div>
+          <div class="row profile-image-container">
+            <img class="profile-image" src="<?php echo $realProfileImagePathThumb; ?>" />
+          </div>
+
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
           <?php
              $dateCreated = date("d F Y", $userdata["creation"]);

@@ -388,19 +388,19 @@ class UserFunctions extends DBHelper
         $xml->setXml($nameXml);
         return $xml->getTagContents($tag);
     }
-    
+
     public function getName() {
         return $this->getNameTag("name");
     }
-    
+
     public function getFirstName() {
         return $this->getNameTag("fname");
     }
-    
+
     public function getLastName() {
         return $this->getNameTag("lname");
     }
-    
+
     public function getProfile() {
         /***
          * Returns the public_profile of the userdata
@@ -1537,6 +1537,37 @@ class UserFunctions extends DBHelper
         }
 
         return $this->qualDomain.$path.'default.png';
+    }
+
+    public function setImageAsUserPicture($image, $path = null) {
+        /***
+         * Sets an image as one for a user
+         *
+         * @param string $image -> filename for an image asset
+         * @param string $path -> path to $image
+         ***/
+        if (empty($path)) {
+            $path = $this->picture_path;
+        }
+        $imageData = file_get_contents($path . $image);
+        $imgUri = $path.$this->getHardlink().'.'.$extension;
+        $imgSmallUri = $path.$this->getHardlink().'-sm.'.$extension;
+        $imgTinyUri = $path.$this->getHardlink().'-xs.'.$extension;
+        try {
+            file_put_contents($imgUri, $imageData);
+        } catch (Exception $e) {
+            return array('status' => false,'error' => $e->getMessage(),'human_error' => 'There was an error in processing your image','app_error_code' => 119,'path' => $path,'img_path' => $imgUri);
+        }
+        try {
+            # Shrinkify image
+            require_once dirname(__FILE__).'/image_functions.php';
+            @resizeImage($imgUri, $imgSmallUri, 512, 512);
+            @resizeImage($imgUri, $imgTinyUri, 128, 128);
+
+            return array('status' => true, 'image_uri' => $imgUri, 'small_image_uri' => $imgSmallUri, 'tiny_image_uri' => $imgTinyUri);
+        } catch (Exception $e) {
+            return array('status' => true,'image_uri' => $imgUri,'error' => $e->getMessage(),'human_error' => 'There was an error in shrinking your image','app_error_code' => 122,'path' => $path);
+        }
     }
 
     public function setUserPicture($image, $path = null)

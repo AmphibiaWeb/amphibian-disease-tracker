@@ -6,7 +6,7 @@
  * See
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/48
  */
-var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, initialCascadeSetup, isoCountries, loadUserBadges, profileAction, renderCaptchas, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
+var apiTarget, cascadePrivacyToggledState, cleanupAddressDisplay, conditionalLoadAccountSettingsOptions, constructProfileJson, copyLink, forceUpdateMarked, formatSocial, getProfilePrivacy, imageHandler, initialCascadeSetup, isoCountries, loadUserBadges, profileAction, renderCaptchas, saveProfileChanges, searchProfiles, setupProfileImageUpload, setupUserChat, validateAddress, verifyLoginCredentials;
 
 profileAction = "update_profile";
 
@@ -1217,7 +1217,7 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
             case "text":
               return csvHandler(linkPath);
             case "image":
-              return imageHandler(linkPath);
+              return imageHandler(linkPath, result);
           }
         } catch (error1) {
           e = error1;
@@ -1230,6 +1230,42 @@ setupProfileImageUpload = function(uploadFormId, bsColWidth, callback) {
         return callback();
       }
     });
+    return false;
+  });
+  return false;
+};
+
+imageHandler = function(path, ajaxResult) {
+  var args, data, pdata;
+  if (ajaxResult == null) {
+    ajaxResult = null;
+  }
+
+  /*
+   * Take the image path provided and associate that with the user
+   * profile iamge
+   */
+  startLoad();
+  data = {
+    profile_image_path: path
+  };
+  console.log("Going to save", data);
+  pdata = jsonTo64(data);
+  args = "perform=write_profile_image&data=" + pdata;
+  $.post(apiTarget, args, "json").done(function(result) {
+    var message, ref, ref1;
+    console.log("Save got", result);
+    if (result.status !== true) {
+      message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
+      stopLoadError("There was an error saving your profile image - " + message + ". Please try again later.");
+      return false;
+    }
+    toastStatusMessage("Successfully updated your profile image");
+    stopLoad();
+    return false;
+  }).fail(function(result, status) {
+    console.error("Error!", result, status);
+    stopLoadError("There was a problem saving to the server.");
     return false;
   });
   return false;
