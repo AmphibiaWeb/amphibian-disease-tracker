@@ -1027,11 +1027,14 @@ imageHandler = (path, ajaxResult = null) ->
       stopLoadError "There was an error saving your profile image - #{message}. Please try again later."
       return false
     # Replace the profile image
-    imagePath = result.image_uri
-    imageSrcSet = "#{result.image_uri} 10x, #{result.small_image_uri} 4x, #{result.tiny_image_uri} 1x"
-    $(".profile-image")
-    .attr "src", imagePath
-    .attr "srcset", imageSrcSet
+    try
+      imagePath = result.image_uri
+      imageNew = """
+      <img class="profile-image img-responsive"
+        src="#{result.tiny_image_uri}"
+        srcset="#{imagePath} 10x, #{result.small_image_uri} 4x, #{result.tiny_image_uri} 1x" alt="Profile image" />
+      """
+      $(".profile-image").replaceWith imageNew
     $(".uploaded-media").remove()
     stopLoad()
     toastStatusMessage "Successfully updated your profile image"

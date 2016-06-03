@@ -12665,11 +12665,67 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .profile-bio-group.social paper-fab {
   color: white;
 }
+.profile-region .profile-image-container {
+  display: flex;
+  align-items: center;
+}
 .profile-region .profile-image-container .img-responsive {
   padding-left: 15px;
   padding-right: 15px;
   border-radius: 6px;
   max-height: 20vh;
+  float: left !important;
+  float: left;
+}
+.profile-region .profile-image-container .img-responsive + button {
+  float: right !important;
+  float: right;
+}
+.profile-region .profile-image-container .img-responsive + button paper-card {
+  width: 100%;
+  margin-bottom: 2rem;
+  transition: all 0.5s ease-out;
+  max-height: 750px;
+}
+.profile-region .profile-image-container .img-responsive + button paper-card > div {
+  max-height: 750px;
+}
+.profile-region .profile-image-container .img-responsive + button paper-card .header {
+  cursor: pointer;
+}
+.profile-region .profile-image-container .img-responsive + button paper-card .header :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f066";
+}
+.profile-region .profile-image-container .img-responsive + button paper-card div {
+  transition: all 0.5s ease-out;
+}
+.profile-region .profile-image-container .img-responsive + button paper-card.collapse > div:not(.header),
+.profile-region .profile-image-container .img-responsive + button paper-card.collapsed > div:not(.header) {
+  transition: all 0.5s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+.profile-region .profile-image-container .img-responsive + button paper-card.collapse > .header :before,
+.profile-region .profile-image-container .img-responsive + button paper-card.collapsed > .header :before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 1rem;
+  content: "\f065" !important;
+}
+.profile-region .profile-image-container .img-responsive + button .paper-card-0 .header.paper-card .title-text.paper-card {
+  color: #009688;
 }
 #bio-profile marked-element,
 #bio-profile paper-textarea,

@@ -1261,16 +1261,18 @@ imageHandler = function(path, ajaxResult) {
   pdata = jsonTo64(data);
   args = "perform=write_profile_image&data=" + pdata;
   $.post(apiTarget, args, "json").done(function(result) {
-    var imagePath, imageSrcSet, message, ref, ref1;
+    var imageNew, imagePath, message, ref, ref1;
     console.log("Save got", result);
     if (result.status !== true) {
       message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
       stopLoadError("There was an error saving your profile image - " + message + ". Please try again later.");
       return false;
     }
-    imagePath = result.image_uri;
-    imageSrcSet = result.image_uri + " 10x, " + result.small_image_uri + " 4x, " + result.tiny_image_uri + " 1x";
-    $(".profile-image").attr("src", imagePath).attr("srcset", imageSrcSet);
+    try {
+      imagePath = result.image_uri;
+      imageNew = "<img class=\"profile-image img-responsive\"\n  src=\"" + result.tiny_image_uri + "\"\n  srcset=\"" + imagePath + " 10x, " + result.small_image_uri + " 4x, " + result.tiny_image_uri + " 1x\" alt=\"Profile image\" />";
+      $(".profile-image").replaceWith(imageNew);
+    } catch (undefined) {}
     $(".uploaded-media").remove();
     stopLoad();
     toastStatusMessage("Successfully updated your profile image");
