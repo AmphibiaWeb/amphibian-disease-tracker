@@ -1225,11 +1225,17 @@ section.conversations {
 
 .profile-region {
     .profile-image-container {
+        display: flex;
+        align-items: center;
         .img-responsive {
             padding-left: @panel-body-padding;
             padding-right: @panel-body-padding;
             .img-rounded;
             max-height: 20vh;
+            .pull-left;
+        }
+        .img-responsive + button {
+            .pull-right;
         }
     }
 }
