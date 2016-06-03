@@ -1029,6 +1029,8 @@ imageHandler = (path, ajaxResult = null) ->
       stopLoadError "There was an error saving your profile image - #{message}. Please try again later."
       return false
     toastStatusMessage "Successfully updated your profile image"
+    # Replace the profile image
+    $(".profile-image").attr "src", relativePath
     stopLoad()
     false
   .fail (result, status) ->

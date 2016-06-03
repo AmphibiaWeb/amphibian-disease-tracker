@@ -1686,7 +1686,7 @@ function saveProfileImage($get) {
             "error" => "Invalid path",
             "args" => $get,
             "parsed" => $data,
-            "canonical_path" => realpath($imagePath);
+            "canonical_path" => realpath($imagePath),
         );
     }
     $u = new UserFunctions();
