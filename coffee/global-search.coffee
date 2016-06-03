@@ -18,9 +18,11 @@ checkCoordinateSanity = ->
     isGood = false
     $(".lng-input").parent().addClass "has-error"
   unless isGood
+    $("#do-global-search").attr "disabled", "disabled"
     return false
   $(".coord-input").parent().removeClass "has-error"
-  false
+  $("#do-global-search").removeAttr "disabled"
+  true
 
 
 getSearchObject = ->
@@ -57,15 +59,37 @@ getSearchObject = ->
   search
 
 
-doSearch = (search = getSearchObject()) ->
+doSearch = (search = getSearchObject(), goDeep = false) ->
   ###
   #
   ###
+  startLoad()
   data = jsonTo64 search
   args = "action=advanced_project_search&q=#{data}"
-  $.post "#{uri.urlString}api.php", args, "json"
+  $.post "#{uri.urlString}admin-api.php", args, "json"
   .done (result) ->
     console.info "Adv. search result", result
+    results = result.result
+    if goDeep
+      # If we're going deep, we'll let the deep take care of the rest
+      doDeepSearch(results)
+      return false
+    totalSamples = 0
+    posSamples = 0
+    totalSpecies = new Array()
+    for project in results
+      totalSamples += project.disease_samples
+      posSamples += project.disease_positive
+      spArr = project.sampled_species.split(",")
+      for species in spArr
+        species = species.trim()
+        unless species in totalSpecies
+          totalSpecies.push species
+    speciesCount = totalSpecies.length
+    console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species"
+    toastStatusMessage "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species"
+    # Visualize it
+    foo()
     stopLoad()
     false
   .fail (result, status) ->
@@ -74,6 +98,24 @@ doSearch = (search = getSearchObject()) ->
   false
 
 
+doDeepSearch = (shallowResults) ->
+  ###
+  # Follows up on doSearch() to then look at the shallow matches and
+  # do a Carto query
+  ###
+  toastStatusMessage "Deep search not yet implemented"
+  stopLoad()
+  false
+
+
 $ ->
   $(".coord-input").keyup ->
     checkCoordinateSanity()
+  $("#do-global-search").click ->
+    ok = checkCoordinateSanity()
+    unless ok
+      toastStatusMessage "Please check your coordinates"
+      return false
+    deep = $(this).attr("data-deep").toBool()
+    doSearch(getSearchObject(), deep)
+    false

@@ -145,6 +145,9 @@ if ($as_include !== true) {
     case "write_profile_image":
         returnAjax(saveProfileImage($_REQUEST));
         break;
+    case 'advanced_project_search':
+        advancedSearchProject($_REQUEST);
+        break;
     default:
         returnAjax(getLoginState($_REQUEST, true));
     }
@@ -639,9 +642,15 @@ function suListProjects()
 }
 
 
-function checkProjectIdAuthorized($projectId) {
+function checkProjectIdAuthorized($projectId, $simple = false) {
+    /***
+     *
+     *
+     * @return array. If $simple = true, @return bool
+     ***/
     $access = array("project"=>$projectId);
-    return authorizedProjectAccess($access);
+    $accessResult = authorizedProjectAccess($access);
+    return $simple ? $accessResult["status"] : $accessResult;
 }
 
 function checkProjectAuthorized($projectData, $uid)
@@ -1703,4 +1712,109 @@ function getConversationWithUser($get) {
 
 function getTotalConversationsSummary($get) {
     return false;
+}
+
+
+function advancedSearchProject($get)
+{
+    /***
+     *
+     ***/
+    global $db;
+    $searchParams = smart_decode64($get["q"], false);
+    $search = array();
+    $response = array(
+        "notices" => array(),
+    );
+    foreach($searchParams as $col=>$searchQuery) {
+        if(checkColumnExists($col, false)) {
+            if($searchQuery["data"] != "*") {
+                $searchQuery["data"] = $db->sanitize($searchQuery["data"]);
+                $search[$col] = $searchQuery;
+            }
+        } else {
+            $response["notices"][] = "'$col' is an invalid column and was ignored.";
+        }
+    }
+    $response["search"] =$searchParams;
+    $response['status'] = true;
+    # The API hit returns data from these columns
+    $returnCols = array(
+        "public",
+        "project_id",
+        "disease",
+        "project_title",
+        "bounding_box_n",
+        "bounding_box_e",
+        "bounding_box_w",
+        "bounding_box_s",
+        "disease_morbidity",
+        "disease_mortality",
+        "disease_samples",
+        "disease_positive",
+        "includes_anura",
+        "includes_caudata",
+        "includes_gymnophiona",
+        "sampled_species",
+    );
+    # For numerical comparisons, we have to allow a type specification
+    $allowedSearchTypes = array(
+        "<",
+        ">",
+        "<=",
+        ">=",
+        "=",
+    );
+    $loose = isset($get["loose"]) ? toBool($get["loose"]) : true;
+    $boolean_type = "AND";
+    $where_arr = array();
+    foreach ($search as $col => $searchQuery) {
+        $crit = $searchQuery["data"];
+        $validSearchType = empty($searchQuery["search_type"]) ? true : in_array($searchQuery["search_type"], $allowedSearchTypes);
+        if(!empty($searchQuery["search_type"]) && !$validSearchType) {
+            $response["notices"][] = "'".$searchQuery["search_type"]."' isn't a valid search type";
+        }
+        if($validSearchType && !is_numeric($crit)) {
+            $response["notices"][] = "Search types may only be specified for numeric data ('".$searchQuery["search_type"]."' tried to be specified for '$crit')";
+        }
+        if(!$validSearchType || !is_numeric($crit)) {
+            $where_arr[] = $loose ? 'LOWER(`'.$col."`) LIKE '%".$crit."%'" : '`'.$col."`='".$crit."'";
+        } else {
+            # The query is numeric AND we have a search type specified
+            $where_arr[] = "`".$col."` ".$searchQuery["search_type"]." ".$crit;
+        }
+    }
+    $where = '('.implode(' '.strtoupper($boolean_type).' ', $where_arr).')';
+    $query = "SELECT ".implode(",", $returnCols)." FROM `".$db->getTable()."` WHERE $where";
+    $response["query"] = $query;
+    $db->invalidateLink();
+    $r = mysqli_query($db->getLink(), $query);
+    $queryResult = array();
+    $baseRows = mysqli_num_rows($r);
+    $boolCols = array(
+        "public",
+        "includes_anura",
+        "includes_caudata",
+        "includes_gymnophiona",
+    );
+    while($row = mysqli_fetch_assoc($r)) {
+        # Authenticate the project against the user
+        if(checkProjectIdAuthorized($row["project_id"], true)) {
+            # Clean up data types
+            foreach($row as $col=>$val) {
+                if(is_numeric($val)) {
+                    if(in_array($col, $boolCols)) {
+                        $row[$col] = toBool($val);
+                    } else {
+                        $row[$col] = floatval($val);
+                    }
+                }
+            }
+            $queryResult[] = $row;
+        }
+    }
+    $response['result'] = $queryResult;
+    $response['count'] = sizeof($response['result']);
+    $response['base_count'] = $baseRows;
+    returnAjax($response);
 }
