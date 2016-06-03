@@ -1325,7 +1325,7 @@ linkUsers = (selector = ".is-user") ->
     # An email is set, look it up
     startLoad()
     search = encodeURIComponent searchRaw
-    args = "action=search_users&q=#{search}&cols=username,alternate_email"
+    args = "action=search_users&q=#{search}&cols=#{cols}"
     $.post "#{uri.urlString}api.php", args, "json"
     .done (result) ->
       console.info "Found", result
