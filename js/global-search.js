@@ -74,13 +74,16 @@ getSearchObject = function() {
   return search;
 };
 
-doSearch = function() {
+doSearch = function(search) {
+  var args, data;
+  if (search == null) {
+    search = getSearchObject();
+  }
 
   /*
    *
    */
-  var args, data;
-  data = jsonTo64(getSearchObject());
+  data = jsonTo64(search);
   args = "action=advanced_project_search&q=" + data;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
     console.info("Adv. search result", result);

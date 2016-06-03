@@ -232,7 +232,8 @@ function advancedSearchProject($get)
     $db->invalidateLink();
     $r = mysqli_query($db->getLink(), $query);
     $queryResult = array();
-    while($row = mysqli_fetch_assoc($result)) {
+    $baseRows = mysqli_num_rows($r);
+    while($row = mysqli_fetch_assoc($r)) {
         $queryResult[] = $row;
     }
     $response['result'] = $queryResult;
@@ -240,6 +241,7 @@ function advancedSearchProject($get)
         $response['result'][$k]['public'] = boolstr($projectResult['public']);
     }
     $response['count'] = sizeof($response['result']);
+    $response['base_count'] = $baseRows;
     returnAjax($response);
 }
 

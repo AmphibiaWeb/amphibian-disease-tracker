@@ -57,11 +57,11 @@ getSearchObject = ->
   search
 
 
-doSearch = ->
+doSearch = (search = getSearchObject()) ->
   ###
   #
   ###
-  data = jsonTo64 getSearchObject()
+  data = jsonTo64 search
   args = "action=advanced_project_search&q=#{data}"
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
