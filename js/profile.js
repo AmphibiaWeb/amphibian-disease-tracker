@@ -1873,6 +1873,14 @@ renderCaptchas = function(response) {
       }
       $(element).replaceWith(html);
     }
+    try {
+      $(".do-mailto").unbind().click(function() {
+        var email;
+        email = $(this).attr("data-email");
+        document.location.href = "mailto:" + email;
+        return false;
+      });
+    } catch (undefined) {}
     stopLoad();
     return false;
   }).fail(function(result, status) {
