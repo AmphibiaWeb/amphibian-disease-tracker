@@ -12482,6 +12482,16 @@ google-map.center-block:after {
 .card-container paper-card {
   width: 100%;
 }
+#global-records-search .form-group .glyphicon {
+  top: 8px;
+}
+#global-records-search .form-group #bounds-container {
+  max-width: 98%;
+  width: 95%;
+}
+#global-records-search .form-group.paper-elements label {
+  padding-top: 12px;
+}
 .self-link .input-group {
   width: 100%;
 }
