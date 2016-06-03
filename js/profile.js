@@ -1874,6 +1874,10 @@ $(function() {
   try {
     conditionalLoadAccountSettingsOptions();
   } catch (undefined) {}
+  $("#expose-uploader").click(function() {
+    $("#upload-container-section").removeAttr("hidden");
+    return $(this).remove();
+  });
   $("#save-profile").click(function() {
     saveProfileChanges();
     return false;

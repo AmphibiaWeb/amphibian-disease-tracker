@@ -1562,6 +1562,9 @@ $ ->
     loadUserBadges()
   try
     conditionalLoadAccountSettingsOptions()
+  $("#expose-uploader").click ->
+    $("#upload-container-section").removeAttr "hidden"
+    $(this).remove()
   $("#save-profile").click ->
     saveProfileChanges()
     false

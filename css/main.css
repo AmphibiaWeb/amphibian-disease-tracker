@@ -12669,6 +12669,7 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   padding-left: 15px;
   padding-right: 15px;
   border-radius: 6px;
+  max-height: 20vh;
 }
 #bio-profile marked-element,
 #bio-profile paper-textarea,
