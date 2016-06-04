@@ -12370,7 +12370,8 @@ paper-card.card-collapsable-widget.collapse {
 .user-search-result:hover {
   background: #eee;
 }
-google-map {
+google-map,
+#global-map-container {
   height: 60vh;
 }
 #project-data p.text-muted .glyphicon,
@@ -12496,7 +12497,8 @@ google-map.center-block:after {
 #global-records-search .form-group.paper-elements label {
   padding-top: 12px;
 }
-#global-data-map {
+#global-data-map,
+#global-map-container {
   width: 80vw;
   display: block;
   margin-left: auto;
