@@ -171,6 +171,7 @@ doDeepSearch = (shallowResults) ->
 
 
 $ ->
+  geo.initLocation()
   $(".coord-input").keyup ->
     checkCoordinateSanity()
   $(".do-search").click ->

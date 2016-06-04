@@ -211,6 +211,7 @@ doDeepSearch = function(shallowResults) {
 };
 
 $(function() {
+  geo.initLocation();
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();
   });

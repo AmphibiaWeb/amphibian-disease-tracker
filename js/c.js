@@ -1846,6 +1846,16 @@ window.geo = new Object();
 
 geo.GLOBE_WIDTH_GOOGLE = 256;
 
+geo.initLocation = function() {
+  try {
+    window.locationData.lat = 37.871527;
+    window.locationData.lng = -122.262113;
+    return getLocation(function() {
+      return _adp.currentLocation = new Point(window.locationData.lat, window.locationData.lng);
+    });
+  } catch (undefined) {}
+};
+
 geo.init = function(doCallback) {
 
   /*
