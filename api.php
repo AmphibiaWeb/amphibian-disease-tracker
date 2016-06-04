@@ -100,6 +100,9 @@ switch ($do) {
   case 'search_user':
     searchUsers($_REQUEST);
     break;
+  // case 'advanced_project_search':
+  //   advancedSearchProject($_REQUEST);
+  //   break;
   default:
     returnAjax(array(
         'status' => false,

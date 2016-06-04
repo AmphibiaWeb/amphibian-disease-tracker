@@ -138,66 +138,10 @@ $loginStatus = getLoginState();
     <main>
       <h1 id="title" class="main-title">The Amphibian Disease Portal</h1>
       <section id="main-body" class="row">
-        <h2 class="col-xs-12 subtitle">A repository for aggregating information on <i>Bd</i> and <i>Bsal</i></h2>
-        <div class="subcontainer col-xs-12">
-          <div id="amphibian-images-carousel" class="carousel slide" data-ride="carousel">
-            <!-- Indicators -->
-            <ol class="carousel-indicators">
-              <li data-target="#amphibian-images-carousel" data-slide-to="0" class="active"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="1"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="2"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="3"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="4"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="5"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="6"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="7"></li>
-              <li data-target="#amphibian-images-carousel" data-slide-to="8"></li>
-            </ol>
-
-            <!-- Wrapper for slides -->
-            <div class="carousel-inner" role="listbox">
-              <div class="item active">
-                <img src="assets/carousel/DSC03218.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/DSCN0400.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/DSCN1372.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/IMG_2927.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/IMG_3818-2.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/IMG_4227-2.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/IMG_20151013_165045-01.jpg" alt="...">
-              </div>
-              <div class="item">
-                <img src="assets/carousel/IMG_20151027_185105.jpg" alt="...">
-              </div>
-            </div>
-
-            <!-- Controls -->
-            <a class="left carousel-control" href="#amphibian-images-carousel" role="button" data-slide="prev">
-              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="right carousel-control" href="#amphibian-images-carousel" role="button" data-slide="next">
-              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
-          </div>
-        </div>
-        <br/>
-        <br/>
+        <h2 class="col-xs-12 subtitle">A repository for aggregating information on <i>Bd</i> and <i>Bsal</i></h2>        
         <section class="col-xs-12" id="global-data-vis">
           <div class="map-container">
-            <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></google-map>
+            <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4" zoom="3"></google-map>
           </div>
           <div class="center-block" id="post-map-container">
             <p class="text-center center-block text-muted" id="post-map-subtitle">

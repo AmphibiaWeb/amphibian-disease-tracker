@@ -60,8 +60,11 @@ if ($as_include !== true) {
         if ($admin_req == 'list') {
             returnAjax(listProjects());
         }
+        if ($admin_req == "advanced_project_search") {
+            returnAjax(advancedSearchProject($_REQUEST));
+        }
         $login_status['error'] = 'Invalid user';
-        $login_status['human_error'] = "You're not logged in as a valid user to edit this. Please log in and try again.";
+        $login_status['human_error'] = "You're not logged in as a valid user to do this. Please log in and try again.";
         returnAjax($login_status);
     }
 
