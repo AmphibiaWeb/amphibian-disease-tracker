@@ -70,6 +70,9 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
 
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
+    <link rel="import" href="bower_components/google-map/google-map.html"/>
+    <link rel="import" href="bower_components/google-map/google-map-marker.html"/>
+    <link rel="import" href="bower_components/google-map/google-map-poly.html"/>
 
     <link rel="import" href="polymer-elements/copyright-statement.html"/>
     <link rel="import" href="polymer-elements/glyphicon-social-icons.html"/>
