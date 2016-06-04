@@ -1756,6 +1756,7 @@ function advancedSearchProject($get)
         "includes_caudata",
         "includes_gymnophiona",
         "sampled_species",
+        "carto_id",
     );
     # For numerical comparisons, we have to allow a type specification
     $allowedSearchTypes = array(
@@ -1808,6 +1809,19 @@ function advancedSearchProject($get)
                     } else {
                         $row[$col] = floatval($val);
                     }
+                }
+                if($col == "carto_id") {
+                    $cartoObj = json_decode($val);
+                    if(empty($cartoObj)) {
+                        $cartoObj = $val;
+                    } else {
+                        foreach($cartoObj as $k=>$v) {
+                            $nk = str_replace("&#95;", "_", $k);
+                            unset($cartoObj[$k]);
+                            $cartoObj[$nk] = $v;
+                        }
+                    }
+                    $row[$col] = $cartoObj;
                 }
             }
             $queryResult[] = $row;

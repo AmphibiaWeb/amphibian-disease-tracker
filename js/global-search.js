@@ -23,11 +23,11 @@ checkCoordinateSanity = function() {
     $(".lng-input").parent().addClass("has-error");
   }
   if (!isGood) {
-    $("#do-global-search").attr("disabled", "disabled");
+    $(".do-search").attr("disabled", "disabled");
     return false;
   }
   $(".coord-input").parent().removeClass("has-error");
-  $("#do-global-search").removeAttr("disabled");
+  $(".do-search").removeAttr("disabled");
   return true;
 };
 
@@ -93,9 +93,30 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var i, j, len, len1, posSamples, project, results, spArr, species, speciesCount, totalSamples, totalSpecies;
+    var boundingBox, e, error, error1, i, j, layer, layers, len, len1, mapCenter, posSamples, project, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, zoom;
     console.info("Adv. search result", result);
+    if (result.status !== true) {
+      console.error(result.error);
+      stopLoadError("There was a problem fetching the results");
+      return false;
+    }
     results = Object.toArray(result.result);
+    if (results.length === 0) {
+      console.warn("No results");
+      stopLoadError("No results");
+      return false;
+    }
+    try {
+      boundingBox = [[search.bounding_box_n, search.bounding_box_w], [search.bounding_box_n, search.bounding_box_e], [search.bounding_box_s, search.bounding_box_e], [search.bounding_box_s, search.bounding_box_w]];
+      mapCenter = getMapCenter(boundingBox);
+      p$("#global-data-map").latitude = mapCenter.lat;
+      p$("#global-data-map").longitude = mapCenter.lng;
+      zoom = getMapZoom(boundingBox, "#global-data-map");
+    } catch (error) {
+      e = error;
+      console.warn("Failed to rezoom/recenter map - " + e.message);
+      console.warn(e.stack);
+    }
     if (goDeep) {
       doDeepSearch(results);
       return false;
@@ -103,6 +124,7 @@ doSearch = function(search, goDeep) {
     totalSamples = 0;
     posSamples = 0;
     totalSpecies = new Array();
+    layers = new Array();
     for (i = 0, len = results.length; i < len; i++) {
       project = results[i];
       totalSamples += project.disease_samples;
@@ -115,11 +137,24 @@ doSearch = function(search, goDeep) {
           totalSpecies.push(species);
         }
       }
+      table = project.carto_id.table;
+      if (!isNull(table)) {
+        layer = {
+          sql: "SELECT * FROM " + table
+        };
+        layers.push(layer);
+      }
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species");
     $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
-    foo();
+    try {
+      createRawCartoMap(layers);
+    } catch (error1) {
+      e = error1;
+      console.error("Couldn't create map! " + e.message);
+      console.warn(e.stack);
+    }
     stopLoad();
     return false;
   }).fail(function(result, status) {
