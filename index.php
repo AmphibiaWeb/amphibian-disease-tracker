@@ -197,7 +197,7 @@ $loginStatus = getLoginState();
         <br/>
         <section class="col-xs-12" id="global-data-vis">
           <div class="map-container">
-            <google-map id="global-data-map" map-type="terrain"></google-map>
+            <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></google-map>
           </div>
           <div class="center-block" id="post-map-container">
             <p class="text-center center-block text-muted" id="post-map-subtitle">
