@@ -1905,19 +1905,27 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     type: options.type ? "cartodb"
     sublayers: layers
   console.info "Creating map", params
+  leafletOptions =
+    center: [window.locationData.lat, window.locationData.lng]
+    zoom: 5
   mapOptions =
     cartodb_logo: false
     https: true
     mobile_layout: true
     gmaps_base_type: "hybrid"
-    center: [window.locationData.lat, window.locationData.lng]
     center_lat: window.locationData.lat,
     center_lon: window.locationData.lng
     zoom: 5
-  #lMap = new L.Map("global-map-container", mapOptions)
-  lMap = new L.Map("alt-map", mapOptions)
-  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
+  googleMapOptions =
+    center: new google.maps.LatLng(options.center_lat, options.center_lon)
+    zoom: options.zoom
+    mapTypeId: google.maps.MapTypeId.HYBRID
+  geo.googleMap = new google.maps.Map document.getElementById(mapSelector.slice(1)), googleMapOptions
+  #lMap = new L.Map("global-map-container", leafletOptions)
+  #lMap = new L.Map("alt-map", mapOptions)
+  #L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
   #BASE_MAP = lMap
+  BASE_MAP = geo.googleMap
   cartodb
   .createLayer(BASE_MAP, params, mapOptions)
   .addTo(BASE_MAP)

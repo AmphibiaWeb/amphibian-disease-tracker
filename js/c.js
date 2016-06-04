@@ -2389,7 +2389,7 @@ buildMap = function(mapBuilderObj, options, callback) {
 };
 
 createRawCartoMap = function(layers, callback, options, mapSelector) {
-  var BASE_MAP, lMap, mapOptions, params, ref, ref1;
+  var BASE_MAP, googleMapOptions, leafletOptions, mapOptions, params, ref, ref1;
   if (mapSelector == null) {
     mapSelector = "#global-data-map";
   }
@@ -2411,18 +2411,26 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     sublayers: layers
   };
   console.info("Creating map", params);
+  leafletOptions = {
+    center: [window.locationData.lat, window.locationData.lng],
+    zoom: 5
+  };
   mapOptions = {
     cartodb_logo: false,
     https: true,
     mobile_layout: true,
     gmaps_base_type: "hybrid",
-    center: [window.locationData.lat, window.locationData.lng],
     center_lat: window.locationData.lat,
     center_lon: window.locationData.lng,
     zoom: 5
   };
-  lMap = new L.Map("alt-map", mapOptions);
-  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
+  googleMapOptions = {
+    center: new google.maps.LatLng(options.center_lat, options.center_lon),
+    zoom: options.zoom,
+    mapTypeId: google.maps.MapTypeId.HYBRID
+  };
+  geo.googleMap = new google.maps.Map(document.getElementById(mapSelector.slice(1)), googleMapOptions);
+  BASE_MAP = geo.googleMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP).on("done", function(layer) {
     console.info("Added layers to map");
     if (typeof callback === "function") {
