@@ -2389,7 +2389,7 @@ buildMap = function(mapBuilderObj, options, callback) {
 };
 
 createRawCartoMap = function(layers, callback, options, mapSelector) {
-  var BASE_MAP, lMap, leafletOptions, mapOptions, params, ref, ref1;
+  var BASE_MAP, lMap, lTopoOptions, leafletOptions, mapOptions, params, ref, ref1;
   if (mapSelector == null) {
     mapSelector = "#global-data-map";
   }
@@ -2428,10 +2428,11 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     lMap = new L.Map("global-map-container", leafletOptions);
     lMap = new L.Map("alt-map", mapOptions);
     geo.lMap = lMap;
-    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    lTopoOptions = {
       maxZoom: 17,
       attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-    }).addTo(lMap);
+    };
+    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', lTopoOptions).addTo(lMap);
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP).on("done", function(layer) {
