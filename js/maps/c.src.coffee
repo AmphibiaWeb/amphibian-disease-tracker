@@ -1900,14 +1900,15 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   BASE_MAP = p$(mapSelector).map
   if isNull options
     options = new Object()
+
   params =
     user_name: options.user_name ? cartoAccount
     type: options.type ? "cartodb"
     sublayers: layers
+
   console.info "Creating map", params
-  leafletOptions =
-    center: [window.locationData.lat, window.locationData.lng]
-    zoom: 5
+
+  # The CartoDB layer options
   mapOptions =
     cartodb_logo: false
     https: true
@@ -1916,20 +1917,36 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     center_lat: window.locationData.lat,
     center_lon: window.locationData.lng
     zoom: 5
-  googleMapOptions =
-    center: new google.maps.LatLng(mapOptions.center_lat, mapOptions.center_lon)
-    zoom: mapOptions.zoom
-    mapTypeId: google.maps.MapTypeId.HYBRID
-  geo.googleMap = new google.maps.Map document.getElementById(mapSelector.slice(1)), googleMapOptions
-  #lMap = new L.Map("global-map-container", leafletOptions)
-  #lMap = new L.Map("alt-map", mapOptions)
-  #L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
-  #BASE_MAP = lMap
-  BASE_MAP = geo.googleMap
+
+  # # Google Map Setup
+  # googleMapOptions =
+  #   center: new google.maps.LatLng(mapOptions.center_lat, mapOptions.center_lon)
+  #   zoom: mapOptions.zoom
+  #   mapTypeId: google.maps.MapTypeId.TERRAIN
+  # geo.googleMap = new google.maps.Map document.getElementById(mapSelector.slice(1)), googleMapOptions
+  # BASE_MAP = geo.googleMap
+
+  ## Leflet Map Setup
+  leafletOptions =
+    center: [window.locationData.lat, window.locationData.lng]
+    zoom: 5
+  unless geo.lMap?
+    lMap = new L.Map("global-map-container", leafletOptions)
+    lMap = new L.Map("alt-map", mapOptions)
+    geo.lMap = lMap
+    # Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'})
+    lTopoOptions =
+      maxZoom: 17
+      attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', lTopoOptions).addTo(lMap);
+  BASE_MAP = geo.lMap
+
   cartodb
   .createLayer(BASE_MAP, params, mapOptions)
   .addTo(BASE_MAP)
   .on "done", (layer) ->
+    for dataLayer in layers
+      layer.createSubLayer dataLayer
     console.info "Added layers to map"
     if typeof callback is "function"
       callback()
