@@ -12498,7 +12498,6 @@ google-map.center-block:after {
 }
 #global-data-map {
   width: 80vw;
-  height: 30vh;
   display: block;
   margin-left: auto;
   margin-right: auto;
