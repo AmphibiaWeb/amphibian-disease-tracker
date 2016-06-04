@@ -120,6 +120,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       unless isNull table
         layer =
           sql: "SELECT * FROM #{table}"
+          cartocss: '##{table} {marker-fill: #F0F0F0;}'
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id

@@ -156,7 +156,8 @@ doSearch = function(search, goDeep) {
       table = project.carto_id.table;
       if (!isNull(table)) {
         layer = {
-          sql: "SELECT * FROM " + table
+          sql: "SELECT * FROM " + table,
+          cartocss: '##{table} {marker-fill: #F0F0F0;}'
         };
         layers.push(layer);
       } else {
