@@ -25,6 +25,16 @@ adData = new Object()
 window.geo = new Object()
 geo.GLOBE_WIDTH_GOOGLE = 256 # Constant
 
+geo.initLocation = ->
+  try
+    # Center on Berkeley
+    window.locationData.lat = 37.871527
+    window.locationData.lng = -122.262113
+    # Now get the real location
+    getLocation ->
+      _adp.currentLocation = new Point window.locationData.lat, window.locationData.lng
+
+
 geo.init = (doCallback) ->
   ###
   # Initialization script for the mapping protocols.
