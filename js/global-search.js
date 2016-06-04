@@ -93,7 +93,7 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, e, error, error1, i, j, k, key, layer, layers, len, len1, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, i, j, k, key, layer, layers, len, len1, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -148,7 +148,12 @@ doSearch = function(search, goDeep) {
           for (key in cartoPreParsed) {
             val = cartoPreParsed[key];
             cleanKey = key.replace("&#95;", "_");
-            cartoParsed[cleanKey] = val.replace("&#95;", "_");
+            try {
+              cleanVal = val.replace("&#95;", "_");
+            } catch (error) {
+              cleanVal = val;
+            }
+            cartoParsed[cleanKey] = cleanVal;
           }
           project.carto_id = cartoParsed;
         } catch (undefined) {}
@@ -172,8 +177,8 @@ doSearch = function(search, goDeep) {
       p$("#global-data-map").latitude = mapCenter.lat;
       p$("#global-data-map").longitude = mapCenter.lng;
       zoom = getMapZoom(boundingBoxArray, "#global-data-map");
-    } catch (error) {
-      e = error;
+    } catch (error1) {
+      e = error1;
       console.warn("Failed to rezoom/recenter map - " + e.message);
       console.warn(e.stack);
     }
@@ -182,12 +187,12 @@ doSearch = function(search, goDeep) {
       return false;
     }
     speciesCount = totalSpecies.length;
-    console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species");
+    console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     try {
       createRawCartoMap(layers);
-    } catch (error1) {
-      e = error1;
+    } catch (error2) {
+      e = error2;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }

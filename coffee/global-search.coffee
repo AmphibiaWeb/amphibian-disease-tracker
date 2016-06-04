@@ -114,7 +114,11 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           cartoParsed = new Object()
           for key, val of cartoPreParsed
             cleanKey = key.replace "&#95;", "_"
-            cartoParsed[cleanKey] = val.replace "&#95;", "_"
+            try
+              cleanVal = val.replace "&#95;", "_"
+            catch
+              cleanVal = val
+            cartoParsed[cleanKey] = cleanVal
           project.carto_id = cartoParsed
       table = project.carto_id.table
       unless isNull table
@@ -145,7 +149,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       doDeepSearch(results)
       return false
     speciesCount = totalSpecies.length
-    console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species"
+    console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
     $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
     # Render the vis
     try
