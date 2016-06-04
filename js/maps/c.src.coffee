@@ -1941,12 +1941,14 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
 
   cartodb
   .createLayer(BASE_MAP, params, mapOptions)
-  .addTo(BASE_MAP)
+  .addTo(BASE_MAP, 1)
   .on "done", (layer) ->
     for dataLayer in layers
       console.info "Re-adding sublayer", dataLayer
       layer.createSubLayer dataLayer
     console.info "Added layers to map"
+    try
+      console.log "Layer counts:", BASE_MAP.overlayMapTypes.length
     if typeof callback is "function"
       callback()
     false

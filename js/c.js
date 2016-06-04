@@ -2432,7 +2432,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo(lMap);
   }
   BASE_MAP = geo.lMap;
-  cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP).on("done", function(layer) {
+  cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
     var dataLayer, l, len;
     for (l = 0, len = layers.length; l < len; l++) {
       dataLayer = layers[l];
@@ -2440,6 +2440,9 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
       layer.createSubLayer(dataLayer);
     }
     console.info("Added layers to map");
+    try {
+      console.log("Layer counts:", BASE_MAP.overlayMapTypes.length);
+    } catch (undefined) {}
     if (typeof callback === "function") {
       callback();
     }
