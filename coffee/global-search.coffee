@@ -80,10 +80,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       return false
     try
       boundingBox = [
-        [search.bounding_box_n, search.bounding_box_w]
-        [search.bounding_box_n, search.bounding_box_e]
-        [search.bounding_box_s, search.bounding_box_e]
-        [search.bounding_box_s, search.bounding_box_w]
+        [search.bounding_box_n.data, search.bounding_box_w.data]
+        [search.bounding_box_n.data, search.bounding_box_e.data]
+        [search.bounding_box_s.data, search.bounding_box_e.data]
+        [search.bounding_box_s.data, search.bounding_box_w.data]
         ]
       mapCenter = getMapCenter boundingBox
       p$("#global-data-map").latitude = mapCenter.lat

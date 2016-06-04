@@ -496,7 +496,7 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
 
 
 
-createRawCartoMap = (layers, options, callback) ->
+createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map") ->
   ###
   # Create a raw CartoDB map
   #
@@ -504,20 +504,17 @@ createRawCartoMap = (layers, options, callback) ->
   # https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
   #
   ###
-  BASE_MAP = p$("#global-data-map").map
+  BASE_MAP = p$(mapSelector).map
   if isNull options
     options = new Object()
   params =
     user_name: options.user_name ? cartoAccount
     type: options.type ? "cartodb"
     sublayers: layers
-  renderBaseMap = ->
-    html = """
-    """
-    false
+  console.info "Creating map", params
   cartodb
-  .createLayer BASE_MAP, params
-  .addTo BASE_MAP
+  .createLayer(BASE_MAP, params)
+  .addTo(BASE_MAP)
   .done (layer) ->
     if typeof callback is "function"
       callback()
