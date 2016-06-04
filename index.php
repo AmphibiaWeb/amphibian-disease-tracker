@@ -143,7 +143,7 @@ $loginStatus = getLoginState();
         <h2 class="col-xs-12 subtitle">A repository for aggregating information on <i>Bd</i> and <i>Bsal</i></h2>
         <section class="col-xs-12" id="global-data-vis">
           <div class="map-container" id="global-map-container">
-            <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4" zoom="3"></google-map>
+            <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4" zoom="3" min-zoom="3"></google-map>
           </div>
           <div class="center-block" id="post-map-container">
             <p class="text-center center-block text-muted" id="post-map-subtitle">
