@@ -192,12 +192,21 @@ $loginStatus = getLoginState();
         </div>
         <br/>
         <br/>
-        <!--
-        Search for global stuff
-        See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/104
-        -->
         <section class="col-xs-12" id="global-data-vis">
+          <div class="visualization-placeholder">
+            <!-- The carto vis -->
+          </div>
+          <div class="center-block" id="post-map-container">
+            <p class="text-center center-block text-muted" id="post-map-subtitle">
+              All Projects
+            </p>
+          </div>
           <div class="form form-horizontal" id="global-records-search">
+            <!--
+            Search for global stuff
+            See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/104
+            -->
+            <h3>Search &amp; Visualize Records</h3>
             <div class="form-group">
               <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
               <div class="col-xs-6 col-sm-9">

@@ -118,7 +118,7 @@ doSearch = function(search, goDeep) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species");
-    toastStatusMessage("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", "", 7500);
+    $("#post-map-subtitle")("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     foo();
     stopLoad();
     return false;
