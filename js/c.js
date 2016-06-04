@@ -2421,8 +2421,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     center_lon: window.locationData.lng,
     zoom: 5
   };
-  lMap = new L.Map("global-map-container", mapOptions);
-  BASE_MAP = lMap;
+  lMap = new L.Map("alt-map", mapOptions);
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP).on("done", function(layer) {
     console.info("Added layers to map");
     if (typeof callback === "function") {

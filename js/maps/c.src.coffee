@@ -1914,9 +1914,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     center_lat: window.locationData.lat,
     center_lon: window.locationData.lng
     zoom: 5
-  lMap = new L.Map("global-map-container", mapOptions)
-  #L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
-  BASE_MAP = lMap
+  #lMap = new L.Map("global-map-container", mapOptions)
+  lMap = new L.Map("alt-map", mapOptions)
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
+  #BASE_MAP = lMap
   cartodb
   .createLayer(BASE_MAP, params, mapOptions)
   .addTo(BASE_MAP)
