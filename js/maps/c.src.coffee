@@ -1934,11 +1934,16 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     lMap = new L.Map("global-map-container", leafletOptions)
     lMap = new L.Map("alt-map", mapOptions)
     geo.lMap = lMap
-    # Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'})
+    # Esri_WorldImagery =
+      # L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'})
     lTopoOptions =
-      maxZoom: 17
-      attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', lTopoOptions).addTo(lMap);
+      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: 'abcd',
+      minZoom: 4,
+      maxZoom: 18,
+      ext: 'png',
+      bounds: [[22, -132], [70, -56]]
+    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.{ext}', lTopoOptions).addTo lMap
   BASE_MAP = geo.lMap
 
   cartodb
