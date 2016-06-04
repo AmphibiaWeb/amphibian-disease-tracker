@@ -2378,7 +2378,11 @@ buildMap = function(mapBuilderObj, options, callback) {
   return false;
 };
 
-createRawCartoMap = function(layers, options, callback) {
+createRawCartoMap = function(layers, callback, options, mapSelector) {
+  var BASE_MAP, params, ref, ref1;
+  if (mapSelector == null) {
+    mapSelector = "#global-data-map";
+  }
 
   /*
    * Create a raw CartoDB map
@@ -2387,8 +2391,7 @@ createRawCartoMap = function(layers, options, callback) {
    * https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
    *
    */
-  var BASE_MAP, params, ref, ref1, renderBaseMap;
-  BASE_MAP = p$("#global-data-map").map;
+  BASE_MAP = p$(mapSelector).map;
   if (isNull(options)) {
     options = new Object();
   }
@@ -2397,11 +2400,7 @@ createRawCartoMap = function(layers, options, callback) {
     type: (ref1 = options.type) != null ? ref1 : "cartodb",
     sublayers: layers
   };
-  renderBaseMap = function() {
-    var html;
-    html = "    ";
-    return false;
-  };
+  console.info("Creating map", params);
   cartodb.createLayer(BASE_MAP, params).addTo(BASE_MAP).done(function(layer) {
     if (typeof callback === "function") {
       callback();
