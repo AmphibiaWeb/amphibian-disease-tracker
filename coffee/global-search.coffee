@@ -114,7 +114,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           cartoParsed = new Object()
           for key, val of cartoPreParsed
             cleanKey = key.replace "&#95;", "_"
-            cartoParsed[cleanKey] = val
+            cartoParsed[cleanKey] = val.replace "&#95;", "_"
           project.carto_id = cartoParsed
       table = project.carto_id.table
       unless isNull table

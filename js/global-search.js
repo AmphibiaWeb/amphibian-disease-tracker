@@ -148,7 +148,7 @@ doSearch = function(search, goDeep) {
           for (key in cartoPreParsed) {
             val = cartoPreParsed[key];
             cleanKey = key.replace("&#95;", "_");
-            cartoParsed[cleanKey] = val;
+            cartoParsed[cleanKey] = val.replace("&#95;", "_");
           }
           project.carto_id = cartoParsed;
         } catch (undefined) {}
