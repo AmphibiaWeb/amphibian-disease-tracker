@@ -2379,7 +2379,7 @@ buildMap = function(mapBuilderObj, options, callback) {
 };
 
 createRawCartoMap = function(layers, callback, options, mapSelector) {
-  var BASE_MAP, params, ref, ref1;
+  var BASE_MAP, lMap, mapOptions, params, ref, ref1;
   if (mapSelector == null) {
     mapSelector = "#global-data-map";
   }
@@ -2401,11 +2401,26 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     sublayers: layers
   };
   console.info("Creating map", params);
-  cartodb.createLayer(BASE_MAP, params).addTo(BASE_MAP).done(function(layer) {
+  mapOptions = {
+    cartodb_logo: false,
+    https: true,
+    mobile_layout: true,
+    gmaps_base_type: "hybrid",
+    center: [window.locationData.lat, window.locationData.lng],
+    center_lat: window.locationData.lat,
+    center_lon: window.locationData.lng,
+    zoom: 5
+  };
+  lMap = new L.Map("global-map-container", mapOptions);
+  cartodb.createLayer(BASE_MAP, params).addTo(BASE_MAP).on("done", function(layer) {
+    console.info("Added layers to map");
     if (typeof callback === "function") {
       callback();
     }
     return false;
+  }).on("error", function(errorString) {
+    toastStatusMessage("Couldn't load maps!");
+    return console.error("Couldn't get map - " + errorString);
   });
   return false;
 };
@@ -2499,7 +2514,7 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
       });
     } catch (error2) {
       console.warn("The map threw an error! " + e.message);
-      console.wan(e.stack);
+      console.warn(e.stack);
       clearTimeout(forceCallback);
       if (typeof callback === "function") {
         callback(null, geo.cartoMap);
