@@ -158,11 +158,11 @@ doSearch = function(search, goDeep) {
           project.carto_id = cartoParsed;
         } catch (undefined) {}
       }
-      table = project.carto_id.table;
+      table = project.carto_id.table.slice(0, 63);
       if (!isNull(table)) {
         layer = {
           sql: "SELECT * FROM " + table,
-          cartocss: "#" + table + " {marker-fill: #F0F0F0;}"
+          cartocss: "#" + table + " {marker-fill: #F0F0F0; polygon-fill: #FF6600; line-color: #000; line-width: 1; polygon-opacity: 0.7; line-opacity: 1;}"
         };
         layers.push(layer);
       } else {

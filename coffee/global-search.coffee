@@ -120,11 +120,11 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
               cleanVal = val
             cartoParsed[cleanKey] = cleanVal
           project.carto_id = cartoParsed
-      table = project.carto_id.table
+      table = project.carto_id.table.slice 0, 63
       unless isNull table
         layer =
           sql: "SELECT * FROM #{table}"
-          cartocss: "##{table} {marker-fill: #F0F0F0;}"
+          cartocss: "##{table} {marker-fill: #F0F0F0; polygon-fill: #FF6600; line-color: #000; line-width: 1; polygon-opacity: 0.7; line-opacity: 1;}"
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
