@@ -2401,7 +2401,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
    * https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
    *
    */
-  BASE_MAP = p$(mapSelector).map;
   if (isNull(options)) {
     options = new Object();
   }
