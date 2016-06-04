@@ -25,6 +25,7 @@ $loginStatus = getLoginState();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
+    <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
     <link rel="prerender" href="https://amphibiandisease.org/project.php" />
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Roboto:400,100,300,500,700,100italic,300italic,400italic,500italic,700italic" rel='stylesheet' type='text/css'/>
 
@@ -98,6 +99,7 @@ $loginStatus = getLoginState();
     <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
     <script type="text/javascript" src="bower_components/js-base64/base64.min.js"></script>
     <script type="text/javascript" src="bower_components/imagelightbox/dist/imagelightbox.min.js"></script>
+    <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
 
     <script type="text/javascript" src="js/c.js"></script>
     <script type="text/javascript" src="js/global-search.js"></script>
@@ -138,7 +140,7 @@ $loginStatus = getLoginState();
     <main>
       <h1 id="title" class="main-title">The Amphibian Disease Portal</h1>
       <section id="main-body" class="row">
-        <h2 class="col-xs-12 subtitle">A repository for aggregating information on <i>Bd</i> and <i>Bsal</i></h2>        
+        <h2 class="col-xs-12 subtitle">A repository for aggregating information on <i>Bd</i> and <i>Bsal</i></h2>
         <section class="col-xs-12" id="global-data-vis">
           <div class="map-container">
             <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4" zoom="3"></google-map>
