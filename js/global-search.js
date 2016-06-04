@@ -162,7 +162,7 @@ doSearch = function(search, goDeep) {
       if (!isNull(table)) {
         layer = {
           sql: "SELECT * FROM " + table,
-          cartocss: '##{table} {marker-fill: #F0F0F0;}'
+          cartocss: "#" + table + " {marker-fill: #F0F0F0;}"
         };
         layers.push(layer);
       } else {
@@ -225,10 +225,14 @@ $(function() {
   };
   lMap = new L.Map("global-map-container", leafletOptions);
   lTopoOptions = {
-    maxZoom: 17,
-    attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    minZoom: 4,
+    maxZoom: 18,
+    ext: 'png',
+    bounds: [[22, -132], [70, -56]]
   };
-  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', lTopoOptions).addTo(lMap);
+  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.{ext}', lTopoOptions).addTo(lMap);
   geo.lMap = lMap;
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();
