@@ -1932,18 +1932,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     zoom: 5
   unless geo.lMap?
     lMap = new L.Map("global-map-container", leafletOptions)
-    lMap = new L.Map("alt-map", mapOptions)
     geo.lMap = lMap
-    # Esri_WorldImagery =
-      # L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'})
     lTopoOptions =
-      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      subdomains: 'abcd',
-      minZoom: 4,
-      maxZoom: 18,
-      ext: 'png',
-      bounds: [[22, -132], [70, -56]]
-    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.{ext}', lTopoOptions).addTo lMap
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo lMap
   BASE_MAP = geo.lMap
 
   cartodb
@@ -1951,6 +1943,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   .addTo(BASE_MAP)
   .on "done", (layer) ->
     for dataLayer in layers
+      console.info "Re-adding sublayer", dataLayer
       layer.createSubLayer dataLayer
     console.info "Added layers to map"
     if typeof callback is "function"

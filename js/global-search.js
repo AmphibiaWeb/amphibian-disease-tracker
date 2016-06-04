@@ -93,7 +93,7 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, i, j, k, key, layer, layers, len, len1, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, layer, layers, len, len1, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -174,12 +174,21 @@ doSearch = function(search, goDeep) {
     try {
       boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
       mapCenter = getMapCenter(boundingBoxArray);
-      p$("#global-data-map").latitude = mapCenter.lat;
-      p$("#global-data-map").longitude = mapCenter.lng;
+      try {
+        p$("#global-data-map").latitude = mapCenter.lat;
+        p$("#global-data-map").longitude = mapCenter.lng;
+      } catch (error1) {
+        try {
+          geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
+        } catch (undefined) {}
+      }
       zoom = getMapZoom(boundingBoxArray, "#global-data-map");
-    } catch (error1) {
-      e = error1;
-      console.warn("Failed to rezoom/recenter map - " + e.message);
+      if (geo.lMap != null) {
+        geo.lMap.setZoom(zoom);
+      }
+    } catch (error2) {
+      e = error2;
+      console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
       console.warn(e.stack);
     }
     if (goDeep) {
@@ -191,8 +200,8 @@ doSearch = function(search, goDeep) {
     $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     try {
       createRawCartoMap(layers);
-    } catch (error2) {
-      e = error2;
+    } catch (error3) {
+      e = error3;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }
@@ -225,14 +234,9 @@ $(function() {
   };
   lMap = new L.Map("global-map-container", leafletOptions);
   lTopoOptions = {
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: 'abcd',
-    minZoom: 4,
-    maxZoom: 18,
-    ext: 'png',
-    bounds: [[22, -132], [70, -56]]
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
   };
-  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.{ext}', lTopoOptions).addTo(lMap);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo(lMap);
   geo.lMap = lMap;
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();

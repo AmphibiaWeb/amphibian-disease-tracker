@@ -138,11 +138,17 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         [boundingBox.s, boundingBox.w]
         ]
       mapCenter = getMapCenter boundingBoxArray
-      p$("#global-data-map").latitude = mapCenter.lat
-      p$("#global-data-map").longitude = mapCenter.lng
+      try
+        p$("#global-data-map").latitude = mapCenter.lat
+        p$("#global-data-map").longitude = mapCenter.lng
+      catch
+        try
+          geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
       zoom = getMapZoom boundingBoxArray, "#global-data-map"
+      if geo.lMap?
+        geo.lMap.setZoom zoom
     catch e
-      console.warn "Failed to rezoom/recenter map - #{e.message}"
+      console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
     if goDeep
       # If we're going deep, we'll let the deep take care of the rest
@@ -182,13 +188,8 @@ $ ->
     zoom: 5
   lMap = new L.Map("global-map-container", leafletOptions)
   lTopoOptions =
-    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: 'abcd',
-    minZoom: 4,
-    maxZoom: 18,
-    ext: 'png',
-    bounds: [[22, -132], [70, -56]]
-  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.{ext}', lTopoOptions).addTo lMap
+    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo lMap
   geo.lMap = lMap
   $(".coord-input").keyup ->
     checkCoordinateSanity()

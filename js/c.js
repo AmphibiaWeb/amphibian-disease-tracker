@@ -2426,23 +2426,18 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   };
   if (geo.lMap == null) {
     lMap = new L.Map("global-map-container", leafletOptions);
-    lMap = new L.Map("alt-map", mapOptions);
     geo.lMap = lMap;
     lTopoOptions = {
-      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      subdomains: 'abcd',
-      minZoom: 4,
-      maxZoom: 18,
-      ext: 'png',
-      bounds: [[22, -132], [70, -56]]
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
     };
-    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.{ext}', lTopoOptions).addTo(lMap);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo(lMap);
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP).on("done", function(layer) {
     var dataLayer, l, len;
     for (l = 0, len = layers.length; l < len; l++) {
       dataLayer = layers[l];
+      console.info("Re-adding sublayer", dataLayer);
       layer.createSubLayer(dataLayer);
     }
     console.info("Added layers to map");
