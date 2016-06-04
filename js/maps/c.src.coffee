@@ -1897,7 +1897,6 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   # https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
   #
   ###
-  BASE_MAP = p$(mapSelector).map
   if isNull options
     options = new Object()
 
@@ -1923,8 +1922,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   #   center: new google.maps.LatLng(mapOptions.center_lat, mapOptions.center_lon)
   #   zoom: mapOptions.zoom
   #   mapTypeId: google.maps.MapTypeId.TERRAIN
-  # geo.googleMap = new google.maps.Map document.getElementById(mapSelector.slice(1)), googleMapOptions
-  # BASE_MAP = geo.googleMap
+  # geo.googleMap = new google.maps.Map
+  # document.getElementById(mapSelector.slice(1)), googleMapOptions
+  # BASE_MAP = p$(mapSelector).map
+  # # BASE_MAP = geo.googleMap
 
   ## Leflet Map Setup
   leafletOptions =
