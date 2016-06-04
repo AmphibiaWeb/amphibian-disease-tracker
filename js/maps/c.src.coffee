@@ -1918,7 +1918,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
   BASE_MAP = lMap
   cartodb
-  .createLayer(BASE_MAP, params) #, mapOptions)
+  .createLayer(BASE_MAP, params, mapOptions)
   .addTo(BASE_MAP)
   .on "done", (layer) ->
     console.info "Added layers to map"
