@@ -1895,13 +1895,29 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     type: options.type ? "cartodb"
     sublayers: layers
   console.info "Creating map", params
+  mapOptions =
+    cartodb_logo: false
+    https: true
+    mobile_layout: true
+    gmaps_base_type: "hybrid"
+    center: [window.locationData.lat, window.locationData.lng]
+    center_lat: window.locationData.lat,
+    center_lon: window.locationData.lng
+    zoom: 5
+  lMap = new L.Map("global-map-container", mapOptions)
+  # L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(lMap);
+  # BASE_MAP = lMap
   cartodb
-  .createLayer(BASE_MAP, params)
+  .createLayer(BASE_MAP, params) #, mapOptions)
   .addTo(BASE_MAP)
-  .done (layer) ->
+  .on "done", (layer) ->
+    console.info "Added layers to map"
     if typeof callback is "function"
       callback()
     false
+  .on "error", (errorString) ->
+    toastStatusMessage("Couldn't load maps!")
+    console.error "Couldn't get map - #{errorString}"
   false
 
 
@@ -1982,7 +1998,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
     catch
       # Try the callback anyway
       console.warn "The map threw an error! #{e.message}"
-      console.wan e.stack
+      console.warn e.stack
       clearTimeout forceCallback
       if typeof callback is "function"
         callback(null, geo.cartoMap)

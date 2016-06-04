@@ -93,7 +93,7 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, e, error, error1, i, j, layer, layers, len, len1, mapCenter, posSamples, project, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, e, error, error1, i, j, k, key, layer, layers, len, len1, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -106,12 +106,71 @@ doSearch = function(search, goDeep) {
       stopLoadError("No results");
       return false;
     }
+    totalSamples = 0;
+    posSamples = 0;
+    totalSpecies = new Array();
+    layers = new Array();
+    boundingBox = {
+      n: 0,
+      s: 0,
+      e: 0,
+      w: 0
+    };
+    i = 0;
+    for (j = 0, len = results.length; j < len; j++) {
+      project = results[j];
+      if (project.bounding_box_n > boundingBox.n) {
+        boundingBox.n = project.bounding_box_n;
+      }
+      if (project.bounding_box_e > boundingBox.e) {
+        boundingBox.e = project.bounding_box_e;
+      }
+      if (project.bounding_box_s < boundingBox.s) {
+        boundingBox.s = project.bounding_box_s;
+      }
+      if (project.bounding_box_w < boundingBox.w) {
+        boundingBox.w = project.bounding_box_w;
+      }
+      totalSamples += project.disease_samples;
+      posSamples += project.disease_positive;
+      spArr = project.sampled_species.split(",");
+      for (k = 0, len1 = spArr.length; k < len1; k++) {
+        species = spArr[k];
+        species = species.trim();
+        if (indexOf.call(totalSpecies, species) < 0) {
+          totalSpecies.push(species);
+        }
+      }
+      if (((ref = project.carto_id) != null ? ref.table : void 0) == null) {
+        try {
+          cartoPreParsed = JSON.parse(project.carto_id);
+          cartoParsed = new Object();
+          for (key in cartoPreParsed) {
+            val = cartoPreParsed[key];
+            cleanKey = key.replace("&#95;", "_");
+            cartoParsed[cleanKey] = val;
+          }
+          project.carto_id = cartoParsed;
+        } catch (undefined) {}
+      }
+      table = project.carto_id.table;
+      if (!isNull(table)) {
+        layer = {
+          sql: "SELECT * FROM " + table
+        };
+        layers.push(layer);
+      } else {
+        console.warn("Unable to get a table id from this carto data:", project.carto_id);
+      }
+      results[i] = project;
+      ++i;
+    }
     try {
-      boundingBox = [[search.bounding_box_n.data, search.bounding_box_w.data], [search.bounding_box_n.data, search.bounding_box_e.data], [search.bounding_box_s.data, search.bounding_box_e.data], [search.bounding_box_s.data, search.bounding_box_w.data]];
-      mapCenter = getMapCenter(boundingBox);
+      boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
+      mapCenter = getMapCenter(boundingBoxArray);
       p$("#global-data-map").latitude = mapCenter.lat;
       p$("#global-data-map").longitude = mapCenter.lng;
-      zoom = getMapZoom(boundingBox, "#global-data-map");
+      zoom = getMapZoom(boundingBoxArray, "#global-data-map");
     } catch (error) {
       e = error;
       console.warn("Failed to rezoom/recenter map - " + e.message);
@@ -120,30 +179,6 @@ doSearch = function(search, goDeep) {
     if (goDeep) {
       doDeepSearch(results);
       return false;
-    }
-    totalSamples = 0;
-    posSamples = 0;
-    totalSpecies = new Array();
-    layers = new Array();
-    for (i = 0, len = results.length; i < len; i++) {
-      project = results[i];
-      totalSamples += project.disease_samples;
-      posSamples += project.disease_positive;
-      spArr = project.sampled_species.split(",");
-      for (j = 0, len1 = spArr.length; j < len1; j++) {
-        species = spArr[j];
-        species = species.trim();
-        if (indexOf.call(totalSpecies, species) < 0) {
-          totalSpecies.push(species);
-        }
-      }
-      table = project.carto_id.table;
-      if (!isNull(table)) {
-        layer = {
-          sql: "SELECT * FROM " + table
-        };
-        layers.push(layer);
-      }
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species");
