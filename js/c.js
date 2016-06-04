@@ -2425,8 +2425,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     zoom: 5
   };
   googleMapOptions = {
-    center: new google.maps.LatLng(options.center_lat, options.center_lon),
-    zoom: options.zoom,
+    center: new google.maps.LatLng(mapOptions.center_lat, mapOptions.center_lon),
+    zoom: mapOptions.zoom,
     mapTypeId: google.maps.MapTypeId.HYBRID
   };
   geo.googleMap = new google.maps.Map(document.getElementById(mapSelector.slice(1)), googleMapOptions);
