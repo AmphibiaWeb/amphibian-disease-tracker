@@ -6,10 +6,11 @@
 checkCoordinateSanity = ->
   isGood = true
   bounds =
-    n: $("#north-coordinate").val()
-    w: $("#west-coordinate").val()
-    s: $("#south-coordinate").val()
-    e: $("#east-coordinate").val()
+    n: toFloat $("#north-coordinate").val()
+    w: toFloat $("#west-coordinate").val()
+    s: toFloat $("#south-coordinate").val()
+    e: toFloat $("#east-coordinate").val()
+  console.log "User Bounds", bounds
   # Check that north is north, west is west
   unless bounds.n > bounds.s
     isGood = false
@@ -84,10 +85,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
     totalSpecies = new Array()
     layers = new Array()
     boundingBox =
-      n: 0
-      s: 0
-      e: 0
-      w: 0
+      n: -90
+      s: 90
+      e: -180
+      w: 180
     i = 0
     for project in results
       if project.bounding_box_n > boundingBox.n
@@ -144,7 +145,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       catch
         try
           geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
-      zoom = getMapZoom boundingBoxArray, "#global-data-map"
+      zoom = getMapZoom boundingBoxArray, ".map-container"
       if geo.lMap?
         geo.lMap.setZoom zoom
     catch e

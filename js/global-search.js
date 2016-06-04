@@ -9,11 +9,12 @@ checkCoordinateSanity = function() {
   var bounds, isGood;
   isGood = true;
   bounds = {
-    n: $("#north-coordinate").val(),
-    w: $("#west-coordinate").val(),
-    s: $("#south-coordinate").val(),
-    e: $("#east-coordinate").val()
+    n: toFloat($("#north-coordinate").val()),
+    w: toFloat($("#west-coordinate").val()),
+    s: toFloat($("#south-coordinate").val()),
+    e: toFloat($("#east-coordinate").val())
   };
+  console.log("User Bounds", bounds);
   if (!(bounds.n > bounds.s)) {
     isGood = false;
     $(".lat-input").parent().addClass("has-error");
@@ -111,10 +112,10 @@ doSearch = function(search, goDeep) {
     totalSpecies = new Array();
     layers = new Array();
     boundingBox = {
-      n: 0,
-      s: 0,
-      e: 0,
-      w: 0
+      n: -90,
+      s: 90,
+      e: -180,
+      w: 180
     };
     i = 0;
     for (j = 0, len = results.length; j < len; j++) {
@@ -182,7 +183,7 @@ doSearch = function(search, goDeep) {
           geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
         } catch (undefined) {}
       }
-      zoom = getMapZoom(boundingBoxArray, "#global-data-map");
+      zoom = getMapZoom(boundingBoxArray, ".map-container");
       if (geo.lMap != null) {
         geo.lMap.setZoom(zoom);
       }
