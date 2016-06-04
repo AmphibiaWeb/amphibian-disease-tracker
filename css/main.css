@@ -12489,6 +12489,9 @@ google-map.center-block:after {
   max-width: 98%;
   width: 95%;
 }
+#global-records-search .form-group .do-search {
+  margin: 0 .25rem;
+}
 #global-records-search .form-group.paper-elements label {
   padding-top: 12px;
 }
