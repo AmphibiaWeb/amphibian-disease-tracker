@@ -217,7 +217,19 @@ doDeepSearch = function(shallowResults) {
 };
 
 $(function() {
+  var lMap, lTopoOptions, leafletOptions;
   geo.initLocation();
+  leafletOptions = {
+    center: [window.locationData.lat, window.locationData.lng],
+    zoom: 5
+  };
+  lMap = new L.Map("global-map-container", leafletOptions);
+  lTopoOptions = {
+    maxZoom: 17,
+    attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  };
+  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', lTopoOptions).addTo(lMap);
+  geo.lMap = lMap;
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();
   });
