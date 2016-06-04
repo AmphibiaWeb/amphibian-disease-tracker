@@ -193,8 +193,8 @@ $loginStatus = getLoginState();
         <br/>
         <br/>
         <section class="col-xs-12" id="global-data-vis">
-          <div class="visualization-placeholder">
-            <!-- The carto vis -->
+          <div class="map-container">
+            <google-map id="global-data-map" map-type="terrain"></google-map>
           </div>
           <div class="center-block" id="post-map-container">
             <p class="text-center center-block text-muted" id="post-map-subtitle">

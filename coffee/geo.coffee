@@ -8,7 +8,7 @@
 uri.domain = uri.o.attr("host").split(".").reverse().pop()
 
 # CartoDB account name
-cartoAccount = "tigerhawkvok"
+cartoAccount = "mvz"
 
 # Google Maps API key
 # This can be public, since we've restricted the referrer
@@ -493,6 +493,37 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
       resetMapBuilder: false
   createMap2 mapBuilderObj.points, options, callback
   false
+
+
+
+createRawCartoMap = (layers, options, callback) ->
+  ###
+  # Create a raw CartoDB map
+  #
+  # See
+  # https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
+  #
+  ###
+  BASE_MAP = p$("#global-data-map").map
+  if isNull options
+    options = new Object()
+  params =
+    user_name: options.user_name ? cartoAccount
+    type: options.type ? "cartodb"
+    sublayers: layers
+  renderBaseMap = ->
+    html = """
+    """
+    false
+  cartodb
+  .createLayer BASE_MAP, params
+  .addTo BASE_MAP
+  .done (layer) ->
+    if typeof callback is "function"
+      callback()
+    false
+  false
+
 
 
 createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetId = "carto-map-container", options, callback) ->
