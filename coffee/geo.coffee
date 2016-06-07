@@ -521,6 +521,9 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     user_name: options.user_name ? cartoAccount
     type: options.type ? "cartodb"
     sublayers: layers
+    extra_params:
+      map_key: window.apiKey # For testing and not leaking
+      api_key: window.apiKey # For testing and not leaking
 
   console.info "Creating map", params
 
@@ -529,10 +532,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     cartodb_logo: false
     https: true
     mobile_layout: true
-    gmaps_base_type: "hybrid"
-    center_lat: window.locationData.lat,
-    center_lon: window.locationData.lng
-    zoom: 5
+    #gmaps_base_type: "hybrid"
+    #center_lat: window.locationData.lat,
+    #center_lon: window.locationData.lng
+    #zoom: 5
 
   # # Google Map Setup
   # googleMapOptions =
