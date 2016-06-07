@@ -2407,17 +2407,17 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   params = {
     user_name: (ref = options.user_name) != null ? ref : cartoAccount,
     type: (ref1 = options.type) != null ? ref1 : "cartodb",
-    sublayers: layers
+    sublayers: layers,
+    extra_params: {
+      map_key: window.apiKey,
+      api_key: window.apiKey
+    }
   };
   console.info("Creating map", params);
   mapOptions = {
     cartodb_logo: false,
     https: true,
-    mobile_layout: true,
-    gmaps_base_type: "hybrid",
-    center_lat: window.locationData.lat,
-    center_lon: window.locationData.lng,
-    zoom: 5
+    mobile_layout: true
   };
   leafletOptions = {
     center: [window.locationData.lat, window.locationData.lng],
