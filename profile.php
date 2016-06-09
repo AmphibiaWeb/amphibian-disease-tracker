@@ -362,7 +362,7 @@ value='".$place["zip"]."'
                              } else {
                                  $icon = "";
                              }
-                             $element = "<div class='profile-bio-group profile-data $class'>$icon</div>";
+                             $element = "<div class='profile-bio-group profile-data social-inline $class'>$icon</div>";
                          }
                      } else {
                          # Not social

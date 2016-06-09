@@ -1260,9 +1260,12 @@ section.conversations {
 }
 
 .profile-region {
-    .profile-data {
+    .profile-data:not(.social-inline) {
         display: flex;
         align-items: center;
+
+    }
+    .profile-data {
         * {
             margin-bottom: 2.5px;
             margin-top: 2.5px;
