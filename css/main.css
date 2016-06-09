@@ -12700,7 +12700,7 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .profile-bio-group.social paper-fab {
   color: white;
 }
-.profile-region .profile-data {
+.profile-region .profile-data:not(.social-inline) {
   display: flex;
   align-items: center;
 }
