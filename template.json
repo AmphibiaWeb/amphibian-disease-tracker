@@ -1,0 +1,32 @@
+{
+    "version": "1.0.0",
+    "name": "adp_generic_heatmap",
+    "auth": {
+        "method": "open",
+    },
+    "placeholders": {
+        "color": {
+            "type": "css_color",
+            "default": "red"
+        },
+        "table_name": {
+            "type": "text",
+            "default": 1
+        }
+    },
+    "layergroup": {
+        "version": "1.0.1",
+        "layers": [
+            {
+                "type": "mapnik",
+                "options": {
+                    "cartocss_version": "2.1.1",
+                    "cartocss": "#layer { polygon-fill: <%= color %>; }",
+                    "sql": "select the_geom from <%= table_name %>",
+                    "geom_column": "the_geom_webmercator",
+                    "geom_type": "geometry",
+                }
+            }
+        ]
+    }
+}
