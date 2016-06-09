@@ -148,7 +148,7 @@ $loginStatus = getLoginState();
           </div>
           <div class="center-block" id="post-map-container">
             <p class="text-center center-block text-muted" id="post-map-subtitle">
-              All Projects
+              All Projects <span class="text-danger">Beta / In Progress</span>
             </p>
           </div>
           <div class="form form-horizontal" id="global-records-search">
@@ -156,7 +156,7 @@ $loginStatus = getLoginState();
             Search for global stuff
             See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/104
             -->
-            <h3>Search &amp; Visualize Records</h3>
+            <h3>Search &amp; Visualize Records <span class="text-danger">Beta / In Progress</span></h3>
             <div class="form-group">
               <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
               <div class="col-xs-6 col-sm-9">
