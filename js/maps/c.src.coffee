@@ -1908,6 +1908,8 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       extra_params:
         map_key: window.apiKey # For testing and not leaking
         api_key: window.apiKey # For testing and not leaking
+  else
+    params = layers
 
   console.info "Creating map", params
 
