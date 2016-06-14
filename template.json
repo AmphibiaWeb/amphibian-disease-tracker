@@ -1,6 +1,6 @@
 {
     "version": "0.0.1",
-    "name": "adp_generic_heatmap-v3",
+    "name": "adp_generic_heatmap-v4",
     "auth": {
         "method": "open"
     },
@@ -11,20 +11,19 @@
         },
         "table_name": {
             "type": "sql_literal",
-            "default": ""
+            "default": "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5"
         }
     },
     "layergroup": {
         "version": "1.0.1",
         "layers": [
             {
-                "type": "mapnik",
+                "type": "cartodb",
                 "options": {
                     "cartocss_version": "2.1.1",
                     "cartocss": "#layer { polygon-fill: <%= color %>; marker-fill: red; }",
-                    "sql": "select the_geom, disease_detected from <%= table_name %>",
-                    "geom_column": "the_geom_webmercator",
-                    "geom_type": "geometry"
+                    "sql": "select * from <%= table_name %>",
+                    "interactivity": ["cartodb_id", "disease_detected"]
                 }
             }
         ]
