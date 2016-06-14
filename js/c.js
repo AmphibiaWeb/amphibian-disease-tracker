@@ -2449,6 +2449,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     } else {
       console.warn("'layers' isn't an array", layers);
     }
+    layer.show();
     try {
       console.log("Layer counts:", BASE_MAP.overlayMapTypes.length);
     } catch (undefined) {}
