@@ -1,6 +1,6 @@
 {
     "version": "0.0.1",
-    "name": "adp_generic_heatmap-v1",
+    "name": "adp_generic_heatmap-v2",
     "auth": {
         "method": "open"
     },
@@ -10,7 +10,7 @@
             "default": "red"
         },
         "table_name": {
-            "type": "text",
+            "type": "sql_literal",
             "default": ""
         }
     },
