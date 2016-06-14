@@ -167,6 +167,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         user_name: cartoAccount
         type: "namedmap"
         sublayers: layers
+        options:
+          named_map: layers[0] 
       createRawCartoMap layerSourceObj
     catch e
       console.error "Couldn't create map! #{e.message}"

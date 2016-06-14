@@ -207,7 +207,10 @@ doSearch = function(search, goDeep) {
       layerSourceObj = {
         user_name: cartoAccount,
         type: "namedmap",
-        sublayers: layers
+        sublayers: layers,
+        options: {
+          named_map: layers[0]
+        }
       };
       createRawCartoMap(layerSourceObj);
     } catch (error3) {
