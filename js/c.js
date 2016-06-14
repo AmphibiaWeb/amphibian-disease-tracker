@@ -2414,6 +2414,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
         api_key: window.apiKey
       }
     };
+  } else {
+    params = layers;
   }
   console.info("Creating map", params);
   mapOptions = {

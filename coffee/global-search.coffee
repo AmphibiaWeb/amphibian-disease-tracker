@@ -125,6 +125,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       unless isNull table
         layer =
           name: "adp_generic_heatmap-v2"
+          type: "namedmap"
           params:
             table_name: table
             color: "#FF6600"
@@ -165,9 +166,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       layerSourceObj =
         user_name: cartoAccount
         type: "namedmap"
-      for layer in layers
-        layerSourceObj.named_map = layer
-        createRawCartoMap layerSourceObj
+        sublayers: layers
+      createRawCartoMap layerSourceObj
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
