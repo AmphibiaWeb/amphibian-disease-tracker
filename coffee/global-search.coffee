@@ -124,13 +124,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       table = project.carto_id.table.slice 0, 63
       unless isNull table
         layer =
-          user_name: cartoAccount
-          type: "namedmap"
-          named_map:
-              name: "adp_generic_heatmap-v2"
-              params:
-                table_name: table
-                color: "#FF6600"
+          name: "adp_generic_heatmap-v2"
+          params:
+            table_name: table
+            color: "#FF6600"
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
@@ -165,7 +162,12 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
     $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
     # Render the vis
     try
-      createRawCartoMap layers
+      layerSourceObj =
+        user_name: cartoAccount
+        type: "namedmap"
+      for layer in layers
+        layerSourceObj.named_map = layer
+        createRawCartoMap layerSourceObj
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
