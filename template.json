@@ -1,6 +1,6 @@
 {
     "version": "0.0.1",
-    "name": "adp_generic_heatmap-v4",
+    "name": "adp_generic_heatmap-v7",
     "auth": {
         "method": "open"
     },
@@ -23,7 +23,8 @@
                     "cartocss_version": "2.1.1",
                     "cartocss": "#layer { polygon-fill: <%= color %>; marker-fill: red; }",
                     "sql": "select * from <%= table_name %>",
-                    "interactivity": ["cartodb_id", "disease_detected"]
+                    "interactivity": ["id", "diseasedetected", "genus", "specificepithet"],
+                    "geom_column": "the_geom"
                 }
             }
         ]
