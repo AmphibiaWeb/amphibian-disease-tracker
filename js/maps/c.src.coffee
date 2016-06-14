@@ -1900,13 +1900,14 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   if isNull options
     options = new Object()
 
-  params =
-    user_name: options.user_name ? cartoAccount
-    type: options.type ? "cartodb"
-    sublayers: layers
-    extra_params:
-      map_key: window.apiKey # For testing and not leaking
-      api_key: window.apiKey # For testing and not leaking
+  unless layers.user_name?
+    params =
+      user_name: options.user_name ? cartoAccount
+      type: options.type ? "cartodb"
+      sublayers: layers
+      extra_params:
+        map_key: window.apiKey # For testing and not leaking
+        api_key: window.apiKey # For testing and not leaking
 
   console.info "Creating map", params
 
@@ -1946,10 +1947,13 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   .createLayer(BASE_MAP, params, mapOptions)
   .addTo(BASE_MAP, 1)
   .on "done", (layer) ->
-    for dataLayer in layers
-      console.info "Re-adding sublayer", dataLayer
-      layer.createSubLayer dataLayer
-    console.info "Added layers to map"
+    if isArray layers
+      for dataLayer in layers
+        console.info "Re-adding sublayer", dataLayer
+        layer.createSubLayer dataLayer
+      console.info "Added layers to map"
+    else
+      console.warn "'layers' isn't an array", layers
     try
       console.log "Layer counts:", BASE_MAP.overlayMapTypes.length
     if typeof callback is "function"

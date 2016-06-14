@@ -2404,15 +2404,17 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   if (isNull(options)) {
     options = new Object();
   }
-  params = {
-    user_name: (ref = options.user_name) != null ? ref : cartoAccount,
-    type: (ref1 = options.type) != null ? ref1 : "cartodb",
-    sublayers: layers,
-    extra_params: {
-      map_key: window.apiKey,
-      api_key: window.apiKey
-    }
-  };
+  if (layers.user_name == null) {
+    params = {
+      user_name: (ref = options.user_name) != null ? ref : cartoAccount,
+      type: (ref1 = options.type) != null ? ref1 : "cartodb",
+      sublayers: layers,
+      extra_params: {
+        map_key: window.apiKey,
+        api_key: window.apiKey
+      }
+    };
+  }
   console.info("Creating map", params);
   mapOptions = {
     cartodb_logo: false,
@@ -2434,12 +2436,16 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
     var dataLayer, l, len;
-    for (l = 0, len = layers.length; l < len; l++) {
-      dataLayer = layers[l];
-      console.info("Re-adding sublayer", dataLayer);
-      layer.createSubLayer(dataLayer);
+    if (isArray(layers)) {
+      for (l = 0, len = layers.length; l < len; l++) {
+        dataLayer = layers[l];
+        console.info("Re-adding sublayer", dataLayer);
+        layer.createSubLayer(dataLayer);
+      }
+      console.info("Added layers to map");
+    } else {
+      console.warn("'layers' isn't an array", layers);
     }
-    console.info("Added layers to map");
     try {
       console.log("Layer counts:", BASE_MAP.overlayMapTypes.length);
     } catch (undefined) {}
