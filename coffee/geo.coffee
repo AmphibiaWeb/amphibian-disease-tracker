@@ -574,6 +574,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       console.info "Added layers to map"
     else
       console.warn "'layers' isn't an array", layers
+    layer.show()      
     try
       console.log "Layer counts:", BASE_MAP.overlayMapTypes.length
     if typeof callback is "function"
