@@ -123,6 +123,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           project.carto_id = cartoParsed
       table = project.carto_id.table.slice 0, 63
       unless isNull table
+        # Create named map layers
         layer =
           name: "adp_generic_heatmap-v2"
           type: "namedmap"
@@ -163,13 +164,13 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
     $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
     # Render the vis
     try
-      layerSourceObj =
-        user_name: cartoAccount
-        type: "namedmap"
-        sublayers: layers
-        options:
-          named_map: layers[0] 
-      createRawCartoMap layerSourceObj
+      # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
+      for layer in layers
+        layerSourceObj =
+          user_name: cartoAccount
+          type: "namedmap"
+          named_map: layer
+        createRawCartoMap layerSourceObj
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack

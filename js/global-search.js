@@ -94,7 +94,7 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, layer, layerSourceObj, layers, len, len1, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -204,15 +204,15 @@ doSearch = function(search, goDeep) {
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     try {
-      layerSourceObj = {
-        user_name: cartoAccount,
-        type: "namedmap",
-        sublayers: layers,
-        options: {
-          named_map: layers[0]
-        }
-      };
-      createRawCartoMap(layerSourceObj);
+      for (l = 0, len2 = layers.length; l < len2; l++) {
+        layer = layers[l];
+        layerSourceObj = {
+          user_name: cartoAccount,
+          type: "namedmap",
+          named_map: layer
+        };
+        createRawCartoMap(layerSourceObj);
+      }
     } catch (error3) {
       e = error3;
       console.error("Couldn't create map! " + e.message);
