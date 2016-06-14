@@ -9645,7 +9645,7 @@ html >>> .capitalize {
   margin-top: 0px !important;
   top: 0px;
   width: 100%;
-  z-index: 999;
+  z-index: 1024;
 }
 header#header-bar {
   background: #5677fc;
@@ -9654,7 +9654,7 @@ header#header-bar {
   margin-top: 0px !important;
   top: 0px;
   width: 100%;
-  z-index: 999;
+  z-index: 1024;
   padding: .5rem;
   margin-top: -10px;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);

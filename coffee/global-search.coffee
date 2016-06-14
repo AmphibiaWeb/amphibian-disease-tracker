@@ -124,8 +124,13 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       table = project.carto_id.table.slice 0, 63
       unless isNull table
         layer =
-          sql: "SELECT * FROM #{table}"
-          cartocss: "##{table} {marker-fill: #F0F0F0; polygon-fill: #FF6600; line-color: #000; line-width: 1; polygon-opacity: 0.7; line-opacity: 1;}"
+          user_name: cartoAccount
+          type: "namedmap"
+          named_map:
+              name: "adp_generic_heatmap-v2"
+              params:
+                table_name: table
+                color: "#FF6600"
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
