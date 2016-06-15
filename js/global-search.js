@@ -164,6 +164,12 @@ doSearch = function(search, goDeep) {
         layer = {
           name: "adp_generic_heatmap-v7",
           type: "namedmap",
+          layers: [
+            {
+              layer_name: "layer-" + layers.length,
+              interactivity: "id, diseasedetected, genus, specificepithet"
+            }
+          ],
           params: {
             table_name: table,
             color: "#FF6600"
