@@ -14,7 +14,7 @@ email: amphibiaweb@berkeley.edu
 name: AmphibiaWeb
 description: >
   A repository for aggregating information on Bd and Bsal
-baseurl: "/" # the subpath of your site, e.g. /blog/
+baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://updates.amphibiandisease.org" # the base hostname & protocol for your site
 cover: "assets/Ensatina_closeup_Yap_1024.jpg"
 logo: "assets/logo.jpg"
