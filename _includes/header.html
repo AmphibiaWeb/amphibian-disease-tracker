@@ -1,8 +1,8 @@
 <header class="navigation" role="banner">
   <div class="navigation-wrapper">
-    <a href="{{ site.baseurl }}/" class="logo">
+    <a href="{{ site.url }}/" class="logo">
       {% if site.logo %}
-      <img src="{{ site.logo | prepend: site.baseurl }}" alt="{{ site.title }}">
+      <img src="{{site.url}}/{{ site.logo }}" alt="{{ site.title }}">
       {% else %}
       <span>{{ site.title }}</span>
       {% endif %}

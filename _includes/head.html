@@ -16,24 +16,24 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
 
   <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
-  <link rel="shortcut icon" href="{{ "assets/icons/favicon-16x16.png?v=2" | prepend: site.baseurl }}" type="image/png">
-	<link rel="icon" href="{{ "assets/icons/favicon-16x16.png?v=2" | prepend: site.baseurl }}" type="image/png">
-  <link rel="apple-touch-icon" sizes="57x57" href="{{ "assets/icons/apple-icon-57x57.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="60x60" href="{{ "assets/icons/apple-icon-60x60.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="72x72" href="{{ "assets/icons/apple-icon-72x72.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="76x76" href="{{ "assets/icons/apple-icon-76x76.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="114x114" href="{{ "assets/icons/apple-icon-114x114.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="120x120" href="{{ "assets/icons/apple-icon-120x120.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="144x144" href="{{ "assets/icons/apple-icon-144x144.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="152x152" href="{{ "assets/icons/apple-icon-152x152.png" | prepend: site.baseurl }}">
-	<link rel="apple-touch-icon" sizes="180x180" href="{{ "assets/icons/apple-icon-180x180.png" | prepend: site.baseurl }}">
-	<link rel="icon" type="image/png" sizes="192x192"  href="{{ "assets/icons/android-icon-192x192.png" | prepend: site.baseurl }}">
-	<link rel="icon" type="image/png" sizes="32x32" href="{{ "assets/icons/favicon-32x32.png" | prepend: site.baseurl }}">
-	<link rel="icon" type="image/png" sizes="96x96" href="{{ "assets/icons/favicon-96x96.png" | prepend: site.baseurl }}">
-	<link rel="icon" type="image/png" sizes="16x16" href="{{ "assets/icons/favicon-16x16.png" | prepend: site.baseurl }}">
-	<link rel="manifest" href="{{ "assets/icons/manifest.json" | prepend: site.baseurl }}">
+  <link rel="shortcut icon" href="{{site.url}}/{{ "assets/icons/favicon-16x16.png?v=2" }}" type="image/png">
+	<link rel="icon" href="{{site.url}}/{{ "assets/icons/favicon-16x16.png?v=2"  }}" type="image/png">
+  <link rel="apple-touch-icon" sizes="57x57" href="{{site.url}}/{{ "assets/icons/apple-icon-57x57.png"  }}">
+	<link rel="apple-touch-icon" sizes="60x60" href="{{site.url}}/{{ "assets/icons/apple-icon-60x60.png"  }}">
+	<link rel="apple-touch-icon" sizes="72x72" href="{{site.url}}/{{ "assets/icons/apple-icon-72x72.png"  }}">
+	<link rel="apple-touch-icon" sizes="76x76" href="{{site.url}}/{{ "assets/icons/apple-icon-76x76.png"  }}">
+	<link rel="apple-touch-icon" sizes="114x114" href="{{site.url}}/{{ "assets/icons/apple-icon-114x114.png"  }}">
+	<link rel="apple-touch-icon" sizes="120x120" href="{{site.url}}/{{ "assets/icons/apple-icon-120x120.png"  }}">
+	<link rel="apple-touch-icon" sizes="144x144" href="{{site.url}}/{{ "assets/icons/apple-icon-144x144.png"  }}">
+	<link rel="apple-touch-icon" sizes="152x152" href="{{site.url}}/{{ "assets/icons/apple-icon-152x152.png"  }}">
+	<link rel="apple-touch-icon" sizes="180x180" href="{{site.url}}/{{ "assets/icons/apple-icon-180x180.png"  }}">
+	<link rel="icon" type="image/png" sizes="192x192"  href="{{site.url}}/{{ "assets/icons/android-icon-192x192.png"  }}">
+	<link rel="icon" type="image/png" sizes="32x32" href="{{site.url}}/{{ "assets/icons/favicon-32x32.png"  }}">
+	<link rel="icon" type="image/png" sizes="96x96" href="{{site.url}}/{{ "assets/icons/favicon-96x96.png"  }}">
+	<link rel="icon" type="image/png" sizes="16x16" href="{{site.url}}/{{ "assets/icons/favicon-16x16.png"  }}">
+	<link rel="manifest" href="{{site.url}}/{{ "assets/icons/manifest.json"  }}">
 	<meta name="msapplication-TileColor" content="#ffffff">
-	<meta name="msapplication-TileImage" content="{{ "assets/icons/ms-icon-144x144.png" | prepend: site.baseurl }}">
+	<meta name="msapplication-TileImage" content="{{site.url}}/{{ "assets/icons/ms-icon-144x144.png"  }}">
 	<meta name="theme-color" content="#ffffff">
 
 	<!-- Facebook OGP cards -->
@@ -42,7 +42,7 @@
   <meta property="og:site_name" content="{{ site.title }}" />
   <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="{% if page.cover %}{{ page.cover | prepend: site.baseurl | prepend: site.url }}{% else %}{{ site.protocols.fb_image | prepend: site.baseurl | prepend: site.url }}{% endif %}" />
+  <meta property="og:image" content="{% if page.cover %}{{ page.cover | prepend: site.baseurl | prepend: "/" | prepend: site.url }}{% else %}{{ site.protocols.fb_image | prepend: site.baseurl | prepend: site.url }}{% endif %}" />
   <meta property="og:image:type" content="{{ site.protocols.fb_image_type }}" />
   <meta property="og:image:width" content="{{ site.protocols.fb_image_width }}" />
   <meta property="og:image:height" content="{{ site.protocols.fb_image_height }}" />
@@ -71,15 +71,14 @@
 <!--From previous index.html-->
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Roboto:400,100,300,500,700,100italic,300italic,400italic,500italic,700italic" rel='stylesheet' type='text/css'/>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <script src="js/c.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{site.url}}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="{{site.url}}/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-    <link rel="import" href="bower_components/polymer/polymer.html"/>
-    <link rel="import" href="bower_components/font-roboto/roboto.html"/>
-    <link rel="import" href="bower_components/polymer/polymer.html"/>
-    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
-    <link rel="import" href="polymer-elements/glyphicon-social-icons.html"/>
+    <link rel="import" href="{{site.url}}/bower_components/polymer/polymer.html"/>
+    <link rel="import" href="{{site.url}}/bower_components/font-roboto/roboto.html"/>
+    <link rel="import" href="{{site.url}}/bower_components/polymer/polymer.html"/>
+    <link rel="import" href="{{site.url}}/bower_components/paper-icon-button/paper-icon-button.html"/>
+    <link rel="import" href="{{site.url}}/polymer-elements/glyphicon-social-icons.html"/>
 
 
 </head>
