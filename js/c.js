@@ -2449,6 +2449,11 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     } else {
       console.warn("'layers' isn't an array", layers);
     }
+    layer.getSubLayer(0).setInteraction(true);
+    layer.getSubLayer(0).on("featureover", function(e, pos, pixel, data) {
+      console.log("Mousover", data);
+      return false;
+    });
     layer.show();
     try {
       console.log("Layer counts:", BASE_MAP.overlayMapTypes.length);

@@ -1957,7 +1957,11 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       console.info "Added layers to map"
     else
       console.warn "'layers' isn't an array", layers
-    layer.show()      
+    layer.getSubLayer(0).setInteraction(true);
+    layer.getSubLayer(0).on "featureover", (e, pos, pixel, data) ->
+      console.log "Mousover", data
+      false
+    layer.show()
     try
       console.log "Layer counts:", BASE_MAP.overlayMapTypes.length
     if typeof callback is "function"
