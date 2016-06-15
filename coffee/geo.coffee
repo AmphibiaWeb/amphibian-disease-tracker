@@ -567,6 +567,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   .addTo(BASE_MAP, 1)
   .on "done", (layer) ->
     console.info "Done, returned", layer, "for type #{params.type}"
+    try
+      layer.setParams "table_name", params.named_map.params.table_name
+    catch
+      console.warn "Couldn't explicitly set table"
     if isArray layers
       for dataLayer in layers
         console.info "Re-adding sublayer", dataLayer

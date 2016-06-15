@@ -2437,8 +2437,13 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
-    var dataLayer, l, len;
+    var dataLayer, error2, l, len;
     console.info("Done, returned", layer, "for type " + params.type);
+    try {
+      layer.setParams("table_name", params.named_map.params.table_name);
+    } catch (error2) {
+      console.warn("Couldn't explicitly set table");
+    }
     if (isArray(layers)) {
       for (l = 0, len = layers.length; l < len; l++) {
         dataLayer = layers[l];
