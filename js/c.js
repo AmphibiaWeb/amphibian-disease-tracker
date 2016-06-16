@@ -1994,7 +1994,7 @@ getMapZoom = function(bb, selector, zoomIt) {
       nsAngle += 360;
     }
     if (!$(selector).exists()) {
-      console.warn("Can't find '" + selector + "' - will use 480x650");
+      console.warn("Can't find '" + selector + "' - will use 650x480");
     }
     mapWidth = (ref = $(selector).width()) != null ? ref : 650;
     mapHeight = (ref1 = $(selector).height()) != null ? ref1 : 480;

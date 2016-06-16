@@ -146,7 +146,7 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
     while nsAngle < 0
       nsAngle += 360
     unless $(selector).exists()
-      console.warn "Can't find '#{selector}' - will use 480x650"
+      console.warn "Can't find '#{selector}' - will use 650x480"
     mapWidth = $(selector).width() ? 650
     mapHeight = $(selector).height() ? 480
     adjAngle = 360 / angle

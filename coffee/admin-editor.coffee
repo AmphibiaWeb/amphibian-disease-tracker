@@ -948,9 +948,11 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       pointArr = new Array()
       for k, row of rows
         geoJson = JSON.parse row.st_asgeojson
-        # cartoDB stores as lng, lat
-        lat = geoJson.coordinates[1]
-        lng = geoJson.coordinates[0]
+        # # cartoDB stores as lng, lat
+        # lat = geoJson.coordinates[1]
+        # lng = geoJson.coordinates[0]
+        lat = row.decimallatitude
+        lng = row.decimallongitude
         point = new Point lat, lng
         point.infoWindow = new Object()
         point.data = row
