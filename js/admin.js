@@ -2903,8 +2903,8 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       for (k in rows) {
         row = rows[k];
         geoJson = JSON.parse(row.st_asgeojson);
-        lat = geoJson.coordinates[1];
-        lng = geoJson.coordinates[0];
+        lat = row.decimallatitude;
+        lng = row.decimallongitude;
         point = new Point(lat, lng);
         point.infoWindow = new Object();
         point.data = row;

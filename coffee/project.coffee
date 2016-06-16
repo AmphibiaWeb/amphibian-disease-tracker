@@ -570,7 +570,7 @@ renderPublicMap = (projectData = publicData) ->
       se
       sw
       ]
-    coordArr = getPointsFromBoundingBox(projectData)
+    coordArr = getPointsFromBoundingBox projectData
     try
       zoom = getMapZoom coordArr, "#transect-viewport"
       console.info "Got zoom", zoom
@@ -596,7 +596,9 @@ renderPublicMap = (projectData = publicData) ->
       zoom = getMapZoom paths, "#transect-viewport"
       p$("#transect-viewport").zoom = zoom
     catch error
-
+      try
+        zoom = getMapZoom coordArr, "#transect-viewport"
+        p$("#transect-viewport").zoom = zoom
   catch e
     stopLoadError "Couldn't render map"
     console.error "Map rendering error - #{e.message}"
@@ -670,7 +672,7 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
 sqlQueryBox = ->
   ###
   # Render and bind events for a box to directly execute queries on a
-  # project. 
+  # project.
   ###
   # Function definitions
   queryCarto = ->
@@ -682,14 +684,14 @@ sqlQueryBox = ->
   queryResultDialog = ->
     false
   queryResultSummaryHistory = ->
-    false  
+    false
   # If it doesn't exist, inject into the DOM
   unless $("#project-sql-query-box").exists()
     html = """
     <div id="project-sql-query-box">
       <textarea class="form-control code" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
       <span class="help-block" id="query-cheats">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>
-        
+
     </div>
     """
     $("main").append html

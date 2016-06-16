@@ -634,6 +634,10 @@ renderPublicMap = function(projectData) {
       return p$("#transect-viewport").zoom = zoom;
     } catch (error3) {
       error = error3;
+      try {
+        zoom = getMapZoom(coordArr, "#transect-viewport");
+        return p$("#transect-viewport").zoom = zoom;
+      } catch (undefined) {}
     }
   } catch (error4) {
     e = error4;
@@ -735,7 +739,7 @@ sqlQueryBox = function() {
     return false;
   };
   if (!$("#project-sql-query-box").exists()) {
-    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n    \n</div>";
+    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
     $("main").append(html);
   }
   return false;
