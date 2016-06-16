@@ -165,8 +165,9 @@ renderMapWithData = (projectData, force = false) ->
     pointPoints = new Array()
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
-      lat = geoJson.coordinates[0]
-      lng = geoJson.coordinates[1]
+      # cartoDB works in lng, lat
+      lat = geoJson.coordinates[1]
+      lng = geoJson.coordinates[0]
       points.push [lat,lng]
       try
         pointPoints.push canonicalizePoint [lat, lng]

@@ -648,7 +648,11 @@ getTableCoordinates = function(table) {
   return false;
 };
 
-pointStringToLatLng = function(pointString) {
+pointStringToLatLng = function(pointString, reverseLatLngOrder) {
+  var latKey, lngKey, pointArr, pointObj, pointSSV;
+  if (reverseLatLngOrder == null) {
+    reverseLatLngOrder = false;
+  }
 
   /*
    * Take point of form
@@ -657,13 +661,14 @@ pointStringToLatLng = function(pointString) {
    *
    * and return a json obj
    */
-  var pointArr, pointObj, pointSSV;
   if (!pointString.search("POINT" === 0)) {
     console.warn("Invalid point string");
     return false;
   }
   pointSSV = pointString.slice(6, -1);
   pointArr = pointSSV.split(" ");
+  latKey = Math.abs(pointArr[0]) > 90 || reverseLatLngOrder ? 1 : 0;
+  lngKey = latKey === 1 ? 0 : 1;
   pointObj = {
     lat: pointArr[0],
     lng: pointArr[1]
@@ -671,7 +676,11 @@ pointStringToLatLng = function(pointString) {
   return pointObj;
 };
 
-pointStringToPoint = function(pointString) {
+pointStringToPoint = function(pointString, reverseLatLngOrder) {
+  var point, pointObj;
+  if (reverseLatLngOrder == null) {
+    reverseLatLngOrder = false;
+  }
 
   /*
    * Take point of form
@@ -680,14 +689,12 @@ pointStringToPoint = function(pointString) {
    *
    * and return a json obj
    */
-  var point, pointArr, pointSSV;
   if (!pointString.search("POINT" === 0)) {
     console.warn("Invalid point string");
     return false;
   }
-  pointSSV = pointString.slice(6, -1);
-  pointArr = pointSSV.split(" ");
-  point = new Point(pointArr[0], pointArr[1]);
+  pointObj = pointStringToLatLng(pointString, reverseLatLngOrder);
+  point = canonicalizePoint(pointObj);
   return point;
 };
 
@@ -2896,8 +2903,8 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       for (k in rows) {
         row = rows[k];
         geoJson = JSON.parse(row.st_asgeojson);
-        lat = geoJson.coordinates[0];
-        lng = geoJson.coordinates[1];
+        lat = geoJson.coordinates[1];
+        lng = geoJson.coordinates[0];
         point = new Point(lat, lng);
         point.infoWindow = new Object();
         point.data = row;
@@ -3502,7 +3509,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
               }
               colArr.push(column);
             }
-            geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[0] + "," + geoJsonGeom.coordinates[1] + "),4326)";
+            geoJsonVal = "ST_SetSRID(ST_Point(" + geoJsonGeom.coordinates[1] + "," + geoJsonGeom.coordinates[0] + "),4326)";
             if (refRow != null) {
               gjString = JSON.stringify(geoJsonGeom);
               refGeom = (ref9 = refRow.the_geom) != null ? ref9 : refRow.st_asgeojson;

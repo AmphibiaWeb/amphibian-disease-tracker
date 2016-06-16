@@ -948,8 +948,9 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       pointArr = new Array()
       for k, row of rows
         geoJson = JSON.parse row.st_asgeojson
-        lat = geoJson.coordinates[0]
-        lng = geoJson.coordinates[1]
+        # cartoDB stores as lng, lat
+        lat = geoJson.coordinates[1]
+        lng = geoJson.coordinates[0]
         point = new Point lat, lng
         point.infoWindow = new Object()
         point.data = row
@@ -1575,7 +1576,8 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 else
                   valuesArr.push value
               colArr.push column
-            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
+            # cartoDB stores as lng, lat
+            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[1]},#{geoJsonGeom.coordinates[0]}),4326)"
             if refRow?
               # is it needed?
               gjString = JSON.stringify geoJsonGeom

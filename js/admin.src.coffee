@@ -739,7 +739,7 @@ getTableCoordinates = (table = "tdf0f1bc730325de59d48a5c80df45931_6d6d454828c05e
   false
 
 
-pointStringToLatLng = (pointString) ->
+pointStringToLatLng = (pointString, reverseLatLngOrder = false) ->
   ###
   # Take point of form
   #
@@ -752,12 +752,14 @@ pointStringToLatLng = (pointString) ->
     return false
   pointSSV = pointString.slice 6, -1
   pointArr = pointSSV.split " "
+  latKey = if Math.abs(pointArr[0]) > 90 or reverseLatLngOrder then 1 else 0
+  lngKey = if latKey is 1 then 0 else 1
   pointObj =
     lat: pointArr[0]
     lng: pointArr[1]
   pointObj
 
-pointStringToPoint = (pointString) ->
+pointStringToPoint = (pointString, reverseLatLngOrder = false) ->
   ###
   # Take point of form
   #
@@ -768,9 +770,8 @@ pointStringToPoint = (pointString) ->
   unless pointString.search "POINT" is 0
     console.warn "Invalid point string"
     return false
-  pointSSV = pointString.slice 6, -1
-  pointArr = pointSSV.split " "
-  point = new Point(pointArr[0], pointArr[1])
+  pointObj = pointStringToLatLng pointString, reverseLatLngOrder
+  point = canonicalizePoint pointObj
   point
 
 
@@ -3003,8 +3004,9 @@ getProjectCartoData = (cartoObj, mapOptions) ->
       pointArr = new Array()
       for k, row of rows
         geoJson = JSON.parse row.st_asgeojson
-        lat = geoJson.coordinates[0]
-        lng = geoJson.coordinates[1]
+        # cartoDB stores as lng, lat
+        lat = geoJson.coordinates[1]
+        lng = geoJson.coordinates[0]
         point = new Point lat, lng
         point.infoWindow = new Object()
         point.data = row
@@ -3630,7 +3632,8 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 else
                   valuesArr.push value
               colArr.push column
-            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
+            # cartoDB stores as lng, lat
+            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[1]},#{geoJsonGeom.coordinates[0]}),4326)"
             if refRow?
               # is it needed?
               gjString = JSON.stringify geoJsonGeom

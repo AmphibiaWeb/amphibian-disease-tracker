@@ -946,7 +946,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
               columnNamesList.push "the_geom geometry"
               if operation is "create"
                 sqlQuery = "#{sqlQuery} (#{columnNamesList.join(",")}); "
-            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[0]},#{geoJsonGeom.coordinates[1]}),4326)"
+            # cartoDB stores in lng, lat
+            geoJsonVal = "ST_SetSRID(ST_Point(#{geoJsonGeom.coordinates[1]},#{geoJsonGeom.coordinates[0]}),4326)"
             # geoJsonVal = "ST_AsBinary(#{JSON.stringify(geoJsonGeom)}, 4326)"
             valuesArr.push geoJsonVal
             valuesList.push "(#{valuesArr.join(",")})"
