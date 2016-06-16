@@ -144,7 +144,7 @@ renderMapWithData = (projectData, force = false) ->
       """
   mapHtml += "    </google-map-poly>"
 
-  cartoQuery = "SELECT genus, specificEpithet, diseaseTested, diseaseDetected, originalTaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  cartoQuery = "SELECT genus, specificepithet, diseasetested, diseasedetected, originaltaxa, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
@@ -163,6 +163,7 @@ renderMapWithData = (projectData, force = false) ->
     rows = result.parsed_responses[0].rows
     points = new Array()
     pointPoints = new Array()
+    console.log "Running swapped cartoDB order (lng, lat)"
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       # cartoDB works in lng, lat
