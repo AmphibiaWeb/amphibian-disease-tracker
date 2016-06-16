@@ -193,8 +193,8 @@ renderMapWithData = function(projectData, force) {
     for (k in rows) {
       row = rows[k];
       geoJson = JSON.parse(row.st_asgeojson);
-      lat = geoJson.coordinates[0];
-      lng = geoJson.coordinates[1];
+      lat = geoJson.coordinates[1];
+      lng = geoJson.coordinates[0];
       points.push([lat, lng]);
       try {
         pointPoints.push(canonicalizePoint([lat, lng]));
