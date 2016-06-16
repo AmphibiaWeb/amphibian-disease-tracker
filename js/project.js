@@ -92,7 +92,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, title, tmp, usedPoints, zoom;
+  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, title, tmp, usedPoints, zoom, zoomPaths;
   if (force == null) {
     force = false;
   }
@@ -133,7 +133,8 @@ renderMapWithData = function(projectData, force) {
   }
   cartoTable = cartoData.table;
   try {
-    zoom = getMapZoom(cartoData.bounding_polygon.paths, "#transect-viewport");
+    zoomPaths = (ref = cartoData.bounding_polygon.paths) != null ? ref : cartoData.bounding_polygon;
+    zoom = getMapZoom(zoomPaths, "#transect-viewport");
     console.info("Got zoom", zoom);
   } catch (error1) {
     zoom = "";
@@ -159,9 +160,9 @@ renderMapWithData = function(projectData, force) {
   }
   mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
   usedPoints = new Array();
-  ref = poly.paths;
-  for (l = 0, len1 = ref.length; l < len1; l++) {
-    point = ref[l];
+  ref1 = poly.paths;
+  for (l = 0, len1 = ref1.length; l < len1; l++) {
+    point = ref1[l];
     if (indexOf.call(usedPoints, point) < 0) {
       usedPoints.push(point);
       mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
@@ -173,14 +174,14 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, pointPoints, points, ref1, ref2, row, rows, taxa, year, yearPretty, years;
+    var collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, pointPoints, points, ref2, ref3, row, rows, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
     }
     console.info("Carto query got result:", result);
     if (!result.status) {
-      error = (ref1 = result.human_error) != null ? ref1 : result.error;
+      error = (ref2 = result.human_error) != null ? ref2 : result.error;
       if (error == null) {
         error = "Unknown error";
       }
@@ -400,9 +401,9 @@ renderMapWithData = function(projectData, force) {
     });
     checkArkDataset(projectData);
     setPublicData(projectData);
-    ref2 = $(".aweb-link-species");
-    for (o = 0, len4 = ref2.length; o < len4; o++) {
-      el = ref2[o];
+    ref3 = $(".aweb-link-species");
+    for (o = 0, len4 = ref3.length; o < len4; o++) {
+      el = ref3[o];
       isPositive = $(el).attr("data-positive").toBool();
       if (isPositive) {
         $(el).attr("data-negative", "false").attr("data-inconclusive", "false");
@@ -615,7 +616,7 @@ renderPublicMap = function(projectData) {
     coordArr = getPointsFromBoundingBox(projectData);
     try {
       zoom = getMapZoom(coordArr, "#transect-viewport");
-      console.info("Got zoom", zoom);
+      console.info("Got public zoom", zoom);
     } catch (error2) {
       zoom = "";
     }
