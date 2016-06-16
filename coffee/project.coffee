@@ -116,7 +116,8 @@ renderMapWithData = (projectData, force = false) ->
   downloadButton ?= ""
   cartoTable = cartoData.table
   try
-    zoom = getMapZoom cartoData.bounding_polygon.paths, "#transect-viewport"
+    zoomPaths = cartoData.bounding_polygon.paths ? cartoData.bounding_polygon
+    zoom = getMapZoom zoomPaths, "#transect-viewport"
     console.info "Got zoom", zoom
   catch
     zoom = ""
@@ -573,7 +574,7 @@ renderPublicMap = (projectData = publicData) ->
     coordArr = getPointsFromBoundingBox projectData
     try
       zoom = getMapZoom coordArr, "#transect-viewport"
-      console.info "Got zoom", zoom
+      console.info "Got public zoom", zoom
     catch
       zoom = ""
     for point in paths
