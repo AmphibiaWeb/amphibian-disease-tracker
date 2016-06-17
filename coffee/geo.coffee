@@ -960,6 +960,9 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength)
             insertPlace += insertMaxLength
             sqlQuery += "INSERT INTO #{dataTable} VALUES #{tempList.join(", ")};"
+          # For the last query, cartodbfy
+          cdbfy = "SELECT cdb_cartodbfy('#{dataTable}');"
+          sqlQuery += cdbfy
 
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "

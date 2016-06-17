@@ -162,7 +162,7 @@ doSearch = function(search, goDeep) {
       table = project.carto_id.table.slice(0, 63);
       if (!isNull(table)) {
         layer = {
-          name: "adp_generic_heatmap-v7",
+          name: "adp_generic_heatmap-v8",
           type: "namedmap",
           layers: [
             {
