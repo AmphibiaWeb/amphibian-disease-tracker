@@ -94,7 +94,7 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, namedMapSource, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -118,6 +118,8 @@ doSearch = function(search, goDeep) {
       w: 180
     };
     i = 0;
+    namedMapSource = "adp_generic_heatmap-v8";
+    console.info("Using named map " + namedMapSource);
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -162,7 +164,7 @@ doSearch = function(search, goDeep) {
       table = project.carto_id.table.slice(0, 63);
       if (!isNull(table)) {
         layer = {
-          name: "adp_generic_heatmap-v8",
+          name: namedMapSource,
           type: "namedmap",
           layers: [
             {
