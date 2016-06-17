@@ -1,7 +1,8 @@
 ###
-#
+# Do global searches, display global points.
 ###
 
+namedMapSource = "adp_generic_heatmap-v8"
 
 checkCoordinateSanity = ->
   isGood = true
@@ -90,7 +91,6 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       e: -180
       w: 180
     i = 0
-    namedMapSource = "adp_generic_heatmap-v8"
     console.info "Using named map #{namedMapSource}"
     for project in results
       if project.bounding_box_n > boundingBox.n
@@ -197,6 +197,12 @@ doDeepSearch = (shallowResults) ->
   stopLoad()
   false
 
+showAllTables = ->
+  ###
+  # Looks up all table names with permissions and shows
+  # their data on the map
+  ###
+  false
 
 $ ->
   geo.initLocation()
@@ -211,11 +217,28 @@ $ ->
   geo.lMap = lMap
   $(".coord-input").keyup ->
     checkCoordinateSanity()
-  $(".do-search").click ->
+  # Project search event handling
+  initProjectSearch = (clickedElement) ->
     ok = checkCoordinateSanity()
     unless ok
       toastStatusMessage "Please check your coordinates"
       return false
-    deep = $(this).attr("data-deep").toBool()
+    try
+      deep = $(clickedElement).attr("data-deep").toBool()
+    catch
+      deep = false
     doSearch(getSearchObject(), deep)
     false
+  # Hit enter on a field
+  $("input.submit-project-search").keyup (e) ->
+    kc = if e.keyCode then e.keyCode else e.which
+    if kc is 13
+      initProjectSearch()
+    else
+      false
+  # Click the search button
+  $(".do-search").click ->
+    initProjectSearch(this)
+  # Initial load
+  showAllTables()
+  false

@@ -1,9 +1,11 @@
 
 /*
- *
+ * Do global searches, display global points.
  */
-var checkCoordinateSanity, doDeepSearch, doSearch, getSearchObject,
+var checkCoordinateSanity, doDeepSearch, doSearch, getSearchObject, namedMapSource, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+namedMapSource = "adp_generic_heatmap-v8";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -94,7 +96,7 @@ doSearch = function(search, goDeep) {
   data = jsonTo64(search);
   args = "perform=advanced_project_search&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, namedMapSource, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -118,7 +120,6 @@ doSearch = function(search, goDeep) {
       w: 180
     };
     i = 0;
-    namedMapSource = "adp_generic_heatmap-v8";
     console.info("Using named map " + namedMapSource);
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
@@ -246,8 +247,17 @@ doDeepSearch = function(shallowResults) {
   return false;
 };
 
+showAllTables = function() {
+
+  /*
+   * Looks up all table names with permissions and shows
+   * their data on the map
+   */
+  return false;
+};
+
 $(function() {
-  var lMap, lTopoOptions, leafletOptions;
+  var initProjectSearch, lMap, lTopoOptions, leafletOptions;
   geo.initLocation();
   leafletOptions = {
     center: [window.locationData.lat, window.locationData.lng],
@@ -262,17 +272,35 @@ $(function() {
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();
   });
-  return $(".do-search").click(function() {
-    var deep, ok;
+  initProjectSearch = function(clickedElement) {
+    var deep, error, ok;
     ok = checkCoordinateSanity();
     if (!ok) {
       toastStatusMessage("Please check your coordinates");
       return false;
     }
-    deep = $(this).attr("data-deep").toBool();
+    try {
+      deep = $(clickedElement).attr("data-deep").toBool();
+    } catch (error) {
+      deep = false;
+    }
     doSearch(getSearchObject(), deep);
     return false;
+  };
+  $("input.submit-project-search").keyup(function(e) {
+    var kc;
+    kc = e.keyCode ? e.keyCode : e.which;
+    if (kc === 13) {
+      return initProjectSearch();
+    } else {
+      return false;
+    }
   });
+  $(".do-search").click(function() {
+    return initProjectSearch(this);
+  });
+  showAllTables();
+  return false;
 });
 
 //# sourceMappingURL=maps/global-search.js.map
