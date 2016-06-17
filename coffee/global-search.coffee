@@ -261,8 +261,8 @@ $ ->
   geo.initLocation()
   # If the user hasn't granted location permissions, default to Berkeley
   leafletOptions =
-    center: [window.locationData.lat, window.locationData.lng]
-    zoom: 5 # Roughly equivalent to fitting the whole US centered on Kansas
+    center: [17.811456088564483, -37.265625]
+    zoom: 2
   lMap = new L.Map("global-map-container", leafletOptions)
   lTopoOptions =
     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
