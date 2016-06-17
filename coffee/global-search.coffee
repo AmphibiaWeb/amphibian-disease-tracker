@@ -214,6 +214,7 @@ showAllTables = ->
     cartoTables = result.carto_table_map
     layers = new Array()
     validTables = new Array()
+    i = 0
     for table in cartoTables
       # Build params
       unless isNull table
@@ -232,6 +233,9 @@ showAllTables = ->
             table_name: table
             color: "#FF6600"
         layers.push layer
+      else
+        console.warn "Bad table ##{i}", table
+      ++i
     # Finished adding layer structures,
     # now try making the aggregate table
     console.info "Got tables", validTables
