@@ -53,6 +53,10 @@ if (!function_exists('elapsed')) {
 
 $admin_req = isset($_REQUEST['perform']) ? strtolower($_REQUEST['perform']) : null;
 
+if($admin_req == null && isset($_REQUEST["action"])) {
+  $admin_req = strtolower($_REQUEST["action"]);
+}
+
 $login_status = getLoginState($get);
 
 if ($as_include !== true) {
@@ -544,7 +548,7 @@ function listProjects($unauthenticated = true)
      * to the user if false. Default true.
      ***/
     global $db, $login_status;
-    $query = 'SELECT `project_id`,`project_title` FROM '.$db->getTable().' WHERE `public` IS TRUE';
+    $query = 'SELECT `project_id`,`project_title`, `carto_id` FROM '.$db->getTable().' WHERE `public` IS TRUE';
     $l = $db->openDB();
     $r = mysqli_query($l, $query);
     $authorizedProjects = array();
@@ -554,9 +558,17 @@ function listProjects($unauthenticated = true)
     $queries = array();
     $queries[] = $query;
     $checkedPermissions = array();
+    $cartoTableList = array();
     while ($row = mysqli_fetch_row($r)) {
         $authorizedProjects[$row[0]] = $row[1];
         $publicProjects[] = $row[0];
+        try {
+          $cartoJson = json_decode($row[2], true);
+          $cartoTable = $cartoJson["table"];
+          $cartoTableList[$row[0]] = $cartoTable;
+        } catch (Exception $e) {
+
+        }
     }
     if (!$unauthenticated) {
         try {
@@ -565,7 +577,7 @@ function listProjects($unauthenticated = true)
             $queries[] = 'UNAUTHORIZED';
         }
         if (!empty($uid)) {
-            $query = 'SELECT `project_id`,`project_title`,`author` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
+            $query = 'SELECT `project_id`,`project_title`,`author`, `carto_id` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
             $queries[] = $query;
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
@@ -573,6 +585,13 @@ function listProjects($unauthenticated = true)
                 if(empty($pid)) continue;
                 # All results here are authorized projects
                 $authorizedProjects[$pid] = $row[1];
+                try {
+                  $cartoJson = json_decode($row[3], true);
+                  $cartoTable = $cartoJson["table"];
+                  $cartoTableList[$row[0]] = $cartoTable;
+                } catch (Exception $e) {
+
+                }
                 if ($row[2] == $uid) {
                     $authoredProjects[] = $pid;
                     $editableProjects[] = $pid;
@@ -599,6 +618,7 @@ function listProjects($unauthenticated = true)
         'authored_projects' => $authoredProjects,
         'editable_projects' => $editableProjects,
         'check_authentication' => !$unauthenticated,
+        "carto_table_map" => $cartoTableList,
         #"permissions" => $checkedPermissions,
     );
 
