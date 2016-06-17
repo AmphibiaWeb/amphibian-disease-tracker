@@ -125,7 +125,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       unless isNull table
         # Create named map layers
         layer =
-          name: "adp_generic_heatmap-v10"
+          name: "adp_generic_heatmap-v8"
           type: "namedmap"
           layers: [
             layer_name: "layer-#{layers.length}"
