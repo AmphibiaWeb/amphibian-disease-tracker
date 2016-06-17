@@ -258,7 +258,7 @@ showAllTables = function() {
   url = uri.urlString + "admin-api.php";
   args = "perform=list";
   $.post(url, args, "json").done(function(result) {
-    var cartoTables, e, error, i, j, k, layer, layerSourceObj, layers, len, len1, table, validTables;
+    var cartoTables, e, error, i, j, layer, layerSourceObj, layers, len, pid, table, validTables;
     if (result.status === false) {
       console.error("Got bad result", result);
       return false;
@@ -268,8 +268,8 @@ showAllTables = function() {
     layers = new Array();
     validTables = new Array();
     i = 0;
-    for (j = 0, len = cartoTables.length; j < len; j++) {
-      table = cartoTables[j];
+    for (pid in cartoTables) {
+      table = cartoTables[pid];
       if (!isNull(table)) {
         table = table.slice(0, 63);
         validTables.push(table);
@@ -296,8 +296,8 @@ showAllTables = function() {
     console.info("Got tables", validTables);
     console.info("Got layers", layers);
     try {
-      for (k = 0, len1 = layers.length; k < len1; k++) {
-        layer = layers[k];
+      for (j = 0, len = layers.length; j < len; j++) {
+        layer = layers[j];
         layerSourceObj = {
           user_name: cartoAccount,
           type: "namedmap",

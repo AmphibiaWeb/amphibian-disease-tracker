@@ -215,7 +215,7 @@ showAllTables = ->
     layers = new Array()
     validTables = new Array()
     i = 0
-    for table in cartoTables
+    for pid, table of cartoTables
       # Build params
       unless isNull table
         # Create named map layers
