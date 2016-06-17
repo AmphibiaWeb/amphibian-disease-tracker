@@ -210,13 +210,16 @@ showAllTables = ->
     if result.status is false
       console.error "Got bad result", result
       return false
+    console.info "Good result", result
     cartoTables = result.carto_table_map
     layers = new Array()
+    validTables = new Array()
     for table in cartoTables
       # Build params
       unless isNull table
         # Create named map layers
         table = table.slice 0, 63
+        validTables.push table
         # TODO Calculate a color based on recency ...
         layer =
           name: namedMapSource
@@ -231,6 +234,8 @@ showAllTables = ->
         layers.push layer
     # Finished adding layer structures,
     # now try making the aggregate table
+    console.info "Got tables", validTables
+    console.info "Got layers", layers
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
       for layer in layers
@@ -238,11 +243,11 @@ showAllTables = ->
           user_name: cartoAccount
           type: "namedmap"
           named_map: layer
+        console.log "Creating raw map from", layerSourceObj
         createRawCartoMap layerSourceObj
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
-      foo()
     false
   .error (result, status) ->
     console.error "AJAX failure showing tables", result, status

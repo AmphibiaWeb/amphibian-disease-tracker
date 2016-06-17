@@ -258,17 +258,20 @@ showAllTables = function() {
   url = uri.urlString + "admin-api.php";
   args = "perform=list";
   $.post(url, args, "json").done(function(result) {
-    var cartoTables, e, error, j, k, layer, layerSourceObj, layers, len, len1, table;
+    var cartoTables, e, error, j, k, layer, layerSourceObj, layers, len, len1, table, validTables;
     if (result.status === false) {
       console.error("Got bad result", result);
       return false;
     }
+    console.info("Good result", result);
     cartoTables = result.carto_table_map;
     layers = new Array();
+    validTables = new Array();
     for (j = 0, len = cartoTables.length; j < len; j++) {
       table = cartoTables[j];
       if (!isNull(table)) {
         table = table.slice(0, 63);
+        validTables.push(table);
         layer = {
           name: namedMapSource,
           type: "namedmap",
@@ -286,6 +289,8 @@ showAllTables = function() {
         layers.push(layer);
       }
     }
+    console.info("Got tables", validTables);
+    console.info("Got layers", layers);
     try {
       for (k = 0, len1 = layers.length; k < len1; k++) {
         layer = layers[k];
@@ -294,13 +299,13 @@ showAllTables = function() {
           type: "namedmap",
           named_map: layer
         };
+        console.log("Creating raw map from", layerSourceObj);
         createRawCartoMap(layerSourceObj);
       }
     } catch (error) {
       e = error;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
-      foo();
     }
     return false;
   }).error(function(result, status) {
