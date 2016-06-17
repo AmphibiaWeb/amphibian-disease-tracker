@@ -322,8 +322,8 @@ $(function() {
   var initProjectSearch, lMap, lTopoOptions, leafletOptions;
   geo.initLocation();
   leafletOptions = {
-    center: [window.locationData.lat, window.locationData.lng],
-    zoom: 5
+    center: [17.811456088564483, -37.265625],
+    zoom: 2
   };
   lMap = new L.Map("global-map-container", leafletOptions);
   lTopoOptions = {
