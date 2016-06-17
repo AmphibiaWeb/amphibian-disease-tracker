@@ -202,6 +202,46 @@ showAllTables = ->
   # Looks up all table names with permissions and shows
   # their data on the map
   ###
+  url = "#{uri.urlString}admin-api.php"
+  args = "perform=list"
+  $.post url, args, "json"
+  .done (result) ->
+    if result.status is false
+      return false
+    cartoTables = result.carto_table_map
+    layers = new Array()
+    for table in cartoTables
+      # Build params
+      unless isNull table
+        # Create named map layers
+        table = table.slice 0, 63
+        # TODO Calculate a color based on recency ...
+        layer =
+          name: namedMapSource
+          type: "namedmap"
+          layers: [
+            layer_name: "layer-#{layers.length}"
+            interactivity: "id, diseasedetected, genus, specificepithet"
+            ]
+          params:
+            table_name: table
+            color: "#FF6600"
+        layers.push layer
+    # Finished adding layer structures,
+    # now try making the aggregate table
+    try
+      # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
+      for layer in layers
+        layerSourceObj =
+          user_name: cartoAccount
+          type: "namedmap"
+          named_map: layer
+        createRawCartoMap layerSourceObj
+    catch e
+      console.error "Couldn't create map! #{e.message}"
+      console.warn e.stack
+      foo()
+    false
   false
 
 $ ->

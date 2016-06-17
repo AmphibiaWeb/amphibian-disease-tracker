@@ -253,6 +253,55 @@ showAllTables = function() {
    * Looks up all table names with permissions and shows
    * their data on the map
    */
+  var args, url;
+  url = uri.urlString + "admin-api.php";
+  args = "perform=list";
+  $.post(url, args, "json").done(function(result) {
+    var cartoTables, e, error, j, k, layer, layerSourceObj, layers, len, len1, table;
+    if (result.status === false) {
+      return false;
+    }
+    cartoTables = result.carto_table_map;
+    layers = new Array();
+    for (j = 0, len = cartoTables.length; j < len; j++) {
+      table = cartoTables[j];
+      if (!isNull(table)) {
+        table = table.slice(0, 63);
+        layer = {
+          name: namedMapSource,
+          type: "namedmap",
+          layers: [
+            {
+              layer_name: "layer-" + layers.length,
+              interactivity: "id, diseasedetected, genus, specificepithet"
+            }
+          ],
+          params: {
+            table_name: table,
+            color: "#FF6600"
+          }
+        };
+        layers.push(layer);
+      }
+    }
+    try {
+      for (k = 0, len1 = layers.length; k < len1; k++) {
+        layer = layers[k];
+        layerSourceObj = {
+          user_name: cartoAccount,
+          type: "namedmap",
+          named_map: layer
+        };
+        createRawCartoMap(layerSourceObj);
+      }
+    } catch (error) {
+      e = error;
+      console.error("Couldn't create map! " + e.message);
+      console.warn(e.stack);
+      foo();
+    }
+    return false;
+  });
   return false;
 };
 
