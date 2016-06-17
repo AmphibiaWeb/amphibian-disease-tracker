@@ -202,11 +202,13 @@ showAllTables = ->
   # Looks up all table names with permissions and shows
   # their data on the map
   ###
+  console.log "Starting table list"
   url = "#{uri.urlString}admin-api.php"
   args = "perform=list"
   $.post url, args, "json"
   .done (result) ->
     if result.status is false
+      console.error "Got bad result", result
       return false
     cartoTables = result.carto_table_map
     layers = new Array()
@@ -242,6 +244,8 @@ showAllTables = ->
       console.warn e.stack
       foo()
     false
+  .error (result, status) ->
+    console.error "AJAX failure showing tables", result, status
   false
 
 $ ->

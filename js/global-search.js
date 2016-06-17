@@ -254,11 +254,13 @@ showAllTables = function() {
    * their data on the map
    */
   var args, url;
+  console.log("Starting table list");
   url = uri.urlString + "admin-api.php";
   args = "perform=list";
   $.post(url, args, "json").done(function(result) {
     var cartoTables, e, error, j, k, layer, layerSourceObj, layers, len, len1, table;
     if (result.status === false) {
+      console.error("Got bad result", result);
       return false;
     }
     cartoTables = result.carto_table_map;
@@ -301,6 +303,8 @@ showAllTables = function() {
       foo();
     }
     return false;
+  }).error(function(result, status) {
+    return console.error("AJAX failure showing tables", result, status);
   });
   return false;
 };
