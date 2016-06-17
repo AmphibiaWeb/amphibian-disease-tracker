@@ -90,6 +90,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       e: -180
       w: 180
     i = 0
+    namedMapSource = "adp_generic_heatmap-v8"
+    console.info "Using named map #{namedMapSource}"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -125,7 +127,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       unless isNull table
         # Create named map layers
         layer =
-          name: "adp_generic_heatmap-v8"
+          name: namedMapSource
           type: "namedmap"
           layers: [
             layer_name: "layer-#{layers.length}"
