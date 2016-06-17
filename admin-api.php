@@ -563,7 +563,7 @@ function listProjects($unauthenticated = true)
         $authorizedProjects[$row[0]] = $row[1];
         $publicProjects[] = $row[0];
         try {
-          $cartoJson = json_decode($row[2], true);
+          $cartoJson = json_decode(deEscape($row[2]), true);
           $cartoTable = $cartoJson["table"];
           $cartoTableList[$row[0]] = $cartoTable;
         } catch (Exception $e) {
@@ -586,7 +586,7 @@ function listProjects($unauthenticated = true)
                 # All results here are authorized projects
                 $authorizedProjects[$pid] = $row[1];
                 try {
-                  $cartoJson = json_decode($row[3], true);
+                  $cartoJson = json_decode(deEscape($row[3]), true);
                   $cartoTable = $cartoJson["table"];
                   $cartoTableList[$row[0]] = $cartoTable;
                 } catch (Exception $e) {
