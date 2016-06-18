@@ -1823,6 +1823,12 @@ function advancedSearchProject($get)
     $response["query"] = $query;
     $db->invalidateLink();
     $r = mysqli_query($db->getLink(), $query);
+    if ($r === false) {
+        $response["status"] = false;
+        $response["error"] = mysqli_error($db->getLink());
+        $response["query"] = $query;
+        returnAjax($response);
+    }
     $queryResult = array();
     $baseRows = mysqli_num_rows($r);
     $boolCols = array(
@@ -1831,6 +1837,7 @@ function advancedSearchProject($get)
         "includes_caudata",
         "includes_gymnophiona",
     );
+
     while($row = mysqli_fetch_assoc($r)) {
         # Authenticate the project against the user
         if(checkProjectIdAuthorized($row["project_id"], true)) {
@@ -1845,12 +1852,16 @@ function advancedSearchProject($get)
                 }
                 if($col == "carto_id") {
                     $cartoObj = json_decode($val);
-                    if(empty($cartoObj)) {
+                    if(!is_array($cartoObj)) {
                         $cartoObj = $val;
-                    } else {
+                    } else {                        
                         foreach($cartoObj as $k=>$v) {
                             $nk = str_replace("&#95;", "_", $k);
-                            unset($cartoObj[$k]);
+                            try {
+                                unset($cartoObj[$k]);
+                            } catch (Exception $e) {
+                                $response["notices"][] = $e->getMessage();
+                            }
                             $cartoObj[$nk] = $v;
                         }
                     }
