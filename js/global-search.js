@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, doDeepSearch, doSearch, getSearchObject, namedMapSource, showAllTables,
+var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchObject, namedMapSource, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v8";
@@ -258,7 +258,7 @@ showAllTables = function() {
   url = uri.urlString + "admin-api.php";
   args = "perform=list";
   $.post(url, args, "json").done(function(result) {
-    var cartoTables, e, error, i, j, layer, layerSourceObj, layers, len, pid, table, validTables;
+    var cartoTables, data, e, error, i, j, layer, layerSourceObj, layers, len, pid, table, validTables;
     if (result.status === false) {
       console.error("Got bad result", result);
       return false;
@@ -269,7 +269,9 @@ showAllTables = function() {
     validTables = new Array();
     i = 0;
     for (pid in cartoTables) {
-      table = cartoTables[pid];
+      data = cartoTables[pid];
+      table = data.table;
+      console.log("Colors", data.creation, generateColorByRecency(data.creation), generateColorByRecency2(data.creation));
       if (!isNull(table)) {
         table = table.slice(0, 63);
         validTables.push(table);
@@ -316,6 +318,83 @@ showAllTables = function() {
     return console.error("AJAX failure showing tables", result, status);
   });
   return false;
+};
+
+generateColorByRecency = function(timestamp, oldCutoff) {
+  var age, b, bh, color, g, gh, maxAge, r, rh, stepCount, stepSize, temp;
+  if (oldCutoff == null) {
+    oldCutoff = 1420070400;
+  }
+
+  /*
+   * Start with white, then lose one color channel at a time to get
+   * color recency
+   *
+   * @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
+   */
+  if (!isNumber(timestamp)) {
+    temp = new Date(timestamp);
+    timestamp = temp.getTime() / 1000;
+  }
+  if (timestamp > Date.now() / 1000) {
+    timestamp = timestamp / 1000;
+  }
+  age = (Date.now() / 1000) - timestamp;
+  maxAge = timestamp - oldCutoff;
+  if (age > maxAge) {
+    color = "#000";
+  } else {
+    stepSize = maxAge / (255 * 3);
+    stepCount = age / stepSize;
+    r = 255 - stepCount;
+    r = r < 0 ? 0 : r;
+    g = 255 + 255 - stepCount;
+    g = g < 0 ? 0 : g;
+    b = 255 + 255 + 255 - stepCount;
+    b = b < 0 ? 0 : b;
+    rh = r.toString(16);
+    gh = g.toString(16);
+    bh = b.toString(16);
+    color = "#" + rh + gh + bh;
+  }
+  return color;
+};
+
+generateColorByRecency2 = function(timestamp, oldCutoff) {
+  var age, b, bh, color, g, gh, maxAge, r, rh, stepCount, stepSize, temp;
+  if (oldCutoff == null) {
+    oldCutoff = 1420070400;
+  }
+
+  /*
+   * Start with white, then lose one color channel at a time to get
+   * color recency
+   *
+   * @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
+   */
+  if (!isNumber(timestamp)) {
+    temp = new Date(timestamp);
+    timestamp = temp.getTime() / 1000;
+  }
+  age = (Date.now() / 1000) - timestamp;
+  maxAge = timestamp - oldCutoff;
+  if (age > maxAge) {
+    color = "#000";
+  } else {
+    stepSize = maxAge / (255 * 3);
+    stepCount = age / stepSize;
+    r = 255 - stepCount;
+    g = r < 0 ? 0 - r : 255 - r;
+    r = r < 0 ? 0 : r;
+    b = g > 255 ? g - 255 : 255 - g;
+    g = g > 255 ? 0 : g;
+    b = b < 0 ? 0 : b;
+    rh = r.toString(16);
+    gh = g.toString(16);
+    bh = b.toString(16);
+    color = "#" + rh + gh + bh;
+  }
+  return color;
 };
 
 $(function() {
