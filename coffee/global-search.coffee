@@ -123,7 +123,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
               cleanVal = val
             cartoParsed[cleanKey] = cleanVal
           project.carto_id = cartoParsed
-      table = project.carto_id.table.slice 0, 63
+      try
+        table = project.carto_id.table.slice 0, 63
       unless isNull table
         # Create named map layers
         layer =

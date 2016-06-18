@@ -162,7 +162,9 @@ doSearch = function(search, goDeep) {
           project.carto_id = cartoParsed;
         } catch (undefined) {}
       }
-      table = project.carto_id.table.slice(0, 63);
+      try {
+        table = project.carto_id.table.slice(0, 63);
+      } catch (undefined) {}
       if (!isNull(table)) {
         layer = {
           name: namedMapSource,
