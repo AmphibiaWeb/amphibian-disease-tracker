@@ -548,7 +548,7 @@ function listProjects($unauthenticated = true)
      * to the user if false. Default true.
      ***/
     global $db, $login_status;
-    $query = 'SELECT `project_id`,`project_title`, `carto_id` FROM '.$db->getTable().' WHERE `public` IS TRUE';
+    $query = 'SELECT `project_id`,`project_title`, `carto_id`, `author_data` FROM '.$db->getTable().' WHERE `public` IS TRUE';
     $l = $db->openDB();
     $r = mysqli_query($l, $query);
     $authorizedProjects = array();
@@ -563,9 +563,14 @@ function listProjects($unauthenticated = true)
         $authorizedProjects[$row[0]] = $row[1];
         $publicProjects[] = $row[0];
         try {
-          $cartoJson = json_decode(deEscape($row[2]), true);
-          $cartoTable = $cartoJson["table"];
-          $cartoTableList[$row[0]] = $cartoTable;
+            $cartoJson = json_decode(deEscape($row[2]), true);
+            $authorJson = json_decode(deEscape($row[3]), true);
+            $cartoTable = $cartoJson["table"];
+            $creation = $authorJson["entry_date"];
+            $cartoTableList[$row[0]] = array(
+                "table" => $cartoTable,
+                "creation" => $creation,
+            );
         } catch (Exception $e) {
 
         }
@@ -577,7 +582,7 @@ function listProjects($unauthenticated = true)
             $queries[] = 'UNAUTHORIZED';
         }
         if (!empty($uid)) {
-            $query = 'SELECT `project_id`,`project_title`,`author`, `carto_id` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
+            $query = 'SELECT `project_id`,`project_title`,`author`, `carto_id`, `author_data` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
             $queries[] = $query;
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
@@ -586,9 +591,14 @@ function listProjects($unauthenticated = true)
                 # All results here are authorized projects
                 $authorizedProjects[$pid] = $row[1];
                 try {
-                  $cartoJson = json_decode(deEscape($row[3]), true);
-                  $cartoTable = $cartoJson["table"];
-                  $cartoTableList[$row[0]] = $cartoTable;
+                    $cartoJson = json_decode(deEscape($row[3]), true);
+                    $authorJson = json_decode(deEscape($row[4]), true);
+                    $cartoTable = $cartoJson["table"];
+                    $creation = $authorJson["entry_date"];
+                    $cartoTableList[$row[0]] = array(
+                        "table" => $cartoTable,
+                        "creation" => $creation,
+                    );
                 } catch (Exception $e) {
 
                 }
