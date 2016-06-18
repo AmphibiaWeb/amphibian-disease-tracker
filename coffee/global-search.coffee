@@ -184,6 +184,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
     false
   .fail (result, status) ->
     console.error result, status
+    console.warn "Attempted to do", "#{uri.urlString}admin-api.php?#{args}"
     stopLoadError "Server error, couldn't perform search"
   false
 
