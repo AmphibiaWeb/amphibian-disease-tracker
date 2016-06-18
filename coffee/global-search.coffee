@@ -233,7 +233,7 @@ showAllTables = ->
             ]
           params:
             table_name: table
-            color: "#FF6600"
+            color: generateColorByRecency2 data.creation
         layers.push layer
       else
         console.warn "Bad table ##{i}", table
@@ -282,16 +282,28 @@ generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
     # Break down the region into 255*3 steps
     stepSize = maxAge / (255 * 3)
     stepCount = age / stepSize
+    b = 255
+    g = 255
     r = 255 - stepCount
-    r = if r < 0 then 0 else r
-    g = 255 + 255 - stepCount
-    g = if g < 0 then 0 else g
-    b = 255 + 255 + 255 - stepCount
-    b = if b < 0 then 0 else b
-    rh = r.toString(16)
-    gh = g.toString(16)
-    bh = b.toString(16)
-    color = "##{rh}#{gh}#{bh}"
+    r = if r < 0 then 0 else toInt r
+    if stepCount > 255
+      g = 255 + 255 - stepCount
+      g = if g < 0 then 0 else toInt g
+      if stepCount > 255 * 2
+        b = 255 + 255 + 255 - stepCount
+        b = if b < 0 then 0 else toInt b
+    console.log "Base channels", r, g, b
+    hexArray = [
+      r.toString(16)
+      g.toString(16)
+      b.toString(16)
+      ]
+    i = 0
+    for cv in hexArray
+      if cv.length is 1
+        hexArray[i] = "0#{cv}"
+      ++i
+    color = "##{hexArray.join("")}"
   color
 
 
@@ -306,6 +318,8 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
   unless isNumber timestamp
     temp = new Date(timestamp)
     timestamp = temp.getTime() / 1000
+  if timestamp > Date.now() / 1000
+    timestamp = timestamp / 1000
   age = (Date.now() / 1000) - timestamp
   maxAge = timestamp - oldCutoff
   if age > maxAge
@@ -316,14 +330,22 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
     stepCount = age / stepSize
     r = 255 - stepCount
     g = if r < 0 then 0 - r else 255 - r
-    r = if r < 0 then 0 else r
-    b = if g > 255 then g - 255 else 255 - g
-    g = if g > 255 then 0 else g
-    b = if b < 0 then 0 else b
-    rh = r.toString(16)
-    gh = g.toString(16)
-    bh = b.toString(16)
-    color = "##{rh}#{gh}#{bh}"
+    r = if r < 0 then 0 else toInt r
+    b = if g > 255 then toInt(g - 255) else 0
+    g = if g > 255 then 255 - (g - 255) else toInt g
+    b = if b < 0 then 0 else toInt b
+    console.log "Base channels", r, g, b
+    hexArray = [
+      r.toString(16)
+      g.toString(16)
+      b.toString(16)
+      ]
+    i = 0
+    for cv in hexArray
+      if cv.length is 1
+        hexArray[i] = "0#{cv}"
+      ++i
+    color = "##{hexArray.join("")}"
   color
 
 
