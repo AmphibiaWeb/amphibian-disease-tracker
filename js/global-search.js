@@ -231,6 +231,7 @@ doSearch = function(search, goDeep) {
     return false;
   }).fail(function(result, status) {
     console.error(result, status);
+    console.warn("Attempted to do", uri.urlString + "admin-api.php?" + args);
     return stopLoadError("Server error, couldn't perform search");
   });
   return false;
