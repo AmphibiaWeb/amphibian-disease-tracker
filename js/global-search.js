@@ -286,7 +286,7 @@ showAllTables = function() {
           ],
           params: {
             table_name: table,
-            color: "#FF6600"
+            color: generateColorByRecency2(data.creation)
           }
         };
         layers.push(layer);
@@ -321,7 +321,60 @@ showAllTables = function() {
 };
 
 generateColorByRecency = function(timestamp, oldCutoff) {
-  var age, b, bh, color, g, gh, maxAge, r, rh, stepCount, stepSize, temp;
+  var age, b, color, cv, g, hexArray, i, j, len, maxAge, r, stepCount, stepSize, temp;
+  if (oldCutoff == null) {
+    oldCutoff = 1420070400;
+  }
+
+  /*
+   * Start with white, then lose one color channel at a time to get
+   * color recency
+   *
+   * @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
+   */
+  if (!isNumber(timestamp)) {
+    temp = new Date(timestamp);
+    timestamp = temp.getTime() / 1000;
+  }
+  if (timestamp > Date.now() / 1000) {
+    timestamp = timestamp / 1000;
+  }
+  age = (Date.now() / 1000) - timestamp;
+  maxAge = timestamp - oldCutoff;
+  if (age > maxAge) {
+    color = "#000";
+  } else {
+    stepSize = maxAge / (255 * 3);
+    stepCount = age / stepSize;
+    b = 255;
+    g = 255;
+    r = 255 - stepCount;
+    r = r < 0 ? 0 : toInt(r);
+    if (stepCount > 255) {
+      g = 255 + 255 - stepCount;
+      g = g < 0 ? 0 : toInt(g);
+      if (stepCount > 255 * 2) {
+        b = 255 + 255 + 255 - stepCount;
+        b = b < 0 ? 0 : toInt(b);
+      }
+    }
+    console.log("Base channels", r, g, b);
+    hexArray = [r.toString(16), g.toString(16), b.toString(16)];
+    i = 0;
+    for (j = 0, len = hexArray.length; j < len; j++) {
+      cv = hexArray[j];
+      if (cv.length === 1) {
+        hexArray[i] = "0" + cv;
+      }
+      ++i;
+    }
+    color = "#" + (hexArray.join(""));
+  }
+  return color;
+};
+
+generateColorByRecency2 = function(timestamp, oldCutoff) {
+  var age, b, color, cv, g, hexArray, i, j, len, maxAge, r, stepCount, stepSize, temp;
   if (oldCutoff == null) {
     oldCutoff = 1420070400;
   }
@@ -347,52 +400,22 @@ generateColorByRecency = function(timestamp, oldCutoff) {
     stepSize = maxAge / (255 * 3);
     stepCount = age / stepSize;
     r = 255 - stepCount;
-    r = r < 0 ? 0 : r;
-    g = 255 + 255 - stepCount;
-    g = g < 0 ? 0 : g;
-    b = 255 + 255 + 255 - stepCount;
-    b = b < 0 ? 0 : b;
-    rh = r.toString(16);
-    gh = g.toString(16);
-    bh = b.toString(16);
-    color = "#" + rh + gh + bh;
-  }
-  return color;
-};
-
-generateColorByRecency2 = function(timestamp, oldCutoff) {
-  var age, b, bh, color, g, gh, maxAge, r, rh, stepCount, stepSize, temp;
-  if (oldCutoff == null) {
-    oldCutoff = 1420070400;
-  }
-
-  /*
-   * Start with white, then lose one color channel at a time to get
-   * color recency
-   *
-   * @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
-   */
-  if (!isNumber(timestamp)) {
-    temp = new Date(timestamp);
-    timestamp = temp.getTime() / 1000;
-  }
-  age = (Date.now() / 1000) - timestamp;
-  maxAge = timestamp - oldCutoff;
-  if (age > maxAge) {
-    color = "#000";
-  } else {
-    stepSize = maxAge / (255 * 3);
-    stepCount = age / stepSize;
-    r = 255 - stepCount;
     g = r < 0 ? 0 - r : 255 - r;
-    r = r < 0 ? 0 : r;
-    b = g > 255 ? g - 255 : 255 - g;
-    g = g > 255 ? 0 : g;
-    b = b < 0 ? 0 : b;
-    rh = r.toString(16);
-    gh = g.toString(16);
-    bh = b.toString(16);
-    color = "#" + rh + gh + bh;
+    r = r < 0 ? 0 : toInt(r);
+    b = g > 255 ? toInt(g - 255) : 0;
+    g = g > 255 ? 255 - (g - 255) : toInt(g);
+    b = b < 0 ? 0 : toInt(b);
+    console.log("Base channels", r, g, b);
+    hexArray = [r.toString(16), g.toString(16), b.toString(16)];
+    i = 0;
+    for (j = 0, len = hexArray.length; j < len; j++) {
+      cv = hexArray[j];
+      if (cv.length === 1) {
+        hexArray[i] = "0" + cv;
+      }
+      ++i;
+    }
+    color = "#" + (hexArray.join(""));
   }
   return color;
 };
