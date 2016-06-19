@@ -284,7 +284,7 @@ showAllTables = function() {
           layers: [
             {
               layer_name: "layer-" + layers.length,
-              interactivity: "id, diseasedetected, genus, specificepithet"
+              interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet"
             }
           ],
           params: {

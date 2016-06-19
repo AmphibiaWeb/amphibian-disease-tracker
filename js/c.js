@@ -2437,7 +2437,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
-    var dataLayer, error2, i, l, len, max, suTemp;
+    var dataLayer, error2, error3, i, l, len, max, suTemp;
     console.info("Done, returned", layer, "for type " + params.type);
     try {
       layer.setParams("table_name", params.named_map.params.table_name);
@@ -2461,14 +2461,24 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     layer.on("featureclick", function(e, latlng, pos, data, layer) {
       console.log("Clicked feature", data, pos, latlng);
       return false;
+    }).on("error", function(err) {
+      return console.warn("Error on sublayer feature click", err);
     });
     i = 0;
     while (i < max) {
       suTemp = layer.getSubLayer(i);
       suTemp.setInteraction(true);
+      suTemp.setInteractivity("cartodb_id");
+      try {
+        suTemp.setInteractivity("genus");
+      } catch (error3) {
+        console.warn("Couldn't set interactivity on genus");
+      }
       suTemp.on("featureclick", function(e, latlng, pos, data, layer) {
         console.log("Clicked sublayer feature", data, pos, latlng);
         return false;
+      }).on("error", function(err) {
+        return console.warn("Error on sublayer feature click", err);
       });
       geo.mapSublayers.push(suTemp);
       ++i;
