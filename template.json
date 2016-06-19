@@ -1,1 +1,37 @@
-{"auth":{"method":"open"},"version":"0.0.1","name":"adp_generic_heatmap-v8","placeholders":{"color":{"type":"css_color","default":"red"},"table_name":{"type":"sql_literal","default":"t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5"}},"layergroup":{"version":"1.0.1","layers":[{"type":"cartodb","options":{"cartocss_version":"2.1.1","cartocss":"#layer { marker-fill: <%= color %>; }","sql":"select * from <%= table_name %>","interactivity":["id","diseasedetected","genus","specificepithet"]}}]}}
+{
+  "layergroup": {
+    "layers": [
+      {
+        "options": {
+          "interactivity": [
+              "cartodb_id"
+            "id",
+            "diseasedetected",
+            "genus",
+            "specificepithet"
+          ],
+          "sql": "select cartodb_id, id, diseasedetected, genus, specificepithet from <%= table_name %>",
+          "cartocss": "#layer { marker-fill: <%= color %>; }",
+          "cartocss_version": "2.1.1"
+        },
+        "type": "cartodb"
+      }
+    ],
+    "version": "1.0.1"
+  },
+  "placeholders": {
+    "table_name": {
+      "default": "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5",
+      "type": "sql_literal"
+    },
+    "color": {
+      "default": "red",
+      "type": "css_color"
+    }
+  },
+  "name": "adp_generic_heatmap-v11",
+  "version": "0.0.1",
+  "auth": {
+    "method": "open"
+  }
+}
