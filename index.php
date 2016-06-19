@@ -219,7 +219,7 @@ $loginStatus = getLoginState();
             <div class="form-group">
               <button class="btn btn-primary do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all results from projects containing at least one matching sample, with the project contained in the bounds"><iron-icon icon="icons:search"></iron-icon> Search Projects</button>
               <button class="btn btn-default do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> Search Samples</button>
-              <button class="btn btn-warning btn-sm col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" disabled><iron-icon icon="icons:refresh"></iron-icon> Reset Map</button>
+              <button class="btn btn-warning btn-sm col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" id="reset-global-map"><iron-icon icon="icons:refresh"></iron-icon> Reset Map</button>
             </div>
           </div>
         </section>

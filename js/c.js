@@ -2437,7 +2437,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
-    var dataLayer, error2, l, len;
+    var dataLayer, error2, i, l, len, max, suTemp;
     console.info("Done, returned", layer, "for type " + params.type);
     try {
       layer.setParams("table_name", params.named_map.params.table_name);
@@ -2454,10 +2454,22 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     } else {
       console.warn("'layers' isn't an array", layers);
     }
+    if (geo.mapSublayers == null) {
+      geo.mapSublayers = new Array();
+    }
+    max = layer.getSubLayerCount();
+    i = 0;
+    while (i < max) {
+      suTemp = layer.getSubLayer(i);
+      geo.mapSublayers.push(suTemp);
+    }
     layer.getSubLayer(0).setInteraction(true);
     layer.getSubLayer(0).on("featureover", function(e, pos, pixel, data) {
       console.log("Mousover", data);
       return false;
+    });
+    layer.on("featureclick", function(e, latlng, pos, data, layer) {
+      return console.log("Clicked feature", data, pos, latlng);
     });
     layer.show();
     try {

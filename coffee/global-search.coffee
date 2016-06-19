@@ -263,6 +263,18 @@ showAllTables = ->
 
 
 
+resetMap = (map = geo.lMap) ->
+  unless geo.mapSublayers?
+    console.error "geo.mapSublayers is not defined."
+    return false
+  # Iterate over sublayers
+  for sublayer in geo.mapSublayers
+    # Call hide() or remove() on each sublayer
+    sublayer.remove()
+  foo()
+  false
+
+
 
 generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
   ###
@@ -387,6 +399,10 @@ $ ->
   # Click the search button
   $(".do-search").click ->
     initProjectSearch(this)
+  # Click reset
+  $("#reset-global-map").click ->
+    resetMap()
+    false
   # Initial load
   showAllTables()
   false

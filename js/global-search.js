@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchObject, namedMapSource, showAllTables,
+var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchObject, namedMapSource, resetMap, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v8";
@@ -323,6 +323,24 @@ showAllTables = function() {
   return false;
 };
 
+resetMap = function(map) {
+  var j, len, ref, sublayer;
+  if (map == null) {
+    map = geo.lMap;
+  }
+  if (geo.mapSublayers == null) {
+    console.error("geo.mapSublayers is not defined.");
+    return false;
+  }
+  ref = geo.mapSublayers;
+  for (j = 0, len = ref.length; j < len; j++) {
+    sublayer = ref[j];
+    sublayer.remove();
+  }
+  foo();
+  return false;
+};
+
 generateColorByRecency = function(timestamp, oldCutoff) {
   var age, b, color, cv, g, hexArray, i, j, len, maxAge, r, stepCount, stepSize, temp;
   if (oldCutoff == null) {
@@ -465,6 +483,10 @@ $(function() {
   });
   $(".do-search").click(function() {
     return initProjectSearch(this);
+  });
+  $("#reset-global-map").click(function() {
+    resetMap();
+    return false;
   });
   showAllTables();
   return false;
