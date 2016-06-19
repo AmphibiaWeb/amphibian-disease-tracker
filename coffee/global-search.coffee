@@ -2,7 +2,7 @@
 # Do global searches, display global points.
 ###
 
-namedMapSource = "adp_generic_heatmap-v8"
+namedMapSource = "adp_generic_heatmap-v15"
 
 checkCoordinateSanity = ->
   isGood = true

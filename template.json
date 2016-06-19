@@ -10,7 +10,7 @@
             "genus",
             "specificepithet"
           ],
-          "sql": "select cartodb_id, id, diseasedetected, genus, specificepithet from <%= table_name %>",
+          "sql": "select * from <%= table_name %>",
           "cartocss": "#layer { marker-fill: <%= color %>; }",
           "cartocss_version": "2.1.1"
         },
@@ -29,7 +29,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_generic_heatmap-v11",
+  "name": "adp_generic_heatmap-v15",
   "version": "0.0.1",
   "auth": {
     "method": "open"

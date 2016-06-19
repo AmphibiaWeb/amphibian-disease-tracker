@@ -5,7 +5,7 @@
 var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchObject, namedMapSource, resetMap, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-namedMapSource = "adp_generic_heatmap-v8";
+namedMapSource = "adp_generic_heatmap-v15";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
