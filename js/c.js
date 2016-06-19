@@ -2459,21 +2459,20 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     }
     max = layer.getSubLayerCount();
     layer.on("featureclick", function(e, latlng, pos, data, layer) {
-      return console.log("Clicked feature", data, pos, latlng);
+      console.log("Clicked feature", data, pos, latlng);
+      return false;
     });
     i = 0;
     while (i < max) {
       suTemp = layer.getSubLayer(i);
-      suTemp.on("featureclick", function(e, latlng, pos, data, layer) {});
-      console.log("Clicked sublayer feature", data, pos, latlng);
+      suTemp.setInteraction(true);
+      suTemp.on("featureclick", function(e, latlng, pos, data, layer) {
+        console.log("Clicked sublayer feature", data, pos, latlng);
+        return false;
+      });
       geo.mapSublayers.push(suTemp);
       ++i;
     }
-    layer.getSubLayer(0).setInteraction(true);
-    layer.getSubLayer(0).on("featureover", function(e, pos, pixel, data) {
-      console.log("Mousover", data);
-      return false;
-    });
     layer.on("featureclick", function(e, latlng, pos, data, layer) {
       return console.log("Clicked feature", data, pos, latlng);
     });

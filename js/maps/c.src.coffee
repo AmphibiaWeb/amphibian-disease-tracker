@@ -1966,17 +1966,16 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     max = layer.getSubLayerCount()
     layer.on "featureclick", (e, latlng, pos, data, layer) ->
       console.log "Clicked feature", data, pos, latlng
+      false
     i = 0
     while i < max
       suTemp = layer.getSubLayer(i)
+      suTemp.setInteraction(true)
       suTemp.on "featureclick", (e, latlng, pos, data, layer) ->
-      console.log "Clicked sublayer feature", data, pos, latlng
+        console.log "Clicked sublayer feature", data, pos, latlng
+        false
       geo.mapSublayers.push suTemp
       ++i
-    layer.getSubLayer(0).setInteraction(true);
-    layer.getSubLayer(0).on "featureover", (e, pos, pixel, data) ->
-      console.log "Mousover", data
-      false
     layer.on "featureclick", (e, latlng, pos, data, layer) ->
       console.log "Clicked feature", data, pos, latlng
     layer.show()
