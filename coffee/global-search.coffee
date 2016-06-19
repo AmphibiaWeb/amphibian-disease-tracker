@@ -271,6 +271,7 @@ resetMap = (map = geo.lMap) ->
   for sublayer in geo.mapSublayers
     # Call hide() or remove() on each sublayer
     sublayer.remove()
+  showAllTables()
   foo()
   false
 

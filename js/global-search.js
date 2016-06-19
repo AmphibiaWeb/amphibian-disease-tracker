@@ -337,6 +337,7 @@ resetMap = function(map) {
     sublayer = ref[j];
     sublayer.remove();
   }
+  showAllTables();
   foo();
   return false;
 };

@@ -2458,9 +2458,14 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
       geo.mapSublayers = new Array();
     }
     max = layer.getSubLayerCount();
+    layer.on("featureclick", function(e, latlng, pos, data, layer) {
+      return console.log("Clicked feature", data, pos, latlng);
+    });
     i = 0;
     while (i < max) {
       suTemp = layer.getSubLayer(i);
+      suTemp.on("featureclick", function(e, latlng, pos, data, layer) {});
+      console.log("Clicked sublayer feature", data, pos, latlng);
       geo.mapSublayers.push(suTemp);
       ++i;
     }
