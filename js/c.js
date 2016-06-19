@@ -2468,11 +2468,12 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     while (i < max) {
       suTemp = layer.getSubLayer(i);
       suTemp.setInteraction(true);
-      suTemp.setInteractivity("cartodb_id");
       try {
+        suTemp.setInteractivity("cartodb_id");
         suTemp.setInteractivity("genus");
       } catch (error3) {
-        console.warn("Couldn't set interactivity on genus");
+        e = error3;
+        console.warn("Couldn't set interactivity on genus - " + e.message);
       }
       suTemp.on("featureclick", function(e, latlng, pos, data, layer) {
         console.log("Clicked sublayer feature", data, pos, latlng);
