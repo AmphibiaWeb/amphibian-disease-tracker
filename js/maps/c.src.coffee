@@ -1968,6 +1968,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     while i < max
       suTemp = layer.getSubLayer(i)
       geo.mapSublayers.push suTemp
+      ++i
     layer.getSubLayer(0).setInteraction(true);
     layer.getSubLayer(0).on "featureover", (e, pos, pixel, data) ->
       console.log "Mousover", data

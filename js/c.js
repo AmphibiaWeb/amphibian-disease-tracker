@@ -2462,6 +2462,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     while (i < max) {
       suTemp = layer.getSubLayer(i);
       geo.mapSublayers.push(suTemp);
+      ++i;
     }
     layer.getSubLayer(0).setInteraction(true);
     layer.getSubLayer(0).on("featureover", function(e, pos, pixel, data) {
