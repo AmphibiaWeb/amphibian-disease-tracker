@@ -296,7 +296,7 @@ doSearch = function(search, goDeep) {
   return false;
 };
 
-doDeepSearch = function(shallowResults, namedMap) {
+doDeepSearch = function(results, namedMap) {
   var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, search, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = "adp_specific_heatmap-v1";
