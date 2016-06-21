@@ -182,7 +182,7 @@ doSearch = function(search, goDeep) {
       w: 180
     };
     i = 0;
-    console.info("Using named map " + namedMap);
+    console.info("Using standard named map " + namedMap);
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -320,7 +320,7 @@ doDeepSearch = function(results, namedMap) {
       w: 180
     };
     i = 0;
-    console.info("Using named map " + namedMap);
+    console.info("Using deep named map " + namedMap);
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -521,21 +521,36 @@ showAllTables = function() {
   return false;
 };
 
-resetMap = function(map) {
-  var j, len, ref, sublayer;
+resetMap = function(map, showTables) {
+  var error, j, k, layer, len, len1, ref, ref1, sublayer;
   if (map == null) {
     map = geo.lMap;
+  }
+  if (showTables == null) {
+    showTables = true;
   }
   if (geo.mapSublayers == null) {
     console.error("geo.mapSublayers is not defined.");
     return false;
   }
-  ref = geo.mapSublayers;
-  for (j = 0, len = ref.length; j < len; j++) {
-    sublayer = ref[j];
-    sublayer.remove();
+  try {
+    ref = geo.mapSublayers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      sublayer = ref[j];
+      sublayer.remove();
+    }
+  } catch (error) {
+    ref1 = map._layers;
+    for (k = 0, len1 = ref1.length; k < len1; k++) {
+      layer = ref1[k];
+      if (layer.url == null) {
+        layer.remove();
+      }
+    }
   }
-  showAllTables();
+  if (showTables) {
+    showAllTables();
+  }
   foo();
   return false;
 };

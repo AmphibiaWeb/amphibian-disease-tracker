@@ -141,7 +141,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       e: -180
       w: 180
     i = 0
-    console.info "Using named map #{namedMap}"
+    console.info "Using standard named map #{namedMap}"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -254,7 +254,7 @@ doDeepSearch = (results, namedMap = "adp_specific_heatmap-v1") ->
       e: -180
       w: 180
     i = 0
-    console.info "Using named map #{namedMap}"
+    console.info "Using deep named map #{namedMap}"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -423,15 +423,22 @@ showAllTables = ->
 
 
 
-resetMap = (map = geo.lMap) ->
+resetMap = (map = geo.lMap, showTables = true) ->
   unless geo.mapSublayers?
     console.error "geo.mapSublayers is not defined."
     return false
   # Iterate over sublayers
-  for sublayer in geo.mapSublayers
-    # Call hide() or remove() on each sublayer
-    sublayer.remove()
-  showAllTables()
+  try
+    for sublayer in geo.mapSublayers
+      # Call hide() or remove() on each sublayer
+      sublayer.remove()
+  catch
+    for layer in map._layers
+      unless layer.url?
+        # Not the base layer
+        layer.remove()
+  if showTables
+    showAllTables()
   foo()
   false
 
