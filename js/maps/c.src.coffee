@@ -1964,21 +1964,18 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     unless geo.mapSublayers?
       geo.mapSublayers = new Array()
     max = layer.getSubLayerCount()
+    try
+      layer.setInteraction(true)
     layer
     .on "featureclick", (e, latlng, pos, data, layer) ->
       console.log "Clicked feature", data, pos, latlng
       false
     .on "error", (err) ->
-      console.warn "Error on sublayer feature click", err
+      console.warn "Error on layer feature click", err
     i = 0
     while i < max
       suTemp = layer.getSubLayer(i)
       suTemp.setInteraction(true)
-      try
-        suTemp.setInteractivity("cartodb_id")
-        suTemp.setInteractivity("genus")
-      catch e
-        console.warn "Couldn't set interactivity on genus - #{e.message}"
       suTemp
       .on "featureclick", (e, latlng, pos, data, layer) ->
         console.log "Clicked sublayer feature", data, pos, latlng

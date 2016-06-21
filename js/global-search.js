@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchObject, namedMapSource, resetMap, showAllTables,
+var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapSource, resetMap, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v15";
@@ -80,8 +80,54 @@ getSearchObject = function() {
   return search;
 };
 
+getSearchContainsObject = function() {
+  var bounds, diseaseStatus, morbidityStatus, search;
+  bounds = {
+    n: $("#north-coordinate").val(),
+    w: $("#west-coordinate").val(),
+    s: $("#south-coordinate").val(),
+    e: $("#east-coordinate").val()
+  };
+  search = {
+    sampled_species: {
+      data: $("#taxa-input").val()
+    },
+    bounding_box_n: {
+      data: bounds.s,
+      search_type: ">"
+    },
+    bounding_box_e: {
+      data: bounds.w,
+      search_type: ">"
+    },
+    bounding_box_w: {
+      data: bounds.e,
+      search_type: "<"
+    },
+    bounding_box_s: {
+      data: bounds.n,
+      search_type: "<"
+    }
+  };
+  diseaseStatus = $(p$("#disease-status").selectedItem).attr("data-search");
+  if (diseaseStatus !== "*") {
+    search.disease_positive = {
+      data: 0,
+      search_type: diseaseStatus.toBool() ? ">" : "="
+    };
+  }
+  morbidityStatus = $(p$("#morbidity-status").selectedItem).attr("data-search");
+  if (morbidityStatus !== "*") {
+    search.disease_morbidity = {
+      data: 0,
+      search_type: morbidityStatus.toBool() ? ">" : "="
+    };
+  }
+  return search;
+};
+
 doSearch = function(search, goDeep) {
-  var args, data;
+  var action, args, data, namedMap;
   if (search == null) {
     search = getSearchObject();
   }
@@ -94,7 +140,9 @@ doSearch = function(search, goDeep) {
    */
   startLoad();
   data = jsonTo64(search);
-  args = "perform=advanced_project_search&q=" + data;
+  action = "advanced_project_search";
+  namedMap = goDeep ? namedMapSource : namedMapSource;
+  args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
     var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
@@ -109,6 +157,10 @@ doSearch = function(search, goDeep) {
       stopLoadError("No results");
       return false;
     }
+    if (goDeep) {
+      doDeepSearch(results);
+      return false;
+    }
     totalSamples = 0;
     posSamples = 0;
     totalSpecies = new Array();
@@ -120,7 +172,7 @@ doSearch = function(search, goDeep) {
       w: 180
     };
     i = 0;
-    console.info("Using named map " + namedMapSource);
+    console.info("Using named map " + namedMap);
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -167,12 +219,11 @@ doSearch = function(search, goDeep) {
       } catch (undefined) {}
       if (!isNull(table)) {
         layer = {
-          name: namedMapSource,
+          name: namedMap,
           type: "namedmap",
           layers: [
             {
-              layer_name: "layer-" + layers.length,
-              interactivity: "id, diseasedetected, genus, specificepithet"
+              layer_name: "layer-" + layers.length
             }
           ],
           params: {
@@ -206,10 +257,6 @@ doSearch = function(search, goDeep) {
       e = error2;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
       console.warn(e.stack);
-    }
-    if (goDeep) {
-      doDeepSearch(results);
-      return false;
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
@@ -459,18 +506,22 @@ $(function() {
     return checkCoordinateSanity();
   });
   initProjectSearch = function(clickedElement) {
-    var deep, error, ok;
+    var deep, error, ok, search;
     ok = checkCoordinateSanity();
     if (!ok) {
       toastStatusMessage("Please check your coordinates");
       return false;
     }
+    search = getSearchObject();
     try {
       deep = $(clickedElement).attr("data-deep").toBool();
+      if (deep) {
+        search = getSearchContainsObject();
+      }
     } catch (error) {
       deep = false;
     }
-    doSearch(getSearchObject(), deep);
+    doSearch(search, deep);
     return false;
   };
   $("input.submit-project-search").keyup(function(e) {

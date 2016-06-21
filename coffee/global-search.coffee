@@ -61,13 +61,50 @@ getSearchObject = ->
   search
 
 
+
+getSearchContainsObject = ->
+  bounds =
+    n: $("#north-coordinate").val()
+    w: $("#west-coordinate").val()
+    s: $("#south-coordinate").val()
+    e: $("#east-coordinate").val()
+  search =
+    sampled_species:
+      data: $("#taxa-input").val()
+    bounding_box_n:
+      data: bounds.s
+      search_type: ">"
+    bounding_box_e:
+      data: bounds.w
+      search_type: ">"
+    bounding_box_w:
+      data: bounds.e
+      search_type: "<"
+    bounding_box_s:
+      data: bounds.n
+      search_type: "<"
+  diseaseStatus = $(p$("#disease-status").selectedItem).attr "data-search"
+  if diseaseStatus isnt "*"
+    search.disease_positive =
+      data: 0
+      search_type: if diseaseStatus.toBool() then ">" else "="
+  morbidityStatus = $(p$("#morbidity-status").selectedItem).attr "data-search"
+  if morbidityStatus isnt "*"
+    search.disease_morbidity =
+      data: 0
+      search_type: if morbidityStatus.toBool() then ">" else "="
+  search
+
+
 doSearch = (search = getSearchObject(), goDeep = false) ->
   ###
   #
   ###
   startLoad()
   data = jsonTo64 search
-  args = "perform=advanced_project_search&q=#{data}"
+  action = "advanced_project_search" # if goDeep then "" else "advanced_project_search"
+  namedMap = if goDeep then namedMapSource else namedMapSource
+  args = "perform=#{action}&q=#{data}"
   $.post "#{uri.urlString}admin-api.php", args, "json"
   .done (result) ->
     console.info "Adv. search result", result
@@ -80,7 +117,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       console.warn "No results"
       stopLoadError "No results"
       return false
-
+    if goDeep
+      # If we're going deep, we'll let the deep take care of the rest
+      doDeepSearch(results)
+      return false
     totalSamples = 0
     posSamples = 0
     totalSpecies = new Array()
@@ -91,7 +131,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       e: -180
       w: 180
     i = 0
-    console.info "Using named map #{namedMapSource}"
+    console.info "Using named map #{namedMap}"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -128,11 +168,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       unless isNull table
         # Create named map layers
         layer =
-          name: namedMapSource
+          name: namedMap
           type: "namedmap"
           layers: [
             layer_name: "layer-#{layers.length}"
-            interactivity: "id, diseasedetected, genus, specificepithet"
             ]
           params:
             table_name: table
@@ -162,10 +201,6 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
-    if goDeep
-      # If we're going deep, we'll let the deep take care of the rest
-      doDeepSearch(results)
-      return false
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
     $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
@@ -384,11 +419,14 @@ $ ->
     unless ok
       toastStatusMessage "Please check your coordinates"
       return false
+    search = getSearchObject()
     try
       deep = $(clickedElement).attr("data-deep").toBool()
+      if deep
+        search = getSearchContainsObject()
     catch
       deep = false
-    doSearch(getSearchObject(), deep)
+    doSearch(search, deep)
     false
   # Hit enter on a field
   $("input.submit-project-search").keyup (e) ->
