@@ -37,7 +37,7 @@ getSearchObject = ->
     e: $("#east-coordinate").val()
   search =
     sampled_species:
-      data: $("#taxa-input").val()
+      data: $("#taxa-input").val().toLowerCase()
     bounding_box_n:
       data: bounds.n
       search_type: "<="
@@ -70,11 +70,11 @@ getSearchContainsObject = ->
     w: $("#west-coordinate").val()
     s: $("#south-coordinate").val()
     e: $("#east-coordinate").val()
-  taxaSearch = $("#taxa-input").val()
+  taxaSearch = $("#taxa-input").val().toLowerCase()
   taxaSplit = taxaSearch.split(" ")
-  ssp = if taxaSplit.length is 3 then taxaSplit.pop() else ""
-  sp = if taxaSplit.length is 2 then taxaSplit.pop() else ""
-  genus = taxaSplit.pop()
+  ssp = if taxaSplit.length is 3 then taxaSplit.pop() else "*"
+  sp = if taxaSplit.length is 2 then taxaSplit.pop() else "*"
+  genus = if taxaSplit.length is 1 then taxaSplit.pop() else "*"
   search =
     sampled_species:
       data: taxaSearch

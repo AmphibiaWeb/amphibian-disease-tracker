@@ -46,7 +46,7 @@ getSearchObject = function() {
   };
   search = {
     sampled_species: {
-      data: $("#taxa-input").val()
+      data: $("#taxa-input").val().toLowerCase()
     },
     bounding_box_n: {
       data: bounds.n,
@@ -90,11 +90,11 @@ getSearchContainsObject = function() {
     s: $("#south-coordinate").val(),
     e: $("#east-coordinate").val()
   };
-  taxaSearch = $("#taxa-input").val();
+  taxaSearch = $("#taxa-input").val().toLowerCase();
   taxaSplit = taxaSearch.split(" ");
-  ssp = taxaSplit.length === 3 ? taxaSplit.pop() : "";
-  sp = taxaSplit.length === 2 ? taxaSplit.pop() : "";
-  genus = taxaSplit.pop();
+  ssp = taxaSplit.length === 3 ? taxaSplit.pop() : "*";
+  sp = taxaSplit.length === 2 ? taxaSplit.pop() : "*";
+  genus = taxaSplit.length === 1 ? taxaSplit.pop() : "*";
   search = {
     sampled_species: {
       data: taxaSearch,
