@@ -1,0 +1,53 @@
+{
+  "layergroup": {
+    "layers": [
+      {
+        "options": {
+          "interactivity": [
+              "cartodb_id",
+            "id",
+            "diseasedetected",
+            "genus",
+            "specificepithet"
+          ],
+          "sql": "select * from <%= table_name %> where genus like %<%= genus %>% and specificepithet like %<%= specific_epithet %>% and diseasedetected = <%= disease_detected %>",
+          "cartocss": "#layer { marker-fill: <%= color %>; }",
+          "cartocss_version": "2.1.1"
+        },
+        "type": "cartodb"
+      }
+    ],
+    "version": "1.0.1"
+  },
+  "placeholders": {
+    "table_name": {
+      "default": "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5",
+      "type": "sql_literal"
+    },
+    "genus": {
+      "default": "batrachoseps",
+      "type": "sql_literal"
+    },
+    "specific_epithet": {
+      "default": "attenuatus",
+      "type": "sql_literal"
+    },
+      "disease_detected": {
+      "default": "*",
+      "type": "sql_literal"
+    },
+      "morbidity": {
+      "default": "*",
+      "type": "sql_literal"
+    },
+    "color": {
+      "default": "red",
+      "type": "css_color"
+    }
+  },
+  "name": "adp_specific_heatmap-v1",
+  "version": "0.0.1",
+  "auth": {
+    "method": "open"
+  }
+}
