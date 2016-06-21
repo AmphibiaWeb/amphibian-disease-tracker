@@ -7,7 +7,7 @@ var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, gener
 
 namedMapSource = "adp_generic_heatmap-v15";
 
-namedMapAdvSource = "adp_specific_heatmap-v1";
+namedMapAdvSource = "adp_specific_heatmap-v2";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -300,7 +300,7 @@ doSearch = function(search, goDeep) {
 doDeepSearch = function(results, namedMap) {
   var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
-    namedMap = "adp_specific_heatmap-v1";
+    namedMap = namedMapAdvSource;
   }
 
   /*

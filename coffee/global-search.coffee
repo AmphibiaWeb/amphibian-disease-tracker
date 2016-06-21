@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v1"
+namedMapAdvSource = "adp_specific_heatmap-v2"
 
 
 checkCoordinateSanity = ->
@@ -237,7 +237,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
   false
 
 
-doDeepSearch = (results, namedMap = "adp_specific_heatmap-v1") ->
+doDeepSearch = (results, namedMap = namedMapAdvSource) ->
   ###
   # Follows up on doSearch() to then look at the shallow matches and
   # do a Carto query
