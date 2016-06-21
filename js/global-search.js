@@ -2,10 +2,12 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchObject, namedMapSource, resetMap, showAllTables,
+var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v15";
+
+namedMapAdvSource = "adp_specific_heatmap-v1";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -80,8 +82,62 @@ getSearchObject = function() {
   return search;
 };
 
+getSearchContainsObject = function() {
+  var bounds, diseaseStatus, genus, morbidityStatus, search, sp, ssp, taxaSearch, taxaSplit;
+  bounds = {
+    n: $("#north-coordinate").val(),
+    w: $("#west-coordinate").val(),
+    s: $("#south-coordinate").val(),
+    e: $("#east-coordinate").val()
+  };
+  taxaSearch = $("#taxa-input").val();
+  taxaSplit = taxaSearch.split(" ");
+  ssp = taxaSplit.length === 3 ? taxaSplit.pop() : "";
+  sp = taxaSplit.length === 2 ? taxaSplit.pop() : "";
+  genus = taxaSplit.pop();
+  search = {
+    sampled_species: {
+      data: taxaSearch,
+      genus: genus,
+      species: sp,
+      subspecies: ssp
+    },
+    bounding_box_n: {
+      data: bounds.s,
+      search_type: ">"
+    },
+    bounding_box_e: {
+      data: bounds.w,
+      search_type: ">"
+    },
+    bounding_box_w: {
+      data: bounds.e,
+      search_type: "<"
+    },
+    bounding_box_s: {
+      data: bounds.n,
+      search_type: "<"
+    }
+  };
+  diseaseStatus = $(p$("#disease-status").selectedItem).attr("data-search");
+  if (diseaseStatus !== "*") {
+    search.disease_positive = {
+      data: 0,
+      search_type: diseaseStatus.toBool() ? ">" : "="
+    };
+  }
+  morbidityStatus = $(p$("#morbidity-status").selectedItem).attr("data-search");
+  if (morbidityStatus !== "*") {
+    search.disease_morbidity = {
+      data: 0,
+      search_type: morbidityStatus.toBool() ? ">" : "="
+    };
+  }
+  return search;
+};
+
 doSearch = function(search, goDeep) {
-  var args, data;
+  var action, args, data, namedMap;
   if (search == null) {
     search = getSearchObject();
   }
@@ -94,7 +150,9 @@ doSearch = function(search, goDeep) {
    */
   startLoad();
   data = jsonTo64(search);
-  args = "perform=advanced_project_search&q=" + data;
+  action = "advanced_project_search";
+  namedMap = goDeep ? namedMapAdvSource : namedMapSource;
+  args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
     var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
@@ -109,6 +167,10 @@ doSearch = function(search, goDeep) {
       stopLoadError("No results");
       return false;
     }
+    if (goDeep) {
+      doDeepSearch(results, namedMap);
+      return false;
+    }
     totalSamples = 0;
     posSamples = 0;
     totalSpecies = new Array();
@@ -120,7 +182,7 @@ doSearch = function(search, goDeep) {
       w: 180
     };
     i = 0;
-    console.info("Using named map " + namedMapSource);
+    console.info("Using named map " + namedMap);
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -167,12 +229,11 @@ doSearch = function(search, goDeep) {
       } catch (undefined) {}
       if (!isNull(table)) {
         layer = {
-          name: namedMapSource,
+          name: namedMap,
           type: "namedmap",
           layers: [
             {
-              layer_name: "layer-" + layers.length,
-              interactivity: "id, diseasedetected, genus, specificepithet"
+              layer_name: "layer-" + layers.length
             }
           ],
           params: {
@@ -207,10 +268,6 @@ doSearch = function(search, goDeep) {
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
       console.warn(e.stack);
     }
-    if (goDeep) {
-      doDeepSearch(results);
-      return false;
-    }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
@@ -239,13 +296,136 @@ doSearch = function(search, goDeep) {
   return false;
 };
 
-doDeepSearch = function(shallowResults) {
+doDeepSearch = function(shallowResults, namedMap) {
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, search, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+  if (namedMap == null) {
+    namedMap = "adp_specific_heatmap-v1";
+  }
 
   /*
    * Follows up on doSearch() to then look at the shallow matches and
    * do a Carto query
    */
-  toastStatusMessage("Deep search not yet implemented");
+  search = getSearchContainsObject();
+  totalSamples = 0;
+  posSamples = 0;
+  totalSpecies = new Array();
+  layers = new Array();
+  boundingBox = {
+    n: -90,
+    s: 90,
+    e: -180,
+    w: 180
+  };
+  i = 0;
+  console.info("Using named map " + namedMap);
+  for (j = 0, len = results.length; j < len; j++) {
+    project = results[j];
+    if (project.bounding_box_n > boundingBox.n) {
+      boundingBox.n = project.bounding_box_n;
+    }
+    if (project.bounding_box_e > boundingBox.e) {
+      boundingBox.e = project.bounding_box_e;
+    }
+    if (project.bounding_box_s < boundingBox.s) {
+      boundingBox.s = project.bounding_box_s;
+    }
+    if (project.bounding_box_w < boundingBox.w) {
+      boundingBox.w = project.bounding_box_w;
+    }
+    totalSamples += project.disease_samples;
+    posSamples += project.disease_positive;
+    spArr = project.sampled_species.split(",");
+    for (k = 0, len1 = spArr.length; k < len1; k++) {
+      species = spArr[k];
+      species = species.trim();
+      if (indexOf.call(totalSpecies, species) < 0) {
+        totalSpecies.push(species);
+      }
+    }
+    if (((ref = project.carto_id) != null ? ref.table : void 0) == null) {
+      try {
+        cartoPreParsed = JSON.parse(project.carto_id);
+        cartoParsed = new Object();
+        for (key in cartoPreParsed) {
+          val = cartoPreParsed[key];
+          cleanKey = key.replace("&#95;", "_");
+          try {
+            cleanVal = val.replace("&#95;", "_");
+          } catch (error) {
+            cleanVal = val;
+          }
+          cartoParsed[cleanKey] = cleanVal;
+        }
+        project.carto_id = cartoParsed;
+      } catch (undefined) {}
+    }
+    try {
+      table = project.carto_id.table.slice(0, 63);
+    } catch (undefined) {}
+    if (!isNull(table)) {
+      layer = {
+        name: namedMap,
+        type: "namedmap",
+        layers: [
+          {
+            layer_name: "layer-" + layers.length
+          }
+        ],
+        params: {
+          table_name: table,
+          color: "#FF6600",
+          genus: search.sampled_species.genus,
+          specific_epithet: search.sampled_species.species,
+          disease_detected: (ref1 = search.disease_positive) != null ? ref1 : "*",
+          morbidity: (ref2 = search.disease_morbidity) != null ? ref2 : "*"
+        }
+      };
+      layers.push(layer);
+    } else {
+      console.warn("Unable to get a table id from this carto data:", project.carto_id);
+    }
+    results[i] = project;
+    ++i;
+  }
+  try {
+    boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
+    mapCenter = getMapCenter(boundingBoxArray);
+    try {
+      p$("#global-data-map").latitude = mapCenter.lat;
+      p$("#global-data-map").longitude = mapCenter.lng;
+    } catch (error1) {
+      try {
+        geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
+      } catch (undefined) {}
+    }
+    zoom = getMapZoom(boundingBoxArray, ".map-container");
+    if (geo.lMap != null) {
+      geo.lMap.setZoom(zoom);
+    }
+  } catch (error2) {
+    e = error2;
+    console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
+    console.warn(e.stack);
+  }
+  speciesCount = totalSpecies.length;
+  console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
+  $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
+  try {
+    for (l = 0, len2 = layers.length; l < len2; l++) {
+      layer = layers[l];
+      layerSourceObj = {
+        user_name: cartoAccount,
+        type: "namedmap",
+        named_map: layer
+      };
+      createRawCartoMap(layerSourceObj);
+    }
+  } catch (error3) {
+    e = error3;
+    console.error("Couldn't create map! " + e.message);
+    console.warn(e.stack);
+  }
   stopLoad();
   return false;
 };
@@ -459,18 +639,22 @@ $(function() {
     return checkCoordinateSanity();
   });
   initProjectSearch = function(clickedElement) {
-    var deep, error, ok;
+    var deep, error, ok, search;
     ok = checkCoordinateSanity();
     if (!ok) {
       toastStatusMessage("Please check your coordinates");
       return false;
     }
+    search = getSearchObject();
     try {
       deep = $(clickedElement).attr("data-deep").toBool();
+      if (deep) {
+        search = getSearchContainsObject();
+      }
     } catch (error) {
       deep = false;
     }
-    doSearch(getSearchObject(), deep);
+    doSearch(search, deep);
     return false;
   };
   $("input.submit-project-search").keyup(function(e) {
