@@ -215,7 +215,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-    $("#post-map-subtitle").text "Viewing data points matching your search"
+    $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
@@ -316,21 +316,29 @@ doDeepSearch = (results, namedMap = "adp_specific_heatmap-v1") ->
         [boundingBox.s, boundingBox.w]
         ]
       mapCenter = getMapCenter boundingBoxArray
+      zoom = getMapZoom boundingBoxArray, ".map-container"
+      console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+      if geo.lMap?
+        geo.lMap.setZoom zoom
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
       catch
         try
           geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
-      zoom = getMapZoom boundingBoxArray, ".map-container"
-      if geo.lMap?
-        geo.lMap.setZoom zoom
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-    $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+    subText = "viewing data points"
+    if search.sampled_species?.genus?
+      spText = " of '#{search.sampled_species.genus} #{search.sampled_species.species} #{search.sampled_species.subspecies}'"
+      subText += spText.replace(/( \*)/img, "")
+    if search.disease_positive?
+      subText += " with disease status '#{search.disease_positive}'"
+    subText += " in bounds defined by [{lat: #{search.bounding_box_n.data},lng: #{search.bounding_box_w.data}},{lat: #{search.bounding_box_s.data},lng: #{search.bounding_box_e.data}}]"
+    $("#post-map-subtitle").text subText
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
