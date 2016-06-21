@@ -271,7 +271,7 @@ doSearch = function(search, goDeep) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
-    $("#post-map-subtitle").text("Viewing data points matching your search");
+    $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     try {
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
@@ -298,7 +298,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, search, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = "adp_specific_heatmap-v1";
   }
@@ -393,6 +393,11 @@ doDeepSearch = function(results, namedMap) {
     try {
       boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
       mapCenter = getMapCenter(boundingBoxArray);
+      zoom = getMapZoom(boundingBoxArray, ".map-container");
+      console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
+      if (geo.lMap != null) {
+        geo.lMap.setZoom(zoom);
+      }
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
@@ -401,10 +406,6 @@ doDeepSearch = function(results, namedMap) {
           geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
         } catch (undefined) {}
       }
-      zoom = getMapZoom(boundingBoxArray, ".map-container");
-      if (geo.lMap != null) {
-        geo.lMap.setZoom(zoom);
-      }
     } catch (error2) {
       e = error2;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
@@ -412,7 +413,16 @@ doDeepSearch = function(results, namedMap) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
-    $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
+    subText = "viewing data points";
+    if (((ref3 = search.sampled_species) != null ? ref3.genus : void 0) != null) {
+      spText = " of '" + search.sampled_species.genus + " " + search.sampled_species.species + " " + search.sampled_species.subspecies + "'";
+      subText += spText.replace(/( \*)/img, "");
+    }
+    if (search.disease_positive != null) {
+      subText += " with disease status '" + search.disease_positive + "'";
+    }
+    subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
+    $("#post-map-subtitle").text(subText);
     try {
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
