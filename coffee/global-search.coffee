@@ -437,6 +437,8 @@ resetMap = (map = geo.lMap, showTables = true) ->
       unless layer.url?
         # Not the base layer
         layer.remove()
+  geo.lMap.setZoom geo.defaultLeafletOptions.zoom
+  geo.lMap.panTo geo.defaultLeafletOptions.center
   if showTables
     showAllTables()
   foo()
@@ -538,6 +540,7 @@ $ ->
   leafletOptions =
     center: [17.811456088564483, -37.265625]
     zoom: 2
+  geo.defaultLeafletOptions = leafletOptions
   lMap = new L.Map("global-map-container", leafletOptions)
   lTopoOptions =
     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
