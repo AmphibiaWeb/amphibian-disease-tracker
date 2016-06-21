@@ -235,7 +235,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
   false
 
 
-doDeepSearch = (shallowResults, namedMap = "adp_specific_heatmap-v1") ->
+doDeepSearch = (results, namedMap = "adp_specific_heatmap-v1") ->
   ###
   # Follows up on doSearch() to then look at the shallow matches and
   # do a Carto query
