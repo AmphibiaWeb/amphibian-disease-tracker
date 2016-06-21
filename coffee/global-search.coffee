@@ -199,21 +199,23 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         [boundingBox.s, boundingBox.w]
         ]
       mapCenter = getMapCenter boundingBoxArray
+      # Zoom
+      zoom = getMapZoom boundingBoxArray, ".map-container"
+      console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+      if geo.lMap?
+        geo.lMap.setZoom zoom
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
       catch
         try
           geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
-      zoom = getMapZoom boundingBoxArray, ".map-container"
-      if geo.lMap?
-        geo.lMap.setZoom zoom
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-    $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+    $("#post-map-subtitle").text "Viewing data points matching your search"
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps

@@ -251,6 +251,11 @@ doSearch = function(search, goDeep) {
     try {
       boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
       mapCenter = getMapCenter(boundingBoxArray);
+      zoom = getMapZoom(boundingBoxArray, ".map-container");
+      console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
+      if (geo.lMap != null) {
+        geo.lMap.setZoom(zoom);
+      }
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
@@ -259,10 +264,6 @@ doSearch = function(search, goDeep) {
           geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
         } catch (undefined) {}
       }
-      zoom = getMapZoom(boundingBoxArray, ".map-container");
-      if (geo.lMap != null) {
-        geo.lMap.setZoom(zoom);
-      }
     } catch (error2) {
       e = error2;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
@@ -270,7 +271,7 @@ doSearch = function(search, goDeep) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
-    $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
+    $("#post-map-subtitle").text("Viewing data points matching your search");
     try {
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
