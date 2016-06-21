@@ -240,107 +240,112 @@ doDeepSearch = (results, namedMap = "adp_specific_heatmap-v1") ->
   # Follows up on doSearch() to then look at the shallow matches and
   # do a Carto query
   ###
-  search = getSearchContainsObject()
-  totalSamples = 0
-  posSamples = 0
-  totalSpecies = new Array()
-  layers = new Array()
-  boundingBox =
-    n: -90
-    s: 90
-    e: -180
-    w: 180
-  i = 0
-  console.info "Using named map #{namedMap}"
-  for project in results
-    if project.bounding_box_n > boundingBox.n
-      boundingBox.n = project.bounding_box_n
-    if project.bounding_box_e > boundingBox.e
-      boundingBox.e = project.bounding_box_e
-    if project.bounding_box_s < boundingBox.s
-      boundingBox.s = project.bounding_box_s
-    if project.bounding_box_w < boundingBox.w
-      boundingBox.w = project.bounding_box_w
-    totalSamples += project.disease_samples
-    posSamples += project.disease_positive
-    spArr = project.sampled_species.split(",")
-    for species in spArr
-      species = species.trim()
-      unless species in totalSpecies
-        totalSpecies.push species
-    # Visualize it
-    # See
-    # https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
-    unless project.carto_id?.table?
-      try
-        cartoPreParsed = JSON.parse project.carto_id
-        cartoParsed = new Object()
-        for key, val of cartoPreParsed
-          cleanKey = key.replace "&#95;", "_"
-          try
-            cleanVal = val.replace "&#95;", "_"
-          catch
-            cleanVal = val
-          cartoParsed[cleanKey] = cleanVal
-        project.carto_id = cartoParsed
-    try
-      table = project.carto_id.table.slice 0, 63
-    unless isNull table
-      # Create named map layers
-      layer =
-        name: namedMap
-        type: "namedmap"
-        layers: [
-          layer_name: "layer-#{layers.length}"
-          ]
-        params:
-          table_name: table
-          color: "#FF6600"
-          genus: search.sampled_species.genus
-          specific_epithet: search.sampled_species.species
-          disease_detected: search.disease_positive ? "*"
-          morbidity: search.disease_morbidity ? "*"
-      layers.push layer
-    else
-      console.warn "Unable to get a table id from this carto data:", project.carto_id
-    results[i] = project
-    ++i
   try
-    boundingBoxArray = [
-      [boundingBox.n, boundingBox.w]
-      [boundingBox.n, boundingBox.e]
-      [boundingBox.s, boundingBox.e]
-      [boundingBox.s, boundingBox.w]
-      ]
-    mapCenter = getMapCenter boundingBoxArray
-    try
-      p$("#global-data-map").latitude = mapCenter.lat
-      p$("#global-data-map").longitude = mapCenter.lng
-    catch
+    search = getSearchContainsObject()
+    totalSamples = 0
+    posSamples = 0
+    totalSpecies = new Array()
+    layers = new Array()
+    boundingBox =
+      n: -90
+      s: 90
+      e: -180
+      w: 180
+    i = 0
+    console.info "Using named map #{namedMap}"
+    for project in results
+      if project.bounding_box_n > boundingBox.n
+        boundingBox.n = project.bounding_box_n
+      if project.bounding_box_e > boundingBox.e
+        boundingBox.e = project.bounding_box_e
+      if project.bounding_box_s < boundingBox.s
+        boundingBox.s = project.bounding_box_s
+      if project.bounding_box_w < boundingBox.w
+        boundingBox.w = project.bounding_box_w
+      totalSamples += project.disease_samples
+      posSamples += project.disease_positive
+      spArr = project.sampled_species.split(",")
+      for species in spArr
+        species = species.trim()
+        unless species in totalSpecies
+          totalSpecies.push species
+      # Visualize it
+      # See
+      # https://docs.cartodb.com/cartodb-platform/cartodb-js/getting-started/#creating-visualizations-at-runtime
+      unless project.carto_id?.table?
+        try
+          cartoPreParsed = JSON.parse project.carto_id
+          cartoParsed = new Object()
+          for key, val of cartoPreParsed
+            cleanKey = key.replace "&#95;", "_"
+            try
+              cleanVal = val.replace "&#95;", "_"
+            catch
+              cleanVal = val
+            cartoParsed[cleanKey] = cleanVal
+          project.carto_id = cartoParsed
       try
-        geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
-    zoom = getMapZoom boundingBoxArray, ".map-container"
-    if geo.lMap?
-      geo.lMap.setZoom zoom
+        table = project.carto_id.table.slice 0, 63
+      unless isNull table
+        # Create named map layers
+        layer =
+          name: namedMap
+          type: "namedmap"
+          layers: [
+            layer_name: "layer-#{layers.length}"
+            ]
+          params:
+            table_name: table
+            color: "#FF6600"
+            genus: search.sampled_species.genus
+            specific_epithet: search.sampled_species.species
+            disease_detected: search.disease_positive ? "*"
+            morbidity: search.disease_morbidity ? "*"
+        layers.push layer
+      else
+        console.warn "Unable to get a table id from this carto data:", project.carto_id
+      results[i] = project
+      ++i
+    try
+      boundingBoxArray = [
+        [boundingBox.n, boundingBox.w]
+        [boundingBox.n, boundingBox.e]
+        [boundingBox.s, boundingBox.e]
+        [boundingBox.s, boundingBox.w]
+        ]
+      mapCenter = getMapCenter boundingBoxArray
+      try
+        p$("#global-data-map").latitude = mapCenter.lat
+        p$("#global-data-map").longitude = mapCenter.lng
+      catch
+        try
+          geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
+      zoom = getMapZoom boundingBoxArray, ".map-container"
+      if geo.lMap?
+        geo.lMap.setZoom zoom
+    catch e
+      console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
+      console.warn e.stack
+    speciesCount = totalSpecies.length
+    console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
+    $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+    # Render the vis
+    try
+      # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
+      for layer in layers
+        layerSourceObj =
+          user_name: cartoAccount
+          type: "namedmap"
+          named_map: layer
+        createRawCartoMap layerSourceObj
+    catch e
+      console.error "Couldn't create map! #{e.message}"
+      console.warn e.stack
+    stopLoad()
   catch e
-    console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
+    stopLoadError "There was a problem performing a sample search"
+    console.error "Problem performing sample search! #{e.message}"
     console.warn e.stack
-  speciesCount = totalSpecies.length
-  console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-  $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
-  # Render the vis
-  try
-    # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
-    for layer in layers
-      layerSourceObj =
-        user_name: cartoAccount
-        type: "namedmap"
-        named_map: layer
-      createRawCartoMap layerSourceObj
-  catch e
-    console.error "Couldn't create map! #{e.message}"
-    console.warn e.stack
-  stopLoad()
   false
 
 
