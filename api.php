@@ -292,6 +292,10 @@ function doCartoSqlApiPush($get)
 {
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
     $sqlQuery = decode64($get['sql_query'], true);
+    if(empty($sqlQuery)) {
+        $sqlQuery = base64_decode(urldecode($get["sql_query"]));
+    }
+    $originalQuery = $sqlQuery;
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
@@ -456,7 +460,10 @@ function doCartoSqlApiPush($get)
             'blobby' => boolstr($get['blobby']),
             "query_type" => $sqlAction,
             "project_id" => $pid,
-            "parsed_query" => $sqlQuery,
+            "parsed_query" => $originalQuery,
+            #"foo" => base64_decode(urldecode($get["sql_query"])),
+            #"bar" => base64_decode($get["sql_query"]),
+            #"baz" => urldecode(base64_decode($get["sql_query"])),
             # "urls_posted" => $urls,
         ));
     } catch (Exception $e) {
