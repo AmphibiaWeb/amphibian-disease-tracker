@@ -2451,7 +2451,7 @@ featureClickEvent = function(e, latlng, pos, data, layer) {
     val = data[col];
     colNames.push(col);
   }
-  cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
+  cartodb.vis.Vis.addInfowindow.debounce(null, null, null, geo.lMap, layer, colNames);
   return false;
 };
 
@@ -2535,7 +2535,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       layer.unbind("featureClick");
     } catch (undefined) {}
     layer.on("featureClick", function(e, latlng, pos, data, layerIndex) {
-      clickEvent.debounce(100, false, null, e, latlng, pos, data, layer);
+      clickEvent.debounce(150, false, null, e, latlng, pos, data, layer);
       return false;
     }).on("error", function(err) {
       return console.warn("Error on layer feature click", err);
