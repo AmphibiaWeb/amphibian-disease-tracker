@@ -291,6 +291,12 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         table = project.carto_id.table.slice 0, 63
       unless isNull table
         # Create named map layers
+        detected = ""
+        if search.disease_positive?.data?
+          if search.disease_positive.search_type is ">"
+            detected = "true"
+          else
+            detected = "false"
         layer =
           name: namedMap
           type: "namedmap"
@@ -302,7 +308,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             color: "#FF6600"
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
-            disease_detected: search.disease_positive?.data ? ""
+            disease_detected: detected
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id

@@ -299,7 +299,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -367,6 +367,14 @@ doDeepSearch = function(results, namedMap) {
         table = project.carto_id.table.slice(0, 63);
       } catch (undefined) {}
       if (!isNull(table)) {
+        detected = "";
+        if (((ref1 = search.disease_positive) != null ? ref1.data : void 0) != null) {
+          if (search.disease_positive.search_type === ">") {
+            detected = "true";
+          } else {
+            detected = "false";
+          }
+        }
         layer = {
           name: namedMap,
           type: "namedmap",
@@ -380,7 +388,7 @@ doDeepSearch = function(results, namedMap) {
             color: "#FF6600",
             genus: search.sampled_species.genus,
             specific_epithet: search.sampled_species.species,
-            disease_detected: (ref1 = (ref2 = search.disease_positive) != null ? ref2.data : void 0) != null ? ref1 : ""
+            disease_detected: detected
           }
         };
         layers.push(layer);
@@ -414,7 +422,7 @@ doDeepSearch = function(results, namedMap) {
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     subText = "viewing data points";
-    if (((ref3 = search.sampled_species) != null ? ref3.genus : void 0) != null) {
+    if (((ref2 = search.sampled_species) != null ? ref2.genus : void 0) != null) {
       spText = " of '" + search.sampled_species.genus + " " + search.sampled_species.species + " " + search.sampled_species.subspecies + "'";
       subText += spText.replace(/( \*)/img, "");
     }
