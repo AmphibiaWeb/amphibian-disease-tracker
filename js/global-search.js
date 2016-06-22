@@ -565,12 +565,14 @@ resetMap = function(map, showTables, resetZoom) {
       }
     }
   }
+  $("#post-map-subtitle").text("");
   if (resetZoom) {
     geo.lMap.setZoom(geo.defaultLeafletOptions.zoom);
     geo.lMap.panTo(geo.defaultLeafletOptions.center);
   }
   if (showTables) {
     showAllTables();
+    $("#post-map-subtitle").text("All Projects");
   }
   return false;
 };

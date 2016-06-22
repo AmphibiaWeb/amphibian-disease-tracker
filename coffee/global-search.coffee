@@ -448,11 +448,13 @@ resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
           layer.removeLayer()
         catch
           layer.remove()
+  $("#post-map-subtitle").text ""
   if resetZoom
     geo.lMap.setZoom geo.defaultLeafletOptions.zoom
     geo.lMap.panTo geo.defaultLeafletOptions.center
   if showTables
     showAllTables()
+    $("#post-map-subtitle").text "All Projects"
   false
 
 
