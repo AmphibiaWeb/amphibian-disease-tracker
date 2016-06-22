@@ -2448,14 +2448,15 @@ featureClickEvent = function(e, latlng, pos, data, layer) {
   /*
    * Generalized click event
    */
-  var col, colNames, val;
+  var col, colNames, colNamesManual, val;
   console.log("Clicked feature event", data, pos, latlng);
   colNames = new Array();
   for (col in data) {
     val = data[col];
     colNames.push(col);
   }
-  geo.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
+  colNamesManual = ["genus", "specificepithet", "diseasedetected"];
+  geo.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNamesManual);
   try {
     geo.infoWindow.on("close", function() {
       return this.remove();

@@ -1936,7 +1936,12 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   colNames = new Array()
   for col, val of data
     colNames.push col
-  geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
+  colNamesManual = [
+    "genus"
+    "specificepithet"
+    "diseasedetected"
+    ]
+  geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNamesManual
   try
     geo.infoWindow.on "close", ->
       this.remove()
