@@ -122,7 +122,7 @@ getSearchContainsObject = function() {
   diseaseStatus = $(p$("#disease-status").selectedItem).attr("data-search");
   if (diseaseStatus !== "*") {
     search.disease_positive = {
-      data: diseaseStatus.toBool.toString(),
+      data: 0,
       search_type: diseaseStatus.toBool() ? ">" : "="
     };
   }
