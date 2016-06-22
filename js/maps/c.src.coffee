@@ -1937,6 +1937,9 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   for col, val of data
     colNames.push col
   geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
+  try
+    geo.infoWindow.on "close", ->
+      this.remove()
   false
 
 
