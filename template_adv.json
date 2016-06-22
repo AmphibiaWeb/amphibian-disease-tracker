@@ -36,16 +36,12 @@
       "default": "*",
       "type": "sql_literal"
     },
-      "morbidity": {
-      "default": "*",
-      "type": "sql_literal"
-    },
     "color": {
       "default": "red",
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v4",
+  "name": "adp_specific_heatmap-v5",
   "version": "0.0.1",
   "auth": {
     "method": "open"

@@ -7,7 +7,7 @@ var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, gener
 
 namedMapSource = "adp_generic_heatmap-v15";
 
-namedMapAdvSource = "adp_specific_heatmap-v4";
+namedMapAdvSource = "adp_specific_heatmap-v5";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -273,6 +273,7 @@ doSearch = function(search, goDeep) {
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     try {
+      resetMap(geo.lMap, false, false);
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
         layerSourceObj = {
@@ -298,7 +299,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, ref5, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -379,8 +380,7 @@ doDeepSearch = function(results, namedMap) {
             color: "#FF6600",
             genus: search.sampled_species.genus,
             specific_epithet: search.sampled_species.species,
-            disease_detected: (ref1 = (ref2 = search.disease_positive) != null ? ref2.data : void 0) != null ? ref1 : "*",
-            morbidity: (ref3 = (ref4 = search.disease_morbidity) != null ? ref4.data : void 0) != null ? ref3 : "*"
+            disease_detected: (ref1 = (ref2 = search.disease_positive) != null ? ref2.data : void 0) != null ? ref1 : "*"
           }
         };
         layers.push(layer);
@@ -414,7 +414,7 @@ doDeepSearch = function(results, namedMap) {
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     subText = "viewing data points";
-    if (((ref5 = search.sampled_species) != null ? ref5.genus : void 0) != null) {
+    if (((ref3 = search.sampled_species) != null ? ref3.genus : void 0) != null) {
       spText = " of '" + search.sampled_species.genus + " " + search.sampled_species.species + " " + search.sampled_species.subspecies + "'";
       subText += spText.replace(/( \*)/img, "");
     }
@@ -424,6 +424,7 @@ doDeepSearch = function(results, namedMap) {
     subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
     $("#post-map-subtitle").text(subText);
     try {
+      resetMap(geo.lMap, false, false);
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
         layerSourceObj = {
@@ -521,13 +522,16 @@ showAllTables = function() {
   return false;
 };
 
-resetMap = function(map, showTables) {
+resetMap = function(map, showTables, resetZoom) {
   var error, j, k, layer, len, len1, ref, ref1, sublayer;
   if (map == null) {
     map = geo.lMap;
   }
   if (showTables == null) {
     showTables = true;
+  }
+  if (resetZoom == null) {
+    resetZoom = true;
   }
   if (geo.mapSublayers == null) {
     console.error("geo.mapSublayers is not defined.");
@@ -548,12 +552,13 @@ resetMap = function(map, showTables) {
       }
     }
   }
-  geo.lMap.setZoom(geo.defaultLeafletOptions.zoom);
-  geo.lMap.panTo(geo.defaultLeafletOptions.center);
+  if (resetZoom) {
+    geo.lMap.setZoom(geo.defaultLeafletOptions.zoom);
+    geo.lMap.panTo(geo.defaultLeafletOptions.center);
+  }
   if (showTables) {
     showAllTables();
   }
-  foo();
   return false;
 };
 
