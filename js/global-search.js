@@ -7,7 +7,7 @@ var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, gener
 
 namedMapSource = "adp_generic_heatmap-v15";
 
-namedMapAdvSource = "adp_specific_heatmap-v2";
+namedMapAdvSource = "adp_specific_heatmap-v3";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -379,7 +379,7 @@ doDeepSearch = function(results, namedMap) {
             color: "#FF6600",
             genus: search.sampled_species.genus,
             specific_epithet: search.sampled_species.species,
-            disease_detected: (ref1 = search.disease_positive) != null ? ref1 : "*",
+            disease_detected: (ref1 = search.disease_positive) != null ? ref1 : "TRUE or diseasedetected = FALSE",
             morbidity: (ref2 = search.disease_morbidity) != null ? ref2 : "*"
           }
         };

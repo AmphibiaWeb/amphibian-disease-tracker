@@ -10,7 +10,7 @@
             "genus",
             "specificepithet"
           ],
-          "sql": "select * from <%= table_name %> where genus like '%<%= genus %>%' and specificepithet like '%<%= specific_epithet %>%' and diseasedetected = <%= disease_detected %>",
+          "sql": "select * from <%= table_name %> where genus like '%<%= genus %>%' and specificepithet like '%<%= specific_epithet %>%' and (diseasedetected = <%= disease_detected %>)",
           "cartocss": "#layer { marker-fill: <%= color %>; }",
           "cartocss_version": "2.1.1"
         },
@@ -45,7 +45,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v2",
+  "name": "adp_specific_heatmap-v3",
   "version": "0.0.1",
   "auth": {
     "method": "open"

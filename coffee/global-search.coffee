@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v2"
+namedMapAdvSource = "adp_specific_heatmap-v3"
 
 
 checkCoordinateSanity = ->
@@ -301,7 +301,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             color: "#FF6600"
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
-            disease_detected: search.disease_positive ? "*"
+            disease_detected: search.disease_positive ? "TRUE or diseasedetected = FALSE"
             morbidity: search.disease_morbidity ? "*"
         layers.push layer
       else
