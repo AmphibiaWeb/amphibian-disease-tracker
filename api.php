@@ -456,6 +456,7 @@ function doCartoSqlApiPush($get)
             'blobby' => boolstr($get['blobby']),
             "query_type" => $sqlAction,
             "project_id" => $pid,
+            "parsed_query" => $sqlQuery,
             # "urls_posted" => $urls,
         ));
     } catch (Exception $e) {
