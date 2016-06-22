@@ -514,7 +514,7 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   colNames = new Array()
   for col, val of data
     colNames.push col
-  cartodb.vis.Vis.addInfowindow.debounce null, null, null, geo.lMap, layer, colNames
+  window.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
   false
 
 
