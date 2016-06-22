@@ -2022,8 +2022,8 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     layer
     .on "featureClick", (e, latlng, pos, data, layerIndex) ->
       # console.log "Clicked feature", data, pos, latlng
-      if geo.infoWindow?
-        geo.infoWindow.remove()
+      # if geo.infoWindow?
+      #   geo.infoWindow.remove()
       clickEvent.debounce 150, false, null, e, latlng, pos, data, layer
       false
     .on "error", (err) ->
