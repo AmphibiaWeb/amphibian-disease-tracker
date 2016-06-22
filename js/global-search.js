@@ -7,7 +7,7 @@ var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, gener
 
 namedMapSource = "adp_generic_heatmap-v15";
 
-namedMapAdvSource = "adp_specific_heatmap-v3";
+namedMapAdvSource = "adp_specific_heatmap-v4";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -122,7 +122,7 @@ getSearchContainsObject = function() {
   diseaseStatus = $(p$("#disease-status").selectedItem).attr("data-search");
   if (diseaseStatus !== "*") {
     search.disease_positive = {
-      data: 0,
+      data: diseaseStatus.toBool.toString(),
       search_type: diseaseStatus.toBool() ? ">" : "="
     };
   }
@@ -298,7 +298,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, error4, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, ref5, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -379,8 +379,8 @@ doDeepSearch = function(results, namedMap) {
             color: "#FF6600",
             genus: search.sampled_species.genus,
             specific_epithet: search.sampled_species.species,
-            disease_detected: (ref1 = search.disease_positive) != null ? ref1 : "TRUE or diseasedetected = FALSE",
-            morbidity: (ref2 = search.disease_morbidity) != null ? ref2 : "*"
+            disease_detected: (ref1 = (ref2 = search.disease_positive) != null ? ref2.data : void 0) != null ? ref1 : "*",
+            morbidity: (ref3 = (ref4 = search.disease_morbidity) != null ? ref4.data : void 0) != null ? ref3 : "*"
           }
         };
         layers.push(layer);
@@ -414,7 +414,7 @@ doDeepSearch = function(results, namedMap) {
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     subText = "viewing data points";
-    if (((ref3 = search.sampled_species) != null ? ref3.genus : void 0) != null) {
+    if (((ref5 = search.sampled_species) != null ? ref5.genus : void 0) != null) {
       spText = " of '" + search.sampled_species.genus + " " + search.sampled_species.species + " " + search.sampled_species.subspecies + "'";
       subText += spText.replace(/( \*)/img, "");
     }
