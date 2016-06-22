@@ -531,7 +531,7 @@ showAllTables = function() {
 };
 
 resetMap = function(map, showTables, resetZoom) {
-  var error, j, k, layer, len, len1, ref, ref1, sublayer;
+  var error, error1, j, k, layer, len, len1, p, ref, ref1, sublayer;
   if (map == null) {
     map = geo.lMap;
   }
@@ -555,8 +555,13 @@ resetMap = function(map, showTables, resetZoom) {
     ref1 = map._layers;
     for (k = 0, len1 = ref1.length; k < len1; k++) {
       layer = ref1[k];
-      if (layer.url == null) {
-        layer.remove();
+      p = layer._url.search("arcgisonline");
+      if (p === -1) {
+        try {
+          layer.removeLayer();
+        } catch (error1) {
+          layer.remove();
+        }
       }
     }
   }
