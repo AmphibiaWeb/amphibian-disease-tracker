@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v8"
+namedMapAdvSource = "adp_specific_heatmap-v9"
 
 
 checkCoordinateSanity = ->
@@ -72,9 +72,9 @@ getSearchContainsObject = ->
     e: $("#east-coordinate").val()
   taxaSearch = $("#taxa-input").val().toLowerCase()
   taxaSplit = taxaSearch.split(" ")
-  ssp = if taxaSplit.length is 3 then taxaSplit.pop() else "*"
-  sp = if taxaSplit.length is 2 then taxaSplit.pop() else "*"
-  genus = if taxaSplit.length is 1 then taxaSplit.pop() else "*"
+  ssp = if taxaSplit.length is 3 then taxaSplit.pop() else ""
+  sp = if taxaSplit.length is 2 then taxaSplit.pop() else ""
+  genus = if taxaSplit.length is 1 then taxaSplit.pop() else ""
   search =
     sampled_species:
       data: taxaSearch
@@ -302,7 +302,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             color: "#FF6600"
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
-            disease_detected: search.disease_positive?.data ? "*"
+            disease_detected: search.disease_positive?.data ? ""
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id

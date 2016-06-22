@@ -7,7 +7,7 @@ var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, gener
 
 namedMapSource = "adp_generic_heatmap-v15";
 
-namedMapAdvSource = "adp_specific_heatmap-v8";
+namedMapAdvSource = "adp_specific_heatmap-v9";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -92,9 +92,9 @@ getSearchContainsObject = function() {
   };
   taxaSearch = $("#taxa-input").val().toLowerCase();
   taxaSplit = taxaSearch.split(" ");
-  ssp = taxaSplit.length === 3 ? taxaSplit.pop() : "*";
-  sp = taxaSplit.length === 2 ? taxaSplit.pop() : "*";
-  genus = taxaSplit.length === 1 ? taxaSplit.pop() : "*";
+  ssp = taxaSplit.length === 3 ? taxaSplit.pop() : "";
+  sp = taxaSplit.length === 2 ? taxaSplit.pop() : "";
+  genus = taxaSplit.length === 1 ? taxaSplit.pop() : "";
   search = {
     sampled_species: {
       data: taxaSearch,
@@ -380,7 +380,7 @@ doDeepSearch = function(results, namedMap) {
             color: "#FF6600",
             genus: search.sampled_species.genus,
             specific_epithet: search.sampled_species.species,
-            disease_detected: (ref1 = (ref2 = search.disease_positive) != null ? ref2.data : void 0) != null ? ref1 : "*"
+            disease_detected: (ref1 = (ref2 = search.disease_positive) != null ? ref2.data : void 0) != null ? ref1 : ""
           }
         };
         layers.push(layer);

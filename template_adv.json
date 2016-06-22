@@ -25,15 +25,15 @@
       "type": "sql_literal"
     },
     "genus": {
-      "default": "*",
+      "default": "",
       "type": "sql_literal"
     },
     "specific_epithet": {
-      "default": "*",
+      "default": "",
       "type": "sql_literal"
     },
       "disease_detected": {
-      "default": "*",
+      "default": "",
       "type": "sql_literal"
     },
     "color": {
@@ -41,7 +41,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v8",
+  "name": "adp_specific_heatmap-v9",
   "version": "0.0.1",
   "auth": {
     "method": "open"
