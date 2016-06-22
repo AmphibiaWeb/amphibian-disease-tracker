@@ -2455,7 +2455,10 @@ featureClickEvent = function(e, latlng, pos, data, layer) {
     val = data[col];
     colNames.push(col);
   }
-  window.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
+  if (geo.infoWindow != null) {
+    geo.infoWindow.remove();
+  }
+  geo.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
   return false;
 };
 
