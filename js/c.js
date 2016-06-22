@@ -730,18 +730,22 @@ Function.prototype.debounce = function() {
   try {
     key = this.getName();
   } catch (undefined) {}
-  func = this;
-  delayed = function() {
-    if (!execAsap) {
-      func.apply(func, args);
-    }
-    return console.info("Debounce applied");
-  };
   try {
     if (core.debouncers[key] != null) {
       timeout = core.debouncers[key];
     }
   } catch (undefined) {}
+  func = this;
+  delayed = function() {
+    if (key != null) {
+      clearTimeout(timeout);
+      delete core.debouncers[key];
+    }
+    if (!execAsap) {
+      func.apply(func, args);
+    }
+    return console.info("Debounce applied");
+  };
   if (timeout != null) {
     try {
       clearTimeout(timeout);
