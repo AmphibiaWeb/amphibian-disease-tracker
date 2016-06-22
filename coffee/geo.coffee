@@ -506,7 +506,15 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
 
 
 
-createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map") ->
+featureClickEvent = (e, latlng, pos, data) ->
+  ###
+  # Generalized click event
+  ###
+  console.log "Clicked feature event", data, pos, latlng  
+  false
+
+
+createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map", clickEvent = featureClickEvent) ->
   ###
   # Create a raw CartoDB map
   #
@@ -586,7 +594,8 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     layer
     .unbind "featureClick"
     .on "featureClick", (e, latlng, pos, data, layer) ->
-      console.log "Clicked feature", data, pos, latlng
+      # console.log "Clicked feature", data, pos, latlng
+      clickEvent.debounce 100, false, null, e, latlng, pos, data
       false
     .on "error", (err) ->
       console.warn "Error on layer feature click", err
@@ -597,7 +606,8 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       suTemp
       .unbind "featureClick"
       .on "featureClick", (e, latlng, pos, data, layerIndex) ->
-        console.log "Clicked sublayer feature", data, pos, latlng
+        # console.log "Clicked sublayer feature", data, pos, latlng
+        clickEvent.debounce 100, false, null, e, latlng, pos, data
         false
       .on "error", (err) ->
         console.warn "Error on sublayer feature click", err

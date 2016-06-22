@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, foo, formatScientificNames, gMapsApiKey, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -685,7 +685,7 @@ String.prototype.toTitleCase = function() {
 };
 
 Function.prototype.debounce = function() {
-  var args, delayed, error2, execAsap, func, threshold, timeout;
+  var args, delayed, error2, execAsap, func, key, ref, threshold, timeout;
   threshold = arguments[0], execAsap = arguments[1], timeout = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
   if (threshold == null) {
     threshold = 300;
@@ -694,26 +694,61 @@ Function.prototype.debounce = function() {
     execAsap = false;
   }
   if (timeout == null) {
-    timeout = debounce_timer;
+    timeout = window.debounce_timer;
   }
+
+  /*
+   * Borrowed from http://coffeescriptcookbook.com/chapters/functions/debounce
+   * Only run the prototyped function once per interval.
+   *
+   * @param threshold -> Timeout in ms
+   * @param execAsap -> Do it NAOW
+   * @param timeout -> backup timeout object
+   */
+  if (((ref = window.core) != null ? ref.debouncers : void 0) == null) {
+    if (window.core == null) {
+      window.core = new Object();
+    }
+    core.debouncers = new Object();
+  }
+  try {
+    key = this.getName();
+  } catch (undefined) {}
   func = this;
   delayed = function() {
     if (!execAsap) {
       func.apply(func, args);
     }
-    return console.log("Debounce applied");
+    return console.info("Debounce applied");
   };
+  try {
+    if (core.debouncers[key] != null) {
+      timeout = core.debouncers[key];
+    }
+  } catch (undefined) {}
   if (timeout != null) {
     try {
       clearTimeout(timeout);
     } catch (error2) {
       e = error2;
     }
-  } else if (execAsap) {
-    func.apply(obj, args);
-    console.log("Executed immediately");
   }
-  return timeout = setTimeout(delayed, threshold);
+  if (execAsap) {
+    func.apply(obj, args);
+    console.log("Executed " + key + " immediately");
+    return false;
+  }
+  if (key != null) {
+    console.log("Debouncing '" + key + "' for " + threshold + " ms");
+    return core.debouncers[key] = delay(threshold, function() {
+      return delayed();
+    });
+  } else {
+    console.log("Delaying '" + key + "' for " + threshold + " ms");
+    return window.debounce_timer = delay(threshold, function() {
+      return delayed();
+    });
+  }
 };
 
 randomInt = function(lower, upper) {
@@ -2388,10 +2423,22 @@ buildMap = function(mapBuilderObj, options, callback) {
   return false;
 };
 
-createRawCartoMap = function(layers, callback, options, mapSelector) {
+featureClickEvent = function(e, latlng, pos, data) {
+
+  /*
+   * Generalized click event
+   */
+  console.log("Clicked feature event", data, pos, latlng);
+  return false;
+};
+
+createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent) {
   var BASE_MAP, lMap, lTopoOptions, leafletOptions, mapOptions, params, ref, ref1;
   if (mapSelector == null) {
     mapSelector = "#global-data-map";
+  }
+  if (clickEvent == null) {
+    clickEvent = featureClickEvent;
   }
 
   /*
@@ -2462,7 +2509,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
       layer.setInteraction(true);
     } catch (undefined) {}
     layer.unbind("featureClick").on("featureClick", function(e, latlng, pos, data, layer) {
-      console.log("Clicked feature", data, pos, latlng);
+      clickEvent.debounce(100, false, null, e, latlng, pos, data);
       return false;
     }).on("error", function(err) {
       return console.warn("Error on layer feature click", err);
@@ -2472,7 +2519,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
       suTemp = layer.getSubLayer(i);
       suTemp.setInteraction(true);
       suTemp.unbind("featureClick").on("featureClick", function(e, latlng, pos, data, layerIndex) {
-        console.log("Clicked sublayer feature", data, pos, latlng);
+        clickEvent.debounce(100, false, null, e, latlng, pos, data);
         return false;
       }).on("error", function(err) {
         return console.warn("Error on sublayer feature click", err);

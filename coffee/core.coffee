@@ -524,22 +524,48 @@ String::toTitleCase = ->
   str
 
 
-Function::debounce = (threshold = 300, execAsap = false, timeout = debounce_timer, args...) ->
+
+Function::debounce = (threshold = 300, execAsap = false, timeout = window.debounce_timer, args...) ->
+  ###
   # Borrowed from http://coffeescriptcookbook.com/chapters/functions/debounce
   # Only run the prototyped function once per interval.
+  #
+  # @param threshold -> Timeout in ms
+  # @param execAsap -> Do it NAOW
+  # @param timeout -> backup timeout object
+  ###
+  unless window.core?.debouncers?
+    unless window.core?
+      window.core = new Object()
+    core.debouncers = new Object()
+  try
+    key = this.getName()
   func = this
   delayed = ->
     func.apply(func, args) unless execAsap
-    console.log("Debounce applied")
+    console.info("Debounce applied")
+  try
+    if core.debouncers[key]?
+      timeout = core.debouncers[key]
   if timeout?
     try
       clearTimeout(timeout)
     catch e
       # just do nothing
-  else if execAsap
+  if execAsap
     func.apply(obj, args)
-    console.log("Executed immediately")
-  timeout = setTimeout(delayed, threshold)
+    console.log("Executed #{key} immediately")
+    return false
+  if key?
+    console.log "Debouncing '#{key}' for #{threshold} ms"
+    core.debouncers[key] = delay threshold, ->
+      delayed()
+  else
+    console.log "Delaying '#{key}' for #{threshold} ms"
+    window.debounce_timer = delay threshold, ->
+      delayed()
+
+
 
 randomInt = (lower = 0, upper = 1) ->
   start = Math.random()
