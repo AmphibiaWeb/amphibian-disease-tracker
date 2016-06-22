@@ -291,7 +291,7 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
 function doCartoSqlApiPush($get)
 {
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
-    $sqlQuery = decode64($get['sql_query']);
+    $sqlQuery = decode64($get['sql_query'], true);
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
