@@ -441,9 +441,13 @@ resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
       sublayer.remove()
   catch
     for layer in map._layers
-      unless layer.url?
+      p = layer._url.search "arcgisonline"
+      if p is -1
         # Not the base layer
-        layer.remove()
+        try
+          layer.removeLayer()
+        catch
+          layer.remove()
   if resetZoom
     geo.lMap.setZoom geo.defaultLeafletOptions.zoom
     geo.lMap.panTo geo.defaultLeafletOptions.center
