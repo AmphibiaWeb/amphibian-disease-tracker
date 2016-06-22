@@ -1936,7 +1936,9 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   colNames = new Array()
   for col, val of data
     colNames.push col
-  window.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
+  if geo.infoWindow?
+    geo.infoWindow.remove()
+  geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
   false
 
 
