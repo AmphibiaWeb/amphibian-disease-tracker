@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v3"
+namedMapAdvSource = "adp_specific_heatmap-v4"
 
 
 checkCoordinateSanity = ->
@@ -96,7 +96,7 @@ getSearchContainsObject = ->
   diseaseStatus = $(p$("#disease-status").selectedItem).attr "data-search"
   if diseaseStatus isnt "*"
     search.disease_positive =
-      data: 0
+      data: diseaseStatus.toBool.toString()
       search_type: if diseaseStatus.toBool() then ">" else "="
   morbidityStatus = $(p$("#morbidity-status").selectedItem).attr "data-search"
   if morbidityStatus isnt "*"
@@ -301,8 +301,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             color: "#FF6600"
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
-            disease_detected: search.disease_positive ? "TRUE or diseasedetected = FALSE"
-            morbidity: search.disease_morbidity ? "*"
+            disease_detected: search.disease_positive?.data ? "*"
+            morbidity: search.disease_morbidity?.data ? "*"
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
