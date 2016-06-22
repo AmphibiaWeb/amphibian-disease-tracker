@@ -2461,7 +2461,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     try {
       layer.setInteraction(true);
     } catch (undefined) {}
-    layer.on("featureclick", function(e, latlng, pos, data, layer) {
+    layer.on("featureClick", function(e, latlng, pos, data, layer) {
       console.log("Clicked feature", data, pos, latlng);
       return false;
     }).on("error", function(err) {
@@ -2471,7 +2471,10 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
     while (i < max) {
       suTemp = layer.getSubLayer(i);
       suTemp.setInteraction(true);
-      suTemp.on("featureclick", function(e, latlng, pos, data, layer) {
+      suTemp.on("featureOver", function(e, latlng, pos, data, layerIndex) {
+        console.log("Hovered over features", data);
+        return false;
+      }).on("featureClick", function(e, latlng, pos, data, layerIndex) {
         console.log("Clicked sublayer feature", data, pos, latlng);
         return false;
       }).on("error", function(err) {
@@ -2480,7 +2483,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector) {
       geo.mapSublayers.push(suTemp);
       ++i;
     }
-    layer.on("featureclick", function(e, latlng, pos, data, layer) {
+    layer.on("featureClick", function(e, latlng, pos, data, layer) {
       return console.log("Clicked feature", data, pos, latlng);
     });
     layer.show();
