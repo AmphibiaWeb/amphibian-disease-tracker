@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v4"
+namedMapAdvSource = "adp_specific_heatmap-v5"
 
 
 checkCoordinateSanity = ->
@@ -219,6 +219,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
+      resetMap geo.lMap, false, false
       for layer in layers
         layerSourceObj =
           user_name: cartoAccount
@@ -302,7 +303,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
             disease_detected: search.disease_positive?.data ? "*"
-            morbidity: search.disease_morbidity?.data ? "*"
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
@@ -342,6 +342,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
+      resetMap geo.lMap, false, false
       for layer in layers
         layerSourceObj =
           user_name: cartoAccount
@@ -423,7 +424,7 @@ showAllTables = ->
 
 
 
-resetMap = (map = geo.lMap, showTables = true) ->
+resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
   unless geo.mapSublayers?
     console.error "geo.mapSublayers is not defined."
     return false
@@ -437,11 +438,11 @@ resetMap = (map = geo.lMap, showTables = true) ->
       unless layer.url?
         # Not the base layer
         layer.remove()
-  geo.lMap.setZoom geo.defaultLeafletOptions.zoom
-  geo.lMap.panTo geo.defaultLeafletOptions.center
+  if resetZoom
+    geo.lMap.setZoom geo.defaultLeafletOptions.zoom
+    geo.lMap.panTo geo.defaultLeafletOptions.center
   if showTables
     showAllTables()
-  foo()
   false
 
 
