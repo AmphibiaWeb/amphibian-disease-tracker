@@ -301,7 +301,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             color: "#FF6600"
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
-            disease_detected: search.disease_positive ? "*"
+            disease_detected: search.disease_positive ? "TRUE or diseasedetected = FALSE"
             morbidity: search.disease_morbidity ? "*"
         layers.push layer
       else
