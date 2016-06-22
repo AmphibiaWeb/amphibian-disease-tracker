@@ -2539,9 +2539,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       layer.unbind("featureClick");
     } catch (undefined) {}
     layer.on("featureClick", function(e, latlng, pos, data, layerIndex) {
-      if (geo.infoWindow != null) {
-        geo.infoWindow.remove();
-      }
       clickEvent.debounce(150, false, null, e, latlng, pos, data, layer);
       return false;
     }).on("error", function(err) {
