@@ -598,7 +598,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     try
       layer.unbind "featureClick"
     layer
-    .on "featureClick", (e, latlng, pos, data, layer) ->
+    .on "featureClick", (e, latlng, pos, data, layerIndex) ->
       # console.log "Clicked feature", data, pos, latlng
       clickEvent.debounce 100, false, null, e, latlng, pos, data, layer
       false

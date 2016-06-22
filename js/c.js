@@ -2534,7 +2534,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     try {
       layer.unbind("featureClick");
     } catch (undefined) {}
-    layer.on("featureClick", function(e, latlng, pos, data, layer) {
+    layer.on("featureClick", function(e, latlng, pos, data, layerIndex) {
       clickEvent.debounce(100, false, null, e, latlng, pos, data, layer);
       return false;
     }).on("error", function(err) {
