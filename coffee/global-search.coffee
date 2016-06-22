@@ -440,7 +440,7 @@ resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
       # Call hide() or remove() on each sublayer
       sublayer.remove()
   catch
-    for layer in map._layers
+    for id, layer of map._layers
       p = layer._url.search "arcgisonline"
       if p is -1
         # Not the base layer

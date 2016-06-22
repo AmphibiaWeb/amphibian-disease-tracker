@@ -531,7 +531,7 @@ showAllTables = function() {
 };
 
 resetMap = function(map, showTables, resetZoom) {
-  var error, error1, j, k, layer, len, len1, p, ref, ref1, sublayer;
+  var error, error1, id, j, layer, len, p, ref, ref1, sublayer;
   if (map == null) {
     map = geo.lMap;
   }
@@ -553,8 +553,8 @@ resetMap = function(map, showTables, resetZoom) {
     }
   } catch (error) {
     ref1 = map._layers;
-    for (k = 0, len1 = ref1.length; k < len1; k++) {
-      layer = ref1[k];
+    for (id in ref1) {
+      layer = ref1[id];
       p = layer._url.search("arcgisonline");
       if (p === -1) {
         try {
