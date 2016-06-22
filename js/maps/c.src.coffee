@@ -1967,6 +1967,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     try
       layer.setInteraction(true)
     layer
+    .unbind "featureClick"
     .on "featureClick", (e, latlng, pos, data, layer) ->
       console.log "Clicked feature", data, pos, latlng
       false
@@ -1977,9 +1978,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       suTemp = layer.getSubLayer(i)
       suTemp.setInteraction(true)
       suTemp
-      .on "featureOver", (e, latlng, pos, data, layerIndex) ->
-        console.log "Hovered over features", data
-        false
+      .unbind "featureClick"
       .on "featureClick", (e, latlng, pos, data, layerIndex) ->
         console.log "Clicked sublayer feature", data, pos, latlng
         false
@@ -1987,8 +1986,6 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
         console.warn "Error on sublayer feature click", err
       geo.mapSublayers.push suTemp
       ++i
-    layer.on "featureClick", (e, latlng, pos, data, layer) ->
-      console.log "Clicked feature", data, pos, latlng
     layer.show()
     try
       console.log "Layer counts:", BASE_MAP.overlayMapTypes.length
