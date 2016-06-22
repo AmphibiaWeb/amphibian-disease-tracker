@@ -2449,18 +2449,13 @@ featureClickEvent = function(e, latlng, pos, data, layer) {
    * Generalized click event
    */
   var col, colNames, val;
-  if (geo.infoWindow != null) {
-    geo.infoWindow.remove();
-  }
   console.log("Clicked feature event", data, pos, latlng);
   colNames = new Array();
   for (col in data) {
     val = data[col];
     colNames.push(col);
   }
-  delay(150, function() {
-    return geo.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
-  });
+  geo.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
   return false;
 };
 
@@ -2544,6 +2539,9 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       layer.unbind("featureClick");
     } catch (undefined) {}
     layer.on("featureClick", function(e, latlng, pos, data, layerIndex) {
+      if (geo.infoWindow != null) {
+        geo.infoWindow.remove();
+      }
       clickEvent.debounce(150, false, null, e, latlng, pos, data, layer);
       return false;
     }).on("error", function(err) {

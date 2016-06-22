@@ -510,14 +510,11 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   ###
   # Generalized click event
   ###
-  if geo.infoWindow?
-    geo.infoWindow.remove()
   console.log "Clicked feature event", data, pos, latlng
   colNames = new Array()
   for col, val of data
     colNames.push col
-  delay 150, ->
-    geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
+  geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
   false
 
 
@@ -603,6 +600,8 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     layer
     .on "featureClick", (e, latlng, pos, data, layerIndex) ->
       # console.log "Clicked feature", data, pos, latlng
+      if geo.infoWindow?
+        geo.infoWindow.remove()
       clickEvent.debounce 150, false, null, e, latlng, pos, data, layer
       false
     .on "error", (err) ->
