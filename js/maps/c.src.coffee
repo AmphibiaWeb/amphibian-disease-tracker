@@ -1925,11 +1925,15 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
 
 
 
-featureClickEvent = (e, latlng, pos, data) ->
+featureClickEvent = (e, latlng, pos, data, layer) ->
   ###
   # Generalized click event
   ###
-  console.log "Clicked feature event", data, pos, latlng  
+  console.log "Clicked feature event", data, pos, latlng
+  colNames = new Array()
+  for col, val of data
+    colNames.push col
+  cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
   false
 
 
@@ -2010,11 +2014,12 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     max = layer.getSubLayerCount()
     try
       layer.setInteraction(true)
+    try
+      layer.unbind "featureClick"
     layer
-    .unbind "featureClick"
     .on "featureClick", (e, latlng, pos, data, layer) ->
       # console.log "Clicked feature", data, pos, latlng
-      clickEvent.debounce 100, false, null, e, latlng, pos, data
+      clickEvent.debounce 100, false, null, e, latlng, pos, data, layer
       false
     .on "error", (err) ->
       console.warn "Error on layer feature click", err
@@ -2022,14 +2027,15 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     while i < max
       suTemp = layer.getSubLayer(i)
       suTemp.setInteraction(true)
-      suTemp
-      .unbind "featureClick"
-      .on "featureClick", (e, latlng, pos, data, layerIndex) ->
-        # console.log "Clicked sublayer feature", data, pos, latlng
-        clickEvent.debounce 100, false, null, e, latlng, pos, data
-        false
-      .on "error", (err) ->
-        console.warn "Error on sublayer feature click", err
+      # try
+      #   suTemp.unbind "featureClick"
+      # suTemp
+      # .on "featureClick", (e, latlng, pos, data, layerIndex) ->
+      #   # console.log "Clicked sublayer feature", data, pos, latlng
+      #   clickEvent.debounce 100, false, null, e, latlng, pos, data
+      #   false
+      # .on "error", (err) ->
+      #   console.warn "Error on sublayer feature click", err
       geo.mapSublayers.push suTemp
       ++i
     layer.show()
