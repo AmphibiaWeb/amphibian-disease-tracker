@@ -25,11 +25,11 @@
       "type": "sql_literal"
     },
     "genus": {
-      "default": "batrachoseps",
+      "default": "*",
       "type": "sql_literal"
     },
     "specific_epithet": {
-      "default": "attenuatus",
+      "default": "*",
       "type": "sql_literal"
     },
       "disease_detected": {
@@ -41,7 +41,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v5",
+  "name": "adp_specific_heatmap-v6",
   "version": "0.0.1",
   "auth": {
     "method": "open"
