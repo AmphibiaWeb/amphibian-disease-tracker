@@ -322,6 +322,14 @@ doDeepSearch = function(results, namedMap) {
     };
     i = 0;
     console.info("Using deep named map " + namedMap);
+    detected = "";
+    if (((ref = search.disease_positive) != null ? ref.data : void 0) != null) {
+      if (search.disease_positive.search_type === ">") {
+        detected = "true";
+      } else {
+        detected = "false";
+      }
+    }
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -346,7 +354,7 @@ doDeepSearch = function(results, namedMap) {
           totalSpecies.push(species);
         }
       }
-      if (((ref = project.carto_id) != null ? ref.table : void 0) == null) {
+      if (((ref1 = project.carto_id) != null ? ref1.table : void 0) == null) {
         try {
           cartoPreParsed = JSON.parse(project.carto_id);
           cartoParsed = new Object();
@@ -367,14 +375,6 @@ doDeepSearch = function(results, namedMap) {
         table = project.carto_id.table.slice(0, 63);
       } catch (undefined) {}
       if (!isNull(table)) {
-        detected = "";
-        if (((ref1 = search.disease_positive) != null ? ref1.data : void 0) != null) {
-          if (search.disease_positive.search_type === ">") {
-            detected = "true";
-          } else {
-            detected = "false";
-          }
-        }
         layer = {
           name: namedMap,
           type: "namedmap",
@@ -427,7 +427,7 @@ doDeepSearch = function(results, namedMap) {
       subText += spText.replace(/( \*)/img, "");
     }
     if (search.disease_positive != null) {
-      subText += " with disease status '" + search.disease_positive + "'";
+      subText += " with disease status '" + detected + "'";
     }
     subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
     $("#post-map-subtitle").text(subText);

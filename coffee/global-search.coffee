@@ -256,6 +256,12 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       w: 180
     i = 0
     console.info "Using deep named map #{namedMap}"
+    detected = ""
+    if search.disease_positive?.data?
+      if search.disease_positive.search_type is ">"
+        detected = "true"
+      else
+        detected = "false"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -291,12 +297,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         table = project.carto_id.table.slice 0, 63
       unless isNull table
         # Create named map layers
-        detected = ""
-        if search.disease_positive?.data?
-          if search.disease_positive.search_type is ">"
-            detected = "true"
-          else
-            detected = "false"
         layer =
           name: namedMap
           type: "namedmap"
@@ -342,7 +342,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       spText = " of '#{search.sampled_species.genus} #{search.sampled_species.species} #{search.sampled_species.subspecies}'"
       subText += spText.replace(/( \*)/img, "")
     if search.disease_positive?
-      subText += " with disease status '#{search.disease_positive}'"
+      subText += " with disease status '#{detected}'"
     subText += " in bounds defined by [{lat: #{search.bounding_box_n.data},lng: #{search.bounding_box_w.data}},{lat: #{search.bounding_box_s.data},lng: #{search.bounding_box_e.data}}]"
     $("#post-map-subtitle").text subText
     # Render the vis
