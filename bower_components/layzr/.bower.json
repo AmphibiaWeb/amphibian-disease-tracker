@@ -1,12 +1,12 @@
 {
   "name": "layzr",
   "homepage": "https://github.com/callmecavs/layzr.js",
-  "version": "2.0.2",
-  "_release": "2.0.2",
+  "version": "2.2.1",
+  "_release": "2.2.1",
   "_resolution": {
     "type": "version",
-    "tag": "v2.0.2",
-    "commit": "fefb0bd5b5a8c353b8a8c65b9c92f86524789a3c"
+    "tag": "v2.2.1",
+    "commit": "a026086a40b53d4179552d17b191a64d6b6c20b3"
   },
   "_source": "git://github.com/callmecavs/layzr.js.git",
   "_target": "*",

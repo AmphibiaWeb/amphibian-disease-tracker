@@ -1,6 +1,6 @@
 # Layzr.js
 
-[![Layzr.js on NPM](https://img.shields.io/npm/v/layzr.js.svg)](https://www.npmjs.com/package/layzr.js) [![Layzr.js on Gitter](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/callmecavs/layzr.js)
+[![Layzr.js on NPM](https://img.shields.io/npm/v/layzr.js.svg?style=flat-square)](https://www.npmjs.com/package/layzr.js)
 
 A small, fast, and modern library for lazy loading images.
 
@@ -28,6 +28,7 @@ Choose an installation option based on your workflow:
 * [npm](#npm)
 * [CDN](#cdn)
 * [Download](#download)
+* [Framework Bridge](#framework-bridge)
 
 Refer to the [releases](https://github.com/callmecavs/layzr.js/releases) page for version specific information.
 
@@ -52,13 +53,13 @@ Copy and paste one of the following `<script>` tags. Note the version number in 
 #### [jsDelivr](http://www.jsdelivr.com/projects/layzr.js)
 
 ```html
-<script src="https://cdn.jsdelivr.net/layzr.js/2.0.0/layzr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/layzr.js/2.0.2/layzr.min.js"></script>
 ```
 
 #### [cdnjs](https://cdnjs.com/libraries/layzr.js)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/layzr.js/2.0.0/layzr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layzr.js/2.0.2/layzr.min.js"></script>
 ```
 
 ### Download
@@ -69,6 +70,12 @@ Copy and paste one of the following `<script>` tags. Note the version number in 
 <script src="layzr.min.js"></script>
 ```
 
+### Framework Bridge
+
+Thank you to the community members who created these framework bridges!
+
+* Ruby on Rails: [layzr-rails](https://github.com/mohitjain/layzr-rails) by [Mohit Jain](https://github.com/mohitjain)
+
 ## Setup Images
 
 Layzr intelligently chooses the best image source available **based on an image's data attributes and browser feature detection**.
@@ -76,7 +83,7 @@ Layzr intelligently chooses the best image source available **based on an image'
 * In browsers that [support `srcset`](http://caniuse.com/#search=srcset), if available, it will be used to determine the source.
 * In browsers that don't, the normal or retina source will be chosen based on the [devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) and availability.
 
-Note that all attribute names are configureable via the [options](#options) passed to Layzr. To indicate potential sources, add the following attributes to your images:
+Note that all attribute names are configurable via the [options](#options) passed to Layzr. To indicate potential sources, add the following attributes to your images:
 
 | Name                           | Required | Optional |
 | :----------------------------- | :------: | :------: |
@@ -210,7 +217,7 @@ instance.on('src:before', (element) => {
 })
 ```
 
-Load event handlers should be attached using this event. See the [example](https://github.com/callmecavs/layzr.js/blob/v2.0.0/examples/large.js), and note the [caveats](https://api.jquery.com/load-event/) associated with image load events before proceeding.
+Load event handlers should be attached using this event. See the [example](https://github.com/callmecavs/layzr.js/blob/master/examples/large.js), and note the [caveats](https://api.jquery.com/load-event/) associated with image load events before proceeding.
 
 ### src:after
 
@@ -258,7 +265,7 @@ Update the elements Layzr is checking.
 instance.update()
 ```
 
-**Dynamically added elements** should be handled using this method. See the [example](https://github.com/callmecavs/layzr.js/blob/v2.0.0/examples/large.js).
+**Dynamically added elements** should be handled using this method. See the [example](https://github.com/callmecavs/layzr.js/blob/master/examples/large.js).
 
 ## Browser Support
 
@@ -288,6 +295,6 @@ To support older browsers, consider including [polyfills/shims](https://github.c
 
 ## License
 
-MIT. © 2016 Michael Cavalea
+[MIT](https://opensource.org/licenses/MIT). © 2016 Michael Cavalea
 
 [![Built With Love](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
