@@ -110,11 +110,11 @@ if (!function_exists('encode64')) {
     function decode64($data, $loose = false)
     {
         if($loose === true) {
-            return urldecode(@base64_decode($data));
+            return @base64_decode(urldecode($data));
         }
         # This is STRICT decoding
       if (@base64_encode(@base64_decode($data, true)) == $data) {
-          return urldecode(@base64_decode($data));
+          return @base64_decode(urldecode($data));
       }
 
         return false;
