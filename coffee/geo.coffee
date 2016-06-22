@@ -510,13 +510,14 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   ###
   # Generalized click event
   ###
+  if geo.infoWindow?
+    geo.infoWindow.remove()
   console.log "Clicked feature event", data, pos, latlng
   colNames = new Array()
   for col, val of data
     colNames.push col
-  if geo.infoWindow?
-    geo.infoWindow.remove()
-  geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
+  delay 150, ->
+    geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
   false
 
 
