@@ -96,7 +96,7 @@ getSearchContainsObject = ->
   diseaseStatus = $(p$("#disease-status").selectedItem).attr "data-search"
   if diseaseStatus isnt "*"
     search.disease_positive =
-      data: diseaseStatus.toBool.toString()
+      data: 0
       search_type: if diseaseStatus.toBool() then ">" else "="
   morbidityStatus = $(p$("#morbidity-status").selectedItem).attr "data-search"
   if morbidityStatus isnt "*"
