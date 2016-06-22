@@ -550,16 +550,19 @@ Function::debounce = (threshold = 300, execAsap = false, timeout = window.deboun
     core.debouncers = new Object()
   try
     key = this.getName()
-  func = this
-  delayed = ->
-    func.apply(func, args) unless execAsap
-    console.info("Debounce applied")
   try
     if core.debouncers[key]?
       timeout = core.debouncers[key]
+  func = this
+  delayed = ->
+    if key?
+      clearTimeout timeout
+      delete core.debouncers[key]
+    func.apply(func, args) unless execAsap
+    console.info("Debounce applied")
   if timeout?
     try
-      clearTimeout(timeout)
+      clearTimeout timeout
     catch e
       # just do nothing
   if execAsap
