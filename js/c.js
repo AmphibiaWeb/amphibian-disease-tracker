@@ -684,6 +684,22 @@ String.prototype.toTitleCase = function() {
   return str;
 };
 
+Function.prototype.getName = function() {
+
+  /*
+   * Returns a unique identifier for a function
+   */
+  var name;
+  name = this.name;
+  if (name == null) {
+    name = this.toString().substr(0, this.toString().indexOf("(")).replace("function ", "");
+  }
+  if (isNull(name)) {
+    name = md5(this.toString());
+  }
+  return name;
+};
+
 Function.prototype.debounce = function() {
   var args, delayed, error2, execAsap, func, key, ref, threshold, timeout;
   threshold = arguments[0], execAsap = arguments[1], timeout = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
