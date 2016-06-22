@@ -524,6 +524,16 @@ String::toTitleCase = ->
   str
 
 
+Function::getName = ->
+  ###
+  # Returns a unique identifier for a function
+  ###
+  name = this.name
+  unless name?
+    name = this.toString().substr( 0, this.toString().indexOf( "(" ) ).replace( "function ", "" );
+  if isNull name
+    name = md5 this.toString()
+  name
 
 Function::debounce = (threshold = 300, execAsap = false, timeout = window.debounce_timer, args...) ->
   ###
