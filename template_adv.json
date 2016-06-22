@@ -10,7 +10,7 @@
             "genus",
             "specificepithet"
           ],
-          "sql": "select * from <%= table_name %> where genus like '%<%= genus %>%' and specificepithet like '%<%= specific_epithet %>%' and diseasedetected = '<%= disease_detected %>'",
+          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '<%= disease_detected %>'",
           "cartocss": "#layer { marker-fill: <%= color %>; }",
           "cartocss_version": "2.1.1"
         },
@@ -25,11 +25,11 @@
       "type": "sql_literal"
     },
     "genus": {
-      "default": "batrachoseps",
+      "default": "*",
       "type": "sql_literal"
     },
     "specific_epithet": {
-      "default": "attenuatus",
+      "default": "*",
       "type": "sql_literal"
     },
       "disease_detected": {
@@ -41,7 +41,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v5",
+  "name": "adp_specific_heatmap-v8",
   "version": "0.0.1",
   "auth": {
     "method": "open"
