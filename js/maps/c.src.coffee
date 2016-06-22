@@ -1933,7 +1933,7 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
   colNames = new Array()
   for col, val of data
     colNames.push col
-  cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames
+  cartodb.vis.Vis.addInfowindow.debounce null, null, null, geo.lMap, layer, colNames
   false
 
 
@@ -2019,7 +2019,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     layer
     .on "featureClick", (e, latlng, pos, data, layerIndex) ->
       # console.log "Clicked feature", data, pos, latlng
-      clickEvent.debounce 100, false, null, e, latlng, pos, data, layer
+      clickEvent.debounce 150, false, null, e, latlng, pos, data, layer
       false
     .on "error", (err) ->
       console.warn "Error on layer feature click", err
