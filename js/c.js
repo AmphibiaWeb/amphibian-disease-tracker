@@ -2439,12 +2439,19 @@ buildMap = function(mapBuilderObj, options, callback) {
   return false;
 };
 
-featureClickEvent = function(e, latlng, pos, data) {
+featureClickEvent = function(e, latlng, pos, data, layer) {
 
   /*
    * Generalized click event
    */
+  var col, colNames, val;
   console.log("Clicked feature event", data, pos, latlng);
+  colNames = new Array();
+  for (col in data) {
+    val = data[col];
+    colNames.push(col);
+  }
+  cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNames);
   return false;
 };
 
@@ -2524,8 +2531,11 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     try {
       layer.setInteraction(true);
     } catch (undefined) {}
-    layer.unbind("featureClick").on("featureClick", function(e, latlng, pos, data, layer) {
-      clickEvent.debounce(100, false, null, e, latlng, pos, data);
+    try {
+      layer.unbind("featureClick");
+    } catch (undefined) {}
+    layer.on("featureClick", function(e, latlng, pos, data, layer) {
+      clickEvent.debounce(100, false, null, e, latlng, pos, data, layer);
       return false;
     }).on("error", function(err) {
       return console.warn("Error on layer feature click", err);
@@ -2534,12 +2544,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     while (i < max) {
       suTemp = layer.getSubLayer(i);
       suTemp.setInteraction(true);
-      suTemp.unbind("featureClick").on("featureClick", function(e, latlng, pos, data, layerIndex) {
-        clickEvent.debounce(100, false, null, e, latlng, pos, data);
-        return false;
-      }).on("error", function(err) {
-        return console.warn("Error on sublayer feature click", err);
-      });
       geo.mapSublayers.push(suTemp);
       ++i;
     }
