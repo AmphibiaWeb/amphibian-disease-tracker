@@ -202,7 +202,7 @@ module.exports = (grunt) ->
   grunt.registerTask("updateNPM","Update Node dependencies",["shell:npm"])
   # Minify the bower stuff in case it changed
   grunt.registerTask "update","Update dependencies", ->
-    grunt.task.run("updateNPM","updateBower","compile","minify")
+    grunt.task.run("shell:updateglobals","updateNPM","updateBower","compile","minify")
   ## Deploy
   grunt.registerTask "qbuild","CoffeeScript and CSS", ->
     # ,"vulcanize"
