@@ -337,7 +337,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-    subText = "viewing data points"
+    subText = "Viewing data points"
     if search.sampled_species?.genus?
       spText = " of '#{search.sampled_species.genus} #{search.sampled_species.species} #{search.sampled_species.subspecies}'"
       subText += spText.replace(/( \*)/img, "")
