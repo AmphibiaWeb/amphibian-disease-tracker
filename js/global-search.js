@@ -311,7 +311,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, error, error1, error2, error3, error4, fatal, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, error, error1, error2, error3, error4, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -346,8 +346,10 @@ doDeepSearch = function(results, namedMap) {
     if (((ref1 = search.disease_morbidity) != null ? ref1.data : void 0) != null) {
       if (search.disease_morbidity.search_type === ">") {
         fatal = "and fatal = true";
+        fatalSimple = true;
       } else {
         fatal = "and fatal = false";
+        fatalSimple = false;
       }
     }
     pathogen = "";
@@ -362,11 +364,6 @@ doDeepSearch = function(results, namedMap) {
             return "";
         }
       })();
-      if (search.disease.data === "") {
-        pathogen = "true";
-      } else {
-        pathogen = "false";
-      }
     }
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
@@ -467,14 +464,14 @@ doDeepSearch = function(results, namedMap) {
       subText += spText.replace(/( \*)/img, "");
     }
     diseaseWord = search.pathogen != null ? search.pathogen.data : "disease";
-    if (search.pathogen != null) {
-      subText += " for " + search.pathogen.data;
+    if (search.disease != null) {
+      subText += " for " + search.disease.data;
     }
     if (search.disease_positive != null) {
       subText += " with disease status '" + detected + "'";
     }
     if (search.disease_morbidity != null) {
-      subText += " with morbidity status '" + fatal + "'";
+      subText += " with morbidity status '" + fatalSimple + "'";
     }
     subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
     try {
