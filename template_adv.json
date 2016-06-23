@@ -12,7 +12,7 @@
             "genus",
             "specificepithet"
           ],
-          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '%<%= disease_detected %>%' %<%= morbidity %>% and diseasetested ilike '%<%= pathogen %>%'",
+          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '%<%= disease_detected %>%' <%= morbidity %> and diseasetested ilike '%<%= pathogen %>%'",
           "cartocss": "#layer { marker-fill: <%= color %>; }",
           "cartocss_version": "2.1.1"
         },
