@@ -271,7 +271,6 @@ doSearch = function(search, goDeep) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
-    $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
     try {
       resetMap(geo.lMap, false, false);
       for (l = 0, len2 = layers.length; l < len2; l++) {
@@ -282,6 +281,7 @@ doSearch = function(search, goDeep) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
+        $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
       }
     } catch (error3) {
       e = error3;
@@ -430,7 +430,6 @@ doDeepSearch = function(results, namedMap) {
       subText += " with disease status '" + detected + "'";
     }
     subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
-    $("#post-map-subtitle").text(subText);
     try {
       resetMap(geo.lMap, false, false);
       for (l = 0, len2 = layers.length; l < len2; l++) {
@@ -441,6 +440,7 @@ doDeepSearch = function(results, namedMap) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
+        $("#post-map-subtitle").text(subText);
       }
     } catch (error3) {
       e = error3;

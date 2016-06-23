@@ -215,7 +215,6 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-    $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
@@ -226,6 +225,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           type: "namedmap"
           named_map: layer
         createRawCartoMap layerSourceObj
+        $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
@@ -344,7 +344,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
     if search.disease_positive?
       subText += " with disease status '#{detected}'"
     subText += " in bounds defined by [{lat: #{search.bounding_box_n.data},lng: #{search.bounding_box_w.data}},{lat: #{search.bounding_box_s.data},lng: #{search.bounding_box_e.data}}]"
-    $("#post-map-subtitle").text subText
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
@@ -355,6 +354,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           type: "namedmap"
           named_map: layer
         createRawCartoMap layerSourceObj
+        $("#post-map-subtitle").text subText
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
