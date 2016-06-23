@@ -366,11 +366,16 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
     subText = "Viewing data points"
-    if search.sampled_species?.genus?
+    unless isNull search.sampled_species?.genus
       spText = " of '#{search.sampled_species.genus} #{search.sampled_species.species} #{search.sampled_species.subspecies}'"
       subText += spText.replace(/( \*)/img, "")
+    diseaseWord = if search.pathogen? then search.pathogen.data else "disease"
+    if search.pathogen?
+      subText += " for #{search.pathogen.data}"
     if search.disease_positive?
       subText += " with disease status '#{detected}'"
+    if search.disease_morbidity?
+      subText += " with morbidity status '#{fatal}'"
     subText += " in bounds defined by [{lat: #{search.bounding_box_n.data},lng: #{search.bounding_box_w.data}},{lat: #{search.bounding_box_s.data},lng: #{search.bounding_box_e.data}}]"
     # Render the vis
     try
@@ -469,13 +474,14 @@ resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
       sublayer.remove()
   catch
     for id, layer of map._layers
-      p = layer._url.search "arcgisonline"
-      if p is -1
-        # Not the base layer
-        try
-          layer.removeLayer()
-        catch
-          layer.remove()
+      try
+        p = layer._url.search "arcgisonline"
+        if p is -1
+          # Not the base layer
+          try
+            layer.removeLayer()
+          catch
+            layer.remove()
   $("#post-map-subtitle").text ""
   if resetZoom
     geo.lMap.setZoom geo.defaultLeafletOptions.zoom
