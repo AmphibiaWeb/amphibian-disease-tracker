@@ -35,6 +35,8 @@ module.exports = (grunt) ->
       vulcanize:
         # Should also use a command to replace js as per uglify:vulcanize
         command: ["vulcanize --csp -o app-prerelease.html --strip app.html"].join("&&")
+      updateglobals:
+        command: ["npm install -g coffee-script npm-check-updates bower grunt-cli npm autoprefixer-core less"].join("&&")
     'string-replace':
       vulcanize:
         options:
@@ -200,7 +202,7 @@ module.exports = (grunt) ->
   grunt.registerTask("updateNPM","Update Node dependencies",["shell:npm"])
   # Minify the bower stuff in case it changed
   grunt.registerTask "update","Update dependencies", ->
-    grunt.task.run("updateNPM","updateBower","compile","minify")
+    grunt.task.run("shell:updateglobals","updateNPM","updateBower","compile","minify")
   ## Deploy
   grunt.registerTask "qbuild","CoffeeScript and CSS", ->
     # ,"vulcanize"
