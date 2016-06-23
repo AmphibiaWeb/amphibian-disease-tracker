@@ -590,6 +590,12 @@ $ ->
   $("#reset-global-map").click ->
     resetMap()
     false
+  $("#toggle-global-search-filters").click ->
+    isOpened = p$("#global-search-filters").opened
+    p$("#global-search-filters").toggle()
+    actionWord = if isOpened then "Hide" else "Show"
+    $(this).find(".action-word").text actionWord
+    false
   # Initial load
   showAllTables()
   checkFileVersion false, "js/global-search.min.js"

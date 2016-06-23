@@ -729,6 +729,14 @@ $(function() {
     resetMap();
     return false;
   });
+  $("#toggle-global-search-filters").click(function() {
+    var actionWord, isOpened;
+    isOpened = p$("#global-search-filters").opened;
+    p$("#global-search-filters").toggle();
+    actionWord = isOpened ? "Hide" : "Show";
+    $(this).find(".action-word").text(actionWord);
+    return false;
+  });
   showAllTables();
   checkFileVersion(false, "js/global-search.min.js");
   return false;
