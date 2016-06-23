@@ -593,7 +593,8 @@ $ ->
   $("#toggle-global-search-filters").click ->
     isOpened = p$("#global-search-filters").opened
     p$("#global-search-filters").toggle()
-    actionWord = if isOpened then "Hide" else "Show"
+    # The actions are now switched, since the state just changed
+    actionWord = unless isOpened then "Hide" else "Show"
     $(this).find(".action-word").text actionWord
     false
   # Initial load

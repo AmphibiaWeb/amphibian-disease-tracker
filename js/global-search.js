@@ -733,7 +733,7 @@ $(function() {
     var actionWord, isOpened;
     isOpened = p$("#global-search-filters").opened;
     p$("#global-search-filters").toggle();
-    actionWord = isOpened ? "Hide" : "Show";
+    actionWord = !isOpened ? "Hide" : "Show";
     $(this).find(".action-word").text(actionWord);
     return false;
   });

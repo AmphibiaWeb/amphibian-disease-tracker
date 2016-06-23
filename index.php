@@ -165,7 +165,7 @@ $loginStatus = getLoginState();
               </div>
             </div>
             <div class="row">
-              <div class="col-xs-12">
+              <div class="col-xs-12 center-block text-center">
                 <paper-button id="toggle-global-search-filters">
                   <iron-icon icon="icons:filter-list"></iron-icon>
                   <span class="action-word">Show</span> Filters
