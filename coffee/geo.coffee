@@ -1008,7 +1008,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             insertPlace += insertMaxLength
             sqlQuery += "INSERT INTO #{dataTable} VALUES #{tempList.join(", ")};"
           # For the last query, cartodbfy
-          cdbfy = "SELECT cdb_cartodbfy('#{dataTable}');"
+          cdbfy = "SELECT cdb_cartodbfytable('#{dataTable}');"
           sqlQuery += cdbfy
 
         when "delete"

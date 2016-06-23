@@ -2947,7 +2947,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             insertPlace += insertMaxLength;
             sqlQuery += "INSERT INTO " + dataTable + " VALUES " + (tempList.join(", ")) + ";";
           }
-          cdbfy = "SELECT cdb_cartodbfy('" + dataTable + "');";
+          cdbfy = "SELECT cdb_cartodbfytable('" + dataTable + "');";
           sqlQuery += cdbfy;
           break;
         case "delete":
