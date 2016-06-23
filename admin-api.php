@@ -1030,7 +1030,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
          * Example result:
          {"login_response":{"url":"http:\/\/www.biscicol.org\/index.jsp"},"mint_response":{"identifier":"ark:\/21547\/AKQ2"},"response_headers":{"0":"HTTP\/1.1 200 OK","1":"X-FRAME-OPTIONS: DENY","2":"Set-Cookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;Path=\/;HttpOnly","3":"Expires: Thu, 01 Jan 1970 00:00:00 GMT","4":"Content-Type: application\/json","5":"Content-Length: 44","6":"Server: Jetty(9.2.6.v20141205)"},"cookies":{"JSESSIONID":"vvt1703eq52ub0jazasfu87h"},"post_headers":"Content-type: application\/x-www-form-urlencoded\r\nCookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;\r\n","post_params":{"http":{"method":"POST","content":"webAddress=https%3A%2F%2Famphibiandisease.org%2Fproject.php%3Fid%3Dfoobar&title=test&resourceType=http%3A%2F%2Fpurl.org%2Fdc%2Fdcmitype%2FDataset","header":"Content-type: application\/x-www-form-urlencoded\r\nCookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;\r\n"}},"execution_time":2675.9889125824}
         ***/
-        $identifier = $resp['identifier'];
+        $identifier = $resp['expeditionBcid'];
         if (empty($identifier)) {
             throw(new Exception('Invalid identifier in response'));
         }
@@ -1068,6 +1068,8 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             'status' => false,
             'error' => $e->getMessage(),
             'human_error' => 'There was a problem communicating with the FIMS project. Please try again later.',
+            "raw_response" => $rawResponse,
+            "action" => "mintBcid",
         );
     }
 }
@@ -1202,6 +1204,8 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             'status' => false,
             'error' => $e->getMessage(),
             'human_error' => 'There was a problem communicating with the FIMS project. Please try again later.',
+            "raw_response" => $rawResponse,
+            "action" => "associateBcidWithExpedition",
         );
     }
 }
@@ -1301,7 +1305,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
          * Example result:
          {"login_response":{"url":"http:\/\/www.biscicol.org\/index.jsp"},"mint_response":{"identifier":"ark:\/21547\/AKQ2"},"response_headers":{"0":"HTTP\/1.1 200 OK","1":"X-FRAME-OPTIONS: DENY","2":"Set-Cookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;Path=\/;HttpOnly","3":"Expires: Thu, 01 Jan 1970 00:00:00 GMT","4":"Content-Type: application\/json","5":"Content-Length: 44","6":"Server: Jetty(9.2.6.v20141205)"},"cookies":{"JSESSIONID":"vvt1703eq52ub0jazasfu87h"},"post_headers":"Content-type: application\/x-www-form-urlencoded\r\nCookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;\r\n","post_params":{"http":{"method":"POST","content":"webAddress=https%3A%2F%2Famphibiandisease.org%2Fproject.php%3Fid%3Dfoobar&title=test&resourceType=http%3A%2F%2Fpurl.org%2Fdc%2Fdcmitype%2FDataset","header":"Content-type: application\/x-www-form-urlencoded\r\nCookie: JSESSIONID=vvt1703eq52ub0jazasfu87h;\r\n"}},"execution_time":2675.9889125824}
         ***/
-        $identifier = $resp['identifier'];
+        $identifier = $resp['expeditionBcid'];
         if (empty($identifier)) {
             throw(new Exception('Invalid identifier in response'));
         }
@@ -1331,6 +1335,8 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             'error' => $e->getMessage(),
             'human_error' => 'There was a problem communicating with the FIMS project. Please try again later.',
             'response' => $resp,
+            "raw_response" => $rawResponse,
+            "action" => "mintExpedition",
         );
     }
 }
