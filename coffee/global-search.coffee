@@ -592,4 +592,5 @@ $ ->
     false
   # Initial load
   showAllTables()
+  checkFileVersion false, "js/global-search.min.js"
   false
