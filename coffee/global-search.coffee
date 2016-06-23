@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v16"
-namedMapAdvSource = "adp_specific_heatmap-v10"
+namedMapAdvSource = "adp_specific_heatmap-v11"
 
 
 checkCoordinateSanity = ->
@@ -273,9 +273,9 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
     fatal = ""
     if search.disease_morbidity?.data?
       if search.disease_morbidity.search_type is ">"
-        fatal = "true"
+        fatal = "and fatal = true"
       else
-        fatal = "false"
+        fatal = "and fatal = false"
     pathogen = ""
     if search.disease?.data?
       pathogen = switch search.disease.data

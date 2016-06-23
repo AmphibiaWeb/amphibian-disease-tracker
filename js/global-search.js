@@ -7,7 +7,7 @@ var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, gener
 
 namedMapSource = "adp_generic_heatmap-v16";
 
-namedMapAdvSource = "adp_specific_heatmap-v10";
+namedMapAdvSource = "adp_specific_heatmap-v11";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -345,9 +345,9 @@ doDeepSearch = function(results, namedMap) {
     fatal = "";
     if (((ref1 = search.disease_morbidity) != null ? ref1.data : void 0) != null) {
       if (search.disease_morbidity.search_type === ">") {
-        fatal = "true";
+        fatal = "and fatal = true";
       } else {
-        fatal = "false";
+        fatal = "and fatal = false";
       }
     }
     pathogen = "";
