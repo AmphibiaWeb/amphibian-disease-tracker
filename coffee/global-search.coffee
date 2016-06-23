@@ -2,8 +2,8 @@
 # Do global searches, display global points.
 ###
 
-namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v9"
+namedMapSource = "adp_generic_heatmap-v16"
+namedMapAdvSource = "adp_specific_heatmap-v10"
 
 
 checkCoordinateSanity = ->
@@ -60,6 +60,10 @@ getSearchObject = ->
     search.disease_morbidity =
       data: 0
       search_type: if morbidityStatus.toBool() then ">" else "="
+  pathogen = $(p$("#pathogen-choice").selectedItem).attr "data-search"
+  if pathogen isnt "*"
+    search.disease =
+      data: pathogen
   search
 
 
@@ -103,6 +107,10 @@ getSearchContainsObject = ->
     search.disease_morbidity =
       data: 0
       search_type: if morbidityStatus.toBool() then ">" else "="
+  pathogen = $(p$("#pathogen-choice").selectedItem).attr "data-search"
+  if pathogen isnt "*"
+    search.disease =
+      data: pathogen
   search
 
 
@@ -262,6 +270,24 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         detected = "true"
       else
         detected = "false"
+    fatal = ""
+    if search.disease_morbidity?.data?
+      if search.disease_morbidity.search_type is ">"
+        fatal = "true"
+      else
+        fatal = "false"
+    pathogen = ""
+    if search.disease?.data?
+      pathogen = switch search.disease.data
+        when "Batrachochytrium dendrobatidis"
+          "bd"
+        when "Batrachochytrium salamandrivorans"
+          "bsal"
+        else ""
+      if search.disease.data is ""
+        pathogen = "true"
+      else
+        pathogen = "false"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -309,6 +335,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
             disease_detected: detected
+            morbidity: fatal
+            pathogen: pathogen
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id

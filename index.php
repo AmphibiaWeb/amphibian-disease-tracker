@@ -166,7 +166,7 @@ $loginStatus = getLoginState();
             </div>
             <div class="row">
               <div class="col-xs-12 center-block text-center">
-                <paper-button id="toggle-global-search-filters">
+                <paper-button id="toggle-global-search-filters" raised>
                   <iron-icon icon="icons:filter-list"></iron-icon>
                   <span class="action-word">Show</span> Filters
                 </paper-button>
@@ -197,8 +197,8 @@ $loginStatus = getLoginState();
                       <div class="col-xs-8 col-sm-10 ">
                         <paper-radio-group id="pathogen-choice" selected="any">
                           <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
-                          <paper-radio-button name="bd" data-search="Bd"><span class="sciname">Batrachochytrium dendrobatidis</span></paper-radio-button>
-                          <paper-radio-button name="bsal" data-search="Bsal"><span class="sciname">Batrachochytrium salamandrivorans</span></paper-radio-button>
+                          <paper-radio-button name="bd" data-search="Batrachochytrium dendrobatidis"><span class="sciname">Batrachochytrium dendrobatidis</span></paper-radio-button>
+                          <paper-radio-button name="bsal" data-search="Batrachochytrium salamandrivorans"><span class="sciname">Batrachochytrium salamandrivorans</span></paper-radio-button>
                         </paper-radio-group>
                       </div>
                     </div>
