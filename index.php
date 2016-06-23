@@ -171,7 +171,7 @@ $loginStatus = getLoginState();
                   <span class="action-word">Show</span> Filters
                 </paper-button>
                 <iron-collapse id="global-search-filters">
-                  <div class="collapse-content">
+                  <div class="collapse-content text-left">
                     <div class="form-group paper-elements">
                       <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
                       <div class="col-xs-8 col-sm-10 ">
@@ -189,6 +189,16 @@ $loginStatus = getLoginState();
                           <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
                           <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
                           <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+                        </paper-radio-group>
+                      </div>
+                    </div>
+                    <div class="form-group paper-elements">
+                      <label for="pathogen-choice" class="col-xs-4 col-sm-2 control-label">Pathogen</label>
+                      <div class="col-xs-8 col-sm-10 ">
+                        <paper-radio-group id="pathogen-choice" selected="any">
+                          <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                          <paper-radio-button name="bd" data-search="Bd"><span class="sciname">Batrachochytrium dendrobatidis</span></paper-radio-button>
+                          <paper-radio-button name="bsal" data-search="Bsal"><span class="sciname">Batrachochytrium salamandrivorans</span></paper-radio-button>
                         </paper-radio-group>
                       </div>
                     </div>

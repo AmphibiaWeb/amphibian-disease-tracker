@@ -329,7 +329,7 @@ loadCreateNewProject = ->
       <paper-input label="Primary Pathogen" id="project-disease" class="project-field col-xs-6" required auto-validate data-field="disease"></paper-input>
         #{getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")}
         <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium dendrobatidis">Bd</button>
-        <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium salamandrivorans ">Bsal</button>
+        <button class="btn btn-default fill-pathogen col-xs-2" data-pathogen="Batrachochytrium salamandrivorans">Bsal</button>
       <paper-input label="Pathogen Strain" id="project-disease-strain" class="project-field col-md-6 col-xs-11" data-field="disease_strain"></paper-input>#{getInfoTooltip("For example, specific Bd strains which have been sequenced JEL423, JAM81, if known")}
       <paper-input label="Project Reference" id="reference-id" class="project-field col-md-6 col-xs-11" data-field="reference_id"></paper-input>
       #{getInfoTooltip("E.g.  a DOI or other reference")}
