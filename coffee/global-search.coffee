@@ -60,6 +60,10 @@ getSearchObject = ->
     search.disease_morbidity =
       data: 0
       search_type: if morbidityStatus.toBool() then ">" else "="
+  pathogen = $(p$("#pathogen-choice").selectedItem).attr "data-search"
+  if pathogen isnt "*"
+    search.disease =
+      data: pathogen
   search
 
 
@@ -103,6 +107,10 @@ getSearchContainsObject = ->
     search.disease_morbidity =
       data: 0
       search_type: if morbidityStatus.toBool() then ">" else "="
+  pathogen = $(p$("#pathogen-choice").selectedItem).attr "data-search"
+  if pathogen isnt "*"
+    search.disease =
+      data: pathogen
   search
 
 
@@ -262,6 +270,24 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         detected = "true"
       else
         detected = "false"
+    fatal = ""
+    if search.disease_morbidity?.data?
+      if search.disease_morbidity.search_type is ">"
+        fatal = "true"
+      else
+        fatal = "false"
+    disease = ""
+    if search.disease?.data?
+      disease = switch search.disease.data
+        when "Batrachochytrium dendrobatidis"
+          "bd"
+        when "Batrachochytrium salamandrivorans"
+          "bsal"
+        else ""
+      if search.disease.data is ""
+        disease = "true"
+      else
+        disease = "false"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
