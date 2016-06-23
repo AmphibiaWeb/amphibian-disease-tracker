@@ -274,8 +274,10 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
     if search.disease_morbidity?.data?
       if search.disease_morbidity.search_type is ">"
         fatal = "and fatal = true"
+        fatalSimple = true
       else
         fatal = "and fatal = false"
+        fatalSimple = false
     pathogen = ""
     if search.disease?.data?
       pathogen = switch search.disease.data
@@ -284,10 +286,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         when "Batrachochytrium salamandrivorans"
           "bsal"
         else ""
-      if search.disease.data is ""
-        pathogen = "true"
-      else
-        pathogen = "false"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -370,12 +368,12 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       spText = " of '#{search.sampled_species.genus} #{search.sampled_species.species} #{search.sampled_species.subspecies}'"
       subText += spText.replace(/( \*)/img, "")
     diseaseWord = if search.pathogen? then search.pathogen.data else "disease"
-    if search.pathogen?
-      subText += " for #{search.pathogen.data}"
+    if search.disease?
+      subText += " for #{search.disease.data}"
     if search.disease_positive?
       subText += " with disease status '#{detected}'"
     if search.disease_morbidity?
-      subText += " with morbidity status '#{fatal}'"
+      subText += " with morbidity status '#{fatalSimple}'"
     subText += " in bounds defined by [{lat: #{search.bounding_box_n.data},lng: #{search.bounding_box_w.data}},{lat: #{search.bounding_box_s.data},lng: #{search.bounding_box_e.data}}]"
     # Render the vis
     try
