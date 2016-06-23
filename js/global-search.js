@@ -421,7 +421,7 @@ doDeepSearch = function(results, namedMap) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
-    subText = "viewing data points";
+    subText = "Viewing data points";
     if (((ref2 = search.sampled_species) != null ? ref2.genus : void 0) != null) {
       spText = " of '" + search.sampled_species.genus + " " + search.sampled_species.species + " " + search.sampled_species.subspecies + "'";
       subText += spText.replace(/( \*)/img, "");

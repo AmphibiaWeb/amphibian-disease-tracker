@@ -12492,6 +12492,11 @@ google-map.center-block:after {
 #global-records-search .form-group.paper-elements label {
   padding-top: 12px;
 }
+#global-records-search .flexible-form-group .form-group {
+  display: inline-block;
+  margin-left: 0;
+  margin-right: 0;
+}
 #global-data-map,
 #global-map-container {
   width: 80vw;
