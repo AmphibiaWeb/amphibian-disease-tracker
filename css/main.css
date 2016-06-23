@@ -12492,10 +12492,13 @@ google-map.center-block:after {
 #global-records-search .form-group.paper-elements label {
   padding-top: 12px;
 }
-#global-records-search .flexible-form-group .form-group {
-  display: inline-block;
+#global-records-search .flexible-form-group .form-group,
+#global-records-search row .form-group {
   margin-left: 0;
   margin-right: 0;
+}
+#global-records-search .action-word {
+  padding-right: 0.5em;
 }
 #global-data-map,
 #global-map-container {
