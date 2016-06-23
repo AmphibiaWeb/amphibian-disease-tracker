@@ -21,7 +21,7 @@ $loginStatus = getLoginState();
     <title>Amphibian Disease Portal</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
-    <meta name="theme-color" content="#445e14"/>
+    <meta name="theme-color" content="#5677fc"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
