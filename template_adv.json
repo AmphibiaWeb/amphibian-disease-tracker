@@ -4,13 +4,15 @@
       {
         "options": {
           "interactivity": [
-              "cartodb_id",
+            "cartodb_id",
             "id",
             "diseasedetected",
+            "diseasetested",
+            "fatal",
             "genus",
             "specificepithet"
           ],
-          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '%<%= disease_detected %>%'",
+          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '%<%= disease_detected %>%' and fatal ilike '%<%= morbidity %>%' and diseasetested ilike '%<%= pathogen %>%'",
           "cartocss": "#layer { marker-fill: <%= color %>; }",
           "cartocss_version": "2.1.1"
         },
@@ -36,12 +38,20 @@
       "default": "",
       "type": "sql_literal"
     },
+      "morbidity": {
+      "default": "",
+      "type": "sql_literal"
+    },
+      "pathogen": {
+      "default": "",
+      "type": "sql_literal"
+    },
     "color": {
       "default": "red",
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v9",
+  "name": "adp_specific_heatmap-v10",
   "version": "0.0.1",
   "auth": {
     "method": "open"
