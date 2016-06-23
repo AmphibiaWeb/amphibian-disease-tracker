@@ -730,6 +730,7 @@ $(function() {
     return false;
   });
   showAllTables();
+  checkFileVersion(false, "js/global-search.min.js");
   return false;
 });
 
