@@ -62,6 +62,8 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/gold-email-input/gold-email-input.html"/>
     <link rel="import" href="bower_components/gold-phone-input/gold-phone-input.html"/>
 
+    <link rel="import" href="bower_components/iron-collapse/iron-collapse.html"/>
+    
     <link rel="import" href="bower_components/iron-form/iron-form.html"/>
     <link rel="import" href="bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"/>
 
@@ -162,30 +164,34 @@ $loginStatus = getLoginState();
                 <span class="glyphicon glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
               </div>
             </div>
-            <div class="row flexible-form-group">
-              <div class="col-xs-12">
-                <div class="form-group paper-elements">
-                  <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
-                  <div class="col-xs-8 col-sm-10 col-lg-4">
-                    <paper-radio-group id="disease-status" selected="any">
-                      <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
-                      <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
-                      <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
-                    </paper-radio-group>
-                  </div>
-                </div>
-                <div class="form-group paper-elements">
-                  <label for="morbidity-status" class="col-xs-4 col-sm-2 control-label">Morbidity Status</label>
-                  <div class="col-xs-8 col-sm-10 col-lg-4">
-                    <paper-radio-group id="morbidity-status" selected="any">
-                      <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
-                      <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
-                      <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
-                    </paper-radio-group>
-                  </div>
-                </div>
+            <paper-button id="toggle-global-search-filters">
+              <iron-icon icon="icons:filter-list"></iron-icon>
+              <span class="action-word">Show</span> Filters
+            </paper-button>
+            <iron-collapse id="global-search-filters">
+              <div class="collapse-content">
+            <div class="form-group paper-elements">
+              <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
+              <div class="col-xs-8 col-sm-10 ">
+                <paper-radio-group id="disease-status" selected="any">
+                  <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                  <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
+                  <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+                </paper-radio-group>
               </div>
             </div>
+            <div class="form-group paper-elements">
+              <label for="morbidity-status" class="col-xs-4 col-sm-2 control-label">Morbidity Status</label>
+              <div class="col-xs-8 col-sm-10 ">
+                <paper-radio-group id="morbidity-status" selected="any">
+                  <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                  <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
+                  <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+                </paper-radio-group>
+              </div>
+            </div>
+            </div>
+            </iron-collapse>
             <div class="form-group">
               <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
               <div class="col-xs-8 col-sm-10 table-responsive">
