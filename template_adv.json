@@ -12,7 +12,7 @@
             "genus",
             "specificepithet"
           ],
-          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '%<%= disease_detected %>%' and fatal ilike '%<%= morbidity %>%' and diseasetested ilike '%<%= pathogen %>%'",
+          "sql": "select * from <%= table_name %> where genus ilike '%<%= genus %>%' and specificepithet ilike '%<%= specific_epithet %>%' and diseasedetected ilike '%<%= disease_detected %>%' %<%= morbidity %>% and diseasetested ilike '%<%= pathogen %>%'",
           "cartocss": "#layer { marker-fill: <%= color %>; }",
           "cartocss_version": "2.1.1"
         },
@@ -51,7 +51,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v10",
+  "name": "adp_specific_heatmap-v11",
   "version": "0.0.1",
   "auth": {
     "method": "open"
