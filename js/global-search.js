@@ -311,7 +311,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, e, error, error1, error2, error3, error4, fatal, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, error, error1, error2, error3, error4, fatal, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -462,12 +462,19 @@ doDeepSearch = function(results, namedMap) {
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     subText = "Viewing data points";
-    if (((ref4 = search.sampled_species) != null ? ref4.genus : void 0) != null) {
+    if (!isNull((ref4 = search.sampled_species) != null ? ref4.genus : void 0)) {
       spText = " of '" + search.sampled_species.genus + " " + search.sampled_species.species + " " + search.sampled_species.subspecies + "'";
       subText += spText.replace(/( \*)/img, "");
     }
+    diseaseWord = search.pathogen != null ? search.pathogen.data : "disease";
+    if (search.pathogen != null) {
+      subText += " for " + search.pathogen.data;
+    }
     if (search.disease_positive != null) {
       subText += " with disease status '" + detected + "'";
+    }
+    if (search.disease_morbidity != null) {
+      subText += " with morbidity status '" + fatal + "'";
     }
     subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
     try {
@@ -595,14 +602,16 @@ resetMap = function(map, showTables, resetZoom) {
     ref1 = map._layers;
     for (id in ref1) {
       layer = ref1[id];
-      p = layer._url.search("arcgisonline");
-      if (p === -1) {
-        try {
-          layer.removeLayer();
-        } catch (error1) {
-          layer.remove();
+      try {
+        p = layer._url.search("arcgisonline");
+        if (p === -1) {
+          try {
+            layer.removeLayer();
+          } catch (error1) {
+            layer.remove();
+          }
         }
-      }
+      } catch (undefined) {}
     }
   }
   $("#post-map-subtitle").text("");
