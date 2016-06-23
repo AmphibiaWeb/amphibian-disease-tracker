@@ -2,8 +2,8 @@
 # Do global searches, display global points.
 ###
 
-namedMapSource = "adp_generic_heatmap-v15"
-namedMapAdvSource = "adp_specific_heatmap-v9"
+namedMapSource = "adp_generic_heatmap-v16"
+namedMapAdvSource = "adp_specific_heatmap-v10"
 
 
 checkCoordinateSanity = ->
@@ -276,18 +276,18 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         fatal = "true"
       else
         fatal = "false"
-    disease = ""
+    pathogen = ""
     if search.disease?.data?
-      disease = switch search.disease.data
+      pathogen = switch search.disease.data
         when "Batrachochytrium dendrobatidis"
           "bd"
         when "Batrachochytrium salamandrivorans"
           "bsal"
         else ""
       if search.disease.data is ""
-        disease = "true"
+        pathogen = "true"
       else
-        disease = "false"
+        pathogen = "false"
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -335,6 +335,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             genus: search.sampled_species.genus
             specific_epithet: search.sampled_species.species
             disease_detected: detected
+            morbidity: fatal
+            pathogen: pathogen
         layers.push layer
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
