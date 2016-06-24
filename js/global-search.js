@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, showAllTables,
+var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -34,6 +34,30 @@ checkCoordinateSanity = function() {
   $(".coord-input").parent().removeClass("has-error");
   $(".do-search").removeAttr("disabled");
   return true;
+};
+
+createTemplateByProject = function(table) {
+  var args, query, templateId;
+  if (table == null) {
+    table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5";
+  }
+  table = table.slice(0, 63);
+  templateId = "infowindow_template_" + table;
+  query = "SELECT cartodb_id FROM " + table;
+  args = "action=fetch&sql_query=" + (post64(query));
+  $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+    var html;
+    if (!isNull(result.project_id)) {
+      html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + result.project_id + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
+      $("body").append(html);
+      try {
+        return sublayer.infowindow.set("template", $("#" + templateId).html());
+      } catch (undefined) {}
+    } else {
+      return console.warn("Couldn't find project ID for table " + table, result);
+    }
+  });
+  return false;
 };
 
 getSearchObject = function() {
@@ -240,6 +264,9 @@ doSearch = function(search, goDeep) {
         table = project.carto_id.table.slice(0, 63);
       } catch (undefined) {}
       if (!isNull(table)) {
+        try {
+          createTemplateByProject(table);
+        } catch (undefined) {}
         layer = {
           name: namedMap,
           type: "namedmap",
