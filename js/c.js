@@ -2566,12 +2566,12 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
             return sublayerToSet.infowindow.set("template", $(selector).html());
           } else {
             ++count;
-            if (count < 50) {
+            if (count < 100) {
               return delay(200, function() {
                 return setTemplate(sublayerToSet, tableName, count);
               });
             } else {
-              return console.warn("Timed out trying to assign a template for '" + tableName + "'", selector);
+              return console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector);
             }
           }
         };

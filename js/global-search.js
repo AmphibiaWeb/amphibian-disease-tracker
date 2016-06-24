@@ -37,22 +37,22 @@ checkCoordinateSanity = function() {
 };
 
 createTemplateByProject = function(table) {
-  var args, query, templateId;
+  var args, query, start, templateId;
   if (table == null) {
     table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5";
   }
+  start = Date.now();
   table = table.slice(0, 63);
   templateId = "infowindow_template_" + table;
   query = "SELECT cartodb_id FROM " + table;
   args = "action=fetch&sql_query=" + (post64(query));
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var html;
+    var elapsed, html;
     if (!isNull(result.project_id)) {
       html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + result.project_id + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
       $("body").append(html);
-      try {
-        return sublayer.infowindow.set("template", $("#" + templateId).html());
-      } catch (undefined) {}
+      elapsed = Date.now() - start;
+      return console.info("Template set for #" + templateId + " (took " + elapsed + "ms)");
     } else {
       return console.warn("Couldn't find project ID for table " + table, result);
     }

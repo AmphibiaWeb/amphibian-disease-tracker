@@ -30,6 +30,7 @@ checkCoordinateSanity = ->
 
 
 createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->
+  start = Date.now()
   table = table.slice 0, 63
   templateId = "infowindow_template_#{table}"
   query = "SELECT cartodb_id FROM #{table}"
@@ -58,8 +59,8 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
           </script>
       """
       $("body").append html
-      try
-        sublayer.infowindow.set "template", $("##{templateId}").html()
+      elapsed = Date.now() - start
+      console.info "Template set for ##{templateId} (took #{elapsed}ms)"
     else
       console.warn "Couldn't find project ID for table #{table}", result
   false
