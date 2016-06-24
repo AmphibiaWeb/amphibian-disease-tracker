@@ -626,11 +626,11 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             sublayerToSet.infowindow.set "template", $(selector).html()
           else
             ++count
-            if count < 50
+            if count < 100
               delay 200, ->
                 setTemplate sublayerToSet, tableName, count
             else
-              console.warn "Timed out trying to assign a template for '#{tableName}'", selector
+              console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector
         setTemplate suTemp, shortTable
       geo.mapSublayers.push suTemp
       ++i
