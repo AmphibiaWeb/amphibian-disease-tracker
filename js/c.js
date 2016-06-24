@@ -2531,8 +2531,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
         layer.createSubLayer(dataLayer);
       }
       console.info("Added layers to map");
-    } else {
-      console.warn("'layers' isn't an array", layers);
     }
     if (geo.mapSublayers == null) {
       geo.mapSublayers = new Array();
@@ -2565,9 +2563,9 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           if ($(selector).exists()) {
             return sublayerToSet.infowindow.set("template", $(selector).html());
           } else {
-            ++count;
             if (count < 100) {
               return delay(200, function() {
+                count = count + 1;
                 return setTemplate(sublayerToSet, tableName, count);
               });
             } else {

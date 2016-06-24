@@ -29,10 +29,12 @@ checkCoordinateSanity = ->
   true
 
 
-createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->
+createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->  
   start = Date.now()
   table = table.slice 0, 63
   templateId = "infowindow_template_#{table}"
+  if $("##{templateId}").exists()
+    return false
   query = "SELECT cartodb_id FROM #{table}"
   args = "action=fetch&sql_query=#{post64(query)}"
   $.post "#{uri.urlString}api.php", args, "json"
