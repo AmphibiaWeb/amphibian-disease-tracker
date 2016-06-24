@@ -2517,7 +2517,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
-    var dataLayer, error2, i, l, len, max, suTemp;
+    var dataLayer, error2, i, l, len, max, shortTable, suTemp;
     console.info("Done, returned", layer, "for type " + params.type);
     try {
       layer.setParams("table_name", params.named_map.params.table_name);
@@ -2554,6 +2554,10 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     while (i < max) {
       suTemp = layer.getSubLayer(i);
       suTemp.setInteraction(true);
+      try {
+        shortTable = params.named_map.params.table_name.slice(0, 63);
+        suTemp.infowindow.set("template", $("#infowindow_template_" + shortTable).html());
+      } catch (undefined) {}
       geo.mapSublayers.push(suTemp);
       ++i;
     }

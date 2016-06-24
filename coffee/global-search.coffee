@@ -29,6 +29,42 @@ checkCoordinateSanity = ->
   true
 
 
+createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->
+  table = table.slice 0, 63
+  templateId = "infowindow_template_#{table}"
+  query = "SELECT cartodb_id FROM #{table}"
+  args = "action=fetch&sql_query=#{post64(query)}"
+  $.post "#{uri.urlString}api.php", args, "json"
+  .done (result) ->
+    unless isNull result.project_id
+      html = """
+          <script type="infowindow/html" id="#{templateId}">
+            <div class="cartodb-popup v2">
+              <a href="#close" class="cartodb-popup-close-button close">x</a>
+              <div class="cartodb-popup-content-wrapper">
+                <div class="cartodb-popup-header">
+                  <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"/>
+                </div>
+                <div class="cartodb-popup-content">
+                  <!-- content.data contains the field info -->
+                  <h4>Species: </h4>
+                  <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
+                  <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>
+                  <p><a href="https://amphibiandisease.org/project.php?id=#{result.project_id}">View Project</a></p>
+                </div>
+              </div>
+              <div class="cartodb-popup-tip-container"></div>
+            </div>
+          </script>
+      """
+      $("body").append html
+      try
+        sublayer.infowindow.set "template", $("##{templateId}").html()
+    else
+      console.warn "Couldn't find project ID for table #{table}", result
+  false
+
+
 getSearchObject = ->
   bounds =
     n: $("#north-coordinate").val()
@@ -185,6 +221,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         table = project.carto_id.table.slice 0, 63
       unless isNull table
         # Create named map layers
+        try
+          createTemplateByProject table
         layer =
           name: namedMap
           type: "namedmap"
