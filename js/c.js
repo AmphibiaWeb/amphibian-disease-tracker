@@ -2557,19 +2557,21 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       try {
         shortTable = params.named_map.params.table_name.slice(0, 63);
         setTemplate = function(sublayerToSet, tableName, count) {
+          var selector;
           if (count == null) {
             count = 0;
           }
-          if ($("#infowindow_template_" + tableName).exists()) {
-            return sublayerToSet.infowindow.set("template", $("#infowindow_template_" + tableName).html());
+          selector = "#infowindow_template_" + tableName;
+          if ($(selector).exists()) {
+            return sublayerToSet.infowindow.set("template", $(selector).html());
           } else {
             ++count;
             if (count < 50) {
-              return delay(100, function() {
+              return delay(200, function() {
                 return setTemplate(sublayerToSet, tableName, count);
               });
             } else {
-              return console.warn("Timed out trying to assign a template for '" + tableName + "'");
+              return console.warn("Timed out trying to assign a template for '" + tableName + "'", selector);
             }
           }
         };
