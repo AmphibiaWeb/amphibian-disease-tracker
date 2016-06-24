@@ -44,6 +44,9 @@ createTemplateByProject = function(table) {
   start = Date.now();
   table = table.slice(0, 63);
   templateId = "infowindow_template_" + table;
+  if ($("#" + templateId).exists()) {
+    return false;
+  }
   query = "SELECT cartodb_id FROM " + table;
   args = "action=fetch&sql_query=" + (post64(query));
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {

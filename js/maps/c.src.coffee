@@ -2018,8 +2018,6 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
         console.info "Re-adding sublayer", dataLayer
         layer.createSubLayer dataLayer
       console.info "Added layers to map"
-    else
-      console.warn "'layers' isn't an array", layers
     unless geo.mapSublayers?
       geo.mapSublayers = new Array()
     max = layer.getSubLayerCount()
@@ -2047,9 +2045,9 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
           if $(selector).exists()
             sublayerToSet.infowindow.set "template", $(selector).html()
           else
-            ++count
             if count < 100
               delay 200, ->
+                count = count + 1
                 setTemplate sublayerToSet, tableName, count
             else
               console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector
