@@ -618,15 +618,9 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     while i < max
       suTemp = layer.getSubLayer(i)
       suTemp.setInteraction(true)
-      # try
-      #   suTemp.unbind "featureClick"
-      # suTemp
-      # .on "featureClick", (e, latlng, pos, data, layerIndex) ->
-      #   # console.log "Clicked sublayer feature", data, pos, latlng
-      #   clickEvent.debounce 100, false, null, e, latlng, pos, data
-      #   false
-      # .on "error", (err) ->
-      #   console.warn "Error on sublayer feature click", err
+      try
+        shortTable = params.named_map.params.table_name.slice 0, 63
+        suTemp.infowindow.set "template", $("#infowindow_template_#{shortTable}").html()
       geo.mapSublayers.push suTemp
       ++i
     layer.show()

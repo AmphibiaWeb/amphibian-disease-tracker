@@ -148,6 +148,23 @@ $loginStatus = getLoginState();
           <div class="map-container" id="global-map-container">
             <!-- <google-map id="global-data-map" map-type="terrain" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4" zoom="3" min-zoom="3"></google-map> -->
           </div>
+          <script type="infowindow/html" id="infowindow_template">
+            <div class="cartodb-popup v2">
+              <a href="#close" class="cartodb-popup-close-button close">x</a>
+              <div class="cartodb-popup-content-wrapper">
+                <div class="cartodb-popup-header">
+                  <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"/>
+                </div>
+                <div class="cartodb-popup-content">
+                  <!-- content.data contains the field info -->
+                  <h4>Species: </h4>
+                  <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
+                  <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>
+                </div>
+              </div>
+              <div class="cartodb-popup-tip-container"></div>
+            </div>
+          </script>
           <div class="center-block" id="post-map-container">
             <p class="text-center center-block text-muted" id="post-map-subtitle">
               All Projects
