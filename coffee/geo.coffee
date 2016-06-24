@@ -621,15 +621,16 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       try
         shortTable = params.named_map.params.table_name.slice 0, 63
         setTemplate = (sublayerToSet, tableName, count = 0) ->
-          if $("#infowindow_template_#{tableName}").exists()
-            sublayerToSet.infowindow.set "template", $("#infowindow_template_#{tableName}").html()
+          selector = "#infowindow_template_#{tableName}"
+          if $(selector).exists()
+            sublayerToSet.infowindow.set "template", $(selector).html()
           else
             ++count
             if count < 50
-              delay 100, ->
+              delay 200, ->
                 setTemplate sublayerToSet, tableName, count
             else
-              console.warn "Timed out trying to assign a template for '#{tableName}'"
+              console.warn "Timed out trying to assign a template for '#{tableName}'", selector
         setTemplate suTemp, shortTable
       geo.mapSublayers.push suTemp
       ++i
