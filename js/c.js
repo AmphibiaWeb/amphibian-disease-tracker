@@ -2517,7 +2517,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
-    var dataLayer, error2, i, l, len, max, shortTable, suTemp;
+    var dataLayer, error2, i, l, len, max, setTemplate, shortTable, suTemp;
     console.info("Done, returned", layer, "for type " + params.type);
     try {
       layer.setParams("table_name", params.named_map.params.table_name);
@@ -2556,7 +2556,24 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       suTemp.setInteraction(true);
       try {
         shortTable = params.named_map.params.table_name.slice(0, 63);
-        suTemp.infowindow.set("template", $("#infowindow_template_" + shortTable).html());
+        setTemplate = function(sublayerToSet, tableName, count) {
+          if (count == null) {
+            count = 0;
+          }
+          if ($("#infowindow_template_" + tableName).exists()) {
+            return sublayerToSet.infowindow.set("template", $("#infowindow_template_" + tableName).html());
+          } else {
+            ++count;
+            if (count < 50) {
+              return delay(100, function() {
+                return setTemplate(sublayerToSet, tableName, count);
+              });
+            } else {
+              return console.warn("Timed out trying to assign a template for '" + tableName + "'");
+            }
+          }
+        };
+        setTemplate(suTemp, shortTable);
       } catch (undefined) {}
       geo.mapSublayers.push(suTemp);
       ++i;
