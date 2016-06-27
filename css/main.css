@@ -9729,6 +9729,9 @@ header#header-bar + main {
     font-size: 3rem;
   }
 }
+th .badge {
+  font-weight: initial;
+}
 paper-card.card-tile .header iron-image img {
   -webkit-filter: grayscale(50%) opacity(0.25);
           filter: grayscale(50%) opacity(0.25);
