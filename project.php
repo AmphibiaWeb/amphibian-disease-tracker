@@ -527,7 +527,13 @@ $loginStatus = getLoginState();
         $speciesParts = explode(' ', $species);
         $args['where-genus'] = $speciesParts[0];
         $args['where-species'] = $speciesParts[1];
-        $linkUri = $aWebUri.'where-genus='.$speciesParts[0].'&amp;where-species='.$speciesParts[1];
+        $badSpecies = preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}[\w ]+){0,1})$/m', $speciesParts[1]) || empty($speciesParts[1]);
+        if($badSpecies) {
+            $linkUri = $aWebUri.'where-genus='.$speciesParts[0];
+        } else {
+            $linkUri = $aWebUri.'where-genus='.$speciesParts[0].'&amp;where-species='.$speciesParts[1];
+        }
+
         $html = '<li class="aweb-link-species" data-species="'.$species.'" data-positive="false" data-negative="false" data-inconclusive="false"> <span class="click sciname" data-href="'.$linkUri.'"data-newtab="true">'.$species.'</span> <paper-icon-button class="click" data-href="'.$linkUri.'" icon="icons:open-in-new" data-newtab="true"></paper-icon-button></li>';
         echo $html;
     }
