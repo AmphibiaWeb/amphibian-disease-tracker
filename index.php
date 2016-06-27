@@ -225,10 +225,12 @@ $loginStatus = getLoginState();
               </div>
             </div>
             <div class="form-group">
-              <iron-label>
-                Use Viewport Bounds
-                <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
+              <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
+                Use Viewport Bounds?
               </iron-label>
+              <div class="col-xs-8 col-sm-10">
+                <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
+              </div>
             </div>
             <div class="form-group">
               <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
