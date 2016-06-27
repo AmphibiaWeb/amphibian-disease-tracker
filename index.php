@@ -229,8 +229,8 @@ $loginStatus = getLoginState();
                 <table class="table table-bordered margin-table" id="bounds-container">
                   <tr>
                     <th>Point</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
+                    <th>Latitude <span class="text-muted">(decimal degrees)</span></th>
+                    <th>Longitude <span class="text-muted">(decimal degrees)</span></th>
                   </tr>
                   <tr>
                     <td>NW</td>
