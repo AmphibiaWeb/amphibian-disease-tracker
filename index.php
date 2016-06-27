@@ -172,7 +172,7 @@ $loginStatus = getLoginState();
             </p>
           </div>
           <div class="form form-horizontal row" id="global-records-search">
-            <h3>Search &amp; Visualize Records <span class="badge">BETA</span></h3>
+            <h3 class="col-xs-12">Search &amp; Visualize Records <span class="badge">BETA</span></h3>
             <div class="col-xs-12 col-md-6 col-lg-8">
               <div class="form-group">
                 <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>

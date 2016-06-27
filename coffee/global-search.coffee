@@ -566,7 +566,7 @@ generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
   age = (Date.now() / 1000) - timestamp
   maxAge = timestamp - oldCutoff
   if age > maxAge
-    color = "#000"
+    color = "#000000"
   else
     # Break down the region into 255*3 steps
     stepSize = maxAge / (255 * 3)
@@ -593,6 +593,7 @@ generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
         hexArray[i] = "0#{cv}"
       ++i
     color = "##{hexArray.join("")}"
+  color += "7f"
   color
 
 
@@ -635,6 +636,7 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
         hexArray[i] = "0#{cv}"
       ++i
     color = "##{hexArray.join("")}"
+  color += "7f"
   color
 
 

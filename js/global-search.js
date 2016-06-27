@@ -704,7 +704,7 @@ generateColorByRecency = function(timestamp, oldCutoff) {
   age = (Date.now() / 1000) - timestamp;
   maxAge = timestamp - oldCutoff;
   if (age > maxAge) {
-    color = "#000";
+    color = "#000000";
   } else {
     stepSize = maxAge / (255 * 3);
     stepCount = age / stepSize;
@@ -732,6 +732,7 @@ generateColorByRecency = function(timestamp, oldCutoff) {
     }
     color = "#" + (hexArray.join(""));
   }
+  color += "7f";
   return color;
 };
 
@@ -779,6 +780,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
     }
     color = "#" + (hexArray.join(""));
   }
+  color += "7f";
   return color;
 };
 
