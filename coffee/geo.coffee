@@ -622,6 +622,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
           selector = "#infowindow_template_#{tableName}"
           if $(selector).exists()
             sublayerToSet.infowindow.set "template", $(selector).html()
+            console.info "Successfully assigned template #{selector} to sublayer"
           else
             if count < 100
               delay 200, ->

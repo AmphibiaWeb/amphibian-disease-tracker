@@ -305,7 +305,7 @@ renderMapWithData = function(projectData, force) {
       ZeroClipboard.config(_adp.zcConfig);
       zcClientInitial = new ZeroClipboard($(".copy-ark-context").get(0));
       ark = $(this).attr("data-ark");
-      url = "https://n2t.net/" + ark;
+      url = "http://biscicol.org/id/" + ark;
       clipboardData = {
         dataType: "text/plain",
         data: url,
@@ -454,7 +454,7 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
   ark = p$(".ark-identifier").value;
   if (html5) {
     try {
-      url = "https://n2t.net/" + ark;
+      url = "http://biscicol.org/id/" + ark;
       clipboardData = {
         dataType: "text/plain",
         data: url,

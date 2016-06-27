@@ -299,7 +299,8 @@ renderMapWithData = (projectData, force = false) ->
       ZeroClipboard.config _adp.zcConfig
       zcClientInitial = new ZeroClipboard $(".copy-ark-context").get 0
       ark = $(this).attr "data-ark"
-      url = "https://n2t.net/#{ark}"
+      #url = "https://n2t.net/#{ark}"
+      url = "http://biscicol.org/id/#{ark}"
       clipboardData =
         dataType: "text/plain"
         data: url
@@ -427,7 +428,8 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
   if html5
     # http://caniuse.com/#feat=clipboard
     try
-      url = "https://n2t.net/#{ark}"
+      #url = "https://n2t.net/#{ark}"
+      url = "http://biscicol.org/id/#{ark}"
       clipboardData =
         dataType: "text/plain"
         data: url
