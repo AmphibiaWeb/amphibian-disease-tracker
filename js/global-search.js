@@ -71,6 +71,10 @@ setViewerBounds = function(map) {
   bounds = map.getBounds();
   sw = bounds._southWest;
   ne = bounds._northEast;
+  if (sw.lng - ne.lng > 360) {
+    sw.lng = -180;
+    ne.lng = 180;
+  }
   $("#north-coordinate").val(ne.lat);
   $("#west-coordinate").val(sw.lng);
   $("#south-coordinate").val(sw.lat);

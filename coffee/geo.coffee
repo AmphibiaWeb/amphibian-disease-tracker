@@ -548,7 +548,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   else
     params = layers
 
-  console.info "Creating map", params
+  # console.info "Creating map", params
 
   # The CartoDB layer options
   mapOptions =
@@ -586,7 +586,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   .createLayer(BASE_MAP, params, mapOptions)
   .addTo(BASE_MAP, 1)
   .on "done", (layer) ->
-    console.info "Done, returned", layer, "for type #{params.type}"
+    # console.info "Done, returned", layer, "for type #{params.type}"
     try
       layer.setParams "table_name", params.named_map.params.table_name
     catch

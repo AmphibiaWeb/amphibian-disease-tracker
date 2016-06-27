@@ -228,7 +228,10 @@ $loginStatus = getLoginState();
               <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
                 Use Viewport Bounds?
               </iron-label>
-              <div class="col-xs-8 col-sm-10">
+              <div class="col-xs-2 col-sm-1">
+                <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the " data-toggle="tooltip"></span>
+              </div>
+              <div class="col-xs-5 col-sm-8">
                 <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
               </div>
             </div>

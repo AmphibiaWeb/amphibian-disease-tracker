@@ -2497,7 +2497,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
   } else {
     params = layers;
   }
-  console.info("Creating map", params);
   mapOptions = {
     cartodb_logo: false,
     https: true,
@@ -2518,7 +2517,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
     var dataLayer, error2, i, l, len, max, setTemplate, shortTable, suTemp;
-    console.info("Done, returned", layer, "for type " + params.type);
     try {
       layer.setParams("table_name", params.named_map.params.table_name);
     } catch (error2) {
