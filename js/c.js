@@ -2561,7 +2561,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           }
           selector = "#infowindow_template_" + tableName;
           if ($(selector).exists()) {
-            return sublayerToSet.infowindow.set("template", $(selector).html());
+            sublayerToSet.infowindow.set("template", $(selector).html());
+            return console.info("Successfully assigned template " + selector + " to sublayer");
           } else {
             if (count < 100) {
               return delay(200, function() {

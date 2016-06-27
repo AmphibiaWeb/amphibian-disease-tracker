@@ -299,7 +299,8 @@ renderMapWithData = (projectData, force = false) ->
       ZeroClipboard.config _adp.zcConfig
       zcClientInitial = new ZeroClipboard $(".copy-ark-context").get 0
       ark = $(this).attr "data-ark"
-      url = "https://n2t.net/#{ark}"
+      #url = "https://n2t.net/#{ark}"
+      url = "http://biscicol.org/id/#{ark}"
       clipboardData =
         dataType: "text/plain"
         data: url
@@ -427,7 +428,8 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
   if html5
     # http://caniuse.com/#feat=clipboard
     try
-      url = "https://n2t.net/#{ark}"
+      #url = "https://n2t.net/#{ark}"
+      url = "http://biscicol.org/id/#{ark}"
       clipboardData =
         dataType: "text/plain"
         data: url
@@ -507,7 +509,7 @@ searchProjects = ->
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
         button = """
-        <button class="btn btn-primary search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
+        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
           #{icon} #{project.project_title}
         </button>
         """

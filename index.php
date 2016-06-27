@@ -171,7 +171,7 @@ $loginStatus = getLoginState();
             </p>
           </div>
           <div class="form form-horizontal" id="global-records-search">
-            <h3>Search &amp; Visualize Records</h3>
+            <h3>Search &amp; Visualize Records <span class="badge">BETA</span></h3>
             <div class="form-group">
               <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
               <div class="col-xs-6 col-sm-9">
@@ -229,8 +229,8 @@ $loginStatus = getLoginState();
                 <table class="table table-bordered margin-table" id="bounds-container">
                   <tr>
                     <th>Point</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
+                    <th>Latitude <span class="text-muted">(decimal degrees)</span></th>
+                    <th>Longitude <span class="text-muted">(decimal degrees)</span></th>
                   </tr>
                   <tr>
                     <td>NW</td>
