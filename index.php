@@ -171,98 +171,98 @@ $loginStatus = getLoginState();
               All Projects
             </p>
           </div>
-          <div class="form form-horizontal" id="global-records-search">
+          <div class="form form-horizontal row" id="global-records-search">
             <h3>Search &amp; Visualize Records <span class="badge">BETA</span></h3>
-            <div class="form-group">
-              <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
-              <div class="col-xs-6 col-sm-9 col-md-8 col-lg-6">
-                <input type="text" id="taxa-input" class="form-control submit-project-search" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
+            <div class="col-xs-12 col-lg-6">
+              <div class="form-group">
+                <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
+                <div class="col-xs-6 col-sm-9">
+                  <input type="text" id="taxa-input" class="form-control submit-project-search" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
+                </div>
+                <div class="col-xs-2 col-sm-1">
+                  <span class="glyphicon glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
+                </div>
               </div>
-              <div class="col-xs-2 col-sm-1">
-                <span class="glyphicon glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 center-block text-center">
-                <paper-button id="toggle-global-search-filters" raised>
-                  <iron-icon icon="icons:filter-list"></iron-icon>
-                  <span class="action-word">Show</span> Filters
-                </paper-button>
-                <iron-collapse id="global-search-filters">
-                  <div class="collapse-content text-left">
-                    <div class="form-group paper-elements">
-                      <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
-                      <div class="col-xs-8 col-sm-10 ">
-                        <paper-radio-group id="disease-status" selected="any">
-                          <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
-                          <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
-                          <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
-                        </paper-radio-group>
+              <div class="row">
+                <div class="col-xs-12 center-block text-center">
+                  <paper-button id="toggle-global-search-filters" raised>
+                    <iron-icon icon="icons:filter-list"></iron-icon>
+                    <span class="action-word">Show</span> Filters
+                  </paper-button>
+                  <iron-collapse id="global-search-filters">
+                    <div class="collapse-content text-left">
+                      <div class="form-group paper-elements">
+                        <label for="disease-status" class="col-xs-4 col-sm-2 control-label">Disease Status</label>
+                        <div class="col-xs-8 col-sm-10 ">
+                          <paper-radio-group id="disease-status" selected="any">
+                            <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                            <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
+                            <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+                          </paper-radio-group>
+                        </div>
+                      </div>
+                      <div class="form-group paper-elements">
+                        <label for="morbidity-status" class="col-xs-4 col-sm-2 control-label">Morbidity Status</label>
+                        <div class="col-xs-8 col-sm-10 ">
+                          <paper-radio-group id="morbidity-status" selected="any">
+                            <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                            <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
+                            <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
+                          </paper-radio-group>
+                        </div>
+                      </div>
+                      <div class="form-group paper-elements">
+                        <label for="pathogen-choice" class="col-xs-4 col-sm-2 control-label">Pathogen</label>
+                        <div class="col-xs-8 col-sm-10 ">
+                          <paper-radio-group id="pathogen-choice" selected="any">
+                            <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
+                            <paper-radio-button name="bd" data-search="Batrachochytrium dendrobatidis"><span class="sciname">Batrachochytrium dendrobatidis</span></paper-radio-button>
+                            <paper-radio-button name="bsal" data-search="Batrachochytrium salamandrivorans"><span class="sciname">Batrachochytrium salamandrivorans</span></paper-radio-button>
+                          </paper-radio-group>
+                        </div>
                       </div>
                     </div>
-                    <div class="form-group paper-elements">
-                      <label for="morbidity-status" class="col-xs-4 col-sm-2 control-label">Morbidity Status</label>
-                      <div class="col-xs-8 col-sm-10 ">
-                        <paper-radio-group id="morbidity-status" selected="any">
-                          <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
-                          <paper-radio-button name="positive" data-search="true">Positive</paper-radio-button>
-                          <paper-radio-button name="negative" data-search="false">Negative</paper-radio-button>
-                        </paper-radio-group>
-                      </div>
-                    </div>
-                    <div class="form-group paper-elements">
-                      <label for="pathogen-choice" class="col-xs-4 col-sm-2 control-label">Pathogen</label>
-                      <div class="col-xs-8 col-sm-10 ">
-                        <paper-radio-group id="pathogen-choice" selected="any">
-                          <paper-radio-button name="any" data-search="*">Any</paper-radio-button>
-                          <paper-radio-button name="bd" data-search="Batrachochytrium dendrobatidis"><span class="sciname">Batrachochytrium dendrobatidis</span></paper-radio-button>
-                          <paper-radio-button name="bsal" data-search="Batrachochytrium salamandrivorans"><span class="sciname">Batrachochytrium salamandrivorans</span></paper-radio-button>
-                        </paper-radio-group>
-                      </div>
-                    </div>
-                  </div>
-                </iron-collapse>
+                  </iron-collapse>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
-                Use Viewport Bounds?
-              </iron-label>
-              <div class="col-xs-2 col-sm-1">
-                <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the " data-toggle="tooltip"></span>
+              <div class="form-group">
+                <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
+                  Use Viewport Bounds?
+                </iron-label>
+                <div class="col-xs-5 col-sm-8">
+                  <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
+                  <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
+                </div>
               </div>
-              <div class="col-xs-5 col-sm-8">
-                <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
-              <div class="col-xs-8 col-sm-10 col-md-8 col-lg-6 table-responsive">
-                <table class="table table-bordered margin-table" id="bounds-container">
-                  <tr>
-                    <th>Point</th>
-                    <th>Latitude <span class="text-muted">(decimal degrees)</span></th>
-                    <th>Longitude <span class="text-muted">(decimal degrees)</span></th>
-                  </tr>
-                  <tr>
-                    <td>NW</td>
-                    <td>
-                      <input type="number" id="north-coordinate" placeholder="37.872483" class="form-control coord-input lat-input submit-project-search" value="90"/>
-                    </td>
-                    <td>
-                      <input type="number" id="west-coordinate" placeholder="-122.258922" class="form-control coord-input lng-input submit-project-search" value="-180"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>SE</td>
-                    <td>
-                      <input type="number" id="south-coordinate" placeholder="-37.7963646" class="form-control coord-input lat-input submit-project-search" value="-90"/>
-                    </td>
-                    <td>
-                      <input type="number" id="east-coordinate" placeholder="144.9589851" class="form-control coord-input lng-input submit-project-search" value="180"/>
-                    </td>
-                  </tr>
-                </table>
+              <div class="form-group">
+                <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
+                <div class="col-xs-8 col-sm-10 table-responsive">
+                  <table class="table table-bordered margin-table" id="bounds-container">
+                    <tr>
+                      <th>Point</th>
+                      <th>Latitude <span class="text-muted">(decimal degrees)</span></th>
+                      <th>Longitude <span class="text-muted">(decimal degrees)</span></th>
+                    </tr>
+                    <tr>
+                      <td>NW</td>
+                      <td>
+                        <input type="number" id="north-coordinate" placeholder="37.872483" class="form-control coord-input lat-input submit-project-search" value="90"/>
+                      </td>
+                      <td>
+                        <input type="number" id="west-coordinate" placeholder="-122.258922" class="form-control coord-input lng-input submit-project-search" value="-180"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>SE</td>
+                      <td>
+                        <input type="number" id="south-coordinate" placeholder="-37.7963646" class="form-control coord-input lat-input submit-project-search" value="-90"/>
+                      </td>
+                      <td>
+                        <input type="number" id="east-coordinate" placeholder="144.9589851" class="form-control coord-input lng-input submit-project-search" value="180"/>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
               </div>
             </div>
             <div class="form-group">
