@@ -686,6 +686,19 @@ $ ->
     actionWord = unless isOpened then "Hide" else "Show"
     $(this).find(".action-word").text actionWord
     false
+  # Update the bounds when the viewport changes
+  updateViewportBounds = ->
+    if p$("#use-viewport-bounds").checked
+      console.info "Setting viewer bounds, checkbox is checked"
+      setViewerBounds()
+    else
+      console.info "Not using viewport bounds"
+  # http://leafletjs.com/reference.html#map-events
+  geo.lMap
+  .on "moveend" ->
+    updateViewportBounds()
+  .on "zoomend" ->
+    updateViewportBounds()
   # Initial load
   showAllTables()
   checkFileVersion false, "js/global-search.min.js"
