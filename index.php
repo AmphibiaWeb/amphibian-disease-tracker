@@ -63,8 +63,9 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/gold-phone-input/gold-phone-input.html"/>
 
     <link rel="import" href="bower_components/iron-collapse/iron-collapse.html"/>
-    
+
     <link rel="import" href="bower_components/iron-form/iron-form.html"/>
+    <link rel="import" href="bower_components/iron-label/iron-label.html"/>
     <link rel="import" href="bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"/>
 
     <link rel="import" href="bower_components/font-roboto/roboto.html"/>
@@ -222,6 +223,12 @@ $loginStatus = getLoginState();
                   </div>
                 </iron-collapse>
               </div>
+            </div>
+            <div class="form-group">
+              <iron-label>
+                Use Viewport Bounds
+                <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
+              </iron-label>
             </div>
             <div class="form-group">
               <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>

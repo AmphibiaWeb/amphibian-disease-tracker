@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, showAllTables,
+var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -63,8 +63,28 @@ createTemplateByProject = function(table) {
   return false;
 };
 
+setViewerBounds = function(map) {
+  var bounds, ne, sw;
+  if (map == null) {
+    map = geo.lMap;
+  }
+  bounds = map.getBounds();
+  sw = bounds._southWest;
+  ne = bounds._northEast;
+  $("#north-coordinate").val(ne.lat);
+  $("#west-coordinate").val(sw.lng);
+  $("#south-coordinate").val(sw.lat);
+  $("#east-coordinate").val(ne.lng);
+  return false;
+};
+
 getSearchObject = function() {
   var bounds, diseaseStatus, morbidityStatus, pathogen, search;
+  try {
+    if (p$("#use-viewport-bounds").checked) {
+      setViewerBounds();
+    }
+  } catch (undefined) {}
   bounds = {
     n: $("#north-coordinate").val(),
     w: $("#west-coordinate").val(),
@@ -117,6 +137,11 @@ getSearchObject = function() {
 
 getSearchContainsObject = function() {
   var bounds, diseaseStatus, genus, morbidityStatus, pathogen, search, sp, ssp, taxaSearch, taxaSplit;
+  try {
+    if (p$("#use-viewport-bounds").checked) {
+      setViewerBounds();
+    }
+  } catch (undefined) {}
   bounds = {
     n: $("#north-coordinate").val(),
     w: $("#west-coordinate").val(),
