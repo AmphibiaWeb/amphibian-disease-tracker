@@ -3785,7 +3785,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
 };
 
 saveEditorData = function(force, callback) {
-  var args, authorObj, el, key, l, len, len1, m, postData, ref, ref1, ref2;
+  var args, authorObj, data, el, key, l, len, len1, m, postData, ref, ref1, ref2;
   if (force == null) {
     force = false;
   }
@@ -3824,6 +3824,12 @@ saveEditorData = function(force, callback) {
   } else {
     window._adp = JSON.parse(localStorage._adp);
     postData = _adp.postedSaveData;
+  }
+  for (key in postData) {
+    data = postData[key];
+    try {
+      postData[key] = deEscape(data);
+    } catch (undefined) {}
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));

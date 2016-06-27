@@ -1846,6 +1846,10 @@ saveEditorData = (force = false, callback) ->
   else
     window._adp = JSON.parse localStorage._adp
     postData = _adp.postedSaveData
+  # Clean up any double parsing
+  for key, data of postData
+    try
+      postData[key] = deEscape data
   # Post it
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
