@@ -175,7 +175,7 @@ $loginStatus = getLoginState();
             <h3>Search &amp; Visualize Records <span class="badge">BETA</span></h3>
             <div class="form-group">
               <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
-              <div class="col-xs-6 col-sm-9">
+              <div class="col-xs-6 col-sm-9 col-md-8 col-lg-6">
                 <input type="text" id="taxa-input" class="form-control submit-project-search" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
               </div>
               <div class="col-xs-2 col-sm-1">
@@ -234,7 +234,7 @@ $loginStatus = getLoginState();
             </div>
             <div class="form-group">
               <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
-              <div class="col-xs-8 col-sm-10 table-responsive">
+              <div class="col-xs-8 col-sm-10 col-md-8 col-lg-6 table-responsive">
                 <table class="table table-bordered margin-table" id="bounds-container">
                   <tr>
                     <th>Point</th>
@@ -263,9 +263,11 @@ $loginStatus = getLoginState();
               </div>
             </div>
             <div class="form-group">
-              <button class="btn btn-primary do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all results from projects containing at least one matching sample, with the project contained in the bounds"><iron-icon icon="icons:search"></iron-icon> Search Projects</button>
-              <button class="btn btn-default do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> Search Samples</button>
+              <div class="col-xs-12">
+              <button class="btn btn-primary do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all results from projects containing at least one matching sample, with the project contained in the bounds"><iron-icon icon="icons:search"></iron-icon> Search In Projects</button>
+              <button class="btn btn-default do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> Search In Samples</button>
               <button class="btn btn-warning btn-sm col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" id="reset-global-map"><iron-icon icon="icons:refresh"></iron-icon> Reset Map</button>
+              </div>
             </div>
           </div>
         </section>
