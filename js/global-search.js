@@ -71,7 +71,7 @@ setViewerBounds = function(map) {
   bounds = map.getBounds();
   sw = bounds._southWest;
   ne = bounds._northEast;
-  if (sw.lng - ne.lng > 360) {
+  if (ne.lng - sw.lng > 360) {
     sw.lng = -180;
     ne.lng = 180;
   }
