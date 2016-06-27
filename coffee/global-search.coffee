@@ -29,7 +29,7 @@ checkCoordinateSanity = ->
   true
 
 
-createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->  
+createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->
   start = Date.now()
   table = table.slice 0, 63
   templateId = "infowindow_template_#{table}"
@@ -68,7 +68,21 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
   false
 
 
+setViewerBounds = (map = geo.lMap) ->
+  bounds = map.getBounds()
+  sw = bounds._southWest
+  ne = bounds._northEast
+  $("#north-coordinate").val(ne.lat)
+  $("#west-coordinate").val(sw.lng)
+  $("#south-coordinate").val(sw.lat)
+  $("#east-coordinate").val(ne.lng)
+  false
+
+
+
 getSearchObject = ->
+  try
+    if p$("#use-viewport-bounds").checked then setViewerBounds()
   bounds =
     n: $("#north-coordinate").val()
     w: $("#west-coordinate").val()
@@ -108,6 +122,8 @@ getSearchObject = ->
 
 
 getSearchContainsObject = ->
+  try
+    if p$("#use-viewport-bounds").checked then setViewerBounds()
   bounds =
     n: $("#north-coordinate").val()
     w: $("#west-coordinate").val()
