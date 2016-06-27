@@ -9729,7 +9729,7 @@ header#header-bar + main {
     font-size: 3rem;
   }
 }
-th .badge {
+th .text-muted {
   font-weight: initial;
 }
 paper-card.card-tile .header iron-image img {
