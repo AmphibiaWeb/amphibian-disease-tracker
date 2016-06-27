@@ -9736,6 +9736,9 @@ paper-card.card-tile .header iron-image img {
   -webkit-filter: grayscale(50%) opacity(0.25);
           filter: grayscale(50%) opacity(0.25);
 }
+#use-viewport-bounds {
+  display: inline-block !important;
+}
 /* Loader */
 #loader {
   position: fixed;
