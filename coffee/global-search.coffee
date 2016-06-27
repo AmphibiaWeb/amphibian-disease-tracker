@@ -695,9 +695,9 @@ $ ->
       console.info "Not using viewport bounds"
   # http://leafletjs.com/reference.html#map-events
   geo.lMap
-  .on "moveend" ->
+  .on "moveend", ->
     updateViewportBounds()
-  .on "zoomend" ->
+  .on "zoomend", ->
     updateViewportBounds()
   # Initial load
   showAllTables()

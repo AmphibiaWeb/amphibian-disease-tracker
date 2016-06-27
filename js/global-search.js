@@ -779,7 +779,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
 };
 
 $(function() {
-  var initProjectSearch, lMap, lTopoOptions, leafletOptions;
+  var initProjectSearch, lMap, lTopoOptions, leafletOptions, updateViewportBounds;
   geo.initLocation();
   leafletOptions = {
     center: [17.811456088564483, -37.265625],
@@ -837,6 +837,19 @@ $(function() {
     actionWord = !isOpened ? "Hide" : "Show";
     $(this).find(".action-word").text(actionWord);
     return false;
+  });
+  updateViewportBounds = function() {
+    if (p$("#use-viewport-bounds").checked) {
+      console.info("Setting viewer bounds, checkbox is checked");
+      return setViewerBounds();
+    } else {
+      return console.info("Not using viewport bounds");
+    }
+  };
+  geo.lMap.on("moveend", function() {
+    return updateViewportBounds();
+  }).on("zoomend", function() {
+    return updateViewportBounds();
   });
   showAllTables();
   checkFileVersion(false, "js/global-search.min.js");
