@@ -173,7 +173,7 @@ $loginStatus = getLoginState();
           </div>
           <div class="form form-horizontal row" id="global-records-search">
             <h3>Search &amp; Visualize Records <span class="badge">BETA</span></h3>
-            <div class="col-xs-12 col-lg-6">
+            <div class="col-xs-12 col-md-6 col-lg-8">
               <div class="form-group">
                 <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
                 <div class="col-xs-6 col-sm-9">
@@ -266,7 +266,7 @@ $loginStatus = getLoginState();
               </div>
             </div>
             <div class="form-group">
-              <div class="col-xs-12">
+              <div class="col-xs-12 col-md-6 col-lg-4">
               <button class="btn btn-primary do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all results from projects containing at least one matching sample, with the project contained in the bounds"><iron-icon icon="icons:search"></iron-icon> Search In Projects</button>
               <button class="btn btn-default do-search col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> Search In Samples</button>
               <button class="btn btn-warning btn-sm col-xs-6 col-sm-4 col-md-3 col-lg-2 pull-right" id="reset-global-map"><iron-icon icon="icons:refresh"></iron-icon> Reset Map</button>
