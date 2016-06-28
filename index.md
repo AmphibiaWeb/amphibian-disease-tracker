@@ -11,3 +11,14 @@ Quick Links:
 - [Login/Administration](https://amphibiandisease.org/admin)
 - [Administration Dashboard](https://amphibiandisease.org/admin-page.html)
 
+## Main page
+
+On this page you can find projects, or samples within projects, that match the specified criteria.
+
+By default, your search bounds are equal to the visible viewport area of map. If you disable the toggle switch, then the bounds will be defined by the bounds in the input.
+
+Searching the entire project is the default. It will show all results for all projects that have any matching criteria.
+
+You can also search samples, and find and highlight samples on the map that only match the sample data.
+
+For any returned samples, clicking on the point will present an infowindow that will contain a summary of that data.

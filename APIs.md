@@ -160,6 +160,13 @@ is permitted, again largely for compatibility reasons.
 /(?i)(t[0-9a-f]+[_]?[0-9a-f]*)/
 ```
 
+## Project Searching
+
+Find projects matching certain classes of criteria. This is the back-end that drives the search on the main index page.
+
+**TODO**
+
+
 ## Validating / Updating Taxa
 
 Validates a taxon against Amphibiaweb and returns canonical information.
