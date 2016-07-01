@@ -478,7 +478,7 @@ showAllTables = ->
     for pid, data of cartoTables
       # Build params
       table = data.table
-      console.log "Colors", data.creation, generateColorByRecency(data.creation), generateColorByRecency2(data.creation)
+      console.log "Colors", data.creation, generateColorByRecency2(data.creation)
       unless isNull table
         # Create named map layers
         table = table.slice 0, 63

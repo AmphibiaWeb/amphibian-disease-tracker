@@ -584,7 +584,7 @@ showAllTables = function() {
     for (pid in cartoTables) {
       data = cartoTables[pid];
       table = data.table;
-      console.log("Colors", data.creation, generateColorByRecency(data.creation), generateColorByRecency2(data.creation));
+      console.log("Colors", data.creation, generateColorByRecency2(data.creation));
       if (!isNull(table)) {
         table = table.slice(0, 63);
         validTables.push(table);
