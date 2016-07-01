@@ -805,10 +805,10 @@ getProjectResultDialog = function(projectList) {
     anuraIcon = project.includes_anura ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
     caudataIcon = project.includes_caudata ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
     gymnophionaIcon = project.includes_gymnophiona ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
-    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td class=\"text-center\">" + anuraIcon + "</td>\n  <td class=\"text-center\">" + caudataIcon + "</td>\n  <td class=\"text-center\">" + gymnophionaIcon + "</td>\n</tr>";
+    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td class=\"text-center\">" + anuraIcon + "</td>\n  <td class=\"text-center\">" + caudataIcon + "</td>\n  <td class=\"text-center\">" + gymnophionaIcon + "</td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" title=\"Visit Project\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-project-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <table class=\"table table-striped\">\n        <tr>\n          <th>Project Name</th>\n          <th>Caudata</th>\n          <th>Anura</th>\n          <th>Gymnophiona</th>\n        </tr>\n        " + (projectTableRows.join("\n")) + "\n      </table>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  html = "<paper-dialog id=\"modal-project-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <table class=\"table table-striped\">\n        <tr>\n          <th>Project Name</th>\n          <th>Caudata</th>\n          <th>Anura</th>\n          <th>Gymnophiona</th>\n          <th>Visit</th>\n        </tr>\n        " + (projectTableRows.join("\n")) + "\n      </table>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-project-list").remove();
   $("body").append(html);
   $("#modal-project-list").on("iron-overlay-closed", function() {
@@ -823,6 +823,7 @@ getProjectResultDialog = function(projectList) {
       return $(".leaflet-control").attr("hidden", "hidden");
     });
   });
+  bindClicks();
   console.info("Generated project result list");
   return false;
 };

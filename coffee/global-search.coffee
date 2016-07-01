@@ -668,6 +668,7 @@ getProjectResultDialog = (projectList) ->
       <td class="text-center">#{anuraIcon}</td>
       <td class="text-center">#{caudataIcon}</td>
       <td class="text-center">#{gymnophionaIcon}</td>
+      <td class="text-center"><paper-icon-button data-toggle="tooltip" title="Visit Project" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward"></paper-icon-button></td>
     </tr>
     """
     projectTableRows.push row
@@ -682,6 +683,7 @@ getProjectResultDialog = (projectList) ->
             <th>Caudata</th>
             <th>Anura</th>
             <th>Gymnophiona</th>
+            <th>Visit</th>
           </tr>
           #{projectTableRows.join("\n")}
         </table>
@@ -706,6 +708,7 @@ getProjectResultDialog = (projectList) ->
       console.info "Successfully opened dialog"
       $(".leaflet-control-attribution").attr "hidden", "hidden"
       $(".leaflet-control").attr "hidden", "hidden"
+  bindClicks()
   console.info "Generated project result list"
   false
 
