@@ -670,8 +670,9 @@ getProjectResultDialog = (projectList) ->
       <td>#{gymnophionaIcon}</td>
     </tr>
     """
+    projectTableRows.push row
   html = """
-  <paper-dialog id="modal-project-list" modal>
+  <paper-dialog id="modal-project-list" modal always-on-top auto-fit-on-attach>
     <h2>Project Result List</h2>
     <paper-dialog-scrollable>
       <div>
@@ -696,7 +697,10 @@ getProjectResultDialog = (projectList) ->
   $(".show-result-list")
   .unbind()
   .click ->
-    safariDialogHelper "#modal-project-list"
+    console.log "Calling dialog helper"
+    safariDialogHelper "#modal-project-list", 0, ->
+      console.info "Successfully opened dialog"
+  console.info "Generated project result list"
   false
 
 
