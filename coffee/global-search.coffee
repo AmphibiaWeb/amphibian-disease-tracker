@@ -603,6 +603,7 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
   # Start with white, then lose one color channel at a time to get
   # color recency
   #
+  # @param int timestamp -> Javascript linux epoch (ms)
   # @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
   ###
   unless isNumber timestamp
@@ -624,7 +625,7 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
     b = if g > 255 then toInt(g - 255) else 0
     g = if g > 255 then 255 - (g - 255) else toInt g
     b = if b < 0 then 0 else toInt b
-    console.log "Base channels", r, g, b
+    console.log "Base channels 2", r, g, b
     hexArray = [
       r.toString(16)
       g.toString(16)
@@ -637,6 +638,7 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
       ++i
     color = "##{hexArray.join("")}"
   #color += "7f"
+  console.log "Recency2 generated", hexArray, color
   color
 
 

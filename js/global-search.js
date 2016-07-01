@@ -745,6 +745,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
    * Start with white, then lose one color channel at a time to get
    * color recency
    *
+   * @param int timestamp -> Javascript linux epoch (ms)
    * @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
    */
   if (!isNumber(timestamp)) {
@@ -767,7 +768,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
     b = g > 255 ? toInt(g - 255) : 0;
     g = g > 255 ? 255 - (g - 255) : toInt(g);
     b = b < 0 ? 0 : toInt(b);
-    console.log("Base channels", r, g, b);
+    console.log("Base channels 2", r, g, b);
     hexArray = [r.toString(16), g.toString(16), b.toString(16)];
     i = 0;
     for (j = 0, len = hexArray.length; j < len; j++) {
@@ -779,6 +780,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
     }
     color = "#" + (hexArray.join(""));
   }
+  console.log("Recency2 generated", hexArray, color);
   return color;
 };
 
