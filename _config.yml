@@ -46,14 +46,15 @@ paginate_path: "/page:num/"
 
 # Category descriptions (for archive pages)
 descriptions:
-  - cat: Resources
-    desc: "Resources on amphibian diseases"
+  - cat: Portal
+    desc: "Information on the Amphibian Disease portal"
 
   - cat: News
     desc: "Latest publications, media and news on Bsal"
-    
-  - cat: Portal
-    desc: "Information on the Amphibian Disease portal"
+
+  - cat: Resources
+    desc: "Resources on amphibian diseases"
+ 
 
 # Social icons and sharing options
 #
