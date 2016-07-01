@@ -3,7 +3,7 @@ layout: post
 title:  "Progress report on portal development"
 date:   2016-04-18 07:00:00
 author: Michelle Koo
-categories: News Resources
+categories: Portal
 ---
 
 Spring update on the [Amphibian Disease portal](https://amphibiandisease.org/): We are in alpha release with core features working! The beta version is in progress now. Most importantly we have outlined the framework for the portal, which is sketched out in a user's workflow diagram.
