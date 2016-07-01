@@ -622,7 +622,7 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
     r = 255 - stepCount
     g = if r < 0 then 0 - r else 255 - r
     r = if r < 0 then 0 else toInt r
-    b = if g > 255 then toInt(g - 255) else 0
+    b = if g > 255 then toInt(g - 255) else 255
     g = if g > 255 then 255 - (g - 255) else toInt g
     b = if b < 0 then 0 else toInt b
     console.log "Base channels 2", r, g, b
