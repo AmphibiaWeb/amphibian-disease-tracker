@@ -1390,6 +1390,31 @@ linkUsers = (selector = ".is-user") ->
   false
 
 
+
+
+
+
+fetchCitation = (citationQuery, callback) ->
+  postUrl = "https://mickschroeder.com/citation/"
+  eQ = encodeURIComponent citationQuery
+  $.get postUrl, "q=#{eQ}", "text"
+  .done (result) ->
+    dom = $.parseHTML(result)
+    citation = dom.find("#citation_formatted").text()
+    console.log citation
+    if typeof callback is "function"
+      callback citation
+    false
+  .fail (result, status) ->
+    console.error "Failed to fetch citation"
+  false
+
+
+
+
+
+
+
 $ ->
   bindClicks()
   formatScientificNames()
