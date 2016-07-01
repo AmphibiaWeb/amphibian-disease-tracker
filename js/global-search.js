@@ -355,7 +355,7 @@ doSearch = function(search, goDeep) {
       }
       $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
       $(".show-result-list").remove();
-      rlButton = "<paper-icon-button icon=\"icons:subject\" data-toggle=\"tooltip\" title=\"Show Project list\"></paper-icon-button>      ";
+      rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"icons:subject\" data-toggle=\"tooltip\" title=\"Show Project list\" raised></paper-icon-button>";
       $("#post-map-subtitle").append(rlButton);
       getProjectResultDialog(results);
     } catch (error3) {
@@ -805,16 +805,22 @@ getProjectResultDialog = function(projectList) {
     anuraIcon = project.includes_anura ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
     caudataIcon = project.includes_caudata ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
     gymnophionaIcon = project.includes_gymnophiona ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
-    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td>" + anuraIcon + "</td>\n  <td>" + caudataIcon + "</td>\n  <td>" + gymnophionaIcon + "</td>\n</tr>";
+    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td class=\"text-center\">" + anuraIcon + "</td>\n  <td class=\"text-center\">" + caudataIcon + "</td>\n  <td class=\"text-center\">" + gymnophionaIcon + "</td>\n</tr>";
     projectTableRows.push(row);
   }
   html = "<paper-dialog id=\"modal-project-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <table class=\"table table-striped\">\n        <tr>\n          <th>Project Name</th>\n          <th>Caudata</th>\n          <th>Anura</th>\n          <th>Gymnophiona</th>\n        </tr>\n        " + (projectTableRows.join("\n")) + "\n      </table>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-project-list").remove();
   $("body").append(html);
+  $("#modal-project-list").on("iron-overlay-closed", function() {
+    $(".leaflet-control-attribution").removeAttr("hidden");
+    return $(".leaflet-control").removeAttr("hidden");
+  });
   $(".show-result-list").unbind().click(function() {
     console.log("Calling dialog helper");
     return safariDialogHelper("#modal-project-list", 0, function() {
-      return console.info("Successfully opened dialog");
+      console.info("Successfully opened dialog");
+      $(".leaflet-control-attribution").attr("hidden", "hidden");
+      return $(".leaflet-control").attr("hidden", "hidden");
     });
   });
   console.info("Generated project result list");
