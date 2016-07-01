@@ -742,8 +742,10 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
   }
 
   /*
-   * Start with white, then lose one color channel at a time to get
-   * color recency
+   * Mix and match color channels based on age. Newest is fully red,
+   * then green is added in and red removed till fully green, then blue
+   * is added in and green removed until fully blue, then blue removed
+   * until fully black.
    *
    * @param int timestamp -> Javascript linux epoch (ms)
    * @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
@@ -765,7 +767,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
     r = 255 - stepCount;
     g = r < 0 ? 0 - r : 255 - r;
     r = r < 0 ? 0 : toInt(r);
-    b = g > 255 ? toInt(g - 255) : 255;
+    b = g > 255 ? toInt(g - 255) : 0;
     g = g > 255 ? 255 - (g - 255) : toInt(g);
     b = b < 0 ? 0 : toInt(b);
     console.log("Base channels 2", r, g, b);
