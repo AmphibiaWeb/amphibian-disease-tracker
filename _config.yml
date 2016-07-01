@@ -51,6 +51,9 @@ descriptions:
 
   - cat: News
     desc: "Latest publications, media and news on Bsal"
+    
+  - cat: Portal
+    desc: "Information on the Amphibian Disease portal"
 
 # Social icons and sharing options
 #
