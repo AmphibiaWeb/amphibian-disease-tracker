@@ -1970,7 +1970,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
   else
     params = layers
 
-  # console.info "Creating map", params
+  console.info "Creating map", params
 
   # The CartoDB layer options
   mapOptions =
