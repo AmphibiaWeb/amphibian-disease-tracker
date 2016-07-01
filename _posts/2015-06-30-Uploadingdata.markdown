@@ -10,7 +10,7 @@ categories: Portal
 
 ## Creating Projects
 
-The first step to uploading data is creating Projects. We describe [the process in the documentation](https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/#creating-a-project) and once created, actual tested samples (the "data") may be added later or by a collaborator.
+The first step to uploading data is creating Projects. We describe [the Project creation process in the documentation](https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/#creating-a-project) and once created, actual tested samples (the "data") may be added later or by a collaborator.
 
 
 ## Preparing the data
@@ -29,7 +29,7 @@ To facilitate organizing and uploading your sample data, we are partnering with 
 Definitions and DarwinCore standards, if applicable, are listed. 
 
 ### The XLS template 
-The downloaded XLS file will have several worksheets:
+The downloaded XLS file will have several worksheets:      
 1. Instructions - simple metadata can be added here
 2. Samples - where the data are entered. Do not alter field names.
 3. Data Fields -  required and optional fields are defined, controlled vocabulary listed
