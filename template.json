@@ -13,7 +13,7 @@
             "specificepithet"
           ],
           "sql": "select * from <%= table_name %>",
-          "cartocss": "#layer { marker-fill: <%= color %>; marker-opacity: 0.5}",
+          "cartocss": "#layer { marker-fill: <%= color %>; marker-opacity: 0.75}",
           "cartocss_version": "2.1.1"
         },
         "type": "cartodb"
