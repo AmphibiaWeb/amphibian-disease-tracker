@@ -348,7 +348,14 @@ doSearch = function(search, goDeep) {
         layer = layers[l];
         layerSourceObj = {
           user_name: cartoAccount,
-          type: "namedmap",
+          type: "torque",
+          order: 1,
+          options: {
+            query: "",
+            table_name: layer.params.table_name,
+            user_name: cartoAccount,
+            tile_style: "Map { -torque-frame-count:1; -torque-animation-duration:10; -torque-time-attribute:\"cartodb_id\"; -torque-aggregation-function:\"count(cartodb_id)\"; -torque-resolution:2; -torque-data-aggregation:linear; } #" + layer.params.table_name + "{ image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red); marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png); [value < 1] {marker-fill-opacity: 0.05;} [value < 10] {marker-fill-opacity: 0.1;} [value < 100] {marker-fill-opacity: 0.2;} [value < 1000] {marker-fill-opacity: 0.4;} [value < 10000] {marker-fill-opacity: 0.6;} [value < 100000] {marker-fill-opacity: 0.8;} [value >= 100000] {marker-fill-opacity: 1.0;} marker-width: 7; }"
+          },
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
