@@ -478,7 +478,7 @@ showAllTables = ->
     for pid, data of cartoTables
       # Build params
       table = data.table
-      console.log "Colors", data.creation, generateColorByRecency(data.creation), generateColorByRecency2(data.creation)
+      console.log "Colors", data.creation, generateColorByRecency2(data.creation)
       unless isNull table
         # Create named map layers
         table = table.slice 0, 63
@@ -600,8 +600,10 @@ generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
 
 generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
   ###
-  # Start with white, then lose one color channel at a time to get
-  # color recency
+  # Mix and match color channels based on age. Newest is fully red,
+  # then green is added in and red removed till fully green, then blue
+  # is added in and green removed until fully blue, then blue removed
+  # until fully black.
   #
   # @param int timestamp -> Javascript linux epoch (ms)
   # @param int oldCutoff -> Linux Epoch "old" cutoff. 2015-01-01
