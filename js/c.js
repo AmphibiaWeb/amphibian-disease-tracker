@@ -2497,6 +2497,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
   } else {
     params = layers;
   }
+  console.info("Creating map", params);
   mapOptions = {
     cartodb_logo: false,
     https: true,
