@@ -290,17 +290,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       for layer in layers
         layerSourceObj =
           user_name: cartoAccount
-          # Params from
-          # https://cartodb.com/docs/cartodb-platform/maps-api/named-maps/#torque-layer-in-a-named-map
-          type: "torque"
-          order: 1
-          options:
-            query: ""
-            table_name: layer.params.table_name
-            user_name: cartoAccount
-            # Style via
-            # http://gis.stackexchange.com/a/185631
-            tile_style: """Map { -torque-frame-count:1; -torque-animation-duration:10; -torque-time-attribute:"cartodb_id"; -torque-aggregation-function:"count(cartodb_id)"; -torque-resolution:2; -torque-data-aggregation:linear; } ##{layer.params.table_name}{ image-filters: colorize-alpha(blue, cyan, lightgreen, yellow , orange, red); marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png); [value < 1] {marker-fill-opacity: 0.05;} [value < 10] {marker-fill-opacity: 0.1;} [value < 100] {marker-fill-opacity: 0.2;} [value < 1000] {marker-fill-opacity: 0.4;} [value < 10000] {marker-fill-opacity: 0.6;} [value < 100000] {marker-fill-opacity: 0.8;} [value >= 100000] {marker-fill-opacity: 1.0;} marker-width: 7; }"""
+          type: "namedmap"
           named_map: layer
         createRawCartoMap layerSourceObj
       $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
