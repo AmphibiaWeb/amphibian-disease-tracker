@@ -293,7 +293,13 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           type: "namedmap"
           named_map: layer
         createRawCartoMap layerSourceObj
-        $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+      $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+      $(".show-result-list").remove()
+      rlButton = """
+      <paper-icon-button icon="icons:subject" data-toggle="tooltip" title="Show Project list"></paper-icon-button>      
+      """
+      $("#post-map-subtitle").append rlButton
+      getProjectResultDialog results
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
@@ -643,6 +649,55 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
   console.log "Recency2 generated", hexArray, color
   color
 
+
+
+getProjectResultDialog = (projectList) ->
+  unless isArray projectList
+    projectList = Object.toArray projectList
+  if projectList.length is 0
+    console.warn "There were no projects in the result list"
+    return false
+  projectTableRows = new Array()
+  for project in projectList
+    anuraIcon = if project.includes_anura then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+    caudataIcon = if project.includes_caudata then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+    gymnophionaIcon = if project.includes_gymnophiona then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+    row = """
+    <tr>
+      <td>#{project.project_title}</td>
+      <td>#{anuraIcon}</td>
+      <td>#{caudataIcon}</td>
+      <td>#{gymnophionaIcon}</td>
+    </tr>
+    """
+  html = """
+  <paper-dialog id="modal-project-list" modal>
+    <h2>Project Result List</h2>
+    <paper-dialog-scrollable>
+      <div>
+        <table class="table table-striped">
+          <tr>
+            <th>Project Name</th>
+            <th>Caudata</th>
+            <th>Anura</th>
+            <th>Gymnophiona</th>
+          </tr>
+          #{projectTableRows.join("\n")}
+        </table>
+      </div>
+    </paper-dialog-scrollable>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Close</paper-button>
+    </div>
+  </paper-dialog>
+  """
+  $("#modal-project-list").remove()
+  $("body").append html
+  $(".show-result-list")
+  .unbind()
+  .click ->
+    safariDialogHelper "#modal-project-list"
+  false
 
 
 $ ->
