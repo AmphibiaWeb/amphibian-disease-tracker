@@ -13,7 +13,7 @@ Please browse the table of contents here for more information.
  - Project Browser, Viewer, etc  (in the works)      
 
 
- ## Users
+## Users
  - [User Workflow](https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/) (Steps to getting started and uploading data)
  
 
