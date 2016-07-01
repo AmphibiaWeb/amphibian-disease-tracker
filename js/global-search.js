@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
+var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getProjectResultDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -222,7 +222,7 @@ doSearch = function(search, goDeep) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, rlButton, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -352,8 +352,12 @@ doSearch = function(search, goDeep) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
-        $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
       }
+      $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
+      $(".show-result-list").remove();
+      rlButton = "<paper-icon-button icon=\"icons:subject\" data-toggle=\"tooltip\" title=\"Show Project list\"></paper-icon-button>      ";
+      $("#post-map-subtitle").append(rlButton);
+      getProjectResultDialog(results);
     } catch (error3) {
       e = error3;
       console.error("Couldn't create map! " + e.message);
@@ -784,6 +788,32 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
   }
   console.log("Recency2 generated", hexArray, color);
   return color;
+};
+
+getProjectResultDialog = function(projectList) {
+  var anuraIcon, caudataIcon, gymnophionaIcon, html, j, len, project, projectTableRows, row;
+  if (!isArray(projectList)) {
+    projectList = Object.toArray(projectList);
+  }
+  if (projectList.length === 0) {
+    console.warn("There were no projects in the result list");
+    return false;
+  }
+  projectTableRows = new Array();
+  for (j = 0, len = projectList.length; j < len; j++) {
+    project = projectList[j];
+    anuraIcon = project.includes_anura ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
+    caudataIcon = project.includes_caudata ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
+    gymnophionaIcon = project.includes_gymnophiona ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
+    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td>" + anuraIcon + "</td>\n  <td>" + caudataIcon + "</td>\n  <td>" + gymnophionaIcon + "</td>\n</tr>";
+  }
+  html = "<paper-dialog id=\"modal-project-list\" modal>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <table class=\"table table-striped\">\n        <tr>\n          <th>Project Name</th>\n          <th>Caudata</th>\n          <th>Anura</th>\n          <th>Gymnophiona</th>\n        </tr>\n        " + (projectTableRows.join("\n")) + "\n      </table>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  $("#modal-project-list").remove();
+  $("body").append(html);
+  $(".show-result-list").unbind().click(function() {
+    return safariDialogHelper("#modal-project-list");
+  });
+  return false;
 };
 
 $(function() {
