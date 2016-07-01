@@ -736,6 +736,7 @@ generateColorByRecency = function(timestamp, oldCutoff) {
     }
     color = "#" + (hexArray.join(""));
   }
+  color = "#ff0000";
   return color;
 };
 
@@ -787,6 +788,7 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
     color = "#" + (hexArray.join(""));
   }
   console.log("Recency2 generated", hexArray, color);
+  color = "#ff0000";
   return color;
 };
 

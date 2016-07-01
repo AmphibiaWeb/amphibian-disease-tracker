@@ -599,7 +599,8 @@ generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
         hexArray[i] = "0#{cv}"
       ++i
     color = "##{hexArray.join("")}"
-  #color += "7f"
+  # After #124
+  color = "#ff0000"
   color
 
 
@@ -645,8 +646,9 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
         hexArray[i] = "0#{cv}"
       ++i
     color = "##{hexArray.join("")}"
-  #color += "7f"
   console.log "Recency2 generated", hexArray, color
+  # After #124
+  color = "#ff0000"
   color
 
 
