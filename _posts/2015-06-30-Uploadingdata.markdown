@@ -30,10 +30,10 @@ Definitions and DarwinCore standards, if applicable, are listed.
 
 ### The XLS template 
 The downloaded XLS file will have several worksheets:      
-1. Instructions - simple metadata can be added here
-2. Samples - where the data are entered. Do not alter field names.
-3. Data Fields -  required and optional fields are defined, controlled vocabulary listed
-4. Lists - controlled vocabulary for Samples. Do not edit this sheet!
+1. Instructions - simple metadata can be added here    
+2. Samples - where the data are entered. Do not alter field names     
+3. Data Fields -  required and optional fields are defined, controlled vocabulary listed      
+4. Lists - controlled vocabulary for Samples. Do not edit this sheet!     
 
 >#### [Shortcut to download the complete XLS template (June 2016)](https://berkeley.box.com/v/AmphibianDisease-template)
 
