@@ -22,6 +22,7 @@ Quick Links:
 - [Project Browser](https://amphibiandisease.org/project.php)
 - [Login/Administration](https://amphibiandisease.org/admin)
 - [Administration Dashboard](https://amphibiandisease.org/admin-page.html)
+- [Download template for data uploading (XLSX)](https://berkeley.box.com/v/AmphibianDisease-template)
 
 ## [Main page](https://amphibiandisease.org)
 
