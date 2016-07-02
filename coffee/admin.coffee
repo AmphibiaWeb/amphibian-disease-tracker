@@ -649,7 +649,7 @@ finalizeData = (skipFields = false, callback) ->
           postData.dataset_arks = dataAttrs.data_ark.join ","
           postData.project_dir_identifier = getUploadIdentifier()
           # Public or private?
-          postData.public = p$("#data-encumbrance-toggle")?.checked ? p$("#public").checked
+          postData.public = p$("#data-encumbrance-toggle")?.checked ? p$("#public")?.checked ? _adp?.projectData?.public ? true
           if _adp?.data?.taxa?.validated?
             taxonData = _adp.data.taxa.validated
             postData.sampled_clades = _adp.data.taxa.clades.join ","

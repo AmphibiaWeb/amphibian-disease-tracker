@@ -649,7 +649,7 @@ finalizeData = (skipFields = false, callback) ->
           postData.dataset_arks = dataAttrs.data_ark.join ","
           postData.project_dir_identifier = getUploadIdentifier()
           # Public or private?
-          postData.public = p$("#data-encumbrance-toggle")?.checked ? p$("#public").checked
+          postData.public = p$("#data-encumbrance-toggle")?.checked ? p$("#public")?.checked ? _adp?.projectData?.public ? true
           if _adp?.data?.taxa?.validated?
             taxonData = _adp.data.taxa.validated
             postData.sampled_clades = _adp.data.taxa.clades.join ","
@@ -3336,11 +3336,19 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
       if p$("#replace-data-toggle").checked
         # Replace
         # Show the dialog
+        startLoad()
         revalidateAndUpdateData false, false, false, false, true
         console.info "Starting newGeoDataHandler to handle a replacement dataset"
         _adp.projectIdentifierString = "t" + md5(_adp.projectId + _adp.projectData.author + Date.now())
+        html = """
+        <div class="alert alert-info" id="still-processing">
+          Please do not close this window until your upload has finished. As long as this message is showing, your processing is still incomplete.
+        </div>
+        """
+        $("#species-list").after html
         newGeoDataHandler result.data, false, (tableName, pointCoords) ->
           console.info "Upload and save complete", tableName
+          startLoad()
           # console.log "Got coordinates", pointCoords
           # try
           #   cartoParsed = JSON.parse _adp.carto_id
@@ -3369,6 +3377,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
           # # New dataset ark
           finalizeData true, (readyPostData) ->
             console.info "Successfully finalized data", readyPostData
+            $("#still-processing").remove()
             html = """
             <div class="alert alert-warning">
               <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>
@@ -3378,6 +3387,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
             $("#species-list").after html
             # _adp.carto_id = JSON.stringify cartoParsed
             _adp.projectData = readyPostData
+            stopLoad()
       else
         # Update
         console.info "Starting revalidateAndUpdateData to handle an update"

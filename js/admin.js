@@ -500,7 +500,7 @@ finalizeData = function(skipFields, callback) {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref11, ref7, ref8, ref9, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref7, ref8, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -544,8 +544,8 @@ finalizeData = function(skipFields, callback) {
           }
           postData.dataset_arks = dataAttrs.data_ark.join(",");
           postData.project_dir_identifier = getUploadIdentifier();
-          postData["public"] = (ref8 = (ref9 = p$("#data-encumbrance-toggle")) != null ? ref9.checked : void 0) != null ? ref8 : p$("#public").checked;
-          if ((typeof _adp !== "undefined" && _adp !== null ? (ref10 = _adp.data) != null ? (ref11 = ref10.taxa) != null ? ref11.validated : void 0 : void 0 : void 0) != null) {
+          postData["public"] = (ref8 = (ref9 = (ref10 = (ref11 = p$("#data-encumbrance-toggle")) != null ? ref11.checked : void 0) != null ? ref10 : (ref12 = p$("#public")) != null ? ref12.checked : void 0) != null ? ref9 : typeof _adp !== "undefined" && _adp !== null ? (ref13 = _adp.projectData) != null ? ref13["public"] : void 0 : void 0) != null ? ref8 : true;
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref14 = _adp.data) != null ? (ref15 = ref14.taxa) != null ? ref15.validated : void 0 : void 0 : void 0) != null) {
             taxonData = _adp.data.taxa.validated;
             postData.sampled_clades = _adp.data.taxa.clades.join(",");
             postData.sampled_species = _adp.data.taxa.list.join(",");
@@ -3170,7 +3170,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath + "&sheets=Samples";
   $.get(helperApi, args, "json").done(function(result) {
-    var nameArr, rows;
+    var html, nameArr, rows;
     console.info("Got result", result);
     if (result.status === false) {
       bsAlert("There was a problem verifying your upload. Please try again.", "danger");
@@ -3187,17 +3187,22 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
     _adp.parsedUploadedData = result.data;
     if (typeof callbackSkipsRevalidate !== "function") {
       if (p$("#replace-data-toggle").checked) {
+        startLoad();
         revalidateAndUpdateData(false, false, false, false, true);
         console.info("Starting newGeoDataHandler to handle a replacement dataset");
         _adp.projectIdentifierString = "t" + md5(_adp.projectId + _adp.projectData.author + Date.now());
+        html = "<div class=\"alert alert-info\" id=\"still-processing\">\n  Please do not close this window until your upload has finished. As long as this message is showing, your processing is still incomplete.\n</div>";
+        $("#species-list").after(html);
         newGeoDataHandler(result.data, false, function(tableName, pointCoords) {
           console.info("Upload and save complete", tableName);
+          startLoad();
           return finalizeData(true, function(readyPostData) {
-            var html;
             console.info("Successfully finalized data", readyPostData);
+            $("#still-processing").remove();
             html = "<div class=\"alert alert-warning\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>";
             $("#species-list").after(html);
-            return _adp.projectData = readyPostData;
+            _adp.projectData = readyPostData;
+            return stopLoad();
           });
         });
       } else {
