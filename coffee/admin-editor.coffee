@@ -1267,11 +1267,13 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
         console.info "Starting newGeoDataHandler to handle a replacement dataset"
         _adp.projectIdentifierString = "t" + md5(_adp.projectId + _adp.projectData.author + Date.now())
         html = """
-        <div class="alert alert-info" id="still-processing">
+        <div class="row">
+        <div class="alert alert-info col-xs-12" id="still-processing">
           Please do not close this window until your upload has finished. As long as this message is showing, your processing is still incomplete.
         </div>
+        </div>
         """
-        $("#species-list").after html
+        $("#validator-progress-container").before html
         newGeoDataHandler result.data, false, (tableName, pointCoords) ->
           console.info "Upload and save complete", tableName
           startLoad()
@@ -1305,12 +1307,14 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
             console.info "Successfully finalized data", readyPostData
             $("#still-processing").remove()
             html = """
-            <div class="alert alert-warning">
+            <div class="row">
+            <div class="alert alert-warning center-block text-center col-xs-8">
               <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>
                 If you don't, your new data <em>will not be saved</em>!
             </div>
+            </div>
             """
-            $("#species-list").after html
+            $("#validator-progress-container").before html
             # _adp.carto_id = JSON.stringify cartoParsed
             _adp.projectData = readyPostData
             stopLoad()
