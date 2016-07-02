@@ -6,11 +6,9 @@ permalink: /about/
 
 <img src="{{ site.baseurl }}/assets/logo.jpg" title="AmphibiaWeb" class="profile" />
 
-Motivated by the decline of amphibians globally and the growing understanding of diseases as major factors, **AmphibiaWeb** and the **US Forest Service** are collaborating to develop a community-based, online repository and reporting site for data on major infectious diseases, especially chytridiomycosis. Our mission is to aggregate, visualize and share data from the community of active researchers archiving their completed and in progress datasets from laboratory experiments and field sites around the world.  
 
----
-### [Amphibian Disease Portal](https://amphibiandisease.org)
----
+
+**[Amphibian Disease Portal](https://amphibiandisease.org)** -  Motivated by the decline of amphibians globally and the growing understanding of diseases as major factors, **AmphibiaWeb** and the **US Forest Service** are collaborating to develop a community-based, online repository and reporting site for data on major infectious diseases, especially chytridiomycosis. Our mission is to aggregate, visualize and share data from the community of active researchers archiving their completed and in progress datasets from laboratory experiments and field sites around the world.  
 
 The amphibian fungal disease [chytridiomycosis](http://amphibiaweb.org/chytrid/chytridiomycosis.html), caused by the fungal pathogen _Batrachochytrium dendrobatidis (Bd)_ has caused the extinction of hundreds of amphibian species globally over the last few decades. In addition, a newly described fungal pathogen, [_B. salamandrivorans (Bsal)_](http://amphibiaweb.org/chytrid/Bsal.html), thought to have evolved in Asia and recently introduced to Europe, has caused mass die-offs in native European salamanders. Our ability to predict outbreaks caused by these pathogenic fungi is poor. To help understand and predict these phenomena we are creating a globally accessible site for aggregating information from tested samples (_Bd_ and _Bsal_) including interactive visualization of these data and the on-going activities of participants.     
        
