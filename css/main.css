@@ -12720,6 +12720,9 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   margin-bottom: 2.5px;
   margin-top: 2.5px;
 }
+.profile-region .profile-data.address address:not(.col-lg-4) {
+  width: 100%;
+}
 .profile-region .profile-image-container {
   display: flex;
   align-items: center;
