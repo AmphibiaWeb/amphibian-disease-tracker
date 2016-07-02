@@ -3316,6 +3316,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     correctedPath = path.slice helperDir.length
   console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}&sheets=Samples"
+  _adp.originalProjectId = _adp.projectId
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result
@@ -3378,11 +3379,14 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
           # _adp.locality = geo.computedLocality
           # # New dataset ark
           finalizeData true, (readyPostData) ->
+            readyPostData.project_id = _adp.originalProjectId
+            _adp.reassignedTrashProjectId = _adp.projectId
+            _adp.projectId = _adp.originalProjectId
             console.info "Successfully finalized data", readyPostData
             $("#still-processing").remove()
             html = """
             <div class="row">
-            <div class="alert alert-warning center-block text-center col-xs-8">
+            <div class="alert alert-warning center-block text-center col-xs-8 force-center">
               <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>
                 If you don't, your new data <em>will not be saved</em>!
             </div>
