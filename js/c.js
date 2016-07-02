@@ -2859,7 +2859,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, m, n, ref, ref1, ref2, ref3, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, lowCol, m, n, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -2982,7 +2982,12 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             for (column in row) {
               value = row[column];
               if (i === 0) {
-                columnNamesList.push(column + " " + columnDatatype[column]);
+                lowCol = column.toLowerCase();
+                columnDef = (ref4 = columnDatatype[column]) != null ? ref4 : columnDatatype[lowCol];
+                if (typeof columnDef === "object") {
+                  columnDef = columnDef.type;
+                }
+                columnNamesList.push(column + " " + columnDef);
               }
               try {
                 value = value.replace("'", "&#95;");
