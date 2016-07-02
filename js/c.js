@@ -1839,7 +1839,7 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorString, authors, citation, error2, givenPart, i, initials, initialsArray, j, l, len, len1, m, n, ref;
+    var author, authorString, authors, citation, error2, givenPart, i, initials, initialsArray, issue, j, l, len, len1, m, n, published, ref, ref1, ref2, ref3;
     j = result.message;
     authors = new Array();
     i = 0;
@@ -1857,21 +1857,23 @@ fetchCitation = function(citationQuery, callback) {
       authors.push(authorString);
       ++i;
       if (i > 2) {
-        authors.push("et al.");
+        authors.push("et al");
         break;
       }
     }
+    published = (ref1 = (ref2 = j["published-print"]["date-parts"][0][0]) != null ? ref2 : j["published-online"]["date-parts"][0][0]) != null ? ref1 : "In press";
+    issue = (ref3 = "(" + j.issue + ")") != null ? ref3 : "";
     try {
-      citation = (authors.join(", ")) + " " + j.title[0] + ". " + j["container-title"][0] + " " + j["published-print"]["date-parts"][0][0] + ";" + j.volume + "(" + j.issue + "):" + j.page + ".";
+      citation = (authors.join(", ")) + ". " + j.title[0] + ". " + j["container-title"][0] + " " + published + ";" + j.volume + issue + ":" + j.page + ".";
     } catch (error2) {
       e = error2;
       console.warn("Couldn't generate full citation");
       console.warn(j);
-      citation = (authors.join(", ")) + " " + j.title[0] + ". " + j["container-title"][0] + ". In press.";
+      citation = (authors.join(", ")) + ". " + j.title[0] + ". " + j["container-title"][0] + ". In press.";
     }
     console.log(citation);
     if (typeof callback === "function") {
-      callback(citation);
+      callback(citation, j.link.URL);
     }
     return false;
   }).fail(function(result, status) {

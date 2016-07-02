@@ -750,10 +750,11 @@ showCitation = function() {
   var doi;
   doi = p$("paper-input[label='DOI']").value;
   if (!$("#citation-pop").exists()) {
-    fetchCitation(doi, function(citation) {
+    fetchCitation(doi, function(citation, url) {
       var html;
-      html = "<paper-dialog id=\"citation-pop\">\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\">\n        " + citation + "\n      </paper-textarea>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close<paper-button>\n  </div>\n</paper-dialog>";
+      html = "<paper-dialog id=\"citation-pop\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\">\n        " + citation + "\n      </paper-textarea>\n      <div class=\"center-block text-center\">\n        <paper-button class=\"click\" data-newtab=\"true\" data-href=\"" + url + "\">\n          <iron-icon icon=\"icons:open-in-new\"></iron-icon>  \n          Open\n        </paper-button>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
       $("body").append(html);
+      bindClicks();
       return safariDialogHelper("#citation-pop");
     });
   } else {
