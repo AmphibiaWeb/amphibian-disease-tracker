@@ -4220,7 +4220,7 @@ mintBcid = function(projectId, datasetUri, title, callback) {
 };
 
 mintExpedition = function(projectId, title, callback) {
-  var args, publicProject, resultObj;
+  var args, error1, publicProject, resultObj;
   if (projectId == null) {
     projectId = _adp.projectId;
   }
@@ -4240,7 +4240,13 @@ mintExpedition = function(projectId, title, callback) {
     return false;
   }
   resultObj = new Object();
-  publicProject = p$("#data-encumbrance-toggle").checked;
+  try {
+    publicProject = p$("#data-encumbrance-toggle").checked;
+  } catch (error1) {
+    try {
+      publicProject = p$("#public").checked;
+    } catch (undefined) {}
+  }
   if (typeof publicProject !== "boolean") {
     publicProject = false;
   }
