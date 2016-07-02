@@ -703,6 +703,32 @@ sqlQueryBox = ->
 
 
 
+showCitation = ->
+  doi = p$("paper-input[label='DOI']").value
+  unless $("#citation-pop").exists()
+    fetchCitation doi, (citation) ->
+      html = """
+      <paper-dialog id="citation-pop">
+        <h2>Citation</h2>
+        <paper-dialog-scrollable>
+          <div class="pop-contents">
+            <paper-textarea label="Citation">
+              #{citation}
+            </paper-textarea>
+          </div>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Close<paper-button>
+        </div>
+      </paper-dialog>
+      """
+      $("body").append html
+      safariDialogHelper "#citation-pop"
+  else
+    p$("#citation-pop").open()
+  false
+
+
 $ ->
   _adp.projectId = uri.o.param "id"
   checkProjectAuthorization()
