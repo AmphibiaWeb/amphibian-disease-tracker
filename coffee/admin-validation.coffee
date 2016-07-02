@@ -254,7 +254,11 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
     console.warn "mintExpedition() requires a callback function"
     return false
   resultObj = new Object()
-  publicProject = p$("#data-encumbrance-toggle").checked
+  try
+    publicProject = p$("#data-encumbrance-toggle").checked
+  catch
+    try
+      publicProject = p$("#public").checked
   unless typeof publicProject is "boolean"
     publicProject = false
   args = "perform=create_expedition&link=#{projectId}&title=#{post64(title)}&public=#{publicProject}"
