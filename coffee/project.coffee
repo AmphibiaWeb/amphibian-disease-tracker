@@ -712,21 +712,27 @@ showCitation = ->
         <h2>Citation</h2>
         <paper-dialog-scrollable>
           <div class="pop-contents">
-            <paper-textarea label="Citation">
+            <paper-textarea label="Citation" id="popped-citation">
               #{citation}
             </paper-textarea>
           </div>
         </paper-dialog-scrollable>
         <div class="buttons">
           <paper-button dialog-dismiss>Close</paper-button>
-          <paper-button class="click" data-newtab="true" data-href="#{url}" raised>
-            <iron-icon icon="icons:open-in-new"></iron-icon>  
+          <paper-button class="click" data-newtab="true" data-href="#{url}">
+            <iron-icon icon="icons:open-in-new"></iron-icon>
             Open
           </paper-button>
         </div>
       </paper-dialog>
       """
       $("body").append html
+      try
+        p$("#popped-citation").value = citation
+      catch
+        delay 500, ->
+          try
+            p$("#popped-citation").value = citation
       bindClicks()
       safariDialogHelper "#citation-pop"
   else
