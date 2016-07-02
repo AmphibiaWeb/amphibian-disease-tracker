@@ -9996,6 +9996,9 @@ ul.project-search-su {
   display: block;
   clear: both;
 }
+#notes iron-autogrow-textarea {
+  width: 100%;
+}
 iron-autogrow-textarea.project-field,
 .alert.project-field {
   margin-left: 1em;
@@ -12716,6 +12719,9 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .profile-region .profile-data * {
   margin-bottom: 2.5px;
   margin-top: 2.5px;
+}
+.profile-region .profile-data.address address:not(.col-lg-4) {
+  width: 100%;
 }
 .profile-region .profile-image-container {
   display: flex;
