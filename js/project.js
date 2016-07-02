@@ -752,7 +752,7 @@ showCitation = function() {
   if (!$("#citation-pop").exists()) {
     fetchCitation(doi, function(citation, url) {
       var error1, html;
-      html = "<paper-dialog id=\"citation-pop\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\" id=\"popped-citation\">\n        " + citation + "\n      </paper-textarea>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n    <paper-button class=\"click\" data-newtab=\"true\" data-href=\"" + url + "\">\n      <iron-icon icon=\"icons:open-in-new\"></iron-icon>\n      Open\n    </paper-button>\n  </div>\n</paper-dialog>";
+      html = "<paper-dialog id=\"citation-pop\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\" id=\"popped-citation\" readonly>\n        " + citation + "\n      </paper-textarea>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n    <paper-button class=\"click\" data-newtab=\"true\" data-href=\"" + url + "\">\n      <iron-icon icon=\"icons:open-in-new\"></iron-icon>\n      Open\n    </paper-button>\n  </div>\n</paper-dialog>";
       $("body").append(html);
       try {
         p$("#popped-citation").value = citation;
@@ -771,6 +771,8 @@ showCitation = function() {
   }
   return false;
 };
+
+window.showCitation = showCitation;
 
 $(function() {
   var zcConfig;
