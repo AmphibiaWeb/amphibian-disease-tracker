@@ -706,6 +706,7 @@ sqlQueryBox = ->
 showCitation = ->
   doi = p$("paper-input[label='DOI']").value
   unless $("#citation-pop").exists()
+    animateLoad()
     fetchCitation doi, (citation, url) ->
       html = """
       <paper-dialog id="citation-pop" modal>
@@ -735,6 +736,7 @@ showCitation = ->
             p$("#popped-citation").value = citation
       bindClicks()
       safariDialogHelper "#citation-pop"
+      stopLoad()
   else
     p$("#citation-pop").open()
   false
