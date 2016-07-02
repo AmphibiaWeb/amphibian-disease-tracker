@@ -3169,6 +3169,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   }
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath + "&sheets=Samples";
+  _adp.originalProjectId = _adp.projectId;
   $.get(helperApi, args, "json").done(function(result) {
     var html, nameArr, rows;
     console.info("Got result", result);
@@ -3197,9 +3198,12 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
           console.info("Upload and save complete", tableName);
           startLoad();
           return finalizeData(true, function(readyPostData) {
+            readyPostData.project_id = _adp.originalProjectId;
+            _adp.reassignedTrashProjectId = _adp.projectId;
+            _adp.projectId = _adp.originalProjectId;
             console.info("Successfully finalized data", readyPostData);
             $("#still-processing").remove();
-            html = "<div class=\"row\">\n<div class=\"alert alert-warning center-block text-center col-xs-8\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>\n</div>";
+            html = "<div class=\"row\">\n<div class=\"alert alert-warning center-block text-center col-xs-8 force-center\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>\n</div>";
             $("#validator-progress-container").before(html);
             _adp.projectData = readyPostData;
             return stopLoad();
