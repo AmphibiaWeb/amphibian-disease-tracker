@@ -1839,7 +1839,7 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorString, authors, citation, givenPart, i, initials, initialsArray, j, l, len, len1, m, n, ref;
+    var author, authorString, authors, citation, error2, givenPart, i, initials, initialsArray, j, l, len, len1, m, n, ref;
     j = result.message;
     authors = new Array();
     i = 0;
@@ -1861,7 +1861,14 @@ fetchCitation = function(citationQuery, callback) {
         break;
       }
     }
-    citation = (authors.join(", ")) + " " + j.title[0] + ". " + j["container-title"][0] + " " + j["published-print"]["date-parts"][0][0] + ";" + j.volume + "(" + j.issue + "):" + j.page;
+    try {
+      citation = (authors.join(", ")) + " " + j.title[0] + ". " + j["container-title"][0] + " " + j["published-print"]["date-parts"][0][0] + ";" + j.volume + "(" + j.issue + "):" + j.page + ".";
+    } catch (error2) {
+      e = error2;
+      console.warn("Couldn't generate full citation");
+      console.warn(j);
+      citation = (authors.join(", ")) + " " + j.title[0] + ". " + j["container-title"][0] + ". In press.";
+    }
     console.log(citation);
     if (typeof callback === "function") {
       callback(citation);

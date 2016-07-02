@@ -1415,9 +1415,16 @@ fetchCitation = (citationQuery, callback) ->
       if i > 2
         authors.push "et al."
         break
-    citation = """
-    #{authors.join(", ")} #{j.title[0]}. #{j["container-title"][0]} #{j["published-print"]["date-parts"][0][0]};#{j.volume}(#{j.issue}):#{j.page}
-    """
+    try
+      citation = """
+      #{authors.join(", ")} #{j.title[0]}. #{j["container-title"][0]} #{j["published-print"]["date-parts"][0][0]};#{j.volume}(#{j.issue}):#{j.page}.
+      """
+    catch e
+      console.warn "Couldn't generate full citation"
+      console.warn j
+      citation = """
+      #{authors.join(", ")} #{j.title[0]}. #{j["container-title"][0]}. In press.
+      """      
     console.log citation
     if typeof callback is "function"
       callback citation
