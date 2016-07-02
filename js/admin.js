@@ -500,7 +500,7 @@ finalizeData = function(skipFields, callback) {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref7, ref8, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref7, ref8, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -540,8 +540,8 @@ finalizeData = function(skipFields, callback) {
           }
           postData.dataset_arks = dataAttrs.data_ark.join(",");
           postData.project_dir_identifier = getUploadIdentifier();
-          postData["public"] = p$("#data-encumbrance-toggle").checked;
-          if ((typeof _adp !== "undefined" && _adp !== null ? (ref7 = _adp.data) != null ? (ref8 = ref7.taxa) != null ? ref8.validated : void 0 : void 0 : void 0) != null) {
+          postData["public"] = (ref7 = (ref8 = p$("#data-encumbrance-toggle")) != null ? ref8.checked : void 0) != null ? ref7 : p$("#public").checked;
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref9 = _adp.data) != null ? (ref10 = ref9.taxa) != null ? ref10.validated : void 0 : void 0 : void 0) != null) {
             taxonData = _adp.data.taxa.validated;
             postData.sampled_clades = _adp.data.taxa.clades.join(",");
             postData.sampled_species = _adp.data.taxa.list.join(",");
@@ -1815,7 +1815,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
       } catch (undefined) {}
     }
     if (isNull(_adp.projectIdentifierString)) {
-      projectIdentifier = "t" + md5(p$("#project-title").value + author);
+      projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now());
       _adp.projectIdentifierString = projectIdentifier;
     } else {
       projectIdentifier = _adp.projectIdentifierString;
@@ -3166,7 +3166,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath + "&sheets=Samples";
   $.get(helperApi, args, "json").done(function(result) {
-    var nameArr, rows;
+    var nameArr, ref, rows;
     console.info("Got result", result);
     if (result.status === false) {
       bsAlert("There was a problem verifying your upload. Please try again.", "danger");
@@ -3185,6 +3185,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
       if (p$("#replace-data-toggle").checked) {
         revalidateAndUpdateData(false, false, false, false, true);
         console.info("Starting newGeoDataHandler to handle a replacement dataset");
+        _adp.projectIdentifierString = "t" + md5(((ref = p$("#project-title")) != null ? ref.value : void 0) + author + Date.now());
         newGeoDataHandler(result.data, false, function(tableName, pointCoords) {
           console.info("Upload and save complete", tableName);
           return finalizeData(true, function(readyPostData) {
