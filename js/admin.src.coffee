@@ -1209,7 +1209,10 @@ getUploadIdentifier = ->
     if isNull _adp.projectId
       author = $.cookie("#{adminParams.domain}_link")
       if isNull _adp.projectIdentifierString
-        seed = if isNull p$("#project-title").value then randomString(16) else p$("#project-title").value
+        try
+          seed = if isNull p$("#project-title").value then randomString(16) else p$("#project-title").value
+        catch
+          seed = randomString(16)
         projectIdentifier = "t" + md5(seed + author)
         _adp.projectIdentifierString = projectIdentifier
       _adp.projectId = md5("#{projectIdentifier}#{author}#{Date.now()}")
@@ -1481,6 +1484,8 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
       # $("#main-body").append html
       uploadedData = result.data
       _adp.parsedUploadedData = result.data
+      try
+        p$("#replace-data-toggle").disabled = false
       unless typeof callbackSkipsGeoHandler is "function"
         newGeoDataHandler(result.data)
       else
@@ -2297,6 +2302,7 @@ loadEditor = (projectPreload) ->
             collectionRangePretty = "<em>(no data)</em>"
           if months.length is 0 or isNull monthPretty then monthPretty = "<em>(no data)</em>"
           if years.length is 0 or isNull yearPretty then yearPretty = "<em>(no data)</em>"
+          toggleChecked = if cartoParsed?.raw_data?.filePath? then "" else "checked disabled"
           html = """
           <h2 class="clearfix newtitle col-xs-12">#{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}project.php?id=#{opid}" data-toggle="tooltip" title="View in Project Viewer" data-newtab="true"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
@@ -2348,7 +2354,7 @@ loadEditor = (projectPreload) ->
                   <span class="toggle-off-label iron-label">Append/Amend Data
                     <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data, and modify existing ones by fieldNumber"></span>
                   </span>
-                  <paper-toggle-button id="replace-data-toggle" disabled>Replace Data</paper-toggle-button>
+                  <paper-toggle-button id="replace-data-toggle" #{toggleChecked}>Replace Data</paper-toggle-button>
                   <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload data, archive current data and only have new data parsed"></span>
                 </div>
                 <div id="uploader-container-section">
@@ -3128,10 +3134,10 @@ getProjectCartoData = (cartoObj, mapOptions) ->
 
 startEditorUploader = ->
   # We've finished the handler, reinitialize
-  unless $("link[href='components/neon-animation/animations/fade-out-animation.html']").exists()
+  unless $("link[href='bower_components/neon-animation/animations/fade-out-animation.html']").exists()
     animations = """
-    <link rel="import" href="components/neon-animation/animations/fade-in-animation.html" />
-    <link rel="import" href="components/neon-animation/animations/fade-out-animation.html" />
+    <link rel="import" href="bower_components/neon-animation/animations/fade-in-animation.html" />
+    <link rel="import" href="bower_components/neon-animation/animations/fade-out-animation.html" />
     """
     $("head").append animations
   bootstrapUploader "data-card-uploader", "", ->
@@ -3263,7 +3269,12 @@ startEditorUploader = ->
             switch longType
               # Fuck you MS, and your terrible MIME types
               when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
-                excelHandler2(linkPath)
+                if p$("#replace-data-toggle").checked
+                  # Replace
+                  excelHandler linkPath
+                else
+                  # Append
+                  excelHandler2(linkPath)
               when "zip", "x-zip-compressed"
                 # Some servers won't read it as the crazy MS mime type
                 # But as a zip, instead. So, check the extension.
@@ -3349,7 +3360,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
     """
     $("#upload-progress-dialog").remove()
     $("body").append dialogHtml
-    p$("#upload-progress-dialog").open()
+    safariDialogHelper "#upload-progress-dialog"
     $("#close-overlay").click ->
       p$("#upload-progress-dialog").close()
   try

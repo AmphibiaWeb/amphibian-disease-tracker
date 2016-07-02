@@ -1395,6 +1395,9 @@ linkUsers = (selector = ".is-user") ->
 
 
 fetchCitation = (citationQuery, callback) ->
+  ###
+  # https://github.com/CrossRef/rest-api-doc/blob/master/rest_api.md
+  ###
   postUrl = "https://api.crossref.org/works/"
   eQ = encodeURIComponent citationQuery
   totalUrl = "#{postUrl}#{citationQuery}"
