@@ -1839,7 +1839,7 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorString, authors, citation, error2, givenPart, i, initials, initialsArray, issue, j, l, len, len1, m, n, published, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+    var author, authorString, authors, citation, error2, givenPart, i, initials, initialsArray, issue, j, l, len, len1, m, n, published, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
     j = result.message;
     authors = new Array();
     i = 0;
@@ -1862,7 +1862,7 @@ fetchCitation = function(citationQuery, callback) {
       }
     }
     published = (ref1 = (ref2 = (ref3 = j["published-print"]) != null ? (ref4 = ref3["date-parts"]) != null ? (ref5 = ref4[0]) != null ? ref5[0] : void 0 : void 0 : void 0) != null ? ref2 : (ref6 = j["published-online"]) != null ? (ref7 = ref6["date-parts"]) != null ? (ref8 = ref7[0]) != null ? ref8[0] : void 0 : void 0 : void 0) != null ? ref1 : "In press";
-    issue = (ref9 = "(" + j.issue + ")") != null ? ref9 : "";
+    issue = j.issue != null ? "(" + j.issue + ")" : "";
     try {
       citation = (authors.join(", ")) + ". " + j.title[0] + ". " + j["container-title"][0] + " " + published + ";" + j.volume + issue + ":" + j.page + ".";
     } catch (error2) {
@@ -1873,7 +1873,7 @@ fetchCitation = function(citationQuery, callback) {
     }
     console.log(citation);
     if (typeof callback === "function") {
-      callback(citation, j.link.URL);
+      callback(citation, j.link[0].URL);
     }
     return false;
   }).fail(function(result, status) {

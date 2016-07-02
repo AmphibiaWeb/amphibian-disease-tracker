@@ -715,16 +715,14 @@ showCitation = ->
             <paper-textarea label="Citation">
               #{citation}
             </paper-textarea>
-            <div class="center-block text-center">
-              <paper-button class="click" data-newtab="true" data-href="#{url}">
-                <iron-icon icon="icons:open-in-new"></iron-icon>  
-                Open
-              </paper-button>
-            </div>
           </div>
         </paper-dialog-scrollable>
         <div class="buttons">
           <paper-button dialog-dismiss>Close</paper-button>
+          <paper-button class="click" data-newtab="true" data-href="#{url}" raised>
+            <iron-icon icon="icons:open-in-new"></iron-icon>  
+            Open
+          </paper-button>
         </div>
       </paper-dialog>
       """
