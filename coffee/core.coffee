@@ -1413,21 +1413,23 @@ fetchCitation = (citationQuery, callback) ->
       authors.push authorString
       ++i
       if i > 2
-        authors.push "et al."
+        authors.push "et al"
         break
+    published = j["published-print"]["date-parts"][0][0] ? j["published-online"]["date-parts"][0][0] ? "In press"
+    issue = "(#{j.issue})" ? ""
     try
       citation = """
-      #{authors.join(", ")} #{j.title[0]}. #{j["container-title"][0]} #{j["published-print"]["date-parts"][0][0]};#{j.volume}(#{j.issue}):#{j.page}.
+      #{authors.join(", ")}. #{j.title[0]}. #{j["container-title"][0]} #{published};#{j.volume}#{issue}:#{j.page}.
       """
     catch e
       console.warn "Couldn't generate full citation"
       console.warn j
       citation = """
-      #{authors.join(", ")} #{j.title[0]}. #{j["container-title"][0]}. In press.
+      #{authors.join(", ")}. #{j.title[0]}. #{j["container-title"][0]}. In press.
       """      
     console.log citation
     if typeof callback is "function"
-      callback citation
+      callback citation, j.link.URL
     false
   .fail (result, status) ->
     console.error "Failed to fetch citation"
