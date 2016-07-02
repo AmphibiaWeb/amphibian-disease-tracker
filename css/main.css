@@ -12471,9 +12471,21 @@ google-map.center-block:after {
 }
 .indent {
   margin-left: 15px;
+  width: calc(100% - 15px);
+}
+@media (min-width: 1200px) {
+  .indent {
+    width: 80%;
+  }
 }
 .basics-list paper-input {
   margin-left: 15px;
+  width: calc(100% - 15px);
+}
+@media (min-width: 1200px) {
+  .basics-list paper-input {
+    width: 80%;
+  }
 }
 .ark-context-wrapper {
   position: absolute;
