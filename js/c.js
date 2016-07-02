@@ -1834,6 +1834,10 @@ linkUsers = function(selector) {
 };
 
 fetchCitation = function(citationQuery, callback) {
+
+  /*
+   * https://github.com/CrossRef/rest-api-doc/blob/master/rest_api.md
+   */
   var eQ, postUrl, totalUrl;
   postUrl = "https://api.crossref.org/works/";
   eQ = encodeURIComponent(citationQuery);

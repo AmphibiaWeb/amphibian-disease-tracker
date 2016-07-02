@@ -1209,7 +1209,10 @@ getUploadIdentifier = ->
     if isNull _adp.projectId
       author = $.cookie("#{adminParams.domain}_link")
       if isNull _adp.projectIdentifierString
-        seed = if isNull p$("#project-title").value then randomString(16) else p$("#project-title").value
+        try
+          seed = if isNull p$("#project-title").value then randomString(16) else p$("#project-title").value
+        catch
+          seed = randomString(16)
         projectIdentifier = "t" + md5(seed + author)
         _adp.projectIdentifierString = projectIdentifier
       _adp.projectId = md5("#{projectIdentifier}#{author}#{Date.now()}")
@@ -1481,6 +1484,8 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
       # $("#main-body").append html
       uploadedData = result.data
       _adp.parsedUploadedData = result.data
+      try
+        p$("#replace-data-toggle").disabled = false
       unless typeof callbackSkipsGeoHandler is "function"
         newGeoDataHandler(result.data)
       else
