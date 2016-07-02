@@ -147,7 +147,7 @@ loadEditor = (projectPreload) ->
           geo.mapOptions = createMapOptions
           unless cartoParsed.bounding_polygon?.paths?
             googleMap = """
-                  <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  apiKey="#{gMapsApiKey}">
+                  <google-map id="transect-viewport" latitude="#{project.lat}" longitude="#{project.lng}" fit-to-markers map-type="hybrid" disable-default-ui  api-key="#{gMapsApiKey}">
                   </google-map>
             """
           googleMap ?= ""
@@ -1208,12 +1208,7 @@ startEditorUploader = ->
             switch longType
               # Fuck you MS, and your terrible MIME types
               when "vnd.openxmlformats-officedocument.spreadsheetml.sheet", "vnd.ms-excel"
-                if p$("#replace-data-toggle").checked
-                  # Replace
-                  excelHandler linkPath
-                else
-                  # Append
-                  excelHandler2(linkPath)
+                excelHandler2(linkPath)
               when "zip", "x-zip-compressed"
                 # Some servers won't read it as the crazy MS mime type
                 # But as a zip, instead. So, check the extension.
@@ -1239,7 +1234,6 @@ startEditorUploader = ->
 excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
   startLoad()
   $("#validator-progress-container").remove()
-  renderValidateProgress("#upload-progress-container")
   helperApi = "#{helperDir}excelHelper.php"
   correctedPath = path
   if path.search(helperDir) isnt -1
@@ -1265,7 +1259,16 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     uploadedData = result.data
     _adp.parsedUploadedData = result.data
     unless typeof callbackSkipsRevalidate is "function"
-      revalidateAndUpdateData(result)
+      if p$("#replace-data-toggle").checked
+        # Replace
+        # Show the dialog
+        revalidateAndUpdateData false, false, false, false, true
+        console.info "Starting newGeoDataHandler to handle a replacement dataset"
+        newGeoDataHandler result.data
+      else
+        # Update
+        console.info "Starting revalidateAndUpdateData to handle an update"
+        revalidateAndUpdateData(result)
     else
       console.warn "Skipping Revalidator() !"
       callbackSkipsRevalidate(result)
@@ -1277,7 +1280,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
   false
 
 
-revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly = false, skipSave = false) ->
+revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly = false, skipSave = false, onlyDialog = false) ->
   unless $("#upload-progress-dialog").exists()
     html = renderValidateProgress("dont-exist", true)
     dialogHtml = """
@@ -1299,9 +1302,11 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
     """
     $("#upload-progress-dialog").remove()
     $("body").append dialogHtml
-    safariDialogHelper "#upload-progress-dialog"
     $("#close-overlay").click ->
       p$("#upload-progress-dialog").close()
+  safariDialogHelper "#upload-progress-dialog"
+  if onlyDialog
+    return false
   try
     cartoData = JSON.parse _adp.projectData.carto_id.unescape()
     _adp.cartoData = cartoData
