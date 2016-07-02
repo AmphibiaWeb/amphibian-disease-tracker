@@ -1398,7 +1398,7 @@ fetchCitation = (citationQuery, callback) ->
   postUrl = "https://api.crossref.org/works/"
   eQ = encodeURIComponent citationQuery
   totalUrl = "#{postUrl}#{citationQuery}"
-  $.get postUrl, "", "json"
+  $.get totalUrl, "", "json"
   .done (result) ->
     j = result.message
     authors = new Array()
