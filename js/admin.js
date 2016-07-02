@@ -3191,16 +3191,16 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
         revalidateAndUpdateData(false, false, false, false, true);
         console.info("Starting newGeoDataHandler to handle a replacement dataset");
         _adp.projectIdentifierString = "t" + md5(_adp.projectId + _adp.projectData.author + Date.now());
-        html = "<div class=\"alert alert-info\" id=\"still-processing\">\n  Please do not close this window until your upload has finished. As long as this message is showing, your processing is still incomplete.\n</div>";
-        $("#species-list").after(html);
+        html = "<div class=\"row\">\n<div class=\"alert alert-info col-xs-12\" id=\"still-processing\">\n  Please do not close this window until your upload has finished. As long as this message is showing, your processing is still incomplete.\n</div>\n</div>";
+        $("#validator-progress-container").before(html);
         newGeoDataHandler(result.data, false, function(tableName, pointCoords) {
           console.info("Upload and save complete", tableName);
           startLoad();
           return finalizeData(true, function(readyPostData) {
             console.info("Successfully finalized data", readyPostData);
             $("#still-processing").remove();
-            html = "<div class=\"alert alert-warning\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>";
-            $("#species-list").after(html);
+            html = "<div class=\"row\">\n<div class=\"alert alert-warning center-block text-center col-xs-8\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>\n</div>";
+            $("#validator-progress-container").before(html);
             _adp.projectData = readyPostData;
             return stopLoad();
           });
