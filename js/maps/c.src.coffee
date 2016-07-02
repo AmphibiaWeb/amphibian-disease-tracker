@@ -1415,7 +1415,7 @@ fetchCitation = (citationQuery, callback) ->
       if i > 2
         authors.push "et al"
         break
-    published = j["published-print"]["date-parts"][0][0] ? j["published-online"]["date-parts"][0][0] ? "In press"
+    published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
     issue = "(#{j.issue})" ? ""
     try
       citation = """
