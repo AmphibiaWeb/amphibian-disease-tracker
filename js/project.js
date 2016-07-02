@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -742,6 +742,22 @@ sqlQueryBox = function() {
   if (!$("#project-sql-query-box").exists()) {
     html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
     $("main").append(html);
+  }
+  return false;
+};
+
+showCitation = function() {
+  var doi;
+  doi = p$("paper-input[label='DOI']").value;
+  if (!$("#citation-pop").exists()) {
+    fetchCitation(doi, function(citation) {
+      var html;
+      html = "<paper-dialog id=\"citation-pop\">\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\">\n        " + citation + "\n      </paper-textarea>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close<paper-button>\n  </div>\n</paper-dialog>";
+      $("body").append(html);
+      return safariDialogHelper("#citation-pop");
+    });
+  } else {
+    p$("#citation-pop").open();
   }
   return false;
 };
