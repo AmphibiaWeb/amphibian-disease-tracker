@@ -2236,7 +2236,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       geo.cartoUrl = dataVisUrl
       postConfig()
 
-getColumnObj = ->
+getColumnObj = (forceBase = false) ->
   columnDatatype =
     id: "int"
     collectionID: "varchar"
@@ -2262,7 +2262,7 @@ getColumnObj = ->
     originalTaxa: "varchar"
     fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
     the_geom: "varchar"
-  if _adp.activeCols?
+  if _adp.activeCols? and not forceBase
     return _adp.activeCols
   columnDatatype
 
@@ -2412,7 +2412,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       # Uses DarwinCore terms
       # http://www.biscicol.org/biocode-fims/templates.jsp#
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
-      columnDatatype = getColumnObj()
+      columnDatatype = getColumnObj(true)
       # Construct the SQL query
       switch operation
         when "edit"

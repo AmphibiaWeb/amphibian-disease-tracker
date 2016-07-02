@@ -2777,8 +2777,11 @@ createMap = function(dataVisIdentifier, targetId, options, callback) {
   }
 };
 
-getColumnObj = function() {
+getColumnObj = function(forceBase) {
   var columnDatatype;
+  if (forceBase == null) {
+    forceBase = false;
+  }
   columnDatatype = {
     id: "int",
     collectionID: "varchar",
@@ -2805,7 +2808,7 @@ getColumnObj = function() {
     fimsExtra: "json",
     the_geom: "varchar"
   };
-  if (_adp.activeCols != null) {
+  if ((_adp.activeCols != null) && !forceBase) {
     return _adp.activeCols;
   }
   return columnDatatype;
@@ -2946,7 +2949,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         ]
       };
       dataGeometry = "ST_AsBinary(" + (JSON.stringify(geoJson)) + ", 4326)";
-      columnDatatype = getColumnObj();
+      columnDatatype = getColumnObj(true);
       switch (operation) {
         case "edit":
           sqlQuery = "UPDATE " + dataTable + " ";
