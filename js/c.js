@@ -1838,7 +1838,7 @@ fetchCitation = function(citationQuery, callback) {
   postUrl = "https://api.crossref.org/works/";
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
-  $.get(postUrl, "", "json").done(function(result) {
+  $.get(totalUrl, "", "json").done(function(result) {
     var author, authorString, authors, citation, givenPart, i, initials, initialsArray, j, l, len, len1, m, n, ref;
     j = result.message;
     authors = new Array();
