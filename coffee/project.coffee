@@ -718,11 +718,11 @@ showCitation = ->
           </div>
         </paper-dialog-scrollable>
         <div class="buttons">
-          <paper-button dialog-dismiss>Close</paper-button>
           <paper-button class="click" data-newtab="true" data-href="#{url}">
             <iron-icon icon="icons:open-in-new"></iron-icon>
             Open
           </paper-button>
+          <paper-button dialog-dismiss>Close</paper-button>
         </div>
       </paper-dialog>
       """

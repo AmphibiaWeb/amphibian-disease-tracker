@@ -440,7 +440,7 @@ $loginStatus = getLoginState();
                ?>
             <paper-input readonly label="DOI" class="<?php echo $class; ?>" value="<?php echo $project['publication']; ?>"></paper-input>
             <paper-fab icon="icons:description" class="materialblue click" data-function="showCitation" data-toggle="tooltip" title="Show Citation" <?php echo $hidden; ?>></paper-fab>
-          </div>>
+          </div>
           <div class="row">
             <paper-input readonly label="Project Contact" value="<?php echo $authorData['name']; ?>" class="col-xs-9 col-md-11"></paper-input>
             <paper-fab icon="social:person" class="materialblue is-user" data-name="<?php echo $authorData['name']; ?>"></paper-fab>
