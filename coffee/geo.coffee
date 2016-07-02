@@ -975,7 +975,11 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             for column, value of row
               # Loop data ....
               if i is 0
-                columnNamesList.push "#{column} #{columnDatatype[column]}"
+                lowCol = column.toLowerCase()
+                columnDef = columnDatatype[column] ? columnDatatype[lowCol]
+                if typeof columnDef is "object"
+                  columnDef = columnDef.type
+                columnNamesList.push "#{column} #{columnDef}"
               try
                 # Strings only!
                 value = value.replace("'", "&#95;")
