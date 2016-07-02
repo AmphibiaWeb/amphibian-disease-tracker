@@ -646,7 +646,7 @@ finalizeData = (skipFields = false, callback) ->
           postData.dataset_arks = dataAttrs.data_ark.join ","
           postData.project_dir_identifier = getUploadIdentifier()
           # Public or private?
-          postData.public = p$("#data-encumbrance-toggle").checked
+          postData.public = p$("#data-encumbrance-toggle")?.checked ? p$("#public").checked
           if _adp?.data?.taxa?.validated?
             taxonData = _adp.data.taxa.validated
             postData.sampled_clades = _adp.data.taxa.clades.join ","
@@ -1807,7 +1807,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
 
     if isNull _adp.projectIdentifierString
       # Create a project identifier from the user hash and project title
-      projectIdentifier = "t" + md5(p$("#project-title").value + author)
+      projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now())
       _adp.projectIdentifierString = projectIdentifier
     else
       projectIdentifier = _adp.projectIdentifierString
@@ -3335,6 +3335,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
         # Show the dialog
         revalidateAndUpdateData false, false, false, false, true
         console.info "Starting newGeoDataHandler to handle a replacement dataset"
+        _adp.projectIdentifierString = "t" + md5(p$("#project-title")?.value + author + Date.now())
         newGeoDataHandler result.data, false, (tableName, pointCoords) ->
           console.info "Upload and save complete", tableName
           # console.log "Got coordinates", pointCoords
