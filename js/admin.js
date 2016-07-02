@@ -3928,6 +3928,10 @@ $(function() {
     d = new Date(_adp.postedSaveTimestamp);
     alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");
+    $("#outdated-warning").remove();
+    delay(300, function() {
+      return $("#outdated-warning").remove();
+    });
     return $("#offline-save").click(function() {
       return saveEditorData(false, function() {
         return document.location.reload(true);
