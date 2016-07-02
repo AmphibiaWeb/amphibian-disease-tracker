@@ -1416,7 +1416,7 @@ fetchCitation = (citationQuery, callback) ->
         authors.push "et al"
         break
     published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
-    issue = "(#{j.issue})" ? ""
+    issue = if j.issue? then "(#{j.issue})" else ""
     try
       citation = """
       #{authors.join(", ")}. #{j.title[0]}. #{j["container-title"][0]} #{published};#{j.volume}#{issue}:#{j.page}.
@@ -1429,7 +1429,7 @@ fetchCitation = (citationQuery, callback) ->
       """      
     console.log citation
     if typeof callback is "function"
-      callback citation, j.link.URL
+      callback citation, j.link[0].URL
     false
   .fail (result, status) ->
     console.error "Failed to fetch citation"

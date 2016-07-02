@@ -55,6 +55,7 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html"/>
     <link rel="import" href="bower_components/paper-toast/paper-toast.html"/>
     <link rel="import" href="bower_components/paper-input/paper-input.html"/>
+    <link rel="import" href="bower_components/paper-input/paper-textarea.html"/>
     <link rel="import" href="bower_components/paper-spinner/paper-spinner.html"/>
     <link rel="import" href="bower_components/paper-slider/paper-slider.html"/>
     <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
