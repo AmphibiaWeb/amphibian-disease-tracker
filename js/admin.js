@@ -2221,7 +2221,7 @@ loadEditor = function(projectPreload) {
           };
           geo.mapOptions = createMapOptions;
           if (((ref2 = cartoParsed.bounding_polygon) != null ? ref2.paths : void 0) == null) {
-            googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui  apiKey=\"" + gMapsApiKey + "\">\n</google-map>";
+            googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + project.lat + "\" longitude=\"" + project.lng + "\" fit-to-markers map-type=\"hybrid\" disable-default-ui  api-key=\"" + gMapsApiKey + "\">\n</google-map>";
           }
           if (googleMap == null) {
             googleMap = "";
@@ -3100,11 +3100,7 @@ startEditorUploader = function() {
             switch (longType) {
               case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               case "vnd.ms-excel":
-                if (p$("#replace-data-toggle").checked) {
-                  excelHandler(linkPath);
-                } else {
-                  excelHandler2(linkPath);
-                }
+                excelHandler2(linkPath);
                 break;
               case "zip":
               case "x-zip-compressed":
@@ -3144,7 +3140,6 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   }
   startLoad();
   $("#validator-progress-container").remove();
-  renderValidateProgress("#upload-progress-container");
   helperApi = helperDir + "excelHelper.php";
   correctedPath = path;
   if (path.search(helperDir) !== -1) {
@@ -3170,7 +3165,14 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
     uploadedData = result.data;
     _adp.parsedUploadedData = result.data;
     if (typeof callbackSkipsRevalidate !== "function") {
-      revalidateAndUpdateData(result);
+      if (p$("#replace-data-toggle").checked) {
+        revalidateAndUpdateData(false, false, false, false, true);
+        console.info("Starting newGeoDataHandler to handle a replacement dataset");
+        newGeoDataHandler(result.data);
+      } else {
+        console.info("Starting revalidateAndUpdateData to handle an update");
+        revalidateAndUpdateData(result);
+      }
     } else {
       console.warn("Skipping Revalidator() !");
       callbackSkipsRevalidate(result);
@@ -3184,7 +3186,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   return false;
 };
 
-revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave) {
+revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave, onlyDialog) {
   var cartoData, dataCallback, dialogHtml, error1, html, link, passedData, path, ref, ref1, skipHandler;
   if (newFilePath == null) {
     newFilePath = false;
@@ -3198,15 +3200,21 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
   if (skipSave == null) {
     skipSave = false;
   }
+  if (onlyDialog == null) {
+    onlyDialog = false;
+  }
   if (!$("#upload-progress-dialog").exists()) {
     html = renderValidateProgress("dont-exist", true);
     dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
     $("#upload-progress-dialog").remove();
     $("body").append(dialogHtml);
-    safariDialogHelper("#upload-progress-dialog");
     $("#close-overlay").click(function() {
       return p$("#upload-progress-dialog").close();
     });
+  }
+  safariDialogHelper("#upload-progress-dialog");
+  if (onlyDialog) {
+    return false;
   }
   try {
     cartoData = JSON.parse(_adp.projectData.carto_id.unescape());
