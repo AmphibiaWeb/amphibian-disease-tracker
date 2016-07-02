@@ -1834,13 +1834,34 @@ linkUsers = function(selector) {
 };
 
 fetchCitation = function(citationQuery, callback) {
-  var eQ, postUrl;
-  postUrl = "https://mickschroeder.com/citation/";
+  var eQ, postUrl, totalUrl;
+  postUrl = "https://api.crossref.org/works/";
   eQ = encodeURIComponent(citationQuery);
-  $.get(postUrl, "q=" + eQ, "text").done(function(result) {
-    var citation, dom;
-    dom = $.parseHTML(result);
-    citation = dom.find("#citation_formatted").text();
+  totalUrl = "" + postUrl + citationQuery;
+  $.get(postUrl, "", "json").done(function(result) {
+    var author, authorString, authors, citation, givenPart, i, initials, initialsArray, j, l, len, len1, m, n, ref;
+    j = result.message;
+    authors = new Array();
+    i = 0;
+    ref = j.author;
+    for (l = 0, len = ref.length; l < len; l++) {
+      author = ref[l];
+      initialsArray = author.given.split(" ");
+      initials = "";
+      for (m = 0, len1 = initialsArray.length; m < len1; m++) {
+        givenPart = initialsArray[m];
+        n = givenPart.slice(0, 1);
+        initials += n;
+      }
+      authorString = author.family + " " + initials;
+      authors.push(authorString);
+      ++i;
+      if (i > 2) {
+        authors.push("et al.");
+        break;
+      }
+    }
+    citation = (authors.join(", ")) + " " + j.title[0] + ". " + j["container-title"][0] + " " + j["published-print"]["date-parts"][0][0] + ";" + j.volume + "(" + j.issue + "):" + j.page;
     console.log(citation);
     if (typeof callback === "function") {
       callback(citation);

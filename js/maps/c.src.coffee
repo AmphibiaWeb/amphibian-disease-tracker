@@ -1395,12 +1395,29 @@ linkUsers = (selector = ".is-user") ->
 
 
 fetchCitation = (citationQuery, callback) ->
-  postUrl = "https://mickschroeder.com/citation/"
+  postUrl = "https://api.crossref.org/works/"
   eQ = encodeURIComponent citationQuery
-  $.get postUrl, "q=#{eQ}", "text"
+  totalUrl = "#{postUrl}#{citationQuery}"
+  $.get postUrl, "", "json"
   .done (result) ->
-    dom = $.parseHTML(result)
-    citation = dom.find("#citation_formatted").text()
+    j = result.message
+    authors = new Array()
+    i = 0
+    for author in j.author
+      initialsArray = author.given.split " "
+      initials = ""
+      for givenPart in initialsArray
+        n = givenPart.slice 0, 1
+        initials += n
+      authorString = "#{author.family} #{initials}"
+      authors.push authorString
+      ++i
+      if i > 2
+        authors.push "et al."
+        break
+    citation = """
+    #{authors.join(", ")} #{j.title[0]}. #{j["container-title"][0]} #{j["published-print"]["date-parts"][0][0]};#{j.volume}(#{j.issue}):#{j.page}
+    """
     console.log citation
     if typeof callback is "function"
       callback citation
