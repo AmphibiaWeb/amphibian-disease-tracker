@@ -712,7 +712,7 @@ showCitation = ->
         <h2>Citation</h2>
         <paper-dialog-scrollable>
           <div class="pop-contents">
-            <paper-textarea label="Citation" id="popped-citation">
+            <paper-textarea label="Citation" id="popped-citation" readonly>
               #{citation}
             </paper-textarea>
           </div>
@@ -739,6 +739,7 @@ showCitation = ->
     p$("#citation-pop").open()
   false
 
+window.showCitation = showCitation
 
 $ ->
   _adp.projectId = uri.o.param "id"
