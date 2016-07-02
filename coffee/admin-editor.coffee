@@ -1264,7 +1264,7 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
         # Show the dialog
         revalidateAndUpdateData false, false, false, false, true
         console.info "Starting newGeoDataHandler to handle a replacement dataset"
-        _adp.projectIdentifierString = "t" + md5(p$("#project-title")?.value + author + Date.now())
+        _adp.projectIdentifierString = "t" + md5(_adp.projectId + _adp.projectData.author + Date.now())
         newGeoDataHandler result.data, false, (tableName, pointCoords) ->
           console.info "Upload and save complete", tableName
           # console.log "Got coordinates", pointCoords

@@ -3166,7 +3166,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath + "&sheets=Samples";
   $.get(helperApi, args, "json").done(function(result) {
-    var nameArr, ref, rows;
+    var nameArr, rows;
     console.info("Got result", result);
     if (result.status === false) {
       bsAlert("There was a problem verifying your upload. Please try again.", "danger");
@@ -3185,7 +3185,7 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
       if (p$("#replace-data-toggle").checked) {
         revalidateAndUpdateData(false, false, false, false, true);
         console.info("Starting newGeoDataHandler to handle a replacement dataset");
-        _adp.projectIdentifierString = "t" + md5(((ref = p$("#project-title")) != null ? ref.value : void 0) + author + Date.now());
+        _adp.projectIdentifierString = "t" + md5(_adp.projectId + _adp.projectData.author + Date.now());
         newGeoDataHandler(result.data, false, function(tableName, pointCoords) {
           console.info("Upload and save complete", tableName);
           return finalizeData(true, function(readyPostData) {
