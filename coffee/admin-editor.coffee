@@ -1961,6 +1961,9 @@ $ ->
     </button>
     """
     bsAlert alertHtml, "info"
+    $("#outdated-warning").remove()
+    delay 300, ->
+      $("#outdated-warning").remove()
     $("#offline-save").click ->
       saveEditorData false,  ->
         document.location.reload(true)
