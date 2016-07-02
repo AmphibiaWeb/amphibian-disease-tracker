@@ -481,7 +481,7 @@ loadCreateNewProject = ->
   bindClicks()
   false
 
-finalizeData = ->
+finalizeData = (skipFields = false, callback) ->
   ###
   # Make sure everythign is uploaded, validate, and POST to the server
   ###
@@ -519,17 +519,20 @@ finalizeData = ->
         dataAttrs.data_ark ?= new Array()
         dataAttrs.data_ark.push  "#{result.ark}::#{dataFileParams.fileName}"
         postData = new Object()
-        for el in $(".project-field")
-          if $(el).hasClass("iron-autogrow-textarea-0")
-            input = $($(el).get(0).textarea).val()
-          else
-            input = $(el).val()
-          key = $(el).attr("data-field")
-          unless isNull key
-            if $(el).attr("type") is "number"
-              postData[key] = toInt input
+        unless skipFields
+          for el in $(".project-field")
+            if $(el).hasClass("iron-autogrow-textarea-0")
+              input = $($(el).get(0).textarea).val()
             else
-              postData[key] = input
+              input = $(el).val()
+            key = $(el).attr("data-field")
+            unless isNull key
+              if $(el).attr("type") is "number"
+                postData[key] = toInt input
+              else
+                postData[key] = input
+        else
+          postData = _adp.projectData
         # postData.boundingBox = geo.boundingBox
         # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
         # Sampled species
@@ -658,6 +661,11 @@ finalizeData = ->
               if postData.includes_anura? isnt false and postData.includes_caudata? isnt false and postData.includes_gymnophiona? isnt false then break
           args = "perform=new&data=#{jsonTo64(postData)}"
           console.info "Data object constructed:", postData
+          if skipFields
+            if typeof callback is "function"
+              callback postData
+            stopLoad()
+            return postData
           $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             if result.status is true
@@ -1623,7 +1631,7 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   # TODO FINISH THIS
   false
 
-newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
+newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCallback) ->
   ###
   # Data expected in form
   #
@@ -1920,6 +1928,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
             window.mapBuilder.points = new Array()
             $("#init-map-build").attr "disabled", "disabled"
             $("#init-map-build .points-count").text window.mapBuilder.points.length
+            if typeof postCartoCallback is "function"
+              postCartoCallback(table, coords)
       else
         if typeof skipCarto is "function"
           skipCarto validatedData, projectIdentifier

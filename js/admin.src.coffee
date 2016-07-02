@@ -481,7 +481,7 @@ loadCreateNewProject = ->
   bindClicks()
   false
 
-finalizeData = ->
+finalizeData = (skipFields = false, callback) ->
   ###
   # Make sure everythign is uploaded, validate, and POST to the server
   ###
@@ -519,17 +519,20 @@ finalizeData = ->
         dataAttrs.data_ark ?= new Array()
         dataAttrs.data_ark.push  "#{result.ark}::#{dataFileParams.fileName}"
         postData = new Object()
-        for el in $(".project-field")
-          if $(el).hasClass("iron-autogrow-textarea-0")
-            input = $($(el).get(0).textarea).val()
-          else
-            input = $(el).val()
-          key = $(el).attr("data-field")
-          unless isNull key
-            if $(el).attr("type") is "number"
-              postData[key] = toInt input
+        unless skipFields
+          for el in $(".project-field")
+            if $(el).hasClass("iron-autogrow-textarea-0")
+              input = $($(el).get(0).textarea).val()
             else
-              postData[key] = input
+              input = $(el).val()
+            key = $(el).attr("data-field")
+            unless isNull key
+              if $(el).attr("type") is "number"
+                postData[key] = toInt input
+              else
+                postData[key] = input
+        else
+          postData = _adp.projectData
         # postData.boundingBox = geo.boundingBox
         # Species lookup for includes_anura, includes_caudata, and includes_gymnophiona
         # Sampled species
@@ -658,6 +661,11 @@ finalizeData = ->
               if postData.includes_anura? isnt false and postData.includes_caudata? isnt false and postData.includes_gymnophiona? isnt false then break
           args = "perform=new&data=#{jsonTo64(postData)}"
           console.info "Data object constructed:", postData
+          if skipFields
+            if typeof callback is "function"
+              callback postData
+            stopLoad()
+            return postData
           $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             if result.status is true
@@ -1623,7 +1631,7 @@ removeDataFile = (removeFile = dataFileParams.fileName, unsetHDF = true) ->
   # TODO FINISH THIS
   false
 
-newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
+newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCallback) ->
   ###
   # Data expected in form
   #
@@ -1920,6 +1928,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false) ->
             window.mapBuilder.points = new Array()
             $("#init-map-build").attr "disabled", "disabled"
             $("#init-map-build .points-count").text window.mapBuilder.points.length
+            if typeof postCartoCallback is "function"
+              postCartoCallback(table, coords)
       else
         if typeof skipCarto is "function"
           skipCarto validatedData, projectIdentifier
@@ -3325,7 +3335,45 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
         # Show the dialog
         revalidateAndUpdateData false, false, false, false, true
         console.info "Starting newGeoDataHandler to handle a replacement dataset"
-        newGeoDataHandler result.data
+        newGeoDataHandler result.data, false, (tableName, pointCoords) ->
+          console.info "Upload and save complete", tableName
+          # console.log "Got coordinates", pointCoords
+          # try
+          #   cartoParsed = JSON.parse _adp.carto_id
+          # else
+          #   cartoParsed = new Object()
+          # # Parse out the changed geo data
+          # cartoParsed.table = tableName
+          # cartoParsed.raw_data =
+          #   hasDataFile: true
+          #   fileName: dataFileParams.fileName
+          #   filePath: dataFileParams.filePath
+          # # Get new bounds
+          # createConvexHull(geo.boundingBox)
+          # simpleHull = new Array()
+          # for p in geo.canonicalHullObject.hull
+          #   simpleHull.push p.getObj()
+          # cartoParsed.bounding_polygon = simpleHull
+          # _adp.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.filePath}"
+          # _adp.bounding_box_n = geo.computedBoundingRectangle.north
+          # _adp.bounding_box_s = geo.computedBoundingRectangle.south
+          # _adp.bounding_box_e = geo.computedBoundingRectangle.east
+          # _adp.bounding_box_w = geo.computedBoundingRectangle.west
+          # # Get new center
+          # # New locality
+          # _adp.locality = geo.computedLocality
+          # # New dataset ark
+          finalizeData true, (readyPostData) ->
+            console.info "Successfully finalized data", readyPostData
+            html = """
+            <div class="alert alert-warning">
+              <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>
+                If you don't, your new data <em>will not be saved</em>!
+            </div>
+            """
+            $("#species-list").after html
+            # _adp.carto_id = JSON.stringify cartoParsed
+            _adp.projectData = readyPostData
       else
         # Update
         console.info "Starting revalidateAndUpdateData to handle an update"

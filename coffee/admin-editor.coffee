@@ -1264,7 +1264,45 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
         # Show the dialog
         revalidateAndUpdateData false, false, false, false, true
         console.info "Starting newGeoDataHandler to handle a replacement dataset"
-        newGeoDataHandler result.data
+        newGeoDataHandler result.data, false, (tableName, pointCoords) ->
+          console.info "Upload and save complete", tableName
+          # console.log "Got coordinates", pointCoords
+          # try
+          #   cartoParsed = JSON.parse _adp.carto_id
+          # else
+          #   cartoParsed = new Object()
+          # # Parse out the changed geo data
+          # cartoParsed.table = tableName
+          # cartoParsed.raw_data =
+          #   hasDataFile: true
+          #   fileName: dataFileParams.fileName
+          #   filePath: dataFileParams.filePath
+          # # Get new bounds
+          # createConvexHull(geo.boundingBox)
+          # simpleHull = new Array()
+          # for p in geo.canonicalHullObject.hull
+          #   simpleHull.push p.getObj()
+          # cartoParsed.bounding_polygon = simpleHull
+          # _adp.sample_raw_data = "https://amphibiandisease.org/#{dataFileParams.filePath}"
+          # _adp.bounding_box_n = geo.computedBoundingRectangle.north
+          # _adp.bounding_box_s = geo.computedBoundingRectangle.south
+          # _adp.bounding_box_e = geo.computedBoundingRectangle.east
+          # _adp.bounding_box_w = geo.computedBoundingRectangle.west
+          # # Get new center
+          # # New locality
+          # _adp.locality = geo.computedLocality
+          # # New dataset ark
+          finalizeData true, (readyPostData) ->
+            console.info "Successfully finalized data", readyPostData
+            html = """
+            <div class="alert alert-warning">
+              <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>
+                If you don't, your new data <em>will not be saved</em>!
+            </div>
+            """
+            $("#species-list").after html
+            # _adp.carto_id = JSON.stringify cartoParsed
+            _adp.projectData = readyPostData
       else
         # Update
         console.info "Starting revalidateAndUpdateData to handle an update"

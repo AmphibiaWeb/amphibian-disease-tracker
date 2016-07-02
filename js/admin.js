@@ -346,12 +346,15 @@ loadCreateNewProject = function() {
   return false;
 };
 
-finalizeData = function() {
+finalizeData = function(skipFields, callback) {
+  var author, dataCheck, e, error1, file, ref, title;
+  if (skipFields == null) {
+    skipFields = false;
+  }
 
   /*
    * Make sure everythign is uploaded, validate, and POST to the server
    */
-  var author, dataCheck, e, error1, file, ref, title;
   startLoad();
   try {
     dataCheck = true;
@@ -396,22 +399,26 @@ finalizeData = function() {
         }
         dataAttrs.data_ark.push(result.ark + "::" + dataFileParams.fileName);
         postData = new Object();
-        ref1 = $(".project-field");
-        for (l = 0, len = ref1.length; l < len; l++) {
-          el = ref1[l];
-          if ($(el).hasClass("iron-autogrow-textarea-0")) {
-            input = $($(el).get(0).textarea).val();
-          } else {
-            input = $(el).val();
-          }
-          key = $(el).attr("data-field");
-          if (!isNull(key)) {
-            if ($(el).attr("type") === "number") {
-              postData[key] = toInt(input);
+        if (!skipFields) {
+          ref1 = $(".project-field");
+          for (l = 0, len = ref1.length; l < len; l++) {
+            el = ref1[l];
+            if ($(el).hasClass("iron-autogrow-textarea-0")) {
+              input = $($(el).get(0).textarea).val();
             } else {
-              postData[key] = input;
+              input = $(el).val();
+            }
+            key = $(el).attr("data-field");
+            if (!isNull(key)) {
+              if ($(el).attr("type") === "number") {
+                postData[key] = toInt(input);
+              } else {
+                postData[key] = input;
+              }
             }
           }
+        } else {
+          postData = _adp.projectData;
         }
         center = getMapCenter(geo.boundingBox);
         excursion = 0;
@@ -552,6 +559,13 @@ finalizeData = function() {
           }
           args = "perform=new&data=" + (jsonTo64(postData));
           console.info("Data object constructed:", postData);
+          if (skipFields) {
+            if (typeof callback === "function") {
+              callback(postData);
+            }
+            stopLoad();
+            return postData;
+          }
           return $.post(adminParams.apiTarget, args, "json").done(function(result) {
             if (result.status === true) {
               bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
@@ -1594,7 +1608,7 @@ removeDataFile = function(removeFile, unsetHDF) {
   return false;
 };
 
-newGeoDataHandler = function(dataObject, skipCarto) {
+newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
   var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
   if (dataObject == null) {
     dataObject = new Object();
@@ -1941,7 +1955,10 @@ newGeoDataHandler = function(dataObject, skipCarto) {
           return createMap2(coords, options, function() {
             window.mapBuilder.points = new Array();
             $("#init-map-build").attr("disabled", "disabled");
-            return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+            $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+            if (typeof postCartoCallback === "function") {
+              return postCartoCallback(table, coords);
+            }
           });
         });
       } else {
@@ -3168,7 +3185,16 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
       if (p$("#replace-data-toggle").checked) {
         revalidateAndUpdateData(false, false, false, false, true);
         console.info("Starting newGeoDataHandler to handle a replacement dataset");
-        newGeoDataHandler(result.data);
+        newGeoDataHandler(result.data, false, function(tableName, pointCoords) {
+          console.info("Upload and save complete", tableName);
+          return finalizeData(true, function(readyPostData) {
+            var html;
+            console.info("Successfully finalized data", readyPostData);
+            html = "<div class=\"alert alert-warning\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>";
+            $("#species-list").after(html);
+            return _adp.projectData = readyPostData;
+          });
+        });
       } else {
         console.info("Starting revalidateAndUpdateData to handle an update");
         revalidateAndUpdateData(result);
