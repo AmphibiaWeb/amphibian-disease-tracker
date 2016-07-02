@@ -621,14 +621,17 @@ finalizeData = (skipFields = false, callback) ->
             postData.bounding_box_e = geo.computedBoundingRectangle.east
             postData.bounding_box_w = geo.computedBoundingRectangle.west
           postData.author = $.cookie("#{adminParams.domain}_link")
-          authorData =
-            name: p$("#project-author").value
-            contact_email: p$("#author-email").value
-            affiliation: p$("#project-affiliation").value
-            lab: p$("#project-pi").value
-            diagnostic_lab: p$("#project-lab").value
-            entry_date: Date.now()
-          postData.author_data = JSON.stringify authorData
+          unless _adp?.projectData?.author_data?
+            authorData =
+              name: p$("#project-author").value
+              contact_email: p$("#author-email").value
+              affiliation: p$("#project-affiliation").value
+              lab: p$("#project-pi").value
+              diagnostic_lab: p$("#project-lab").value
+              entry_date: Date.now()
+            postData.author_data = JSON.stringify authorData
+          else
+            postData.author_data = _adp.projectData.author_data
           cartoData =
             table: geo.dataTable
             raw_data: dataFileParams

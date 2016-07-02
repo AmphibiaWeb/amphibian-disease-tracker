@@ -500,7 +500,7 @@ finalizeData = function(skipFields, callback) {
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref7, ref8, ref9, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref11, ref7, ref8, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -510,15 +510,19 @@ finalizeData = function(skipFields, callback) {
             postData.bounding_box_w = geo.computedBoundingRectangle.west;
           }
           postData.author = $.cookie(adminParams.domain + "_link");
-          authorData = {
-            name: p$("#project-author").value,
-            contact_email: p$("#author-email").value,
-            affiliation: p$("#project-affiliation").value,
-            lab: p$("#project-pi").value,
-            diagnostic_lab: p$("#project-lab").value,
-            entry_date: Date.now()
-          };
-          postData.author_data = JSON.stringify(authorData);
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref7 = _adp.projectData) != null ? ref7.author_data : void 0 : void 0) == null) {
+            authorData = {
+              name: p$("#project-author").value,
+              contact_email: p$("#author-email").value,
+              affiliation: p$("#project-affiliation").value,
+              lab: p$("#project-pi").value,
+              diagnostic_lab: p$("#project-lab").value,
+              entry_date: Date.now()
+            };
+            postData.author_data = JSON.stringify(authorData);
+          } else {
+            postData.author_data = _adp.projectData.author_data;
+          }
           cartoData = {
             table: geo.dataTable,
             raw_data: dataFileParams,
@@ -540,8 +544,8 @@ finalizeData = function(skipFields, callback) {
           }
           postData.dataset_arks = dataAttrs.data_ark.join(",");
           postData.project_dir_identifier = getUploadIdentifier();
-          postData["public"] = (ref7 = (ref8 = p$("#data-encumbrance-toggle")) != null ? ref8.checked : void 0) != null ? ref7 : p$("#public").checked;
-          if ((typeof _adp !== "undefined" && _adp !== null ? (ref9 = _adp.data) != null ? (ref10 = ref9.taxa) != null ? ref10.validated : void 0 : void 0 : void 0) != null) {
+          postData["public"] = (ref8 = (ref9 = p$("#data-encumbrance-toggle")) != null ? ref9.checked : void 0) != null ? ref8 : p$("#public").checked;
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref10 = _adp.data) != null ? (ref11 = ref10.taxa) != null ? ref11.validated : void 0 : void 0 : void 0) != null) {
             taxonData = _adp.data.taxa.validated;
             postData.sampled_clades = _adp.data.taxa.clades.join(",");
             postData.sampled_species = _adp.data.taxa.list.join(",");
