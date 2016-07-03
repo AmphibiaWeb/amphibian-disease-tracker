@@ -1126,6 +1126,7 @@ startEditorUploader = ->
           </paper-dialog-scrollable>
           <div class="buttons">
             <paper-button id="close-overlay">Close</paper-button>
+            <paper-button id="save-now-upload" disabled>Save</paper-button>
           </div>
         </paper-dialog>
         """
