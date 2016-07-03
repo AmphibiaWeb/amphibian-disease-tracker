@@ -3930,10 +3930,12 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, d;
+  var alertHtml, bupid, d;
   _adp.originalProjectId = _adp.projectId.slice(0);
+  bupid = _adp.projectId;
   if (localStorage._adp != null) {
     window._adp = JSON.parse(localStorage._adp);
+    _adp.originalProjectId = bupid;
     d = new Date(_adp.postedSaveTimestamp);
     alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");

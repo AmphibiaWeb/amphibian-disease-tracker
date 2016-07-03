@@ -1948,8 +1948,10 @@ saveEditorData = (force = false, callback) ->
 
 $ ->
   _adp.originalProjectId = _adp.projectId.slice 0
+  bupid = _adp.projectId
   if localStorage._adp?
     window._adp = JSON.parse localStorage._adp
+    _adp.originalProjectId = bupid
     d = new Date _adp.postedSaveTimestamp
     alertHtml = """
     <strong>You have offline save information</strong> &#8212; did you want to save it?
