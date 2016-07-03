@@ -2490,6 +2490,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           console.info "Inserting statements of max length #{maxStatementLength}"
           longestStatement = 0
           shortestStatement = maxStatementLength
+          tempList = new Array()
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
             statements = 0
             while tempList.join(", ").length < maxStatementLength -1
