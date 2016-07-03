@@ -3999,6 +3999,10 @@ saveEditorData = (force = false, callback) ->
     try
       postData[key] = deEscape data
   # Post it
+  if _adp.originalProjectId?
+    if _adp.originalProjectId isnt _adp.projectId
+      console.warn "Mismatched IDs!", _adp.originalProjectId, _adp.projectId
+      postData.project_id = _adp.originalProjectId
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
@@ -4029,8 +4033,10 @@ saveEditorData = (force = false, callback) ->
 
 $ ->
   _adp.originalProjectId = _adp.projectId.slice 0
+  bupid = _adp.projectId
   if localStorage._adp?
     window._adp = JSON.parse localStorage._adp
+    _adp.originalProjectId = bupid
     d = new Date _adp.postedSaveTimestamp
     alertHtml = """
     <strong>You have offline save information</strong> &#8212; did you want to save it?

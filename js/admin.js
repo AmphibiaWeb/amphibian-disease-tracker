@@ -3899,6 +3899,12 @@ saveEditorData = function(force, callback) {
       postData[key] = deEscape(data);
     } catch (undefined) {}
   }
+  if (_adp.originalProjectId != null) {
+    if (_adp.originalProjectId !== _adp.projectId) {
+      console.warn("Mismatched IDs!", _adp.originalProjectId, _adp.projectId);
+      postData.project_id = _adp.originalProjectId;
+    }
+  }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
@@ -3930,10 +3936,12 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, d;
+  var alertHtml, bupid, d;
   _adp.originalProjectId = _adp.projectId.slice(0);
+  bupid = _adp.projectId;
   if (localStorage._adp != null) {
     window._adp = JSON.parse(localStorage._adp);
+    _adp.originalProjectId = bupid;
     d = new Date(_adp.postedSaveTimestamp);
     alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");
