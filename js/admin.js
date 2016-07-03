@@ -3215,6 +3215,11 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
             html = "<div class=\"row\">\n<div class=\"alert alert-warning center-block text-center col-xs-8 force-center\">\n  <strong>IMPORTANT</strong>: Remember to save your project after closing this window!<br/><br/>\n    If you don't, your new data <em>will not be saved</em>!\n</div>\n</div>";
             $("#validator-progress-container").before(html);
             _adp.projectData = readyPostData;
+            $("#save-now-upload").click(function() {
+              return saveEditorData(true, function() {
+                return document.location.reload;
+              });
+            }).removeAttr("disabled");
             return stopLoad();
           });
         });
@@ -3254,7 +3259,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
   }
   if (!$("#upload-progress-dialog").exists()) {
     html = renderValidateProgress("dont-exist", true);
-    dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n    </div>\n  </paper-dialog>";
+    dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n      <paper-button id=\"save-now-upload\" disabled>Save</paper-button>\n    </div>\n  </paper-dialog>";
     $("#upload-progress-dialog").remove();
     $("body").append(dialogHtml);
     $("#close-overlay").click(function() {
