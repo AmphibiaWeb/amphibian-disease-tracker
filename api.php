@@ -291,6 +291,11 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
 function doCartoSqlApiPush($get)
 {
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
+    
+    // error_reporting(E_ALL);
+    // ini_set('display_errors', 1);
+    // error_log('Login is running in debug mode!');
+
     $sqlQuery = decode64($get['sql_query'], true);
     if(empty($sqlQuery)) {
         $sqlQuery = base64_decode(urldecode($get["sql_query"]));
@@ -408,6 +413,12 @@ function doCartoSqlApiPush($get)
     $parsed_responses = array();
     $urls = array();
     ini_set('allow_url_fopen', true);
+    try {
+        set_time_limit(0);
+    } catch (Exception $e) {        
+        $length = 30 * sizeof($statements);
+        set_time_limit($length);
+    }
     if (!boolstr($get['blobby'])) {
         foreach ($statements as $statement) {
             $statement = trim($statement);

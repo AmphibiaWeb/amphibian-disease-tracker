@@ -1729,7 +1729,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
           #  the_geom: "varchar"
           #
           when "ContactName", "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
-            fimsExtra[column] = value
+            fimsExtra[column] = value.replace /'/mg, "&#39;"
             skipCol = true
           when "specimenDisposition"
             column = "sampleDisposition"

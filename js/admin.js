@@ -1716,7 +1716,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "quantityDetected":
           case "dilutionFactor":
           case "cycleTimeFirstDetection":
-            fimsExtra[column] = value;
+            fimsExtra[column] = value.replace(/'/mg, "&#39;");
             skipCol = true;
             break;
           case "specimenDisposition":
