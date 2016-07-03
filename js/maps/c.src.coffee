@@ -2485,6 +2485,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           # Create the final query
           # Remove the first comma of valuesList
           maxStatementLength = 4096
+          insertMaxLength = 15
           insertPlace = 0
           console.info "Inserting statements of max length #{maxStatementLength}"
           longestStatement = 0
@@ -2494,6 +2495,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             while tempList.join(", ").length < maxStatementLength -1
               ++statements
               tempList = valuesList.slice(insertPlace, insertPlace + statements)
+              if statements > insertMaxLength
+                break
             # Too big now by one
             statements--
             if statements > longestStatement
