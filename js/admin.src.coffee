@@ -1732,7 +1732,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             if typeof value is "string"
               try
                 fimsExtra[column] = value.replace /'/mg, "&#39;"
-                fimsExtra[column] = value.replace /;/mg, "&#59;"                
+                fimsExtra[column] = value.replace /"/mg, "&#34;"
+                fimsExtra[column] = value.replace /;/mg, "&#59;"
               catch
                 console.warn "Couldn't replace quotes for this:", value
                 fimsExtra[column] = value
