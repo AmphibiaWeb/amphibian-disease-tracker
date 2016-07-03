@@ -1613,7 +1613,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1716,7 +1716,16 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "quantityDetected":
           case "dilutionFactor":
           case "cycleTimeFirstDetection":
-            fimsExtra[column] = value.replace(/'/mg, "&#39;");
+            if (typeof value === "string") {
+              try {
+                fimsExtra[column] = value.replace(/'/mg, "&#39;");
+              } catch (error2) {
+                console.warn("Couldn't replace quotes for this:", value);
+                fimsExtra[column] = value;
+              }
+            } else {
+              fimsExtra[column] = value;
+            }
             skipCol = true;
             break;
           case "specimenDisposition":
@@ -1780,14 +1789,14 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
               trimmed = value.trim();
               trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
               cleanValue = trimmed;
-            } catch (error2) {
+            } catch (error3) {
               cleanValue = value;
             }
             break;
           default:
             try {
               cleanValue = value.trim();
-            } catch (error3) {
+            } catch (error4) {
               cleanValue = value;
             }
         }
@@ -1807,7 +1816,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
       dataAttrs.fimsData.push(fimsExtra);
       try {
         tRow.fimsExtra = JSON.stringify(fimsExtra);
-      } catch (error4) {
+      } catch (error5) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
@@ -1909,7 +1918,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     }
     _adp.data.pushDataUpload = totalData;
     validateData(totalData, function(validatedData) {
-      var cladeList, e, error5, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
+      var cladeList, e, error6, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
       taxonList = new Array();
       cladeList = new Array();
@@ -1938,8 +1947,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
             cladeList.push(taxon.response.validated_taxon.family);
           }
-        } catch (error5) {
-          e = error5;
+        } catch (error6) {
+          e = error6;
           console.warn("Couldn't get the family! " + e.message, taxon.response);
           console.warn(e.stack);
         }
@@ -1973,8 +1982,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
         }
       }
     });
-  } catch (error5) {
-    e = error5;
+  } catch (error6) {
+    e = error6;
     console.error("Error parsing data - " + e.message);
     console.warn(e.stack);
     message = "There was a problem parsing your data. Please check <a href=\"http://biscicol.org/biocode-fims/templates.jsp\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org FIMS requirements<span class=\"glyphicon glyphicon-new-window\"></span></a>";
