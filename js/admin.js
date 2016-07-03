@@ -2204,6 +2204,7 @@ loadEditor = function(projectPreload) {
           project.access_data.viewers = Object.toArray(project.access_data.viewers);
           console.info("Project access lists:", project.access_data);
           _adp.projectData = project;
+          _adp.originalProjectId = project.project_id;
           _adp.fetchResult = result;
           userHtml = "";
           ref1 = project.access_data.total;
@@ -3936,12 +3937,26 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, bupid, d;
-  _adp.originalProjectId = _adp.projectId.slice(0);
-  bupid = _adp.projectId;
+  var alertHtml, bupid, d, error1;
+  try {
+    _adp.originalProjectId = _adp.projectData.project_id;
+    bupid = _adp.projectData.project_id;
+  } catch (error1) {
+    delay(1000, function() {
+      var error2;
+      try {
+        _adp.originalProjectId = _adp.projectData.project_id;
+        return bupid = _adp.projectData.project_id;
+      } catch (error2) {
+        return console.warn("Warning: COuldn't backup project id");
+      }
+    });
+  }
   if (localStorage._adp != null) {
     window._adp = JSON.parse(localStorage._adp);
-    _adp.originalProjectId = bupid;
+    try {
+      _adp.originalProjectId = bupid;
+    } catch (undefined) {}
     d = new Date(_adp.postedSaveTimestamp);
     alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>";
     bsAlert(alertHtml, "info");
