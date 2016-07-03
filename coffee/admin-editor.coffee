@@ -1321,6 +1321,11 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
             $("#validator-progress-container").before html
             # _adp.carto_id = JSON.stringify cartoParsed
             _adp.projectData = readyPostData
+            $("#save-now-upload")
+            .click ->
+              saveEditorData true, ->
+                document.location.reload
+            .removeAttr "disabled"
             stopLoad()
       else
         # Update
@@ -1354,6 +1359,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button id="close-overlay">Close</paper-button>
+        <paper-button id="save-now-upload" disabled>Save</paper-button>
       </div>
     </paper-dialog>
     """
