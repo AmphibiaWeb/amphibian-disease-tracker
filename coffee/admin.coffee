@@ -1731,9 +1731,9 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
           when "ContactName", "basisOfRecord", "occurrenceID", "institutionCode", "collectionCode", "labNumber", "originalsource", "datum", "georeferenceSource", "depth", "Collector2", "Collector3", "verbatimLocality", "Habitat", "Test_Method", "eventRemarks", "quantityDetected", "dilutionFactor", "cycleTimeFirstDetection"
             if typeof value is "string"
               try
-                fimsExtra[column] = value.replace /'/mg, "&#39;"
-                fimsExtra[column] = value.replace /"/mg, "&#34;"
-                fimsExtra[column] = value.replace /;/mg, "&#59;"
+                value = value.replace /'/mig, "&#39;"
+                value = value.replace /"/mig, "&#34;"
+                fimsExtra[column] = value.replace /;/mig, "&#59;"
               catch
                 console.warn "Couldn't replace quotes for this:", value
                 fimsExtra[column] = value

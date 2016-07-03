@@ -1718,9 +1718,9 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "cycleTimeFirstDetection":
             if (typeof value === "string") {
               try {
-                fimsExtra[column] = value.replace(/'/mg, "&#39;");
-                fimsExtra[column] = value.replace(/"/mg, "&#34;");
-                fimsExtra[column] = value.replace(/;/mg, "&#59;");
+                value = value.replace(/'/mig, "&#39;");
+                value = value.replace(/"/mig, "&#34;");
+                fimsExtra[column] = value.replace(/;/mig, "&#59;");
               } catch (error2) {
                 console.warn("Couldn't replace quotes for this:", value);
                 fimsExtra[column] = value;
