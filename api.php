@@ -291,7 +291,7 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
 function doCartoSqlApiPush($get)
 {
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
-    
+
     // error_reporting(E_ALL);
     // ini_set('display_errors', 1);
     // error_log('Login is running in debug mode!');
@@ -408,14 +408,18 @@ function doCartoSqlApiPush($get)
     }
     $cartoPostUrl = 'https://'.$cartodb_username.'.cartodb.com/api/v2/sql';
     $cartoArgSuffix = '&api_key='.$cartodb_api_key;
-    $statements = explode(';', $sqlQuery);
+    $statements = explode(');', $sqlQuery);
+    foreach($statements as $k=>$statement) {
+        # Re-append the closing parens
+        $statements[$k] = $statement . ")";
+    }
     $responses = array();
     $parsed_responses = array();
     $urls = array();
     ini_set('allow_url_fopen', true);
     try {
         set_time_limit(0);
-    } catch (Exception $e) {        
+    } catch (Exception $e) {
         $length = 30 * sizeof($statements);
         set_time_limit($length);
     }
@@ -444,7 +448,10 @@ function doCartoSqlApiPush($get)
                 $context = stream_context_create($opts);
                 $response = file_get_contents($cartoFullUrl, false, $context);
                 $responses[] = $response;
-                $parsed_responses[] = json_decode($response, true);
+                $decoded = json_decode($response, true);
+                $decoded["query"] = $statement;
+                $decoded["encoded_query"] = urlencode($statement);
+                $parsed_responses[] = $decoded;
             }
         }
     } else {
@@ -460,7 +467,10 @@ function doCartoSqlApiPush($get)
         $context = stream_context_create($opts);
         $response = file_get_contents($cartoFullUrl, false, $context);
         $responses[] = $response;
-        $parsed_responses[] = json_decode($response, true);
+        $decoded = json_decode($response, true);
+        $decoded["query"] = $sqlQuery;
+        $parsed_responses[] = $decoded;
+
     }
     try {
         returnAjax(array(
