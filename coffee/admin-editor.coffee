@@ -75,6 +75,7 @@ loadEditor = (projectPreload) ->
           console.info "Project access lists:", project.access_data
           # Helper functions to bind to upcoming buttons
           _adp.projectData = project
+          _adp.originalProjectId = project.project_id
           _adp.fetchResult = result
           ## End Bindings
           ## Real DOM stuff
@@ -1951,11 +1952,20 @@ saveEditorData = (force = false, callback) ->
 
 
 $ ->
-  _adp.originalProjectId = _adp.projectId.slice 0
-  bupid = _adp.projectId
+  try
+    _adp.originalProjectId = _adp.projectData.project_id
+    bupid = _adp.projectData.project_id
+  catch
+    delay 1000, ->
+      try
+        _adp.originalProjectId = _adp.projectData.project_id
+        bupid = _adp.projectData.project_id
+      catch
+        console.warn "Warning: COuldn't backup project id"
   if localStorage._adp?
     window._adp = JSON.parse localStorage._adp
-    _adp.originalProjectId = bupid
+    try
+      _adp.originalProjectId = bupid
     d = new Date _adp.postedSaveTimestamp
     alertHtml = """
     <strong>You have offline save information</strong> &#8212; did you want to save it?
