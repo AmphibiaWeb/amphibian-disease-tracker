@@ -1718,16 +1718,14 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "cycleTimeFirstDetection":
             if (typeof value === "string") {
               try {
+                value = value.replace(/;/mig, "&#59;");
                 value = value.replace(/'/mig, "&#39;");
                 value = value.replace(/"/mig, "&#34;");
-                fimsExtra[column] = value.replace(/;/mig, "&#59;");
               } catch (error2) {
                 console.warn("Couldn't replace quotes for this:", value);
-                fimsExtra[column] = value;
               }
-            } else {
-              fimsExtra[column] = value;
             }
+            fimsExtra[column] = value;
             skipCol = true;
             break;
           case "specimenDisposition":
