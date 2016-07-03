@@ -1008,17 +1008,29 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesList.push "(#{valuesArr.join(",")})"
           # Create the final query
           # Remove the first comma of valuesList
-          insertMaxLength = 15
+          maxStatementLength = 4096
           insertPlace = 0
-          console.info "Inserting #{insertMaxLength} at a time"
+          console.info "Inserting statements of max length #{maxStatementLength}"
+          longestStatement = 0
+          shortestStatement = maxStatementLength
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
-            tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength)
-            insertPlace += insertMaxLength
+            statements = 0
+            while tempList.join(", ").length < maxStatementLength -1
+              ++statements
+              tempList = valuesList.slice(insertPlace, insertPlace + statements)
+            # Too big now by one
+            statements--
+            if statements > longestStatement
+              longestStatement = statements
+            if statements < shortestStatement
+              shortestStatement = statements
+            tempList = valuesList.slice(insertPlace, insertPlace + statements)
+            insertPlace += statements
             sqlQuery += "INSERT INTO #{dataTable} VALUES #{tempList.join(", ")};"
           # For the last query, cartodbfy
           cdbfy = "SELECT cdb_cartodbfytable('#{dataTable}');"
           sqlQuery += cdbfy
-
+          console.info "Constructed statements: maximum #{longestStatement} rows, minimum #{shortestStatement} rows"
         when "delete"
           sqlQuery = "DELETE FROM #{dataTable} WHERE "
           # Deletion criteria ...

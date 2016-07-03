@@ -409,9 +409,11 @@ function doCartoSqlApiPush($get)
     $cartoPostUrl = 'https://'.$cartodb_username.'.cartodb.com/api/v2/sql';
     $cartoArgSuffix = '&api_key='.$cartodb_api_key;
     $statements = explode(');', $sqlQuery);
+    $l = sizeof($statements);
+    $lastIndex = $l - 1;
     foreach($statements as $k=>$statement) {
         # Re-append the closing parens
-        $statements[$k] = $statement . ")";
+        if($k != $lastIndex) $statements[$k] = $statement . ")";
     }
     $responses = array();
     $parsed_responses = array();

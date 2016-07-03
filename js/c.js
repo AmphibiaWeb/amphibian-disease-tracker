@@ -2862,7 +2862,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, lowCol, m, n, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, sqlQuery, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, longestStatement, lowCol, m, maxStatementLength, n, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, shortestStatement, sqlQuery, statements, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -3021,16 +3021,31 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(geoJsonVal);
             valuesList.push("(" + (valuesArr.join(",")) + ")");
           }
-          insertMaxLength = 15;
+          maxStatementLength = 4096;
           insertPlace = 0;
-          console.info("Inserting " + insertMaxLength + " at a time");
+          console.info("Inserting statements of max length " + maxStatementLength);
+          longestStatement = 0;
+          shortestStatement = maxStatementLength;
           while (valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0) {
-            tempList = valuesList.slice(insertPlace, insertPlace + insertMaxLength);
-            insertPlace += insertMaxLength;
+            statements = 0;
+            while (tempList.join(", ").length < maxStatementLength(-1)) {
+              ++statements;
+              tempList = valuesList.slice(insertPlace, insertPlace + statements);
+            }
+            statements--;
+            if (statements > longestStatement) {
+              longestStatement = statements;
+            }
+            if (statements < shortestStatement) {
+              shortestStatement = statements;
+            }
+            tempList = valuesList.slice(insertPlace, insertPlace + statements);
+            insertPlace += statements;
             sqlQuery += "INSERT INTO " + dataTable + " VALUES " + (tempList.join(", ")) + ";";
           }
           cdbfy = "SELECT cdb_cartodbfytable('" + dataTable + "');";
           sqlQuery += cdbfy;
+          console.info("Constructed statements: maximum " + longestStatement + " rows, minimum " + shortestStatement + " rows");
           break;
         case "delete":
           sqlQuery = "DELETE FROM " + dataTable + " WHERE ";
