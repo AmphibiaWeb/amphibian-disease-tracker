@@ -1242,7 +1242,6 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     correctedPath = path.slice helperDir.length
   console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}&sheets=Samples"
-  _adp.originalProjectId = _adp.projectId
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result
@@ -1948,6 +1947,7 @@ saveEditorData = (force = false, callback) ->
 
 
 $ ->
+  _adp.originalProjectId = _adp.projectId.slice 0
   if localStorage._adp?
     window._adp = JSON.parse localStorage._adp
     d = new Date _adp.postedSaveTimestamp
