@@ -1017,7 +1017,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
           tempList = new Array()
           while valuesList.slice(insertPlace, insertPlace + insertMaxLength).length > 0
             statements = 0
-            while tempList.join(", ").length < maxStatementLength -1
+            while tempList.join(", ").length < maxStatementLength - 1
               ++statements
               tempList = valuesList.slice(insertPlace, insertPlace + statements)
               if statements > insertMaxLength
