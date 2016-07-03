@@ -3178,7 +3178,6 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   }
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath + "&sheets=Samples";
-  _adp.originalProjectId = _adp.projectId;
   $.get(helperApi, args, "json").done(function(result) {
     var html, nameArr, rows;
     console.info("Got result", result);
@@ -3932,6 +3931,7 @@ saveEditorData = function(force, callback) {
 
 $(function() {
   var alertHtml, d;
+  _adp.originalProjectId = _adp.projectId.slice(0);
   if (localStorage._adp != null) {
     window._adp = JSON.parse(localStorage._adp);
     d = new Date(_adp.postedSaveTimestamp);
