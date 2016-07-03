@@ -4062,6 +4062,9 @@ $ ->
     <button class="btn btn-success" id="offline-save">
       Save Now &amp; Refresh Page
     </button>
+    <button class="btn btn-danger" id="offline-trash">
+      Remove Offline Backup
+    </button>
     """
     bsAlert alertHtml, "info"
     $("#outdated-warning").remove()
@@ -4070,6 +4073,9 @@ $ ->
     $("#offline-save").click ->
       saveEditorData false,  ->
         document.location.reload(true)
+    $("#offline-trash").click ->
+      delete localStorage._adp
+      $(".hanging-alert").alert("close")
 
 ###
 #
