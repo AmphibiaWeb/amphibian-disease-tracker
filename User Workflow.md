@@ -158,3 +158,21 @@ Once you click the save button, your data will be processed and saved to the ser
 If you have a datafile, upon project saving, your datafile will also be given an ARK identifier (such as [`ark:/21547/APH2`](https://n2t.net/ark:/21547/APH2)). This ARK is distinct from your project ARK, and visiting that resolver URL will scroll the download button into view and make it pulse green (resolving into your project url suffixed with something akin to [`#dataset:7f5d6fe37b819da189d99e077aa89279`](https://amphibiandisease.org/project.php?id=4bc91fb90ff5575d5affec1724447bba#dataset:7f5d6fe37b819da189d99e077aa89279)).
 
 ![ARK dataset resolution][dataset_ark]
+
+## Troubleshooting
+
+### Trying to upload data?
+Most errors in validation will be reported during the uploading process so they can be fixed and uploaded again.
+Other Q & A may help.
+
+1. Do the fields in the XLSX template need to remain in their original order?      
+  > If header fields are present, then they can be in any order; if absent, yes, the fields must be in their original order.
+
+2. Can I add extra fields to the XLSX template?    
+  > Any fields not in the template will result in validation errors. We may add more fields if a common request. Please contact us.   
+
+3. What happens to null columns?    
+  > Empty fields are irrelevant. They'll just store as empty (since they're all saved anyway).    
+
+4. Can worksheets be altered, either names or their order?     
+  > They can be in any order if their names are unchanged; if not named then the Samples has to be the first and only worksheet.
