@@ -2329,7 +2329,9 @@ loadEditor = (projectPreload) ->
           else
             yearPretty = "the years #{yearPretty}"
           years = yearsReal
-          if toInt(project.sampled_collection_start) > 0
+          if toInt(project.sampled_collection_start) isnt 0
+            # Technically, there is 1ms that this would fail at, but
+            # ... close enough is good enough
             d1 = new Date toInt project.sampled_collection_start
             d2 = new Date toInt project.sampled_collection_end
             collectionRangePretty = "#{dateMonthToString d1.getMonth()} #{d1.getFullYear()} &#8212; #{dateMonthToString d2.getMonth()} #{d2.getFullYear()}"
