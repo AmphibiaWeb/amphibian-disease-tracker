@@ -610,6 +610,15 @@ finalizeData = (skipFields = false, callback) ->
         postData.lat = center.lat
         postData.lng = center.lng
         postData.radius = toInt excursion * 1000
+        if _adp.data?.pushDataUpload?.samples?
+          # Store the samples in postData
+          s = _adp.data.pushDataUpload.samples
+          postData.disease_morbidity = s.morbidity
+          postData.disease_mortality = s.mortality
+          postData.disease_negative = s.negative
+          postData.disease_no_confidence = s.no_confidence
+          postData.disease_positive = s.positive
+          postData.disease_samples = toInt(s.positive) + toInt(s.negative) + toInt(s.no_confidence)
         # Do this after locality calcs
         postBBLocality = ->
           console.info "Computed locality #{_adp.locality}"
