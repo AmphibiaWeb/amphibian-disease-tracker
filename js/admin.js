@@ -385,7 +385,7 @@ finalizeData = function(skipFields, callback) {
     }
     file = (ref = dataFileParams != null ? dataFileParams.filePath : void 0) != null ? ref : null;
     return mintBcid(_adp.projectId, file, title, function(result) {
-      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, fieldNumbers, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, row, rowLat, rowLng, sampleMethods, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, fieldNumbers, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, s, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -499,8 +499,17 @@ finalizeData = function(skipFields, callback) {
         postData.lat = center.lat;
         postData.lng = center.lng;
         postData.radius = toInt(excursion * 1000);
+        if (((ref7 = _adp.data) != null ? (ref8 = ref7.pushDataUpload) != null ? ref8.samples : void 0 : void 0) != null) {
+          s = _adp.data.pushDataUpload.samples;
+          postData.disease_morbidity = s.morbidity;
+          postData.disease_mortality = s.mortality;
+          postData.disease_negative = s.negative;
+          postData.disease_no_confidence = s.no_confidence;
+          postData.disease_positive = s.positive;
+          postData.disease_samples = toInt(s.positive) + toInt(s.negative) + toInt(s.no_confidence);
+        }
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref7, ref8, ref9, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -510,7 +519,7 @@ finalizeData = function(skipFields, callback) {
             postData.bounding_box_w = geo.computedBoundingRectangle.west;
           }
           postData.author = $.cookie(adminParams.domain + "_link");
-          if ((typeof _adp !== "undefined" && _adp !== null ? (ref7 = _adp.projectData) != null ? ref7.author_data : void 0 : void 0) == null) {
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref9 = _adp.projectData) != null ? ref9.author_data : void 0 : void 0) == null) {
             authorData = {
               name: p$("#project-author").value,
               contact_email: p$("#author-email").value,
@@ -544,8 +553,8 @@ finalizeData = function(skipFields, callback) {
           }
           postData.dataset_arks = dataAttrs.data_ark.join(",");
           postData.project_dir_identifier = getUploadIdentifier();
-          postData["public"] = (ref8 = (ref9 = (ref10 = (ref11 = p$("#data-encumbrance-toggle")) != null ? ref11.checked : void 0) != null ? ref10 : (ref12 = p$("#public")) != null ? ref12.checked : void 0) != null ? ref9 : typeof _adp !== "undefined" && _adp !== null ? (ref13 = _adp.projectData) != null ? ref13["public"] : void 0 : void 0) != null ? ref8 : true;
-          if ((typeof _adp !== "undefined" && _adp !== null ? (ref14 = _adp.data) != null ? (ref15 = ref14.taxa) != null ? ref15.validated : void 0 : void 0 : void 0) != null) {
+          postData["public"] = (ref10 = (ref11 = (ref12 = (ref13 = p$("#data-encumbrance-toggle")) != null ? ref13.checked : void 0) != null ? ref12 : (ref14 = p$("#public")) != null ? ref14.checked : void 0) != null ? ref11 : typeof _adp !== "undefined" && _adp !== null ? (ref15 = _adp.projectData) != null ? ref15["public"] : void 0 : void 0) != null ? ref10 : true;
+          if ((typeof _adp !== "undefined" && _adp !== null ? (ref16 = _adp.data) != null ? (ref17 = ref16.taxa) != null ? ref17.validated : void 0 : void 0 : void 0) != null) {
             taxonData = _adp.data.taxa.validated;
             postData.sampled_clades = _adp.data.taxa.clades.join(",");
             postData.sampled_species = _adp.data.taxa.list.join(",");
