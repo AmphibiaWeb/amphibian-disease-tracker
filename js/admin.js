@@ -1613,7 +1613,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1689,6 +1689,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     try {
       p$("#data-parsing").max = rows;
     } catch (undefined) {}
+    now = Date.now();
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -1741,6 +1742,11 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "dateIdentified":
             column = "dateIdentified";
             t = excelDateToUnixTime(value);
+            if (t > Date.now()) {
+              console.warn("This row (#" + n + ") has a date (" + value + " = " + t + ") after today!");
+              stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + n + ". Check your dates!");
+              return false;
+            }
             d = new Date(t);
             date = d.getUTCDate();
             if (date < 10) {

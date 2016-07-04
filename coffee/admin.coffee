@@ -1696,6 +1696,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
     $("#data-parsing").removeAttr "indeterminate"
     try
       p$("#data-parsing").max = rows
+    now = Date.now()
     for n, row of dataObject
       tRow = new Object()
       for column, value of row
@@ -1749,6 +1750,10 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             column = "dateIdentified"
             # Coerce to ISO8601
             t = excelDateToUnixTime(value)
+            if t > Date.now()
+              console.warn "This row (##{n}) has a date (#{value} = #{t}) after today!"
+              stopLoadBarsError null, "Detected a future date '#{value}' at row ##{n}. Check your dates!"
+              return false
             d = new Date(t)
             date = d.getUTCDate()
             if date < 10
