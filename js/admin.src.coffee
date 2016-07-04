@@ -3871,7 +3871,8 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 _adp.projectData.disease_mortality = validatedData.samples.mortality
                 _adp.projectData.disease_positive = validatedData.samples.positive
                 _adp.projectData.disease_negative = validatedData.samples.negative
-                _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
+                _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence 
+                _adp.projectData.disease_samples = _adp.rowsCount
                 # All the parsed month data, etc.
                 center = getMapCenter(geo.boundingBox)
                 # Have some fun times with uploadedData
