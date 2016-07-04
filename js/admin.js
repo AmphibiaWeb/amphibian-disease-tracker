@@ -3738,6 +3738,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 _adp.projectData.disease_positive = validatedData.samples.positive;
                 _adp.projectData.disease_negative = validatedData.samples.negative;
                 _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence;
+                _adp.projectData.disease_samples = _adp.rowsCount;
                 center = getMapCenter(geo.boundingBox);
                 excursion = 0;
                 dates = new Array();
