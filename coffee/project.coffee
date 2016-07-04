@@ -303,7 +303,7 @@ renderMapWithData = (projectData, force = false) ->
             console.warn "CSV downloader couldn't find #{speciesItem} in perTaxaStatus"
             window.perTaxaStatus = perTaxaStatus
           adjustedList.push tmp.join(options.splitValues)
-        downloadCSVFile _adp.pageSpeciesList, options
+        downloadCSVFile adjustedList, options
     bindClicks(".download-file")
     $(".download-data-file").contextmenu (event) ->
       event.preventDefault()

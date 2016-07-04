@@ -321,7 +321,7 @@ renderMapWithData = function(projectData, force) {
           }
           adjustedList.push(tmp.join(options.splitValues));
         }
-        downloadCSVFile(_adp.pageSpeciesList, options);
+        downloadCSVFile(adjustedList, options);
       }
     }
     bindClicks(".download-file");
