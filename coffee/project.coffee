@@ -165,6 +165,7 @@ renderMapWithData = (projectData, force = false) ->
     points = new Array()
     pointPoints = new Array()
     console.log "Running swapped cartoDB order (lng, lat)"
+    perTaxaStatus = new Object()
     for k, row of rows
       geoJson = JSON.parse row.st_asgeojson
       # cartoDB works in lng, lat
@@ -174,14 +175,23 @@ renderMapWithData = (projectData, force = false) ->
       try
         pointPoints.push canonicalizePoint [lat, lng]
       # Fill the points as markers
+      taxa = "#{row.genus} #{row.specificepithet}"
+      unless perTaxaStatus[taxa]?
+        perTaxaStatus[taxa] =
+          positive: false
+          negative: false
+          no_confidence: false
+      # Get disease status
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
+          perTaxaStatus[taxa].positive = true
           "positive"
         when "false"
+          perTaxaStatus[taxa].negative = true
           "negative"
         else
+          perTaxaStatus[taxa].no_confidence = true
           row.diseasedetected.toString()
-      taxa = "#{row.genus} #{row.specificepithet}"
       note = ""
       if taxa isnt row.originaltaxa
         note = "(<em>#{row.originaltaxa}</em>)"
@@ -276,7 +286,23 @@ renderMapWithData = (projectData, force = false) ->
           selector: ".download-buttons"
           buttonText: "Download Species List"
           splitValues: " " # Split genus, species, ssp into their own cols
-          header: ["Genus","Species","Subspecies"]
+          header: ["Genus","Species","Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?"]
+        adjustedList = new Array()
+        for speciesItem in _adp.pageSpeciesList
+          tmp = speciesItem.split options.splitValues
+          if tmp.length < 3
+            while tmp.length < 3
+              tmp.push ""
+          # Now we have the right spacing
+          # If we have species in right category, append it
+          if perTaxaStatus[speciesItem]?
+            tmp.push perTaxaStatus[speciesItem].positive.toString()
+            tmp.push perTaxaStatus[speciesItem].negative.toString()
+            tmp.push perTaxaStatus[speciesItem].no_confidence.toString()
+          else
+            console.warn "CSV downloader couldn't find #{speciesItem} in perTaxaStatus"
+            window.perTaxaStatus = perTaxaStatus
+          adjustedList.push tmp.join(options.splitValues)
         downloadCSVFile _adp.pageSpeciesList, options
     bindClicks(".download-file")
     $(".download-data-file").contextmenu (event) ->

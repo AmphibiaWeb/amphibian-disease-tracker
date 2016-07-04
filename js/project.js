@@ -174,7 +174,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, pointPoints, points, ref2, ref3, row, rows, taxa, year, yearPretty, years;
+    var adjustedList, collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, len5, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, perTaxaStatus, pointPoints, points, q, ref2, ref3, ref4, row, rows, speciesItem, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -192,6 +192,7 @@ renderMapWithData = function(projectData, force) {
     points = new Array();
     pointPoints = new Array();
     console.log("Running swapped cartoDB order (lng, lat)");
+    perTaxaStatus = new Object();
     for (k in rows) {
       row = rows[k];
       geoJson = JSON.parse(row.st_asgeojson);
@@ -201,17 +202,27 @@ renderMapWithData = function(projectData, force) {
       try {
         pointPoints.push(canonicalizePoint([lat, lng]));
       } catch (undefined) {}
+      taxa = row.genus + " " + row.specificepithet;
+      if (perTaxaStatus[taxa] == null) {
+        perTaxaStatus[taxa] = {
+          positive: false,
+          negative: false,
+          no_confidence: false
+        };
+      }
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
+            perTaxaStatus[taxa].positive = true;
             return "positive";
           case "false":
+            perTaxaStatus[taxa].negative = true;
             return "negative";
           default:
+            perTaxaStatus[taxa].no_confidence = true;
             return row.diseasedetected.toString();
         }
       })();
-      taxa = row.genus + " " + row.specificepithet;
       note = "";
       if (taxa !== row.originaltaxa) {
         note = "(<em>" + row.originaltaxa + "</em>)";
@@ -288,8 +299,28 @@ renderMapWithData = function(projectData, force) {
           selector: ".download-buttons",
           buttonText: "Download Species List",
           splitValues: " ",
-          header: ["Genus", "Species", "Subspecies"]
+          header: ["Genus", "Species", "Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?"]
         };
+        adjustedList = new Array();
+        ref3 = _adp.pageSpeciesList;
+        for (o = 0, len4 = ref3.length; o < len4; o++) {
+          speciesItem = ref3[o];
+          tmp = speciesItem.split(options.splitValues);
+          if (tmp.length < 3) {
+            while (tmp.length < 3) {
+              tmp.push("");
+            }
+          }
+          if (perTaxaStatus[speciesItem] != null) {
+            tmp.push(perTaxaStatus[speciesItem].positive.toString());
+            tmp.push(perTaxaStatus[speciesItem].negative.toString());
+            tmp.push(perTaxaStatus[speciesItem].no_confidence.toString());
+          } else {
+            console.warn("CSV downloader couldn't find " + speciesItem + " in perTaxaStatus");
+            window.perTaxaStatus = perTaxaStatus;
+          }
+          adjustedList.push(tmp.join(options.splitValues));
+        }
         downloadCSVFile(_adp.pageSpeciesList, options);
       }
     }
@@ -402,9 +433,9 @@ renderMapWithData = function(projectData, force) {
     });
     checkArkDataset(projectData);
     setPublicData(projectData);
-    ref3 = $(".aweb-link-species");
-    for (o = 0, len4 = ref3.length; o < len4; o++) {
-      el = ref3[o];
+    ref4 = $(".aweb-link-species");
+    for (q = 0, len5 = ref4.length; q < len5; q++) {
+      el = ref4[q];
       isPositive = $(el).attr("data-positive").toBool();
       if (isPositive) {
         $(el).attr("data-negative", "false").attr("data-inconclusive", "false");
