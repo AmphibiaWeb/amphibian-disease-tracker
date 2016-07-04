@@ -262,6 +262,7 @@ renderMapWithData = (projectData, force = false) ->
       </div>
     </div>
     """
+    mapData = mapData.replace /NaN/mg, "0"
     unless _adp.mapRendered is true
       $("#auth-block").append mapData
       setupMapMarkerToggles()
