@@ -848,7 +848,7 @@ sqlQueryBox = function() {
   };
   formatQuery = function(rawQuery) {
     var lowQuery, query;
-    lowQuery = rawQuery;
+    lowQuery = rawQuery.trim();
     query = lowQuery.replace(/@@/mig, _adp.cartoDataParsed.table);
     query = query.replace(/!@/mig, "SELECT * FROM " + _adp.cartoDataParsed.table);
     $("#query-input").val(query);
@@ -876,6 +876,9 @@ sqlQueryBox = function() {
     var kc;
     kc = e.keyCode ? e.keyCode : e.which;
     if (kc === 13) {
+      try {
+        e.preventDefault();
+      } catch (undefined) {}
       startQuery();
     }
     return false;
