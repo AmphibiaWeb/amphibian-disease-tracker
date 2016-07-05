@@ -1502,6 +1502,9 @@ cancelAsyncOperation = (asyncOperation = _adp.currentAsyncJqxhr) ->
   # https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort
   ###
   try
+    if asyncOperation.readyState is XMLHttpRequest.DONE
+      console.warn "Couldn't cancel operation -- it's already completed"
+      return false
     asyncOperation.abort()
     # Do a host of cancellation events
     try
