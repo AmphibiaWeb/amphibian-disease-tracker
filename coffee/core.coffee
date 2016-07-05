@@ -1495,12 +1495,15 @@ fetchCitation = (citationQuery, callback) ->
 
 
 
-cancelAsyncOperation = (asyncOperation = _adp.currentAsyncJqxhr) ->
+cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
   ###
   # Abort the current operation
   #
   # https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort
   ###
+  try
+    if caller?
+      $(caller).remove()
   try
     if asyncOperation.readyState is XMLHttpRequest.DONE
       console.warn "Couldn't cancel operation -- it's already completed"

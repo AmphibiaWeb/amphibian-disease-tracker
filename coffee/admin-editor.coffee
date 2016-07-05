@@ -1127,7 +1127,7 @@ startEditorUploader = ->
       <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
           </paper-dialog-scrollable>
           <div class="buttons">
-            <paper-button id="close-overlay">Close</paper-button>
+            <paper-button id="close-overlay">Close &amp; Cancel</paper-button>
             <paper-button id="save-now-upload" disabled>Save</paper-button>
           </div>
         </paper-dialog>
@@ -1136,6 +1136,7 @@ startEditorUploader = ->
         $("body").append dialogHtml
         p$("#upload-progress-dialog").open()
         $("#close-overlay").click ->
+          cancelAsyncOperation(this)
           p$("#upload-progress-dialog").close()
         console.info "Server returned the following result:", result
         console.info "The script returned the following file information:", file
@@ -1361,7 +1362,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
   <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button id="close-overlay">Close</paper-button>
+        <paper-button id="close-overlay">Close &amp; Cancel</paper-button>
         <paper-button id="save-now-upload" disabled>Save</paper-button>
       </div>
     </paper-dialog>
@@ -1369,6 +1370,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
     $("#upload-progress-dialog").remove()
     $("body").append dialogHtml
     $("#close-overlay").click ->
+      cancelAsyncOperation(this)
       p$("#upload-progress-dialog").close()
   safariDialogHelper "#upload-progress-dialog"
   if onlyDialog

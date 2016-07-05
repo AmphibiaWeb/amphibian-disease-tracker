@@ -2021,10 +2021,14 @@ renderValidateProgress = (placeAfterSelector = "#file-uploader-form", returnIt =
     <label for="data-validation">Data Validation:</label><paper-progress id="data-validation" class="cyan" indeterminate></paper-progress>
     <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation" class="teal" indeterminate></paper-progress>
     <label for="data-sync">Estimated Data Sync Progress:</label><paper-progress id="data-sync" indeterminate></paper-progress>
+    <br/><br/>
+    <button class="btn btn-danger" id="cancel-new-upload"><iron-icon icon="icons:cancel"></iron-icon> Cancel</button>
   </div>
   """
   unless $("#validator-progress-container").exists()
     $(placeAfterSelector).after html
+    $("#cancel-new-upload").click ->
+      cancelAsyncOperation(this)
   if returnIt
     return html
   false
@@ -3222,7 +3226,7 @@ startEditorUploader = ->
       <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
           </paper-dialog-scrollable>
           <div class="buttons">
-            <paper-button id="close-overlay">Close</paper-button>
+            <paper-button id="close-overlay">Close &amp; Cancel</paper-button>
             <paper-button id="save-now-upload" disabled>Save</paper-button>
           </div>
         </paper-dialog>
@@ -3231,6 +3235,7 @@ startEditorUploader = ->
         $("body").append dialogHtml
         p$("#upload-progress-dialog").open()
         $("#close-overlay").click ->
+          cancelAsyncOperation(this)
           p$("#upload-progress-dialog").close()
         console.info "Server returned the following result:", result
         console.info "The script returned the following file information:", file
@@ -3456,7 +3461,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
   <iron-autogrow-textarea id="species-list" class="project-field  col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button id="close-overlay">Close</paper-button>
+        <paper-button id="close-overlay">Close &amp; Cancel</paper-button>
         <paper-button id="save-now-upload" disabled>Save</paper-button>
       </div>
     </paper-dialog>
@@ -3464,6 +3469,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
     $("#upload-progress-dialog").remove()
     $("body").append dialogHtml
     $("#close-overlay").click ->
+      cancelAsyncOperation(this)
       p$("#upload-progress-dialog").close()
   safariDialogHelper "#upload-progress-dialog"
   if onlyDialog

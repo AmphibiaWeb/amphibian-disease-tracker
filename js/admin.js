@@ -2061,9 +2061,12 @@ renderValidateProgress = function(placeAfterSelector, returnIt) {
    *
    * https://elements.polymer-project.org/elements/paper-progress
    */
-  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\" class=\"blue\" indeterminate></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\" class=\"cyan\" indeterminate></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\" class=\"teal\" indeterminate></paper-progress>\n  <label for=\"data-sync\">Estimated Data Sync Progress:</label><paper-progress id=\"data-sync\" indeterminate></paper-progress>\n</div>";
+  html = "<div id=\"validator-progress-container\" class=\"col-md-6 col-xs-12\">\n  <label for=\"data-parsing\">Data Parsing:</label><paper-progress id=\"data-parsing\" class=\"blue\" indeterminate></paper-progress>\n  <label for=\"data-validation\">Data Validation:</label><paper-progress id=\"data-validation\" class=\"cyan\" indeterminate></paper-progress>\n  <label for=\"taxa-validation\">Taxa Validation:</label><paper-progress id=\"taxa-validation\" class=\"teal\" indeterminate></paper-progress>\n  <label for=\"data-sync\">Estimated Data Sync Progress:</label><paper-progress id=\"data-sync\" indeterminate></paper-progress>\n  <br/><br/>\n  <button class=\"btn btn-danger\" id=\"cancel-new-upload\"><iron-icon icon=\"icons:cancel\"></iron-icon> Cancel</button>\n</div>";
   if (!$("#validator-progress-container").exists()) {
     $(placeAfterSelector).after(html);
+    $("#cancel-new-upload").click(function() {
+      return cancelAsyncOperation(this);
+    });
   }
   if (returnIt) {
     return html;
@@ -3111,11 +3114,12 @@ startEditorUploader = function() {
       }
       try {
         html = renderValidateProgress("dont-exist", true);
-        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n      <paper-button id=\"save-now-upload\" disabled>Save</paper-button>\n    </div>\n  </paper-dialog>";
+        dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close &amp; Cancel</paper-button>\n      <paper-button id=\"save-now-upload\" disabled>Save</paper-button>\n    </div>\n  </paper-dialog>";
         $("#upload-progress-dialog").remove();
         $("body").append(dialogHtml);
         p$("#upload-progress-dialog").open();
         $("#close-overlay").click(function() {
+          cancelAsyncOperation(this);
           return p$("#upload-progress-dialog").close();
         });
         console.info("Server returned the following result:", result);
@@ -3274,10 +3278,11 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
   }
   if (!$("#upload-progress-dialog").exists()) {
     html = renderValidateProgress("dont-exist", true);
-    dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close</paper-button>\n      <paper-button id=\"save-now-upload\" disabled>Save</paper-button>\n    </div>\n  </paper-dialog>";
+    dialogHtml = "  <paper-dialog modal id=\"upload-progress-dialog\"\n    entry-animation=\"fade-in-animation\"\n    exit-animation=\"fade-out-animation\">\n    <h2>Upload Progress</h2>\n    <paper-dialog-scrollable>\n      <div id=\"upload-progress-container\" style=\"min-width:80vw; \">\n      </div>\n      " + html + "\n<p class=\"col-xs-12\">Species in dataset</p>\n<iron-autogrow-textarea id=\"species-list\" class=\"project-field  col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    </paper-dialog-scrollable>\n    <div class=\"buttons\">\n      <paper-button id=\"close-overlay\">Close &amp; Cancel</paper-button>\n      <paper-button id=\"save-now-upload\" disabled>Save</paper-button>\n    </div>\n  </paper-dialog>";
     $("#upload-progress-dialog").remove();
     $("body").append(dialogHtml);
     $("#close-overlay").click(function() {
+      cancelAsyncOperation(this);
       return p$("#upload-progress-dialog").close();
     });
   }

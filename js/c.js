@@ -1937,7 +1937,7 @@ fetchCitation = function(citationQuery, callback) {
   return false;
 };
 
-cancelAsyncOperation = function(asyncOperation) {
+cancelAsyncOperation = function(caller, asyncOperation) {
   var error2, error3;
   if (asyncOperation == null) {
     asyncOperation = _adp.currentAsyncJqxhr;
@@ -1948,6 +1948,11 @@ cancelAsyncOperation = function(asyncOperation) {
    *
    * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort
    */
+  try {
+    if (caller != null) {
+      $(caller).remove();
+    }
+  } catch (undefined) {}
   try {
     if (asyncOperation.readyState === XMLHttpRequest.DONE) {
       console.warn("Couldn't cancel operation -- it's already completed");
