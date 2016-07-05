@@ -1949,6 +1949,10 @@ cancelAsyncOperation = function(asyncOperation) {
    * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort
    */
   try {
+    if (asyncOperation.readyState === XMLHttpRequest.DONE) {
+      console.warn("Couldn't cancel operation -- it's already completed");
+      return false;
+    }
     asyncOperation.abort();
     try {
       stopLoadBarsError(null, "Operation Cancelled");
