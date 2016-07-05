@@ -181,17 +181,26 @@ renderMapWithData = (projectData, force = false) ->
           positive: false
           negative: false
           no_confidence: false
+          counts:
+            total: 0
+            positive: 0
+            negative: 0
+            no_confidence: 0
       # Get disease status
       row.diseasedetected = switch row.diseasedetected.toString().toLowerCase()
         when "true"
           perTaxaStatus[taxa].positive = true
+          perTaxaStatus[taxa].counts.positive++
           "positive"
         when "false"
           perTaxaStatus[taxa].negative = true
+          perTaxaStatus[taxa].counts.negative++
           "negative"
         else
           perTaxaStatus[taxa].no_confidence = true
+          perTaxaStatus[taxa].counts.no_confidence++
           row.diseasedetected.toString()
+      perTaxaStatus[taxa].counts.total++
       note = ""
       if taxa isnt row.originaltaxa
         note = "(<em>#{row.originaltaxa}</em>)"
@@ -286,7 +295,7 @@ renderMapWithData = (projectData, force = false) ->
           selector: ".download-buttons"
           buttonText: "Download Species List"
           splitValues: " " # Split genus, species, ssp into their own cols
-          header: ["Genus","Species","Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?"]
+          header: ["Genus","Species","Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count"]
         adjustedList = new Array()
         for speciesItem in _adp.pageSpeciesList
           tmp = speciesItem.split options.splitValues
@@ -299,6 +308,9 @@ renderMapWithData = (projectData, force = false) ->
             tmp.push perTaxaStatus[speciesItem].positive.toString()
             tmp.push perTaxaStatus[speciesItem].negative.toString()
             tmp.push perTaxaStatus[speciesItem].no_confidence.toString()
+            tmp.push perTaxaStatus[speciesItem].counts.positive.toString()
+            tmp.push perTaxaStatus[speciesItem].counts.negative.toString()
+            tmp.push perTaxaStatus[speciesItem].counts.no_confidence.toString()
           else
             console.warn "CSV downloader couldn't find #{speciesItem} in perTaxaStatus"
             window.perTaxaStatus = perTaxaStatus
