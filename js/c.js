@@ -381,7 +381,8 @@ copyText = function(text, zcObj, zcElement) {
           window.hasRetriedCopy = false;
         }
       }
-      return window.resetClipboard = false;
+      window.resetClipboard = false;
+      return _adp.copyObject[identifier].setData(clipboardData);
     });
     _adp.copyObject[identifier].on("error", function(e) {
       console.error("Error copying to clipboard");
