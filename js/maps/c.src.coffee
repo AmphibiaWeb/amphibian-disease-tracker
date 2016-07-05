@@ -249,7 +249,7 @@ copyText = (text, zcObj, zcElement) ->
     console.warn "Skipping copy on debounce"
     return false
   window.copyDebouncer.last = Date.now()
-  identifier = md5 $(zcElement).html()  
+  identifier = md5 $(zcElement).html()
   try
     clipboardData =
       dataType: "text/plain"
@@ -266,6 +266,10 @@ copyText = (text, zcObj, zcElement) ->
     # .unbind("click")
     # .click ->
     #   _adp.copyObject[identifier].setData clipboardData
+    _adp.copyObject[identifier].on "copy", (e) ->
+      try
+        e.clipboardData =
+          setData: _adp.copyObject[identifier].setData clipboardData
     _adp.copyObject[identifier].on "aftercopy", (e) ->
       if e.data["text/plain"] is text
         toastStatusMessage "Copied to clipboard"

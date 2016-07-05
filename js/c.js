@@ -359,6 +359,13 @@ copyText = function(text, zcObj, zcElement) {
     };
     console.info("Setting up clipboard events for \"" + text + "\"");
     _adp.copyObject[identifier].setData(clipboardData);
+    _adp.copyObject[identifier].on("copy", function(e) {
+      try {
+        return e.clipboardData = {
+          setData: _adp.copyObject[identifier].setData(clipboardData)
+        };
+      } catch (undefined) {}
+    });
     _adp.copyObject[identifier].on("aftercopy", function(e) {
       if (e.data["text/plain"] === text) {
         toastStatusMessage("Copied to clipboard");
