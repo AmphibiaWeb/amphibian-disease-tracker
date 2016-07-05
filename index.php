@@ -22,7 +22,7 @@ $loginStatus = getLoginState();
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
     <meta name="theme-color" content="#5677fc"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=1.0, user-scalable=0" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
@@ -319,7 +319,7 @@ $loginStatus = getLoginState();
                 <div class="card-actions">
                   <paper-button class="click" data-href="https://amphibiandisease.org/project.php">
                     <iron-icon icon="icons:language"></iron-icon>
-                    View the Project Browser
+                    <span class='hidden-md-lg'>View the </span>Project Browser
                   </paper-button>
                 </div>
               </paper-card>
