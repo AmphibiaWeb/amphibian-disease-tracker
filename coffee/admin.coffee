@@ -2021,10 +2021,14 @@ renderValidateProgress = (placeAfterSelector = "#file-uploader-form", returnIt =
     <label for="data-validation">Data Validation:</label><paper-progress id="data-validation" class="cyan" indeterminate></paper-progress>
     <label for="taxa-validation">Taxa Validation:</label><paper-progress id="taxa-validation" class="teal" indeterminate></paper-progress>
     <label for="data-sync">Estimated Data Sync Progress:</label><paper-progress id="data-sync" indeterminate></paper-progress>
+    <br/><br/>
+    <button class="btn btn-danger" id="cancel-new-upload"><iron-icon icon="icons:cancel"></iron-icon> Cancel</button>
   </div>
   """
   unless $("#validator-progress-container").exists()
     $(placeAfterSelector).after html
+    $("#cancel-new-upload").click ->
+      cancelAsyncOperation(this)
   if returnIt
     return html
   false
