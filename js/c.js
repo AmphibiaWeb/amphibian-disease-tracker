@@ -334,7 +334,7 @@ copyText = function(text, zcObj, zcElement) {
   /*
    *
    */
-  var clip, clipboardData;
+  var clip, clipboardData, identifier, ref;
   if (window.copyDebouncer == null) {
     window.copyDebouncer = new Object();
   }
@@ -343,6 +343,7 @@ copyText = function(text, zcObj, zcElement) {
     return false;
   }
   window.copyDebouncer.last = Date.now();
+  identifier = md5($(zcElement).html());
   try {
     clipboardData = {
       dataType: "text/plain",
@@ -352,13 +353,13 @@ copyText = function(text, zcObj, zcElement) {
     document.dispatchEvent(clip);
     return false;
   } catch (undefined) {}
-  if (zcObj != null) {
+  if (((ref = _adp.copyObject) != null ? ref[identifier] : void 0) != null) {
     clipboardData = {
       "text/plain": text
     };
     console.info("Setting up clipboard events for \"" + text + "\"");
-    zcObj.setData(clipboardData);
-    zcObj.on("aftercopy", function(e) {
+    _adp.copyObject[identifier].setData(clipboardData);
+    _adp.copyObject[identifier].on("aftercopy", function(e) {
       if (e.data["text/plain"] === text) {
         toastStatusMessage("Copied to clipboard");
         console.info("Succesfully copied", e.data["text/plain"]);
@@ -382,7 +383,7 @@ copyText = function(text, zcObj, zcElement) {
       }
       return window.resetClipboard = false;
     });
-    zcObj.on("error", function(e) {
+    _adp.copyObject[identifier].on("error", function(e) {
       console.error("Error copying to clipboard");
       console.warn("Got", e);
       if (e.name === "flash-overdue") {
@@ -398,7 +399,7 @@ copyText = function(text, zcObj, zcElement) {
       }
     });
   } else {
-    console.error("Can't copy: zcObject doesn't exist");
+    console.error("Can't copy: zcObject doesn't exist for identifier " + identifier);
   }
   return false;
 };

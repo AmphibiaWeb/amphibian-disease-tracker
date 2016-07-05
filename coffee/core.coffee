@@ -249,6 +249,7 @@ copyText = (text, zcObj, zcElement) ->
     console.warn "Skipping copy on debounce"
     return false
   window.copyDebouncer.last = Date.now()
+  identifier = md5 $(zcElement).html()  
   try
     clipboardData =
       dataType: "text/plain"
@@ -256,12 +257,12 @@ copyText = (text, zcObj, zcElement) ->
     clip = new ClipboardEvent "copy", clipboardData
     document.dispatchEvent clip
     return false
-  if zcObj?
+  if _adp.copyObject?[identifier]?
     clipboardData =
       "text/plain": text
     console.info "Setting up clipboard events for \"#{text}\""
-    zcObj.setData clipboardData
-    zcObj.on "aftercopy", (e) ->
+    _adp.copyObject[identifier].setData clipboardData
+    _adp.copyObject[identifier].on "aftercopy", (e) ->
       if e.data["text/plain"] is text
         toastStatusMessage "Copied to clipboard"
         console.info "Succesfully copied", e.data["text/plain"]
@@ -283,7 +284,7 @@ copyText = (text, zcObj, zcElement) ->
           toastStatusMessage "Error copying to clipboard. Please try again"
           window.hasRetriedCopy = false
       window.resetClipboard = false
-    zcObj.on "error", (e) ->
+    _adp.copyObject[identifier].on "error", (e) ->
       console.error "Error copying to clipboard"
       console.warn "Got", e
       if e.name is "flash-overdue"
@@ -297,7 +298,7 @@ copyText = (text, zcObj, zcElement) ->
           copyLink window.tempZC, text
         window.tempZC = new ZeroClipboard zcElement
   else
-    console.error "Can't copy: zcObject doesn't exist"
+    console.error "Can't copy: zcObject doesn't exist for identifier #{identifier}"
   false
 
 
