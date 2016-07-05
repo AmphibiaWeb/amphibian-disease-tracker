@@ -319,7 +319,7 @@ $loginStatus = getLoginState();
                 <div class="card-actions">
                   <paper-button class="click" data-href="https://amphibiandisease.org/project.php">
                     <iron-icon icon="icons:language"></iron-icon>
-                    <span class='hidden-md-lg'>View the </span>Project Browser
+                    <span class='hidden-md-lg'>View the </span> Project Browser
                   </paper-button>
                 </div>
               </paper-card>
