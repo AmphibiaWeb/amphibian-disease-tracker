@@ -175,7 +175,7 @@ renderMapWithData = function(projectData, force) {
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   $.post("api.php", args, "json").done(function(result) {
-    var adjustedList, collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, len5, lng, m, mapData, marker, month, monthPretty, months, n, note, o, options, perTaxaStatus, pointPoints, points, q, ref2, ref3, ref4, row, rows, speciesItem, taxa, year, yearPretty, years;
+    var adjustedList, collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, len5, lng, m, mapData, marker, month, monthPretty, months, note, o, options, perTaxaStatus, pointPoints, points, q, ref2, ref3, ref4, row, rows, speciesItem, t, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
       return false;
@@ -274,8 +274,8 @@ renderMapWithData = function(projectData, force) {
     yearPretty = "";
     years = projectData.sampling_years.split(",");
     i = 0;
-    for (n = 0, len3 = years.length; n < len3; n++) {
-      year = years[n];
+    for (o = 0, len3 = years.length; o < len3; o++) {
+      year = years[o];
       ++i;
       if (i > 1 && i === years.length) {
         if (years.length > 2) {
@@ -314,8 +314,8 @@ renderMapWithData = function(projectData, force) {
         };
         adjustedList = new Array();
         ref3 = _adp.pageSpeciesList;
-        for (o = 0, len4 = ref3.length; o < len4; o++) {
-          speciesItem = ref3[o];
+        for (q = 0, len4 = ref3.length; q < len4; q++) {
+          speciesItem = ref3[q];
           tmp = speciesItem.split(options.splitValues);
           if (tmp.length < 3) {
             while (tmp.length < 3) {
@@ -449,8 +449,8 @@ renderMapWithData = function(projectData, force) {
     checkArkDataset(projectData);
     setPublicData(projectData);
     ref4 = $(".aweb-link-species");
-    for (q = 0, len5 = ref4.length; q < len5; q++) {
-      el = ref4[q];
+    for (t = 0, len5 = ref4.length; t < len5; t++) {
+      el = ref4[t];
       isPositive = $(el).attr("data-positive").toBool();
       if (isPositive) {
         $(el).attr("data-negative", "false").attr("data-inconclusive", "false");
@@ -780,7 +780,7 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, err, error1, error2, j, len, output, r, ref, ref1, ref2, sqlQuery;
+      var e, err, error1, error2, n, output, r, ref, ref1, ref2, sqlQuery;
       console.log(result);
       if (result.status !== true) {
         err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
@@ -799,10 +799,12 @@ sqlQueryBox = function() {
         $("#query-immediate-result").text(r.error);
         return false;
       }
+      console.log("Using responses", r.parsed_responses);
       output = "";
       ref2 = r.parsed_responses;
-      for (j = 0, len = ref2.length; j < len; j++) {
-        sqlQuery = ref2[j];
+      for (n in ref2) {
+        sqlQuery = ref2[n];
+        output += "#" + n + ": ";
         try {
           output += JSON.stringify(sqlQuery.rows);
         } catch (error2) {
