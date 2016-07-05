@@ -322,6 +322,7 @@ bindCopyEvents = (selector = ".click-copy") ->
               text = p$(copySelector).value
         console.info "Registering copy text", text
         copyText text, _adp.copyObject[identifier], el
+        delete window.copyDebouncer
       else
         console.info "Copy event already set up for identifier", identifier
       # $(this).click ->
