@@ -774,7 +774,7 @@ sqlQueryBox = function() {
    * Render and bind events for a box to directly execute queries on a
    * project.
    */
-  var formatQuery, html, queryCarto, queryResultDialog, queryResultSummaryHistory;
+  var formatQuery, html, queryCarto, queryResultDialog, queryResultSummaryHistory, startQuery;
   if (_adp.cartoDataParsed == null) {
     console.error("CartoDB data not available. Are you logged in?");
     return false;
@@ -838,15 +838,25 @@ sqlQueryBox = function() {
     return false;
   };
   if (!$("#project-sql-query-box").exists()) {
-    html = "<div id=\"project-sql-query-box\" class=\"row\">\n  <h2 class=\"col-xs-12\">Raw Project Queries</h2>\n  <textarea class=\"form-control code col-xs-12\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <div class=\"col-xs-12 col-sm-9\">\n    <span class=\"text-muted\" id=\"query-cheats\">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>\n  </div>\n  <div class=\"col-xs-12 col-sm-3\">\n    <button class=\"btn btn-default do-sql-query pull-right\">Execute Query</button>\n  </div>\n  <pre class=\"code col-xs-12\" id=\"query-immediate-result\"></pre>\n</div>";
+    html = "<div id=\"project-sql-query-box\" class=\"row\">\n  <h2 class=\"col-xs-12\">Raw Project Queries</h2>\n  <textarea class=\"form-control code col-xs-10 force-center\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <div class=\"col-xs-12 col-sm-9\">\n    <span class=\"text-muted\" id=\"query-cheats\">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>\n  </div>\n  <div class=\"col-xs-12 col-sm-3\">\n    <button class=\"btn btn-default do-sql-query pull-right\">Execute Query</button>\n  </div>\n  <pre class=\"code col-xs-10 force-center\" id=\"query-immediate-result\"></pre>\n</div>";
     $("main").append(html);
   }
-  $(".do-sql-query").click(function() {
+  startQuery = function() {
     var input, query;
     console.info("Executing query ...");
     input = $("#query-input").val();
     query = formatQuery(input);
     return queryCarto(query);
+  };
+  $(".do-sql-query").keyup(function(e) {
+    var kc;
+    kc = e.keyCode ? e.keyCode : e.which;
+    if (kc === 13) {
+      startQuery();
+    }
+    return false;
+  }).click(function() {
+    return startQuery();
   });
   return false;
 };
