@@ -781,6 +781,7 @@ sqlQueryBox = function() {
   }
   queryCarto = function(query) {
     var args;
+    animateLoad();
     console.info("Querying with");
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
@@ -799,6 +800,8 @@ sqlQueryBox = function() {
           }
         })();
         $("#query-immediate-result").text(err + ": " + extended);
+        $(".do-sql-query").removeAttr("disabled");
+        stopLoad();
         return false;
       }
       try {
@@ -806,10 +809,16 @@ sqlQueryBox = function() {
       } catch (error1) {
         e = error1;
         console.error("Error parsing result");
+        $("#query-immediate-result").text("Error parsing result from CartoDB");
+        $(".do-sql-query").removeAttr("disabled");
+        stopLoad();
+        return false;
       }
       if (r.error != null) {
         console.error("Error in result: " + r.error);
         $("#query-immediate-result").text(r.error);
+        $(".do-sql-query").removeAttr("disabled");
+        stopLoad();
         return false;
       }
       console.log("Using responses", result.parsed_responses);
@@ -827,7 +836,13 @@ sqlQueryBox = function() {
         output += "\n\n";
       }
       $("#query-immediate-result").text(output);
+      $(".do-sql-query").removeAttr("disabled");
+      stopLoad();
       return false;
+    }).error(function() {
+      $("#query-immediate-result").text("Error executing query");
+      $(".do-sql-query").removeAttr("disabled");
+      return stopLoadError();
     });
     return false;
   };
@@ -854,16 +869,18 @@ sqlQueryBox = function() {
     console.info("Executing query ...");
     input = $("#query-input").val();
     query = formatQuery(input);
+    $(".do-sql-query").attr("disabled", "disabled");
     return queryCarto(query);
   };
-  $(".do-sql-query").keyup(function(e) {
+  $("#query-input").keyup(function(e) {
     var kc;
     kc = e.keyCode ? e.keyCode : e.which;
     if (kc === 13) {
       startQuery();
     }
     return false;
-  }).click(function() {
+  });
+  $(".do-sql-query").click(function() {
     return startQuery();
   });
   return false;
