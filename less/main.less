@@ -1170,7 +1170,15 @@ marked-element.indent {
     .action-word {
         padding-right: 0.5em;
     }
-    
+    table {
+        th {
+            .text-muted {
+                // Prevent the "decimal degrees" from forcing table scroll
+                .small;
+                display: block;
+            }
+        }
+    }
 }
 
 #global-data-map, #global-map-container {
@@ -1178,6 +1186,10 @@ marked-element.indent {
     .center-block;
 }
 
+
+paper-button > iron-icon {
+    margin-right: 1rem;
+}
 
 //////////////////////////////////////
 // Profile Page
