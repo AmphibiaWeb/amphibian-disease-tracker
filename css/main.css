@@ -12382,7 +12382,10 @@ google-map,
 #auth-block p.text-muted .glyphicon {
   margin-left: 0.25em;
 }
-#query-immediate-result {
+#project-sql-query-box {
+  margin-top: 2rem;
+}
+#project-sql-query-box #query-immediate-result {
   max-height: 45vh;
   overflow-y: scroll;
 }

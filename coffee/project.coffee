@@ -319,6 +319,7 @@ renderMapWithData = (projectData, force = false) ->
           adjustedList.push tmp.join(options.splitValues)
         downloadCSVFile adjustedList, options
     bindClicks(".download-file")
+    sqlQueryBox()
     $(".download-data-file").contextmenu (event) ->
       event.preventDefault()
       console.log "Event details", event
@@ -718,6 +719,9 @@ sqlQueryBox = ->
   # Render and bind events for a box to directly execute queries on a
   # project.
   ###
+  unless _adp.cartoDataParsed?
+    console.error "CartoDB data not available. Are you logged in?"
+    return false
   # Function definitions
   queryCarto = (query) ->
     console.info "Querying with"
@@ -767,6 +771,7 @@ sqlQueryBox = ->
   unless $("#project-sql-query-box").exists()
     html = """
     <div id="project-sql-query-box">
+      <h2>Raw Project Queries</h2>
       <textarea class="form-control code" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
       <button class="btn btn-default do-sql-query">Execute Query</button>
       <pre class="code" id="query-immediate-result"></pre>
