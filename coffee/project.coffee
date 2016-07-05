@@ -778,8 +778,8 @@ sqlQueryBox = ->
     false
   formatQuery = (rawQuery) ->
     # # Lower-caseify
-    # lowQuery = rawQuery.toLowerCase()
-    lowQuery = rawQuery
+    # lowQuery = rawQuery.trim().toLowerCase()
+    lowQuery = rawQuery.trim()
     # Replace "@@" with TABLENAME
     query = lowQuery.replace /@@/mig, _adp.cartoDataParsed.table
     query = query.replace /!@/mig, "SELECT * FROM #{_adp.cartoDataParsed.table}"
@@ -816,6 +816,8 @@ sqlQueryBox = ->
   $("#query-input").keyup (e) ->
     kc = if e.keyCode then e.keyCode else e.which
     if kc is 13
+      try
+        e.preventDefault()
       startQuery()
     false
   $(".do-sql-query").click ->
