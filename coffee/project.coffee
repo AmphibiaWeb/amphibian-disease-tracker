@@ -739,6 +739,7 @@ sqlQueryBox = ->
     lowQuery = rawQuery.toLowerCase()
     # Replace "@@" with TABLENAME
     query = lowQuery.replace /@@/mig, _adp.cartoDataParsed.table
+    query = query.replace /!@/mig, "SELECT * FROM #{_adp.cartoDataParsed.table}"
     query
   queryResultDialog = ->
     false
@@ -749,7 +750,7 @@ sqlQueryBox = ->
     html = """
     <div id="project-sql-query-box">
       <textarea class="form-control code" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
-      <button class="btn btn-default" class="do-sql-query">Execute Query</button>
+      <button class="btn btn-default do-sql-query">Execute Query</button>
       <span class="help-block" id="query-cheats">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>
 
     </div>
@@ -757,6 +758,7 @@ sqlQueryBox = ->
     $("main").append html
   # Events
   $(".do-sql-query").click ->
+    console.info "Executing query ..."
     input = $("#query-input").text()
     query = formatQuery input
     queryCarto query
