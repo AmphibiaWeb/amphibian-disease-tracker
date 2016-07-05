@@ -207,22 +207,32 @@ renderMapWithData = function(projectData, force) {
         perTaxaStatus[taxa] = {
           positive: false,
           negative: false,
-          no_confidence: false
+          no_confidence: false,
+          counts: {
+            total: 0,
+            positive: 0,
+            negative: 0,
+            no_confidence: 0
+          }
         };
       }
       row.diseasedetected = (function() {
         switch (row.diseasedetected.toString().toLowerCase()) {
           case "true":
             perTaxaStatus[taxa].positive = true;
+            perTaxaStatus[taxa].counts.positive++;
             return "positive";
           case "false":
             perTaxaStatus[taxa].negative = true;
+            perTaxaStatus[taxa].counts.negative++;
             return "negative";
           default:
             perTaxaStatus[taxa].no_confidence = true;
+            perTaxaStatus[taxa].counts.no_confidence++;
             return row.diseasedetected.toString();
         }
       })();
+      perTaxaStatus[taxa].counts.total++;
       note = "";
       if (taxa !== row.originaltaxa) {
         note = "(<em>" + row.originaltaxa + "</em>)";
@@ -299,7 +309,7 @@ renderMapWithData = function(projectData, force) {
           selector: ".download-buttons",
           buttonText: "Download Species List",
           splitValues: " ",
-          header: ["Genus", "Species", "Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?"]
+          header: ["Genus", "Species", "Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count"]
         };
         adjustedList = new Array();
         ref3 = _adp.pageSpeciesList;
@@ -315,6 +325,9 @@ renderMapWithData = function(projectData, force) {
             tmp.push(perTaxaStatus[speciesItem].positive.toString());
             tmp.push(perTaxaStatus[speciesItem].negative.toString());
             tmp.push(perTaxaStatus[speciesItem].no_confidence.toString());
+            tmp.push(perTaxaStatus[speciesItem].counts.positive.toString());
+            tmp.push(perTaxaStatus[speciesItem].counts.negative.toString());
+            tmp.push(perTaxaStatus[speciesItem].counts.no_confidence.toString());
           } else {
             console.warn("CSV downloader couldn't find " + speciesItem + " in perTaxaStatus");
             window.perTaxaStatus = perTaxaStatus;
