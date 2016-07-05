@@ -781,7 +781,8 @@ sqlQueryBox = ->
       <div class="col-xs-12 col-sm-3">
         <button class="btn btn-default do-sql-query pull-right">Execute Query</button>
       </div>
-      <pre class="code col-xs-10 force-center-block" id="query-immediate-result"></pre>
+      <h3 class="col-xs-12">Result:</h3>
+      <pre class="code col-xs-12" id="query-immediate-result"></pre>
     </div>
     """
     $("main").append html
