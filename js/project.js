@@ -340,6 +340,7 @@ renderMapWithData = function(projectData, force) {
       }
     }
     bindClicks(".download-file");
+    sqlQueryBox();
     $(".download-data-file").contextmenu(function(event) {
       var caller, clipboardData, copyFn, elPos, inFn, outFn, url, zcClientInitial;
       event.preventDefault();
@@ -774,6 +775,10 @@ sqlQueryBox = function() {
    * project.
    */
   var formatQuery, html, queryCarto, queryResultDialog, queryResultSummaryHistory;
+  if (_adp.cartoDataParsed == null) {
+    console.error("CartoDB data not available. Are you logged in?");
+    return false;
+  }
   queryCarto = function(query) {
     var args;
     console.info("Querying with");
@@ -832,7 +837,7 @@ sqlQueryBox = function() {
     return false;
   };
   if (!$("#project-sql-query-box").exists()) {
-    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default do-sql-query\">Execute Query</button>\n  <pre class=\"code\" id=\"query-immediate-result\"></pre>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
+    html = "<div id=\"project-sql-query-box\">\n  <h2>Raw Project Queries</h2>\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default do-sql-query\">Execute Query</button>\n  <pre class=\"code\" id=\"query-immediate-result\"></pre>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
     $("main").append(html);
   }
   $(".do-sql-query").click(function() {
