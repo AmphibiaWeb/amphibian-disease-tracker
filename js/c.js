@@ -352,6 +352,7 @@ copyText = function(text, zcObj, zcElement) {
     zcObj.on("aftercopy", function(e) {
       if (e.data["text/plain"]) {
         toastStatusMessage("Copied to clipboard");
+        console.info("Succesfully copied", e.data["text/plain"]);
       } else {
         toastStatusMessage("Error copying to clipboard");
       }

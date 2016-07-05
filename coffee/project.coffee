@@ -786,6 +786,7 @@ showCitation = ->
           try
             p$("#popped-citation").value = citation
       bindClicks()
+      bindCopyEvents()
       safariDialogHelper "#citation-pop"
       stopLoad()
   else
