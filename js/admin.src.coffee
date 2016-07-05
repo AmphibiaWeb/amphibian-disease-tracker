@@ -3953,6 +3953,12 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                     unless _adp.fims.expedition?
                       _adp.fims.expedition = new Object()
                     _adp.fims.expedition.ark = _adp.projectData.project_obj_id
+                  if _adp.originalProjectId?
+                    if _adp.projectId isnt _adp.originalProjectId or _adp.projectData.project_id isnt _adp.originalProjectId
+                      _adp.projectId = _adp.originalProjectId
+                      _adp.projectData.project_id = _adp.originalProjectId
+                  if _adp.projectData.project_id isnt _adp.projectId
+                    _adp.projectId = _adp.projectData.project_id
                   mintBcid _adp.projectId, fullPath, _adp.projectData.project_title, (result) ->
                     if result.ark?
                       fileA = fullPath.split("/")
