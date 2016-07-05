@@ -295,7 +295,7 @@ renderMapWithData = (projectData, force = false) ->
           selector: ".download-buttons"
           buttonText: "Download Species List"
           splitValues: " " # Split genus, species, ssp into their own cols
-          header: ["Genus","Species","Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count"]
+          header: ["Genus","Species","Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count", "Totals"]
         adjustedList = new Array()
         for speciesItem in _adp.pageSpeciesList
           tmp = speciesItem.split options.splitValues
@@ -311,6 +311,7 @@ renderMapWithData = (projectData, force = false) ->
             tmp.push perTaxaStatus[speciesItem].counts.positive.toString()
             tmp.push perTaxaStatus[speciesItem].counts.negative.toString()
             tmp.push perTaxaStatus[speciesItem].counts.no_confidence.toString()
+            tmp.push perTaxaStatus[speciesItem].counts.total.toString()
           else
             console.warn "CSV downloader couldn't find #{speciesItem} in perTaxaStatus"
             window.perTaxaStatus = perTaxaStatus
