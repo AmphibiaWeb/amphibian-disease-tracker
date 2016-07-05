@@ -367,6 +367,7 @@ copyText = function(text, zcObj, zcElement) {
           console.warn("Incorrect copy: instead of '" + text + "', '" + e.data["text/plain"] + "'");
           if (!window.hasRetriedCopy) {
             window.hasRetriedCopy = true;
+            delete window.copyDebouncer.last;
             $(zcElement).click();
           } else {
             console.error("Re-copy failed!");

@@ -272,6 +272,7 @@ copyText = (text, zcObj, zcElement) ->
           # Try again
           unless window.hasRetriedCopy
             window.hasRetriedCopy = true
+            delete window.copyDebouncer.last
             $(zcElement).click()
           else
             console.error "Re-copy failed!"
