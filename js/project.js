@@ -780,8 +780,13 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, error1, r;
+      var e, err, error1, r, ref, ref1;
       console.log(result);
+      if (result.status !== true) {
+        err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
+        console.error(error);
+        $("#query-immediate-result").text(error);
+      }
       try {
         r = JSON.parse(result.post_response[0]);
       } catch (error1) {
@@ -790,6 +795,7 @@ sqlQueryBox = function() {
       }
       if (r.error != null) {
         console.error("Error in result: " + r.error);
+        $("#query-immediate-result").text(r.error);
       }
       return false;
     });
@@ -800,6 +806,7 @@ sqlQueryBox = function() {
     lowQuery = rawQuery.toLowerCase();
     query = lowQuery.replace(/@@/mig, _adp.cartoDataParsed.table);
     query = query.replace(/!@/mig, "SELECT * FROM " + _adp.cartoDataParsed.table);
+    $("#query-input").val(query);
     return query;
   };
   queryResultDialog = function() {
@@ -809,13 +816,13 @@ sqlQueryBox = function() {
     return false;
   };
   if (!$("#project-sql-query-box").exists()) {
-    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default do-sql-query\">Execute Query</button>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
+    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default do-sql-query\">Execute Query</button>\n  <pre class=\"code\" id=\"query-immediate-result\"></pre>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
     $("main").append(html);
   }
   $(".do-sql-query").click(function() {
     var input, query;
     console.info("Executing query ...");
-    input = $("#query-input").text();
+    input = $("#query-input").val();
     query = formatQuery(input);
     return queryCarto(query);
   });
