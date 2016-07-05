@@ -678,7 +678,7 @@ finalizeData = (skipFields = false, callback) ->
               callback postData
             stopLoad()
             return postData
-          $.post adminParams.apiTarget, args, "json"
+          _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             if result.status is true
               bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
@@ -1144,7 +1144,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
     # Try to get the data straight from the CartoDB database
     getCols = "SELECT * FROM #{table} WHERE FALSE"
     args = "action=fetch&sql_query=#{post64(getCols)}"
-    $.post "api.php", args, "json"
+    _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
     .done (result) ->
       try
         r = JSON.parse(result.post_response[0])
@@ -1175,7 +1175,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
       sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
       args = "action=fetch&sql_query=#{apiPostSqlQuery}"
-      $.post "api.php", args, "json"
+      _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
       .done (result) ->
         cartoResponse = result.parsed_responses[0]
         coords = new Array()
@@ -2133,7 +2133,7 @@ loadEditor = (projectPreload) ->
       opid = projectId
       projectId = encodeURIComponent projectId
       args = "perform=get&project=#{projectId}"
-      $.post adminParams.apiTarget, args, "json"
+      _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
       .done (result) ->
         try
           console.info "Server said", result
@@ -2517,7 +2517,7 @@ loadEditor = (projectPreload) ->
               startLoad()
               el = this
               args = "perform=delete&id=#{project.id}"
-              $.post adminParams.apiTarget, args, "json"
+              _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
               .done (result) ->
                 if result.status is true
                   stopLoad()
@@ -2737,7 +2737,7 @@ popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
       args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{j64}"
       # Push needs to be server authenticated, to prevent API spoofs
       console.log "Would push args to", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-      $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+      _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
       .done (result) ->
         console.log "Server permissions alter said", result
         if result.status isnt true
@@ -2839,7 +2839,7 @@ showAddUserDialog = (refAccessList) ->
       if isNull search
         $("#user-search-result-container").prop "hidden", "hidden"
       else
-        $.post "#{uri.urlString}/api.php", "action=search_users&q=#{search}", "json"
+        _adp.currentAsyncJqxhr = $.post "#{uri.urlString}/api.php", "action=search_users&q=#{search}", "json"
         .done (result) ->
           console.info result
           users = Object.toArray result.result
@@ -2917,7 +2917,7 @@ showAddUserDialog = (refAccessList) ->
     args = "perform=editaccess&project=#{window.projectParams.pid}&deltas=#{uidArgs}"
     # Push needs to be server authenticated, to prevent API spoofs
     console.log "Would push args to", "#{adminParams.apiTarget}?#{args}"
-    $.post adminParams.apiTarget, args, "json"
+    _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
     .done (result) ->
       console.log "Server permissions said", result
       if result.status isnt true
@@ -2994,7 +2994,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   # Ping Carto on this and get the data
   getCols = "SELECT * FROM #{cartoTable} WHERE FALSE"
   args = "action=fetch&sql_query=#{post64(getCols)}"
-  $.post "api.php", args, "json"
+  _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
   .done (result) ->
     try
       r = JSON.parse(result.post_response[0])
@@ -3023,7 +3023,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
     console.info "Would ping cartodb with", cartoQuery
     apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
     args = "action=fetch&sql_query=#{apiPostSqlQuery}"
-    $.post "api.php", args, "json"
+    _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
     .done (result) ->
       console.info "Carto query got result:", result
       unless result.status
@@ -3557,7 +3557,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
         console.warn "Administration file not loaded. Upload cannot continue"
         stopLoadError "Administration file not loaded. Upload cannot continue"
         return false
-      $.post adminParams.apiTarget, args, "json"
+      _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
       .done (result) ->
         if result.status
           console.info "Validated data", validatedData
@@ -3794,7 +3794,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
 
             cartoQuery = "SELECT #{_adp.colsList.join(",")}, ST_asGeoJSON(the_geom) FROM #{dataTable};"
             args = "action=fetch&sql_query=#{post64(cartoQuery)}"
-            $.post "api.php", args, "json"
+            _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
             .done (result) ->
               console.info "Carto query got result:", result
               unless result.status
@@ -4036,7 +4036,7 @@ saveEditorData = (force = false, callback) ->
       postData.project_id = _adp.originalProjectId
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
-  $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+  _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.info "Save result: server said", result
     unless result.status is true
@@ -4060,6 +4060,8 @@ saveEditorData = (force = false, callback) ->
     if typeof callback is "function"
       callback()
   false
+
+
 
 
 $ ->
@@ -4206,6 +4208,11 @@ validateData = (dataObject, callback = null) ->
 
 
 stopLoadBarsError = (currentTimeout, message) ->
+  unless $("#validator-progress-container:visible").exists()
+    ex = ->
+      this.message = "Loading bars aren't visible!"
+      this.name = "BadLoadState"
+    throw new ex()
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
@@ -4226,7 +4233,7 @@ stopLoadBarsError = (currentTimeout, message) ->
 delayFimsRecheck = (originalResponse, callback) ->
   cookies = encodeURIComponent originalResponse.responses.login_response.cookies
   args = "perform=validate&auth=#{cookies}"
-  $.post adminParams.apiTarget, args, "json"
+  _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Server said", result
     if typeof callback is "function"
@@ -4291,7 +4298,7 @@ validateFimsData = (dataObject, callback = null) ->
   args = "perform=validate&datasrc=#{src}&link=#{_adp.projectId}"
   # Post the object over to FIMS
   console.info "Posting ...", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-  $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+  _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.log "FIMS validate result", result
     unless result.status is true
@@ -4385,7 +4392,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
   addToExp = _adp?.fims?.expedition?.ark?
 
   args = "perform=mint&link=#{projectId}&title=#{post64(title)}&file=#{datasetUri}&expedition=#{addToExp}"
-  $.post adminParams.apiTarget, args, "json"
+  _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Got", result
     unless result.status
@@ -4426,7 +4433,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
   unless typeof publicProject is "boolean"
     publicProject = false
   args = "perform=create_expedition&link=#{projectId}&title=#{post64(title)}&public=#{publicProject}"
-  $.post adminParams.apiTarget, args, "json"
+  _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Expedition got", result
     unless result.status
@@ -4575,7 +4582,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
   args = "action=validate&genus=#{taxonObj.genus}&species=#{taxonObj.species}"
   if taxonObj.subspecies?
     args += "&subspecies=#{taxonObj.subspecies}"
-  $.post "api.php", args, "json"
+  _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
   .done (result) ->
     if result.status
       # Success! Save validated taxon, and run callback

@@ -678,7 +678,7 @@ finalizeData = (skipFields = false, callback) ->
               callback postData
             stopLoad()
             return postData
-          $.post adminParams.apiTarget, args, "json"
+          _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
           .done (result) ->
             if result.status is true
               bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
@@ -1144,7 +1144,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
     # Try to get the data straight from the CartoDB database
     getCols = "SELECT * FROM #{table} WHERE FALSE"
     args = "action=fetch&sql_query=#{post64(getCols)}"
-    $.post "api.php", args, "json"
+    _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
     .done (result) ->
       try
         r = JSON.parse(result.post_response[0])
@@ -1175,7 +1175,7 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
       sqlQuery = "SELECT ST_AsText(the_geom), #{colsArr.join(",")} FROM #{table}"
       apiPostSqlQuery = encodeURIComponent encode64 sqlQuery
       args = "action=fetch&sql_query=#{apiPostSqlQuery}"
-      $.post "api.php", args, "json"
+      _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
       .done (result) ->
         cartoResponse = result.parsed_responses[0]
         coords = new Array()

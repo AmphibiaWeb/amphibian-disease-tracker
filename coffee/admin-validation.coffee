@@ -42,6 +42,11 @@ validateData = (dataObject, callback = null) ->
 
 
 stopLoadBarsError = (currentTimeout, message) ->
+  unless $("#validator-progress-container:visible").exists()
+    ex = ->
+      this.message = "Loading bars aren't visible!"
+      this.name = "BadLoadState"
+    throw new ex()
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
@@ -62,7 +67,7 @@ stopLoadBarsError = (currentTimeout, message) ->
 delayFimsRecheck = (originalResponse, callback) ->
   cookies = encodeURIComponent originalResponse.responses.login_response.cookies
   args = "perform=validate&auth=#{cookies}"
-  $.post adminParams.apiTarget, args, "json"
+  _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Server said", result
     if typeof callback is "function"
@@ -127,7 +132,7 @@ validateFimsData = (dataObject, callback = null) ->
   args = "perform=validate&datasrc=#{src}&link=#{_adp.projectId}"
   # Post the object over to FIMS
   console.info "Posting ...", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-  $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+  _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.log "FIMS validate result", result
     unless result.status is true
@@ -221,7 +226,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
   addToExp = _adp?.fims?.expedition?.ark?
 
   args = "perform=mint&link=#{projectId}&title=#{post64(title)}&file=#{datasetUri}&expedition=#{addToExp}"
-  $.post adminParams.apiTarget, args, "json"
+  _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Got", result
     unless result.status
@@ -262,7 +267,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
   unless typeof publicProject is "boolean"
     publicProject = false
   args = "perform=create_expedition&link=#{projectId}&title=#{post64(title)}&public=#{publicProject}"
-  $.post adminParams.apiTarget, args, "json"
+  _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
   .done (result) ->
     console.log "Expedition got", result
     unless result.status
@@ -411,7 +416,7 @@ validateAWebTaxon = (taxonObj, callback = null) ->
   args = "action=validate&genus=#{taxonObj.genus}&species=#{taxonObj.species}"
   if taxonObj.subspecies?
     args += "&subspecies=#{taxonObj.subspecies}"
-  $.post "api.php", args, "json"
+  _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
   .done (result) ->
     if result.status
       # Success! Save validated taxon, and run callback

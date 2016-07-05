@@ -579,7 +579,7 @@ finalizeData = function(skipFields, callback) {
             stopLoad();
             return postData;
           }
-          return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+          return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
             if (result.status === true) {
               bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
               stopLoad();
@@ -1129,7 +1129,7 @@ getCanonicalDataCoords = function(table, options, callback) {
     var args, getCols;
     getCols = "SELECT * FROM " + table + " WHERE FALSE";
     args = "action=fetch&sql_query=" + (post64(getCols));
-    return $.post("api.php", args, "json").done(function(result) {
+    return _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
       var apiPostSqlQuery, col, colRemap, cols, colsArr, e, error, error1, k, message, r, ref, ref1, ref2, sqlQuery, type, v;
       try {
         r = JSON.parse(result.post_response[0]);
@@ -1170,7 +1170,7 @@ getCanonicalDataCoords = function(table, options, callback) {
       sqlQuery = "SELECT ST_AsText(the_geom), " + (colsArr.join(",")) + " FROM " + table;
       apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
       args = "action=fetch&sql_query=" + apiPostSqlQuery;
-      return $.post("api.php", args, "json").done(function(result) {
+      return _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
         var cartoResponse, coords, i, info, point, realCol, ref3, ref4, row, textPoint, val;
         cartoResponse = result.parsed_responses[0];
         coords = new Array();
@@ -2185,7 +2185,7 @@ loadEditor = function(projectPreload) {
       opid = projectId;
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
-      return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+      return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
         var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, fundingHtml, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ref5, ta, toggleChecked, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
@@ -2434,7 +2434,7 @@ loadEditor = function(projectPreload) {
               startLoad();
               el = this;
               args = "perform=delete&id=" + project.id;
-              $.post(adminParams.apiTarget, args, "json").done(function(result) {
+              _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
                 if (result.status === true) {
                   stopLoad();
                   toastStatusMessage("Successfully deleted Project #" + project.project_id);
@@ -2641,7 +2641,7 @@ popManageUserAccess = function(project, result) {
       j64 = jsonTo64(permissionsObj);
       args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + j64;
       console.log("Would push args to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
-      $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
+      _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
         var error, k, objPrefix, ref1, ref2, ref3, ref4, useIcon, userObj;
         console.log("Server permissions alter said", result);
         if (result.status !== true) {
@@ -2729,7 +2729,7 @@ showAddUserDialog = function(refAccessList) {
       if (isNull(search)) {
         return $("#user-search-result-container").prop("hidden", "hidden");
       } else {
-        return $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
+        return _adp.currentAsyncJqxhr = $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
           var badge, bonusClass, html, l, len, prefix, users;
           console.info(result);
           users = Object.toArray(result.result);
@@ -2813,7 +2813,7 @@ showAddUserDialog = function(refAccessList) {
     uidArgs = jsonTo64(jsonUids);
     args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + uidArgs;
     console.log("Would push args to", adminParams.apiTarget + "?" + args);
-    return $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
       var error, html, i, icon, len1, m, ref1, ref2, tense, uid, userName, userObj;
       console.log("Server permissions said", result);
       if (result.status !== true) {
@@ -2889,7 +2889,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   }
   getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
-  $.post("api.php", args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
     var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, e, error2, filePath, html, k, r, ref, type, v;
     try {
       r = JSON.parse(result.post_response[0]);
@@ -2925,7 +2925,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     console.info("Would ping cartodb with", cartoQuery);
     apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
-    $.post("api.php", args, "json").done(function(result) {
+    _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
       var base, base1, center, error, error3, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
       console.info("Carto query got result:", result);
       if (!result.status) {
@@ -3377,7 +3377,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
         stopLoadError("Administration file not loaded. Upload cannot continue");
         return false;
       }
-      $.post(adminParams.apiTarget, args, "json").done(function(result) {
+      _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
         var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, statementCount, statements, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
@@ -3641,7 +3641,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
             _adp.projectData.carto_id = JSON.stringify(cartoData);
             cartoQuery = "SELECT " + (_adp.colsList.join(",")) + ", ST_asGeoJSON(the_geom) FROM " + dataTable + ";";
             args = "action=fetch&sql_query=" + (post64(cartoQuery));
-            $.post("api.php", args, "json").done(function(result) {
+            _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
               var col, error, faux, realCol, ref10, ref11, rows, val;
               console.info("Carto query got result:", result);
               if (!result.status) {
@@ -3938,7 +3938,7 @@ saveEditorData = function(force, callback) {
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
-  $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
     var error, ref3, ref4;
     console.info("Save result: server said", result);
     if (result.status !== true) {
@@ -4117,7 +4117,14 @@ validateData = function(dataObject, callback) {
 };
 
 stopLoadBarsError = function(currentTimeout, message) {
-  var el, l, len, others;
+  var el, ex, l, len, others;
+  if (!$("#validator-progress-container:visible").exists()) {
+    ex = function() {
+      this.message = "Loading bars aren't visible!";
+      return this.name = "BadLoadState";
+    };
+    throw new ex();
+  }
   try {
     clearTimeout(currentTimeout);
   } catch (undefined) {}
@@ -4143,7 +4150,7 @@ delayFimsRecheck = function(originalResponse, callback) {
   var args, cookies;
   cookies = encodeURIComponent(originalResponse.responses.login_response.cookies);
   args = "perform=validate&auth=" + cookies;
-  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log("Server said", result);
     if (typeof callback === "function") {
       return callback();
@@ -4219,7 +4226,7 @@ validateFimsData = function(dataObject, callback) {
   src = post64(dataObject.dataSrc);
   args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
   console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
-  $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
     var error, errorClass, errorList, errorMessages, errorType, errors, html, k, key, message, overrideShowErrors, ref2, ref3, ref4, ref5, ref6, ref7, statusTest;
     console.log("FIMS validate result", result);
     if (result.status !== true) {
@@ -4306,7 +4313,7 @@ mintBcid = function(projectId, datasetUri, title, callback) {
   resultObj = new Object();
   addToExp = (typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.fims) != null ? (ref1 = ref.expedition) != null ? ref1.ark : void 0 : void 0 : void 0) != null;
   args = "perform=mint&link=" + projectId + "&title=" + (post64(title)) + "&file=" + datasetUri + "&expedition=" + addToExp;
-  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log("Got", result);
     if (!result.status) {
       stopLoadError(result.human_error);
@@ -4361,7 +4368,7 @@ mintExpedition = function(projectId, title, callback) {
     publicProject = false;
   }
   args = "perform=create_expedition&link=" + projectId + "&title=" + (post64(title)) + "&public=" + publicProject;
-  $.post(adminParams.apiTarget, args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log("Expedition got", result);
     if (!result.status) {
       stopLoadError(result.human_error);
@@ -4550,7 +4557,7 @@ validateAWebTaxon = function(taxonObj, callback) {
   if (taxonObj.subspecies != null) {
     args += "&subspecies=" + taxonObj.subspecies;
   }
-  $.post("api.php", args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
     if (result.status) {
       taxonObj.genus = result.validated_taxon.genus;
       taxonObj.species = result.validated_taxon.species;
