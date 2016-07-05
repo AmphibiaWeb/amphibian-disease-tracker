@@ -799,6 +799,7 @@ sqlQueryBox = function() {
     var lowQuery, query;
     lowQuery = rawQuery.toLowerCase();
     query = lowQuery.replace(/@@/mig, _adp.cartoDataParsed.table);
+    query = query.replace(/!@/mig, "SELECT * FROM " + _adp.cartoDataParsed.table);
     return query;
   };
   queryResultDialog = function() {
@@ -808,11 +809,12 @@ sqlQueryBox = function() {
     return false;
   };
   if (!$("#project-sql-query-box").exists()) {
-    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default\" class=\"do-sql-query\">Execute Query</button>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
+    html = "<div id=\"project-sql-query-box\">\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default do-sql-query\">Execute Query</button>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
     $("main").append(html);
   }
   $(".do-sql-query").click(function() {
     var input, query;
+    console.info("Executing query ...");
     input = $("#query-input").text();
     query = formatQuery(input);
     return queryCarto(query);
