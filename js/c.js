@@ -356,6 +356,7 @@ copyText = function(text, zcObj, zcElement) {
     clipboardData = {
       "text/plain": text
     };
+    console.info("Setting up clipboard events");
     zcObj.setData(clipboardData);
     zcObj.on("aftercopy", function(e) {
       if (e.data["text/plain"] === text) {
@@ -395,6 +396,8 @@ copyText = function(text, zcObj, zcElement) {
         return window.tempZC = new ZeroClipboard(zcElement);
       }
     });
+  } else {
+    console.error("Can't copy: zcObject doesn't exist");
   }
   return false;
 };
@@ -410,10 +413,14 @@ bindCopyEvents = function(selector) {
     };
     ZeroClipboard.config(zcConfig);
     return $(selector).each(function() {
-      var zcObj;
-      zcObj = new ZeroClipboard(this);
-      return $(this).click(function() {
-        var copySelector, text;
+      var copySelector, identifier, text;
+      identifier = md5($(this).html());
+      if (_adp.copyObject == null) {
+        _adp.copyObject = new Object();
+      }
+      if (_adp.copyObject[identifier] == null) {
+        console.info("Setting up copy events for identifier", identifier);
+        _adp.copyObject[identifier] = new ZeroClipboard(this);
         text = $(this).attr("data-clipboard-text");
         if (isNull(text)) {
           copySelector = $(this).attr("data-copy-selector");
@@ -425,9 +432,10 @@ bindCopyEvents = function(selector) {
           }
           console.info("Copying text", text);
         }
-        copyText(text, zcObj, this);
-        return false;
-      });
+        return copyText(text, _adp.copyObject[identifier], this);
+      } else {
+        return console.info("Copy event already set up for identifier", identifier);
+      }
     });
   });
   return false;
