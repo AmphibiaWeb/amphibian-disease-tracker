@@ -3825,6 +3825,15 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                     }
                     _adp.fims.expedition.ark = _adp.projectData.project_obj_id;
                   }
+                  if (_adp.originalProjectId != null) {
+                    if (_adp.projectId !== _adp.originalProjectId || _adp.projectData.project_id !== _adp.originalProjectId) {
+                      _adp.projectId = _adp.originalProjectId;
+                      _adp.projectData.project_id = _adp.originalProjectId;
+                    }
+                  }
+                  if (_adp.projectData.project_id !== _adp.projectId) {
+                    _adp.projectId = _adp.projectData.project_id;
+                  }
                   mintBcid(_adp.projectId, fullPath, _adp.projectData.project_title, function(result) {
                     var file, fileA, newArk;
                     if (result.ark != null) {

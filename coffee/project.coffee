@@ -748,6 +748,12 @@ showCitation = ->
   unless $("#citation-pop").exists()
     animateLoad()
     fetchCitation doi, (citation, url) ->
+      pdfButton = if isNull url then "" else """
+          <paper-button class="click" data-newtab="true" data-href="#{url}">
+            <iron-icon icon="icons:open-in-new"></iron-icon>
+            Open
+          </paper-button>
+      """
       html = """
       <paper-dialog id="citation-pop" modal>
         <h2>Citation</h2>
@@ -759,10 +765,15 @@ showCitation = ->
           </div>
         </paper-dialog-scrollable>
         <div class="buttons">
-          <paper-button class="click" data-newtab="true" data-href="#{url}">
-            <iron-icon icon="icons:open-in-new"></iron-icon>
-            Open
+          <paper-button id="copy-citation" class="click-copy" data-copy-selector="#popped-citation">
+            <iron-icon icon="icons:content-copy"></iron-icon>
+            Copy Citation
           </paper-button>
+          <paper-button id="copy-doi" class="click-copy" data-copy-selector="#doi-input">
+            <iron-icon icon="icons:content-copy"></iron-icon>
+            Copy DOI
+          </paper-button>
+          #{pdfButton}
           <paper-button dialog-dismiss>Close</paper-button>
         </div>
       </paper-dialog>
