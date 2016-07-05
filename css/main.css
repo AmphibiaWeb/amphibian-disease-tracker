@@ -12531,12 +12531,19 @@ marked-element.indent {
 #global-records-search .action-word {
   padding-right: 0.5em;
 }
+#global-records-search table th .text-muted {
+  font-size: 87%;
+  display: block;
+}
 #global-data-map,
 #global-map-container {
   width: 80vw;
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+paper-button > iron-icon {
+  margin-right: 1rem;
 }
 .self-link .input-group {
   width: 100%;
