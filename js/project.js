@@ -780,12 +780,13 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, err, error1, r, ref, ref1;
+      var e, err, error1, error2, j, len, output, r, ref, ref1, ref2, sqlQuery;
       console.log(result);
       if (result.status !== true) {
         err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
         console.error(error);
         $("#query-immediate-result").text(error);
+        return false;
       }
       try {
         r = JSON.parse(result.post_response[0]);
@@ -796,7 +797,20 @@ sqlQueryBox = function() {
       if (r.error != null) {
         console.error("Error in result: " + r.error);
         $("#query-immediate-result").text(r.error);
+        return false;
       }
+      output = "";
+      ref2 = r.parsed_responses;
+      for (j = 0, len = ref2.length; j < len; j++) {
+        sqlQuery = ref2[j];
+        try {
+          output += JSON.stringify(sqlQuery.rows);
+        } catch (error2) {
+          output += "BAD QUERY";
+        }
+        output += "\n\n";
+      }
+      $("#query-immediate-result").text(output);
       return false;
     });
     return false;
