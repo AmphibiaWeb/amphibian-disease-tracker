@@ -310,16 +310,20 @@ bindCopyEvents = (selector = ".click-copy") ->
       identifier = md5 $(this).html()
       unless _adp.copyObject?
         _adp.copyObject = new Object()
-      _adp.copyObject[identifier] = new ZeroClipboard this
-      text = $(this).attr "data-clipboard-text"
-      if isNull text
-        copySelector = $(this).attr "data-copy-selector"
-        text = $(copySelector).val()
+      unless _adp.copyObject[identifier]?
+        console.info "Setting up copy events for identifier", identifier
+        _adp.copyObject[identifier] = new ZeroClipboard this
+        text = $(this).attr "data-clipboard-text"
         if isNull text
-          try
-            text = p$(copySelector).value
-        console.info "Copying text", text
-      copyText text, _adp.copyObject[identifier], this
+          copySelector = $(this).attr "data-copy-selector"
+          text = $(copySelector).val()
+          if isNull text
+            try
+              text = p$(copySelector).value
+          console.info "Copying text", text
+        copyText text, _adp.copyObject[identifier], this
+      else
+        console.info "Copy event already set up for identifier", identifier
       # $(this).click ->
       #   text = $(this).attr "data-clipboard-text"
       #   if isNull text

@@ -418,19 +418,24 @@ bindCopyEvents = function(selector) {
       if (_adp.copyObject == null) {
         _adp.copyObject = new Object();
       }
-      _adp.copyObject[identifier] = new ZeroClipboard(this);
-      text = $(this).attr("data-clipboard-text");
-      if (isNull(text)) {
-        copySelector = $(this).attr("data-copy-selector");
-        text = $(copySelector).val();
+      if (_adp.copyObject[identifier] == null) {
+        console.info("Setting up copy events for identifier", identifier);
+        _adp.copyObject[identifier] = new ZeroClipboard(this);
+        text = $(this).attr("data-clipboard-text");
         if (isNull(text)) {
-          try {
-            text = p$(copySelector).value;
-          } catch (undefined) {}
+          copySelector = $(this).attr("data-copy-selector");
+          text = $(copySelector).val();
+          if (isNull(text)) {
+            try {
+              text = p$(copySelector).value;
+            } catch (undefined) {}
+          }
+          console.info("Copying text", text);
         }
-        console.info("Copying text", text);
+        return copyText(text, _adp.copyObject[identifier], this);
+      } else {
+        return console.info("Copy event already set up for identifier", identifier);
       }
-      return copyText(text, _adp.copyObject[identifier], this);
     });
   });
   return false;
