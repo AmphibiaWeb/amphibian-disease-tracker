@@ -746,7 +746,7 @@ sqlQueryBox = ->
       console.log "Using responses", result.parsed_responses
       output = ""
       for n, sqlQuery of result.parsed_responses
-        nHuman = n + 1
+        nHuman = toInt(n) + 1
         output += "##{nHuman}: "
         try
           output += JSON.stringify sqlQuery.rows
@@ -775,8 +775,10 @@ sqlQueryBox = ->
     <div id="project-sql-query-box" class="row">
       <h2 class="col-xs-12">Raw Project Queries</h2>
       <textarea class="form-control code col-xs-12" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
-      <div class="col-xs-12 clearfix">
+      <div class="col-xs-12 col-sm-9">
         <span class="text-muted" id="query-cheats">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>
+      </div>
+      <div class="col-xs-12 col-sm-3">
         <button class="btn btn-default do-sql-query pull-right">Execute Query</button>
       </div>
       <pre class="code col-xs-12" id="query-immediate-result"></pre>
