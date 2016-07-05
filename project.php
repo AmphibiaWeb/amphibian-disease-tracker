@@ -438,7 +438,7 @@ $loginStatus = getLoginState();
                $class = empty($project['publication']) ? "col-xs-12" : "col-xs-9 col-md-11";
                $hidden = empty($project['publication']) ? "hidden" : "";
                ?>
-            <paper-input readonly label="DOI" class="<?php echo $class; ?>" value="<?php echo $project['publication']; ?>"></paper-input>
+            <paper-input readonly label="DOI" class="<?php echo $class; ?>" value="<?php echo $project['publication']; ?>" id="doi-input"></paper-input>
             <paper-fab icon="icons:description" class="materialblue click" data-function="showCitation" data-toggle="tooltip" title="Show Citation" <?php echo $hidden; ?>></paper-fab>
           </div>
           <div class="row">
