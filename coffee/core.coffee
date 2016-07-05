@@ -259,6 +259,7 @@ copyText = (text, zcObj, zcElement) ->
   if zcObj?
     clipboardData =
       "text/plain": text
+    console.info "Setting up clipboard events"
     zcObj.setData clipboardData
     zcObj.on "aftercopy", (e) ->
       if e.data["text/plain"] is text
@@ -295,6 +296,8 @@ copyText = (text, zcObj, zcElement) ->
           copyLink window.tempZC, text
         window.tempZC = new ZeroClipboard zcElement
 
+  else
+    console.error "Can't copy: zcObject doesn't exist"
   false
 
 
@@ -304,18 +307,30 @@ bindCopyEvents = (selector = ".click-copy") ->
       swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
     ZeroClipboard.config zcConfig
     $(selector).each ->
-      zcObj = new ZeroClipboard this
-      $(this).click ->
-        text = $(this).attr "data-clipboard-text"
+      identifier = md5 $(this).html()
+      unless _adp.copyObject?
+        _adp.copyObject = new Object()
+      _adp.copyObject[identifier] = new ZeroClipboard this
+      text = $(this).attr "data-clipboard-text"
+      if isNull text
+        copySelector = $(this).attr "data-copy-selector"
+        text = $(copySelector).val()
         if isNull text
-          copySelector = $(this).attr "data-copy-selector"
-          text = $(copySelector).val()
-          if isNull text
-            try
-              text = p$(copySelector).value
-          console.info "Copying text", text
-        copyText text, zcObj, this
-        false
+          try
+            text = p$(copySelector).value
+        console.info "Copying text", text
+      copyText text, _adp.copyObject[identifier], this
+      # $(this).click ->
+      #   text = $(this).attr "data-clipboard-text"
+      #   if isNull text
+      #     copySelector = $(this).attr "data-copy-selector"
+      #     text = $(copySelector).val()
+      #     if isNull text
+      #       try
+      #         text = p$(copySelector).value
+      #     console.info "Copying text", text
+      #   copyText text, zcObj, this
+      #   false
   false
 
 
