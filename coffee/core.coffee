@@ -255,11 +255,21 @@ copyText = (text, zcObj, zcElement) ->
       "text/plain": text
     zcObj.setData clipboardData
     zcObj.on "aftercopy", (e) ->
-      if e.data["text/plain"]
+      if e.data["text/plain"] is text
         toastStatusMessage "Copied to clipboard"
         console.info "Succesfully copied", e.data["text/plain"]
+        window.hasRetriedCopy = false
       else
-        toastStatusMessage "Error copying to clipboard"
+        if e.data["text/plain"]
+          # We copied, but copied the wrong thing
+          console.warn "Incorrect copy: instead of '#{text}', '#{e.data["text/plain"]}'"
+          # Try again
+          unless window.hasRetriedCopy
+            window.hasRetriedCopy = true
+            $(zcElement).click()
+        else
+          toastStatusMessage "Error copying to clipboard"
+          window.hasRetriedCopy = false
       window.resetClipboard = false
     zcObj.on "error", (e) ->
       console.error "Error copying to clipboard"

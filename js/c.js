@@ -350,11 +350,21 @@ copyText = function(text, zcObj, zcElement) {
     };
     zcObj.setData(clipboardData);
     zcObj.on("aftercopy", function(e) {
-      if (e.data["text/plain"]) {
+      if (e.data["text/plain"] === text) {
         toastStatusMessage("Copied to clipboard");
         console.info("Succesfully copied", e.data["text/plain"]);
+        window.hasRetriedCopy = false;
       } else {
-        toastStatusMessage("Error copying to clipboard");
+        if (e.data["text/plain"]) {
+          console.warn("Incorrect copy: instead of '" + text + "', '" + e.data["text/plain"] + "'");
+          if (!window.hasRetriedCopy) {
+            window.hasRetriedCopy = true;
+            $(zcElement).click();
+          }
+        } else {
+          toastStatusMessage("Error copying to clipboard");
+          window.hasRetriedCopy = false;
+        }
       }
       return window.resetClipboard = false;
     });
