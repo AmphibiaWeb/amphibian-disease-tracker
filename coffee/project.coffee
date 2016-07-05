@@ -732,8 +732,13 @@ sqlQueryBox = ->
       console.log result
       if result.status isnt true
         err = result.human_error ? result.error ? "Unknown error"
-        console.error error
-        $("#query-immediate-result").text error
+        console.error err
+        extended = switch err
+          when "UNAUTHORIZED_QUERY_TYPE"
+            result.query_type
+          else
+            "(no details for this error)"
+        $("#query-immediate-result").text "#{err}: #{extended}"
         return false
       try
         r = JSON.parse(result.post_response[0])

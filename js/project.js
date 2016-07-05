@@ -785,12 +785,20 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, err, error1, error2, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
+      var e, err, error1, error2, extended, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
       console.log(result);
       if (result.status !== true) {
         err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
-        console.error(error);
-        $("#query-immediate-result").text(error);
+        console.error(err);
+        extended = (function() {
+          switch (err) {
+            case "UNAUTHORIZED_QUERY_TYPE":
+              return result.query_type;
+            default:
+              return "(no details for this error)";
+          }
+        })();
+        $("#query-immediate-result").text(err + ": " + extended);
         return false;
       }
       try {
