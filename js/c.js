@@ -407,36 +407,39 @@ bindCopyEvents = function(selector) {
     selector = ".click-copy";
   }
   loadJS("bower_components/zeroclipboard/dist/ZeroClipboard.min.js", function() {
-    var zcConfig;
+    var copySelector, el, identifier, l, len, ref, results, text, zcConfig;
     zcConfig = {
       swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
     };
     ZeroClipboard.config(zcConfig);
-    return $(selector).each(function() {
-      var copySelector, identifier, text;
-      identifier = md5($(this).html());
+    ref = $(selector);
+    results = [];
+    for (l = 0, len = ref.length; l < len; l++) {
+      el = ref[l];
+      identifier = md5($(el).html());
       if (_adp.copyObject == null) {
         _adp.copyObject = new Object();
       }
       if (_adp.copyObject[identifier] == null) {
         console.info("Setting up copy events for identifier", identifier);
-        _adp.copyObject[identifier] = new ZeroClipboard(this);
-        text = $(this).attr("data-clipboard-text");
+        _adp.copyObject[identifier] = new ZeroClipboard(el);
+        text = $(el).attr("data-clipboard-text");
         if (isNull(text)) {
-          copySelector = $(this).attr("data-copy-selector");
+          copySelector = $(el).attr("data-copy-selector");
           text = $(copySelector).val();
           if (isNull(text)) {
             try {
               text = p$(copySelector).value;
             } catch (undefined) {}
           }
-          console.info("Copying text", text);
         }
-        return copyText(text, _adp.copyObject[identifier], this);
+        console.info("Registering copy text", text);
+        results.push(copyText(text, _adp.copyObject[identifier], el));
       } else {
-        return console.info("Copy event already set up for identifier", identifier);
+        results.push(console.info("Copy event already set up for identifier", identifier));
       }
-    });
+    }
+    return results;
   });
   return false;
 };
