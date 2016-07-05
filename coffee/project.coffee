@@ -84,6 +84,7 @@ renderMapWithData = (projectData, force = false) ->
     console.warn "The map was asked to be rendered again, but it has already been rendered!"
     return false
   cartoData = JSON.parse deEscape projectData.carto_id
+  _adp.cartoDataParsed = cartoData
   raw = cartoData.raw_data
   if raw.hasDataFile
     helperDir = "helpers/"
@@ -718,12 +719,27 @@ sqlQueryBox = ->
   # project.
   ###
   # Function definitions
-  queryCarto = ->
+  queryCarto = (query) ->
+    console.info "Querying with"
+    console.log query
+    args = "action=fetch&sql_query=#{post64(query)}"
+    _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
+    .done (result) ->
+      console.log result
+      try
+        r = JSON.parse(result.post_response[0])
+      catch e
+        console.error "Error parsing result"
+      if r.error?
+        console.error "Error in result: #{r.error}"
+      false
     false
-  formatQuery = ->
+  formatQuery = (rawQuery) ->
     # Lower-caseify
+    lowQuery = rawQuery.toLowerCase()
     # Replace "@@" with TABLENAME
-    false
+    query = lowQuery.replace /@@/mig, _adp.cartoDataParsed.table
+    query
   queryResultDialog = ->
     false
   queryResultSummaryHistory = ->
@@ -733,12 +749,17 @@ sqlQueryBox = ->
     html = """
     <div id="project-sql-query-box">
       <textarea class="form-control code" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
+      <button class="btn btn-default" class="do-sql-query">Execute Query</button>
       <span class="help-block" id="query-cheats">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>
 
     </div>
     """
     $("main").append html
   # Events
+  $(".do-sql-query").click ->
+    input = $("#query-input").text()
+    query = formatQuery input
+    queryCarto query
   false
 
 
