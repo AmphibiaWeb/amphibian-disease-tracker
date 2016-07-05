@@ -1495,6 +1495,22 @@ fetchCitation = (citationQuery, callback) ->
 
 
 
+cancelAsyncOperation = (asyncOperation = _adp.currentAsyncJqxhr) ->
+  ###
+  # Abort the current operation
+  #
+  # https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/abort
+  ###
+  try
+    asyncOperation.abort()
+    # Do a host of cancellation events
+    try
+      stopLoadBarsError null, "Operation Cancelled"
+    catch
+      stopLoadError "Operation Cancelled"
+  catch
+    console.error "Couldn't abort current async operation"
+  false
 
 
 
