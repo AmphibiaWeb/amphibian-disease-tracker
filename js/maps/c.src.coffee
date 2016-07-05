@@ -243,6 +243,12 @@ copyText = (text, zcObj, zcElement) ->
   ###
   #
   ###
+  unless window.copyDebouncer?
+    window.copyDebouncer = new Object()
+  if Date.now() - window.copyDebouncer.last < 300
+    console.warn "Skipping copy on debounce"
+    return false
+  window.copyDebouncer.last = Date.now()
   try
     clipboardData =
       dataType: "text/plain"
@@ -267,8 +273,11 @@ copyText = (text, zcObj, zcElement) ->
           unless window.hasRetriedCopy
             window.hasRetriedCopy = true
             $(zcElement).click()
+          else
+            console.error "Re-copy failed!"
+            toastStatusMessage "Error copying to clipboard. Please try again"
         else
-          toastStatusMessage "Error copying to clipboard"
+          toastStatusMessage "Error copying to clipboard. Please try again"
           window.hasRetriedCopy = false
       window.resetClipboard = false
     zcObj.on "error", (e) ->
@@ -1440,7 +1449,7 @@ fetchCitation = (citationQuery, callback) ->
       console.warn j
       citation = """
       #{authors.join(", ")}. #{j.title[0]}. #{j["container-title"][0]}. In press.
-      """      
+      """
     console.log citation
     if typeof callback is "function"
       callback citation, j.link[0].URL
