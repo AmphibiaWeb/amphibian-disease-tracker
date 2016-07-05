@@ -335,6 +335,14 @@ copyText = function(text, zcObj, zcElement) {
    *
    */
   var clip, clipboardData;
+  if (window.copyDebouncer == null) {
+    window.copyDebouncer = new Object();
+  }
+  if (Date.now() - window.copyDebouncer.last < 300) {
+    console.warn("Skipping copy on debounce");
+    return false;
+  }
+  window.copyDebouncer.last = Date.now();
   try {
     clipboardData = {
       dataType: "text/plain",
@@ -360,9 +368,12 @@ copyText = function(text, zcObj, zcElement) {
           if (!window.hasRetriedCopy) {
             window.hasRetriedCopy = true;
             $(zcElement).click();
+          } else {
+            console.error("Re-copy failed!");
+            toastStatusMessage("Error copying to clipboard. Please try again");
           }
         } else {
-          toastStatusMessage("Error copying to clipboard");
+          toastStatusMessage("Error copying to clipboard. Please try again");
           window.hasRetriedCopy = false;
         }
       }
