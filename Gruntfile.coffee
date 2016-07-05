@@ -206,7 +206,7 @@ module.exports = (grunt) ->
   ## Deploy
   grunt.registerTask "qbuild","CoffeeScript and CSS", ->
     # ,"vulcanize"
-    grunt.task.run("compile","css")
+    grunt.task.run("phplint","compile","css")
   grunt.registerTask "build","Compile and update, then watch", ->
     # ,"vulcanize"
     grunt.task.run("updateNPM","updateBower","compile","minify","watch")

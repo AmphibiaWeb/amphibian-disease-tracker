@@ -812,6 +812,7 @@ showCitation = function() {
         });
       }
       bindClicks();
+      bindCopyEvents();
       safariDialogHelper("#citation-pop");
       return stopLoad();
     });

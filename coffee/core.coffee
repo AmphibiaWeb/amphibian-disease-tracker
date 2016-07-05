@@ -257,6 +257,7 @@ copyText = (text, zcObj, zcElement) ->
     zcObj.on "aftercopy", (e) ->
       if e.data["text/plain"]
         toastStatusMessage "Copied to clipboard"
+        console.info "Succesfully copied", e.data["text/plain"]
       else
         toastStatusMessage "Error copying to clipboard"
       window.resetClipboard = false
