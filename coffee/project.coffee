@@ -726,12 +726,17 @@ sqlQueryBox = ->
     _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
     .done (result) ->
       console.log result
+      if result.status isnt true
+        err = result.human_error ? result.error ? "Unknown error"
+        console.error error
+        $("#query-immediate-result").text error
       try
         r = JSON.parse(result.post_response[0])
       catch e
         console.error "Error parsing result"
       if r.error?
         console.error "Error in result: #{r.error}"
+        $("#query-immediate-result").text r.error
       false
     false
   formatQuery = (rawQuery) ->
@@ -740,6 +745,7 @@ sqlQueryBox = ->
     # Replace "@@" with TABLENAME
     query = lowQuery.replace /@@/mig, _adp.cartoDataParsed.table
     query = query.replace /!@/mig, "SELECT * FROM #{_adp.cartoDataParsed.table}"
+    $("#query-input").val query
     query
   queryResultDialog = ->
     false
@@ -751,7 +757,8 @@ sqlQueryBox = ->
     <div id="project-sql-query-box">
       <textarea class="form-control code" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
       <button class="btn btn-default do-sql-query">Execute Query</button>
-      <span class="help-block" id="query-cheats">Tips: <ol><li>Type <kbd>@@</kb> as a placeholder for the table name</li><li>Type <kb>!@</kb> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>
+      <pre class="code" id="query-immediate-result"></pre>
+      <span class="help-block" id="query-cheats">Tips: <ol><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>
 
     </div>
     """
@@ -759,7 +766,7 @@ sqlQueryBox = ->
   # Events
   $(".do-sql-query").click ->
     console.info "Executing query ..."
-    input = $("#query-input").text()
+    input = $("#query-input").val()
     query = formatQuery input
     queryCarto query
   false
