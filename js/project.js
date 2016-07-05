@@ -804,9 +804,9 @@ sqlQueryBox = function() {
         $("#query-immediate-result").text(r.error);
         return false;
       }
-      console.log("Using responses", r.parsed_responses);
+      console.log("Using responses", result.parsed_responses);
       output = "";
-      ref2 = r.parsed_responses;
+      ref2 = result.parsed_responses;
       for (n in ref2) {
         sqlQuery = ref2[n];
         output += "#" + n + ": ";

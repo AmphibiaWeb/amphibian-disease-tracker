@@ -743,9 +743,9 @@ sqlQueryBox = ->
         console.error "Error in result: #{r.error}"
         $("#query-immediate-result").text r.error
         return false
-      console.log "Using responses", r.parsed_responses
+      console.log "Using responses", result.parsed_responses
       output = ""
-      for n, sqlQuery of r.parsed_responses
+      for n, sqlQuery of result.parsed_responses
         output += "##{n}: "
         try
           output += JSON.stringify sqlQuery.rows          
