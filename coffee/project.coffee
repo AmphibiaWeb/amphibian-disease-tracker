@@ -724,6 +724,7 @@ sqlQueryBox = ->
     return false
   # Function definitions
   queryCarto = (query) ->
+    animateLoad()
     console.info "Querying with"
     console.log query
     args = "action=fetch&sql_query=#{post64(query)}"
@@ -739,14 +740,22 @@ sqlQueryBox = ->
           else
             "(no details for this error)"
         $("#query-immediate-result").text "#{err}: #{extended}"
+        $(".do-sql-query").removeAttr "disabled"
+        stopLoad()
         return false
       try
         r = JSON.parse(result.post_response[0])
       catch e
         console.error "Error parsing result"
+        $("#query-immediate-result").text "Error parsing result from CartoDB"
+        $(".do-sql-query").removeAttr "disabled"
+        stopLoad()
+        return false
       if r.error?
         console.error "Error in result: #{r.error}"
         $("#query-immediate-result").text r.error
+        $(".do-sql-query").removeAttr "disabled"
+        stopLoad()
         return false
       console.log "Using responses", result.parsed_responses
       output = ""
@@ -759,7 +768,13 @@ sqlQueryBox = ->
           output += "BAD QUERY"
         output += "\n\n"
       $("#query-immediate-result").text output
+      $(".do-sql-query").removeAttr "disabled"
+      stopLoad()
       false
+    .error ->
+      $("#query-immediate-result").text "Error executing query"
+      $(".do-sql-query").removeAttr "disabled"
+      stopLoadError()
     false
   formatQuery = (rawQuery) ->
     # # Lower-caseify
@@ -796,14 +811,14 @@ sqlQueryBox = ->
     console.info "Executing query ..."
     input = $("#query-input").val()
     query = formatQuery input
+    $(".do-sql-query").attr "disabled", "disabled"
     queryCarto query
-  $(".do-sql-query")
-  .keyup (e) ->
+  $("#query-input").keyup (e) ->
     kc = if e.keyCode then e.keyCode else e.which
     if kc is 13
       startQuery()
     false
-  .click ->
+  $(".do-sql-query").click ->
     startQuery()
   false
 
