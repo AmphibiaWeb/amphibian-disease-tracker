@@ -434,7 +434,8 @@ bindCopyEvents = function(selector) {
           }
         }
         console.info("Registering copy text", text);
-        results.push(copyText(text, _adp.copyObject[identifier], el));
+        copyText(text, _adp.copyObject[identifier], el);
+        results.push(delete window.copyDebouncer);
       } else {
         results.push(console.info("Copy event already set up for identifier", identifier));
       }
