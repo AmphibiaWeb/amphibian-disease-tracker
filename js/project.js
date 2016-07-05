@@ -309,7 +309,7 @@ renderMapWithData = function(projectData, force) {
           selector: ".download-buttons",
           buttonText: "Download Species List",
           splitValues: " ",
-          header: ["Genus", "Species", "Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count"]
+          header: ["Genus", "Species", "Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count", "Totals"]
         };
         adjustedList = new Array();
         ref3 = _adp.pageSpeciesList;
@@ -328,6 +328,7 @@ renderMapWithData = function(projectData, force) {
             tmp.push(perTaxaStatus[speciesItem].counts.positive.toString());
             tmp.push(perTaxaStatus[speciesItem].counts.negative.toString());
             tmp.push(perTaxaStatus[speciesItem].counts.no_confidence.toString());
+            tmp.push(perTaxaStatus[speciesItem].counts.total.toString());
           } else {
             console.warn("CSV downloader couldn't find " + speciesItem + " in perTaxaStatus");
             window.perTaxaStatus = perTaxaStatus;
