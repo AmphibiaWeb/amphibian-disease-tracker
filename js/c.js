@@ -356,7 +356,7 @@ copyText = function(text, zcObj, zcElement) {
     clipboardData = {
       "text/plain": text
     };
-    console.info("Setting up clipboard events");
+    console.info("Setting up clipboard events for \"" + text + "\"");
     zcObj.setData(clipboardData);
     zcObj.on("aftercopy", function(e) {
       if (e.data["text/plain"] === text) {
@@ -375,6 +375,7 @@ copyText = function(text, zcObj, zcElement) {
             toastStatusMessage("Error copying to clipboard. Please try again");
           }
         } else {
+          console.error("Bad data passed", e.data["text/plain"]);
           toastStatusMessage("Error copying to clipboard. Please try again");
           window.hasRetriedCopy = false;
         }
@@ -434,8 +435,10 @@ bindCopyEvents = function(selector) {
           }
         }
         console.info("Registering copy text", text);
-        copyText(text, _adp.copyObject[identifier], el);
-        results.push(delete window.copyDebouncer);
+        try {
+          delete window.copyDebouncer.last;
+        } catch (undefined) {}
+        results.push(copyText(text, _adp.copyObject[identifier], el));
       } else {
         results.push(console.info("Copy event already set up for identifier", identifier));
       }

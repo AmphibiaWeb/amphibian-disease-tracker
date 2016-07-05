@@ -259,7 +259,7 @@ copyText = (text, zcObj, zcElement) ->
   if zcObj?
     clipboardData =
       "text/plain": text
-    console.info "Setting up clipboard events"
+    console.info "Setting up clipboard events for \"#{text}\""
     zcObj.setData clipboardData
     zcObj.on "aftercopy", (e) ->
       if e.data["text/plain"] is text
@@ -279,6 +279,7 @@ copyText = (text, zcObj, zcElement) ->
             console.error "Re-copy failed!"
             toastStatusMessage "Error copying to clipboard. Please try again"
         else
+          console.error "Bad data passed", e.data["text/plain"]
           toastStatusMessage "Error copying to clipboard. Please try again"
           window.hasRetriedCopy = false
       window.resetClipboard = false
@@ -295,7 +296,6 @@ copyText = (text, zcObj, zcElement) ->
           window.resetClipboard = true
           copyLink window.tempZC, text
         window.tempZC = new ZeroClipboard zcElement
-
   else
     console.error "Can't copy: zcObject doesn't exist"
   false
@@ -321,8 +321,9 @@ bindCopyEvents = (selector = ".click-copy") ->
             try
               text = p$(copySelector).value
         console.info "Registering copy text", text
+        try
+          delete window.copyDebouncer.last
         copyText text, _adp.copyObject[identifier], el
-        delete window.copyDebouncer
       else
         console.info "Copy event already set up for identifier", identifier
       # $(this).click ->
