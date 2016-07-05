@@ -730,6 +730,7 @@ sqlQueryBox = ->
         err = result.human_error ? result.error ? "Unknown error"
         console.error error
         $("#query-immediate-result").text error
+        return false
       try
         r = JSON.parse(result.post_response[0])
       catch e
@@ -737,6 +738,15 @@ sqlQueryBox = ->
       if r.error?
         console.error "Error in result: #{r.error}"
         $("#query-immediate-result").text r.error
+        return false
+      output = ""
+      for sqlQuery in r.parsed_responses
+        try
+          output += JSON.stringify sqlQuery.rows          
+        catch
+          output += "BAD QUERY"
+        output += "\n\n"
+      $("#query-immediate-result").text output
       false
     false
   formatQuery = (rawQuery) ->

@@ -12382,6 +12382,10 @@ google-map,
 #auth-block p.text-muted .glyphicon {
   margin-left: 0.25em;
 }
+#query-immediate-result {
+  max-height: 45vh;
+  overflow-y: scroll;
+}
 .species-list {
   list-style-type: none;
   margin: 1rem;
