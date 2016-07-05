@@ -370,7 +370,11 @@ copyText = function(text, zcObj, zcElement) {
           if (!window.hasRetriedCopy) {
             window.hasRetriedCopy = true;
             delete window.copyDebouncer.last;
-            $(zcElement).click();
+            delay(100, function() {
+              console.warn("Re-trying copy");
+              $(zcElement).click();
+              return console.info("Sent click");
+            });
           } else {
             console.error("Re-copy failed!");
             toastStatusMessage("Error copying to clipboard. Please try again");
