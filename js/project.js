@@ -785,7 +785,7 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, err, error1, error2, n, output, r, ref, ref1, ref2, sqlQuery;
+      var e, err, error1, error2, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
       console.log(result);
       if (result.status !== true) {
         err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
@@ -809,7 +809,8 @@ sqlQueryBox = function() {
       ref2 = result.parsed_responses;
       for (n in ref2) {
         sqlQuery = ref2[n];
-        output += "#" + n + ": ";
+        nHuman = n + 1;
+        output += "#" + nHuman + ": ";
         try {
           output += JSON.stringify(sqlQuery.rows);
         } catch (error2) {
@@ -824,7 +825,7 @@ sqlQueryBox = function() {
   };
   formatQuery = function(rawQuery) {
     var lowQuery, query;
-    lowQuery = rawQuery.toLowerCase();
+    lowQuery = rawQuery;
     query = lowQuery.replace(/@@/mig, _adp.cartoDataParsed.table);
     query = query.replace(/!@/mig, "SELECT * FROM " + _adp.cartoDataParsed.table);
     $("#query-input").val(query);
@@ -837,7 +838,7 @@ sqlQueryBox = function() {
     return false;
   };
   if (!$("#project-sql-query-box").exists()) {
-    html = "<div id=\"project-sql-query-box\">\n  <h2>Raw Project Queries</h2>\n  <textarea class=\"form-control code\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <button class=\"btn btn-default do-sql-query\">Execute Query</button>\n  <pre class=\"code\" id=\"query-immediate-result\"></pre>\n  <span class=\"help-block\" id=\"query-cheats\">Tips: <ol><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>\n\n</div>";
+    html = "<div id=\"project-sql-query-box\" class=\"row\">\n  <h2 class=\"col-xs-12\">Raw Project Queries</h2>\n  <textarea class=\"form-control code col-xs-12\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <div class=\"col-xs-12 clearfix\">\n    <span class=\"text-muted\" id=\"query-cheats\">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>\n    <button class=\"btn btn-default do-sql-query pull-right\">Execute Query</button>\n  </div>\n  <pre class=\"code col-xs-12\" id=\"query-immediate-result\"></pre>\n</div>";
     $("main").append(html);
   }
   $(".do-sql-query").click(function() {

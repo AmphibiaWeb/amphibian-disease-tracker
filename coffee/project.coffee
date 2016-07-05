@@ -746,9 +746,10 @@ sqlQueryBox = ->
       console.log "Using responses", result.parsed_responses
       output = ""
       for n, sqlQuery of result.parsed_responses
-        output += "##{n}: "
+        nHuman = n + 1
+        output += "##{nHuman}: "
         try
-          output += JSON.stringify sqlQuery.rows          
+          output += JSON.stringify sqlQuery.rows
         catch
           output += "BAD QUERY"
         output += "\n\n"
@@ -756,8 +757,9 @@ sqlQueryBox = ->
       false
     false
   formatQuery = (rawQuery) ->
-    # Lower-caseify
-    lowQuery = rawQuery.toLowerCase()
+    # # Lower-caseify
+    # lowQuery = rawQuery.toLowerCase()
+    lowQuery = rawQuery
     # Replace "@@" with TABLENAME
     query = lowQuery.replace /@@/mig, _adp.cartoDataParsed.table
     query = query.replace /!@/mig, "SELECT * FROM #{_adp.cartoDataParsed.table}"
@@ -770,13 +772,14 @@ sqlQueryBox = ->
   # If it doesn't exist, inject into the DOM
   unless $("#project-sql-query-box").exists()
     html = """
-    <div id="project-sql-query-box">
-      <h2>Raw Project Queries</h2>
-      <textarea class="form-control code" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
-      <button class="btn btn-default do-sql-query">Execute Query</button>
-      <pre class="code" id="query-immediate-result"></pre>
-      <span class="help-block" id="query-cheats">Tips: <ol><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code><li>Your queries will be case insensitive</li><li>Multiple queries at once is just fine</li></ol></span>
-
+    <div id="project-sql-query-box" class="row">
+      <h2 class="col-xs-12">Raw Project Queries</h2>
+      <textarea class="form-control code col-xs-12" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
+      <div class="col-xs-12 clearfix">
+        <span class="text-muted" id="query-cheats">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>
+        <button class="btn btn-default do-sql-query pull-right">Execute Query</button>
+      </div>
+      <pre class="code col-xs-12" id="query-immediate-result"></pre>
     </div>
     """
     $("main").append html
