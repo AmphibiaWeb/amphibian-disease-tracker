@@ -222,7 +222,7 @@ doSearch = function(search, goDeep) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, feedback, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, rlButton, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, rlButton, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -332,7 +332,7 @@ doSearch = function(search, goDeep) {
         p$("#global-data-map").longitude = mapCenter.lng;
       } catch (error1) {
         try {
-          geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
+          geo.lMap.panTo(mapCenter.getObject());
         } catch (undefined) {}
       }
     } catch (error2) {
@@ -342,12 +342,6 @@ doSearch = function(search, goDeep) {
     }
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
-    feedback = {
-      boundingBoxArray: boundingBoxArray,
-      zoom: zoom,
-      center: mapCenter
-    };
-    console.info("Computed centers", feedback);
     try {
       resetMap(geo.lMap, false, false);
       for (l = 0, len2 = layers.length; l < len2; l++) {
@@ -371,7 +365,7 @@ doSearch = function(search, goDeep) {
           return p$("#global-data-map").longitude = mapCenter.lng;
         } catch (error3) {
           try {
-            return geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
+            return geo.lMap.setView(mapCenter.getObject());
           } catch (undefined) {}
         }
       });
@@ -528,7 +522,7 @@ doDeepSearch = function(results, namedMap) {
         p$("#global-data-map").longitude = mapCenter.lng;
       } catch (error1) {
         try {
-          geo.lMap.panTo([mapCenter.lat, mapCenter.lng]);
+          geo.lMap.panTo(mapCenter.getObject());
         } catch (undefined) {}
       }
     } catch (error2) {
@@ -566,6 +560,17 @@ doDeepSearch = function(results, namedMap) {
         createRawCartoMap(layerSourceObj);
         $("#post-map-subtitle").text(subText);
       }
+      delay(100, function() {
+        var error3;
+        try {
+          p$("#global-data-map").latitude = mapCenter.lat;
+          return p$("#global-data-map").longitude = mapCenter.lng;
+        } catch (error3) {
+          try {
+            return geo.lMap.setView(mapCenter.getObject());
+          } catch (undefined) {}
+        }
+      });
     } catch (error3) {
       e = error3;
       console.error("Couldn't create map! " + e.message);
