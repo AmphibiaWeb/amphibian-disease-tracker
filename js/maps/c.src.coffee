@@ -309,6 +309,14 @@ copyText = (text, zcObj, zcElement) ->
           window.resetClipboard = true
           copyLink window.tempZC, text
         window.tempZC = new ZeroClipboard zcElement
+      # Case for no flash at all
+      if e.name is "flash-disabled"
+        # stuff
+        console.info "No flash on this system"
+        ZeroClipboard.destroy()
+        $(".click-copy").remove()
+        p$("paper-dialog").refit()
+        toastStatusMessage "Clipboard copying isn't available on your system"
   else
     console.error "Can't copy: zcObject doesn't exist for identifier #{identifier}"
   false
