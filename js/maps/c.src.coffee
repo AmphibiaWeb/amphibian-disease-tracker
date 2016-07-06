@@ -3241,7 +3241,7 @@ setupMapMarkerToggles = ->
     </h3>
     <button class="btn btn-danger col-xs-3 toggle-marker" data-disease-status="positive">Positive</button>
     <button class="btn btn-primary col-xs-3 toggle-marker" data-disease-status="negative">Negative</button>
-    <button class="btn btn-warning col-xs-3 toggle-marker" data-disease-status="no_confidence">Inconclusive</button>
+    <button class="btn btn-warning col-xs-3 toggle-marker" data-disease-status="no_confidence"><span class="hidden-xs">Inconclusive</span><span class="visible-xs-inline">?</span></button>
   </div>
   """
   unless $(".toggle-marker").exists()
