@@ -383,17 +383,18 @@ doSearch = function(search, goDeep) {
         if (count >= maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
+          return false;
         }
+        ++count;
         return delay(timeout, function() {
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.info("#" + count + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
-          count++;
           return ensureCenter(count);
         });
       })(0, 100, 100);
@@ -613,17 +614,18 @@ doDeepSearch = function(results, namedMap) {
         if (count >= maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
+          return false;
         }
+        ++count;
         return delay(timeout, function() {
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.info("#" + count + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
-          count++;
           return ensureCenter(count);
         });
       })(0, 100, 100);

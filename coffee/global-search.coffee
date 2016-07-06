@@ -321,14 +321,15 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         if count >= maxCount
           waited = timeout * maxCount
           console.info "Map could not be correctly centered in #{waited}ms"
+          return false
+        ++count
         delay timeout, ->
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
+            console.info "##{count} General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
-          count++
           ensureCenter(count)
     catch e
       console.error "Couldn't create map! #{e.message}"
@@ -502,14 +503,15 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         if count >= maxCount
           waited = timeout * maxCount
           console.info "Map could not be correctly centered in #{waited}ms"
+          return false
+        ++count
         delay timeout, ->
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
+            console.info "##{count} Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
-          count++
           ensureCenter(count)
     catch e
       console.error "Couldn't create map! #{e.message}"
