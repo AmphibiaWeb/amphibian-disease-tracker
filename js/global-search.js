@@ -392,7 +392,7 @@ doSearch = function(search, goDeep) {
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("#" + count + " Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.info("#" + count + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
           return ensureCenter(count);
@@ -623,7 +623,7 @@ doDeepSearch = function(results, namedMap) {
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.info("#" + count + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
           return ensureCenter(count);

@@ -328,7 +328,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "##{count} Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
+            console.info "##{count} General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
           ensureCenter(count)
     catch e
@@ -510,7 +510,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
+            console.info "##{count} Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
           ensureCenter(count)
     catch e
