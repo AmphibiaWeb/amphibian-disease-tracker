@@ -1670,7 +1670,7 @@ getMapZoom = (bb, selector = geo.mapSelector, zoomIt = true) ->
   #   apply zoom to it
   ###
   # Minimum zoom out, any more doesn't make sense for the project
-  zoomOutThreshold = 2
+  zoomOutThreshold = if $(window).width() < 1024 then 1 else 2
   if bb?
     eastMost = -180
     westMost = 180

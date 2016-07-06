@@ -2147,7 +2147,7 @@ getMapZoom = function(bb, selector, zoomIt) {
    * @param bool zoomIt -> if selector is a Google Map element, then
    *   apply zoom to it
    */
-  zoomOutThreshold = 2;
+  zoomOutThreshold = $(window).width() < 1024 ? 1 : 2;
   if (bb != null) {
     eastMost = -180;
     westMost = 180;
