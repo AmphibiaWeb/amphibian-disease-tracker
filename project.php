@@ -319,7 +319,7 @@ $loginStatus = getLoginState();
             $tooltipTitle = "Project #".substr($project['project_id'], 0, 8)."...";
             if ( strlen($shortProjectTitle) > 43 ) {
                 $shortProjectTitle = substr($shortProjectTitle, 0, 40) . "...";
-                $tooltipTItle = DBHelper::staticSanitize($project['project_title']);
+                $tooltipTitle = DBHelper::staticSanitize($project['project_title']);
             }
             $affilEncode = htmlspecialchars($authorData["affiliation"]);
             $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
