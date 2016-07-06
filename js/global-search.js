@@ -376,26 +376,32 @@ doSearch = function(search, goDeep) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (lat === rndLat && lng === rndLng) {
-          console.info("Correctly centered");
+        if (pctOffLat < 2 && pctOffLng < 2) {
+          console.info("Correctly centered", [pctOffLat, pctOffLng]);
+          clearTimeout(_adp.centerTimeout);
           return false;
+        } else {
+          console.warn("Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 && pctOffLng < 2, lat, lng, rndLat, rndLng);
         }
-        if (count >= maxCount) {
+        if (count > maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
+          clearTimeout(_adp.centerTimeout);
           return false;
         }
         ++count;
-        return delay(timeout, function() {
+        return _adp.centerTimeout = delay(timeout, function() {
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("#" + count + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.info("#" + count + "/" + maxCount + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
-          return ensureCenter(count);
+          if (count < maxCount) {
+            return ensureCenter(count);
+          }
         });
       })(0, 100, 100);
     } catch (error2) {
@@ -607,26 +613,32 @@ doDeepSearch = function(results, namedMap) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (lat === rndLat && lng === rndLng) {
-          console.info("Correctly centered");
+        if (pctOffLat < 2 && pctOffLng < 2) {
+          console.info("Correctly centered", [pctOffLat, pctOffLng]);
+          clearTimeout(_adp.centerTimeout);
           return false;
+        } else {
+          console.warn("Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 && pctOffLng < 2, lat, lng, rndLat, rndLng);
         }
-        if (count >= maxCount) {
+        if (count > maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
+          clearTimeout(_adp.centerTimeout);
           return false;
         }
         ++count;
-        return delay(timeout, function() {
+        return _adp.centerTimeout = delay(timeout, function() {
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("#" + count + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.info("#" + count + "/" + maxCount + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
-          return ensureCenter(count);
+          if (count < maxCount) {
+            return ensureCenter(count);
+          }
         });
       })(0, 100, 100);
     } catch (error2) {
