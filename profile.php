@@ -369,7 +369,7 @@ value='".$place["zip"]."'
                          # Some special cases
                          if(strpos($class, "phone") !== false) {
                              # Wrap in phone wrapper
-                             $fill = "<span class='phone-number'>$fill</span>";
+                             $fill = "<span class='phone-number col-xs-8'>$fill</span>";
                          }
                          $fillKey = strtolower(str_replace(" ", "_", $fillType));
                          global $privacyConfig, $isCollaborator, $isMember, $isPublic;
