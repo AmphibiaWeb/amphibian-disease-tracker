@@ -222,7 +222,7 @@ doSearch = function(search, goDeep) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, error, error1, error2, error3, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, rlButton, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, rlButton, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -330,13 +330,12 @@ doSearch = function(search, goDeep) {
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
-      } catch (error1) {
-        try {
-          geo.lMap.panTo(mapCenter.getObject());
-        } catch (undefined) {}
-      }
-    } catch (error2) {
-      e = error2;
+      } catch (undefined) {}
+      try {
+        geo.lMap.setView(mapCenter.getObj());
+      } catch (undefined) {}
+    } catch (error1) {
+      e = error1;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
       console.warn(e.stack);
     }
@@ -358,19 +357,42 @@ doSearch = function(search, goDeep) {
       rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"icons:subject\" data-toggle=\"tooltip\" title=\"Show Project list\" raised></paper-icon-button>";
       $("#post-map-subtitle").append(rlButton);
       getProjectResultDialog(results);
-      delay(100, function() {
-        var error3;
+      (ensureCenter = function(count, maxCount) {
+
+        /*
+         * Make sure the center is right
+         */
+        var center, lat, lng, rndLat, rndLng;
+        rndLat = roundNumber(mapCenter.lat, 3);
+        rndLng = roundNumber(mapCenter.lng, 3);
         try {
-          p$("#global-data-map").latitude = mapCenter.lat;
-          return p$("#global-data-map").longitude = mapCenter.lng;
-        } catch (error3) {
-          try {
-            return geo.lMap.setView(mapCenter.getObject());
-          } catch (undefined) {}
+          lat = roundNumber(p$("#global-data-map").latitude, 3);
+          lng = roundNumber(p$("#global-data-map").longitude, 3);
+        } catch (undefined) {}
+        try {
+          center = geo.lMap.getCenter();
+          lat = roundNumber(center.lat, 3);
+          lng = roundNumber(center.lng, 3);
+        } catch (undefined) {}
+        if (lat === rndLat && lng === rndLng) {
+          console.info("Correctly centered");
+          return false;
         }
-      });
-    } catch (error3) {
-      e = error3;
+        return delay(100, function() {
+          try {
+            p$("#global-data-map").latitude = mapCenter.lat;
+            p$("#global-data-map").longitude = mapCenter.lng;
+          } catch (undefined) {}
+          try {
+            console.info("Setting view to", mapCenter.getObj());
+            geo.lMap.setView(mapCenter.getObj());
+          } catch (undefined) {}
+          count++;
+          return ensureCenter(count);
+        });
+      })(0, 100);
+    } catch (error2) {
+      e = error2;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }
@@ -385,7 +407,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, error, error1, error2, error3, error4, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -520,13 +542,12 @@ doDeepSearch = function(results, namedMap) {
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
-      } catch (error1) {
-        try {
-          geo.lMap.panTo(mapCenter.getObject());
-        } catch (undefined) {}
-      }
-    } catch (error2) {
-      e = error2;
+      } catch (undefined) {}
+      try {
+        geo.lMap.setView(mapCenter.getObj());
+      } catch (undefined) {}
+    } catch (error1) {
+      e = error1;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
       console.warn(e.stack);
     }
@@ -560,25 +581,48 @@ doDeepSearch = function(results, namedMap) {
         createRawCartoMap(layerSourceObj);
         $("#post-map-subtitle").text(subText);
       }
-      delay(100, function() {
-        var error3;
+      (ensureCenter = function(count, maxCount) {
+
+        /*
+         * Make sure the center is right
+         */
+        var center, lat, lng, rndLat, rndLng;
+        rndLat = roundNumber(mapCenter.lat, 3);
+        rndLng = roundNumber(mapCenter.lng, 3);
         try {
-          p$("#global-data-map").latitude = mapCenter.lat;
-          return p$("#global-data-map").longitude = mapCenter.lng;
-        } catch (error3) {
-          try {
-            return geo.lMap.setView(mapCenter.getObject());
-          } catch (undefined) {}
+          lat = roundNumber(p$("#global-data-map").latitude, 3);
+          lng = roundNumber(p$("#global-data-map").longitude, 3);
+        } catch (undefined) {}
+        try {
+          center = geo.lMap.getCenter();
+          lat = roundNumber(center.lat, 3);
+          lng = roundNumber(center.lng, 3);
+        } catch (undefined) {}
+        if (lat === rndLat && lng === rndLng) {
+          console.info("Correctly centered");
+          return false;
         }
-      });
-    } catch (error3) {
-      e = error3;
+        return delay(100, function() {
+          try {
+            p$("#global-data-map").latitude = mapCenter.lat;
+            p$("#global-data-map").longitude = mapCenter.lng;
+          } catch (undefined) {}
+          try {
+            console.info("Setting view to", mapCenter.getObj());
+            geo.lMap.setView(mapCenter.getObj());
+          } catch (undefined) {}
+          count++;
+          return ensureCenter(count);
+        });
+      })(0, 100);
+    } catch (error2) {
+      e = error2;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }
     stopLoad();
-  } catch (error4) {
-    e = error4;
+  } catch (error3) {
+    e = error3;
     stopLoadError("There was a problem performing a sample search");
     console.error("Problem performing sample search! " + e.message);
     console.warn(e.stack);

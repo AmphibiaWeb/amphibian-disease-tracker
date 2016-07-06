@@ -1936,6 +1936,11 @@ saveEditorData = (force = false, callback) ->
   for key, data of postData
     try
       postData[key] = deEscape data
+  isChangingPublic = false
+  if $("paper-toggle-button#public").exists()
+    postData.public = p$("paper-toggle-button#public").checked
+    if postData.public
+      isChangingPublic = true
   # Post it
   if _adp.originalProjectId?
     if _adp.originalProjectId isnt _adp.projectId
@@ -1958,6 +1963,12 @@ saveEditorData = (force = false, callback) ->
     # Update the project data
     _adp.projectData = result.project.project
     delete localStorage._adp
+    if isChangingPublic
+      $("paper-toggle-button#public").parent().remove()
+      newStatus = """
+      <iron-icon icon="social:public" class="material-green" data-toggle="tooltip" title="Public Project"></iron-icon>
+      """
+      $("iron-icon[icon='icons:lock'].material-red").replaceWith newStatus
   .fail (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     localStorage._adp = JSON.stringify _adp
