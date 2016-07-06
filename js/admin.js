@@ -3889,7 +3889,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
 };
 
 saveEditorData = function(force, callback) {
-  var args, authorObj, data, el, key, l, len, len1, m, postData, ref, ref1, ref2;
+  var args, authorObj, data, el, isChangingPublic, key, l, len, len1, m, postData, ref, ref1, ref2;
   if (force == null) {
     force = false;
   }
@@ -3935,8 +3935,12 @@ saveEditorData = function(force, callback) {
       postData[key] = deEscape(data);
     } catch (undefined) {}
   }
+  isChangingPublic = false;
   if ($("paper-toggle-button#public").exists()) {
     postData["public"] = p$("paper-toggle-button#public").checked;
+    if (postData["public"]) {
+      isChangingPublic = true;
+    }
   }
   if (_adp.originalProjectId != null) {
     if (_adp.originalProjectId !== _adp.projectId) {
@@ -3947,7 +3951,7 @@ saveEditorData = function(force, callback) {
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, ref3, ref4;
+    var error, newStatus, ref3, ref4;
     console.info("Save result: server said", result);
     if (result.status !== true) {
       error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
@@ -3960,7 +3964,12 @@ saveEditorData = function(force, callback) {
     stopLoad();
     toastStatusMessage("Save successful");
     _adp.projectData = result.project.project;
-    return delete localStorage._adp;
+    delete localStorage._adp;
+    if (isChangingPublic) {
+      $("paper-toggle-button#public").parent().remove();
+      newStatus = "<iron-icon icon=\"social:public\" class=\"material-green\" data-toggle=\"tooltip\" title=\"Public Project\"></iron-icon>";
+      return $("iron-icon[icon='icons:lock'].material-red").replaceWith(newStatus);
+    }
   }).fail(function(result, status) {
     stopLoadError("Sorry, there was an error communicating with the server");
     localStorage._adp = JSON.stringify(_adp);
