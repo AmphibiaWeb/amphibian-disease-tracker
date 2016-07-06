@@ -439,7 +439,7 @@ $loginStatus = getLoginState();
             <?php
                $class = empty($project['publication']) ? "col-xs-12" : "col-xs-9 col-md-11";
                $hidden = empty($project['publication']) ? "hidden" : "";
-               $pub = preg_replace('%^(doi|ark|(https?://)?dx\.doi\.org(/|:)|(https?://)?(www\.)?biscicol\.org/id(/|:)|(https?://)?(www\.)?n2t.net(/|:)):? *%im', '', $project['publication']);
+               $pub = preg_replace('%^(doi|ark|(https?://)?(dx\.)?doi\.org(/|:)|(https?://)?(www\.)?biscicol\.org/id(/|:)|(https?://)?(www\.)?n2t.net(/|:)):? *%im', '', $project['publication']);
                ?>
             <paper-input readonly label="DOI" class="<?php echo $class; ?>" value="<?php echo $pub; ?>" id="doi-input"></paper-input>
             <paper-fab icon="icons:description" class="materialblue click" data-function="showCitation" data-toggle="tooltip" title="Show Citation" <?php echo $hidden; ?>></paper-fab>
