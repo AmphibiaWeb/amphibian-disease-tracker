@@ -275,10 +275,9 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
-      catch
-        try
+      try
 
-          geo.lMap.panTo mapCenter.getObj()
+        geo.lMap.setView mapCenter.getObj()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
@@ -301,13 +300,31 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       """
       $("#post-map-subtitle").append rlButton
       getProjectResultDialog results
-      delay 100, ->
+      do ensureCenter = (count = 0, maxCount = 100) ->
+        ###
+        # Make sure the center is right
+        ###
+        rndLat = roundNumber mapCenter.lat, 3
+        rndLng = roundNumber mapCenter.lng, 3
         try
-          p$("#global-data-map").latitude = mapCenter.lat
-          p$("#global-data-map").longitude = mapCenter.lng
-        catch
+          lat = roundNumber p$("#global-data-map").latitude, 3
+          lng = roundNumber p$("#global-data-map").longitude, 3          
+        try
+          center = geo.lMap.getCenter()
+          lat = roundNumber center.lat, 3
+          lng = roundNumber center.lng, 3
+        if  lat is rndLat and lng is rndLng
+          console.info "Correctly centered"
+          return false
+        delay 100, ->
           try
+            p$("#global-data-map").latitude = mapCenter.lat
+            p$("#global-data-map").longitude = mapCenter.lng
+          try
+            console.info "Setting view to", mapCenter.getObj()
             geo.lMap.setView mapCenter.getObj()
+          count++
+          ensureCenter(count)
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
@@ -429,9 +446,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
-      catch
-        try
-          geo.lMap.panTo mapCenter.getObj()
+      try
+        geo.lMap.setView mapCenter.getObj()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
@@ -460,13 +476,31 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           named_map: layer
         createRawCartoMap layerSourceObj
         $("#post-map-subtitle").text subText
-      delay 100, ->
+      do ensureCenter = (count = 0, maxCount = 100) ->
+        ###
+        # Make sure the center is right
+        ###
+        rndLat = roundNumber mapCenter.lat, 3
+        rndLng = roundNumber mapCenter.lng, 3
         try
-          p$("#global-data-map").latitude = mapCenter.lat
-          p$("#global-data-map").longitude = mapCenter.lng
-        catch
+          lat = roundNumber p$("#global-data-map").latitude, 3
+          lng = roundNumber p$("#global-data-map").longitude, 3
+        try
+          center = geo.lMap.getCenter()
+          lat = roundNumber center.lat, 3
+          lng = roundNumber center.lng, 3
+        if  lat is rndLat and lng is rndLng
+          console.info "Correctly centered"
+          return false
+        delay 100, ->
           try
+            p$("#global-data-map").latitude = mapCenter.lat
+            p$("#global-data-map").longitude = mapCenter.lng
+          try
+            console.info "Setting view to", mapCenter.getObj()
             geo.lMap.setView mapCenter.getObj()
+          count++
+          ensureCenter(count)
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack

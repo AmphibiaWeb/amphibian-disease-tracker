@@ -1936,6 +1936,8 @@ saveEditorData = (force = false, callback) ->
   for key, data of postData
     try
       postData[key] = deEscape data
+  if $("paper-toggle-button#public").exists()
+    postData.public = p$("paper-toggle-button#public").checked
   # Post it
   if _adp.originalProjectId?
     if _adp.originalProjectId isnt _adp.projectId
