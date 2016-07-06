@@ -270,19 +270,19 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       # Zoom
       zoom = getMapZoom boundingBoxArray, ".map-container"
       console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+      if geo.lMap?
+        # http://leafletjs.com/reference.html#events-once
+        geo.lMap.once "zoomend", =>
+          # http://leafletjs.com/reference.html#map-zoomend
+          console.info "ZoomEnd is ensuring centering"
+          ensureCenter(0)
+        geo.lMap.setZoom zoom
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
         p$("#global-data-map").zoom = zoom
       try
         geo.lMap.setView mapCenter.getObj()
-      if geo.lMap?
-        # http://leafletjs.com/reference.html#map-zoomend
-        geo.lMap.on "zoomend", =>
-          console.info "ZoomEnd is ensuring centering"
-          ensureCenter(0)
-          geo.lMap.off "zoomend"
-        geo.lMap.setZoom zoom
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
@@ -471,19 +471,19 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       mapCenter = getMapCenter boundingBoxArray
       zoom = getMapZoom boundingBoxArray, ".map-container"
       console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+      if geo.lMap?
+        # http://leafletjs.com/reference.html#events-once
+        geo.lMap.once "zoomend", =>
+          # http://leafletjs.com/reference.html#map-zoomend
+          console.info "ZoomEnd is ensuring centering"
+          ensureCenter(0)
+        geo.lMap.setZoom zoom
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
         p$("#global-data-map").zoom = zoom
       try
         geo.lMap.setView mapCenter.getObj()
-      if geo.lMap?
-        # http://leafletjs.com/reference.html#map-zoomend
-        geo.lMap.on "zoomend", =>
-          console.info "ZoomEnd is ensuring centering"
-          ensureCenter(0)
-          geo.lMap.off "zoomend"
-        geo.lMap.setZoom zoom
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
