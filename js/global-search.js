@@ -368,6 +368,11 @@ doSearch = function(search, goDeep) {
         try {
           lat = roundNumber(p$("#global-data-map").latitude, 3);
           lng = roundNumber(p$("#global-data-map").longitude, 3);
+          center = {
+            type: "google-map-element",
+            lat: lat,
+            lng: lng
+          };
         } catch (undefined) {}
         try {
           center = geo.lMap.getCenter();
@@ -377,7 +382,7 @@ doSearch = function(search, goDeep) {
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
         if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
-          console.info("Correctly centered", mapCenter, [pctOffLat, pctOffLng]);
+          console.info("Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]);
           clearTimeout(_adp.centerTimeout);
           return false;
         } else {
@@ -396,6 +401,7 @@ doSearch = function(search, goDeep) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
+          var error2;
           if (!isNumber(maxCount)) {
             maxCount = 100;
           }
@@ -406,7 +412,10 @@ doSearch = function(search, goDeep) {
           try {
             console.info("#" + count + "/" + maxCount + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
-          } catch (undefined) {}
+          } catch (error2) {
+            e = error2;
+            console.warn("Error setting view - " + e.message);
+          }
           if (count < maxCount) {
             return ensureCenter(count);
           }
@@ -614,6 +623,11 @@ doDeepSearch = function(results, namedMap) {
         try {
           lat = roundNumber(p$("#global-data-map").latitude, 3);
           lng = roundNumber(p$("#global-data-map").longitude, 3);
+          center = {
+            type: "google-map-element",
+            lat: lat,
+            lng: lng
+          };
         } catch (undefined) {}
         try {
           center = geo.lMap.getCenter();
@@ -623,7 +637,7 @@ doDeepSearch = function(results, namedMap) {
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
         if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
-          console.info("Correctly centered", mapCenter, [pctOffLat, pctOffLng]);
+          console.info("Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]);
           clearTimeout(_adp.centerTimeout);
           return false;
         } else {
@@ -642,6 +656,7 @@ doDeepSearch = function(results, namedMap) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
+          var error2;
           if (!isNumber(maxCount)) {
             maxCount = 100;
           }
@@ -652,7 +667,10 @@ doDeepSearch = function(results, namedMap) {
           try {
             console.info("#" + count + "/" + maxCount + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
-          } catch (undefined) {}
+          } catch (error2) {
+            e = error2;
+            console.warn("Error setting view - " + e.message);
+          }
           if (count < maxCount) {
             return ensureCenter(count);
           }
