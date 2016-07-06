@@ -1878,7 +1878,9 @@ function advancedSearchProject($get)
                     $row[$col] = $cartoObj;
                 }
             }
-            $queryResult[] = $row;
+            if(!empty($row["project_id"])) {
+                $queryResult[] = $row;
+            }
         }
     }
     $response['result'] = $queryResult;

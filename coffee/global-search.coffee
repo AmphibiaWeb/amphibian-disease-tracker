@@ -309,6 +309,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         try
           lat = roundNumber p$("#global-data-map").latitude, 3
           lng = roundNumber p$("#global-data-map").longitude, 3
+          center =
+            type: "google-map-element"
+            lat: lat
+            lng: lng
         try
           center = geo.lMap.getCenter()
           lat = roundNumber center.lat, 3
@@ -316,7 +320,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
         if pctOffLat < 2 and pctOffLng < 2 and count > 15
-          console.info "Correctly centered", mapCenter, [pctOffLat, pctOffLng]
+          console.info "Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]
           clearTimeout _adp.centerTimeout
           return false
         else
@@ -339,6 +343,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           try
             console.info "##{count}/#{maxCount} General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
+          catch e
+            console.warn "Error setting view - #{e.message}"
           if count < maxCount
             ensureCenter(count)
     catch e
@@ -502,6 +508,10 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         try
           lat = roundNumber p$("#global-data-map").latitude, 3
           lng = roundNumber p$("#global-data-map").longitude, 3
+          center =
+            type: "google-map-element"
+            lat: lat
+            lng: lng
         try
           center = geo.lMap.getCenter()
           lat = roundNumber center.lat, 3
@@ -509,7 +519,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
         if pctOffLat < 2 and pctOffLng < 2 and count > 15
-          console.info "Correctly centered", mapCenter, [pctOffLat, pctOffLng]
+          console.info "Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]
           clearTimeout _adp.centerTimeout
           return false
         else
@@ -532,6 +542,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           try
             console.info "##{count}/#{maxCount} Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
+          catch e
+            console.warn "Error setting view - #{e.message}"
           if count < maxCount
             ensureCenter(count)
     catch e
