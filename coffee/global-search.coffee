@@ -277,17 +277,13 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         p$("#global-data-map").longitude = mapCenter.lng
       catch
         try
-          geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
+
+          geo.lMap.panTo mapCenter.getObject()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
-    feedback =
-      boundingBoxArray: boundingBoxArray
-      zoom: zoom
-      center: mapCenter
-    console.info "Computed centers", feedback
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
@@ -311,7 +307,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           p$("#global-data-map").longitude = mapCenter.lng
         catch
           try
-            geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
+            geo.lMap.setView mapCenter.getObject()
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
@@ -435,7 +431,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         p$("#global-data-map").longitude = mapCenter.lng
       catch
         try
-          geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
+          geo.lMap.panTo mapCenter.getObject()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
@@ -464,6 +460,13 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           named_map: layer
         createRawCartoMap layerSourceObj
         $("#post-map-subtitle").text subText
+      delay 100, ->
+        try
+          p$("#global-data-map").latitude = mapCenter.lat
+          p$("#global-data-map").longitude = mapCenter.lng
+        catch
+          try
+            geo.lMap.setView mapCenter.getObject()
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
