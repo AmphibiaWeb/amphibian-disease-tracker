@@ -283,6 +283,11 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       console.warn e.stack
     speciesCount = totalSpecies.length
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
+    feedback =
+      boundingBoxArray: boundingBoxArray
+      zoom: zoom
+      center: mapCenter
+    console.info "Computed centers", feedback
     # Render the vis
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
@@ -300,6 +305,13 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       """
       $("#post-map-subtitle").append rlButton
       getProjectResultDialog results
+      delay 100, ->
+        try
+          p$("#global-data-map").latitude = mapCenter.lat
+          p$("#global-data-map").longitude = mapCenter.lng
+        catch
+          try
+            geo.lMap.panTo [mapCenter.lat, mapCenter.lng]
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
