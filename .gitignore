@@ -74,6 +74,7 @@ meta/*.xls
 .dropbox*
 info.php
 grav/vendor/bin/*
+grav/vendor/erusev/*
 users/profiles/*.png
 users/profiles/*.jpg
 users/profiles/*.jpeg

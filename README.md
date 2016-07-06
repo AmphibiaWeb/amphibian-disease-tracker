@@ -1,5 +1,5 @@
 AmphibianDisease.org
-==========================
+===========================
 ## Quick Links
 
 - [Project Browser](https://amphibiandisease.org/project.php)
