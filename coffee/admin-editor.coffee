@@ -296,7 +296,7 @@ loadEditor = (projectPreload) ->
                   <span class="toggle-off-label iron-label">Append/Amend Data
                     <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data, and modify existing ones by fieldNumber"></span>
                   </span>
-                  <paper-toggle-button id="replace-data-toggle" #{toggleChecked}>Replace Data</paper-toggle-button>
+                  <paper-toggle-button id="replace-data-toggle" class="material-red" #{toggleChecked}>Replace Data</paper-toggle-button>
                   <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload data, archive current data and only have new data parsed"></span>
                 </div>
                 <div id="uploader-container-section">
@@ -1964,11 +1964,14 @@ saveEditorData = (force = false, callback) ->
     _adp.projectData = result.project.project
     delete localStorage._adp
     if isChangingPublic
-      $("paper-toggle-button#public").parent().remove()
-      newStatus = """
-      <iron-icon icon="social:public" class="material-green" data-toggle="tooltip" title="Public Project"></iron-icon>
-      """
-      $("iron-icon[icon='icons:lock'].material-red").replaceWith newStatus
+      if _adp.projectData.public
+        $("paper-toggle-button#public").parent().remove()
+        newStatus = """
+        <iron-icon icon="social:public" class="material-green" data-toggle="tooltip" title="Public Project"></iron-icon>
+        """
+        $("iron-icon[icon='icons:lock'].material-red").replaceWith newStatus
+      else
+        console.warn "We sent a change to public, but it didn't update server-side."
   .fail (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
     localStorage._adp = JSON.stringify _adp
