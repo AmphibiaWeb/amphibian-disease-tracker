@@ -388,7 +388,7 @@ doSearch = function(search, goDeep) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
+        if (pctOffLat < 2 && pctOffLng < 2 && count > 5) {
           console.info("Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]);
           if (geo.lMap.getZoom() !== zoom) {
             console.warn("The map was centered before the zoom finished -- this may need to fire again");
@@ -420,7 +420,7 @@ doSearch = function(search, goDeep) {
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("#" + count + "/" + maxCount + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.log("#" + count + "/" + maxCount + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (error2) {
             e = error2;
@@ -653,7 +653,7 @@ doDeepSearch = function(results, namedMap) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
+        if (pctOffLat < 2 && pctOffLng < 2 && count > 5) {
           console.info("Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]);
           if (geo.lMap.getZoom() !== zoom) {
             console.warn("The map was centered before the zoom finished -- this may need to fire again");
@@ -685,7 +685,7 @@ doDeepSearch = function(results, namedMap) {
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("#" + count + "/" + maxCount + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
+            console.log("#" + count + "/" + maxCount + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (error2) {
             e = error2;

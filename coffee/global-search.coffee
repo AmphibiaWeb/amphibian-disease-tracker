@@ -324,7 +324,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           lng = roundNumber center.lng, 3
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
-        if pctOffLat < 2 and pctOffLng < 2 and count > 15
+        if pctOffLat < 2 and pctOffLng < 2 and count > 5
           console.info "Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]
           if geo.lMap.getZoom() isnt zoom
             console.warn "The map was centered before the zoom finished -- this may need to fire again"
@@ -348,7 +348,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "##{count}/#{maxCount} General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
+            console.log "##{count}/#{maxCount} General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
           catch e
             console.warn "Error setting view - #{e.message}"
@@ -462,6 +462,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       results[i] = project
       ++i
     try
+      # Configure the map
       boundingBoxArray = [
         [boundingBox.n, boundingBox.w]
         [boundingBox.n, boundingBox.e]
@@ -471,6 +472,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       mapCenter = getMapCenter boundingBoxArray
       zoom = getMapZoom boundingBoxArray, ".map-container"
       console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+      # For leaflet, if we don't zoom first the map gets cranky with
+      # its baseLayer
       if geo.lMap?
         # http://leafletjs.com/reference.html#events-once
         geo.lMap.once "zoomend", =>
@@ -479,15 +482,18 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           ensureCenter(0)
         geo.lMap.setZoom zoom
       try
+        # If we're using a Polymer map, set it's configs
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
         p$("#global-data-map").zoom = zoom
       try
+        # NOW we can set the leafelet center
         geo.lMap.setView mapCenter.getObj()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
     speciesCount = totalSpecies.length
+    # Label the results
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox
     subText = "Viewing data points"
     unless isNull search.sampled_species?.genus
@@ -529,17 +535,23 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           center = geo.lMap.getCenter()
           lat = roundNumber center.lat, 3
           lng = roundNumber center.lng, 3
+        # Get the percent deviation from the center, in case the
+        # precise center doesn't have zero error
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
-        if pctOffLat < 2 and pctOffLng < 2 and count > 15
+        # we want to keep an eye on the centering for at least a
+        # little while
+        if pctOffLat < 2 and pctOffLng < 2 and count > 5
           console.info "Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]
           if geo.lMap.getZoom() isnt zoom
             console.warn "The map was centered before the zoom finished -- this may need to fire again"
           clearTimeout _adp.centerTimeout
           return false
         else
+          # We can be quiet for initial center attempts
           unless count <= 15
             console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
+        # For whatever reason, this was getting wiped. Fuck if I know why.
         if not isNumber maxCount
           maxCount = 100
         if count > maxCount
@@ -549,13 +561,14 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           return false
         ++count
         _adp.centerTimeout = delay timeout, ->
+          # For whatever reason, this was getting wiped. Fuck if I know why.
           if not isNumber maxCount
             maxCount = 100
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "##{count}/#{maxCount} Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
+            console.log "##{count}/#{maxCount} Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
           catch e
             console.warn "Error setting view - #{e.message}"
