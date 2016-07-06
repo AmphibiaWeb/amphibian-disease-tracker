@@ -752,7 +752,7 @@ value='".$place["zip"]."'
           </paper-radio-group>
         </div>
         <ul id="profile-result-container" class="col-xs-12 col-md-8">
-          <li>Enter a search to the right to find users</li>
+          <li>Enter a search <span class="hidden-xs hidden-sm">to the right</span><span class="visible-xs-inline visible-sm-inline">above</span> to find users</li>
         </ul>
       </section>
       <?php } elseif (!$validUser) { ?>
