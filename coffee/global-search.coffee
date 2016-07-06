@@ -31,7 +31,6 @@ checkCoordinateSanity = ->
 
 createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->
   start = Date.now()
-  table = table.slice 0, 63
   templateId = "infowindow_template_#{table}"
   if $("##{templateId}").exists()
     return false
@@ -240,7 +239,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
             cartoParsed[cleanKey] = cleanVal
           project.carto_id = cartoParsed
       try
-        table = project.carto_id.table.slice 0, 63
+        table = project.carto_id.table
         table = table.unescape()
       unless isNull table
         # Create named map layers
@@ -425,7 +424,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             cartoParsed[cleanKey] = cleanVal
           project.carto_id = cartoParsed
       try
-        table = project.carto_id.table.slice 0, 63
+        table = project.carto_id.table
         table = table.unescape()
       unless isNull table
         # Create named map layers
@@ -568,7 +567,6 @@ showAllTables = ->
       console.log "Colors", data.creation, generateColorByRecency2(data.creation)
       unless isNull table
         # Create named map layers
-        table = table.slice 0, 63
         table = table.unescape()
         validTables.push table
         # TODO Calculate a color based on recency ...

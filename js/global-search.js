@@ -42,7 +42,6 @@ createTemplateByProject = function(table) {
     table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5";
   }
   start = Date.now();
-  table = table.slice(0, 63);
   templateId = "infowindow_template_" + table;
   if ($("#" + templateId).exists()) {
     return false;
@@ -293,7 +292,7 @@ doSearch = function(search, goDeep) {
         } catch (undefined) {}
       }
       try {
-        table = project.carto_id.table.slice(0, 63);
+        table = project.carto_id.table;
         table = table.unescape();
       } catch (undefined) {}
       if (!isNull(table)) {
@@ -523,7 +522,7 @@ doDeepSearch = function(results, namedMap) {
         } catch (undefined) {}
       }
       try {
-        table = project.carto_id.table.slice(0, 63);
+        table = project.carto_id.table;
         table = table.unescape();
       } catch (undefined) {}
       if (!isNull(table)) {
@@ -696,7 +695,6 @@ showAllTables = function() {
       table = data.table;
       console.log("Colors", data.creation, generateColorByRecency2(data.creation));
       if (!isNull(table)) {
-        table = table.slice(0, 63);
         table = table.unescape();
         validTables.push(table);
         layer = {
