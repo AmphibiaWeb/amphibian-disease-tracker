@@ -376,12 +376,12 @@ doSearch = function(search, goDeep) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (pctOffLat < 2 && pctOffLng < 2 && count > 5) {
+        if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
           console.info("Correctly centered", mapCenter, [pctOffLat, pctOffLng]);
           clearTimeout(_adp.centerTimeout);
           return false;
         } else {
-          if (!(count <= 5)) {
+          if (!(count <= 15)) {
             console.warn("Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 && pctOffLng < 2, lat, lng, rndLat, rndLng);
           }
         }
@@ -622,12 +622,12 @@ doDeepSearch = function(results, namedMap) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (pctOffLat < 2 && pctOffLng < 2 && count > 5) {
+        if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
           console.info("Correctly centered", mapCenter, [pctOffLat, pctOffLng]);
           clearTimeout(_adp.centerTimeout);
           return false;
         } else {
-          if (!(count <= 5)) {
+          if (!(count <= 15)) {
             console.warn("Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 && pctOffLng < 2, lat, lng, rndLat, rndLng);
           }
         }
