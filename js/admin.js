@@ -3935,6 +3935,9 @@ saveEditorData = function(force, callback) {
       postData[key] = deEscape(data);
     } catch (undefined) {}
   }
+  if ($("paper-toggle-button#public").exists()) {
+    postData["public"] = p$("paper-toggle-button#public").checked;
+  }
   if (_adp.originalProjectId != null) {
     if (_adp.originalProjectId !== _adp.projectId) {
       console.warn("Mismatched IDs!", _adp.originalProjectId, _adp.projectId);
