@@ -294,6 +294,7 @@ doSearch = function(search, goDeep) {
       }
       try {
         table = project.carto_id.table.slice(0, 63);
+        table = table.unescape();
       } catch (undefined) {}
       if (!isNull(table)) {
         try {
@@ -523,6 +524,7 @@ doDeepSearch = function(results, namedMap) {
       }
       try {
         table = project.carto_id.table.slice(0, 63);
+        table = table.unescape();
       } catch (undefined) {}
       if (!isNull(table)) {
         layer = {
@@ -695,6 +697,7 @@ showAllTables = function() {
       console.log("Colors", data.creation, generateColorByRecency2(data.creation));
       if (!isNull(table)) {
         table = table.slice(0, 63);
+        table = table.unescape();
         validTables.push(table);
         layer = {
           name: namedMapSource,

@@ -241,6 +241,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           project.carto_id = cartoParsed
       try
         table = project.carto_id.table.slice 0, 63
+        table = table.unescape()
       unless isNull table
         # Create named map layers
         try
@@ -425,6 +426,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           project.carto_id = cartoParsed
       try
         table = project.carto_id.table.slice 0, 63
+        table = table.unescape()
       unless isNull table
         # Create named map layers
         layer =
@@ -567,6 +569,7 @@ showAllTables = ->
       unless isNull table
         # Create named map layers
         table = table.slice 0, 63
+        table = table.unescape()
         validTables.push table
         # TODO Calculate a color based on recency ...
         layer =
