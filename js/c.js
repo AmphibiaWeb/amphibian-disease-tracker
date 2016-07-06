@@ -407,7 +407,14 @@ copyText = function(text, zcObj, zcElement) {
           window.resetClipboard = true;
           return copyLink(window.tempZC, text);
         });
-        return window.tempZC = new ZeroClipboard(zcElement);
+        window.tempZC = new ZeroClipboard(zcElement);
+      }
+      if (e.name === "flash-disabled") {
+        console.info("No flash on this system");
+        ZeroClipboard.destroy();
+        $(".click-copy").remove();
+        p$("paper-dialog").refit();
+        return toastStatusMessage("Clipboard copying isn't available on your system");
       }
     });
   } else {
