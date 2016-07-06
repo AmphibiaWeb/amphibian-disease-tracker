@@ -325,11 +325,19 @@ doSearch = function(search, goDeep) {
       zoom = getMapZoom(boundingBoxArray, ".map-container");
       console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
       if (geo.lMap != null) {
+        geo.lMap.on("zoomend", (function(_this) {
+          return function() {
+            console.info("ZoomEnd is ensuring centering");
+            ensureCenter();
+            return $(_this).unbind("zoomend");
+          };
+        })(this));
         geo.lMap.setZoom(zoom);
       }
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
+        p$("#global-data-map").zoom = zoom;
       } catch (undefined) {}
       try {
         geo.lMap.setView(mapCenter.getObj());
@@ -383,6 +391,9 @@ doSearch = function(search, goDeep) {
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
         if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
           console.info("Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]);
+          if (geo.lMap.getZoom() !== zoom) {
+            console.warn("The map was centered before the zoom finished -- this may need to fire again");
+          }
           clearTimeout(_adp.centerTimeout);
           return false;
         } else {
@@ -568,11 +579,19 @@ doDeepSearch = function(results, namedMap) {
       zoom = getMapZoom(boundingBoxArray, ".map-container");
       console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
       if (geo.lMap != null) {
+        geo.lMap.on("zoomend", (function(_this) {
+          return function() {
+            console.info("ZoomEnd is ensuring centering");
+            ensureCenter();
+            return $(_this).unbind("zoomend");
+          };
+        })(this));
         geo.lMap.setZoom(zoom);
       }
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
+        p$("#global-data-map").zoom = zoom;
       } catch (undefined) {}
       try {
         geo.lMap.setView(mapCenter.getObj());
@@ -638,6 +657,9 @@ doDeepSearch = function(results, namedMap) {
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
         if (pctOffLat < 2 && pctOffLng < 2 && count > 15) {
           console.info("Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]);
+          if (geo.lMap.getZoom() !== zoom) {
+            console.warn("The map was centered before the zoom finished -- this may need to fire again");
+          }
           clearTimeout(_adp.centerTimeout);
           return false;
         } else {
