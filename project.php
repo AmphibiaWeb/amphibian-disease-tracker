@@ -316,12 +316,14 @@ $loginStatus = getLoginState();
             $authorData = json_decode($project['author_data'], true);
             $icon = boolstr($project['public']) ? '<iron-icon icon="social:public"></iron-icon>' : '<iron-icon icon="icons:lock"></iron-icon>';
             $shortProjectTitle = $project['project_title'];
-            if ( strlen($shortProjectTitle) > 64 ) {
-                $shortProjectTitle = substr($shortProjectTitle, 0, 64) . "...";
+            $tooltipTitle = "Project #".substr($project['project_id'], 0, 8)."...";
+            if ( strlen($shortProjectTitle) > 43 ) {
+                $shortProjectTitle = substr($shortProjectTitle, 0, 40) . "...";
+                $tooltipTItle = DBHelper::staticSanitize($project['project_title']);
             }
             $affilEncode = htmlspecialchars($authorData["affiliation"]);
             $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='Project #".substr($project['project_id'], 0, 8)."...'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
+            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
             $html .= '<li>'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
