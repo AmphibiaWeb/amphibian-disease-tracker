@@ -1254,8 +1254,9 @@ cleanupAddressDisplay = ->
     addressObj = window.publicProfile.place
     if addressObj.human_html?
       mapsSearch = encodeURIComponent addressObj.human_html.replace(/(<br\/>|\n|\\n)/g, " ")
+      # col-xs-12 col-md-3 col-lg-4
       postHtml = """
-      <div class="col-xs-12 col-md-3 col-lg-4">
+      <div class="">
         <paper-fab mini icon="maps:map" data-href="https://www.google.com/maps/search/#{mapsSearch}" class="click materialblue newwindow" data-newtab="true" data-toggle="tooltip" title="View in Google Maps">
         </paper-fab>
       </div>
