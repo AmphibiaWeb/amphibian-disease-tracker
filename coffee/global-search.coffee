@@ -271,10 +271,16 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       zoom = getMapZoom boundingBoxArray, ".map-container"
       console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
       if geo.lMap?
+        # http://leafletjs.com/reference.html#map-zoomend
+        geo.lMap.on "zoomend", =>
+          console.info "ZoomEnd is ensuring centering"
+          ensureCenter()
+          $(this).unbind("zoomend")
         geo.lMap.setZoom zoom
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
+        p$("#global-data-map").zoom = zoom
       try
 
         geo.lMap.setView mapCenter.getObj()
@@ -321,6 +327,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
         if pctOffLat < 2 and pctOffLng < 2 and count > 15
           console.info "Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]
+          if geo.lMap.getZoom() isnt zoom
+            console.warn "The map was centered before the zoom finished -- this may need to fire again"
           clearTimeout _adp.centerTimeout
           return false
         else
@@ -465,10 +473,16 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       zoom = getMapZoom boundingBoxArray, ".map-container"
       console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
       if geo.lMap?
+        # http://leafletjs.com/reference.html#map-zoomend
+        geo.lMap.on "zoomend", =>
+          console.info "ZoomEnd is ensuring centering"
+          ensureCenter()
+          $(this).unbind("zoomend")
         geo.lMap.setZoom zoom
       try
         p$("#global-data-map").latitude = mapCenter.lat
         p$("#global-data-map").longitude = mapCenter.lng
+        p$("#global-data-map").zoom = zoom
       try
         geo.lMap.setView mapCenter.getObj()
     catch e
@@ -520,6 +534,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
         if pctOffLat < 2 and pctOffLng < 2 and count > 15
           console.info "Correctly centered", mapCenter, center, [pctOffLat, pctOffLng]
+          if geo.lMap.getZoom() isnt zoom
+            console.warn "The map was centered before the zoom finished -- this may need to fire again"
           clearTimeout _adp.centerTimeout
           return false
         else
