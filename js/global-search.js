@@ -324,16 +324,6 @@ doSearch = function(search, goDeep) {
       mapCenter = getMapCenter(boundingBoxArray);
       zoom = getMapZoom(boundingBoxArray, ".map-container");
       console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
-      if (geo.lMap != null) {
-        geo.lMap.on("zoomend", (function(_this) {
-          return function() {
-            console.info("ZoomEnd is ensuring centering");
-            ensureCenter();
-            return $(_this).unbind("zoomend");
-          };
-        })(this));
-        geo.lMap.setZoom(zoom);
-      }
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
@@ -342,6 +332,16 @@ doSearch = function(search, goDeep) {
       try {
         geo.lMap.setView(mapCenter.getObj());
       } catch (undefined) {}
+      if (geo.lMap != null) {
+        geo.lMap.on("zoomend", (function(_this) {
+          return function() {
+            console.info("ZoomEnd is ensuring centering");
+            ensureCenter(0);
+            return _this.off("zoomend");
+          };
+        })(this));
+        geo.lMap.setZoom(zoom);
+      }
     } catch (error1) {
       e = error1;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
@@ -578,16 +578,6 @@ doDeepSearch = function(results, namedMap) {
       mapCenter = getMapCenter(boundingBoxArray);
       zoom = getMapZoom(boundingBoxArray, ".map-container");
       console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
-      if (geo.lMap != null) {
-        geo.lMap.on("zoomend", (function(_this) {
-          return function() {
-            console.info("ZoomEnd is ensuring centering");
-            ensureCenter();
-            return $(_this).unbind("zoomend");
-          };
-        })(this));
-        geo.lMap.setZoom(zoom);
-      }
       try {
         p$("#global-data-map").latitude = mapCenter.lat;
         p$("#global-data-map").longitude = mapCenter.lng;
@@ -596,6 +586,16 @@ doDeepSearch = function(results, namedMap) {
       try {
         geo.lMap.setView(mapCenter.getObj());
       } catch (undefined) {}
+      if (geo.lMap != null) {
+        geo.lMap.on("zoomend", (function(_this) {
+          return function() {
+            console.info("ZoomEnd is ensuring centering");
+            ensureCenter(0);
+            return _this.off("zoomend");
+          };
+        })(this));
+        geo.lMap.setZoom(zoom);
+      }
     } catch (error1) {
       e = error1;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
