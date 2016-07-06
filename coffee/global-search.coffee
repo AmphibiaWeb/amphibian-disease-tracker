@@ -300,7 +300,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       """
       $("#post-map-subtitle").append rlButton
       getProjectResultDialog results
-      do ensureCenter = (count = 0, maxCount = 100) ->
+      do ensureCenter = (count = 0, maxCount = 100, timeout = 100) ->
         ###
         # Make sure the center is right
         ###
@@ -308,20 +308,25 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         rndLng = roundNumber mapCenter.lng, 3
         try
           lat = roundNumber p$("#global-data-map").latitude, 3
-          lng = roundNumber p$("#global-data-map").longitude, 3          
+          lng = roundNumber p$("#global-data-map").longitude, 3
         try
           center = geo.lMap.getCenter()
           lat = roundNumber center.lat, 3
           lng = roundNumber center.lng, 3
+        pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
+        pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
         if  lat is rndLat and lng is rndLng
           console.info "Correctly centered"
           return false
-        delay 100, ->
+        if count >= maxCount
+          waited = timeout * maxCount
+          console.info "Map could not be correctly centered in #{waited}ms"
+        delay timeout, ->
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "Setting view to", mapCenter.getObj()
+            console.info "Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
           count++
           ensureCenter(count)
@@ -476,7 +481,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           named_map: layer
         createRawCartoMap layerSourceObj
         $("#post-map-subtitle").text subText
-      do ensureCenter = (count = 0, maxCount = 100) ->
+      do ensureCenter = (count = 0, maxCount = 100, timeout = 100) ->
         ###
         # Make sure the center is right
         ###
@@ -489,15 +494,20 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           center = geo.lMap.getCenter()
           lat = roundNumber center.lat, 3
           lng = roundNumber center.lng, 3
+        pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
+        pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
         if  lat is rndLat and lng is rndLng
           console.info "Correctly centered"
           return false
-        delay 100, ->
+        if count >= maxCount
+          waited = timeout * maxCount
+          console.info "Map could not be correctly centered in #{waited}ms"
+        delay timeout, ->
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
           try
-            console.info "Setting view to", mapCenter.getObj()
+            console.info "Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
           count++
           ensureCenter(count)
