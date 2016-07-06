@@ -315,12 +315,13 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           lng = roundNumber center.lng, 3
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
-        if pctOffLat < 2 and pctOffLng < 2
-          console.info "Correctly centered", [pctOffLat, pctOffLng]
+        if pctOffLat < 2 and pctOffLng < 2 and count > 5
+          console.info "Correctly centered", mapCenter, [pctOffLat, pctOffLng]
           clearTimeout _adp.centerTimeout
           return false
         else
-          console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
+          unless count <= 5
+            console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
         if not isNumber maxCount
           maxCount = 100
         if count > maxCount
@@ -507,12 +508,13 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           lng = roundNumber center.lng, 3
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
-        if pctOffLat < 2 and pctOffLng < 2
-          console.info "Correctly centered", [pctOffLat, pctOffLng]
+        if pctOffLat < 2 and pctOffLng < 2 and count > 5
+          console.info "Correctly centered", mapCenter, [pctOffLat, pctOffLng]
           clearTimeout _adp.centerTimeout
           return false
         else
-          console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
+          unless count <= 5
+            console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
         if not isNumber maxCount
           maxCount = 100
         if count > maxCount
