@@ -376,11 +376,11 @@ doSearch = function(search, goDeep) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (lat === rndLat && lng === rndLng) {
-          console.info("Correctly centered");
+        if (pctOffLat < 2 && pctOffLng < 2) {
+          console.info("Correctly centered", [pctOffLat, pctOffLng]);
           return false;
         }
-        if (count >= maxCount) {
+        if (count > maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
           return false;
@@ -395,7 +395,9 @@ doSearch = function(search, goDeep) {
             console.info("#" + count + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
-          return ensureCenter(count);
+          if (!(count > maxCount)) {
+            return ensureCenter(count);
+          }
         });
       })(0, 100, 100);
     } catch (error2) {
@@ -607,11 +609,11 @@ doDeepSearch = function(results, namedMap) {
         } catch (undefined) {}
         pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
         pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
-        if (lat === rndLat && lng === rndLng) {
-          console.info("Correctly centered");
+        if (pctOffLat < 2 && pctOffLng < 2) {
+          console.info("Correctly centered", [pctOffLat, pctOffLng]);
           return false;
         }
-        if (count >= maxCount) {
+        if (count > maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
           return false;
@@ -626,7 +628,9 @@ doDeepSearch = function(results, namedMap) {
             console.info("#" + count + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
-          return ensureCenter(count);
+          if (!(count > maxCount)) {
+            return ensureCenter(count);
+          }
         });
       })(0, 100, 100);
     } catch (error2) {

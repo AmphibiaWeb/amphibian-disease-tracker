@@ -315,10 +315,10 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           lng = roundNumber center.lng, 3
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
-        if  lat is rndLat and lng is rndLng
-          console.info "Correctly centered"
+        if pctOffLat < 2 and pctOffLng < 2
+          console.info "Correctly centered", [pctOffLat, pctOffLng]
           return false
-        if count >= maxCount
+        if count > maxCount
           waited = timeout * maxCount
           console.info "Map could not be correctly centered in #{waited}ms"
           return false
@@ -330,7 +330,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           try
             console.info "##{count} General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
-          ensureCenter(count)
+          unless count > maxCount
+            ensureCenter(count)
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
@@ -497,10 +498,10 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           lng = roundNumber center.lng, 3
         pctOffLat = Math.abs((lat - rndLat)/rndLat) * 100
         pctOffLng = Math.abs((lng - rndLng)/rndLng) * 100
-        if  lat is rndLat and lng is rndLng
-          console.info "Correctly centered"
+        if pctOffLat < 2 and pctOffLng < 2
+          console.info "Correctly centered", [pctOffLat, pctOffLng]
           return false
-        if count >= maxCount
+        if count > maxCount
           waited = timeout * maxCount
           console.info "Map could not be correctly centered in #{waited}ms"
           return false
@@ -512,7 +513,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           try
             console.info "##{count} Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]
             geo.lMap.setView mapCenter.getObj()
-          ensureCenter(count)
+          unless count > maxCount
+            ensureCenter(count)
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
