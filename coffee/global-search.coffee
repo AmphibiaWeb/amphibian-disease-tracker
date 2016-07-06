@@ -321,6 +321,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           return false
         else
           console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
+        if not isNumber maxCount
+          maxCount = 100
         if count > maxCount
           waited = timeout * maxCount
           console.info "Map could not be correctly centered in #{waited}ms"
@@ -328,6 +330,8 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           return false
         ++count
         _adp.centerTimeout = delay timeout, ->
+          if not isNumber maxCount
+            maxCount = 100
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng
@@ -508,6 +512,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           return false
         else
           console.warn "Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 and pctOffLng < 2, lat, lng, rndLat, rndLng
+        if not isNumber maxCount
+          maxCount = 100
         if count > maxCount
           waited = timeout * maxCount
           console.info "Map could not be correctly centered in #{waited}ms"
@@ -515,6 +521,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           return false
         ++count
         _adp.centerTimeout = delay timeout, ->
+          if not isNumber maxCount
+            maxCount = 100
           try
             p$("#global-data-map").latitude = mapCenter.lat
             p$("#global-data-map").longitude = mapCenter.lng

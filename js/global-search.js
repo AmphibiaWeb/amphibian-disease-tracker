@@ -383,6 +383,9 @@ doSearch = function(search, goDeep) {
         } else {
           console.warn("Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 && pctOffLng < 2, lat, lng, rndLat, rndLng);
         }
+        if (!isNumber(maxCount)) {
+          maxCount = 100;
+        }
         if (count > maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
@@ -391,6 +394,9 @@ doSearch = function(search, goDeep) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
+          if (!isNumber(maxCount)) {
+            maxCount = 100;
+          }
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
@@ -620,6 +626,9 @@ doDeepSearch = function(results, namedMap) {
         } else {
           console.warn("Centering too deviant", pctOffLat < 2, pctOffLng < 2, pctOffLat < 2 && pctOffLng < 2, lat, lng, rndLat, rndLng);
         }
+        if (!isNumber(maxCount)) {
+          maxCount = 100;
+        }
         if (count > maxCount) {
           waited = timeout * maxCount;
           console.info("Map could not be correctly centered in " + waited + "ms");
@@ -628,6 +637,9 @@ doDeepSearch = function(results, namedMap) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
+          if (!isNumber(maxCount)) {
+            maxCount = 100;
+          }
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
