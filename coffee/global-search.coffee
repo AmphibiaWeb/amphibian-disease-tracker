@@ -281,7 +281,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
         geo.lMap.on "zoomend", =>
           console.info "ZoomEnd is ensuring centering"
           ensureCenter(0)
-          this.off "zoomend"
+          geo.lMap.off "zoomend"
         geo.lMap.setZoom zoom
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
@@ -482,7 +482,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         geo.lMap.on "zoomend", =>
           console.info "ZoomEnd is ensuring centering"
           ensureCenter(0)
-          this.off "zoomend"
+          geo.lMap.off "zoomend"
         geo.lMap.setZoom zoom
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray

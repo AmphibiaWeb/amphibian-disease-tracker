@@ -337,7 +337,7 @@ doSearch = function(search, goDeep) {
           return function() {
             console.info("ZoomEnd is ensuring centering");
             ensureCenter(0);
-            return _this.off("zoomend");
+            return geo.lMap.off("zoomend");
           };
         })(this));
         geo.lMap.setZoom(zoom);
@@ -591,7 +591,7 @@ doDeepSearch = function(results, namedMap) {
           return function() {
             console.info("ZoomEnd is ensuring centering");
             ensureCenter(0);
-            return _this.off("zoomend");
+            return geo.lMap.off("zoomend");
           };
         })(this));
         geo.lMap.setZoom(zoom);
