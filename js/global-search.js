@@ -332,7 +332,7 @@ doSearch = function(search, goDeep) {
         p$("#global-data-map").longitude = mapCenter.lng;
       } catch (error1) {
         try {
-          geo.lMap.panTo(mapCenter.getObject());
+          geo.lMap.panTo(mapCenter.getObj());
         } catch (undefined) {}
       }
     } catch (error2) {
@@ -365,7 +365,7 @@ doSearch = function(search, goDeep) {
           return p$("#global-data-map").longitude = mapCenter.lng;
         } catch (error3) {
           try {
-            return geo.lMap.setView(mapCenter.getObject());
+            return geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
         }
       });
@@ -522,7 +522,7 @@ doDeepSearch = function(results, namedMap) {
         p$("#global-data-map").longitude = mapCenter.lng;
       } catch (error1) {
         try {
-          geo.lMap.panTo(mapCenter.getObject());
+          geo.lMap.panTo(mapCenter.getObj());
         } catch (undefined) {}
       }
     } catch (error2) {
@@ -567,7 +567,7 @@ doDeepSearch = function(results, namedMap) {
           return p$("#global-data-map").longitude = mapCenter.lng;
         } catch (error3) {
           try {
-            return geo.lMap.setView(mapCenter.getObject());
+            return geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
         }
       });

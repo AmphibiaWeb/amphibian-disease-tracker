@@ -278,7 +278,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       catch
         try
 
-          geo.lMap.panTo mapCenter.getObject()
+          geo.lMap.panTo mapCenter.getObj()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
@@ -307,7 +307,7 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
           p$("#global-data-map").longitude = mapCenter.lng
         catch
           try
-            geo.lMap.setView mapCenter.getObject()
+            geo.lMap.setView mapCenter.getObj()
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
@@ -431,7 +431,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         p$("#global-data-map").longitude = mapCenter.lng
       catch
         try
-          geo.lMap.panTo mapCenter.getObject()
+          geo.lMap.panTo mapCenter.getObj()
     catch e
       console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
       console.warn e.stack
@@ -466,7 +466,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           p$("#global-data-map").longitude = mapCenter.lng
         catch
           try
-            geo.lMap.setView mapCenter.getObject()
+            geo.lMap.setView mapCenter.getObj()
     catch e
       console.error "Couldn't create map! #{e.message}"
       console.warn e.stack
