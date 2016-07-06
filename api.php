@@ -380,7 +380,7 @@ function doCartoSqlApiPush($get)
                     $response = array(
                         'status' => false,
                         'error' => 'UNAUTHORIZED_USER',
-                        'human_error' => "User $uid isn't authorized to edit this dataset",
+                        'human_error' => "User '$uid' isn't authorized to edit this dataset",
                         'args_provided' => $get,
                         "project_id" => $pid,
                         "query_type" => $sqlAction,

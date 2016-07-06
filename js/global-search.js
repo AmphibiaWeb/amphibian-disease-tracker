@@ -357,12 +357,12 @@ doSearch = function(search, goDeep) {
       rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"icons:subject\" data-toggle=\"tooltip\" title=\"Show Project list\" raised></paper-icon-button>";
       $("#post-map-subtitle").append(rlButton);
       getProjectResultDialog(results);
-      (ensureCenter = function(count, maxCount) {
+      (ensureCenter = function(count, maxCount, timeout) {
 
         /*
          * Make sure the center is right
          */
-        var center, lat, lng, rndLat, rndLng;
+        var center, lat, lng, pctOffLat, pctOffLng, rndLat, rndLng, waited;
         rndLat = roundNumber(mapCenter.lat, 3);
         rndLng = roundNumber(mapCenter.lng, 3);
         try {
@@ -374,23 +374,29 @@ doSearch = function(search, goDeep) {
           lat = roundNumber(center.lat, 3);
           lng = roundNumber(center.lng, 3);
         } catch (undefined) {}
+        pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
+        pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
         if (lat === rndLat && lng === rndLng) {
           console.info("Correctly centered");
           return false;
         }
-        return delay(100, function() {
+        if (count >= maxCount) {
+          waited = timeout * maxCount;
+          console.info("Map could not be correctly centered in " + waited + "ms");
+        }
+        return delay(timeout, function() {
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("Setting view to", mapCenter.getObj());
+            console.info("Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
           count++;
           return ensureCenter(count);
         });
-      })(0, 100);
+      })(0, 100, 100);
     } catch (error2) {
       e = error2;
       console.error("Couldn't create map! " + e.message);
@@ -581,12 +587,12 @@ doDeepSearch = function(results, namedMap) {
         createRawCartoMap(layerSourceObj);
         $("#post-map-subtitle").text(subText);
       }
-      (ensureCenter = function(count, maxCount) {
+      (ensureCenter = function(count, maxCount, timeout) {
 
         /*
          * Make sure the center is right
          */
-        var center, lat, lng, rndLat, rndLng;
+        var center, lat, lng, pctOffLat, pctOffLng, rndLat, rndLng, waited;
         rndLat = roundNumber(mapCenter.lat, 3);
         rndLng = roundNumber(mapCenter.lng, 3);
         try {
@@ -598,23 +604,29 @@ doDeepSearch = function(results, namedMap) {
           lat = roundNumber(center.lat, 3);
           lng = roundNumber(center.lng, 3);
         } catch (undefined) {}
+        pctOffLat = Math.abs((lat - rndLat) / rndLat) * 100;
+        pctOffLng = Math.abs((lng - rndLng) / rndLng) * 100;
         if (lat === rndLat && lng === rndLng) {
           console.info("Correctly centered");
           return false;
         }
-        return delay(100, function() {
+        if (count >= maxCount) {
+          waited = timeout * maxCount;
+          console.info("Map could not be correctly centered in " + waited + "ms");
+        }
+        return delay(timeout, function() {
           try {
             p$("#global-data-map").latitude = mapCenter.lat;
             p$("#global-data-map").longitude = mapCenter.lng;
           } catch (undefined) {}
           try {
-            console.info("Setting view to", mapCenter.getObj());
+            console.info("Setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
           } catch (undefined) {}
           count++;
           return ensureCenter(count);
         });
-      })(0, 100);
+      })(0, 100, 100);
     } catch (error2) {
       e = error2;
       console.error("Couldn't create map! " + e.message);

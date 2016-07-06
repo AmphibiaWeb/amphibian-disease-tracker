@@ -786,7 +786,7 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, err, error1, error2, extended, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
+      var e, err, error1, error2, ex, extended, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
       console.log(result);
       if (result.status !== true) {
         err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
@@ -796,7 +796,7 @@ sqlQueryBox = function() {
             case "UNAUTHORIZED_QUERY_TYPE":
               return result.query_type;
             default:
-              return "(no details for this error)";
+              return ex = "(no details for error " + result.error + ")";
           }
         })();
         $("#query-immediate-result").text(err + ": " + extended);
@@ -869,6 +869,11 @@ sqlQueryBox = function() {
     console.info("Executing query ...");
     input = $("#query-input").val();
     query = formatQuery(input);
+    if (query.search(_adp.cartoDataParsed.table) === -1) {
+      console.error("Query didn't specify a table!");
+      toastStatusMessage("You forgot to include the table identifier in your query.");
+      return false;
+    }
     $(".do-sql-query").attr("disabled", "disabled");
     return queryCarto(query);
   };

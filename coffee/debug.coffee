@@ -140,11 +140,18 @@ window.reportDebugLog = reportDebugLog
 $ ->
   window.debugLoggingEnabled = false
   
-  do setupContext = ->
+  do setupContext = (count = 0) ->
     unless Polymer?.RenderStatus?._ready
+      if Polymer?
+        if count > 20
+          waited = count * 500
+          console.warn "Fake it till you make it -- after waiting #{waited}ms, we're going to pretend Polymer is ready"
+          try
+            Polymer.RenderStatus._ready = true
       console.warn "Delaying context until Polymer.RenderStatus is ready"
       delay 500, ->
-        setupContext()
+        count++
+        setupContext(count)
       return false
     console.info "Setting up context events"
     $("footer paper-icon-button[icon='icons:bug-report']").contextmenu (event) ->

@@ -738,7 +738,7 @@ sqlQueryBox = ->
           when "UNAUTHORIZED_QUERY_TYPE"
             result.query_type
           else
-            "(no details for this error)"
+            ex = "(no details for error #{result.error})"
         $("#query-immediate-result").text "#{err}: #{extended}"
         $(".do-sql-query").removeAttr "disabled"
         stopLoad()
@@ -811,6 +811,10 @@ sqlQueryBox = ->
     console.info "Executing query ..."
     input = $("#query-input").val()
     query = formatQuery input
+    if query.search(_adp.cartoDataParsed.table) is -1
+      console.error "Query didn't specify a table!"
+      toastStatusMessage "You forgot to include the table identifier in your query."
+      return false
     $(".do-sql-query").attr "disabled", "disabled"
     queryCarto query
   $("#query-input").keyup (e) ->

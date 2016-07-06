@@ -4383,12 +4383,22 @@ window.reportDebugLog = reportDebugLog;
 $(function() {
   var setupContext;
   window.debugLoggingEnabled = false;
-  (setupContext = function() {
-    var ref;
+  (setupContext = function(count) {
+    var ref, waited;
     if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
+      if (typeof Polymer !== "undefined" && Polymer !== null) {
+        if (count > 20) {
+          waited = count * 500;
+          console.warn("Fake it till you make it -- after waiting " + waited + "ms, we're going to pretend Polymer is ready");
+          try {
+            Polymer.RenderStatus._ready = true;
+          } catch (undefined) {}
+        }
+      }
       console.warn("Delaying context until Polymer.RenderStatus is ready");
       delay(500, function() {
-        return setupContext();
+        count++;
+        return setupContext(count);
       });
       return false;
     }
@@ -4432,7 +4442,7 @@ $(function() {
         return $(".bug-report-context-wrapper").remove();
       });
     });
-  })();
+  })(0);
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     return enableDebugLogging();
   }
