@@ -527,10 +527,28 @@ copyright-statement {
     overflow-y: scroll;
 }
 
+@code-box-height: 8em;
+
 td > .code-box {
-    max-height: 8em;
+    height: @code-box-height;
     max-width: 80%;
     overflow-x: scroll;
+}
+
+td.code-box-container + td {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    align-self: center;
+    height: @code-box-height;
+    .text-center;
+    * {
+        vertical-align: middle;
+        margin-left: auto;
+        margin-right: auto;
+        .text-center;
+    }
+    
 }
 
 main .btn, main paper-button.paper-button-0 {
