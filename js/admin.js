@@ -3890,7 +3890,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
 };
 
 recalculateAndUpdateHull = function(points) {
-  var cartoData, color, error1, opacity, ref, ref1, ref2, ref3;
+  var cartoData, color, consoleCopy, error1, opacity, ref, ref1, ref2, ref3;
   if (points == null) {
     points = _adp.workingProjectPoints;
   }
@@ -3912,7 +3912,8 @@ recalculateAndUpdateHull = function(points) {
   }
   opacity = (ref = (ref1 = cartoData.bounding_polygon) != null ? ref1.fillOpacity : void 0) != null ? ref : defaultFillOpacity;
   color = (ref2 = (ref3 = cartoData.bounding_polygon) != null ? ref3.fillColor : void 0) != null ? ref2 : defaultFillColor;
-  console.warn("Overwriting cartoData", cartoData);
+  consoleCopy = cartoData;
+  console.warn("Overwriting cartoData", consoleCopy);
   cartoData.bounding_polygon = {
     paths: _adp.canonicalHull.hull,
     fillOpacity: opacity,
