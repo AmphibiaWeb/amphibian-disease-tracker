@@ -9830,6 +9830,8 @@ copyright-statement {
 }
 td > .code-box {
   max-height: 5em;
+  max-width: 80%;
+  overflow-x: scroll;
 }
 main .btn,
 main paper-button.paper-button-0 {

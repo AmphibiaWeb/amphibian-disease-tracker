@@ -447,7 +447,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, rlButton, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -636,6 +636,7 @@ doDeepSearch = function(results, namedMap) {
         tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' " + layer.params.morbidity + " and diseasetested ilike '%" + layer.params.pathogen + "%');";
         resultQueryPile += tempQuery;
       }
+      $("#post-map-subtitle").text(subText);
       args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
         var error2;
@@ -650,10 +651,6 @@ doDeepSearch = function(results, namedMap) {
       }).fail(function(result, status) {
         return console.error("Couldn't fetch detailed results");
       });
-      $("#post-map-subtitle").text(subText);
-      $(".show-result-list").remove();
-      rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Show Sample Details\" raised></paper-icon-button>";
-      $("#post-map-subtitle").append(rlButton);
       (ensureCenter = function(count, maxCount, timeout) {
 
         /*
@@ -1019,7 +1016,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var data, error, html, i, j, len, project, projectResults, projectTableRows, row, table;
+  var data, dataWidthMax, error, html, i, j, len, project, projectResults, projectTableRows, rlButton, row, table;
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -1033,6 +1030,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   for (j = 0, len = resultsList.length; j < len; j++) {
     projectResults = resultsList[j];
     ++i;
+    dataWidthMax = $(window).width() * .7;
     try {
       data = JSON.stringify(projectResults.rows);
       if (isNull(data)) {
@@ -1043,7 +1041,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
       data = "Invalid data from server";
     }
     table = project = tableToProjectMap[projectResults.table];
-    row = "<tr>\n  <td><pre class=\"code-box\" colspan=\"4\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
+    row = "<tr>\n  <td><pre class=\"code-box\" colspan=\"4\" style=\"max-width:" + dataWidthMax + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
   html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
@@ -1053,6 +1051,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");
   });
+  $(".show-result-list").remove();
+  rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Show Sample Details\" raised></paper-icon-button>";
+  $("#post-map-subtitle").append(rlButton);
   $(".show-result-list").unbind().click(function() {
     console.log("Calling dialog helper");
     return safariDialogHelper("#modal-sql-details-list", 0, function() {

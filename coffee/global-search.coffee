@@ -526,6 +526,8 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         # summary dialog
         tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
         resultQueryPile += tempQuery
+      # Label the subtext
+      $("#post-map-subtitle").text subText
       # Initiate a query against the found tables
       args = "action=fetch&sql_query=#{post64(resultQueryPile)}"
       $.post "#{uri.urlString}api.php", args, "json"
@@ -539,13 +541,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         false
       .fail (result, status) ->
         console.error "Couldn't fetch detailed results"
-      # Label the subtext
-      $("#post-map-subtitle").text subText
-      $(".show-result-list").remove()
-      rlButton = """
-      <paper-icon-button class="show-result-list" icon="editor:insert-chart" data-toggle="tooltip" title="Show Sample Details" raised></paper-icon-button>
-      """
-      $("#post-map-subtitle").append rlButton
       do ensureCenter = (count = 0, maxCount = 100, timeout = 100) ->
         ###
         # Make sure the center is right
@@ -892,6 +887,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   i = 0
   for projectResults in resultsList
     ++i
+    dataWidthMax = $(window).width() * .7
     try
       data = JSON.stringify projectResults.rows
       if isNull data
@@ -903,7 +899,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     project = tableToProjectMap[projectResults.table]
     row = """
     <tr>
-      <td><pre class="code-box" colspan="4">#{data}</pre></td>
+      <td><pre class="code-box" colspan="4" style="max-width:#{dataWidthMax}px">#{data}</pre></td>
       <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
@@ -935,6 +931,11 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"
     $(".leaflet-control").removeAttr "hidden"
+  $(".show-result-list").remove()
+  rlButton = """
+  <paper-icon-button class="show-result-list" icon="editor:insert-chart" data-toggle="tooltip" title="Show Sample Details" raised></paper-icon-button>
+  """
+  $("#post-map-subtitle").append rlButton
   $(".show-result-list")
   .unbind()
   .click ->
