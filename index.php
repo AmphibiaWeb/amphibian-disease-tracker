@@ -72,6 +72,7 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/iron-icons/iron-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/image-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
+    <link rel="import" href="bower_components/iron-icons/editor-icons.html"/>
 
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
     <link rel="import" href="bower_components/google-map/google-map.html"/>
