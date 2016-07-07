@@ -3089,6 +3089,7 @@ getProjectCartoData = (cartoObj, mapOptions) ->
         workingMap += marker
         pointArr.push point
       # p$("#transect-viewport").resize()
+      _adp.workingProjectPoints = pointArr
       unless cartoData?.bounding_polygon?.paths? and cartoData?.bounding_polygon?.fillColor?
         try
           _adp.canonicalHull = createConvexHull pointArr, true
@@ -3879,7 +3880,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 _adp.projectData.disease_mortality = validatedData.samples.mortality
                 _adp.projectData.disease_positive = validatedData.samples.positive
                 _adp.projectData.disease_negative = validatedData.samples.negative
-                _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence 
+                _adp.projectData.disease_no_confidence = validatedData.samples.no_confidence
                 _adp.projectData.disease_samples = _adp.rowsCount
                 # All the parsed month data, etc.
                 center = getMapCenter(geo.boundingBox)
@@ -4001,6 +4002,22 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
 
 
 
+recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
+  unless points?
+    console.error "Can't run without points!"
+  _adp.projectPreModBackup = _adp.projectData
+  try
+    localStorage.projectPreModBackup = JSON.stringify _adp.projectData
+  _adp.canonicalHull = createConvexHull pointArr, true
+  try
+    cartoData = JSON.parse _adp.projectData.carto_id
+  catch
+    cartoData = new Object()
+  cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
+  cartoData.bounding_polygon.fillOpacity ?= defaultFillOpacity
+  cartoData.bounding_polygon.fillColor ?= defaultFillColor
+  _adp.projectData.carto_id = JSON.stringify cartoData
+  cartoData
 
 
 
