@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -2987,6 +2987,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
         workingMap += marker;
         pointArr.push(point);
       }
+      _adp.workingProjectPoints = pointArr;
       if (!(((cartoData != null ? (ref3 = cartoData.bounding_polygon) != null ? ref3.paths : void 0 : void 0) != null) && ((cartoData != null ? (ref4 = cartoData.bounding_polygon) != null ? ref4.fillColor : void 0 : void 0) != null))) {
         try {
           _adp.canonicalHull = createConvexHull(pointArr, true);
@@ -3886,6 +3887,35 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
     dataCallback(passedData);
   }
   return false;
+};
+
+recalculateAndUpdateHull = function(points) {
+  var base, base1, cartoData, error1;
+  if (points == null) {
+    points = _adp.workingProjectPoints;
+  }
+  if (points == null) {
+    console.error("Can't run without points!");
+  }
+  _adp.projectPreModBackup = _adp.projectData;
+  try {
+    localStorage.projectPreModBackup = JSON.stringify(_adp.projectData);
+  } catch (undefined) {}
+  _adp.canonicalHull = createConvexHull(pointArr, true);
+  try {
+    cartoData = JSON.parse(_adp.projectData.carto_id);
+  } catch (error1) {
+    cartoData = new Object();
+  }
+  cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
+  if ((base = cartoData.bounding_polygon).fillOpacity == null) {
+    base.fillOpacity = defaultFillOpacity;
+  }
+  if ((base1 = cartoData.bounding_polygon).fillColor == null) {
+    base1.fillColor = defaultFillColor;
+  }
+  _adp.projectData.carto_id = JSON.stringify(cartoData);
+  return cartoData;
 };
 
 saveEditorData = function(force, callback) {
