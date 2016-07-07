@@ -447,7 +447,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -501,6 +501,7 @@ doDeepSearch = function(results, namedMap) {
         }
       })();
     }
+    projectTableMap = new Object();
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
       if (project.bounding_box_n > boundingBox.n) {
@@ -566,6 +567,10 @@ doDeepSearch = function(results, namedMap) {
           }
         };
         layers.push(layer);
+        projectTableMap[table] = {
+          id: project.project_id,
+          name: project.project_title
+        };
       } else {
         console.warn("Unable to get a table id from this carto data:", project.carto_id);
       }
@@ -631,9 +636,16 @@ doDeepSearch = function(results, namedMap) {
         tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' " + layer.params.morbidity + " and diseasetested ilike '%" + layer.params.pathogen + "%');";
         resultQueryPile += tempQuery;
       }
-      args = "fetch&sql_query=" + (post64(resultQueryPile));
+      args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+        var error2;
         console.info("Detailed results: ", result);
+        try {
+          results = Object.toArray(result.parsed_responses);
+          getSampleSummaryDialog(results, projectTableMap);
+        } catch (error2) {
+          console.warn("Couldn't parse responses from server");
+        }
         return false;
       }).fail(function(result, status) {
         return console.error("Couldn't fetch detailed results");
@@ -992,40 +1004,49 @@ getProjectResultDialog = function(projectList) {
   return false;
 };
 
-getSampleSummaryDialog = function(resultsList) {
+getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
 
   /*
    * Show a SQL-query like dataset in a modal dialog
    *
-   * See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
+   * See
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
+   *
+   * @param array resultList -> array of Carto responses. Data expected
+   *   in "rows" field
+   * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var anuraIcon, caudataIcon, gymnophionaIcon, html, j, len, project, projectList, projectTableRows, row;
-  if (!isArray(projectList)) {
-    projectList = Object.toArray(projectList);
+  var data, error, html, j, len, project, projectResults, projectTableRows, row, table;
+  if (!isArray(resultsList)) {
+    resultsList = Object.toArray(resultsList);
   }
-  if (projectList.length === 0) {
-    console.warn("There were no projects in the result list");
+  if (resultsList.length === 0) {
+    console.warn("There were no results in the result list");
     return false;
   }
+  console.log("Generating dialog from", resultsList);
   projectTableRows = new Array();
-  for (j = 0, len = projectList.length; j < len; j++) {
-    project = projectList[j];
-    anuraIcon = project.includes_anura ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
-    caudataIcon = project.includes_caudata ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
-    gymnophionaIcon = project.includes_gymnophiona ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
-    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td class=\"text-center\">" + anuraIcon + "</td>\n  <td class=\"text-center\">" + caudataIcon + "</td>\n  <td class=\"text-center\">" + gymnophionaIcon + "</td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" title=\"Visit Project\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\"></paper-icon-button></td>\n</tr>";
+  for (j = 0, len = resultsList.length; j < len; j++) {
+    projectResults = resultsList[j];
+    try {
+      data = JSON.stringify(projectResults.rows);
+    } catch (error) {
+      data = "Invalid data from server";
+    }
+    table = project = tableToProjectMap[projectResults.table];
+    row = "<tr>\n  <td><pre class=\"code-box\"></pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" title=\"Visit Project\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" data-toggle=\"tooltip\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-project-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <table class=\"table table-striped\">\n        <tr>\n          <th>Project Name</th>\n          <th>Caudata</th>\n          <th>Anura</th>\n          <th>Gymnophiona</th>\n          <th>Visit</th>\n        </tr>\n        " + (projectTableRows.join("\n")) + "\n      </table>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
-  $("#modal-project-list").remove();
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12 table-responsive\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  $("#modal-sql-details-list").remove();
   $("body").append(html);
-  $("#modal-project-list").on("iron-overlay-closed", function() {
+  $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");
   });
   $(".show-result-list").unbind().click(function() {
     console.log("Calling dialog helper");
-    return safariDialogHelper("#modal-project-list", 0, function() {
+    return safariDialogHelper("#modal-sql-details-list", 0, function() {
       console.info("Successfully opened dialog");
       $(".leaflet-control-attribution").attr("hidden", "hidden");
       return $(".leaflet-control").attr("hidden", "hidden");

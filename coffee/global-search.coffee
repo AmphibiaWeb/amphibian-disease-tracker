@@ -880,7 +880,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   unless isArray resultsList
     resultsList = Object.toArray resultsList
   if resultsList.length is 0
-    console.warn "There were no resultss in the result list"
+    console.warn "There were no results in the result list"
     return false
   console.log "Generating dialog from", resultsList
   projectTableRows = new Array()  
@@ -889,14 +889,12 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       data = JSON.stringify projectResults.rows
     catch
       data = "Invalid data from server"
-    project = tableToProjectMap
+    table = 
+    project = tableToProjectMap[projectResults.table]
     row = """
     <tr>
-      <td>#{project.project_title}</td>
-      <td class="text-center">#{anuraIcon}</td>
-      <td class="text-center">#{caudataIcon}</td>
-      <td class="text-center">#{gymnophionaIcon}</td>
-      <td class="text-center"><paper-icon-button data-toggle="tooltip" title="Visit Project" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward"></paper-icon-button></td>
+      <td><pre class="code-box"></pre></td>
+      <td class="text-center"><paper-icon-button data-toggle="tooltip" title="Visit Project" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" data-toggle="tooltip" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
     projectTableRows.push row
@@ -904,17 +902,16 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
     <h2>Project Result List</h2>
     <paper-dialog-scrollable>
-      <div>
-        <table class="table table-striped">
-          <tr>
-            <th>Project Name</th>
-            <th>Caudata</th>
-            <th>Anura</th>
-            <th>Gymnophiona</th>
-            <th>Visit</th>
-          </tr>
-          #{projectTableRows.join("\n")}
-        </table>
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+          <table class="table table-striped">
+            <tr>
+              <th colspan="4">Query Data</th>
+              <th>Visit Project</th>
+            </tr>
+            #{projectTableRows.join("\n")}
+          </table>
+        </div>
       </div>
     </paper-dialog-scrollable>
     <div class="buttons">
