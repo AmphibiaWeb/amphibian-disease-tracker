@@ -9819,6 +9819,18 @@ copyright-statement {
   border-radius: 4px;
   font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+.code-box {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+  font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+  overflow-y: scroll;
+}
+td > .code-box {
+  max-height: 2em;
+}
 main .btn,
 main paper-button.paper-button-0 {
   margin-top: 5px;

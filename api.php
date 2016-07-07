@@ -304,111 +304,125 @@ function doCartoSqlApiPush($get)
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
-    $queryPattern = '/(?i)([a-zA-Z]+(?: +INTO)?) +.*(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]*.*[;]?/m';
-    $sqlAction = preg_replace($queryPattern, '$1', $sqlQuery);
-    $sqlAction = strtolower(str_replace(" ","", $sqlAction));
-    $restrictedActions = array(
-        "select" => "READ",
-        "delete" => "EDIT",
-        "insert" => "EDIT",
-        "insertinto" => "EDIT",
-        "update" => "EDIT",
-    );
-    $unrestrictedActions = array(
-        "create" => true,
-    );
-    # Looking up the columns is a safe action
-    if (preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]+[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $sqlQuery)) {
-        # Successful match
-        unset($restrictedActions["select"]);
-        $unrestrictedActions["select"] = true;
-    }
-    if (isset($restrictedActions[$sqlAction])) {
-        # Check the user
-        # If bad, kick the access out
-        $cartoTable = preg_replace($queryPattern, '$2', $sqlQuery);
-        $cartoTableJson = str_replace('_', '&#95;', $cartoTable);
-        $accessListLookupQuery = 'SELECT `project_id`, `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
-        $l = $db->openDB();
-        $r = mysqli_query($l, $accessListLookupQuery);
-        $row = mysqli_fetch_assoc($r);
-        $pid = $row["project_id"];
-        # Non-existant projects are fair game
-        if(!empty($pid)) {
-            $requestedPermission = $restrictedActions[$sqlAction];
-            $pArr = explode(",", $row["access_data"]);
-            $permissions = array();
-            foreach($pArr as $access) {
-                $up = explode(":", $access);
-                $permissions[$up[0]] = $up[1];
-            } # End loop
-            $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row['access_data']);
-            $users = explode(',', $csvString);
-            $users[] = $row['author'];
-            $isPublic = boolstr($row['public']);
-            $suFlag = $login_status['detail']['userdata']['su_flag'];
-            $isSu = boolstr($suFlag);
-            # Get current user ID
-            if ($login_status['status'] !== true && !$isPublic) {
-                $response = array(
-                    'status' => false,
-                    'error' => 'NOT_LOGGED_IN',
-                    'human_error' => 'Attempted to access private project without being logged in',
-                    'args_provided' => $get,
-                    "project_id" => $pid,
-                    "query_type" => $sqlAction,
-                    'is_public_dataset' => $isPublic,
-                );
-                returnAjax($response);
-            } # End login check
-            $uid = $login_status['detail']['uid'];
-            if (!in_array($uid, $users) && !$isPublic && $isSu !== true) {
-                $response = array(
-                    'status' => false,
-                    'error' => 'UNAUTHORIZED_USER',
-                    'human_error' => "User $uid isn't authorized to access this dataset",
-                    'args_provided' => $get,
-                    "project_id" => $pid,
-                    'is_public_dataset' => $isPublic,
-                );
-                returnAjax($response);
-            } # End authorized  user check
-            if ($requestedPermission == "EDIT") {
-                # Editing has an extra filter
-                $hasPermission = $permissions[$uid];
-                if ($hasPermission !== $requestedPermission && $isSu !== true) {
+    $queryPattern = '/(?i)([a-zA-Z]+(?: +INTO)?) +.*(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]*.*[;]?/m';
+    $statements = explode(');', $sqlQuery);
+    $checkedTablePermissions = array();
+    $pidList = array();
+    foreach($statements as $k=>$statement) {
+        if(empty($statement)) {
+            unset($statements[$k]);
+            continue;
+        }
+        $sqlAction = preg_replace($queryPattern, '$1', $statement);
+        $sqlAction = strtolower(str_replace(" ","", $sqlAction));
+        $restrictedActions = array(
+            "select" => "READ",
+            "delete" => "EDIT",
+            "insert" => "EDIT",
+            "insertinto" => "EDIT",
+            "update" => "EDIT",
+        );
+        $unrestrictedActions = array(
+            "create" => true,
+        );
+        # Looking up the columns is a safe action
+        if (preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $statement)) {
+            # Successful match
+            unset($restrictedActions["select"]);
+            $unrestrictedActions["select"] = true;
+        }
+        if (isset($restrictedActions[$sqlAction])) {
+            # Check the user
+            # If bad, kick the access out
+            $cartoTable = preg_replace($queryPattern, '$2', $statement);
+            $checkedTablePermissions[] = $cartoTable;
+            $cartoTableJson = str_replace('_', '&#95;', $cartoTable);
+            $accessListLookupQuery = 'SELECT `project_id`, `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
+            $l = $db->openDB();
+            $r = mysqli_query($l, $accessListLookupQuery);
+            $row = mysqli_fetch_assoc($r);
+            $pid = $row["project_id"];
+            $pidList[$cartoTable] = $pid;
+            # Non-existant projects are fair game
+            if(!empty($pid)) {
+                $requestedPermission = $restrictedActions[$sqlAction];
+                $pArr = explode(",", $row["access_data"]);
+                $permissions = array();
+                foreach($pArr as $access) {
+                    $up = explode(":", $access);
+                    $permissions[$up[0]] = $up[1];
+                } # End loop
+                $csvString = preg_replace('/(:(EDIT|READ))/m', '', $row['access_data']);
+                $users = explode(',', $csvString);
+                $users[] = $row['author'];
+                $isPublic = boolstr($row['public']);
+                $suFlag = $login_status['detail']['userdata']['su_flag'];
+                $isSu = boolstr($suFlag);
+                # Get current user ID
+                if ($login_status['status'] !== true && !$isPublic) {
                     $response = array(
                         'status' => false,
-                        'error' => 'UNAUTHORIZED_USER',
-                        'human_error' => "User '$uid' isn't authorized to edit this dataset",
+                        'error' => 'NOT_LOGGED_IN',
+                        'human_error' => 'Attempted to access private project without being logged in',
                         'args_provided' => $get,
                         "project_id" => $pid,
                         "query_type" => $sqlAction,
-                        "user_permissions" => $hasPermission,
+                        'is_public_dataset' => $isPublic,
+                        "statement_parsed" => $statement,
                     );
                     returnAjax($response);
-                } # End edit permission check
-            } # End edit permission case
-        } # End project existence check
-    } else if (!isset($unrestrictedActions[$sqlAction])) {
-        # Unrecognized query type
-        returnAjax(array(
-            "status" => false,
-            "error" => "UNAUTHORIZED_QUERY_TYPE",
-            "query_type" => $sqlAction,
-            "args_provided" => $get,
-        ));
-    }
-    if (empty($sqlQuery)) {
-        returnAjax(array(
-        'status' => false,
-        'error' => 'Invalid Query',
-        'args_provided' => $get,
-    ));
+                } # End login check
+                $uid = $login_status['detail']['uid'];
+                if (!in_array($uid, $users) && !$isPublic && $isSu !== true) {
+                    $response = array(
+                        'status' => false,
+                        'error' => 'UNAUTHORIZED_USER',
+                        'human_error' => "User $uid isn't authorized to access this dataset",
+                        'args_provided' => $get,
+                        "project_id" => $pid,
+                        'is_public_dataset' => $isPublic,
+                        "statement_parsed" => $statement,
+                    );
+                    returnAjax($response);
+                } # End authorized  user check
+                if ($requestedPermission == "EDIT") {
+                    # Editing has an extra filter
+                    $hasPermission = $permissions[$uid];
+                    if ($hasPermission !== $requestedPermission && $isSu !== true) {
+                        $response = array(
+                            'status' => false,
+                            'error' => 'UNAUTHORIZED_USER',
+                            'human_error' => "User '$uid' isn't authorized to edit this dataset",
+                            'args_provided' => $get,
+                            "project_id" => $pid,
+                            "query_type" => $sqlAction,
+                            "user_permissions" => $hasPermission,
+                            "statement_parsed" => $statement,
+                        );
+                        returnAjax($response);
+                    } # End edit permission check
+                } # End edit permission case
+            } # End project existence check
+        } else if (!isset($unrestrictedActions[$sqlAction])) {
+            # Unrecognized query type
+            returnAjax(array(
+                "status" => false,
+                "error" => "UNAUTHORIZED_QUERY_TYPE",
+                "query_type" => $sqlAction,
+                "args_provided" => $get,
+                "statement_parsed" => $statement,
+            ));
+        }
+        if (empty($statement)) {
+            returnAjax(array(
+                'status' => false,
+                'error' => 'Invalid Query',
+                'args_provided' => $get,
+            ));
+        }
     }
     $cartoPostUrl = 'https://'.$cartodb_username.'.cartodb.com/api/v2/sql';
     $cartoArgSuffix = '&api_key='.$cartodb_api_key;
-    $statements = explode(');', $sqlQuery);
     $l = sizeof($statements);
     $lastIndex = $l - 1;
     foreach($statements as $k=>$statement) {
@@ -432,7 +446,9 @@ function doCartoSqlApiPush($get)
                 continue;
             }
             $cartoArgs = 'q='.urlencode($statement).$cartoArgSuffix;
-            #
+            # Fetch a table
+            $cartoTable = preg_replace($queryPattern, '$2', $statement);
+            $sqlAction = preg_replace($queryPattern, '$1', $statement);
             $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
             $urls[] = $cartoFullUrl;
             if (boolstr($get['alt'])) {
@@ -453,6 +469,10 @@ function doCartoSqlApiPush($get)
                 $decoded = json_decode($response, true);
                 $decoded["query"] = $statement;
                 $decoded["encoded_query"] = urlencode($statement);
+                $decoded["table"] = $cartoTable;
+                $decoded["project_id"] = $pidList[$cartoTable];
+                $decoded["blobby"] = false;
+                $decoded["sql_action"] = $sqlAction;
                 $parsed_responses[] = $decoded;
             }
         }
@@ -471,24 +491,30 @@ function doCartoSqlApiPush($get)
         $responses[] = $response;
         $decoded = json_decode($response, true);
         $decoded["query"] = $sqlQuery;
+        $decoded["blobby"] = true;
         $parsed_responses[] = $decoded;
 
     }
     try {
-        returnAjax(array(
+        $response = array(
             'status' => true,
             'sql_statements' => $statements,
             'post_response' => $responses,
             'parsed_responses' => $parsed_responses,
             'blobby' => boolstr($get['blobby']),
             "query_type" => $sqlAction,
-            "project_id" => $pid,
             "parsed_query" => $originalQuery,
+            "checked_tables" => $checkedTablePermissions,
             #"foo" => base64_decode(urldecode($get["sql_query"])),
             #"bar" => base64_decode($get["sql_query"]),
             #"baz" => urldecode(base64_decode($get["sql_query"])),
             # "urls_posted" => $urls,
-        ));
+        );
+        if(boolstr($get['blobby'])) {
+            $response["project_id"] = $pid;
+            $response["query_type"] = $sqlAction;
+        }
+        returnAjax($response);
     } catch (Exception $e) {
         returnAjax(array(
             'status' => false,
