@@ -427,7 +427,7 @@ function doCartoSqlApiPush($get)
     $lastIndex = $l - 1;
     foreach($statements as $k=>$statement) {
         # Re-append the closing parens
-        if($k != $lastIndex) $statements[$k] = $statement . ")";
+        if(substr_count($statement, "(") === substr_count($statement, ")") + 1) $statements[$k] = $statement . ")";
     }
     $responses = array();
     $parsed_responses = array();

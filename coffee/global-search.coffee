@@ -888,6 +888,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   for projectResults in resultsList
     ++i
     dataWidthMax = $(window).width() * .7
+    dataWidthMin = $(window).width() * .4
     try
       data = JSON.stringify projectResults.rows
       if isNull data
@@ -899,7 +900,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     project = tableToProjectMap[projectResults.table]
     row = """
     <tr>
-      <td colspan="4"><textarea readonly class="code-box" style="max-width:#{dataWidthMax}px">#{data}</textarea></td>
+      <td colspan="4"><textarea readonly class="code-box" style="max-width:#{dataWidthMax}px;min-width:#{dataWidthMin}px">#{data}</textarea></td>
       <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
