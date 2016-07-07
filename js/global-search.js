@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getProjectResultDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
+var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -447,7 +447,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, search, spArr, spText, species, speciesCount, subText, table, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -619,6 +619,7 @@ doDeepSearch = function(results, namedMap) {
     subText += " in bounds defined by [{lat: " + search.bounding_box_n.data + ",lng: " + search.bounding_box_w.data + "},{lat: " + search.bounding_box_s.data + ",lng: " + search.bounding_box_e.data + "}]";
     try {
       resetMap(geo.lMap, false, false);
+      resultQueryPile = "";
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
         layerSourceObj = {
@@ -627,8 +628,17 @@ doDeepSearch = function(results, namedMap) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
-        $("#post-map-subtitle").text(subText);
+        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' " + layer.params.morbidity + " and diseasetested ilike '%" + layer.params.pathogen + "%');";
+        resultQueryPile += tempQuery;
       }
+      args = "fetch&sql_query=" + (post64(resultQueryPile));
+      $.post(uri.urlString + "api.php", args, "json").done(function(result) {
+        console.info("Detailed results: ", result);
+        return false;
+      }).fail(function(result, status) {
+        return console.error("Couldn't fetch detailed results");
+      });
+      $("#post-map-subtitle").text(subText);
       (ensureCenter = function(count, maxCount, timeout) {
 
         /*
@@ -940,7 +950,56 @@ generateColorByRecency2 = function(timestamp, oldCutoff) {
 };
 
 getProjectResultDialog = function(projectList) {
+
+  /*
+   * From a list of projects, show a modal dialog with some basic
+   * metadata for that list
+   */
   var anuraIcon, caudataIcon, gymnophionaIcon, html, j, len, project, projectTableRows, row;
+  if (!isArray(projectList)) {
+    projectList = Object.toArray(projectList);
+  }
+  if (projectList.length === 0) {
+    console.warn("There were no projects in the result list");
+    return false;
+  }
+  projectTableRows = new Array();
+  for (j = 0, len = projectList.length; j < len; j++) {
+    project = projectList[j];
+    anuraIcon = project.includes_anura ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
+    caudataIcon = project.includes_caudata ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
+    gymnophionaIcon = project.includes_gymnophiona ? "<iron-icon icon='icons:check-circle'></iron-icon>" : "<iron-icon icon='icons:clear'></iron-icon>";
+    row = "<tr>\n  <td>" + project.project_title + "</td>\n  <td class=\"text-center\">" + anuraIcon + "</td>\n  <td class=\"text-center\">" + caudataIcon + "</td>\n  <td class=\"text-center\">" + gymnophionaIcon + "</td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" title=\"Visit Project\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\"></paper-icon-button></td>\n</tr>";
+    projectTableRows.push(row);
+  }
+  html = "<paper-dialog id=\"modal-project-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <table class=\"table table-striped\">\n        <tr>\n          <th>Project Name</th>\n          <th>Caudata</th>\n          <th>Anura</th>\n          <th>Gymnophiona</th>\n          <th>Visit</th>\n        </tr>\n        " + (projectTableRows.join("\n")) + "\n      </table>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  $("#modal-project-list").remove();
+  $("body").append(html);
+  $("#modal-project-list").on("iron-overlay-closed", function() {
+    $(".leaflet-control-attribution").removeAttr("hidden");
+    return $(".leaflet-control").removeAttr("hidden");
+  });
+  $(".show-result-list").unbind().click(function() {
+    console.log("Calling dialog helper");
+    return safariDialogHelper("#modal-project-list", 0, function() {
+      console.info("Successfully opened dialog");
+      $(".leaflet-control-attribution").attr("hidden", "hidden");
+      return $(".leaflet-control").attr("hidden", "hidden");
+    });
+  });
+  bindClicks();
+  console.info("Generated project result list");
+  return false;
+};
+
+getSampleSummaryDialog = function(resultsList) {
+
+  /*
+   * Show a SQL-query like dataset in a modal dialog
+   *
+   * See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
+   */
+  var anuraIcon, caudataIcon, gymnophionaIcon, html, j, len, project, projectList, projectTableRows, row;
   if (!isArray(projectList)) {
     projectList = Object.toArray(projectList);
   }

@@ -511,13 +511,28 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
     try
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
       resetMap geo.lMap, false, false
+      resultQueryPile = ""
       for layer in layers
         layerSourceObj =
           user_name: cartoAccount
           type: "namedmap"
           named_map: layer
         createRawCartoMap layerSourceObj
-        $("#post-map-subtitle").text subText
+        # Now do an SQL query to get the legitimate results for a
+        # summary dialog
+        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
+        resultQueryPile += tempQuery
+      # Initiate a query against the found tables
+      args = "fetch&sql_query=#{post64(resultQueryPile)}"
+      $.post "#{uri.urlString}api.php", args, "json"
+      .done (result) ->
+        console.info "Detailed results: ", result
+        
+        false
+      .fail (result, status) ->
+        console.error "Couldn't fetch detailed results"
+      # Label the subtext
+      $("#post-map-subtitle").text subText
       do ensureCenter = (count = 0, maxCount = 100, timeout = 100) ->
         ###
         # Make sure the center is right
@@ -776,6 +791,79 @@ generateColorByRecency2 = (timestamp, oldCutoff = 1420070400) ->
 
 
 getProjectResultDialog = (projectList) ->
+  ###
+  # From a list of projects, show a modal dialog with some basic
+  # metadata for that list
+  ###
+  unless isArray projectList
+    projectList = Object.toArray projectList
+  if projectList.length is 0
+    console.warn "There were no projects in the result list"
+    return false
+  projectTableRows = new Array()
+  for project in projectList
+    anuraIcon = if project.includes_anura then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+    caudataIcon = if project.includes_caudata then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+    gymnophionaIcon = if project.includes_gymnophiona then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+    row = """
+    <tr>
+      <td>#{project.project_title}</td>
+      <td class="text-center">#{anuraIcon}</td>
+      <td class="text-center">#{caudataIcon}</td>
+      <td class="text-center">#{gymnophionaIcon}</td>
+      <td class="text-center"><paper-icon-button data-toggle="tooltip" title="Visit Project" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward"></paper-icon-button></td>
+    </tr>
+    """
+    projectTableRows.push row
+  html = """
+  <paper-dialog id="modal-project-list" modal always-on-top auto-fit-on-attach>
+    <h2>Project Result List</h2>
+    <paper-dialog-scrollable>
+      <div>
+        <table class="table table-striped">
+          <tr>
+            <th>Project Name</th>
+            <th>Caudata</th>
+            <th>Anura</th>
+            <th>Gymnophiona</th>
+            <th>Visit</th>
+          </tr>
+          #{projectTableRows.join("\n")}
+        </table>
+      </div>
+    </paper-dialog-scrollable>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Close</paper-button>
+    </div>
+  </paper-dialog>
+  """
+  $("#modal-project-list").remove()
+  $("body").append html
+  $("#modal-project-list")
+  .on "iron-overlay-closed", ->
+    $(".leaflet-control-attribution").removeAttr "hidden"
+    $(".leaflet-control").removeAttr "hidden"
+  $(".show-result-list")
+  .unbind()
+  .click ->
+    console.log "Calling dialog helper"
+    safariDialogHelper "#modal-project-list", 0, ->
+      console.info "Successfully opened dialog"
+      $(".leaflet-control-attribution").attr "hidden", "hidden"
+      $(".leaflet-control").attr "hidden", "hidden"
+  bindClicks()
+  console.info "Generated project result list"
+  false
+
+
+
+
+getSampleSummaryDialog = (resultsList) ->
+  ###
+  # Show a SQL-query like dataset in a modal dialog
+  #
+  # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
+  ###
   unless isArray projectList
     projectList = Object.toArray projectList
   if projectList.length is 0
