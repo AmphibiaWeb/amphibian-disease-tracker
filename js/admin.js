@@ -3890,7 +3890,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
 };
 
 recalculateAndUpdateHull = function(points) {
-  var base, base1, cartoData, error1;
+  var cartoData, color, error1, opacity, ref, ref1, ref2, ref3;
   if (points == null) {
     points = _adp.workingProjectPoints;
   }
@@ -3901,19 +3901,23 @@ recalculateAndUpdateHull = function(points) {
   try {
     localStorage.projectPreModBackup = JSON.stringify(_adp.projectData);
   } catch (undefined) {}
-  _adp.canonicalHull = createConvexHull(pointArr, true);
+  _adp.canonicalHull = createConvexHull(points, true);
+  if (isNull(_adp.canonicalHull)) {
+    return false;
+  }
   try {
     cartoData = JSON.parse(_adp.projectData.carto_id);
   } catch (error1) {
     cartoData = new Object();
   }
-  cartoData.bounding_polygon.paths = _adp.canonicalHull.hull;
-  if ((base = cartoData.bounding_polygon).fillOpacity == null) {
-    base.fillOpacity = defaultFillOpacity;
-  }
-  if ((base1 = cartoData.bounding_polygon).fillColor == null) {
-    base1.fillColor = defaultFillColor;
-  }
+  opacity = (ref = (ref1 = cartoData.bounding_polygon) != null ? ref1.fillOpacity : void 0) != null ? ref : defaultFillOpacity;
+  color = (ref2 = (ref3 = cartoData.bounding_polygon) != null ? ref3.fillColor : void 0) != null ? ref2 : defaultFillColor;
+  console.warn("Overwriting cartoData", cartoData);
+  cartoData.bounding_polygon = {
+    paths: _adp.canonicalHull.hull,
+    fillOpacity: opacity,
+    fillColor: color
+  };
   _adp.projectData.carto_id = JSON.stringify(cartoData);
   return cartoData;
 };
