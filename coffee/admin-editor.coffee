@@ -1918,7 +1918,8 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
     cartoData = new Object()
   opacity = cartoData.bounding_polygon?.fillOpacity ? defaultFillOpacity
   color =   cartoData.bounding_polygon?.fillColor ? defaultFillColor
-  console.warn "Overwriting cartoData", cartoData
+  consoleCopy = cartoData
+  console.warn "Overwriting cartoData", consoleCopy
   cartoData.bounding_polygon =
     paths: _adp.canonicalHull.hull
     fillOpacity: opacity
