@@ -4008,14 +4008,20 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
   _adp.projectPreModBackup = _adp.projectData
   try
     localStorage.projectPreModBackup = JSON.stringify _adp.projectData
-  _adp.canonicalHull = createConvexHull pointArr, true
+  _adp.canonicalHull = createConvexHull points, true
+  if isNull _adp.canonicalHull
+    return false
   try
     cartoData = JSON.parse _adp.projectData.carto_id
   catch
     cartoData = new Object()
-  cartoData.bounding_polygon.paths = _adp.canonicalHull.hull
-  cartoData.bounding_polygon.fillOpacity ?= defaultFillOpacity
-  cartoData.bounding_polygon.fillColor ?= defaultFillColor
+  opacity = cartoData.bounding_polygon?.fillOpacity ? defaultFillOpacity
+  color =   cartoData.bounding_polygon?.fillColor ? defaultFillColor
+  console.warn "Overwriting cartoData", cartoData
+  cartoData.bounding_polygon =
+    paths: _adp.canonicalHull.hull
+    fillOpacity: opacity
+    fillColor: color
   _adp.projectData.carto_id = JSON.stringify cartoData
   cartoData
 
