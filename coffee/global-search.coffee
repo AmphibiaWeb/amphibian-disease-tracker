@@ -535,12 +535,17 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           results = Object.toArray result.parsed_responses
           getSampleSummaryDialog results, projectTableMap
         catch
-          console.warn "Couldn't parse responses from server"        
+          console.warn "Couldn't parse responses from server"
         false
       .fail (result, status) ->
         console.error "Couldn't fetch detailed results"
       # Label the subtext
       $("#post-map-subtitle").text subText
+      $(".show-result-list").remove()
+      rlButton = """
+      <paper-icon-button class="show-result-list" icon="editor:insert-chart" data-toggle="tooltip" title="Show Sample Details" raised></paper-icon-button>
+      """
+      $("#post-map-subtitle").append rlButton
       do ensureCenter = (count = 0, maxCount = 100, timeout = 100) ->
         ###
         # Make sure the center is right
@@ -883,17 +888,22 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     console.warn "There were no results in the result list"
     return false
   console.log "Generating dialog from", resultsList
-  projectTableRows = new Array()  
+  projectTableRows = new Array()
+  i = 0
   for projectResults in resultsList
+    ++i
     try
       data = JSON.stringify projectResults.rows
+      if isNull data
+        console.warn "Got bad data for row ##{i}!", projectResults, projectResults.rows, data
+        continue
     catch
       data = "Invalid data from server"
-    table = 
+    table =
     project = tableToProjectMap[projectResults.table]
     row = """
     <tr>
-      <td><pre class="code-box">#{data}</pre></td>
+      <td><pre class="code-box" colspan="4">#{data}</pre></td>
       <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
@@ -903,7 +913,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     <h2>Project Result List</h2>
     <paper-dialog-scrollable>
       <div class="row">
-        <div class="col-xs-12 table-responsive">
+        <div class="col-xs-12">
           <table class="table table-striped">
             <tr>
               <th colspan="4">Query Data</th>
