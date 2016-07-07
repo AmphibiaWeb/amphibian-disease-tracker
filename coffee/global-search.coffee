@@ -893,8 +893,8 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     project = tableToProjectMap[projectResults.table]
     row = """
     <tr>
-      <td><pre class="code-box"></pre></td>
-      <td class="text-center"><paper-icon-button data-toggle="tooltip" title="Visit Project" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" data-toggle="tooltip" title="#{project.name}"></paper-icon-button></td>
+      <td><pre class="code-box">#{data}</pre></td>
+      <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
     projectTableRows.push row

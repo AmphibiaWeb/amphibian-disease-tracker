@@ -1034,7 +1034,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
       data = "Invalid data from server";
     }
     table = project = tableToProjectMap[projectResults.table];
-    row = "<tr>\n  <td><pre class=\"code-box\"></pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" title=\"Visit Project\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" data-toggle=\"tooltip\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
+    row = "<tr>\n  <td><pre class=\"code-box\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
   html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12 table-responsive\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
