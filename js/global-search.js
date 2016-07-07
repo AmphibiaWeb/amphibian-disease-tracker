@@ -447,7 +447,7 @@ doSearch = function(search, goDeep) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, rlButton, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -651,6 +651,9 @@ doDeepSearch = function(results, namedMap) {
         return console.error("Couldn't fetch detailed results");
       });
       $("#post-map-subtitle").text(subText);
+      $(".show-result-list").remove();
+      rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Show Sample Details\" raised></paper-icon-button>";
+      $("#post-map-subtitle").append(rlButton);
       (ensureCenter = function(count, maxCount, timeout) {
 
         /*
@@ -1016,7 +1019,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var data, error, html, j, len, project, projectResults, projectTableRows, row, table;
+  var data, error, html, i, j, len, project, projectResults, projectTableRows, row, table;
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -1026,18 +1029,24 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   }
   console.log("Generating dialog from", resultsList);
   projectTableRows = new Array();
+  i = 0;
   for (j = 0, len = resultsList.length; j < len; j++) {
     projectResults = resultsList[j];
+    ++i;
     try {
       data = JSON.stringify(projectResults.rows);
+      if (isNull(data)) {
+        console.warn("Got bad data for row #" + i + "!", projectResults, projectResults.rows, data);
+        continue;
+      }
     } catch (error) {
       data = "Invalid data from server";
     }
     table = project = tableToProjectMap[projectResults.table];
-    row = "<tr>\n  <td><pre class=\"code-box\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
+    row = "<tr>\n  <td><pre class=\"code-box\" colspan=\"4\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12 table-responsive\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
