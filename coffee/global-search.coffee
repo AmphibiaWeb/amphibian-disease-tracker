@@ -406,6 +406,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         when "Batrachochytrium salamandrivorans"
           "bsal"
         else ""
+    projectTableMap = new Object()
     for project in results
       if project.bounding_box_n > boundingBox.n
         boundingBox.n = project.bounding_box_n
@@ -457,6 +458,9 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             morbidity: fatal
             pathogen: pathogen
         layers.push layer
+        projectTableMap[table] =
+          id: project.project_id
+          name: project.project_title
       else
         console.warn "Unable to get a table id from this carto data:", project.carto_id
       results[i] = project
@@ -523,11 +527,15 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
         resultQueryPile += tempQuery
       # Initiate a query against the found tables
-      args = "fetch&sql_query=#{post64(resultQueryPile)}"
+      args = "action=fetch&sql_query=#{post64(resultQueryPile)}"
       $.post "#{uri.urlString}api.php", args, "json"
       .done (result) ->
         console.info "Detailed results: ", result
-        
+        try
+          results = Object.toArray result.parsed_responses
+          getSampleSummaryDialog results, projectTableMap
+        catch
+          console.warn "Couldn't parse responses from server"        
         false
       .fail (result, status) ->
         console.error "Couldn't fetch detailed results"
@@ -858,22 +866,30 @@ getProjectResultDialog = (projectList) ->
 
 
 
-getSampleSummaryDialog = (resultsList) ->
+getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   ###
   # Show a SQL-query like dataset in a modal dialog
   #
-  # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
+  # See
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
+  #
+  # @param array resultList -> array of Carto responses. Data expected
+  #   in "rows" field
+  # @param object tableToProjectMap -> Map the table name onto project id
   ###
-  unless isArray projectList
-    projectList = Object.toArray projectList
-  if projectList.length is 0
-    console.warn "There were no projects in the result list"
+  unless isArray resultsList
+    resultsList = Object.toArray resultsList
+  if resultsList.length is 0
+    console.warn "There were no resultss in the result list"
     return false
-  projectTableRows = new Array()
-  for project in projectList
-    anuraIcon = if project.includes_anura then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
-    caudataIcon = if project.includes_caudata then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
-    gymnophionaIcon = if project.includes_gymnophiona then "<iron-icon icon='icons:check-circle'></iron-icon>" else "<iron-icon icon='icons:clear'></iron-icon>"
+  console.log "Generating dialog from", resultsList
+  projectTableRows = new Array()  
+  for projectResults in resultsList
+    try
+      data = JSON.stringify projectResults.rows
+    catch
+      data = "Invalid data from server"
+    project = tableToProjectMap
     row = """
     <tr>
       <td>#{project.project_title}</td>
@@ -885,7 +901,7 @@ getSampleSummaryDialog = (resultsList) ->
     """
     projectTableRows.push row
   html = """
-  <paper-dialog id="modal-project-list" modal always-on-top auto-fit-on-attach>
+  <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
     <h2>Project Result List</h2>
     <paper-dialog-scrollable>
       <div>
@@ -906,9 +922,9 @@ getSampleSummaryDialog = (resultsList) ->
     </div>
   </paper-dialog>
   """
-  $("#modal-project-list").remove()
+  $("#modal-sql-details-list").remove()
   $("body").append html
-  $("#modal-project-list")
+  $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"
     $(".leaflet-control").removeAttr "hidden"
@@ -916,7 +932,7 @@ getSampleSummaryDialog = (resultsList) ->
   .unbind()
   .click ->
     console.log "Calling dialog helper"
-    safariDialogHelper "#modal-project-list", 0, ->
+    safariDialogHelper "#modal-sql-details-list", 0, ->
       console.info "Successfully opened dialog"
       $(".leaflet-control-attribution").attr "hidden", "hidden"
       $(".leaflet-control").attr "hidden", "hidden"
