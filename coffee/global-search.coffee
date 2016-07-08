@@ -896,7 +896,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
         console.warn "Got bad data for row ##{i}!", projectResults, projectResults.rows, data
         continue
       data = """#{data}"""
-      for row in projectResults.rows
+      for n, row of projectResults.rows
         row.carto_table = projectResults.table
         row.project_id = projectResults.project_id
         outputData.push row
