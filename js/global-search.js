@@ -1016,7 +1016,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var data, dataWidthMax, dataWidthMin, error, html, i, j, len, project, projectResults, projectTableRows, rlButton, row, table;
+  var data, dataWidthMax, dataWidthMin, el, error, html, i, j, k, len, len1, project, projectResults, projectTableRows, ref, rlButton, row, table;
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -1049,9 +1049,13 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
-  try {
-    Prism.highlightAll(true);
-  } catch (undefined) {}
+  ref = $(".code-box");
+  for (k = 0, len1 = ref.length; k < len1; k++) {
+    el = ref[k];
+    try {
+      Prism.highlightElement(el, true);
+    } catch (undefined) {}
+  }
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");

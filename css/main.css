@@ -9950,6 +9950,10 @@ copyright-statement {
   font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
   overflow-y: scroll;
 }
+pre.code-box {
+  white-space: pre-wrap;
+  word-wrap: normal;
+}
 td > .code-box {
   height: 8em;
   max-width: 80%;
