@@ -1386,7 +1386,7 @@ downloadCSVFile = (data, options) ->
     $(selector)
     .attr("download", options.downloadFile)
     .attr("href",file)
-  false
+  file
 
 
 linkUsers = (selector = ".is-user") ->
@@ -1527,6 +1527,12 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
   false
 
 
+
+generateCSVFromResults = (resultArray, selector = "#modal-sql-details-list") ->
+  console.info "Given", resultArray
+  file = downloadCSVFile(resultArray)
+  $("#{selector} #download-file").removeAttr "disabled"
+  false
 
 
 $ ->

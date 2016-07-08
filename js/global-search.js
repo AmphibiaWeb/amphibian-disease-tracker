@@ -1016,7 +1016,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var data, dataWidthMax, dataWidthMin, el, error, html, i, j, k, len, len1, project, projectResults, projectTableRows, ref, rlButton, row, table;
+  var data, dataWidthMax, dataWidthMin, el, error, html, i, j, k, l, len, len1, len2, outputData, project, projectResults, projectTableRows, ref, ref1, rlButton, row, table;
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -1026,6 +1026,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   }
   console.log("Generating dialog from", resultsList);
   projectTableRows = new Array();
+  outputData = new Array();
   i = 0;
   for (j = 0, len = resultsList.length; j < len; j++) {
     projectResults = resultsList[j];
@@ -1039,6 +1040,13 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
         continue;
       }
       data = "" + data;
+      ref = projectResults.rows;
+      for (k = 0, len1 = ref.length; k < len1; k++) {
+        row = ref[k];
+        row.carto_table = projectResults.table;
+        row.project_id = projectResults.project_id;
+        outputData.push(row);
+      }
     } catch (error) {
       data = "Invalid data from server";
     }
@@ -1046,16 +1054,17 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <a tabindex=\"-1\" id=\"download-file\">\n      <paper-button disabled>\n        <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n        Download File\n      </paper-button>\n    </a>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
-  ref = $(".code-box");
-  for (k = 0, len1 = ref.length; k < len1; k++) {
-    el = ref[k];
+  ref1 = $(".code-box");
+  for (l = 0, len2 = ref1.length; l < len2; l++) {
+    el = ref1[l];
     try {
       Prism.highlightElement(el, true);
     } catch (undefined) {}
   }
+  generateCSVFromResults(outputData);
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");
