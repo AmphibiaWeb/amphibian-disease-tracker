@@ -928,22 +928,18 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       </div>
     </paper-dialog-scrollable>
     <div class="buttons">
-      <a tabindex="-1" id="download-file">
-        <paper-button disabled>
-          <iron-icon icon="icons:cloud-download"></iron-icon>
-          Download File
-        </paper-button>
-      </a>
+      <paper-button id="generate-download">Create Download</paper-button>
       <paper-button dialog-dismiss>Close</paper-button>
     </div>
   </paper-dialog>
   """
   $("#modal-sql-details-list").remove()
   $("body").append html
+  $("#generate-download").click ->
+    generateCSVFromResults(outputData, this)
   for el in $(".code-box")
     try
-      Prism.highlightElement(el, true)
-  generateCSVFromResults(outputData)
+      Prism.highlightElement(el, true)  
   $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"

@@ -1326,23 +1326,28 @@ downloadCSVFile = (data, options) ->
   headerPlaceholder = new Array()
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
     row = 0
+    if options.objectAsValues
+      options.splitValues = ","
     for key, value of jsonObj
       if typeof value is "function" then continue
       ++row
       # Escape as per RFC4180
       # https://tools.ietf.org/html/rfc4180#page-2
       try
-        escapedKey = key.replace(/"/g,'""')
-        if row is 0
-          unless options.objectAsValues
+        escapedKey = key.toString().replace(/"/g,'""')
+        if row is 1
+          unless options.objectsAsValues
+            console.log "Boring options", options.objectAsValues, options
             headerPlaceholder.push escapedKey
           else
+            console.info "objectAsValues set"
             for col, data of value
               headerPlaceholder.push col
+            console.log "Using as header", headerPlaceholder
         if typeof value is "object" and cascadeObjects
           # Parse it differently
           value = parser(value, true)
-        handleValue = (providedValue = value) ->
+        handleValue = (providedValue = value, providedOptions = options) ->
           # Parse it all
           if isNull value
             escapedValue = ""
@@ -1350,8 +1355,8 @@ downloadCSVFile = (data, options) ->
             providedValue = providedValue.toString()
             tempValue = providedValue.replace(/"/g,'""')
             tempValue = providedValue.replace(/<\/p><p>/g,'","')
-            if typeof options.splitValues is "string"
-              tempValueArr = tempValue.split options.splitValues
+            if typeof providedOptions.splitValues is "string"
+              tempValueArr = tempValue.split providedOptions.splitValues
               tempValue = tempValueArr.join "\",\""
               escapedKey = false
             escapedValue = tempValue
@@ -1369,12 +1374,11 @@ downloadCSVFile = (data, options) ->
         unless options.objectAsValues
           textAsset += handleValue(value)
         else
-          options.splitValues = ","
           tmpRow = new Array()
           for col in headerPlaceholder
             tmpRow.push value[col]
           tmpRowString = tmpRow.join options.splitValues
-          textAsset += handleValue tmpRowString            
+          textAsset += handleValue tmpRowString, options
       catch e
         console.warn "Unable to run key #{key} on row #{row}", value, jsonObj
         console.warn e.stack
@@ -1559,12 +1563,28 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 
 
 
-generateCSVFromResults = (resultArray, selector = "#modal-sql-details-list") ->
+generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-list") ->
+  animateLoad()
+  toastStatusMessage "This may take a few seconds, please wait"
   console.info "Given", resultArray
+  $("#download-file").remove()
+  html = """
+      <a tabindex="-1" id="download-file">
+        <paper-button disabled>
+          <iron-icon icon="icons:cloud-download"></iron-icon>
+          Download File
+        </paper-button>
+      </a>
+  """
+  $(caller).replaceWith html
   options =
     objectAsValues: true
-  file = downloadCSVFile(resultArray, options)
-  $("#{selector} #download-file paper-button").removeAttr "disabled"
+  try
+    file = downloadCSVFile(resultArray, options)
+    $("#{selector} #download-file paper-button").removeAttr "disabled"
+    stopLoad()
+  catch
+    stopLoadError "Sorry, there was a problem with this dataset and we can't do that right now."
   false
 
 

@@ -1054,9 +1054,12 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <a tabindex=\"-1\" id=\"download-file\">\n      <paper-button disabled>\n        <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n        Download File\n      </paper-button>\n    </a>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
+  $("#generate-download").click(function() {
+    return generateCSVFromResults(outputData, this);
+  });
   ref1 = $(".code-box");
   for (k = 0, len1 = ref1.length; k < len1; k++) {
     el = ref1[k];
@@ -1064,7 +1067,6 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
       Prism.highlightElement(el, true);
     } catch (undefined) {}
   }
-  generateCSVFromResults(outputData);
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");
