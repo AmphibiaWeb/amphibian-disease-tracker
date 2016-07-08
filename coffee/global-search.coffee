@@ -884,6 +884,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     return false
   console.log "Generating dialog from", resultsList
   projectTableRows = new Array()
+  outputData = new Array()
   i = 0
   for projectResults in resultsList
     ++i
@@ -895,6 +896,10 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
         console.warn "Got bad data for row ##{i}!", projectResults, projectResults.rows, data
         continue
       data = """#{data}"""
+      for row in projectResults.rows
+        row.carto_table = projectResults.table
+        row.project_id = projectResults.project_id
+        outputData.push row
     catch
       data = "Invalid data from server"
     table =
@@ -923,6 +928,12 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       </div>
     </paper-dialog-scrollable>
     <div class="buttons">
+      <a tabindex="-1" id="download-file">
+        <paper-button disabled>
+          <iron-icon icon="icons:cloud-download"></iron-icon>
+          Download File
+        </paper-button>
+      </a>
       <paper-button dialog-dismiss>Close</paper-button>
     </div>
   </paper-dialog>
@@ -932,6 +943,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   for el in $(".code-box")
     try
       Prism.highlightElement(el, true)
+  generateCSVFromResults(outputData)
   $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"
