@@ -935,7 +935,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     row = """
     <tr>
       <td colspan="4" class="code-box-container"><pre readonly class="code-box language-json" style="max-width:#{dataWidthMax}px;min-width:#{dataWidthMin}px">#{data}</pre></td>
-      <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
+      <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
     projectTableRows.push row
