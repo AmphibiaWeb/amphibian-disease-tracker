@@ -970,7 +970,7 @@ $(function() {
     return false;
   });
   return $("#community-map").on("google-map-ready", function() {
-    var badLat, badLng, boundaryPoints, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
+    var badLat, badLng, boundaryPoints, center, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
     map = p$("#community-map");
     if (_adp.aggregateHulls != null) {
       boundaryPoints = new Array();
@@ -992,6 +992,12 @@ $(function() {
       console.info("Adjusting zoom from " + map.zoom);
       zoom = getMapZoom(boundaryPoints, "#community-map");
       console.info("Calculated new zoom " + zoom);
+      try {
+        center = getMapCenter(boundaryPoints);
+        map.latitude = center.lat;
+        map.longitude = center.lng;
+        console.info("Recentered map");
+      } catch (undefined) {}
       map.zoom = zoom;
     }
     return false;
