@@ -1342,7 +1342,11 @@ downloadCSVFile = (data, options) ->
           else
             console.info "objectAsValues set"
             for col, data of value
-              headerPlaceholder.push col
+              if isArray options.acceptableCols
+                if col in options.acceptableCols
+                  headerPlaceholder.push col
+              else  
+                headerPlaceholder.push col
             console.log "Using as header", headerPlaceholder
         if typeof value is "object" and cascadeObjects
           # Parse it differently
@@ -1581,6 +1585,30 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   $(caller).replaceWith html
   options =
     objectAsValues: true
+    acceptableCols: [
+      "collectionid"
+      "catalognumber"
+      "fieldnumber"
+      "diseasetested"
+      "diseasestrain"
+      "samplemethod"
+      "sampledisposition"
+      "diseasedetected"
+      "fatal"
+      "cladesampled"
+      "genus"
+      "specificepithet"
+      "infraspecificepithet"
+      "lifestage"
+      "dateidentified"
+      "decimallatitude"
+      "decimallongitude"
+      "alt"
+      "coordinateuncertaintyinmeters"
+      "collector"
+      "fimsextra"
+      "originaltaxa"
+      ]
   # TODO migrate this to a Web Worker
   # http://www.html5rocks.com/en/tutorials/workers/basics/
   try

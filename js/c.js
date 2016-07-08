@@ -1786,7 +1786,13 @@ downloadCSVFile = function(data, options) {
             console.info("objectAsValues set");
             for (col in value) {
               data = value[col];
-              headerPlaceholder.push(col);
+              if (isArray(options.acceptableCols)) {
+                if (indexOf.call(options.acceptableCols, col) >= 0) {
+                  headerPlaceholder.push(col);
+                }
+              } else {
+                headerPlaceholder.push(col);
+              }
             }
             console.log("Using as header", headerPlaceholder);
           }
@@ -2048,7 +2054,8 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
   $(caller).replaceWith(html);
   options = {
-    objectAsValues: true
+    objectAsValues: true,
+    acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
   };
   try {
     file = downloadCSVFile(resultArray, options);

@@ -516,30 +516,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
       resetMap geo.lMap, false, false
       resultQueryPile = ""
-      queryPileCols = [
-        "collectionid"
-        "catalognumber"
-        "fieldnumber"
-        "diseasetested"
-        "diseasestrain"
-        "samplemethod"
-        "sampledisposition"
-        "diseasedetected"
-        "fatal"
-        "cladesampled"
-        "genus"
-        "specificepithet"
-        "infraspecificepithet"
-        "lifestage"
-        "dateidentified"
-        "decimallatitude"
-        "decimallongitude"
-        "alt"
-        "coordinateuncertaintyinmeters"
-        "collector"
-        "fimsextra"
-        "originaltaxa"
-        ]
       for layer in layers
         layerSourceObj =
           user_name: cartoAccount
@@ -547,8 +523,10 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           named_map: layer
         createRawCartoMap layerSourceObj
         # Now do an SQL query to get the legitimate results for a
-        # summary dialog        
-        tempQuery = "select #{queryPileCols.join(",")} from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
+        # summary dialog
+        # Different tables may have a different col set, so we have to
+        # select *      
+        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
