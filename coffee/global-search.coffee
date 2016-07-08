@@ -887,21 +887,21 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   i = 0
   for projectResults in resultsList
     ++i
-    dataWidthMax = $(window).width() * .7
-    dataWidthMin = $(window).width() * .4
+    dataWidthMax = $(window).width() * .5
+    dataWidthMin = $(window).width() * .3
     try
       data = JSON.stringify projectResults.rows
       if isNull data
         console.warn "Got bad data for row ##{i}!", projectResults, projectResults.rows, data
         continue
-      data = """<code class="language-json">#{data}</code>"""
+      data = """#{data}"""
     catch
       data = "Invalid data from server"
     table =
     project = tableToProjectMap[projectResults.table]
     row = """
     <tr>
-      <td colspan="4" class="code-box-container"><textarea readonly class="code-box" style="max-width:#{dataWidthMax}px;min-width:#{dataWidthMin}px">#{data}</textarea></td>
+      <td colspan="4" class="code-box-container"><pre readonly class="code-box language-json" style="max-width:#{dataWidthMax}px;min-width:#{dataWidthMin}px">#{data}</pre></td>
       <td class="text-center"><paper-icon-button data-toggle="tooltip" raised class="click" data-href="https://amphibiandisease.org/project.php?id=#{project.project_id}" icon="icons:arrow-forward" title="#{project.name}"></paper-icon-button></td>
     </tr>
     """
