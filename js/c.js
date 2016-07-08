@@ -1717,7 +1717,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, file, header, headerPlaceholer, headerStr, html, id, jsonObject, parser, selector, textAsset;
+  var c, col, file, header, headerPlaceholer, headerStr, html, id, jsonObject, k, l, len, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     console.info("Parsing as JSON string");
@@ -1759,9 +1759,12 @@ downloadCSVFile = function(data, options) {
   if (options.cascadeObjects == null) {
     options.cascadeObjects = false;
   }
+  if (options.objectAsValues == null) {
+    options.objectAsValues = false;
+  }
   headerPlaceholer = new Array();
   (parser = function(jsonObj, cascadeObjects) {
-    var error2, escapedKey, escapedValue, key, results, row, tempValue, tempValueArr, value;
+    var col, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
     row = 0;
     results = [];
     for (key in jsonObj) {
@@ -1773,32 +1776,56 @@ downloadCSVFile = function(data, options) {
       try {
         escapedKey = key.replace(/"/g, '""');
         if (row === 0) {
-          headerPlaceholder.push(escapedKey);
+          if (!options.objectAsValues) {
+            headerPlaceholder.push(escapedKey);
+          } else {
+            for (col in value) {
+              data = value[col];
+              headerPlaceholder.push(col);
+            }
+          }
         }
         if (typeof value === "object" && cascadeObjects) {
           value = parser(value, true);
         }
-        if (isNull(value)) {
-          escapedValue = "";
-        } else {
-          value = value.toString();
-          tempValue = value.replace(/"/g, '""');
-          tempValue = value.replace(/<\/p><p>/g, '","');
-          if (typeof options.splitValues === "string") {
-            tempValueArr = tempValue.split(options.splitValues);
-            tempValue = tempValueArr.join("\",\"");
-            escapedKey = false;
+        handleValue = function(providedValue) {
+          var escapedValue, tempValue, tempValueArr, tmpTextAsset;
+          if (providedValue == null) {
+            providedValue = value;
           }
-          escapedValue = tempValue;
-        }
-        if (escapedKey === false) {
-          results.push(textAsset += "\"" + escapedValue + "\"\n");
-        } else if (isNumber(escapedKey)) {
-          results.push(textAsset += "\"" + escapedValue + "\",");
-        } else if (!isNull(escapedKey)) {
-          results.push(textAsset += "\"" + escapedKey + "\",\"" + escapedValue + "\"\n");
+          if (isNull(value)) {
+            escapedValue = "";
+          } else {
+            providedValue = providedValue.toString();
+            tempValue = providedValue.replace(/"/g, '""');
+            tempValue = providedValue.replace(/<\/p><p>/g, '","');
+            if (typeof options.splitValues === "string") {
+              tempValueArr = tempValue.split(options.splitValues);
+              tempValue = tempValueArr.join("\",\"");
+              escapedKey = false;
+            }
+            escapedValue = tempValue;
+          }
+          if (escapedKey === false) {
+            tmpTextAsset = "\"" + escapedValue + "\"\n";
+          } else if (isNumber(escapedKey)) {
+            tmpTextAsset = "\"" + escapedValue + "\",";
+          } else if (!isNull(escapedKey)) {
+            tmpTextAsset = "\"" + escapedKey + "\",\"" + escapedValue + "\"\n";
+          }
+          return tmpTextAsset;
+        };
+        if (!options.objectAsValues) {
+          results.push(textAsset += handleValue(value));
         } else {
-          results.push(void 0);
+          options.splitValues = ",";
+          tmpRow = new Array();
+          for (l = 0, len = headerPlaceholder.length; l < len; l++) {
+            col = headerPlaceholder[l];
+            tmpRow.push(value[col]);
+          }
+          tmpRowString = tmpRow.join(options.splitValues);
+          results.push(textAsset += handleValue(tmpRowString));
         }
       } catch (error2) {
         e = error2;
@@ -1809,6 +1836,16 @@ downloadCSVFile = function(data, options) {
     return results;
   })(jsonObject, options.cascadeObjects);
   textAsset = textAsset.trim();
+  k = 0;
+  for (l = 0, len = headerPlaceholder.length; l < len; l++) {
+    col = headerPlaceholder[l];
+    col = col.replace(/"/g, '""');
+    headerPlaceholder[k] = col;
+    ++k;
+  }
+  if (options.objectAsValues) {
+    options.header = headerPlaceholder;
+  }
   if (isArray(options.header)) {
     headerStr = options.header.join("\",\"");
     textAsset = "\"" + headerStr + "\"\n" + textAsset;
@@ -1995,10 +2032,10 @@ generateCSVFromResults = function(resultArray, selector) {
   }
   console.info("Given", resultArray);
   options = {
-    cascadeObjects: true
+    objectAsValues: true
   };
   file = downloadCSVFile(resultArray, options);
-  $(selector + " #download-file").removeAttr("disabled");
+  $(selector + " #download-file paper-button").removeAttr("disabled");
   return false;
 };
 
