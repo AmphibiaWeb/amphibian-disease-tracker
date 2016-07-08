@@ -889,6 +889,8 @@ sqlQueryBox = function() {
         e.preventDefault();
       } catch (undefined) {}
       startQuery();
+    } else {
+      Prism.highlightElement(this);
     }
     return false;
   });
