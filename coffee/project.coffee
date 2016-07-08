@@ -798,6 +798,11 @@ sqlQueryBox = ->
     <div id="project-sql-query-box" class="row">
       <h2 class="col-xs-12">Raw Project Queries</h2>
       <textarea class="form-control code col-xs-10 force-center-block" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
+      <div class="col-xs-12">
+        <label class="text-muted col-xs-2" for="interpreted-query">Real Query:</label>
+        <code class="language-sql col-xs-10" id="interpreted-query">
+        </code>
+      </div>
       <div class="col-xs-12 col-sm-9">
         <span class="text-muted" id="query-cheats">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>
       </div>
@@ -827,7 +832,9 @@ sqlQueryBox = ->
         e.preventDefault()
       startQuery()
     else
-      Prism.highlightElement(this)
+      query = formatQuery $(this).val()
+      $("code#interpreted-query").text query
+      Prism.highlightElement($("code#interpreted-query")[0])
     false
   $(".do-sql-query").click ->
     startQuery()
