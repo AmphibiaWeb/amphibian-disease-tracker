@@ -1385,7 +1385,8 @@ downloadCSVFile = (data, options) ->
             dataVal = value[col]
             if typeof dataVal is "object"
               try
-                dataVal = JSON.stringify dataVal                
+                dataVal = JSON.stringify dataVal
+                dataVal = dataVal.replace(/"/g,'""')              
             tmpRow.push dataVal
           tmpRowString = tmpRow.join options.splitValues
           textAsset += handleValue tmpRowString, options

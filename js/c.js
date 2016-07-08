@@ -1843,6 +1843,7 @@ downloadCSVFile = function(data, options) {
             if (typeof dataVal === "object") {
               try {
                 dataVal = JSON.stringify(dataVal);
+                dataVal = dataVal.replace(/"/g, '""');
               } catch (undefined) {}
             }
             tmpRow.push(dataVal);
