@@ -897,7 +897,7 @@ sqlQueryBox = function() {
     } else {
       query = formatQuery($(this).val(), true);
       $("code#interpreted-query").text(query);
-      Prism.highlightElement($("code#interpreted-query")[0]);
+      Prism.highlightElement($("code#interpreted-query")[0], true);
     }
     return false;
   });
