@@ -850,12 +850,17 @@ sqlQueryBox = function() {
     });
     return false;
   };
-  formatQuery = function(rawQuery) {
+  formatQuery = function(rawQuery, dontReplace) {
     var lowQuery, query;
+    if (dontReplace == null) {
+      dontReplace = false;
+    }
     lowQuery = rawQuery.trim();
     query = lowQuery.replace(/@@/mig, _adp.cartoDataParsed.table);
     query = query.replace(/!@/mig, "SELECT * FROM " + _adp.cartoDataParsed.table);
-    $("#query-input").val(query);
+    if (!dontReplace) {
+      $("#query-input").val(query);
+    }
     return query;
   };
   queryResultDialog = function() {
@@ -890,7 +895,7 @@ sqlQueryBox = function() {
       } catch (undefined) {}
       startQuery();
     } else {
-      query = formatQuery($(this).val());
+      query = formatQuery($(this).val(), true);
       $("code#interpreted-query").text(query);
       Prism.highlightElement($("code#interpreted-query")[0]);
     }

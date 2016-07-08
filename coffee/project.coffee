@@ -779,14 +779,15 @@ sqlQueryBox = ->
       $(".do-sql-query").removeAttr "disabled"
       stopLoadError()
     false
-  formatQuery = (rawQuery) ->
+  formatQuery = (rawQuery, dontReplace = false) ->
     # # Lower-caseify
     # lowQuery = rawQuery.trim().toLowerCase()
     lowQuery = rawQuery.trim()
     # Replace "@@" with TABLENAME
     query = lowQuery.replace /@@/mig, _adp.cartoDataParsed.table
     query = query.replace /!@/mig, "SELECT * FROM #{_adp.cartoDataParsed.table}"
-    $("#query-input").val query
+    unless dontReplace
+      $("#query-input").val query
     query
   queryResultDialog = ->
     false
@@ -832,7 +833,7 @@ sqlQueryBox = ->
         e.preventDefault()
       startQuery()
     else
-      query = formatQuery $(this).val()
+      query = formatQuery $(this).val(), true
       $("code#interpreted-query").text query
       Prism.highlightElement($("code#interpreted-query")[0])
     false
