@@ -928,6 +928,10 @@ $ ->
       for hull in hulls
         points = Object.toArray hull
         for point in points
+          badLat = isNull(point.lat) or Math.abs(point.lat) is 90
+          badLng = isNull(point.lng) or Math.abs(point.lng) is 180
+          if badLat or badLng
+            continue
           p = new Point point.lat, point.lng
           boundaryPoints.push p
       console.info "Adjusting zoom from #{map.zoom}"

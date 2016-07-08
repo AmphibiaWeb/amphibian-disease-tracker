@@ -970,7 +970,7 @@ $(function() {
     return false;
   });
   return $("#community-map").on("google-map-ready", function() {
-    var boundaryPoints, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
+    var badLat, badLng, boundaryPoints, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
     map = p$("#community-map");
     if (_adp.aggregateHulls != null) {
       boundaryPoints = new Array();
@@ -980,6 +980,11 @@ $(function() {
         points = Object.toArray(hull);
         for (l = 0, len1 = points.length; l < len1; l++) {
           point = points[l];
+          badLat = isNull(point.lat) || Math.abs(point.lat) === 90;
+          badLng = isNull(point.lng) || Math.abs(point.lng) === 180;
+          if (badLat || badLng) {
+            continue;
+          }
           p = new Point(point.lat, point.lng);
           boundaryPoints.push(p);
         }
