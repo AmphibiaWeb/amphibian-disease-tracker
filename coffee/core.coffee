@@ -1336,7 +1336,7 @@ downloadCSVFile = (data, options) ->
       try
         escapedKey = key.toString().replace(/"/g,'""')
         if row is 1
-          unless options.objectsAsValues
+          unless options.objectAsValues
             console.log "Boring options", options.objectAsValues, options
             headerPlaceholder.push escapedKey
           else
