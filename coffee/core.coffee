@@ -1327,7 +1327,7 @@ downloadCSVFile = (data, options) ->
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
     row = 0
     if options.objectAsValues
-      options.splitValues = ","
+      options.splitValues = "::@@::"
     for key, value of jsonObj
       if typeof value is "function" then continue
       ++row

@@ -1767,7 +1767,7 @@ downloadCSVFile = function(data, options) {
     var col, dataVal, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
     row = 0;
     if (options.objectAsValues) {
-      options.splitValues = ",";
+      options.splitValues = "::@@::";
     }
     results = [];
     for (key in jsonObj) {
