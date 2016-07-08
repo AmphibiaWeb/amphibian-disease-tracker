@@ -1717,7 +1717,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, col, file, header, headerPlaceholer, headerStr, html, id, jsonObject, k, l, len, parser, selector, textAsset;
+  var c, col, file, header, headerPlaceholder, headerStr, html, id, jsonObject, k, l, len, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     console.info("Parsing as JSON string");
@@ -1762,7 +1762,7 @@ downloadCSVFile = function(data, options) {
   if (options.objectAsValues == null) {
     options.objectAsValues = false;
   }
-  headerPlaceholer = new Array();
+  headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
     var col, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
     row = 0;

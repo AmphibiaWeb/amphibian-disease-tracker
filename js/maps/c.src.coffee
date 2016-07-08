@@ -1323,7 +1323,7 @@ downloadCSVFile = (data, options) ->
   options.cascadeObjects ?= false
   options.objectAsValues ?= false
   # Parse it
-  headerPlaceholer = new Array()
+  headerPlaceholder = new Array()
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
     row = 0
     for key, value of jsonObj
