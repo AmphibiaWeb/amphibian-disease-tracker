@@ -2007,12 +2007,13 @@ fetchCitation = function(citationQuery, callback) {
       authors.push(authorString);
       ++i;
       if (i > 2) {
+        ++i;
         authors.push("et al");
         break;
       }
-      if (i === 2) {
-        authorJoin = " and ";
-      }
+    }
+    if (i === 2) {
+      authorJoin = " and ";
     }
     published = (ref1 = (ref2 = (ref3 = j["published-print"]) != null ? (ref4 = ref3["date-parts"]) != null ? (ref5 = ref4[0]) != null ? ref5[0] : void 0 : void 0 : void 0) != null ? ref2 : (ref6 = j["published-online"]) != null ? (ref7 = ref6["date-parts"]) != null ? (ref8 = ref7[0]) != null ? ref8[0] : void 0 : void 0 : void 0) != null ? ref1 : "In press";
     issue = j.issue != null ? "(" + j.issue + ")" : "";

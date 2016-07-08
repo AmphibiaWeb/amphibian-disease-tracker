@@ -1541,10 +1541,11 @@ fetchCitation = (citationQuery, callback) ->
       authors.push authorString
       ++i
       if i > 2
+        ++i
         authors.push "et al"        
         break
-      if i is 2
-        authorJoin = " and "
+    if i is 2
+      authorJoin = " and "
     published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
     issue = if j.issue? then "(#{j.issue})" else ""
     try
