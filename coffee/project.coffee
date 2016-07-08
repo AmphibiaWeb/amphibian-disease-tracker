@@ -770,7 +770,7 @@ sqlQueryBox = ->
         output += "\n\n"
       $("#query-immediate-result").html output
       try
-        Prism.highlightAll()
+        Prism.highlightAll(true)
       $(".do-sql-query").removeAttr "disabled"
       stopLoad()
       false

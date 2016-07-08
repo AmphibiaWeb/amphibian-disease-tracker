@@ -838,7 +838,7 @@ sqlQueryBox = function() {
       }
       $("#query-immediate-result").html(output);
       try {
-        Prism.highlightAll();
+        Prism.highlightAll(true);
       } catch (undefined) {}
       $(".do-sql-query").removeAttr("disabled");
       stopLoad();
