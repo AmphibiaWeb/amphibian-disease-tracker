@@ -1766,6 +1766,9 @@ downloadCSVFile = function(data, options) {
   (parser = function(jsonObj, cascadeObjects) {
     var col, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
     row = 0;
+    if (options.objectAsValues) {
+      options.splitValues = ",";
+    }
     results = [];
     for (key in jsonObj) {
       value = jsonObj[key];
@@ -1774,24 +1777,30 @@ downloadCSVFile = function(data, options) {
       }
       ++row;
       try {
-        escapedKey = key.replace(/"/g, '""');
-        if (row === 0) {
-          if (!options.objectAsValues) {
+        escapedKey = key.toString().replace(/"/g, '""');
+        if (row === 1) {
+          if (!options.objectsAsValues) {
+            console.log("Boring options", options.objectAsValues, options);
             headerPlaceholder.push(escapedKey);
           } else {
+            console.info("objectAsValues set");
             for (col in value) {
               data = value[col];
               headerPlaceholder.push(col);
             }
+            console.log("Using as header", headerPlaceholder);
           }
         }
         if (typeof value === "object" && cascadeObjects) {
           value = parser(value, true);
         }
-        handleValue = function(providedValue) {
+        handleValue = function(providedValue, providedOptions) {
           var escapedValue, tempValue, tempValueArr, tmpTextAsset;
           if (providedValue == null) {
             providedValue = value;
+          }
+          if (providedOptions == null) {
+            providedOptions = options;
           }
           if (isNull(value)) {
             escapedValue = "";
@@ -1799,8 +1808,8 @@ downloadCSVFile = function(data, options) {
             providedValue = providedValue.toString();
             tempValue = providedValue.replace(/"/g, '""');
             tempValue = providedValue.replace(/<\/p><p>/g, '","');
-            if (typeof options.splitValues === "string") {
-              tempValueArr = tempValue.split(options.splitValues);
+            if (typeof providedOptions.splitValues === "string") {
+              tempValueArr = tempValue.split(providedOptions.splitValues);
               tempValue = tempValueArr.join("\",\"");
               escapedKey = false;
             }
@@ -1818,14 +1827,13 @@ downloadCSVFile = function(data, options) {
         if (!options.objectAsValues) {
           results.push(textAsset += handleValue(value));
         } else {
-          options.splitValues = ",";
           tmpRow = new Array();
           for (l = 0, len = headerPlaceholder.length; l < len; l++) {
             col = headerPlaceholder[l];
             tmpRow.push(value[col]);
           }
           tmpRowString = tmpRow.join(options.splitValues);
-          results.push(textAsset += handleValue(tmpRowString));
+          results.push(textAsset += handleValue(tmpRowString, options));
         }
       } catch (error2) {
         e = error2;
@@ -2025,17 +2033,27 @@ cancelAsyncOperation = function(caller, asyncOperation) {
   return false;
 };
 
-generateCSVFromResults = function(resultArray, selector) {
-  var file, options;
+generateCSVFromResults = function(resultArray, caller, selector) {
+  var error2, file, html, options;
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
+  animateLoad();
+  toastStatusMessage("This may take a few seconds, please wait");
   console.info("Given", resultArray);
+  $("#download-file").remove();
+  html = "<a tabindex=\"-1\" id=\"download-file\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
+  $(caller).replaceWith(html);
   options = {
     objectAsValues: true
   };
-  file = downloadCSVFile(resultArray, options);
-  $(selector + " #download-file paper-button").removeAttr("disabled");
+  try {
+    file = downloadCSVFile(resultArray, options);
+    $(selector + " #download-file paper-button").removeAttr("disabled");
+    stopLoad();
+  } catch (error2) {
+    stopLoadError("Sorry, there was a problem with this dataset and we can't do that right now.");
+  }
   return false;
 };
 

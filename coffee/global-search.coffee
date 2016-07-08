@@ -928,22 +928,18 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       </div>
     </paper-dialog-scrollable>
     <div class="buttons">
-      <a tabindex="-1" id="download-file">
-        <paper-button disabled>
-          <iron-icon icon="icons:cloud-download"></iron-icon>
-          Download File
-        </paper-button>
-      </a>
+      <paper-button id="generate-download">Create Download</paper-button>
       <paper-button dialog-dismiss>Close</paper-button>
     </div>
   </paper-dialog>
   """
   $("#modal-sql-details-list").remove()
   $("body").append html
+  $("#generate-download").click ->
+    generateCSVFromResults(outputData, this)
   for el in $(".code-box")
     try
-      Prism.highlightElement(el, true)
-  generateCSVFromResults(outputData)
+      Prism.highlightElement(el, true)  
   $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"
@@ -956,6 +952,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   $(".show-result-list")
   .unbind()
   .click ->
+    animateLoad()
     startTime = Date.now()
     console.log "Calling dialog helper"
     safariDialogHelper "#modal-sql-details-list", 0, ->
@@ -963,6 +960,22 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       console.info "Successfully opened dialog in #{elapsed}ms via safariDialogHelper"
       $(".leaflet-control-attribution").attr "hidden", "hidden"
       $(".leaflet-control").attr "hidden", "hidden"
+      i = 0
+      timeout = 100
+      maxTime = 30000
+      do checkIsVisible = ->
+        delay timeout, ->
+          ++i
+          if (i * timeout) < maxTime and not $("#modal-sql-details-list").isVisible()
+            checkIsVisbile()
+          else
+            stopLoad()
+            appxTime = (timeout * i) - (timeout / 2) + elapsed
+            if appxTime > 500
+              console.warn "It took about #{appxTime}ms to render the dialog visible!"
+            else
+              console.info "Dialog ready in about #{appxTime}ms"
+        
   bindClicks()
   console.info "Generated project result list"
   false

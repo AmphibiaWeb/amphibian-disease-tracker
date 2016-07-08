@@ -1054,9 +1054,12 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.project_id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <a tabindex=\"-1\" id=\"download-file\">\n      <paper-button disabled>\n        <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n        Download File\n      </paper-button>\n    </a>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
+  $("#generate-download").click(function() {
+    return generateCSVFromResults(outputData, this);
+  });
   ref1 = $(".code-box");
   for (k = 0, len1 = ref1.length; k < len1; k++) {
     el = ref1[k];
@@ -1064,7 +1067,6 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
       Prism.highlightElement(el, true);
     } catch (undefined) {}
   }
-  generateCSVFromResults(outputData);
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");
@@ -1074,14 +1076,35 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   $("#post-map-subtitle").append(rlButton);
   $(".show-result-list").unbind().click(function() {
     var startTime;
+    animateLoad();
     startTime = Date.now();
     console.log("Calling dialog helper");
     return safariDialogHelper("#modal-sql-details-list", 0, function() {
-      var elapsed;
+      var checkIsVisible, elapsed, maxTime, timeout;
       elapsed = Date.now() - startTime;
       console.info("Successfully opened dialog in " + elapsed + "ms via safariDialogHelper");
       $(".leaflet-control-attribution").attr("hidden", "hidden");
-      return $(".leaflet-control").attr("hidden", "hidden");
+      $(".leaflet-control").attr("hidden", "hidden");
+      i = 0;
+      timeout = 100;
+      maxTime = 30000;
+      return (checkIsVisible = function() {
+        return delay(timeout, function() {
+          var appxTime;
+          ++i;
+          if ((i * timeout) < maxTime && !$("#modal-sql-details-list").isVisible()) {
+            return checkIsVisbile();
+          } else {
+            stopLoad();
+            appxTime = (timeout * i) - (timeout / 2) + elapsed;
+            if (appxTime > 500) {
+              return console.warn("It took about " + appxTime + "ms to render the dialog visible!");
+            } else {
+              return console.info("Dialog ready in about " + appxTime + "ms");
+            }
+          }
+        });
+      })();
     });
   });
   bindClicks();
