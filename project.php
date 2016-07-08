@@ -367,7 +367,7 @@ $loginStatus = getLoginState();
             <paper-radio-button name="names" data-cols="project_id,project_title" data-cue="Project ID or name...">
               Project Names &amp; IDs
             </paper-radio-button>
-            <paper-radio-button name="users" data-cols="author_data" data-cue="Name or email...">
+            <paper-radio-button name="users" data-cols="author_data,pi_lab" data-cue="Name or email...">
               PIs, Labs, Creators, Affiliation
             </paper-radio-button>
             <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
