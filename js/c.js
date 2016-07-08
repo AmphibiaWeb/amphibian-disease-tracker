@@ -1779,7 +1779,7 @@ downloadCSVFile = function(data, options) {
       try {
         escapedKey = key.toString().replace(/"/g, '""');
         if (row === 1) {
-          if (!options.objectsAsValues) {
+          if (!options.objectAsValues) {
             console.log("Boring options", options.objectAsValues, options);
             headerPlaceholder.push(escapedKey);
           } else {
