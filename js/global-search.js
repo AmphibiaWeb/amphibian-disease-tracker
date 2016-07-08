@@ -1016,7 +1016,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var data, dataWidthMax, dataWidthMin, el, error, html, i, j, k, l, len, len1, len2, outputData, project, projectResults, projectTableRows, ref, ref1, rlButton, row, table;
+  var data, dataWidthMax, dataWidthMin, el, error, html, i, j, k, len, len1, n, outputData, project, projectResults, projectTableRows, ref, ref1, rlButton, row, table;
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -1041,8 +1041,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
       }
       data = "" + data;
       ref = projectResults.rows;
-      for (k = 0, len1 = ref.length; k < len1; k++) {
-        row = ref[k];
+      for (n in ref) {
+        row = ref[n];
         row.carto_table = projectResults.table;
         row.project_id = projectResults.project_id;
         outputData.push(row);
@@ -1058,8 +1058,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   $("#modal-sql-details-list").remove();
   $("body").append(html);
   ref1 = $(".code-box");
-  for (l = 0, len2 = ref1.length; l < len2; l++) {
-    el = ref1[l];
+  for (k = 0, len1 = ref1.length; k < len1; k++) {
+    el = ref1[k];
     try {
       Prism.highlightElement(el, true);
     } catch (undefined) {}
