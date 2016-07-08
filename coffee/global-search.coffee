@@ -525,7 +525,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         # Now do an SQL query to get the legitimate results for a
         # summary dialog
         # Different tables may have a different col set, so we have to
-        # select *      
+        # select *
         tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
         resultQueryPile += tempQuery
       # Label the subtext
@@ -872,6 +872,9 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   ###
   # Show a SQL-query like dataset in a modal dialog
   #
+  # TODO migrate this to a Web Worker
+  # http://www.html5rocks.com/en/tutorials/workers/basics/
+  #
   # See
   # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
   #
@@ -879,6 +882,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   #   in "rows" field
   # @param object tableToProjectMap -> Map the table name onto project id
   ###
+  startRenderTime = Date.now()
   unless isArray resultsList
     resultsList = Object.toArray resultsList
   if resultsList.length is 0
@@ -888,20 +892,42 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   projectTableRows = new Array()
   outputData = new Array()
   i = 0
+  unhelpfulCols = [
+    "cartodb_id"
+    "the_geom"
+    "the_geom_webmercator"
+    "id"
+    ]
   for projectResults in resultsList
     ++i
     dataWidthMax = $(window).width() * .5
     dataWidthMin = $(window).width() * .3
     try
-      data = JSON.stringify projectResults.rows
+      rowSet = projectResults.rows
+      try
+        # Clean up the provided view
+        altRows = new Object()
+        for n, row of projectResults.rows
+          # Remove the useless-to-people cols
+          for col in unhelpfulCols
+            delete row[col]
+          altRows[n] = row
+          # Add a few others for the CSV download
+          row.carto_table = projectResults.table
+          row.project_id = projectResults.project_id
+          outputData.push row
+        rowSet = altRows
+      catch
+        # Make sure we have the dat for the CSV download
+        for n, row of projectResults.rows
+          row.carto_table = projectResults.table
+          row.project_id = projectResults.project_id
+          outputData.push row
+      data = JSON.stringify rowSet
       if isNull data
         console.warn "Got bad data for row ##{i}!", projectResults, projectResults.rows, data
         continue
       data = """#{data}"""
-      for n, row of projectResults.rows
-        row.carto_table = projectResults.table
-        row.project_id = projectResults.project_id
-        outputData.push row
     catch
       data = "Invalid data from server"
     table =
@@ -941,7 +967,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     generateCSVFromResults(outputData, this)
   for el in $(".code-box")
     try
-      Prism.highlightElement(el, true)  
+      Prism.highlightElement(el, true)
   $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"
@@ -969,7 +995,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
         delay timeout, ->
           ++i
           if (i * timeout) < maxTime and not $("#modal-sql-details-list").isVisible()
-            checkIsVisbile()
+            checkIsVisible()
           else
             stopLoad()
             appxTime = (timeout * i) - (timeout / 2) + elapsed
@@ -977,9 +1003,10 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
               console.warn "It took about #{appxTime}ms to render the dialog visible!"
             else
               console.info "Dialog ready in about #{appxTime}ms"
-        
+
   bindClicks()
-  console.info "Generated project result list"
+  elapsed = Date.now() - startRenderTime
+  console.info "Generated project result list in #{elapsed}ms"
   false
 
 
