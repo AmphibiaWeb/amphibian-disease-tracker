@@ -1325,7 +1325,7 @@ downloadCSVFile = (data, options) ->
       ++row
       # Escape as per RFC4180
       # https://tools.ietf.org/html/rfc4180#page-2
-      try
+      try        
         escapedKey = key.replace(/"/g,'""')
 
         if typeof value is "object" and cascadeObjects
@@ -1335,6 +1335,7 @@ downloadCSVFile = (data, options) ->
         if isNull value
           escapedValue = ""
         else
+          value = value.toString()
           tempValue = value.replace(/"/g,'""')
           tempValue = value.replace(/<\/p><p>/g,'","')
           if typeof options.splitValues is "string"
