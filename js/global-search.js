@@ -1009,6 +1009,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   /*
    * Show a SQL-query like dataset in a modal dialog
    *
+   * TODO migrate this to a Web Worker
+   * http://www.html5rocks.com/en/tutorials/workers/basics/
+   *
    * See
    * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/146
    *
@@ -1016,7 +1019,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var data, dataWidthMax, dataWidthMin, el, error, html, i, j, k, len, len1, n, outputData, project, projectResults, projectTableRows, ref, ref1, rlButton, row, table;
+  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, project, projectResults, projectTableRows, ref, ref1, ref2, rlButton, row, rowSet, startRenderTime, table, unhelpfulCols;
+  startRenderTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -1028,26 +1032,45 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   projectTableRows = new Array();
   outputData = new Array();
   i = 0;
+  unhelpfulCols = ["cartodb_id", "the_geom", "the_geom_webmercator", "id"];
   for (j = 0, len = resultsList.length; j < len; j++) {
     projectResults = resultsList[j];
     ++i;
     dataWidthMax = $(window).width() * .5;
     dataWidthMin = $(window).width() * .3;
     try {
-      data = JSON.stringify(projectResults.rows);
+      rowSet = projectResults.rows;
+      try {
+        altRows = new Object();
+        ref = projectResults.rows;
+        for (n in ref) {
+          row = ref[n];
+          for (k = 0, len1 = unhelpfulCols.length; k < len1; k++) {
+            col = unhelpfulCols[k];
+            delete row[col];
+          }
+          altRows[n] = row;
+          row.carto_table = projectResults.table;
+          row.project_id = projectResults.project_id;
+          outputData.push(row);
+        }
+        rowSet = altRows;
+      } catch (error) {
+        ref1 = projectResults.rows;
+        for (n in ref1) {
+          row = ref1[n];
+          row.carto_table = projectResults.table;
+          row.project_id = projectResults.project_id;
+          outputData.push(row);
+        }
+      }
+      data = JSON.stringify(rowSet);
       if (isNull(data)) {
         console.warn("Got bad data for row #" + i + "!", projectResults, projectResults.rows, data);
         continue;
       }
       data = "" + data;
-      ref = projectResults.rows;
-      for (n in ref) {
-        row = ref[n];
-        row.carto_table = projectResults.table;
-        row.project_id = projectResults.project_id;
-        outputData.push(row);
-      }
-    } catch (error) {
+    } catch (error1) {
       data = "Invalid data from server";
     }
     table = project = tableToProjectMap[projectResults.table];
@@ -1060,9 +1083,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   $("#generate-download").click(function() {
     return generateCSVFromResults(outputData, this);
   });
-  ref1 = $(".code-box");
-  for (k = 0, len1 = ref1.length; k < len1; k++) {
-    el = ref1[k];
+  ref2 = $(".code-box");
+  for (l = 0, len2 = ref2.length; l < len2; l++) {
+    el = ref2[l];
     try {
       Prism.highlightElement(el, true);
     } catch (undefined) {}
@@ -1093,7 +1116,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
           var appxTime;
           ++i;
           if ((i * timeout) < maxTime && !$("#modal-sql-details-list").isVisible()) {
-            return checkIsVisbile();
+            return checkIsVisible();
           } else {
             stopLoad();
             appxTime = (timeout * i) - (timeout / 2) + elapsed;
@@ -1108,7 +1131,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     });
   });
   bindClicks();
-  console.info("Generated project result list");
+  elapsed = Date.now() - startRenderTime;
+  console.info("Generated project result list in " + elapsed + "ms");
   return false;
 };
 
