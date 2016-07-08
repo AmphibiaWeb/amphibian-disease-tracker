@@ -1771,6 +1771,7 @@ downloadCSVFile = function(data, options) {
         if (isNull(value)) {
           escapedValue = "";
         } else {
+          value = value.toString();
           tempValue = value.replace(/"/g, '""');
           tempValue = value.replace(/<\/p><p>/g, '","');
           if (typeof options.splitValues === "string") {
