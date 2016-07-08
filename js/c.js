@@ -1966,14 +1966,29 @@ linkUsers = function(selector) {
 fetchCitation = function(citationQuery, callback) {
 
   /*
+   * Fetch and format a citation. Uses CrossRef API:
    * https://github.com/CrossRef/rest-api-doc/blob/master/rest_api.md
+   *
+   * Output format should be Proceedings B style:
+   * https://www.zotero.org/styles/proceedings-of-the-royal-society-b?source=1
+   * http://rspb.royalsocietypublishing.org/faq#question1
+   *
+   * Example:
+   *
+   * Oneal E, Knowles LL. 2012 Ecological selection as the cause and sexual differentiation as the consequence of species divergence? Proc R Soc B 280: 20122236; doi: 10.1098/rspb.2012.2236
+   *
+   * @param string citationQuery -> pre-formatted string for the
+   *   CrossRef API.
+   * @param function callback -> callback for the citation. Callback
+   *   provided with  the citation as arg1, then the PDF URL as arg2.
    */
   var eQ, postUrl, totalUrl;
   postUrl = "https://api.crossref.org/works/";
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorString, authors, citation, error2, givenPart, i, initials, initialsArray, issue, j, l, len, len1, m, n, published, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+    var author, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, givenPart, i, initials, initialsArray, issue, j, l, len, len1, m, n, published, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+    console.info("Citation base", result);
     j = result.message;
     authors = new Array();
     i = 0;
@@ -1998,9 +2013,17 @@ fetchCitation = function(citationQuery, callback) {
     published = (ref1 = (ref2 = (ref3 = j["published-print"]) != null ? (ref4 = ref3["date-parts"]) != null ? (ref5 = ref4[0]) != null ? ref5[0] : void 0 : void 0 : void 0) != null ? ref2 : (ref6 = j["published-online"]) != null ? (ref7 = ref6["date-parts"]) != null ? (ref8 = ref7[0]) != null ? ref8[0] : void 0 : void 0 : void 0) != null ? ref1 : "In press";
     issue = j.issue != null ? "(" + j.issue + ")" : "";
     try {
-      citation = (authors.join(", ")) + ". " + j.title[0] + ". " + j["container-title"][0] + " " + published + ";" + j.volume + issue + ":" + j.page + ".";
-    } catch (error2) {
-      e = error2;
+      try {
+        doi = j.DOI;
+        doiNumbers = doi.replace(/[^0-9]/mg, "");
+        doiContinuous = doiNumbers.slice(-8);
+        continuous = " " + doiContinuous + "; doi: " + doi;
+      } catch (error2) {
+        continuous = j.page;
+      }
+      citation = (authors.join(", ")) + ". " + published + " " + j.title[0] + ". " + j["container-title"][0] + " " + j.volume + issue + ":" + continuous + ".";
+    } catch (error3) {
+      e = error3;
       console.warn("Couldn't generate full citation");
       console.warn(j);
       citation = (authors.join(", ")) + ". " + j.title[0] + ". " + j["container-title"][0] + ". In press.";
