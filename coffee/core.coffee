@@ -1530,6 +1530,7 @@ fetchCitation = (citationQuery, callback) ->
     j = result.message
     authors = new Array()
     i = 0
+    authorJoin = ", "
     for author in j.author
       initialsArray = author.given.split " "
       initials = ""
@@ -1540,8 +1541,10 @@ fetchCitation = (citationQuery, callback) ->
       authors.push authorString
       ++i
       if i > 2
-        authors.push "et al"
+        authors.push "et al"        
         break
+      if i is 2
+        authorJoin = " and "
     published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
     issue = if j.issue? then "(#{j.issue})" else ""
     try
@@ -1552,9 +1555,9 @@ fetchCitation = (citationQuery, callback) ->
         continuous = " #{doiContinuous}; doi: #{doi}"
       catch
         # Go classic 
-        continuous = j.page
+        continuous = "#{j.page}."
       citation = """
-      #{authors.join(", ")}. #{published} #{j.title[0]}. #{j["container-title"][0]} #{j.volume}#{issue}:#{continuous}.
+      #{authors.join(authorJoin)}. #{published} #{j.title[0]}. #{j["container-title"][0]} #{j.volume}#{issue}:#{continuous}
       """
     catch e
       console.warn "Couldn't generate full citation"
