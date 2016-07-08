@@ -937,5 +937,10 @@ $ ->
       console.info "Adjusting zoom from #{map.zoom}"
       zoom = getMapZoom boundaryPoints, "#community-map"
       console.info "Calculated new zoom #{zoom}"
+      try
+        center = getMapCenter(boundaryPoints)
+        map.latitude = center.lat
+        map.longitude = center.lng
+        console.info "Recentered map"
       map.zoom = zoom
     false
