@@ -929,8 +929,9 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   """
   $("#modal-sql-details-list").remove()
   $("body").append html
-  try
-    Prism.highlightAll(true)
+  for el in $(".code-box")
+    try
+      Prism.highlightElement(el, true)
   $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"
