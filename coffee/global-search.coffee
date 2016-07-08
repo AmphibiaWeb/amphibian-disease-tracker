@@ -952,6 +952,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   $(".show-result-list")
   .unbind()
   .click ->
+    animateLoad()
     startTime = Date.now()
     console.log "Calling dialog helper"
     safariDialogHelper "#modal-sql-details-list", 0, ->
@@ -968,6 +969,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
           if (i * timeout) < maxTime and not $("#modal-sql-details-list").isVisible()
             checkIsVisbile()
           else
+            stopLoad()
             appxTime = (timeout * i) - (timeout / 2) + elapsed
             if appxTime > 500
               console.warn "It took about #{appxTime}ms to render the dialog visible!"

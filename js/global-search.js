@@ -1076,6 +1076,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   $("#post-map-subtitle").append(rlButton);
   $(".show-result-list").unbind().click(function() {
     var startTime;
+    animateLoad();
     startTime = Date.now();
     console.log("Calling dialog helper");
     return safariDialogHelper("#modal-sql-details-list", 0, function() {
@@ -1094,6 +1095,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
           if ((i * timeout) < maxTime && !$("#modal-sql-details-list").isVisible()) {
             return checkIsVisbile();
           } else {
+            stopLoad();
             appxTime = (timeout * i) - (timeout / 2) + elapsed;
             if (appxTime > 500) {
               return console.warn("It took about " + appxTime + "ms to render the dialog visible!");
