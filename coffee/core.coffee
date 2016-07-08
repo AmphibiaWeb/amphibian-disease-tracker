@@ -1382,7 +1382,11 @@ downloadCSVFile = (data, options) ->
         else
           tmpRow = new Array()
           for col in headerPlaceholder
-            tmpRow.push value[col]
+            dataVal = value[col]
+            if typeof dataVal is "object"
+              try
+                dataVal = JSON.stringify dataVal                
+            tmpRow.push dataVal
           tmpRowString = tmpRow.join options.splitValues
           textAsset += handleValue tmpRowString, options
       catch e

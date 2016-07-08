@@ -1764,7 +1764,7 @@ downloadCSVFile = function(data, options) {
   }
   headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
-    var col, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
+    var col, dataVal, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
     row = 0;
     if (options.objectAsValues) {
       options.splitValues = ",";
@@ -1839,7 +1839,13 @@ downloadCSVFile = function(data, options) {
           tmpRow = new Array();
           for (l = 0, len = headerPlaceholder.length; l < len; l++) {
             col = headerPlaceholder[l];
-            tmpRow.push(value[col]);
+            dataVal = value[col];
+            if (typeof dataVal === "object") {
+              try {
+                dataVal = JSON.stringify(dataVal);
+              } catch (undefined) {}
+            }
+            tmpRow.push(dataVal);
           }
           tmpRowString = tmpRow.join(options.splitValues);
           results.push(textAsset += handleValue(tmpRowString, options));
