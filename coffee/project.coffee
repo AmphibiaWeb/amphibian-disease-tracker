@@ -826,6 +826,8 @@ sqlQueryBox = ->
       try
         e.preventDefault()
       startQuery()
+    else
+      Prism.highlightElement(this)
     false
   $(".do-sql-query").click ->
     startQuery()
