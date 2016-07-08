@@ -1079,11 +1079,30 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     startTime = Date.now();
     console.log("Calling dialog helper");
     return safariDialogHelper("#modal-sql-details-list", 0, function() {
-      var elapsed;
+      var checkIsVisible, elapsed, maxTime, timeout;
       elapsed = Date.now() - startTime;
       console.info("Successfully opened dialog in " + elapsed + "ms via safariDialogHelper");
       $(".leaflet-control-attribution").attr("hidden", "hidden");
-      return $(".leaflet-control").attr("hidden", "hidden");
+      $(".leaflet-control").attr("hidden", "hidden");
+      i = 0;
+      timeout = 100;
+      maxTime = 30000;
+      return (checkIsVisible = function() {
+        return delay(timeout, function() {
+          var appxTime;
+          ++i;
+          if ((i * timeout) < maxTime && !$("#modal-sql-details-list").isVisible()) {
+            return checkIsVisbile();
+          } else {
+            appxTime = (timeout * i) - (timeout / 2) + elapsed;
+            if (appxTime > 500) {
+              return console.warn("It took about " + appxTime + "ms to render the dialog visible!");
+            } else {
+              return console.info("Dialog ready in about " + appxTime + "ms");
+            }
+          }
+        });
+      })();
     });
   });
   bindClicks();

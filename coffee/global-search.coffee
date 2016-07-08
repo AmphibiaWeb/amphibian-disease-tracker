@@ -959,6 +959,21 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       console.info "Successfully opened dialog in #{elapsed}ms via safariDialogHelper"
       $(".leaflet-control-attribution").attr "hidden", "hidden"
       $(".leaflet-control").attr "hidden", "hidden"
+      i = 0
+      timeout = 100
+      maxTime = 30000
+      do checkIsVisible = ->
+        delay timeout, ->
+          ++i
+          if (i * timeout) < maxTime and not $("#modal-sql-details-list").isVisible()
+            checkIsVisbile()
+          else
+            appxTime = (timeout * i) - (timeout / 2) + elapsed
+            if appxTime > 500
+              console.warn "It took about #{appxTime}ms to render the dialog visible!"
+            else
+              console.info "Dialog ready in about #{appxTime}ms"
+        
   bindClicks()
   console.info "Generated project result list"
   false
