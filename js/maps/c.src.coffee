@@ -1505,13 +1505,28 @@ linkUsers = (selector = ".is-user") ->
 
 fetchCitation = (citationQuery, callback) ->
   ###
+  # Fetch and format a citation. Uses CrossRef API:
   # https://github.com/CrossRef/rest-api-doc/blob/master/rest_api.md
+  #
+  # Output format should be Proceedings B style:
+  # https://www.zotero.org/styles/proceedings-of-the-royal-society-b?source=1
+  # http://rspb.royalsocietypublishing.org/faq#question1
+  #
+  # Example:
+  #
+  # Oneal E, Knowles LL. 2012 Ecological selection as the cause and sexual differentiation as the consequence of species divergence? Proc R Soc B 280: 20122236; doi: 10.1098/rspb.2012.2236
+  #
+  # @param string citationQuery -> pre-formatted string for the
+  #   CrossRef API.
+  # @param function callback -> callback for the citation. Callback
+  #   provided with  the citation as arg1, then the PDF URL as arg2.
   ###
   postUrl = "https://api.crossref.org/works/"
   eQ = encodeURIComponent citationQuery
   totalUrl = "#{postUrl}#{citationQuery}"
   $.get totalUrl, "", "json"
   .done (result) ->
+    console.info "Citation base", result
     j = result.message
     authors = new Array()
     i = 0
@@ -1530,8 +1545,16 @@ fetchCitation = (citationQuery, callback) ->
     published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
     issue = if j.issue? then "(#{j.issue})" else ""
     try
+      try
+        doi = j.DOI
+        doiNumbers = doi.replace(/[^0-9]/mg, "")
+        doiContinuous = doiNumbers.slice -8
+        continuous = " #{doiContinuous}; doi: #{doi}"
+      catch
+        # Go classic 
+        continuous = j.page
       citation = """
-      #{authors.join(", ")}. #{j.title[0]}. #{j["container-title"][0]} #{published};#{j.volume}#{issue}:#{j.page}.
+      #{authors.join(", ")}. #{published} #{j.title[0]}. #{j["container-title"][0]} #{j.volume}#{issue}:#{continuous}.
       """
     catch e
       console.warn "Couldn't generate full citation"
@@ -1590,6 +1613,7 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   $(caller).replaceWith html
   options =
     objectAsValues: true
+    downloadFile: "#{Date.now()}_adp-global-search-result-data.csv"
     acceptableCols: [
       "collectionid"
       "catalognumber"
