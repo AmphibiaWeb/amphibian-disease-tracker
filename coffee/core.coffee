@@ -1321,6 +1321,7 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   options.cascadeObjects ?= false
+  options.objectAsValues ?= false
   # Parse it
   headerPlaceholer = new Array()
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
@@ -1330,38 +1331,61 @@ downloadCSVFile = (data, options) ->
       ++row
       # Escape as per RFC4180
       # https://tools.ietf.org/html/rfc4180#page-2
-      try        
+      try
         escapedKey = key.replace(/"/g,'""')
         if row is 0
-          headerPlaceholder.push escapedKey
+          unless options.objectAsValues
+            headerPlaceholder.push escapedKey
+          else
+            for col, data of value
+              headerPlaceholder.push col
         if typeof value is "object" and cascadeObjects
           # Parse it differently
           value = parser(value, true)
-        # Parse it all
-        if isNull value
-          escapedValue = ""
-        else
-          value = value.toString()
-          tempValue = value.replace(/"/g,'""')
-          tempValue = value.replace(/<\/p><p>/g,'","')
-          if typeof options.splitValues is "string"
-            tempValueArr = tempValue.split options.splitValues
-            tempValue = tempValueArr.join "\",\""
-            escapedKey = false
-          escapedValue = tempValue
-        if escapedKey is false
-          # Special case of split values
-          textAsset += "\"#{escapedValue}\"\n"
-        else if isNumber escapedKey
-          textAsset += "\"#{escapedValue}\","
-        else unless isNull escapedKey
-          textAsset += """"#{escapedKey}","#{escapedValue}"
+        handleValue = (providedValue = value) ->
+          # Parse it all
+          if isNull value
+            escapedValue = ""
+          else
+            providedValue = providedValue.toString()
+            tempValue = providedValue.replace(/"/g,'""')
+            tempValue = providedValue.replace(/<\/p><p>/g,'","')
+            if typeof options.splitValues is "string"
+              tempValueArr = tempValue.split options.splitValues
+              tempValue = tempValueArr.join "\",\""
+              escapedKey = false
+            escapedValue = tempValue
+          if escapedKey is false
+            # Special case of split values
+            tmpTextAsset = "\"#{escapedValue}\"\n"
+          else if isNumber escapedKey
+            tmpTextAsset = "\"#{escapedValue}\","
+          else unless isNull escapedKey
+            tmpTextAsset = """"#{escapedKey}","#{escapedValue}"
 
-          """
+            """
+          tmpTextAsset
+        # Build the textAsset string
+        unless options.objectAsValues
+          textAsset += handleValue(value)
+        else
+          options.splitValues = ","
+          tmpRow = new Array()
+          for col in headerPlaceholder
+            tmpRow.push value[col]
+          tmpRowString = tmpRow.join options.splitValues
+          textAsset += handleValue tmpRowString            
       catch e
         console.warn "Unable to run key #{key} on row #{row}", value, jsonObj
         console.warn e.stack
   textAsset = textAsset.trim()
+  k = 0
+  for col in headerPlaceholder
+    col = col.replace(/"/g,'""')
+    headerPlaceholder[k] = col
+    ++k
+  if options.objectAsValues
+    options.header = headerPlaceholder
   if isArray options.header
     headerStr = options.header.join "\",\""
     textAsset = """
@@ -1538,9 +1562,9 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 generateCSVFromResults = (resultArray, selector = "#modal-sql-details-list") ->
   console.info "Given", resultArray
   options =
-    cascadeObjects: true
+    objectAsValues: true
   file = downloadCSVFile(resultArray, options)
-  $("#{selector} #download-file").removeAttr "disabled"
+  $("#{selector} #download-file paper-button").removeAttr "disabled"
   false
 
 
