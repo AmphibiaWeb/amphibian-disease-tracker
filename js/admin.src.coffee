@@ -3932,6 +3932,8 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",")
                 _adp.projectData.sample_field_numbers = fieldNumbers.join(",")
                 _adp.projectData.sample_methods_used = sampleMethods.join(",")
+                try
+                  recalculateAndUpdateHull()
                 # Finalizing callback
                 finalize = ->
                   # Save it
@@ -4008,9 +4010,12 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
   _adp.projectPreModBackup = _adp.projectData
   try
     localStorage.projectPreModBackup = JSON.stringify _adp.projectData
-  _adp.canonicalHull = createConvexHull points, true
+  _adp.canonicalHull = createConvexHull points, true  
   if isNull _adp.canonicalHull
     return false
+  simpleHull = new Array()
+  for point in _adp.canonicalHull.hull
+    simpleHull.push point.getObj()
   try
     cartoData = JSON.parse _adp.projectData.carto_id
   catch
@@ -4064,6 +4069,9 @@ saveEditorData = (force = false, callback) ->
     postData.public = p$("paper-toggle-button#public").checked
     if postData.public
       isChangingPublic = true
+      try
+        recalculateAndUpdateHull()
+        postData.carto_id = _adp.projectData.carto_id
   # Post it
   if _adp.originalProjectId?
     if _adp.originalProjectId isnt _adp.projectId

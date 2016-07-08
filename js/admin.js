@@ -3801,6 +3801,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",");
                 _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
                 _adp.projectData.sample_methods_used = sampleMethods.join(",");
+                try {
+                  recalculateAndUpdateHull();
+                } catch (undefined) {}
                 finalize = function() {
                   _adp.skipRead = true;
                   _adp.dataBu = _adp.projectData;
@@ -3890,7 +3893,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
 };
 
 recalculateAndUpdateHull = function(points) {
-  var cartoData, color, consoleCopy, error1, opacity, ref, ref1, ref2, ref3;
+  var cartoData, color, consoleCopy, error1, l, len, opacity, point, ref, ref1, ref2, ref3, ref4, simpleHull;
   if (points == null) {
     points = _adp.workingProjectPoints;
   }
@@ -3905,13 +3908,19 @@ recalculateAndUpdateHull = function(points) {
   if (isNull(_adp.canonicalHull)) {
     return false;
   }
+  simpleHull = new Array();
+  ref = _adp.canonicalHull.hull;
+  for (l = 0, len = ref.length; l < len; l++) {
+    point = ref[l];
+    simpleHull.push(point.getObj());
+  }
   try {
     cartoData = JSON.parse(_adp.projectData.carto_id);
   } catch (error1) {
     cartoData = new Object();
   }
-  opacity = (ref = (ref1 = cartoData.bounding_polygon) != null ? ref1.fillOpacity : void 0) != null ? ref : defaultFillOpacity;
-  color = (ref2 = (ref3 = cartoData.bounding_polygon) != null ? ref3.fillColor : void 0) != null ? ref2 : defaultFillColor;
+  opacity = (ref1 = (ref2 = cartoData.bounding_polygon) != null ? ref2.fillOpacity : void 0) != null ? ref1 : defaultFillOpacity;
+  color = (ref3 = (ref4 = cartoData.bounding_polygon) != null ? ref4.fillColor : void 0) != null ? ref3 : defaultFillColor;
   consoleCopy = cartoData;
   console.warn("Overwriting cartoData", consoleCopy);
   cartoData.bounding_polygon = {
@@ -3975,6 +3984,10 @@ saveEditorData = function(force, callback) {
     postData["public"] = p$("paper-toggle-button#public").checked;
     if (postData["public"]) {
       isChangingPublic = true;
+      try {
+        recalculateAndUpdateHull();
+        postData.carto_id = _adp.projectData.carto_id;
+      } catch (undefined) {}
     }
   }
   if (_adp.originalProjectId != null) {
