@@ -1299,10 +1299,13 @@ downloadCSVFile = (data, options) ->
   ###
   textAsset = ""
   if isJson data
+    console.info "Parsing as JSON string"
     jsonObject = JSON.parse data
   else if isArray data
+    console.info "Parsing as array"
     jsonObject = toObject data
   else if typeof data is "object"
+    console.info "Parsing as object"
     jsonObject = data
   else
     console.error "Unexpected data type '#{typeof data}' for downloadCSVFile()", data
@@ -1317,8 +1320,10 @@ downloadCSVFile = (data, options) ->
   options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
   options.selector ?= "#download-file"
   options.splitValues ?= false
+  options.cascadeObjects ?= false
   # Parse it
-  do parser = (jsonObj = jsonObject, cascadeObjects = false) ->
+  headerPlaceholer = new Array()
+  do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
     row = 0
     for key, value of jsonObj
       if typeof value is "function" then continue
@@ -1327,7 +1332,8 @@ downloadCSVFile = (data, options) ->
       # https://tools.ietf.org/html/rfc4180#page-2
       try        
         escapedKey = key.replace(/"/g,'""')
-
+        if row is 0
+          headerPlaceholder.push escapedKey
         if typeof value is "object" and cascadeObjects
           # Parse it differently
           value = parser(value, true)
@@ -1531,7 +1537,9 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 
 generateCSVFromResults = (resultArray, selector = "#modal-sql-details-list") ->
   console.info "Given", resultArray
-  file = downloadCSVFile(resultArray)
+  options =
+    cascadeObjects: true
+  file = downloadCSVFile(resultArray, options)
   $("#{selector} #download-file").removeAttr "disabled"
   false
 

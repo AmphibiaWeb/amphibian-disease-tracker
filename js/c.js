@@ -1717,13 +1717,16 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, file, header, headerStr, html, id, jsonObject, parser, selector, textAsset;
+  var c, file, header, headerPlaceholer, headerStr, html, id, jsonObject, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
+    console.info("Parsing as JSON string");
     jsonObject = JSON.parse(data);
   } else if (isArray(data)) {
+    console.info("Parsing as array");
     jsonObject = toObject(data);
   } else if (typeof data === "object") {
+    console.info("Parsing as object");
     jsonObject = data;
   } else {
     console.error("Unexpected data type '" + (typeof data) + "' for downloadCSVFile()", data);
@@ -1753,6 +1756,10 @@ downloadCSVFile = function(data, options) {
   if (options.splitValues == null) {
     options.splitValues = false;
   }
+  if (options.cascadeObjects == null) {
+    options.cascadeObjects = false;
+  }
+  headerPlaceholer = new Array();
   (parser = function(jsonObj, cascadeObjects) {
     var error2, escapedKey, escapedValue, key, results, row, tempValue, tempValueArr, value;
     row = 0;
@@ -1765,6 +1772,9 @@ downloadCSVFile = function(data, options) {
       ++row;
       try {
         escapedKey = key.replace(/"/g, '""');
+        if (row === 0) {
+          headerPlaceholder.push(escapedKey);
+        }
         if (typeof value === "object" && cascadeObjects) {
           value = parser(value, true);
         }
@@ -1797,7 +1807,7 @@ downloadCSVFile = function(data, options) {
       }
     }
     return results;
-  })(jsonObject, false);
+  })(jsonObject, options.cascadeObjects);
   textAsset = textAsset.trim();
   if (isArray(options.header)) {
     headerStr = options.header.join("\",\"");
@@ -1979,12 +1989,15 @@ cancelAsyncOperation = function(caller, asyncOperation) {
 };
 
 generateCSVFromResults = function(resultArray, selector) {
-  var file;
+  var file, options;
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
   console.info("Given", resultArray);
-  file = downloadCSVFile(resultArray);
+  options = {
+    cascadeObjects: true
+  };
+  file = downloadCSVFile(resultArray, options);
   $(selector + " #download-file").removeAttr("disabled");
   return false;
 };

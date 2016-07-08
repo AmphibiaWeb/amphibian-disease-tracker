@@ -956,9 +956,11 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   $(".show-result-list")
   .unbind()
   .click ->
+    startTime = Date.now()
     console.log "Calling dialog helper"
     safariDialogHelper "#modal-sql-details-list", 0, ->
-      console.info "Successfully opened dialog"
+      elapsed = Date.now() - startTime
+      console.info "Successfully opened dialog in #{elapsed}ms via safariDialogHelper"
       $(".leaflet-control-attribution").attr "hidden", "hidden"
       $(".leaflet-control").attr "hidden", "hidden"
   bindClicks()
