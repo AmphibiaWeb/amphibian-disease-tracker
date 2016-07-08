@@ -763,11 +763,14 @@ sqlQueryBox = ->
         nHuman = toInt(n) + 1
         output += "##{nHuman}: "
         try
-          output += JSON.stringify sqlQuery.rows
+          json = JSON.stringify sqlQuery.rows
+          output += """<code class="language-json">#{json}</code>"""
         catch
           output += "BAD QUERY"
         output += "\n\n"
-      $("#query-immediate-result").text output
+      $("#query-immediate-result").html output
+      try
+        Prism.highlightAll()
       $(".do-sql-query").removeAttr "disabled"
       stopLoad()
       false

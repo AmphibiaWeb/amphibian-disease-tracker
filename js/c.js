@@ -2011,10 +2011,11 @@ $(function() {
     } else {
       console.info("No admin setup requested");
     }
-    return $("header .header-bar-user-name").click(function() {
+    $("header .header-bar-user-name").click(function() {
       return goTo(uri.urlString + "profile.php");
     });
   } catch (undefined) {}
+  return loadJS(uri.urlString + "js/prism.js");
 });
 
 

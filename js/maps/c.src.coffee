@@ -1558,6 +1558,8 @@ $ ->
     # Let clicking on username load up profile page
     $("header .header-bar-user-name").click ->
       goTo "#{uri.urlString}profile.php"
+  # Lazy-load syntax highlighter
+  loadJS "#{uri.urlString}js/prism.js"
 
 ###
 # Do Georeferencing from data

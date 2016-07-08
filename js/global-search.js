@@ -1038,6 +1038,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
         console.warn("Got bad data for row #" + i + "!", projectResults, projectResults.rows, data);
         continue;
       }
+      data = "<code class=\"language-json\">" + data + "</code>";
     } catch (error) {
       data = "Invalid data from server";
     }
@@ -1048,6 +1049,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
+  try {
+    Prism.highlightAll();
+  } catch (undefined) {}
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
     return $(".leaflet-control").removeAttr("hidden");

@@ -786,7 +786,7 @@ sqlQueryBox = function() {
     console.log(query);
     args = "action=fetch&sql_query=" + (post64(query));
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var e, err, error1, error2, ex, extended, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
+      var e, err, error1, error2, ex, extended, json, n, nHuman, output, r, ref, ref1, ref2, sqlQuery;
       console.log(result);
       if (result.status !== true) {
         err = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "Unknown error";
@@ -829,13 +829,17 @@ sqlQueryBox = function() {
         nHuman = toInt(n) + 1;
         output += "#" + nHuman + ": ";
         try {
-          output += JSON.stringify(sqlQuery.rows);
+          json = JSON.stringify(sqlQuery.rows);
+          output += "<code class=\"language-json\">" + json + "</code>";
         } catch (error2) {
           output += "BAD QUERY";
         }
         output += "\n\n";
       }
-      $("#query-immediate-result").text(output);
+      $("#query-immediate-result").html(output);
+      try {
+        Prism.highlightAll();
+      } catch (undefined) {}
       $(".do-sql-query").removeAttr("disabled");
       stopLoad();
       return false;
