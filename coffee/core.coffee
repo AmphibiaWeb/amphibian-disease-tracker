@@ -1352,6 +1352,8 @@ downloadCSVFile = (data, options) ->
           if isNull value
             escapedValue = ""
           else
+            if typeof providedValue is "object"
+              providedValue = JSON.stringify providedValue
             providedValue = providedValue.toString()
             tempValue = providedValue.replace(/"/g,'""')
             tempValue = providedValue.replace(/<\/p><p>/g,'","')
@@ -1569,7 +1571,7 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   console.info "Given", resultArray
   $("#download-file").remove()
   html = """
-      <a tabindex="-1" id="download-file">
+      <a tabindex="-1" id="download-file" class="paper-button-link">
         <paper-button disabled>
           <iron-icon icon="icons:cloud-download"></iron-icon>
           Download File
@@ -1579,6 +1581,8 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   $(caller).replaceWith html
   options =
     objectAsValues: true
+  # TODO migrate this to a Web Worker
+  # http://www.html5rocks.com/en/tutorials/workers/basics/
   try
     file = downloadCSVFile(resultArray, options)
     $("#{selector} #download-file paper-button").removeAttr "disabled"
