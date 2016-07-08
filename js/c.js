@@ -2062,6 +2062,7 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   $(caller).replaceWith(html);
   options = {
     objectAsValues: true,
+    downloadFile: (Date.now()) + "_adp-global-search-result-data.csv",
     acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
   };
   try {
