@@ -1805,6 +1805,9 @@ downloadCSVFile = function(data, options) {
           if (isNull(value)) {
             escapedValue = "";
           } else {
+            if (typeof providedValue === "object") {
+              providedValue = JSON.stringify(providedValue);
+            }
             providedValue = providedValue.toString();
             tempValue = providedValue.replace(/"/g, '""');
             tempValue = providedValue.replace(/<\/p><p>/g, '","');
@@ -2042,7 +2045,7 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   toastStatusMessage("This may take a few seconds, please wait");
   console.info("Given", resultArray);
   $("#download-file").remove();
-  html = "<a tabindex=\"-1\" id=\"download-file\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
+  html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
   $(caller).replaceWith(html);
   options = {
     objectAsValues: true
