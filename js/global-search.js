@@ -1050,7 +1050,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   $("#modal-sql-details-list").remove();
   $("body").append(html);
   try {
-    Prism.highlightAll();
+    Prism.highlightAll(true);
   } catch (undefined) {}
   $("#modal-sql-details-list").on("iron-overlay-closed", function() {
     $(".leaflet-control-attribution").removeAttr("hidden");
