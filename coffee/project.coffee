@@ -798,10 +798,10 @@ sqlQueryBox = ->
     html = """
     <div id="project-sql-query-box" class="row">
       <h2 class="col-xs-12">Raw Project Queries</h2>
-      <textarea class="form-control code col-xs-10 force-center-block" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
+      <textarea class="form-control code col-xs-10 col-xs-offset-1 force-center-block" rows="3" id="query-input" placeholder="SQL Query" aria-describedby="query-cheats"></textarea>
       <div class="col-xs-12">
-        <label class="text-muted col-xs-2" for="interpreted-query">Real Query:</label>
-        <code class="language-sql col-xs-10" id="interpreted-query">
+        <label class="text-muted col-xs-2 col-md-1" for="interpreted-query">Real Query:</label>
+        <code class="language-sql col-xs-10 col-md-11" id="interpreted-query">
         </code>
       </div>
       <div class="col-xs-12 col-sm-9">
