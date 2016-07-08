@@ -1073,9 +1073,13 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Show Sample Details\" raised></paper-icon-button>";
   $("#post-map-subtitle").append(rlButton);
   $(".show-result-list").unbind().click(function() {
+    var startTime;
+    startTime = Date.now();
     console.log("Calling dialog helper");
     return safariDialogHelper("#modal-sql-details-list", 0, function() {
-      console.info("Successfully opened dialog");
+      var elapsed;
+      elapsed = Date.now() - startTime;
+      console.info("Successfully opened dialog in " + elapsed + "ms via safariDialogHelper");
       $(".leaflet-control-attribution").attr("hidden", "hidden");
       return $(".leaflet-control").attr("hidden", "hidden");
     });
