@@ -342,7 +342,7 @@ loadCreateNewProject = ->
       #{getInfoTooltip("Name or PI responsible for lab results")}
       <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
       <h2 class="new-title col-xs-12">Project Notes</h2>
-      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11 language-markdown" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
       <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
         <div class="markdown-html"></div>
       </marked-element>

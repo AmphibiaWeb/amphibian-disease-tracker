@@ -894,6 +894,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       if isNull data
         console.warn "Got bad data for row ##{i}!", projectResults, projectResults.rows, data
         continue
+      data = """<code class="language-json">#{data}</code>"""
     catch
       data = "Invalid data from server"
     table =
@@ -928,6 +929,8 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   """
   $("#modal-sql-details-list").remove()
   $("body").append html
+  try
+    Prism.highlightAll()
   $("#modal-sql-details-list")
   .on "iron-overlay-closed", ->
     $(".leaflet-control-attribution").removeAttr "hidden"

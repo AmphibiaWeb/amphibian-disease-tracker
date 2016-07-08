@@ -342,7 +342,7 @@ loadCreateNewProject = ->
       #{getInfoTooltip("Name or PI responsible for lab results")}
       <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
       <h2 class="new-title col-xs-12">Project Notes</h2>
-      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
+      <iron-autogrow-textarea id="project-notes" class="project-field col-md-6 col-xs-11 language-markdown" rows="3" data-field="sample_notes"></iron-autogrow-textarea>#{getInfoTooltip("Project notes or brief abstract; accepts Markdown ")}
       <marked-element class="project-param col-md-6 col-xs-12" id="note-preview">
         <div class="markdown-html"></div>
       </marked-element>
@@ -2265,7 +2265,7 @@ loadEditor = (projectPreload) ->
             <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
             <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
+          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param language-markdown" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="note-preview">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{mdNotes}</script>
@@ -2277,7 +2277,7 @@ loadEditor = (projectPreload) ->
             <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
             <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
+          <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param language-markdown" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="preview-funding">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{mdFunding}</script>

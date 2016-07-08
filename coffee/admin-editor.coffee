@@ -166,7 +166,7 @@ loadEditor = (projectPreload) ->
             <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
             <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
+          <iron-autogrow-textarea id="project-notes" class="markdown-pair project-param language-markdown" rows="3" data-field="sample_notes" hidden #{conditionalReadonly}>#{project.sample_notes}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="note-preview">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{mdNotes}</script>
@@ -178,7 +178,7 @@ loadEditor = (projectPreload) ->
             <li role="presentation" class="active" data-view="md"><a>Preview</a></li>
             <li role="presentation" data-view="edit"><a>Edit</a></li>
           </ul>
-          <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
+          <iron-autogrow-textarea id="project-funding" class="markdown-pair project-param language-markdown" rows="3" data-field="extended_funding_reach_goals" hidden #{conditionalReadonly}>#{project.extended_funding_reach_goals}</iron-autogrow-textarea>
           <marked-element class="markdown-pair" id="preview-funding">
             <div class="markdown-html"></div>
             <script type="text/markdown">#{mdFunding}</script>
