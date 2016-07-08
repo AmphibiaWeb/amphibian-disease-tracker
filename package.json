@@ -1,6 +1,6 @@
 {
   "name": "amphibian-disease-tracker",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Amphibian Disease Tracker Portal",
   "main": "",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tigerhawkvok/amphibian-disease-tracker.git"
+    "url": "https://github.com/AmphibiaWeb/amphibian-disease-tracker.git"
   },
   "author": "Philip Kahn <tigerhawkvok@gmail.com>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/tigerhawkvok/amphibian-disease-tracker/issues"
+    "url": "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues"
   },
-  "homepage": "https://github.com/tigerhawkvok/amphibian-disease-tracker",
+  "homepage": "https://amphibiandisease.org/",
   "devDependencies": {
     "autoprefixer": "^6.3.7",
     "autoprefixer-core": "^6.0.1",
