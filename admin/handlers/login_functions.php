@@ -1427,6 +1427,10 @@ class UserFunctions extends DBHelper
         $qualifiedDomain = array_pop($domainParts);
         $domainBaseParts = explode(".", $qualifiedDomain);
         $tld = array_pop($domainBaseParts);
+        while(sizeof($domainBaseParts) > 1) {
+            $tld2 = array_pop($domainBaseParts);
+            $tld = $tld2 . "." . $tld;
+        }
         $domain = array_pop($domainBaseParts);
         if(is_array($this->allowedDomains)) {
             if(sizeof($this->allowedDomains) > 0) {
