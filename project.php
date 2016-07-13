@@ -81,7 +81,7 @@ $loginStatus = getLoginState();
   </head>
   <body class="container-fluid">
     <?php
-       require_once dirname(__FILE__) . "/vulcanized-polymer.php";
+       require_once dirname(__FILE__) . "/modular/vulcanized-polymer.php";
        echo $vulcanized;
        ?>
     <header id="header-bar" class="fixed-bar clearfix row">
