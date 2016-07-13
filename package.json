@@ -37,7 +37,7 @@
     "grunt-php-cs-fixer": "0.0.8",
     "grunt-phplint": "0.0.8",
     "grunt-postcss": "^0.8.0",
-    "grunt-regex-extract": "0.0.1",
+    "grunt-regex-extract": "github:tigerhawkvok/grunt-regex-extract#3d88618c5ae5ffc5f497661c09b79614d20a0a81",
     "grunt-shell": "^1.3.0",
     "grunt-string-replace": "^1.2.1",
     "less": "^2.7.1",

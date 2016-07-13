@@ -40,11 +40,11 @@ module.exports = (grunt) ->
         command: ["npm install -g coffee-script npm-check-updates bower grunt-cli npm autoprefixer-core less"].join("&&")
       vulcanize:
         # Should also use a command to replace js as per uglify:vulcanize
-        command: ["vulcanize --strip-comments --inline-scripts pre-vulcanize.html --out-html vulcanized.html"].join("&&")
+        command: ["vulcanize --strip-comments pre-vulcanize.html --out-html vulcanized.html"].join("&&")
     regex_extract:
       default_options:
         options:
-          regex: "<div[^>]*by-vulcanize[^>]*><script>[\\s\\S]*<\\/script>\\s*<\\/dom-module>\\s*<\\/div>"
+          regex: "<div[^>]*by-vulcanize[^>]*><script>[\\s\\S]*<\\/script>\\s*<\\/div>(?=\\s*<header)"
           modifiers: "mig"
           includePath: false
           matchPoints: "0"
