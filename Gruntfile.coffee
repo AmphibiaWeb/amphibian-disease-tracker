@@ -21,6 +21,10 @@ module.exports = (grunt) ->
   # https://www.npmjs.com/package/grunt-phplint
   grunt.loadNpmTasks("grunt-phplint")
   grunt.loadNpmTasks('grunt-php-cs-fixer')
+  # https://github.com/mpau23/grunt-regex-extract
+  grunt.loadNpmTasks("grunt-regex-extract")
+  # https://github.com/gruntjs/grunt-contrib-clean
+  grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     shell:
@@ -32,20 +36,21 @@ module.exports = (grunt) ->
         command: ["npm install", "npm update"].join("&&")
       movesrc:
         command: ["mv js/c.src.coffee js/maps/c.src.coffee"].join("&&")
-      vulcanize:
-        # Should also use a command to replace js as per uglify:vulcanize
-        command: ["vulcanize --csp -o app-prerelease.html --strip app.html"].join("&&")
       updateglobals:
         command: ["npm install -g coffee-script npm-check-updates bower grunt-cli npm autoprefixer-core less"].join("&&")
-    'string-replace':
       vulcanize:
+        # Should also use a command to replace js as per uglify:vulcanize
+        command: ["vulcanize --strip-comments pre-vulcanize.html --out-html vulcanized.html"].join("&&")
+    regex_extract:
+      default_options:
         options:
-          replacements: [
-            pattern: "app-prerelease.js",
-            replacement: "js/app.min.js"
-            ]
+          regex: "<div[^>]*by-vulcanize[^>]*><script>[\\s\\S]*<\\/script>\\s*<\\/div>(?=\\s*<header)"
+          modifiers: "mig"
+          includePath: false
+          matchPoints: "0"
         files:
-          "index.html":"app-prerelease.html"
+          "modular/vulcanized-div-and-dom-module.html": ["vulcanized.html"]
+    clean: ["vulcanized.html", "vulcanized-parsed.html", "post-vulcanize.html"]
     postcss:
       options:
         processors: [
@@ -185,7 +190,7 @@ module.exports = (grunt) ->
         ignore: [/XHTML element “[a-z-]+-[a-z-]+” not allowed as child of XHTML element.*/,"Bad value “X-UA-Compatible” for attribute “http-equiv” on XHTML element “meta”.",/Bad value “theme-color”.*/,/Bad value “import” for attribute “rel” on element “link”.*/,/Element “.+” not allowed as child of element*/,/.*Illegal character in query: not a URL code point./]
   ## Now the tasks
   grunt.registerTask("default",["watch"])
-  grunt.registerTask("vulcanize","Vulcanize web components",["shell:vulcanize","uglify:vulcanize","string-replace:vulcanize"])
+  grunt.registerTask("vulcanize","Vulcanize web components",["shell:vulcanize","regex_extract","clean"])
   grunt.registerTask("compile","Compile coffeescript",["coffee:compile","uglify:dist","shell:movesrc"])
   ## The minification tasks
   # Part 1
@@ -209,4 +214,4 @@ module.exports = (grunt) ->
     grunt.task.run("phplint","compile","css")
   grunt.registerTask "build","Compile and update, then watch", ->
     # ,"vulcanize"
-    grunt.task.run("updateNPM","updateBower","compile","minify","watch")
+    grunt.task.run("updateNPM","updateBower","vulcanize","phplint","compile","minify","watch")

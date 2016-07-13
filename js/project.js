@@ -250,7 +250,7 @@ renderMapWithData = function(projectData, force) {
         _adp.canonicalHull = createConvexHull(points, true);
       } catch (undefined) {}
     }
-    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6\" api-key=\"" + gMapsApiKey + "\">\n  " + mapHtml + "\n</google-map>";
+    googleMap = "<google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6\" api-key=\"" + gMapsApiKey + "\">\n  " + mapHtml + "\n</google-map>";
     monthPretty = "";
     months = projectData.sampling_months.split(",");
     i = 0;
@@ -676,7 +676,7 @@ renderPublicMap = function(projectData) {
       }
     }
     mapHtml += "    </google-map-poly>";
-    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Project Area of Interest</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" disable-default-ui zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  api-key=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
+    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Project Area of Interest</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  api-key=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
     $("#auth-block").append(googleMap);
     try {
       zoom = getMapZoom(paths, "#transect-viewport");
