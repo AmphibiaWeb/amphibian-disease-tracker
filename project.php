@@ -248,7 +248,7 @@ $loginStatus = getLoginState();
              ?>
         <google-map class="col-xs-11 col-md-9 center-block" id="community-map" latitude="<?php echo $averageLat;
              ?>" longitude="<?php echo $averageLng;
-             ?>" zoom="2" disable-default-ui map-type="satellite" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
+             ?>" zoom="2" map-type="hybrid" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
           <?php echo $polyHtml;
              ?>
         </google-map>
