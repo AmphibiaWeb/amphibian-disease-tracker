@@ -46,7 +46,9 @@ $loginStatus = getLoginState();
     <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon512.png" />
     <link rel="icon" type="image/png" sizes="1024x1024" href="assets/favicon1024.png" />
 
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <?php
+       require_once dirname(__FILE__) . "/modular/vulcanized-polymer.php";
+       ?>
 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -81,7 +83,6 @@ $loginStatus = getLoginState();
   </head>
   <body class="container-fluid">
     <?php
-       require_once dirname(__FILE__) . "/modular/vulcanized-polymer.php";
        echo $vulcanized;
        ?>
     <header id="header-bar" class="fixed-bar clearfix row">
