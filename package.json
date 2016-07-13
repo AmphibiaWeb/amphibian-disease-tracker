@@ -43,6 +43,6 @@
     "less": "^2.7.1",
     "npm": "^3.10.3",
     "npm-check-updates": "^2.6.8",
-    "vulcanize": "^1.14.8"
+    "vulcanize": "https://registry.npmjs.org/vulcanize/-/vulcanize-1.14.8.tgz"
   }
 }
