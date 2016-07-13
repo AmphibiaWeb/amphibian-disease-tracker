@@ -44,11 +44,7 @@ $loginStatus = getLoginState();
     <link rel="icon" type="image/png" sizes="128x128" href="assets/favicon128.png" />
     <link rel="icon" type="image/png" sizes="256x254" href="assets/favicon256.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon512.png" />
-    <link rel="icon" type="image/png" sizes="1024x1024" href="assets/favicon1024.png" />
-
-    <?php
-       require_once dirname(__FILE__) . "/modular/vulcanized-polymer.php";
-       ?>
+    <link rel="icon" type="image/png" sizes="1024x1024" href="assets/favicon1024.png" />    
 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -80,6 +76,9 @@ $loginStatus = getLoginState();
       --paper-input-container-underline-disabled: var(--paper-grey-300);
       }
     </style>
+    <?php
+       require_once dirname(__FILE__) . "/modular/vulcanized-polymer.php";
+       ?>
   </head>
   <body class="container-fluid">
     <?php
