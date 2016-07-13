@@ -204,7 +204,7 @@ module.exports = (grunt) ->
   ## Global update
   # Bower
   grunt.registerTask("updateBower","Update bower dependencies",["shell:bower"])
-  grunt.registerTask("updateNPM","Update Node dependencies",["shell:npm"])
+  grunt.registerTask("updateNPM","Update Node dependencies",["shell:updateglobals","shell:npm"])
   # Minify the bower stuff in case it changed
   grunt.registerTask "update","Update dependencies", ->
     grunt.task.run("shell:updateglobals","updateNPM","updateBower","compile","minify")
@@ -214,4 +214,4 @@ module.exports = (grunt) ->
     grunt.task.run("phplint","compile","css")
   grunt.registerTask "build","Compile and update, then watch", ->
     # ,"vulcanize"
-    grunt.task.run("updateNPM","updateBower","vulcanize","phplint","compile","minify","watch")
+    grunt.task.run("updateNPM","updateBower","vulcanize","phplint","compile","minify")
