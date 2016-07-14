@@ -10129,6 +10129,9 @@ paper-button[raised].admin-action {
   align-self: flex-end;
   margin-left: 1rem;
 }
+#su-management-list .su-user-list iron-icon + .tooltip {
+  margin-left: -1em;
+}
 #su-management-list .su-user-list span {
   flex-grow: 1;
 }
