@@ -29,21 +29,23 @@ loadSUProfileBrowser = ->
       list = result.result
       list = Object.toArray list
       listElements = new Array()
+      i = 0
       for user in list
+        ++i
         if isNull user.full_name
           continue
         if user.has_verified_email
           verifiedHtml = """
-<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-blue' data-toggle='tooltip' title='At least one verified email'></iron-icon>
+<iron-icon id='restriction-badge-#{i}' icon='icons:verified-user' class='material-blue' data-toggle='tooltip' title='At least one verified email'></iron-icon>
           """
         else
           verifiedHtml = ""
         if user.unrestricted
           isUnrestricted = """
-<iron-icon id='unrestriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Meets restriction criteria'></iron-icon>
+<iron-icon id='unrestriction-badge-#{i}' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Meets restriction criteria'></iron-icon>
           """
         else
-          isUnrestricted = "<iron-icon id='unrestriction-badge' icon='icons:verified-user' class='material-red' data-toggle='tooltip' title='Fails restriction criteria'></iron-icon>"
+          isUnrestricted = "<iron-icon id='unrestriction-badge-#{i}' icon='icons:verified-user' class='material-red' data-toggle='tooltip' title='Fails restriction criteria'></iron-icon>"
         if user.is_admin
           adminHtml = """
           <span class="glyphicons glyphicons-user-key" data-toggle="tooltip" title="Adminstrator"></span>
