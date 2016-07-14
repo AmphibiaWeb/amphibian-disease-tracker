@@ -4677,7 +4677,7 @@ loadSUProfileBrowser = function() {
     args = "action=search_users&q=";
     dest = uri.urlString + "api.php";
     return $.post(dest, args).done(function(result) {
-      var adminHtml, entry, html, l, len, list, listElements, listInterior, message, ref, ref1, verifiedHtml;
+      var adminHtml, entry, html, isUnrestricted, l, len, list, listElements, listInterior, message, ref, ref1, ref2, verifiedHtml;
       if (result.status !== true) {
         message = (ref = (ref1 = result.human_error) != null ? ref1 : result.error) != null ? ref : "There was a problem loading the user list";
         stopLoadError(message);
@@ -4692,16 +4692,21 @@ loadSUProfileBrowser = function() {
           continue;
         }
         if (user.has_verified_email) {
-          verifiedHtml = "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='At least one verified email'></iron-icon>";
+          verifiedHtml = "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-blue' data-toggle='tooltip' title='At least one verified email'></iron-icon>";
         } else {
           verifiedHtml = "";
+        }
+        if (user.unrestricted) {
+          isUnrestricted = "<iron-icon id='unrestriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Meets restriction criteria'></iron-icon>";
+        } else {
+          isUnrestricted = "<iron-icon id='unrestriction-badge' icon='icons:verified-user' class='material-red' data-toggle='tooltip' title='Fails restriction criteria'></iron-icon>";
         }
         if (user.is_admin) {
           adminHtml = "<span class=\"glyphicons glyphicons-user-key\" data-toggle=\"tooltip\" title=\"Adminstrator\"></span>";
         } else {
           adminHtml = "";
         }
-        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
+        entry = "<span class=\"" + classPrefix + "-user-details\">\n  " + user.full_name + " / " + user.handle + " / " + user.email + " | <small>" + ((ref2 = user.alternate_email) != null ? ref2 : "No Alternate Email") + "</small> " + isUnrestricted + " " + verifiedHtml + " " + adminHtml + "\n</span>\n<div>\n  <button class=\"" + classPrefix + "-view-projects btn btn-default\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"icons:find-in-page\"></iron-icon>\n    Find Projects\n  </button>\n  <button class=\"" + classPrefix + "-reset btn btn-warning\" data-uid=\"" + user.uid + "\" data-email=\"" + user.email + "\">\n    <iron-icon icon=\"av:replay\"></iron-icon>\n    Reset Password\n  </button>\n  <button class=\"" + classPrefix + "-delete btn btn-danger\" data-uid=\"" + user.uid + "\">\n    <iron-icon icon=\"icons:delete\"></iron-icon>\n    Delete User\n  </button>\n</div>";
         listElements.push(entry);
       }
       listInterior = listElements.join("</li><li class='su-user-list'>");
@@ -4722,7 +4727,7 @@ loadSUProfileBrowser = function() {
         args = "action=search_project&q=" + search + "&cols=" + cols;
         $.post(uri.urlString + "api.php", args, "json").done((function(_this) {
           return function(result) {
-            var button, dataAttached, hasData, icon, isAuthor, len1, m, matchStatus, project, projects, publicState, ref2, ref3, s, showList;
+            var button, dataAttached, hasData, icon, isAuthor, len1, m, matchStatus, project, projects, publicState, ref3, ref4, s, showList;
             console.info(result);
             html = "<h3 class=\"col-xs-12\">\n  Projects with \"" + email + "\" as a participant\n</h3>";
             showList = new Array();
@@ -4755,7 +4760,7 @@ loadSUProfileBrowser = function() {
               }
               html += "</ul>";
             } else {
-              s = (ref2 = (ref3 = email != null ? email : $(_this).attr("data-email")) != null ? ref3 : result.search) != null ? ref2 : search;
+              s = (ref3 = (ref4 = email != null ? email : $(_this).attr("data-email")) != null ? ref4 : result.search) != null ? ref3 : search;
               html = "<p class='col-xs-12'><em>No results found for user \"<strong>" + s + "</strong>\"";
             }
             html += "<div class=\"col-xs-12\">\n  <button class=\"btn btn-default go-back-button\">\n    <iron-icon icon=\"icons:arrow-back\"></iron-icon>\n    Back to Profile Browser\n  </button>\n</div>";
@@ -4785,10 +4790,10 @@ loadSUProfileBrowser = function() {
         args = "action=startpasswordreset&username=" + email + "&method=email";
         $(this).attr("disabled", "disabled");
         $.post("admin/async_login_handler.php", args, "json").done(function(result) {
-          var ref2, ref3;
+          var ref3, ref4;
           console.info("Reset prompt returned", result);
           if (!result.status) {
-            message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "Couldn't initiate password reset for " + email;
+            message = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "Couldn't initiate password reset for " + email;
             if (result.action === "GET_TOTP") {
               message = "User has two-factor authentication. They have to reset themselves.";
             } else {
@@ -4826,10 +4831,10 @@ loadSUProfileBrowser = function() {
           console.info("Posting to", "" + uri.urlString + adminParams.apiTarget + "?" + args);
           $.post(adminParams.apiTarget, args, "json").done((function(_this) {
             return function(result) {
-              var ref2, ref3, systemError;
+              var ref3, ref4, systemError;
               console.info("Click to delete returned", result);
               if (result.status !== true) {
-                message = (ref2 = (ref3 = result.human_error) != null ? ref3 : result.error) != null ? ref2 : "There was an error executing the action";
+                message = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error executing the action";
                 systemError = result.error;
                 switch (systemError) {
                   case systemError.search("INVALID_TARGET") !== -1:

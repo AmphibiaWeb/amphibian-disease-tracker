@@ -211,6 +211,8 @@ function searchUsers($get)
         if($isAdmin) {
             $clean["is_admin"] = boolstr($entry["admin_flag"]);
             $clean["alternate_email"] = $entry["alternate_email"];
+            $tmpUser = new UserFunctions($clean["email"]);
+            $clean["unrestricted"] = $tmpUser->meetsRestrictionCriteria();
         }
         $nameXml = $entry['name'];
         $xml = new Xml();

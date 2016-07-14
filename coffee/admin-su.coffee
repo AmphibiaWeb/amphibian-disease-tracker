@@ -34,10 +34,16 @@ loadSUProfileBrowser = ->
           continue
         if user.has_verified_email
           verifiedHtml = """
-<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='At least one verified email'></iron-icon>
+<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-blue' data-toggle='tooltip' title='At least one verified email'></iron-icon>
           """
         else
           verifiedHtml = ""
+        if user.unrestricted
+          isUnrestricted = """
+<iron-icon id='unrestriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Meets restriction criteria'></iron-icon>
+          """
+        else
+          isUnrestricted = "<iron-icon id='unrestriction-badge' icon='icons:verified-user' class='material-red' data-toggle='tooltip' title='Fails restriction criteria'></iron-icon>"
         if user.is_admin
           adminHtml = """
           <span class="glyphicons glyphicons-user-key" data-toggle="tooltip" title="Adminstrator"></span>
@@ -46,7 +52,7 @@ loadSUProfileBrowser = ->
           adminHtml = ""
         entry = """
         <span class="#{classPrefix}-user-details">
-          #{user.full_name} / #{user.handle} / #{user.email} #{verifiedHtml} #{adminHtml}
+          #{user.full_name} / #{user.handle} / #{user.email} | <small>#{user.alternate_email ? "No Alternate Email"}</small> #{isUnrestricted} #{verifiedHtml} #{adminHtml}
         </span>
         <div>
           <button class="#{classPrefix}-view-projects btn btn-default" data-uid="#{user.uid}" data-email="#{user.email}">
