@@ -3,6 +3,13 @@
 /*
  * Server functions to proxy out the database
  */
+$debug = false;
+
+if($debug) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+    error_log("Login is running in debug mode!");
+}
 
 if (!(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')) {
     $data = array('status' => false,'error' => 'This application only accepts SSL connections');
@@ -21,8 +28,16 @@ parse_str($_SERVER['QUERY_STRING'], $_GET);
 $print_login_state = false;
 # Enable the next line for Braintree billing
 # require_once("./braintree_billing.php");
-require_once 'userhandler/async_login_handler.php';
-require_once 'userhandler/app_handlers.php';
+require_once 'async_login_handler.php';
+
+// $email = $_GET["email"];
+// $u = new UserFunctions();
+// returnAjax($u->examineEmailDeep($email));
+// returnAjax(UserFunctions::examineEmail($email));
+
+
+require_once 'app_handlers.php';
+
 
 /*******************
  * The functions that actually do stuff

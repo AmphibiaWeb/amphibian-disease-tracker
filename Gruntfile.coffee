@@ -25,6 +25,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks("grunt-regex-extract")
   # https://github.com/gruntjs/grunt-contrib-clean
   grunt.loadNpmTasks('grunt-contrib-clean')
+  # https://github.com/davidtucker/grunt-line-remover
+  grunt.loadNpmTasks('grunt-line-remover')
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     shell:
@@ -41,6 +43,27 @@ module.exports = (grunt) ->
       vulcanize:
         # Should also use a command to replace js as per uglify:vulcanize
         command: ["vulcanize --strip-comments pre-vulcanize.html --out-html vulcanized.html"].join("&&")
+      retrim:
+        command: []
+    'string-replace':
+      vulcanize_clean:
+        options:
+          replacements: [
+              pattern: "(\\s{2,}|\\n+|(\\r\\n)+|\\t+|\\r+)"
+              replacement: " "
+            ,
+              pattern: ";(\\r\\n|\\r|\\n)"
+              replacement: ";"
+            ,
+              pattern: "}(\\r\\n|\\r|\\n)"
+              replacement: "}"
+            ]
+        files:
+          "modular/vulcanized-trimmed-withlines.html": ["modular/vulcanized-div-and-dom-module.html"]
+    lineremover:
+      noOptions:
+        files:
+          "modular/vulcanized-trimmed.html":"modular/vulcanized-trimmed-withlines.html"
     regex_extract:
       default_options:
         options:
@@ -50,7 +73,7 @@ module.exports = (grunt) ->
           matchPoints: "0"
         files:
           "modular/vulcanized-div-and-dom-module.html": ["vulcanized.html"]
-    clean: ["vulcanized.html", "vulcanized-parsed.html", "post-vulcanize.html"]
+    clean: ["vulcanized.html", "vulcanized-parsed.html", "post-vulcanize.html", "*.build.html", "*.build.js"]
     postcss:
       options:
         processors: [
@@ -190,7 +213,7 @@ module.exports = (grunt) ->
         ignore: [/XHTML element “[a-z-]+-[a-z-]+” not allowed as child of XHTML element.*/,"Bad value “X-UA-Compatible” for attribute “http-equiv” on XHTML element “meta”.",/Bad value “theme-color”.*/,/Bad value “import” for attribute “rel” on element “link”.*/,/Element “.+” not allowed as child of element*/,/.*Illegal character in query: not a URL code point./]
   ## Now the tasks
   grunt.registerTask("default",["watch"])
-  grunt.registerTask("vulcanize","Vulcanize web components",["shell:vulcanize","regex_extract","clean"])
+  grunt.registerTask("vulcanize","Vulcanize web components",["shell:vulcanize","regex_extract","string-replace", "lineremover","clean"])
   grunt.registerTask("compile","Compile coffeescript",["coffee:compile","uglify:dist","shell:movesrc"])
   ## The minification tasks
   # Part 1

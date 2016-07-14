@@ -177,7 +177,7 @@ function searchUsers($get)
         'name' => $q,
         'dblink' => $q, #?
     );
-    $cols = array('username', 'name', 'dblink', "email_verified", "alternate_email_verified", "admin_flag");
+    $cols = array('username', 'name', 'dblink', "email_verified", "alternate_email_verified", "admin_flag", "alternate_email");
     if (!empty($get['cols'])) {
         if (checkUserColumnExists($get['cols'], false)) {
             # Replace the defaults
@@ -210,6 +210,9 @@ function searchUsers($get)
         );
         if($isAdmin) {
             $clean["is_admin"] = boolstr($entry["admin_flag"]);
+            $clean["alternate_email"] = $entry["alternate_email"];
+            $tmpUser = new UserFunctions($clean["email"]);
+            $clean["unrestricted"] = $tmpUser->meetsRestrictionCriteria();
         }
         $nameXml = $entry['name'];
         $xml = new Xml();

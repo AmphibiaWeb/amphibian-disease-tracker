@@ -1422,7 +1422,7 @@ class UserFunctions extends DBHelper
         }
     }
 
-    private function matchEmailAgainstRestrictions($email) {
+    public static function examineEmail($email) {
         $domainParts = explode("@", $email);
         $qualifiedDomain = array_pop($domainParts);
         $domainBaseParts = explode(".", $qualifiedDomain);
@@ -1430,6 +1430,79 @@ class UserFunctions extends DBHelper
         while(sizeof($domainBaseParts) > 1) {
             $tld2 = array_pop($domainBaseParts);
             $tld = $tld2 . "." . $tld;
+        }
+        $domain = array_pop($domainBaseParts);
+        $response = array(
+            "tld" => $tld,
+            "domain" => $domain,
+            "email" => $email,
+
+        );
+        return $response;
+    }
+
+    public function examineEmailDeep($email) {
+        $domainParts = explode("@", $email);
+        $qualifiedDomain = array_pop($domainParts);
+        $domainBaseParts = explode(".", $qualifiedDomain);
+        $tld = array_pop($domainBaseParts);
+        $i = 1;
+        $tldTwo = null;
+        while(sizeof($domainBaseParts) > 1) {
+            $tld2 = array_pop($domainBaseParts);
+            $tld = $tld2 . "." . $tld;
+            ++$i;
+            if($i == 2) $tldTwo = $tld;
+        }
+        $domain = array_pop($domainBaseParts);
+        $response = array(
+            "tld" => $tld,
+            "tld2" => $tldTwo,
+            "domain" => $domain,
+            "email" => $email,
+            "allowedDomains" => $this->allowedDomains,
+            "allowedTLDs" => $this->allowedTLDs,
+        );
+        $status = null;
+        if(is_array($this->allowedDomains)) {
+            $response["checkedDomains"] = true;
+            if(sizeof($this->allowedDomains) > 0) {
+                # Match
+                $hasFullDomain = in_array($qualifiedDomain, $this->allowedDomains);
+                $hasBaseDomain = in_array($domain, $this->allowedDomains);
+                if(!($hasFullDomain || $hasBaseDomain)) $status = false;
+                else $response["validDomain"] = true;
+            } else $response["validDomain"] = null;
+        } else $response["checkedDomains"] = false;
+        if(is_array($this->allowedTLDs)) {
+            $response["checkTlds"] = true;
+            if(sizeof($this->allowedTLDs) > 0) {
+                # Match
+                $baseTldMatch = in_array($tld, $this->allowedTLDs);
+                if(!empty($tldTwo)) {
+                    $europeTldMatch = in_array($tldTwo, $this->allowedTLDs);
+                } else $europeTldMatch = false;
+                if(!($baseTldMatch || $europeTldMatch)) $status = false;
+                else $response["validTld"] = true;
+            }
+        } else $response["checkTlds"] = false;
+        if ($status === null) $status = true;
+        $response["status"] = $status;
+        return $response;
+    }
+
+    private function matchEmailAgainstRestrictions($email) {
+        $domainParts = explode("@", $email);
+        $qualifiedDomain = array_pop($domainParts);
+        $domainBaseParts = explode(".", $qualifiedDomain);
+        $tld = array_pop($domainBaseParts);
+        $i = 1;
+        $tldTwo = null;
+        while(sizeof($domainBaseParts) > 1) {
+            $tld2 = array_pop($domainBaseParts);
+            $tld = $tld2 . "." . $tld;
+            ++$i;
+            if($i == 2) $tldTwo = $tld;
         }
         $domain = array_pop($domainBaseParts);
         if(is_array($this->allowedDomains)) {
@@ -1443,7 +1516,11 @@ class UserFunctions extends DBHelper
         if(is_array($this->allowedTLDs)) {
             if(sizeof($this->allowedTLDs) > 0) {
                 # Match
-                if(!in_array($tld, $this->allowedTLDs)) return false;
+                $baseTldMatch = in_array($tld, $this->allowedTLDs);
+                if(!empty($tldTwo)) {
+                  $europeTldMatch = in_array($tldTwo, $this->allowedTLDs);
+                } else $europeTldMatch = false;
+                if(!($baseTldMatch || $europeTldMatch)) return false;
             }
         }
         return true;
