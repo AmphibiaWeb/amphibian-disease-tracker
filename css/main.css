@@ -9601,6 +9601,10 @@ html >>> .tooltip-container {
   background: #5677fc;
   color: #fff;
 }
+.materialbluetext,
+.material-blue {
+  color: #5677fc;
+}
 paper-fab.materialblue.paper-fab-0 {
   background: #5677fc;
   color: #fff;
@@ -10121,7 +10125,7 @@ paper-button[raised].admin-action {
 #su-management-list .su-user-list:after {
   clear: both;
 }
-#su-management-list .su-user-list div {
+#su-management-list .su-user-list div:not(.tooltip) {
   align-self: flex-end;
   margin-left: 1rem;
 }
