@@ -108,6 +108,10 @@ body {
     color:#fff;
 }
 
+.materialbluetext, .material-blue {
+    color: @material-blue;
+}
+
 paper-fab.materialblue.paper-fab-0 {
     .materialblue;
 }
@@ -675,7 +679,7 @@ paper-button[raised].admin-action {
         padding: .5rem;
         display: flex;
         align-items: center;
-        div {
+        div:not(.tooltip) {
             align-self: flex-end;
             margin-left: 1rem;
         }
