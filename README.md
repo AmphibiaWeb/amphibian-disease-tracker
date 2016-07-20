@@ -6,7 +6,6 @@ https://updates.amphibiandisease.org
 Categories:
  - News
  - Resources
- - Portal
 
 ## Additions
   - Drafts
