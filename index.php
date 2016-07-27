@@ -228,10 +228,10 @@ $loginStatus = getLoginState();
               </div>
               <div class="form-group">
                 <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
-                  Use Viewport Bounds?
+                  Search in map view
                 </iron-label>
                 <div class="col-xs-5 col-sm-8">
-                  <paper-toggle-button id="use-viewport-bounds" checked></paper-toggle-button>
+                  <paper-toggle-button id="use-viewport-bounds" checked>Enabled</paper-toggle-button>
                   <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
                 </div>
               </div>
