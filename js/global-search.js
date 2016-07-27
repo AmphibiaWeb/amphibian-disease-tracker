@@ -1227,7 +1227,7 @@ $(function() {
     var kc;
     kc = e.keyCode ? e.keyCode : e.which;
     if (kc === 13) {
-      return initProjectSearch();
+      return initProjectSearch(null, true);
     } else {
       return false;
     }

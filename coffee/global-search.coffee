@@ -1089,7 +1089,7 @@ $ ->
   $("input.submit-project-search").keyup (e) ->
     kc = if e.keyCode then e.keyCode else e.which
     if kc is 13
-      initProjectSearch()
+      initProjectSearch(null, true)
     else
       false
   # Click the search button
