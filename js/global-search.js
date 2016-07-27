@@ -236,9 +236,9 @@ doSearch = function(search, goDeep, hasRunValidated) {
     results = Object.toArray(result.result);
     if (results.length === 0) {
       searchFailed = function() {
-        var inputErrorHtml;
+        var inputErrorHtml, ref;
         console.warn("The search failed!");
-        if (!isNull(data.sampled_species)) {
+        if (!isNull((ref = search.sampled_species) != null ? ref.data : void 0)) {
           inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  Invalid species: AmphibiaWeb doesn't recognize this species\n</span>";
           $("#taxa-input-container").addClass("has-error");
           $("#taxa-input").attr("aria-describedby", "taxa-input-error").after(inputErrorHtml).keyup(function() {
@@ -263,6 +263,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
         validateAWebTaxon(taxon, function(validatedTaxon) {
           var taxonString;
           if (validatedTaxon.invalid === true) {
+            console.error("This taxon is invalid!", validatedTaxon);
             searchFailed();
             return false;
           }
