@@ -1153,8 +1153,11 @@ $(function() {
   $(".coord-input").keyup(function() {
     return checkCoordinateSanity();
   });
-  initProjectSearch = function(clickedElement) {
-    var deep, error, ok, search;
+  initProjectSearch = function(clickedElement, forceDeep) {
+    var deep, error, error1, ok, search;
+    if (forceDeep == null) {
+      forceDeep = false;
+    }
     ok = checkCoordinateSanity();
     if (!ok) {
       toastStatusMessage("Please check your coordinates");
@@ -1162,11 +1165,18 @@ $(function() {
     }
     search = getSearchObject();
     try {
-      deep = $(clickedElement).attr("data-deep").toBool();
+      try {
+        deep = $(clickedElement).attr("data-deep").toBool();
+      } catch (error) {
+        deep = false;
+      }
+      if (forceDeep) {
+        deep = true;
+      }
       if (deep) {
         search = getSearchContainsObject();
       }
-    } catch (error) {
+    } catch (error1) {
       deep = false;
     }
     doSearch(search, deep);

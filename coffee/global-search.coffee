@@ -1025,14 +1025,19 @@ $ ->
   $(".coord-input").keyup ->
     checkCoordinateSanity()
   # Project search event handling
-  initProjectSearch = (clickedElement) ->
+  initProjectSearch = (clickedElement, forceDeep = false) ->
     ok = checkCoordinateSanity()
     unless ok
       toastStatusMessage "Please check your coordinates"
       return false
     search = getSearchObject()
     try
-      deep = $(clickedElement).attr("data-deep").toBool()
+      try
+        deep = $(clickedElement).attr("data-deep").toBool()
+      catch
+        deep = false
+      if forceDeep
+        deep = true
       if deep
         search = getSearchContainsObject()
     catch
