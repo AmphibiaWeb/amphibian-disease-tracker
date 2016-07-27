@@ -407,7 +407,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
         createRawCartoMap(layerSourceObj);
       }
       $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
-      $("#post-map-subtitle").addClass("bg-success");
+      $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
       $(".show-result-list").remove();
       rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"icons:subject\" data-toggle=\"tooltip\" title=\"Show Project list\" raised></paper-icon-button>";
       $("#post-map-subtitle").append(rlButton);
@@ -685,7 +685,7 @@ doDeepSearch = function(results, namedMap) {
         resultQueryPile += tempQuery;
       }
       $("#post-map-subtitle").text(subText);
-      $("#post-map-subtitle").addClass("bg-success");
+      $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
       args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
         var error2;
@@ -892,7 +892,7 @@ resetMap = function(map, showTables, resetZoom) {
       } catch (undefined) {}
     }
   }
-  $("#post-map-subtitle").text("");
+  $("#post-map-subtitle").removeClass("bg-success").addClass("text-muted").text("");
   if (resetZoom) {
     geo.lMap.setZoom(geo.defaultLeafletOptions.zoom);
     geo.lMap.panTo(geo.defaultLeafletOptions.center);
