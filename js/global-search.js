@@ -226,7 +226,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArrary, taxonRaw, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -255,7 +255,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
       if (!isNull((ref = search.sampled_species) != null ? ref.data : void 0) && !hasRunValidated) {
         console.warn("The initial search failed, we're going to validate the taxon and re-check");
         taxonRaw = search.sampled_species.data;
-        taxonArrary = taxonRaw.split(" ");
+        taxonArray = taxonRaw.split(" ");
         taxon = {
           genus: (ref1 = taxonArray[0]) != null ? ref1 : "",
           species: (ref2 = taxonArray[1]) != null ? ref2 : ""

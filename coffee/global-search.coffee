@@ -215,7 +215,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
         # Do a smarter taxon lookup
         console.warn "The initial search failed, we're going to validate the taxon and re-check"
         taxonRaw = search.sampled_species.data
-        taxonArrary = taxonRaw.split " "
+        taxonArray = taxonRaw.split " "
         taxon =
           genus: taxonArray[0] ? ""
           species: taxonArray[1] ? ""

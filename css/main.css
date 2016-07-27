@@ -9864,6 +9864,11 @@ paper-card.card-tile .header iron-image img {
 }
 #use-viewport-bounds {
   display: inline-block !important;
+  position: relative;
+  top: 0.5rem;
+}
+#use-viewport-bounds .toggle-container {
+  top: 0.5rem;
 }
 /* Loader */
 #loader {
