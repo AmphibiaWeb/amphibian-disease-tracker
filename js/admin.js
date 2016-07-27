@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateAWebTaxon, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -4589,65 +4589,6 @@ validateTaxonData = function(dataObject, callback) {
       }
     });
   })(taxa, 0);
-  return false;
-};
-
-validateAWebTaxon = function(taxonObj, callback) {
-  var args, doCallback, ref;
-  if (callback == null) {
-    callback = null;
-  }
-
-  /*
-   *
-   *
-   * @param Object taxonObj -> object with keys "genus", "species", and
-   *   optionally "subspecies"
-   * @param function callback -> Callback function
-   */
-  if (((ref = window.validationMeta) != null ? ref.validatedTaxons : void 0) == null) {
-    if (typeof window.validationMeta !== "object") {
-      window.validationMeta = new Object();
-    }
-    window.validationMeta.validatedTaxons = new Array();
-  }
-  doCallback = function(validatedTaxon) {
-    if (typeof callback === "function") {
-      callback(validatedTaxon);
-    }
-    return false;
-  };
-  if (window.validationMeta.validatedTaxons.containsObject(taxonObj)) {
-    console.info("Already validated taxon, skipping revalidation", taxonObj);
-    doCallback(taxonObj);
-    return false;
-  }
-  args = "action=validate&genus=" + taxonObj.genus + "&species=" + taxonObj.species;
-  if (taxonObj.subspecies != null) {
-    args += "&subspecies=" + taxonObj.subspecies;
-  }
-  _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-    if (result.status) {
-      taxonObj.genus = result.validated_taxon.genus;
-      taxonObj.species = result.validated_taxon.species;
-      taxonObj.subspecies = result.validated_taxon.subspecies;
-      if (taxonObj.clade == null) {
-        taxonObj.clade = result.validated_taxon.family;
-      }
-      window.validationMeta.validatedTaxons.push(taxonObj);
-    } else {
-      taxonObj.invalid = true;
-    }
-    taxonObj.response = result;
-    doCallback(taxonObj);
-    return false;
-  }).fail(function(result, status) {
-    var prettyTaxon;
-    prettyTaxon = taxonObj.genus + " " + taxonObj.species;
-    prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
-    bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
-    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
-  });
   return false;
 };
 

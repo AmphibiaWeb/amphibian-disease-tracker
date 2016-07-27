@@ -1653,6 +1653,60 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   false
 
 
+
+
+validateAWebTaxon = (taxonObj, callback = null) ->
+  ###
+  #
+  #
+  # @param Object taxonObj -> object with keys "genus", "species", and
+  #   optionally "subspecies"
+  # @param function callback -> Callback function
+  ###
+  unless window.validationMeta?.validatedTaxons?
+    # Just being thorough on this check
+    unless typeof window.validationMeta is "object"
+      window.validationMeta = new Object()
+    # Create the array if it doesn't exist yet
+    window.validationMeta.validatedTaxons = new Array()
+  doCallback = (validatedTaxon) ->
+    if typeof callback is "function"
+      callback(validatedTaxon)
+    false
+  # Check the taxon against pre-validated ones
+  if window.validationMeta.validatedTaxons.containsObject taxonObj
+    console.info "Already validated taxon, skipping revalidation", taxonObj
+    doCallback(taxonObj)
+    return false
+  args = "action=validate&genus=#{taxonObj.genus}&species=#{taxonObj.species}"
+  if taxonObj.subspecies?
+    args += "&subspecies=#{taxonObj.subspecies}"
+  _adp.currentAsyncJqxhr = $.post "api.php", args, "json"
+  .done (result) ->
+    if result.status
+      # Success! Save validated taxon, and run callback
+      taxonObj.genus = result.validated_taxon.genus
+      taxonObj.species = result.validated_taxon.species
+      taxonObj.subspecies = result.validated_taxon.subspecies
+      taxonObj.clade ?= result.validated_taxon.family
+      window.validationMeta.validatedTaxons.push taxonObj
+    else
+      taxonObj.invalid = true
+    taxonObj.response = result
+    doCallback(taxonObj)
+    return false
+  .fail (result, status) ->
+    # On fail, notify the user that the taxon wasn't actually validated
+    # with a BSAlert, rather than toast
+    prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
+    prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
+    bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
+    console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb"
+  false
+
+
+
+
 $ ->
   bindClicks()
   formatScientificNames()

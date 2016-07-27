@@ -171,9 +171,11 @@ getSearchContainsObject = ->
   search
 
 
-doSearch = (search = getSearchObject(), goDeep = false) ->
+doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false) ->
   ###
+  # Main search bootstrapper.
   #
+  # Looks up a taxon, and gets a list of projects to search within.
   ###
   startLoad()
   data = jsonTo64 search
@@ -189,8 +191,47 @@ doSearch = (search = getSearchObject(), goDeep = false) ->
       return false
     results = Object.toArray result.result
     if results.length is 0
-      console.warn "No results"
-      stopLoadError "No results"
+      searchFailed = ->
+        unless isNull data.sampled_species
+          # Mark the field
+          inputErrorHtml = """
+          <span id="taxa-input-error" class="help-block">
+            Invalid species: AmphibiaWeb doesn't recognize this species
+          </span>
+          """
+          $("#taxa-input-container").addClass "has-error"
+          $("#taxa-input")
+          .attr "aria-describedby", "taxa-input-error"
+          .after inputErrorHtml
+          .keyup ->
+            try
+              $("#taxa-input-container").removeClass "has-error"
+              $("#taxa-input-error").remove()          
+        console.warn "No results"
+        stopLoadError "No results"
+        false
+      if not isNull(data.sampled_species) and not hasRunValidated
+        # Do a smarter taxon lookup
+        taxonRaw = data.sampled_species
+        taxonArrary = taxonRaw.split " "
+        taxon =
+          genus: taxonArray[0] ? ""
+          species: taxonArray[1] ? ""
+        # Check it against AmphibiaWeb
+        validateAWebTaxon taxon, (validatedTaxon) ->
+          if validatedTaxon.invalid is true
+            # This thing simply doesn't exist
+            searchFailed()
+            return false
+          taxonString = "#{validatedTaxon.genus} #{validatedTaxon.species} #{validatedTaxon.subspecies}"
+          taxonString = taxonString.trim()
+          $("#taxa-input").val taxonString
+          # Try again
+          doSearch getSearchObject(), goDeep, true
+          return false
+      else
+        # We already ran the AWeb async
+        searchFailed()
       return false
     if goDeep
       # If we're going deep, we'll let the deep take care of the rest
@@ -1025,14 +1066,19 @@ $ ->
   $(".coord-input").keyup ->
     checkCoordinateSanity()
   # Project search event handling
-  initProjectSearch = (clickedElement) ->
+  initProjectSearch = (clickedElement, forceDeep = false) ->
     ok = checkCoordinateSanity()
     unless ok
       toastStatusMessage "Please check your coordinates"
       return false
     search = getSearchObject()
     try
-      deep = $(clickedElement).attr("data-deep").toBool()
+      try
+        deep = $(clickedElement).attr("data-deep").toBool()
+      catch
+        deep = false
+      if forceDeep
+        deep = true
       if deep
         search = getSearchContainsObject()
     catch
