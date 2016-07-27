@@ -203,7 +203,7 @@ getSearchContainsObject = function() {
   return search;
 };
 
-doSearch = function(search, goDeep) {
+doSearch = function(search, goDeep, hasRunValidated) {
   var action, args, data, namedMap;
   if (search == null) {
     search = getSearchObject();
@@ -211,9 +211,14 @@ doSearch = function(search, goDeep) {
   if (goDeep == null) {
     goDeep = false;
   }
+  if (hasRunValidated == null) {
+    hasRunValidated = false;
+  }
 
   /*
+   * Main search bootstrapper.
    *
+   * Looks up a taxon, and gets a list of projects to search within.
    */
   startLoad();
   data = jsonTo64(search);
@@ -221,7 +226,7 @@ doSearch = function(search, goDeep) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, results, rlButton, spArr, species, speciesCount, table, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArrary, taxonRaw, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -230,8 +235,44 @@ doSearch = function(search, goDeep) {
     }
     results = Object.toArray(result.result);
     if (results.length === 0) {
-      console.warn("No results");
-      stopLoadError("No results");
+      searchFailed = function() {
+        var inputErrorHtml;
+        if (!isNull(data.sampled_species)) {
+          inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  Invalid species: AmphibiaWeb doesn't recognize this species\n</span>";
+          $("#taxa-input-container").addClass("has-error");
+          $("#taxa-input").attr("aria-describedby", "taxa-input-error").after(inputErrorHtml).keyup(function() {
+            try {
+              $("#taxa-input-container").removeClass("has-error");
+              return $("#taxa-input-error").remove();
+            } catch (undefined) {}
+          });
+        }
+        console.warn("No results");
+        stopLoadError("No results");
+        return false;
+      };
+      if (!isNull(data.sampled_species) && !hasRunValidated) {
+        taxonRaw = data.sampled_species;
+        taxonArrary = taxonRaw.split(" ");
+        taxon = {
+          genus: (ref = taxonArray[0]) != null ? ref : "",
+          species: (ref1 = taxonArray[1]) != null ? ref1 : ""
+        };
+        validateAWebTaxon(taxon, function(validatedTaxon) {
+          var taxonString;
+          if (validatedTaxon.invalid === true) {
+            searchFailed();
+            return false;
+          }
+          taxonString = validatedTaxon.genus + " " + validatedTaxon.species + " " + validatedTaxon.subspecies;
+          taxonString = taxonString.trim();
+          $("#taxa-input").val(taxonString);
+          doSearch(getSearchObject(), goDeep, true);
+          return false;
+        });
+      } else {
+        searchFailed();
+      }
       return false;
     }
     if (goDeep) {
@@ -274,7 +315,7 @@ doSearch = function(search, goDeep) {
           totalSpecies.push(species);
         }
       }
-      if (((ref = project.carto_id) != null ? ref.table : void 0) == null) {
+      if (((ref2 = project.carto_id) != null ? ref2.table : void 0) == null) {
         try {
           cartoPreParsed = JSON.parse(project.carto_id);
           cartoParsed = new Object();

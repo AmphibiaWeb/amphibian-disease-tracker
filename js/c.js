@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2100,6 +2100,65 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   } catch (error2) {
     stopLoadError("Sorry, there was a problem with this dataset and we can't do that right now.");
   }
+  return false;
+};
+
+validateAWebTaxon = function(taxonObj, callback) {
+  var args, doCallback, ref;
+  if (callback == null) {
+    callback = null;
+  }
+
+  /*
+   *
+   *
+   * @param Object taxonObj -> object with keys "genus", "species", and
+   *   optionally "subspecies"
+   * @param function callback -> Callback function
+   */
+  if (((ref = window.validationMeta) != null ? ref.validatedTaxons : void 0) == null) {
+    if (typeof window.validationMeta !== "object") {
+      window.validationMeta = new Object();
+    }
+    window.validationMeta.validatedTaxons = new Array();
+  }
+  doCallback = function(validatedTaxon) {
+    if (typeof callback === "function") {
+      callback(validatedTaxon);
+    }
+    return false;
+  };
+  if (window.validationMeta.validatedTaxons.containsObject(taxonObj)) {
+    console.info("Already validated taxon, skipping revalidation", taxonObj);
+    doCallback(taxonObj);
+    return false;
+  }
+  args = "action=validate&genus=" + taxonObj.genus + "&species=" + taxonObj.species;
+  if (taxonObj.subspecies != null) {
+    args += "&subspecies=" + taxonObj.subspecies;
+  }
+  _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
+    if (result.status) {
+      taxonObj.genus = result.validated_taxon.genus;
+      taxonObj.species = result.validated_taxon.species;
+      taxonObj.subspecies = result.validated_taxon.subspecies;
+      if (taxonObj.clade == null) {
+        taxonObj.clade = result.validated_taxon.family;
+      }
+      window.validationMeta.validatedTaxons.push(taxonObj);
+    } else {
+      taxonObj.invalid = true;
+    }
+    taxonObj.response = result;
+    doCallback(taxonObj);
+    return false;
+  }).fail(function(result, status) {
+    var prettyTaxon;
+    prettyTaxon = taxonObj.genus + " " + taxonObj.species;
+    prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
+    bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
+    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
+  });
   return false;
 };
 
