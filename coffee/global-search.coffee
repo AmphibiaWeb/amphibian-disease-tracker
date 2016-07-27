@@ -198,7 +198,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           # Mark the field
           inputErrorHtml = """
           <span id="taxa-input-error" class="help-block">
-            Invalid species: Please check your spelling. <a href="http://amphibiaweb.org/search/index.html" data-newtab="true">Check AmphibiaWeb for valid species</a>
+            Invalid species: Please check your spelling. <a href="http://amphibiaweb.org/search/index.html" class="click" data-newtab="true">Check AmphibiaWeb for valid species</a>
           </span>
           """
           $("#taxa-input-container").addClass "has-error"
