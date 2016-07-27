@@ -252,9 +252,9 @@ doSearch = function(search, goDeep, hasRunValidated) {
         stopLoadError("No results");
         return false;
       };
-      if (!isNull(data.sampled_species) && !hasRunValidated) {
+      if (!isNull(search.sampled_species) && !hasRunValidated) {
         console.warn("The initial search failed, we're going to validate the taxon and re-check");
-        taxonRaw = data.sampled_species;
+        taxonRaw = search.sampled_species;
         taxonArrary = taxonRaw.split(" ");
         taxon = {
           genus: (ref = taxonArray[0]) != null ? ref : "",
@@ -273,7 +273,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
           return false;
         });
       } else {
-        console.warn("No need to validate", isNull(data.sampled_species), hasRunValidated);
+        console.warn("No need to validate", isNull(search.sampled_species), hasRunValidated);
         searchFailed();
       }
       return false;
