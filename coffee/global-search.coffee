@@ -193,7 +193,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
     if results.length is 0
       searchFailed = ->
         console.warn "The search failed!"
-        unless isNull data.sampled_species
+        unless isNull search.sampled_species?.data
           # Mark the field
           inputErrorHtml = """
           <span id="taxa-input-error" class="help-block">
@@ -223,6 +223,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
         validateAWebTaxon taxon, (validatedTaxon) ->
           if validatedTaxon.invalid is true
             # This thing simply doesn't exist
+            console.error "This taxon is invalid!", validatedTaxon
             searchFailed()
             return false
           taxonString = "#{validatedTaxon.genus} #{validatedTaxon.species} #{validatedTaxon.subspecies}"
