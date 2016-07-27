@@ -178,6 +178,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
   # Looks up a taxon, and gets a list of projects to search within.
   ###
   startLoad()
+  $("#post-map-subtitle").removeClass "bg-success"
   data = jsonTo64 search
   action = "advanced_project_search" # if goDeep then "" else "advanced_project_search"
   namedMap = if goDeep then namedMapAdvSource else namedMapSource
@@ -197,7 +198,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           # Mark the field
           inputErrorHtml = """
           <span id="taxa-input-error" class="help-block">
-            Invalid species: AmphibiaWeb doesn't recognize this species
+            Invalid species: Please check your spelling. <a href="http://amphibiaweb.org/search/index.html" data-newtab="true">Check AmphibiaWeb for valid species</a>
           </span>
           """
           $("#taxa-input-container").addClass "has-error"
@@ -207,7 +208,8 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           .keyup ->
             try
               $("#taxa-input-container").removeClass "has-error"
-              $("#taxa-input-error").remove()          
+              $("#taxa-input-error").remove()
+          bindClicks()
         console.warn "No results"
         stopLoadError "No results"
         false
@@ -344,6 +346,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           named_map: layer
         createRawCartoMap layerSourceObj
       $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+      $("#post-map-subtitle").addClass "bg-success"
       $(".show-result-list").remove()
       rlButton = """
       <paper-icon-button class="show-result-list" icon="icons:subject" data-toggle="tooltip" title="Show Project list" raised></paper-icon-button>
@@ -575,6 +578,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
+      $("#post-map-subtitle").addClass "bg-success"
       # Initiate a query against the found tables
       args = "action=fetch&sql_query=#{post64(resultQueryPile)}"
       $.post "#{uri.urlString}api.php", args, "json"
