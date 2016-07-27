@@ -346,7 +346,9 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           named_map: layer
         createRawCartoMap layerSourceObj
       $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
-      $("#post-map-subtitle").addClass "bg-success"
+      $("#post-map-subtitle")
+      .removeClass "text-muted"
+      .addClass "bg-success"
       $(".show-result-list").remove()
       rlButton = """
       <paper-icon-button class="show-result-list" icon="icons:subject" data-toggle="tooltip" title="Show Project list" raised></paper-icon-button>
@@ -578,7 +580,9 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
-      $("#post-map-subtitle").addClass "bg-success"
+      $("#post-map-subtitle")
+      .removeClass "text-muted"
+      .addClass "bg-success"
       # Initiate a query against the found tables
       args = "action=fetch&sql_query=#{post64(resultQueryPile)}"
       $.post "#{uri.urlString}api.php", args, "json"
@@ -742,7 +746,10 @@ resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
             layer.removeLayer()
           catch
             layer.remove()
-  $("#post-map-subtitle").text ""
+  $("#post-map-subtitle")
+  .removeClass "bg-success"
+  .addClass "text-muted"
+  .text ""
   if resetZoom
     geo.lMap.setZoom geo.defaultLeafletOptions.zoom
     geo.lMap.panTo geo.defaultLeafletOptions.center

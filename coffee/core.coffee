@@ -1617,7 +1617,7 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   $(caller).replaceWith html
   options =
     objectAsValues: true
-    downloadFile: "#{Date.now()}_adp-global-search-result-data.csv"
+    downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
     acceptableCols: [
       "collectionid"
       "catalognumber"

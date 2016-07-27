@@ -9862,6 +9862,14 @@ paper-card.card-tile .header iron-image img {
   -webkit-filter: grayscale(50%) opacity(0.25);
           filter: grayscale(50%) opacity(0.25);
 }
+.form-group iron-label {
+  font-weight: bold;
+}
+#post-map-subtitle {
+  width: 80%;
+  margin-top: .5rem;
+  border-radius: 10px;
+}
 #use-viewport-bounds {
   display: inline-block !important;
   position: relative;
