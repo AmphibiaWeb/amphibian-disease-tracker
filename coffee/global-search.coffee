@@ -192,6 +192,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
     results = Object.toArray result.result
     if results.length is 0
       searchFailed = ->
+        console.warn "The search failed!"
         unless isNull data.sampled_species
           # Mark the field
           inputErrorHtml = """
@@ -212,6 +213,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
         false
       if not isNull(data.sampled_species) and not hasRunValidated
         # Do a smarter taxon lookup
+        console.warn "The initial search failed, we're going to validate the taxon and re-check"
         taxonRaw = data.sampled_species
         taxonArrary = taxonRaw.split " "
         taxon =
@@ -231,6 +233,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           return false
       else
         # We already ran the AWeb async
+        console.warn "No need to validate", isNull(data.sampled_species), hasRunValidated
         searchFailed()
       return false
     if goDeep
