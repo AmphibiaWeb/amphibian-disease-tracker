@@ -197,7 +197,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           # Mark the field
           inputErrorHtml = """
           <span id="taxa-input-error" class="help-block">
-            Invalid species: AmphibiaWeb doesn't recognize this species
+            Invalid species: Please check your spelling. <a href="http://amphibiaweb.org/search/index.html" data-newtab="true">Check AmphibiaWeb for valid species</a>
           </span>
           """
           $("#taxa-input-container").addClass "has-error"
@@ -207,7 +207,8 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           .keyup ->
             try
               $("#taxa-input-container").removeClass "has-error"
-              $("#taxa-input-error").remove()          
+              $("#taxa-input-error").remove()
+          bindClicks()
         console.warn "No results"
         stopLoadError "No results"
         false

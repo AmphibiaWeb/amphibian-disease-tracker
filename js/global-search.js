@@ -239,7 +239,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
         var inputErrorHtml, ref;
         console.warn("The search failed!");
         if (!isNull((ref = search.sampled_species) != null ? ref.data : void 0)) {
-          inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  Invalid species: AmphibiaWeb doesn't recognize this species\n</span>";
+          inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  Invalid species: Please check your spelling. <a href=\"http://amphibiaweb.org/search/index.html\" data-newtab=\"true\">Check AmphibiaWeb for valid species</a>\n</span>";
           $("#taxa-input-container").addClass("has-error");
           $("#taxa-input").attr("aria-describedby", "taxa-input-error").after(inputErrorHtml).keyup(function() {
             try {
@@ -247,6 +247,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
               return $("#taxa-input-error").remove();
             } catch (undefined) {}
           });
+          bindClicks();
         }
         console.warn("No results");
         stopLoadError("No results");
