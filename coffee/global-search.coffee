@@ -178,6 +178,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
   # Looks up a taxon, and gets a list of projects to search within.
   ###
   startLoad()
+  $("#post-map-subtitle").removeClass "bg-success"
   data = jsonTo64 search
   action = "advanced_project_search" # if goDeep then "" else "advanced_project_search"
   namedMap = if goDeep then namedMapAdvSource else namedMapSource
@@ -345,6 +346,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           named_map: layer
         createRawCartoMap layerSourceObj
       $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
+      $("#post-map-subtitle").addClass "bg-success"
       $(".show-result-list").remove()
       rlButton = """
       <paper-icon-button class="show-result-list" icon="icons:subject" data-toggle="tooltip" title="Show Project list" raised></paper-icon-button>
@@ -576,6 +578,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
+      $("#post-map-subtitle").addClass "bg-success"
       # Initiate a query against the found tables
       args = "action=fetch&sql_query=#{post64(resultQueryPile)}"
       $.post "#{uri.urlString}api.php", args, "json"
