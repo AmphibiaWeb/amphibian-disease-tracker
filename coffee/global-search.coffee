@@ -211,10 +211,10 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
         console.warn "No results"
         stopLoadError "No results"
         false
-      if not isNull(search.sampled_species) and not hasRunValidated
+      if not isNull(search.sampled_species?.data) and not hasRunValidated
         # Do a smarter taxon lookup
         console.warn "The initial search failed, we're going to validate the taxon and re-check"
-        taxonRaw = search.sampled_species
+        taxonRaw = search.sampled_species.data
         taxonArrary = taxonRaw.split " "
         taxon =
           genus: taxonArray[0] ? ""
@@ -233,7 +233,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           return false
       else
         # We already ran the AWeb async
-        console.warn "No need to validate", isNull(search.sampled_species), hasRunValidated
+        console.warn "No need to validate", isNull(search.sampled_species?.data), hasRunValidated
         searchFailed()
       return false
     if goDeep
