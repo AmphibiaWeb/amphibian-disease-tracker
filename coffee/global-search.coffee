@@ -1039,7 +1039,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       <td>#{data.samples}</td>
       <td>#{data.positive}</td>
       <td>#{data.negative}</td>
-      <td>#{prevalence}</td>
+      <td>#{prevalence}%</td>
     </tr>
     """
   summaryTable = """
