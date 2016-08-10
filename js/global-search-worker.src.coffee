@@ -13,6 +13,18 @@ self.addEventListener "message", (e) ->
       tableMap = e.data.tableToProjectMap
       getSampleSummaryDialog jResultsList, tableMap, e.data.windowWidth
 
+
+getPrettySpecies = (rowData) ->
+  genus = rowData.genus
+  species = rowData.specificEpithet ? rowData.specificepithet
+  ssp = rowData.infraspecificEpithet ? rowData.infraspecificEpithet
+  pretty = genus
+  unless isNull species
+    pretty += " #{species}"
+    unless isNull ssp
+      pretty += " #{ssp}"
+  pretty
+
 getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   ###
   # Show a SQL-query like dataset in a modal dialog
@@ -32,7 +44,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   if resultsList.length is 0
     console.warn "There were no results in the result list"
     return false
-  console.log "Generating dialog from", resultsList
+  console.log "Generating dialog from list of length #{resultsList.length}", resultsList
   projectTableRows = new Array()
   outputData = new Array()
   i = 0
