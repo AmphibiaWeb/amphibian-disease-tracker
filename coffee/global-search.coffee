@@ -1003,7 +1003,6 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
               dataSummary.data[species].negative++
           dataSummary.data[species].samples++
           prevalence = dataSummary.data[species].positive / dataSummary.data[species].samples
-          prevalence = roundNumberSigfig prevalence, 2
           dataSummary.data[species].prevalence = prevalence
           outputData.push row
         rowSet = altRows
@@ -1029,10 +1028,42 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     </tr>
     """
     projectTableRows.push row
+  # Create the pretty table
+  summaryTableRows = new Array()
+  for species, data of dataSummary
+    prevalence = data.prevalence * 100
+    prevalence = roundNumberSigfig prevalence, 2
+    summaryTableRows.push """
+    <tr>
+      <td>#{species}</td>
+      <td>#{data.samples}</td>
+      <td>#{data.positive}</td>
+      <td>#{data.negative}</td>
+      <td>#{prevalence}</td>
+    </tr>
+    """
+  summaryTable = """
+  <div class="row">
+    <div class="col-xs-12">
+      <table class="table table-striped">
+        <tr>
+          <th>Species</th>
+          <th>Samples</th>
+          <th>Disease Positive</th>
+          <th>Disease Negative</th>
+          <th>Disease Prevalence</th>
+        </tr>
+        #{summaryTableRows.join("\n")}
+      </table>
+    </div>
+  </div>
+  """
+  # Create the whole thing
   html = """
   <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
     <h2>Project Result List</h2>
     <paper-dialog-scrollable>
+      #{summaryTable}
       <div class="row">
         <div class="col-xs-12">
           <table class="table table-striped">
