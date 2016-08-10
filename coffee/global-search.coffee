@@ -1030,7 +1030,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     projectTableRows.push row
   # Create the pretty table
   summaryTableRows = new Array()
-  for species, data of dataSummary
+  for species, data of dataSummary.data
     prevalence = data.prevalence * 100
     prevalence = roundNumberSigfig prevalence, 2
     summaryTableRows.push """

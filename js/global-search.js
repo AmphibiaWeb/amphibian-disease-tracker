@@ -1083,7 +1083,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, rlButton, row, rowSet, species, startRenderTime, summaryTable, summaryTableRows, table, unhelpfulCols;
+  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, ref3, rlButton, row, rowSet, species, startRenderTime, summaryTable, summaryTableRows, table, unhelpfulCols;
   startRenderTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -1169,8 +1169,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     projectTableRows.push(row);
   }
   summaryTableRows = new Array();
-  for (species in dataSummary) {
-    data = dataSummary[species];
+  ref2 = dataSummary.data;
+  for (species in ref2) {
+    data = ref2[species];
     prevalence = data.prevalence * 100;
     prevalence = roundNumberSigfig(prevalence, 2);
     summaryTableRows.push("<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "</td>\n</tr>");
@@ -1182,9 +1183,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   $("#generate-download").click(function() {
     return generateCSVFromResults(outputData, this);
   });
-  ref2 = $(".code-box");
-  for (l = 0, len2 = ref2.length; l < len2; l++) {
-    el = ref2[l];
+  ref3 = $(".code-box");
+  for (l = 0, len2 = ref3.length; l < len2; l++) {
+    el = ref3[l];
     try {
       Prism.highlightElement(el, true);
     } catch (undefined) {}
