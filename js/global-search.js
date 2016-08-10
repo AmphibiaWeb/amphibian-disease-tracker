@@ -1089,7 +1089,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   postMessageContent = {
     action: "summary-dialog",
     resultsList: resultsList,
-    tableToProjectMap: tableToProjectMap
+    tableToProjectMap: tableToProjectMap,
+    windowWidth: $(window).width()
   };
   worker = new Worker("js/global-search-worker.js");
   worker.addEventListener("message", function(e) {
