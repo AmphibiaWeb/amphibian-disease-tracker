@@ -967,6 +967,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     ]
   window.dataSummary =
     species: []
+    diseases: []
     data: {}
   for projectResults in resultsList
     ++i
@@ -988,22 +989,24 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
           species = getPrettySpecies row
           unless species in dataSummary.species
             dataSummary.species.push species
-            dataSummary.data[species] =
+          d = row.diseasetested
+          if isNull dataSummary.data[species][d]
+            dataSummary.data[species][d] =
               samples: 0
               positive: 0
               negative: 0
               no_confidence: 0
               prevalence: 0
           if row.diseasedetected.toBool()
-            dataSummary.data[species].positive++
+            dataSummary.data[species][d].positive++
           else
             if row.diseasedetected.toLowerCase() is "no_confidence"
-              dataSummary.data[species].no_confidence++
+              dataSummary.data[species][d].no_confidence++
             else
-              dataSummary.data[species].negative++
-          dataSummary.data[species].samples++
-          prevalence = dataSummary.data[species].positive / dataSummary.data[species].samples
-          dataSummary.data[species].prevalence = prevalence
+              dataSummary.data[species][d].negative++
+          dataSummary.data[species][d].samples++
+          prevalence = dataSummary.data[species][d].positive / dataSummary.data[species][d].samples
+          dataSummary.data[species][d].prevalence = prevalence
           outputData.push row
         rowSet = altRows
       catch
@@ -1029,35 +1032,41 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     """
     projectTableRows.push row
   # Create the pretty table
-  summaryTableRows = new Array()
-  for species, data of dataSummary.data
-    prevalence = data.prevalence * 100
-    prevalence = roundNumberSigfig prevalence, 2
-    summaryTableRows.push """
-    <tr>
-      <td>#{species}</td>
-      <td>#{data.samples}</td>
-      <td>#{data.positive}</td>
-      <td>#{data.negative}</td>
-      <td>#{prevalence}%</td>
-    </tr>
-    """
-  summaryTable = """
-  <div class="row">
-    <div class="col-xs-12">
-      <table class="table table-striped">
-        <tr>
-          <th>Species</th>
-          <th>Samples</th>
-          <th>Disease Positive</th>
-          <th>Disease Negative</th>
-          <th>Disease Prevalence</th>
-        </tr>
-        #{summaryTableRows.join("\n")}
-      </table>
+  summaryTableRows = new Object()
+  for species, diseases of dataSummary.data
+    for disease, data of diseases
+      unless summaryTableRows[disease]?
+        summaryTableRows[disease] = new Array()
+      prevalence = data.prevalence * 100
+      prevalence = roundNumberSigfig prevalence, 2
+      summaryTableRows[disease].push """
+      <tr>
+        <td>#{species}</td>
+        <td>#{data.samples}</td>
+        <td>#{data.positive}</td>
+        <td>#{data.negative}</td>
+        <td>#{prevalence}%</td>
+      </tr>
+      """
+  summaryTable = ""
+  for disease, tableRows of summaryTableRows
+    summaryTable += """
+    <div class="row">
+      <div class="col-xs-12">
+        <h3>#{disease}</h3>
+        <table class="table table-striped">
+          <tr>
+            <th>Species</th>
+            <th>Samples</th>
+            <th>Disease Positive</th>
+            <th>Disease Negative</th>
+            <th>Disease Prevalence</th>
+          </tr>
+          #{tableRows.join("\n")}
+        </table>
+      </div>
     </div>
-  </div>
-  """
+    """
   # Create the whole thing
   html = """
   <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
@@ -1066,6 +1075,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
       #{summaryTable}
       <div class="row">
         <div class="col-xs-12">
+          <h3>Raw Data</h3>
           <table class="table table-striped">
             <tr>
               <th colspan="4">Query Data</th>
