@@ -1083,7 +1083,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, rlButton, row, rowSet, species, startRenderTime, table, unhelpfulCols;
+  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, rlButton, row, rowSet, species, startRenderTime, summaryTable, summaryTableRows, table, unhelpfulCols;
   startRenderTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -1142,7 +1142,6 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
           }
           dataSummary.data[species].samples++;
           prevalence = dataSummary.data[species].positive / dataSummary.data[species].samples;
-          prevalence = roundNumberSigfig(prevalence, 2);
           dataSummary.data[species].prevalence = prevalence;
           outputData.push(row);
         }
@@ -1169,7 +1168,15 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  summaryTableRows = new Array();
+  for (species in dataSummary) {
+    data = dataSummary[species];
+    prevalence = data.prevalence * 100;
+    prevalence = roundNumberSigfig(prevalence, 2);
+    summaryTableRows.push("<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "</td>\n</tr>");
+  }
+  summaryTable = "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (summaryTableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
   $("#generate-download").click(function() {
