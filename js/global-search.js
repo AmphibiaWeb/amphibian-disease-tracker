@@ -1083,7 +1083,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, ref3, rlButton, row, rowSet, species, startRenderTime, summaryTable, summaryTableRows, table, unhelpfulCols;
+  var altRows, col, d, data, dataWidthMax, dataWidthMin, disease, diseases, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, ref3, rlButton, row, rowSet, species, startRenderTime, summaryTable, summaryTableRows, table, tableRows, unhelpfulCols;
   startRenderTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -1099,6 +1099,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   unhelpfulCols = ["cartodb_id", "the_geom", "the_geom_webmercator", "id"];
   window.dataSummary = {
     species: [],
+    diseases: [],
     data: {}
   };
   for (j = 0, len = resultsList.length; j < len; j++) {
@@ -1123,7 +1124,10 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
           species = getPrettySpecies(row);
           if (indexOf.call(dataSummary.species, species) < 0) {
             dataSummary.species.push(species);
-            dataSummary.data[species] = {
+          }
+          d = row.diseasetested;
+          if (isNull(dataSummary.data[species][d])) {
+            dataSummary.data[species][d] = {
               samples: 0,
               positive: 0,
               negative: 0,
@@ -1132,17 +1136,17 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
             };
           }
           if (row.diseasedetected.toBool()) {
-            dataSummary.data[species].positive++;
+            dataSummary.data[species][d].positive++;
           } else {
             if (row.diseasedetected.toLowerCase() === "no_confidence") {
-              dataSummary.data[species].no_confidence++;
+              dataSummary.data[species][d].no_confidence++;
             } else {
-              dataSummary.data[species].negative++;
+              dataSummary.data[species][d].negative++;
             }
           }
-          dataSummary.data[species].samples++;
-          prevalence = dataSummary.data[species].positive / dataSummary.data[species].samples;
-          dataSummary.data[species].prevalence = prevalence;
+          dataSummary.data[species][d].samples++;
+          prevalence = dataSummary.data[species][d].positive / dataSummary.data[species][d].samples;
+          dataSummary.data[species][d].prevalence = prevalence;
           outputData.push(row);
         }
         rowSet = altRows;
@@ -1168,16 +1172,26 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  summaryTableRows = new Array();
+  summaryTableRows = new Object();
   ref2 = dataSummary.data;
   for (species in ref2) {
-    data = ref2[species];
-    prevalence = data.prevalence * 100;
-    prevalence = roundNumberSigfig(prevalence, 2);
-    summaryTableRows.push("<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>");
+    diseases = ref2[species];
+    for (disease in diseases) {
+      data = diseases[disease];
+      if (summaryTableRows[disease] == null) {
+        summaryTableRows[disease] = new Array();
+      }
+      prevalence = data.prevalence * 100;
+      prevalence = roundNumberSigfig(prevalence, 2);
+      summaryTableRows[disease].push("<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>");
+    }
   }
-  summaryTable = "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (summaryTableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  summaryTable = "";
+  for (disease in summaryTableRows) {
+    tableRows = summaryTableRows[disease];
+    summaryTable += "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>" + disease + "</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (tableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
+  }
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <h3>Raw Data</h3>\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#modal-sql-details-list").remove();
   $("body").append(html);
   $("#generate-download").click(function() {
