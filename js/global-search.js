@@ -1083,176 +1083,76 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataWidthMax, dataWidthMin, disease, diseases, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, ref3, rlButton, row, rowSet, species, startRenderTime, summaryTable, table, tableRows, unhelpfulCols;
+  var postMessageContent, startRenderTime, worker;
   startRenderTime = Date.now();
-  if (!isArray(resultsList)) {
-    resultsList = Object.toArray(resultsList);
-  }
-  if (resultsList.length === 0) {
-    console.warn("There were no results in the result list");
-    return false;
-  }
-  console.log("Generating dialog from", resultsList);
-  projectTableRows = new Array();
-  outputData = new Array();
-  i = 0;
-  unhelpfulCols = ["cartodb_id", "the_geom", "the_geom_webmercator", "id"];
-  window.dataSummary = {
-    species: [],
-    diseases: [],
-    data: {}
+  console.info("Starting Web Worker to do hard work");
+  postMessageContent = {
+    action: "summary-dialog",
+    resultsList: resultsList,
+    tableToProjectMap: tableToProjectMap
   };
-  for (j = 0, len = resultsList.length; j < len; j++) {
-    projectResults = resultsList[j];
-    ++i;
-    dataWidthMax = $(window).width() * .5;
-    dataWidthMin = $(window).width() * .3;
-    try {
-      rowSet = projectResults.rows;
-      try {
-        altRows = new Object();
-        ref = projectResults.rows;
-        for (n in ref) {
-          row = ref[n];
-          for (k = 0, len1 = unhelpfulCols.length; k < len1; k++) {
-            col = unhelpfulCols[k];
-            delete row[col];
-          }
-          altRows[n] = row;
-          row.carto_table = projectResults.table;
-          row.project_id = projectResults.project_id;
-          species = getPrettySpecies(row);
-          if (indexOf.call(dataSummary.species, species) < 0) {
-            dataSummary.species.push(species);
-          }
-          d = row.diseasetested;
-          if (indexOf.call(dataSummary.diseases, d) < 0) {
-            dataSummary.diseases.push(d);
-          }
-          if (isNull(dataSummary.data[species])) {
-            dataSummary.data[species] = {};
-          }
-          if (isNull(dataSummary.data[species][d])) {
-            dataSummary.data[species][d] = {
-              samples: 0,
-              positive: 0,
-              negative: 0,
-              no_confidence: 0,
-              prevalence: 0
-            };
-          }
-          if (row.diseasedetected.toBool()) {
-            dataSummary.data[species][d].positive++;
-          } else {
-            if (row.diseasedetected.toLowerCase() === "no_confidence") {
-              dataSummary.data[species][d].no_confidence++;
-            } else {
-              dataSummary.data[species][d].negative++;
-            }
-          }
-          dataSummary.data[species][d].samples++;
-          prevalence = dataSummary.data[species][d].positive / dataSummary.data[species][d].samples;
-          dataSummary.data[species][d].prevalence = prevalence;
-          outputData.push(row);
-        }
-        rowSet = altRows;
-      } catch (error) {
-        ref1 = projectResults.rows;
-        for (n in ref1) {
-          row = ref1[n];
-          row.carto_table = projectResults.table;
-          row.project_id = projectResults.project_id;
-          outputData.push(row);
-        }
-      }
-      data = JSON.stringify(rowSet);
-      if (isNull(data)) {
-        console.warn("Got bad data for row #" + i + "!", projectResults, projectResults.rows, data);
-        continue;
-      }
-      data = "" + data;
-    } catch (error1) {
-      data = "Invalid data from server";
-    }
-    table = project = tableToProjectMap[projectResults.table];
-    row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
-    projectTableRows.push(row);
-  }
-  window.summaryTableRows = new Object();
-  ref2 = dataSummary.data;
-  for (species in ref2) {
-    diseases = ref2[species];
-    for (disease in diseases) {
-      data = diseases[disease];
-      if (summaryTableRows[disease] == null) {
-        summaryTableRows[disease] = new Array();
-      }
-      prevalence = data.prevalence * 100;
-      prevalence = roundNumberSigfig(prevalence, 2);
-      summaryTableRows[disease].push("<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>");
-    }
-  }
-  summaryTable = "";
-  for (disease in summaryTableRows) {
-    tableRows = summaryTableRows[disease];
-    summaryTable += "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>" + disease + "</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (tableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
-  }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <h3>Raw Data</h3>\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
-  $("#modal-sql-details-list").remove();
-  $("body").append(html);
-  $("#generate-download").click(function() {
-    return generateCSVFromResults(outputData, this);
-  });
-  ref3 = $(".code-box");
-  for (l = 0, len2 = ref3.length; l < len2; l++) {
-    el = ref3[l];
-    try {
-      Prism.highlightElement(el, true);
-    } catch (undefined) {}
-  }
-  $("#modal-sql-details-list").on("iron-overlay-closed", function() {
-    $(".leaflet-control-attribution").removeAttr("hidden");
-    return $(".leaflet-control").removeAttr("hidden");
-  });
-  $(".show-result-list").remove();
-  rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Show Sample Details\" raised></paper-icon-button>";
-  $("#post-map-subtitle").append(rlButton);
-  $(".show-result-list").unbind().click(function() {
-    var startTime;
-    animateLoad();
-    startTime = Date.now();
-    console.log("Calling dialog helper");
-    return safariDialogHelper("#modal-sql-details-list", 0, function() {
-      var checkIsVisible, elapsed, maxTime, timeout;
-      elapsed = Date.now() - startTime;
-      console.info("Successfully opened dialog in " + elapsed + "ms via safariDialogHelper");
-      $(".leaflet-control-attribution").attr("hidden", "hidden");
-      $(".leaflet-control").attr("hidden", "hidden");
-      i = 0;
-      timeout = 100;
-      maxTime = 30000;
-      return (checkIsVisible = function() {
-        return delay(timeout, function() {
-          var appxTime;
-          ++i;
-          if ((i * timeout) < maxTime && !$("#modal-sql-details-list").isVisible()) {
-            return checkIsVisible();
-          } else {
-            stopLoad();
-            appxTime = (timeout * i) - (timeout / 2) + elapsed;
-            if (appxTime > 500) {
-              return console.warn("It took about " + appxTime + "ms to render the dialog visible!");
-            } else {
-              return console.info("Dialog ready in about " + appxTime + "ms");
-            }
-          }
-        });
-      })();
+  worker = new Worker("js/global-search-worker.js");
+  worker.addEventListener("message", function(e) {
+    var el, elapsed, html, j, len, outputData, ref, rlButton;
+    html = e.data.html;
+    outputData = e.data.outputData;
+    $("#modal-sql-details-list").remove();
+    $("body").append(html);
+    $("#generate-download").click(function() {
+      return generateCSVFromResults(outputData, this);
     });
+    ref = $(".code-box");
+    for (j = 0, len = ref.length; j < len; j++) {
+      el = ref[j];
+      try {
+        Prism.highlightElement(el, true);
+      } catch (undefined) {}
+    }
+    $("#modal-sql-details-list").on("iron-overlay-closed", function() {
+      $(".leaflet-control-attribution").removeAttr("hidden");
+      return $(".leaflet-control").removeAttr("hidden");
+    });
+    $(".show-result-list").remove();
+    rlButton = "<paper-icon-button class=\"show-result-list\" icon=\"editor:insert-chart\" data-toggle=\"tooltip\" title=\"Show Sample Details\" raised></paper-icon-button>";
+    $("#post-map-subtitle").append(rlButton);
+    $(".show-result-list").unbind().click(function() {
+      var startTime;
+      animateLoad();
+      startTime = Date.now();
+      console.log("Calling dialog helper");
+      return safariDialogHelper("#modal-sql-details-list", 0, function() {
+        var checkIsVisible, elapsed, i, maxTime, timeout;
+        elapsed = Date.now() - startTime;
+        console.info("Successfully opened dialog in " + elapsed + "ms via safariDialogHelper");
+        $(".leaflet-control-attribution").attr("hidden", "hidden");
+        $(".leaflet-control").attr("hidden", "hidden");
+        i = 0;
+        timeout = 100;
+        maxTime = 30000;
+        return (checkIsVisible = function() {
+          return delay(timeout, function() {
+            var appxTime;
+            ++i;
+            if ((i * timeout) < maxTime && !$("#modal-sql-details-list").isVisible()) {
+              return checkIsVisible();
+            } else {
+              stopLoad();
+              appxTime = (timeout * i) - (timeout / 2) + elapsed;
+              if (appxTime > 500) {
+                return console.warn("It took about " + appxTime + "ms to render the dialog visible!");
+              } else {
+                return console.info("Dialog ready in about " + appxTime + "ms");
+              }
+            }
+          });
+        })();
+      });
+    });
+    bindClicks();
+    elapsed = Date.now() - startRenderTime;
+    return console.info("Generated project result list in " + elapsed + "ms");
   });
-  bindClicks();
-  elapsed = Date.now() - startRenderTime;
-  console.info("Generated project result list in " + elapsed + "ms");
+  worker.postMessage(postMessageContent);
   return false;
 };
 
