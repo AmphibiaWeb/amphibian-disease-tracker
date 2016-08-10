@@ -155,7 +155,10 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     html: html,
     outputData: outputData,
     data: dataSummary,
-    summaryRows: summaryTableRows
+    summaryRows: summaryTableRows,
+    providedList: resultsList,
+    providedMap: tableToProjectMap,
+    providedWidth: windowWidth
   };
   self.postMessage(message);
   return self.close();

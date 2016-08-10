@@ -180,5 +180,8 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     outputData: outputData
     data: dataSummary
     summaryRows: summaryTableRows
+    providedList: resultsList
+    providedMap: tableToProjectMap
+    providedWidth: windowWidth
   self.postMessage message
   self.close()
