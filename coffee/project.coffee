@@ -116,6 +116,9 @@ renderMapWithData = (projectData, force = false) ->
         ++i
   downloadButton ?= ""
   cartoTable = cartoData.table
+  if isNull cartoTable
+    console.warn "WARNING: This project has no data associated with it. Not doing map render."
+    return false
   try
     zoomPaths = cartoData.bounding_polygon.paths ? cartoData.bounding_polygon
     zoom = getMapZoom zoomPaths, "#transect-viewport"
