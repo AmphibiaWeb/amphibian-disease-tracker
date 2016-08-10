@@ -6,10 +6,8 @@
  *
  *
  */
-var byteCount, dateMonthToString, deEscape, decode64, delay, downloadCSVFile, e, encode64, error1, generateCSVFromResults, getElementHtml, getLocation, getSampleSummaryDialog, goTo, isArray, isBlank, isBool, isEmpty, isJson, isNull, isNumber, jsonTo64, locationData, openLink, openTab, post64, prepURI, randomInt, randomString, roundNumber, roundNumberSigfig, toFloat, toInt, toObject, uri, validateAWebTaxon,
+var byteCount, dateMonthToString, deEscape, decode64, delay, downloadCSVFile, encode64, generateCSVFromResults, getLocation, getSampleSummaryDialog, goTo, isArray, isBlank, isBool, isEmpty, isJson, isNull, isNumber, jsonTo64, locationData, openLink, openTab, post64, prepURI, randomInt, randomString, roundNumber, roundNumberSigfig, toFloat, toInt, toObject, validateAWebTaxon,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-importScripts("https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js", "purl.min.js");
 
 self.addEventListener("message", function(e) {
   var jResultsList, tableMap;
@@ -163,41 +161,6 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
  * Core helpers/imports for web workers
  */
 
-var document = self.document = {parentNode: null, nodeType: 9, toString: function() {return "FakeDocument"}};
-var window = self.window = self;
-var fakeElement = Object.create(document);
-fakeElement.nodeType = 1;
-fakeElement.toString=function() {return "FakeElement"};
-fakeElement.parentNode = fakeElement.firstChild = fakeElement.lastChild = fakeElement;
-fakeElement.ownerDocument = document;
-
-document.head = document.body = fakeElement;
-document.ownerDocument = document.documentElement = document;
-document.getElementById = document.createElement = function() {return fakeElement;};
-document.createDocumentFragment = function() {return this;};
-document.createElement = function() {return this;};
-document.getElementsByTagName = document.getElementsByClassName = function() {return [fakeElement];};
-document.getAttribute = document.setAttribute = document.removeChild =
-  document.addEventListener = document.removeEventListener =
-  function() {return null;};
-document.cloneNode = document.appendChild = function() {return this;};
-document.appendChild = function(child) {return child;};;
-
-importScripts("https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js");
-
-try {
-  importScripts("purl.min.js");
-  try {
-    uri = new Object();
-    uri.o = $.url();
-    uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host') + uri.o.attr("directory");
-    uri.query = uri.o.attr("fragment");
-  } catch (error1) {
-    e = error1;
-    console.warn("PURL not installed!");
-  }
-} catch (undefined) {}
-
 locationData = new Object();
 
 locationData.params = {
@@ -207,7 +170,7 @@ locationData.params = {
 locationData.last = void 0;
 
 isBool = function(str, strict) {
-  var error2;
+  var e, error1;
   if (strict == null) {
     strict = false;
   }
@@ -225,8 +188,8 @@ isBool = function(str, strict) {
       return str === 1 || str === 0;
     }
     return false;
-  } catch (error2) {
-    e = error2;
+  } catch (error1) {
+    e = error1;
     return false;
   }
 };
@@ -240,41 +203,41 @@ isBlank = function(str) {
 };
 
 isNull = function(str) {
-  var error2;
+  var e, error1;
   try {
     if (isEmpty(str) || isBlank(str) || (str == null)) {
       if (!(str === false || str === 0)) {
         return true;
       }
     }
-  } catch (error2) {
-    e = error2;
+  } catch (error1) {
+    e = error1;
     return false;
   }
   return false;
 };
 
 isJson = function(str) {
-  var error2;
+  var error1;
   if (typeof str === 'object' && !isArray(str)) {
     return true;
   }
   try {
     JSON.parse(str);
     return true;
-  } catch (error2) {
+  } catch (error1) {
     return false;
   }
   return false;
 };
 
 isArray = function(arr) {
-  var error2, shadow;
+  var error1, shadow;
   try {
     shadow = arr.slice(0);
     shadow.push("foo");
     return true;
-  } catch (error2) {
+  } catch (error1) {
     return false;
   }
 };
@@ -334,14 +297,14 @@ Array.prototype.min = function() {
 };
 
 Array.prototype.containsObject = function(obj) {
-  var error2, res;
+  var e, error1, res;
   try {
     res = _.find(this, function(val) {
       return _.isEqual(obj, val);
     });
     return typeof res === "object";
-  } catch (error2) {
-    e = error2;
+  } catch (error1) {
+    e = error1;
     console.error("Please load underscore.js before using this.");
     return console.info("https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js");
   }
@@ -362,12 +325,12 @@ Object.toArray = function(obj) {
 };
 
 Object.size = function(obj) {
-  var error2, key, size;
+  var e, error1, key, size;
   if (typeof obj !== "object") {
     try {
       return obj.length;
-    } catch (error2) {
-      e = error2;
+    } catch (error1) {
+      e = error1;
       console.error("Passed argument isn't an object and doesn't have a .length parameter");
       console.warn(e.message);
     }
@@ -492,19 +455,6 @@ deEscape = function(string) {
   return string;
 };
 
-getElementHtml = function(el) {
-  return el.outerHTML;
-};
-
-jQuery.fn.outerHTML = function() {
-  e = $(this).get(0);
-  return e.outerHTML;
-};
-
-jQuery.fn.outerHtml = function() {
-  return $(this).outerHTML();
-};
-
 jsonTo64 = function(obj, encode) {
   var encoded, objString, shadowObj;
   if (encode == null) {
@@ -531,22 +481,22 @@ jsonTo64 = function(obj, encode) {
 };
 
 encode64 = function(string) {
-  var error2;
+  var e, error1;
   try {
     return Base64.encode(string);
-  } catch (error2) {
-    e = error2;
+  } catch (error1) {
+    e = error1;
     console.warn("Bad encode string provided");
     return string;
   }
 };
 
 decode64 = function(string) {
-  var error2;
+  var e, error1;
   try {
     return Base64.decode(string);
-  } catch (error2) {
-    e = error2;
+  } catch (error1) {
+    e = error1;
     console.warn("Bad decode string provided");
     return string;
   }
@@ -676,7 +626,7 @@ goTo = function(url) {
 };
 
 dateMonthToString = function(month) {
-  var conversionObj, error2, rv;
+  var conversionObj, error1, rv;
   conversionObj = {
     0: "January",
     1: "February",
@@ -693,7 +643,7 @@ dateMonthToString = function(month) {
   };
   try {
     rv = conversionObj[month];
-  } catch (error2) {
+  } catch (error1) {
     rv = month;
   }
   return rv;
@@ -785,7 +735,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, col, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, selector, textAsset;
+  var col, file, header, headerPlaceholder, headerStr, j, jsonObject, k, len, parser, textAsset;
   textAsset = "";
   if (isJson(data)) {
     console.info("Parsing as JSON string");
@@ -832,7 +782,7 @@ downloadCSVFile = function(data, options) {
   }
   headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
-    var col, dataVal, error2, escapedKey, handleValue, j, key, len, results, row, tmpRow, tmpRowString, value;
+    var col, dataVal, e, error1, escapedKey, handleValue, j, key, len, results, row, tmpRow, tmpRowString, value;
     row = 0;
     if (options.objectAsValues) {
       options.splitValues = "::@@::";
@@ -919,8 +869,8 @@ downloadCSVFile = function(data, options) {
           tmpRowString = tmpRow.join(options.splitValues);
           results.push(textAsset += handleValue(tmpRowString, options));
         }
-      } catch (error2) {
-        e = error2;
+      } catch (error1) {
+        e = error1;
         console.warn("Unable to run key " + key + " on row " + row, value, jsonObj);
         results.push(console.warn(e.stack));
       }
@@ -950,29 +900,17 @@ downloadCSVFile = function(data, options) {
     textAsset = textAsset.slice(0, -1);
   }
   file = ("data:text/csv;charset=utf-8;header=" + header + ",") + encodeURIComponent(textAsset);
-  selector = options.selector;
-  if (options.create === true) {
-    c = $(selector).find("button").length;
-    id = (selector.slice(1)) + "-download-button-" + c;
-    html = "<a id=\"" + id + "\" class=\"" + options.classes + "\" href=\"" + file + "\" download=\"" + options.downloadFile + "\">\n  " + options.iconHtml + "\n  " + options.buttonText + "\n</a>";
-    $(selector).append(html);
-  } else {
-    $(selector).attr("download", options.downloadFile).attr("href", file);
-  }
   return file;
 };
 
 generateCSVFromResults = function(resultArray, caller, selector) {
-  var error2, file, html, options;
+  var error1, file, options;
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
   animateLoad();
   toastStatusMessage("This may take a few seconds, please wait");
   console.info("Given", resultArray);
-  $("#download-file").remove();
-  html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
-  $(caller).replaceWith(html);
   options = {
     objectAsValues: true,
     downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
@@ -980,9 +918,8 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   };
   try {
     file = downloadCSVFile(resultArray, options);
-    $(selector + " #download-file paper-button").removeAttr("disabled");
     stopLoad();
-  } catch (error2) {
+  } catch (error1) {
     stopLoadError("Sorry, there was a problem with this dataset and we can't do that right now.");
   }
   return false;

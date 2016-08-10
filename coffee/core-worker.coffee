@@ -3,39 +3,39 @@
 ###
 
 # jQuery DOM workaround
-`var document = self.document = {parentNode: null, nodeType: 9, toString: function() {return "FakeDocument"}};
-var window = self.window = self;
-var fakeElement = Object.create(document);
-fakeElement.nodeType = 1;
-fakeElement.toString=function() {return "FakeElement"};
-fakeElement.parentNode = fakeElement.firstChild = fakeElement.lastChild = fakeElement;
-fakeElement.ownerDocument = document;
+# `var document = self.document = {parentNode: null, nodeType: 9, toString: function() {return "FakeDocument"}};
+# var window = self.window = self;
+# var fakeElement = Object.create(document);
+# fakeElement.nodeType = 1;
+# fakeElement.toString=function() {return "FakeElement"};
+# fakeElement.parentNode = fakeElement.firstChild = fakeElement.lastChild = fakeElement;
+# fakeElement.ownerDocument = document;
 
-document.head = document.body = fakeElement;
-document.ownerDocument = document.documentElement = document;
-document.getElementById = document.createElement = function() {return fakeElement;};
-document.createDocumentFragment = function() {return this;};
-document.createElement = function() {return this;};
-document.getElementsByTagName = document.getElementsByClassName = function() {return [fakeElement];};
-document.getAttribute = document.setAttribute = document.removeChild =
-  document.addEventListener = document.removeEventListener =
-  function() {return null;};
-document.cloneNode = document.appendChild = function() {return this;};
-document.appendChild = function(child) {return child;};`
+# document.head = document.body = fakeElement;
+# document.ownerDocument = document.documentElement = document;
+# document.getElementById = document.createElement = function() {return fakeElement;};
+# document.createDocumentFragment = function() {return this;};
+# document.createElement = function() {return this;};
+# document.getElementsByTagName = document.getElementsByClassName = function() {return [fakeElement];};
+# document.getAttribute = document.setAttribute = document.removeChild =
+#   document.addEventListener = document.removeEventListener =
+#   function() {return null;};
+# document.cloneNode = document.appendChild = function() {return this;};
+# document.appendChild = function(child) {return child;};`
 
-importScripts "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"
-try
-  importScripts "purl.min.js"
-  # Set up basic URI parameters
-  # Uses
-  # https://github.com/allmarkedup/purl
-  try
-    uri = new Object()
-    uri.o = $.url()
-    uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host')  + uri.o.attr("directory")
-    uri.query = uri.o.attr("fragment")
-  catch e
-    console.warn("PURL not installed!")
+# importScripts "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"
+# try
+#   importScripts "purl.min.js"
+#   # Set up basic URI parameters
+#   # Uses
+#   # https://github.com/allmarkedup/purl
+#   try
+#     uri = new Object()
+#     uri.o = $.url()
+#     uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host')  + uri.o.attr("directory")
+#     uri.query = uri.o.attr("fragment")
+#   catch e
+#     console.warn("PURL not installed!")
 
 locationData = new Object()
 locationData.params =
@@ -247,18 +247,6 @@ deEscape = (string) ->
   string = string.replace(/\&#60;/mg, '<')
   string
 
-
-getElementHtml = (el) ->
-  el.outerHTML
-
-
-jQuery.fn.outerHTML = ->
-  e = $(this).get(0)
-  e.outerHTML
-
-
-jQuery.fn.outerHtml = ->
-  $(this).outerHTML()
 
 
 
@@ -618,21 +606,6 @@ downloadCSVFile = (data, options) ->
   if textAsset.slice(-1) is ","
     textAsset = textAsset.slice(0, -1)
   file = "data:text/csv;charset=utf-8;header=#{header}," + encodeURIComponent(textAsset)
-  selector = options.selector
-  if options.create is true
-    c = $(selector).find("button").length
-    id = "#{selector.slice(1)}-download-button-#{c}"
-    html = """
-    <a id="#{id}" class="#{options.classes}" href="#{file}" download="#{options.downloadFile}">
-      #{options.iconHtml}
-      #{options.buttonText}
-    </a>
-    """
-    $(selector).append html
-  else
-    $(selector)
-    .attr("download", options.downloadFile)
-    .attr("href",file)
   file
 
 
@@ -641,16 +614,6 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   animateLoad()
   toastStatusMessage "This may take a few seconds, please wait"
   console.info "Given", resultArray
-  $("#download-file").remove()
-  html = """
-      <a tabindex="-1" id="download-file" class="paper-button-link">
-        <paper-button disabled>
-          <iron-icon icon="icons:cloud-download"></iron-icon>
-          Download File
-        </paper-button>
-      </a>
-  """
-  $(caller).replaceWith html
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
@@ -682,7 +645,6 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   # http://www.html5rocks.com/en/tutorials/workers/basics/
   try
     file = downloadCSVFile(resultArray, options)
-    $("#{selector} #download-file paper-button").removeAttr "disabled"
     stopLoad()
   catch
     stopLoadError "Sorry, there was a problem with this dataset and we can't do that right now."
