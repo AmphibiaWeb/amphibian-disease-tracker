@@ -17,11 +17,11 @@ self.addEventListener("message", function(e) {
     case "summary-dialog":
       jResultsList = e.data.resultsList;
       tableMap = e.data.tableToProjectMap;
-      return getSampleSummaryDialog(jResultsList, tableMap);
+      return getSampleSummaryDialog(jResultsList, tableMap, e.data.windowWidth);
   }
 });
 
-getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
+getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
 
   /*
    * Show a SQL-query like dataset in a modal dialog
@@ -36,7 +36,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataWidthMax, dataWidthMin, disease, diseases, error, error1, html, i, j, k, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, species, summaryTable, table, tableRows, unhelpfulCols;
+  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, error, error1, html, i, j, k, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, species, summaryTable, summaryTableRows, table, tableRows, unhelpfulCols;
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -49,7 +49,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   outputData = new Array();
   i = 0;
   unhelpfulCols = ["cartodb_id", "the_geom", "the_geom_webmercator", "id"];
-  window.dataSummary = {
+  dataSummary = {
     species: [],
     diseases: [],
     data: {}
@@ -57,8 +57,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   for (j = 0, len = resultsList.length; j < len; j++) {
     projectResults = resultsList[j];
     ++i;
-    dataWidthMax = $(window).width() * .5;
-    dataWidthMin = $(window).width() * .3;
+    dataWidthMax = windowWidth * .5;
+    dataWidthMin = windowWidth * .3;
     try {
       rowSet = projectResults.rows;
       try {
@@ -130,7 +130,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  window.summaryTableRows = new Object();
+  summaryTableRows = new Object();
   ref2 = dataSummary.data;
   for (species in ref2) {
     diseases = ref2[species];

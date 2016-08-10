@@ -5,15 +5,15 @@
 #
 #
 ###
-importScripts "js/c.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"
+importScripts "c.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"
 self.addEventListener "message", (e) ->
   switch e.data.action
     when "summary-dialog"
       jResultsList = e.data.resultsList
       tableMap = e.data.tableToProjectMap
-      getSampleSummaryDialog jResultsList, tableMap
+      getSampleSummaryDialog jResultsList, tableMap, e.data.windowWidth
 
-getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
+getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   ###
   # Show a SQL-query like dataset in a modal dialog
   #
@@ -42,14 +42,14 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     "the_geom_webmercator"
     "id"
     ]
-  window.dataSummary =
+  dataSummary =
     species: []
     diseases: []
     data: {}
   for projectResults in resultsList
     ++i
-    dataWidthMax = $(window).width() * .5
-    dataWidthMin = $(window).width() * .3
+    dataWidthMax = windowWidth * .5
+    dataWidthMin = windowWidth * .3
     try
       rowSet = projectResults.rows
       try
@@ -113,7 +113,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     """
     projectTableRows.push row
   # Create the pretty table
-  window.summaryTableRows = new Object()
+  summaryTableRows = new Object()
   for species, diseases of dataSummary.data
     for disease, data of diseases
       unless summaryTableRows[disease]?
