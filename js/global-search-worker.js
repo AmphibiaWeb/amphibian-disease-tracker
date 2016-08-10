@@ -6,7 +6,7 @@
  *
  *
  */
-var byteCount, dateMonthToString, deEscape, decode64, delay, downloadCSVFile, encode64, generateCSVFromResults, getLocation, getSampleSummaryDialog, goTo, isArray, isBlank, isBool, isEmpty, isJson, isNull, isNumber, jsonTo64, locationData, openLink, openTab, post64, prepURI, randomInt, randomString, roundNumber, roundNumberSigfig, toFloat, toInt, toObject, validateAWebTaxon,
+var byteCount, dateMonthToString, deEscape, decode64, delay, downloadCSVFile, encode64, generateCSVFromResults, getLocation, getPrettySpecies, getSampleSummaryDialog, goTo, isArray, isBlank, isBool, isEmpty, isJson, isNull, isNumber, jsonTo64, locationData, openLink, openTab, post64, prepURI, randomInt, randomString, roundNumber, roundNumberSigfig, toFloat, toInt, toObject, validateAWebTaxon,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 self.addEventListener("message", function(e) {
@@ -18,6 +18,21 @@ self.addEventListener("message", function(e) {
       return getSampleSummaryDialog(jResultsList, tableMap, e.data.windowWidth);
   }
 });
+
+getPrettySpecies = function(rowData) {
+  var genus, pretty, ref, ref1, species, ssp;
+  genus = rowData.genus;
+  species = (ref = rowData.specificEpithet) != null ? ref : rowData.specificepithet;
+  ssp = (ref1 = rowData.infraspecificEpithet) != null ? ref1 : rowData.infraspecificEpithet;
+  pretty = genus;
+  if (!isNull(species)) {
+    pretty += " " + species;
+    if (!isNull(ssp)) {
+      pretty += " " + ssp;
+    }
+  }
+  return pretty;
+};
 
 getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
 
@@ -42,7 +57,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     console.warn("There were no results in the result list");
     return false;
   }
-  console.log("Generating dialog from", resultsList);
+  console.log("Generating dialog from list of length " + resultsList.length, resultsList);
   projectTableRows = new Array();
   outputData = new Array();
   i = 0;
