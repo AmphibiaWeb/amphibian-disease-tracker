@@ -101,7 +101,7 @@ module.exports = (grunt) ->
           sourceMapIn:"js/maps/c.js.map"
         files:
           "js/combined.min.js":["js/c.js","js/admin.js","js/project.js", "js/profile.js", "js/global-search.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
-          "js/app.min.js":["js/c.js","js/admin.js","js/project.js"]
+          "js/app.min.js":["js/c.js","js/admin.js","js/project.js","js/global-search.js","js/global-search-worker.js"]
       dist:
         options:
           sourceMap:true
@@ -127,6 +127,7 @@ module.exports = (grunt) ->
           "js/project.min.js":["js/project.js"]
           "js/profile.min.js":["js/profile.js"]
           "js/global-search.min.js":["js/global-search.js"]
+          "js/global-search-worker.min.js":["js/global-search-worker.js"]
       minpurl:
         options:
           sourceMap:true
@@ -174,6 +175,7 @@ module.exports = (grunt) ->
           "js/project.js":["coffee/project.coffee"]
           "js/profile.js":["coffee/profile.coffee"]
           "js/global-search.js":["coffee/global-search.coffee"]
+          "js/global-search-worker.js":["coffee/global-search-worker.coffee", "coffee/core-worker.coffee"]
     phpcsfixer:
       app:
         dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "home.php", "helpers/excelHelper.php", "profile.php"]
