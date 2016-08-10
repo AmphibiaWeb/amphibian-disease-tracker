@@ -148,6 +148,8 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
       </div>
     </div>
     """
+  if isNull summaryTable
+    summaryTable = "<h3>Sorry, we were unable to generate a summary table</h3>"
   # Create the whole thing
   html = """
   <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
@@ -178,6 +180,9 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     outputData: outputData
     data: dataSummary
     summaryRows: summaryTableRows
+    providedList: resultsList
+    providedMap: tableToProjectMap
+    providedWidth: windowWidth
   self.postMessage message
   self.close()
 
