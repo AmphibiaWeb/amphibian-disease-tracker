@@ -955,6 +955,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     action: "summary-dialog"
     resultsList: resultsList
     tableToProjectMap: tableToProjectMap
+    windowWidth: $(window).width()
   worker = new Worker "js/global-search-worker.js"
   worker.addEventListener "message", (e) ->
     html = e.data.html
