@@ -990,6 +990,10 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
           unless species in dataSummary.species
             dataSummary.species.push species
           d = row.diseasetested
+          unless d in dataSummary.diseases
+            dataSummary.diseases.push d
+          if isNull dataSummary.data[species]
+            dataSummary.data[species] = {}
           if isNull dataSummary.data[species][d]
             dataSummary.data[species][d] =
               samples: 0
@@ -1032,7 +1036,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     """
     projectTableRows.push row
   # Create the pretty table
-  summaryTableRows = new Object()
+  window.summaryTableRows = new Object()
   for species, diseases of dataSummary.data
     for disease, data of diseases
       unless summaryTableRows[disease]?

@@ -1083,7 +1083,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataWidthMax, dataWidthMin, disease, diseases, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, ref3, rlButton, row, rowSet, species, startRenderTime, summaryTable, summaryTableRows, table, tableRows, unhelpfulCols;
+  var altRows, col, d, data, dataWidthMax, dataWidthMin, disease, diseases, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, ref3, rlButton, row, rowSet, species, startRenderTime, summaryTable, table, tableRows, unhelpfulCols;
   startRenderTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -1126,6 +1126,12 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
             dataSummary.species.push(species);
           }
           d = row.diseasetested;
+          if (indexOf.call(dataSummary.diseases, d) < 0) {
+            dataSummary.diseases.push(d);
+          }
+          if (isNull(dataSummary.data[species])) {
+            dataSummary.data[species] = {};
+          }
           if (isNull(dataSummary.data[species][d])) {
             dataSummary.data[species][d] = {
               samples: 0,
@@ -1172,7 +1178,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
   }
-  summaryTableRows = new Object();
+  window.summaryTableRows = new Object();
   ref2 = dataSummary.data;
   for (species in ref2) {
     diseases = ref2[species];
