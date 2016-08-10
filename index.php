@@ -114,9 +114,7 @@ $loginStatus = getLoginState();
       <div class="logo-container">
         <div class="square-object">
           <div class="square tile">
-            <a href="http://amphibiaweb.org/" class="content click" data-newtab="true">
-              <img src="assets/aw_logo512-trans.png" alt="AmphibiaWeb logo" class="content"/>
-            </a>
+            <img src="assets/aw_logo512-trans.png" alt="AmphibiaWeb logo" class="content click" data-href="http://amphibiaweb.org/" data-newtab="true"/>
           </div>
         </div>
       </div>
