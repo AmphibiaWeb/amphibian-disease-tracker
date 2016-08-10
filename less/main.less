@@ -324,16 +324,27 @@ paper-dialog-scrollable {
 
 .square-object {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    object-fit: contain;
+    
     .square {
         position: relative;
         width: 50%;
-
+        object-fit: contain;
+        
         .content {
             position: absolute;
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
+    }
+    
+    .square.tile {
+        border-radius: 5px;
+        box-shadow: 3px 3px 3px rgba(0,0,0,.5);
     }
 
     .square:after {
@@ -367,7 +378,7 @@ header#header-bar {
         left: 0;
         max-height: 100%;
         max-width: 50%;
-     
+        height: 100%;
         /*
         height: 90%;
         background: #fff;
