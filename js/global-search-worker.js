@@ -175,9 +175,10 @@ document.head = document.body = fakeElement;
 document.ownerDocument = document.documentElement = document;
 document.getElementById = document.createElement = function() {return fakeElement;};
 document.createDocumentFragment = function() {return this;};
+document.createElement = function() {return this;};
 document.getElementsByTagName = document.getElementsByClassName = function() {return [fakeElement];};
-document.getAttribute = document.setAttribute = document.removeChild = 
-  document.addEventListener = document.removeEventListener = 
+document.getAttribute = document.setAttribute = document.removeChild =
+  document.addEventListener = document.removeEventListener =
   function() {return null;};
 document.cloneNode = document.appendChild = function() {return this;};
 document.appendChild = function(child) {return child;};;

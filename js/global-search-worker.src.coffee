@@ -196,9 +196,10 @@ document.head = document.body = fakeElement;
 document.ownerDocument = document.documentElement = document;
 document.getElementById = document.createElement = function() {return fakeElement;};
 document.createDocumentFragment = function() {return this;};
+document.createElement = function() {return this;};
 document.getElementsByTagName = document.getElementsByClassName = function() {return [fakeElement];};
-document.getAttribute = document.setAttribute = document.removeChild = 
-  document.addEventListener = document.removeEventListener = 
+document.getAttribute = document.setAttribute = document.removeChild =
+  document.addEventListener = document.removeEventListener =
   function() {return null;};
 document.cloneNode = document.appendChild = function() {return this;};
 document.appendChild = function(child) {return child;};`
@@ -726,7 +727,7 @@ downloadCSVFile = (data, options) ->
               if isArray options.acceptableCols
                 if col in options.acceptableCols
                   headerPlaceholder.push col
-              else  
+              else
                 headerPlaceholder.push col
             console.log "Using as header", headerPlaceholder
         if typeof value is "object" and cascadeObjects
@@ -767,7 +768,7 @@ downloadCSVFile = (data, options) ->
             if typeof dataVal is "object"
               try
                 dataVal = JSON.stringify dataVal
-                dataVal = dataVal.replace(/"/g,'""')              
+                dataVal = dataVal.replace(/"/g,'""')
             tmpRow.push dataVal
           tmpRowString = tmpRow.join options.splitValues
           textAsset += handleValue tmpRowString, options
