@@ -39,6 +39,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   #   in "rows" field
   # @param object tableToProjectMap -> Map the table name onto project id
   ###
+  startTime = Date.now()
   unless isArray resultsList
     resultsList = Object.toArray resultsList
   if resultsList.length is 0
@@ -161,7 +162,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     </div>
     """
   if isNull summaryTable
-    summaryTable = "<h3>Sorry, we were unable to generate a summary table</h3>"
+    summaryTable = "<h3><em>Sorry, we were unable to generate a summary table</em></h3>"
   # Create the whole thing
   html = """
   <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
@@ -195,6 +196,8 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     providedList: resultsList
     providedMap: tableToProjectMap
     providedWidth: windowWidth
+  elapsed = startTime - Date.now()
+  console.info "Worker saved #{elapsed}ms from the main thread"
   self.postMessage message
   self.close()
 
