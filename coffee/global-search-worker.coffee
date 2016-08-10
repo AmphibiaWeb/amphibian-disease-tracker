@@ -176,5 +176,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   message =
     html: html
     outputData: outputData
+    data: dataSummary
+    summaryRows: summaryTableRows
   self.postMessage message
   self.close()

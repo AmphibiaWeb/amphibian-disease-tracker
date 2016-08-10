@@ -150,7 +150,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
   html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <h3>Raw Data</h3>\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   message = {
     html: html,
-    outputData: outputData
+    outputData: outputData,
+    data: dataSummary,
+    summaryRows: summaryTableRows
   };
   self.postMessage(message);
   return self.close();
