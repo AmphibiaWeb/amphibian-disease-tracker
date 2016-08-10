@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
+var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, generateColorByRecency, generateColorByRecency2, getPrettySpecies, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -904,6 +904,21 @@ resetMap = function(map, showTables, resetZoom) {
   return false;
 };
 
+getPrettySpecies = function(rowData) {
+  var genus, pretty, ref, ref1, species, ssp;
+  genus = rowData.genus;
+  species = (ref = rowData.specificEpithet) != null ? ref : rowData.specificepithet;
+  ssp = (ref1 = rowData.infraspecificEpithet) != null ? ref1 : rowData.infraspecificEpithet;
+  pretty = genus;
+  if (!isNull(species)) {
+    pretty += " " + species;
+    if (!isNull(ssp)) {
+      pretty += " " + ssp;
+    }
+  }
+  return pretty;
+};
+
 generateColorByRecency = function(timestamp, oldCutoff) {
   var age, b, color, cv, g, hexArray, i, j, len, maxAge, r, stepCount, stepSize, temp;
   if (oldCutoff == null) {
@@ -1068,7 +1083,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, project, projectResults, projectTableRows, ref, ref1, ref2, rlButton, row, rowSet, startRenderTime, table, unhelpfulCols;
+  var altRows, col, data, dataWidthMax, dataWidthMin, el, elapsed, error, error1, html, i, j, k, l, len, len1, len2, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, rlButton, row, rowSet, species, startRenderTime, table, unhelpfulCols;
   startRenderTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -1082,6 +1097,10 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   outputData = new Array();
   i = 0;
   unhelpfulCols = ["cartodb_id", "the_geom", "the_geom_webmercator", "id"];
+  window.dataSummary = {
+    species: [],
+    data: {}
+  };
   for (j = 0, len = resultsList.length; j < len; j++) {
     projectResults = resultsList[j];
     ++i;
@@ -1101,6 +1120,30 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
           altRows[n] = row;
           row.carto_table = projectResults.table;
           row.project_id = projectResults.project_id;
+          species = getPrettySpecies(row);
+          if (indexOf.call(dataSummary.species, species) < 0) {
+            dataSummary.species.push(species);
+            dataSummary.data[species] = {
+              samples: 0,
+              positive: 0,
+              negative: 0,
+              no_confidence: 0,
+              prevalence: 0
+            };
+          }
+          if (row.diseasedetected.toBool()) {
+            dataSummary.data[species].positive++;
+          } else {
+            if (row.diseasedetected.toLowerCase() === "no_confidence") {
+              dataSummary.data[species].no_confidence++;
+            } else {
+              dataSummary.data[species].negative++;
+            }
+          }
+          dataSummary.data[species].samples++;
+          prevalence = dataSummary.data[species].positive / dataSummary.data[species].samples;
+          prevalence = roundNumberSigfig(prevalence, 2);
+          dataSummary.data[species].prevalence = prevalence;
           outputData.push(row);
         }
         rowSet = altRows;

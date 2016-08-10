@@ -188,6 +188,13 @@ $isCollaborator = false;
   </head>
   <body class="container-fluid">
     <header id="header-bar" class="fixed-bar clearfix row">
+      <div class="logo-container">
+        <div class="square-object">
+          <div class="square tile">
+            <img src="assets/aw_logo512-trans.png" alt="AmphibiaWeb logo" class="content click" data-href="http://amphibiaweb.org/" data-newtab="true"/>
+          </div>
+        </div>
+      </div>
       <p class="col-xs-12 login-status-bar text-right">
         <?php
            $user = $_COOKIE['amphibiandisease_fullname'];

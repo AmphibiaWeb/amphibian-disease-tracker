@@ -288,10 +288,10 @@ $loginStatus = getLoginState();
           <br/><br/>
           <div class="row">
             <div class="card-container col-xs-12 col-md-6 col-lg-3">
-              <paper-card heading="Documentation" class="card-tile" elevation="2" animated-shadow>
+              <paper-card heading="Get Involved" class="card-tile" elevation="2" animated-shadow>
                 <div class="card-content">
                   <p>
-                    Read the documentation for the site
+                    Learn the user workflow for the site
                   </p>
                 </div>
                 <div class="card-actions">

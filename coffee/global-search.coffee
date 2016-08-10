@@ -759,6 +759,17 @@ resetMap = (map = geo.lMap, showTables = true, resetZoom = true) ->
   false
 
 
+getPrettySpecies = (rowData) ->
+  genus = rowData.genus
+  species = rowData.specificEpithet ? rowData.specificepithet
+  ssp = rowData.infraspecificEpithet ? rowData.infraspecificEpithet
+  pretty = genus
+  unless isNull species
+    pretty += " #{species}"
+    unless isNull ssp
+      pretty += " #{ssp}"
+  pretty
+
 
 generateColorByRecency = (timestamp, oldCutoff = 1420070400) ->
   ###
@@ -954,6 +965,9 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     "the_geom_webmercator"
     "id"
     ]
+  window.dataSummary =
+    species: []
+    data: {}
   for projectResults in resultsList
     ++i
     dataWidthMax = $(window).width() * .5
@@ -971,6 +985,26 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
           # Add a few others for the CSV download
           row.carto_table = projectResults.table
           row.project_id = projectResults.project_id
+          species = getPrettySpecies row
+          unless species in dataSummary.species
+            dataSummary.species.push species
+            dataSummary.data[species] =
+              samples: 0
+              positive: 0
+              negative: 0
+              no_confidence: 0
+              prevalence: 0
+          if row.diseasedetected.toBool()
+            dataSummary.data[species].positive++
+          else
+            if row.diseasedetected.toLowerCase() is "no_confidence"
+              dataSummary.data[species].no_confidence++
+            else
+              dataSummary.data[species].negative++
+          dataSummary.data[species].samples++
+          prevalence = dataSummary.data[species].positive / dataSummary.data[species].samples
+          prevalence = roundNumberSigfig prevalence, 2
+          dataSummary.data[species].prevalence = prevalence
           outputData.push row
         rowSet = altRows
       catch
