@@ -82,3 +82,4 @@ users/profiles/*.bmp
 users/profiles/*.gif
 # Allow test sensitive queries in the directory to be synced and saved but not committed
 testQuery.sql
+*.bak
