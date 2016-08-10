@@ -133,6 +133,10 @@ renderMapWithData = function(projectData, force) {
     downloadButton = "";
   }
   cartoTable = cartoData.table;
+  if (isNull(cartoTable)) {
+    console.warn("WARNING: This project has no data associated with it. Not doing map render.");
+    return false;
+  }
   try {
     zoomPaths = (ref = cartoData.bounding_polygon.paths) != null ? ref : cartoData.bounding_polygon;
     zoom = getMapZoom(zoomPaths, "#transect-viewport");
