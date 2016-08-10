@@ -303,7 +303,11 @@ $loginStatus = getLoginState();
         $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
     } else {
         foreach ($list as $k => $project) {
-            if (empty($project['project_id']) || empty($project['locality'])) {
+            # This check also used to check for empty localities:
+            #  || empty($project['locality'])
+            #
+            # but removed to address #163
+            if (empty($project['project_id'])) { 
                 continue;
             }
             if ($i < $skip) {
