@@ -111,6 +111,9 @@ $loginStatus = getLoginState();
   </head>
   <body class="container-fluid">
     <header id="header-bar" class="fixed-bar clearfix row">
+      <div class="logo-container">
+        <img src="assets/aw_logo512-trans.png" alt="AmphibiaWeb logo" />
+      </div>
      <p class="col-xs-12 text-right">
       <?php
          $user = $_COOKIE['amphibiandisease_fullname'];
