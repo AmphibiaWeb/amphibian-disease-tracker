@@ -2,18 +2,19 @@
 # Core helpers/imports for web workers
 ###
 
-importScripts "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js", "purl.min.js"
-
-# Set up basic URI parameters
-# Uses
-# https://github.com/allmarkedup/purl
+importScripts "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"
 try
-  uri = new Object()
-  uri.o = $.url()
-  uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host')  + uri.o.attr("directory")
-  uri.query = uri.o.attr("fragment")
-catch e
-  console.warn("PURL not installed!")
+  importScripts "purl.min.js"
+  # Set up basic URI parameters
+  # Uses
+  # https://github.com/allmarkedup/purl
+  try
+    uri = new Object()
+    uri.o = $.url()
+    uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host')  + uri.o.attr("directory")
+    uri.query = uri.o.attr("fragment")
+  catch e
+    console.warn("PURL not installed!")
 
 locationData = new Object()
 locationData.params =

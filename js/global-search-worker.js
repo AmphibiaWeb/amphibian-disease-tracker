@@ -163,17 +163,20 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
  * Core helpers/imports for web workers
  */
 
-importScripts("https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js", "purl.min.js");
+importScripts("https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js");
 
 try {
-  uri = new Object();
-  uri.o = $.url();
-  uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host') + uri.o.attr("directory");
-  uri.query = uri.o.attr("fragment");
-} catch (error1) {
-  e = error1;
-  console.warn("PURL not installed!");
-}
+  importScripts("purl.min.js");
+  try {
+    uri = new Object();
+    uri.o = $.url();
+    uri.urlString = uri.o.attr('protocol') + '://' + uri.o.attr('host') + uri.o.attr("directory");
+    uri.query = uri.o.attr("fragment");
+  } catch (error1) {
+    e = error1;
+    console.warn("PURL not installed!");
+  }
+} catch (undefined) {}
 
 locationData = new Object();
 
