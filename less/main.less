@@ -322,6 +322,28 @@ paper-dialog-scrollable {
     // Alt color: rgba(86,119,252,.95)
 }
 
+.square-object {
+    position: relative;
+    .square {
+        position: relative;
+        width: 50%;
+
+        .content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    .square:after {
+        content: "";
+        display: block;
+        padding-bottom: 100%;
+    }
+}
+
+
 header#header-bar {
     .materialblue;
     .fixed-bar;
@@ -344,9 +366,18 @@ header#header-bar {
         top: 0;
         left: 0;
         max-height: 100%;
-        
+        max-width: 50%;
+     
+        /*
+        height: 90%;
+        background: #fff;
+        background-image: url("/assets/aw_logo512-trans.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        border-radius: 5px;
+        */
         img {
-            max-height: 100%;
+            object-fit: contain;
         }
     }
 }
@@ -561,7 +592,7 @@ copyright-statement {
 pre.code-box {
     white-space: pre-wrap;
     word-wrap: normal;
-                     
+
 }
 
 @code-box-height: 8em;
@@ -585,7 +616,7 @@ td.code-box-container + td {
         margin-right: auto;
         .text-center;
     }
-    
+
 }
 
 main .btn, main paper-button.paper-button-0 {
@@ -1217,14 +1248,14 @@ marked-element.indent {
          #bounds-container {
              max-width: 98%;
              width: 95%;
-         }   
+         }
          .do-search, .btn {
              margin: 0 .25rem;
          }
-    }    
+    }
     .form-group.paper-elements {
         label {
-            padding-top: 12px;            
+            padding-top: 12px;
         }
 
     }
@@ -1235,7 +1266,7 @@ marked-element.indent {
             margin-right: 0;
         }
     }
-    
+
     .action-word {
         padding-right: 0.5em;
     }
@@ -1263,7 +1294,7 @@ paper-button > iron-icon {
 .hidden-md-lg {
     margin-right: .333em;
     @media (min-width: @screen-lg-min) and (max-width: 1280px ) {
-        
+
         display: none;
     }
 }
@@ -1409,7 +1440,7 @@ section.conversations {
         * {
             margin-bottom: 2.5px;
             margin-top: 2.5px;
-        }        
+        }
     }
     .profile-data.address {
         address:not(.col-lg-4) {
