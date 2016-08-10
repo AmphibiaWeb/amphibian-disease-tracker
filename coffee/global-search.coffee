@@ -960,6 +960,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   worker.addEventListener "message", (e) ->
     html = e.data.html
     outputData = e.data.outputData
+    console.info "Web worker returned", e.data
     $("#modal-sql-details-list").remove()
     $("body").append html
     $("#generate-download").click ->
