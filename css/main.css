@@ -9795,6 +9795,7 @@ html >>> .capitalize {
 .square-object .square.tile {
   border-radius: 5px;
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  background: #fff;
 }
 .square-object .square:after {
   content: "";
@@ -9821,7 +9822,7 @@ header#header-bar .header-bar-user-name {
 }
 header#header-bar .logo-container {
   position: absolute;
-  top: 0;
+  top: 1px;
   left: 0;
   max-height: 100%;
   max-width: 50%;
@@ -9834,6 +9835,9 @@ header#header-bar .logo-container {
         background-repeat: no-repeat;
         border-radius: 5px;
         */
+}
+header#header-bar .logo-container .square-object {
+  width: 90px;
 }
 header#header-bar .logo-container img {
   object-fit: contain;
