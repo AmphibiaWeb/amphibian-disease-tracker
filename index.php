@@ -113,7 +113,7 @@ $loginStatus = getLoginState();
     <header id="header-bar" class="fixed-bar clearfix row">
       <div class="logo-container">
         <div class="square-object">
-          <div class="square">
+          <div class="square tile">
             <img src="assets/aw_logo512-trans.png" alt="AmphibiaWeb logo" class="content"/>
           </div>
         </div>

@@ -9776,16 +9776,25 @@ html >>> .capitalize {
 }
 .square-object {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  object-fit: contain;
 }
 .square-object .square {
   position: relative;
   width: 50%;
+  object-fit: contain;
 }
 .square-object .square .content {
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+.square-object .square.tile {
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 .square-object .square:after {
   content: "";
@@ -9816,6 +9825,7 @@ header#header-bar .logo-container {
   left: 0;
   max-height: 100%;
   max-width: 50%;
+  height: 100%;
   /*
         height: 90%;
         background: #fff;
