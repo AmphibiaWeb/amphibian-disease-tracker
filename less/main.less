@@ -246,7 +246,7 @@ paper-dialog-scrollable {
     box-shadow: 5px 5px 15px rgba(0,0,0,.25)
 }
 
-@slide-duration: .3s;
+@slide-duration: 2s;
 .slide-alert {
     .hover-over-page;
     .isolated-alert;
@@ -254,6 +254,7 @@ paper-dialog-scrollable {
     left: initial !important;
     width: @alert-width;
     display: none;
+    right: 0;
     @media (max-width: @screen-sm-max) {
         left: initial !important;
         // .slide-in {
@@ -263,22 +264,22 @@ paper-dialog-scrollable {
     &.slide-in {
         // transition: @slide-duration;
         // right: @alert-width + 5%;
-        animation: slide-in @slide-duration reverse;
+        animation: slide-in @slide-duration forwards;
         animation-timing-function: ease-out;
         display: block !important;
     }
     &.slide-out {
         //right: 0;
-        transform: translateX(-100%);
+        transform: translateX(0);
     }
 }
 
 @keyframes slide-in {
     0% {
-        transform: translateX(-100%);
+        transform: translateX(0);
     }
     100% {
-        transform: translateX(5%);
+        transform: translateX(-105%);
     }
     // 100% { right: @alert-width + 5%; }
     // @media (max-width: @screen-sm-max) {
