@@ -10,7 +10,7 @@ categories: Portal
 
 ## Creating Projects
 
-The first step to uploading data is creating Projects. We describe [the Project creation process in the documentation](https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/#creating-a-project) and once created, actual tested samples (the "data") may be added later or by a collaborator.
+The first step to uploading data is creating Projects. **We describe [the Project creation process in the documentation](https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/#creating-a-project)** and once created, actual tested samples (the "data") may be added later or by a collaborator.
 
 
 ## Preparing the data
