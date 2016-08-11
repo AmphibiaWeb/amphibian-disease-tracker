@@ -1213,6 +1213,9 @@ firstLoadInstructionPrompt = (force = false) ->
           <div class="center-block text-center">
             <a href="http://updates.amphibiandisease.org/portal/2016/06/30/Uploadingdata.html" class="btn btn-default click" data-newtab="true">Get Involved</a>  <a href="http://updates.amphibiandisease.org/posts/" class="click btn btn-default" data-newtab="true">Learn More</a>  <a href="https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/" class="btn btn-default click" data-newtab="true">Read Documentation</a>
           </div>
+          <p>
+            You can also find these resources by scrolling down on this page later.
+          </p>
         </div>      
       </div>
       """
