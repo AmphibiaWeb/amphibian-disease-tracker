@@ -1178,7 +1178,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   false
 
 
-firstLoadInstructionPrompt = ->
+firstLoadInstructionPrompt = (force = false) ->
   loadCookie = "#{uri.domain}_firstLoadPrompt"
   try
     hasLoaded = $.cookie(loadCookie).toBool()
@@ -1189,7 +1189,7 @@ firstLoadInstructionPrompt = ->
     checkLoggedIn (result) ->
       if result.status
         hasLoaded = true
-      if hasLoaded
+      if hasLoaded and not force
         return false
       # First load: Let's show a prompt to read up
       # See:

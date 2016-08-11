@@ -1297,8 +1297,11 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
   return false;
 };
 
-firstLoadInstructionPrompt = function() {
+firstLoadInstructionPrompt = function(force) {
   var error, hasLoaded, loadCookie;
+  if (force == null) {
+    force = false;
+  }
   loadCookie = uri.domain + "_firstLoadPrompt";
   try {
     hasLoaded = $.cookie(loadCookie).toBool();
@@ -1311,7 +1314,7 @@ firstLoadInstructionPrompt = function() {
       if (result.status) {
         hasLoaded = true;
       }
-      if (hasLoaded) {
+      if (hasLoaded && !force) {
         return false;
       }
       html = "<div class=\"alert alert-info slide-alert slide-out\" id=\"first-load-prompt\">\n  <p class=\"center-block text-center\"><strong>Looks like you're new here!</strong></p>\n  <p>\n    foo bar stuff things\n  </p>\n</div>";
