@@ -9756,6 +9756,7 @@ html >>> .capitalize {
 .slide-alert.slide-in {
   animation: slide-in 1s forwards;
   animation-timing-function: ease-out;
+  animation-delay-timer: 1s;
   display: block !important;
 }
 .slide-alert.slide-out {
