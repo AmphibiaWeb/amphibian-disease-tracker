@@ -9740,6 +9740,7 @@ html >>> .capitalize {
   left: initial !important;
   width: 50%;
   display: none;
+  right: 0;
 }
 @media (max-width: 767px) {
   .slide-alert {
@@ -9753,19 +9754,19 @@ html >>> .capitalize {
   }
 }
 .slide-alert.slide-in {
-  animation: slide-in 0.3s reverse;
+  animation: slide-in 2s forwards;
   animation-timing-function: ease-out;
   display: block !important;
 }
 .slide-alert.slide-out {
-  transform: translateX(-100%);
+  transform: translateX(0);
 }
 @keyframes slide-in {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(5%);
+    transform: translateX(-105%);
   }
 }
 .success-glow {
