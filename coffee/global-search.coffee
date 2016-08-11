@@ -1188,9 +1188,12 @@ firstLoadInstructionPrompt = (force = false) ->
     # Logged in is the same
     checkLoggedIn (result) ->
       if result.status
+        console.info "User is logged in"
         hasLoaded = true
       if hasLoaded and not force
         return false
+      if hasLoaded
+        console.warn "Force-showing the prompt"
       # First load: Let's show a prompt to read up
       # See:
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/168
@@ -1202,18 +1205,24 @@ firstLoadInstructionPrompt = (force = false) ->
         <div class="alert-message">
           <p class="center-block text-center"><strong>Looks like you're new here!</strong></p>
           <p>
-            foo bar stuff things
+            Need help getting started? We've put together some resources for you below.
           </p>
+          <div class="center-block text-center">
+            <a href="http://updates.amphibiandisease.org/portal/2016/06/30/Uploadingdata.html" class="btn btn-default click" data-newtab="true">Get Involved</a> | <a href="http://updates.amphibiandisease.org/posts/" class="click btn btn-default" data-newtab="true">Learn More</a> | <a href="https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/" class="btn btn-default click" data-newtab="true">Read Documentation</a>
+          </div>
         </div>      
       </div>
       """
       # Add it to the dom
       $("#first-load-prompt").remove()
       $("body").append html
+      bindClicks()
       # Animate it in
       $("#first-load-prompt")
       .removeClass "slide-out"
       .addClass "slide-in"
+      # Add the cookie that it's shown
+      $.cookie loadCookie, true
   false
 
 
@@ -1227,8 +1236,12 @@ $ ->
   lMap = new L.Map("global-map-container", leafletOptions)
   lTopoOptions =
     attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo lMap
+  geo.tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions)
+  geo.tileLayer.addTo lMap
   geo.lMap = lMap
+  geo.tileLayer.on "load", ->
+    console.info "Map ready"
+    firstLoadInstructionPrompt()
   $(".coord-input").keyup ->
     checkCoordinateSanity()
   # Project search event handling
