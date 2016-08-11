@@ -279,12 +279,11 @@ paper-dialog-scrollable {
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-105%);
+        transform: translateX( -(@alert-width + 5%) );
     }
-    // 100% { right: @alert-width + 5%; }
-    // @media (max-width: @screen-sm-max) {
-    //     100% { right: @alert-width-mobile +5%; }
-    // }
+    @media (max-width: @screen-sm-max) {
+        transform: translateX( -(@alert-width-mobile + 5%) );
+    }
 }
 
 
