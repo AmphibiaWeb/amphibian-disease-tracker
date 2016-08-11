@@ -855,18 +855,33 @@ bindClicks = (selector = ".click") ->
   ###
   $(selector).each ->
     try
-      url = $(this).attr("data-href")
+      url = $(this).attr("data-href") ? $(this).attr "href"
       if not isNull(url)
-        $(this).unbind()
         # console.log("Binding a url to ##{$(this).attr("id")}")
         try
-          if url is uri.o.attr("path") and $(this).prop("tagName").toLowerCase() is "paper-tab"
+          tagType = $(this).prop("tagName").toLowerCase()
+        catch
+          tagType = null
+        try
+          if url is uri.o.attr("path") and tagType is "paper-tab"
             $(this).parent().prop("selected",$(this).index())
         catch e
           console.warn("tagname lower case error")
-        $(this).click ->
+        newTab = $(this).attr("newTab")?.toBool() or $(this).attr("newtab")?.toBool() or $(this).attr("data-newtab")?.toBool()
+        if tagType is "a" and not newTab
+          # next iteration
+          return true
+        if tagType is "a"
+          $(this).keypress ->
+            openTab url
+        $(this)
+        .unbind()
+        .click (e) ->
+          # Prevent links from auto-triggering          
+          e.preventDefault()
+          e.stopPropagation()
           try
-            if $(this).attr("newTab")?.toBool() or $(this).attr("newtab")?.toBool() or $(this).attr("data-newtab")?.toBool()
+            if newTab
               openTab(url)
             else
               goTo(url)
