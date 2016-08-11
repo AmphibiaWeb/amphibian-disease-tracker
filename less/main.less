@@ -253,7 +253,7 @@ paper-dialog-scrollable {
     position: absolute;
     width: @alert-width;
     display: none;
-    .slide-in {
+    &.slide-in {
         // transition: @slide-duration;
         // right: @alert-width + 5%;
         animation: slide-in @slide-duration reverse;
@@ -265,7 +265,7 @@ paper-dialog-scrollable {
     //         right: @alert-width-mobile + 5%;
     //     }
     // }
-    .slide-out {
+    &.slide-out {
         //right: 0;
         transform: translateX(-100%);
     }
