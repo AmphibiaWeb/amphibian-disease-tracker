@@ -49,7 +49,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, error1, error2, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, species, summaryTable, summaryTableRows, table, tableRows, unhelpfulCols;
+  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, elapsed, error1, error2, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, species, startTime, summaryTable, summaryTableRows, table, tableRows, unhelpfulCols;
+  startTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
   }
@@ -163,7 +164,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     summaryTable += "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>" + disease + "</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (tableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
   }
   if (isNull(summaryTable)) {
-    summaryTable = "<h3>Sorry, we were unable to generate a summary table</h3>";
+    summaryTable = "<h3><em>Sorry, we were unable to generate a summary table</em></h3>";
   }
   html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <h3>Raw Data</h3>\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   message = {
@@ -175,6 +176,8 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     providedMap: tableToProjectMap,
     providedWidth: windowWidth
   };
+  elapsed = startTime - Date.now();
+  console.info("Worker saved " + elapsed + "ms from the main thread");
   self.postMessage(message);
   return self.close();
 };
