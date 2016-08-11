@@ -1309,17 +1309,21 @@ firstLoadInstructionPrompt = function(force) {
     hasLoaded = false;
   }
   if (force || !hasLoaded) {
+    if (hasLoaded) {
+      console.info("Forced to continue showing prompt to user who has seen it already");
+    }
     checkLoggedIn(function(result) {
       var html;
       if (result.status) {
-        console.info("User is logged in");
+        console.info("User is logged in, and does not need an instruction prompt");
+        $.cookie(loadCookie, true);
         hasLoaded = true;
       }
       if (hasLoaded && !force) {
         return false;
       }
       if (hasLoaded) {
-        console.warn("Force-showing the prompt");
+        console.warn("Force-showing the prompt to a logged in user");
       }
       html = "<div class=\"alert alert-warning alert-dismissable slide-alert slide-out\" role=\"alert\" id=\"first-load-prompt\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <div class=\"alert-message\">\n    <p class=\"center-block text-center\"><strong>Looks like you're new here!</strong></p>\n    <p>\n      Need help getting started? We've put together some resources for you below.\n    </p>\n    <div class=\"center-block text-center\">\n      <a href=\"http://updates.amphibiandisease.org/portal/2016/06/30/Uploadingdata.html\" class=\"btn btn-default click\" data-newtab=\"true\">Get Involved</a>  <a href=\"http://updates.amphibiandisease.org/posts/\" class=\"click btn btn-default\" data-newtab=\"true\">Learn More</a>  <a href=\"https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/\" class=\"btn btn-default click\" data-newtab=\"true\">Read Documentation</a>\n    </div>\n  </div>      \n</div>";
       $("#first-load-prompt").remove();

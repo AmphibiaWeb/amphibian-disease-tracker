@@ -1186,14 +1186,17 @@ firstLoadInstructionPrompt = (force = false) ->
     hasLoaded = false
   if force or not hasLoaded
     # Logged in is the same
+    if hasLoaded
+      console.info "Forced to continue showing prompt to user who has seen it already"
     checkLoggedIn (result) ->
       if result.status
-        console.info "User is logged in"
+        console.info "User is logged in, and does not need an instruction prompt"
+        $.cookie loadCookie, true
         hasLoaded = true
       if hasLoaded and not force
         return false
       if hasLoaded
-        console.warn "Force-showing the prompt"
+        console.warn "Force-showing the prompt to a logged in user"
       # First load: Let's show a prompt to read up
       # See:
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/168
