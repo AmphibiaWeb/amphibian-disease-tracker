@@ -9742,12 +9742,12 @@ html >>> .capitalize {
     left: 10% !important;
   }
 }
-.slide-alert .slide-in {
+.slide-alert.slide-in {
   animation: slide-in 0.3s reverse;
   animation-timing-function: ease-out;
   display: block !important;
 }
-.slide-alert .slide-out {
+.slide-alert.slide-out {
   transform: translateX(-100%);
 }
 @keyframes slide-in {

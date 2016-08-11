@@ -1184,7 +1184,7 @@ firstLoadInstructionPrompt = (force = false) ->
     hasLoaded = $.cookie(loadCookie).toBool()
   catch
     hasLoaded = false
-  unless hasLoaded
+  if force or not hasLoaded
     # Logged in is the same
     checkLoggedIn (result) ->
       if result.status
