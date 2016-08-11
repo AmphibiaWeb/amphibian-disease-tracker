@@ -871,11 +871,15 @@ bindClicks = (selector = ".click") ->
         if tagType is "a" and not newTab
           # next iteration
           return true
+        if tagType is "a"
+          $(this).keypress ->
+            openTab url
         $(this)
         .unbind()
         .click (e) ->
-          # Prevent links from auto-triggering
+          # Prevent links from auto-triggering          
           e.preventDefault()
+          e.stopPropagation()
           try
             if newTab
               openTab(url)

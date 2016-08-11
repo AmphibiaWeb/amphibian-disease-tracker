@@ -1150,9 +1150,15 @@ bindClicks = function(selector) {
         if (tagType === "a" && !newTab) {
           return true;
         }
+        if (tagType === "a") {
+          $(this).keypress(function() {
+            return openTab(url);
+          });
+        }
         $(this).unbind().click(function(e) {
           var error4;
           e.preventDefault();
+          e.stopPropagation();
           try {
             if (newTab) {
               return openTab(url);
