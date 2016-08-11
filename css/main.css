@@ -9754,22 +9754,19 @@ html >>> .capitalize {
   }
 }
 .slide-alert.slide-in {
-  animation: slide-in 2s forwards;
+  animation: slide-in 1s forwards;
   animation-timing-function: ease-out;
   display: block !important;
 }
 .slide-alert.slide-out {
-  transform: translateX(0);
+  transform: translateX(105%);
 }
 @keyframes slide-in {
   0% {
-    transform: translateX(0);
+    transform: translateX(100%);
   }
   100% {
-    transform: translateX(-55%);
-  }
-  @media (max-width: 991px) {
-    transform: translateX(-85%);
+    transform: translateX(-5%);
   }
 }
 .success-glow {

@@ -1308,7 +1308,7 @@ firstLoadInstructionPrompt = function(force) {
   } catch (error) {
     hasLoaded = false;
   }
-  if (!hasLoaded) {
+  if (force || !hasLoaded) {
     checkLoggedIn(function(result) {
       var html;
       if (result.status) {
@@ -1317,7 +1317,7 @@ firstLoadInstructionPrompt = function(force) {
       if (hasLoaded && !force) {
         return false;
       }
-      html = "<div class=\"alert alert-info slide-alert slide-out\" id=\"first-load-prompt\">\n  <p class=\"center-block text-center\"><strong>Looks like you're new here!</strong></p>\n  <p>\n    foo bar stuff things\n  </p>\n</div>";
+      html = "<div class=\"alert alert-warning alert-dismissable slide-alert slide-out\" role=\"alert\" id=\"first-load-prompt\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <div class=\"alert-message\">\n    <p class=\"center-block text-center\"><strong>Looks like you're new here!</strong></p>\n    <p>\n      foo bar stuff things\n    </p>\n  </div>      \n</div>";
       $("#first-load-prompt").remove();
       $("body").append(html);
       return $("#first-load-prompt").removeClass("slide-out").addClass("slide-in");

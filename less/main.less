@@ -246,7 +246,7 @@ paper-dialog-scrollable {
     box-shadow: 5px 5px 15px rgba(0,0,0,.25)
 }
 
-@slide-duration: 2s;
+@slide-duration: 1s;
 .slide-alert {
     .hover-over-page;
     .isolated-alert;
@@ -270,19 +270,16 @@ paper-dialog-scrollable {
     }
     &.slide-out {
         //right: 0;
-        transform: translateX(0);
+        transform: translateX(105%);
     }
 }
 
 @keyframes slide-in {
     0% {
-        transform: translateX(0);
+        transform: translateX(100%);
     }
     100% {
-        transform: translateX( -(@alert-width + 5%) );
-    }
-    @media (max-width: @screen-sm-max) {
-        transform: translateX( -(@alert-width-mobile + 5%) );
+        transform: translateX( -5% );
     }
 }
 
