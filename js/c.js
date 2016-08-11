@@ -1129,28 +1129,37 @@ bindClicks = function(selector) {
    * URL data-href.
    */
   $(selector).each(function() {
-    var callable, error2, error3, url;
+    var callable, error2, error3, error4, newTab, ref, ref1, ref2, ref3, tagType, url;
     try {
-      url = $(this).attr("data-href");
+      url = (ref = $(this).attr("data-href")) != null ? ref : $(this).attr("href");
       if (!isNull(url)) {
-        $(this).unbind();
         try {
-          if (url === uri.o.attr("path") && $(this).prop("tagName").toLowerCase() === "paper-tab") {
+          tagType = $(this).prop("tagName").toLowerCase();
+        } catch (error2) {
+          tagType = null;
+        }
+        try {
+          if (url === uri.o.attr("path") && tagType === "paper-tab") {
             $(this).parent().prop("selected", $(this).index());
           }
-        } catch (error2) {
-          e = error2;
+        } catch (error3) {
+          e = error3;
           console.warn("tagname lower case error");
         }
-        $(this).click(function() {
-          var error3, ref, ref1, ref2;
+        newTab = ((ref1 = $(this).attr("newTab")) != null ? ref1.toBool() : void 0) || ((ref2 = $(this).attr("newtab")) != null ? ref2.toBool() : void 0) || ((ref3 = $(this).attr("data-newtab")) != null ? ref3.toBool() : void 0);
+        if (tagType === "a" && !newTab) {
+          return true;
+        }
+        $(this).unbind().click(function(e) {
+          var error4;
+          e.preventDefault();
           try {
-            if (((ref = $(this).attr("newTab")) != null ? ref.toBool() : void 0) || ((ref1 = $(this).attr("newtab")) != null ? ref1.toBool() : void 0) || ((ref2 = $(this).attr("data-newtab")) != null ? ref2.toBool() : void 0)) {
+            if (newTab) {
               return openTab(url);
             } else {
               return goTo(url);
             }
-          } catch (error3) {
+          } catch (error4) {
             return goTo(url);
           }
         });
@@ -1160,19 +1169,19 @@ bindClicks = function(selector) {
         if (callable != null) {
           $(this).unbind();
           return $(this).click(function() {
-            var error3;
+            var error4;
             try {
               console.log("Executing bound function " + callable + "()");
               return window[callable]();
-            } catch (error3) {
-              e = error3;
+            } catch (error4) {
+              e = error4;
               return console.error("'" + callable + "()' is a bad function - " + e.message);
             }
           });
         }
       }
-    } catch (error3) {
-      e = error3;
+    } catch (error4) {
+      e = error4;
       return console.error("There was a problem binding to #" + ($(this).attr("id")) + " - " + e.message);
     }
   });
