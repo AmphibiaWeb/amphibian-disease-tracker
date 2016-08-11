@@ -221,24 +221,67 @@ paper-dialog-scrollable {
 }
 
 
+@alert-width: 50%;
+@alert-width-mobile: 80%;
+
 #outdated-warning, .hanging-alert {
+    .isolated-alert;
     position:fixed;
     top:0;
-    width:50%;
-    margin:0;
-    left:25%;
-    z-index:5999;
 }
 
-#outdated-warning {
+
+.isolated-alert {
+    width: @alert-width;
+    margin:0;
+    left: (100% - @alert-width) / 2;
+    z-index:5999;
+    @media (max-width: @screen-xs-max) {
+        width: @alert-width-mobile !important;
+        left: (100% - @alert-width-mobile) / 2 !important;
+    }
+}
+
+#outdated-warning, .hover-over-page {
     box-shadow: 5px 5px 15px rgba(0,0,0,.25)
 }
 
-@media (max-width: @screen-xs-max) {
-    #outdated-warning, .hanging-alert {
-        width: 80% !important;
-        left: 10% !important;
+@slide-duration: .3s;
+.slide-alert {
+    .hover-over-page;
+    .isolated-alert;
+    position: absolute;
+    width: @alert-width;
+    display: none;
+    .slide-in {
+        // transition: @slide-duration;
+        // right: @alert-width + 5%;
+        animation: slide-in @slide-duration reverse;
+        animation-timing-function: ease-out;
+        display: block !important;
     }
+    // @media (max-width: @screen-sm-max) {
+    //     .slide-in {
+    //         right: @alert-width-mobile + 5%;
+    //     }
+    // }
+    .slide-out {
+        //right: 0;
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes slide-in {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(5%);
+    }
+    // 100% { right: @alert-width + 5%; }
+    // @media (max-width: @screen-sm-max) {
+    //     100% { right: @alert-width-mobile +5%; }
+    // }
 }
 
 
@@ -328,12 +371,12 @@ paper-dialog-scrollable {
     justify-content: center;
     align-items: center;
     object-fit: contain;
-    
+
     .square {
         position: relative;
         width: 50%;
         object-fit: contain;
-        
+
         .content {
             position: absolute;
             width: 100%;
@@ -341,7 +384,7 @@ paper-dialog-scrollable {
             object-fit: contain;
         }
     }
-    
+
     .square.tile {
         border-radius: 5px;
         box-shadow: 3px 3px 3px rgba(0,0,0,.5);

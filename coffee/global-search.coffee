@@ -1178,6 +1178,42 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   false
 
 
+firstLoadInstructionPrompt = ->
+  loadCookie = "#{uri.domain}_firstLoadPrompt"
+  try
+    hasLoaded = $.cookie(loadCookie).toBool()
+  catch
+    hasLoaded = false
+  unless hasLoaded
+    # Logged in is the same
+    checkLoggedIn (result) ->
+      if result.status
+        hasLoaded = true
+      if hasLoaded
+        return false
+      # First load: Let's show a prompt to read up
+      # See:
+      # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/168
+
+      # Create a alert box to let users know
+      html = """
+      <div class="alert alert-info slide-alert slide-out" id="first-load-prompt">
+        <p class="center-block text-center"><strong>Looks like you're new here!</strong></p>
+        <p>
+          foo bar stuff things
+        </p>
+      </div>
+      """
+      # Add it to the dom
+      $("#first-load-prompt").remove()
+      $("body").append html
+      # Animate it in
+      $("#first-load-prompt")
+      .removeClass "slide-out"
+      .addClass "slide-in"
+  false
+
+
 $ ->
   geo.initLocation()
   # If the user hasn't granted location permissions, default to Berkeley
