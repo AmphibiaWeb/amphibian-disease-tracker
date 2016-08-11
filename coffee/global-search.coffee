@@ -1197,11 +1197,14 @@ firstLoadInstructionPrompt = (force = false) ->
 
       # Create a alert box to let users know
       html = """
-      <div class="alert alert-info slide-alert slide-out" id="first-load-prompt">
-        <p class="center-block text-center"><strong>Looks like you're new here!</strong></p>
-        <p>
-          foo bar stuff things
-        </p>
+      <div class="alert alert-warning alert-dismissable slide-alert slide-out" role="alert" id="first-load-prompt">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="alert-message">
+          <p class="center-block text-center"><strong>Looks like you're new here!</strong></p>
+          <p>
+            foo bar stuff things
+          </p>
+        </div>      
       </div>
       """
       # Add it to the dom
