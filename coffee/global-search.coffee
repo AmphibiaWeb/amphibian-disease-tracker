@@ -202,6 +202,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
           </span>
           """
           $("#taxa-input-container").addClass "has-error"
+          $("#taxa-input-error").remove()
           $("#taxa-input")
           .attr "aria-describedby", "taxa-input-error"
           .after inputErrorHtml

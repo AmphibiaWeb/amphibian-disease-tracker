@@ -2938,7 +2938,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
                 return setTemplate(sublayerToSet, tableName, count);
               });
             } else {
-              return console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector);
+              return console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154");
             }
           }
         };

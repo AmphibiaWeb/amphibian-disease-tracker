@@ -629,7 +629,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
                 count = count + 1
                 setTemplate sublayerToSet, tableName, count
             else
-              console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector
+              console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154"
         setTemplate suTemp, shortTable
       geo.mapSublayers.push suTemp
       ++i
