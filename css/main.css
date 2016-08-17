@@ -9741,6 +9741,7 @@ html >>> .capitalize {
   width: 50%;
   display: none;
   right: 0;
+  will-change: transform;
 }
 @media (max-width: 767px) {
   .slide-alert {
