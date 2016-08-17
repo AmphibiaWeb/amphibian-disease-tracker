@@ -142,7 +142,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     for disease, data of diseases
       unless summaryTableRows[disease]?
         summaryTableRows[disease] = new Array()
-        summaryTableRowSortable[disease] = new Object()
+        summaryTableRowsSortable[disease] = new Object()
       prevalence = data.prevalence * 100
       prevalence = roundNumberSigfig prevalence, 2
       summaryRow = """

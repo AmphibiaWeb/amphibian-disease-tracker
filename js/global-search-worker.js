@@ -164,7 +164,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
       data = diseases[disease];
       if (summaryTableRows[disease] == null) {
         summaryTableRows[disease] = new Array();
-        summaryTableRowSortable[disease] = new Object();
+        summaryTableRowsSortable[disease] = new Object();
       }
       prevalence = data.prevalence * 100;
       prevalence = roundNumberSigfig(prevalence, 2);
