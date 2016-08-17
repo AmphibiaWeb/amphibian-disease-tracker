@@ -10,12 +10,19 @@ var byteCount, dateMonthToString, deEscape, decode64, delay, downloadCSVFile, en
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 self.addEventListener("message", function(e) {
-  var jResultsList, tableMap;
+  var data, jResultsList, options, response, tableMap;
   switch (e.data.action) {
     case "summary-dialog":
       jResultsList = e.data.resultsList;
       tableMap = e.data.tableToProjectMap;
       return getSampleSummaryDialog(jResultsList, tableMap, e.data.windowWidth);
+    case "csv":
+      data = e.data.data;
+      options = e.data.options;
+      response = downloadCSVFile(data, options);
+      console.info("CSV file successfully generated");
+      self.postMessage(response);
+      return self.close();
   }
 });
 
@@ -761,7 +768,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var col, file, header, headerPlaceholder, headerStr, j, jsonObject, k, len, parser, textAsset;
+  var c, col, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, response, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     console.info("Parsing as JSON string");
@@ -926,29 +933,44 @@ downloadCSVFile = function(data, options) {
     textAsset = textAsset.slice(0, -1);
   }
   file = ("data:text/csv;charset=utf-8;header=" + header + ",") + encodeURIComponent(textAsset);
-  return file;
+  selector = options.selector;
+  if (options.create === true) {
+    c = randomInt(0, 9999);
+    id = (selector.slice(1)) + "-download-button-" + c;
+    html = "<a id=\"" + id + "\" class=\"" + options.classes + "\" href=\"" + file + "\" download=\"" + options.downloadFile + "\">\n  " + options.iconHtml + "\n  " + options.buttonText + "\n</a>";
+  } else {
+    html = "";
+  }
+  response = {
+    file: file,
+    options: options,
+    html: html
+  };
+  return response;
 };
 
 generateCSVFromResults = function(resultArray, caller, selector) {
-  var error1, file, options;
+  var error1, options, response;
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
-  animateLoad();
-  toastStatusMessage("This may take a few seconds, please wait");
-  console.info("Given", resultArray);
+  console.info("Worker CSV: Given", resultArray);
   options = {
     objectAsValues: true,
     downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
     acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
   };
   try {
-    file = downloadCSVFile(resultArray, options);
-    stopLoad();
+    response = downloadCSVFile(resultArray, options);
   } catch (error1) {
-    stopLoadError("Sorry, there was a problem with this dataset and we can't do that right now.");
+    console.error("Sorry, there was a problem with this dataset and we can't do that right now.");
+    response = {
+      file: "",
+      options: options,
+      html: ""
+    };
   }
-  return false;
+  return response;
 };
 
 validateAWebTaxon = function(taxonObj, callback) {
