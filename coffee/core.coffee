@@ -1317,7 +1317,7 @@ checkLoggedIn = (callback) ->
 
 
 
-downloadCSVFile = (data, options) ->
+downloadCSVFile = (data, options, callback) ->
   ###
   # Options:
   #
@@ -1343,14 +1343,26 @@ downloadCSVFile = (data, options) ->
       file = e.data.file
       options = e.data.options
       console.info "CSV Web worker returned", e.data
-      # Insert it into the DOM
-      selector = options.selector
-      if options.create is true
-        $(selector).append html
+      # Helper callback
+      postCallback = ->
+        # Insert it into the DOM
+        selector = options.selector
+        if options.create is true
+          $(selector).append html
+        else
+          $(selector)
+          .attr("download", options.downloadFile)
+          .attr("href",file)
+        false
+      # Possibly execute callback
+      if typeof callback is "function"
+        try
+          callback ->
+            postCallback()
+        catch
+          postCallback()
       else
-        $(selector)
-        .attr("download", options.downloadFile)
-        .attr("href",file)
+        postCallback()
     worker.postMessage postMessageContent
   catch e
     ###
@@ -1675,18 +1687,8 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 
 generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-list") ->
   animateLoad()
-  toastStatusMessage "This may take a few seconds, please wait"
-  console.info "Given", resultArray
-  $("#download-file").remove()
-  html = """
-      <a tabindex="-1" id="download-file" class="paper-button-link">
-        <paper-button disabled>
-          <iron-icon icon="icons:cloud-download"></iron-icon>
-          Download File
-        </paper-button>
-      </a>
-  """
-  $(caller).replaceWith html
+  # toastStatusMessage "This may take a few seconds, please wait"
+  console.info "Source CSV data:", resultArray
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
@@ -1717,11 +1719,21 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   # TODO migrate this to a Web Worker
   # http://www.html5rocks.com/en/tutorials/workers/basics/
   try
-    file = downloadCSVFile(resultArray, options)
-    $("#{selector} #download-file paper-button").removeAttr "disabled"
-    stopLoad()
+    downloadCSVFile resultArray, options, ->
+      $("#download-file").remove()
+      html = """
+          <a tabindex="-1" id="download-file" class="paper-button-link">
+            <paper-button disabled>
+              <iron-icon icon="icons:cloud-download"></iron-icon>
+              Download File
+            </paper-button>
+          </a>
+      """
+      $(caller).replaceWith html
+      $("#{selector} #download-file paper-button").removeAttr "disabled"
+      stopLoad()
   catch
-    stopLoadError "Sorry, there was a problem with this dataset and we can't do that right now."
+    stopLoadError "Sorry, there was a problem with this dataset and we can't generate a downloadable file."
   false
 
 

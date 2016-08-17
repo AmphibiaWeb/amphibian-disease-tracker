@@ -1742,7 +1742,7 @@ checkLoggedIn = function(callback) {
   return false;
 };
 
-downloadCSVFile = function(data, options) {
+downloadCSVFile = function(data, options, callback) {
 
   /*
    * Options:
@@ -1765,16 +1765,31 @@ downloadCSVFile = function(data, options) {
     worker = new Worker("js/global-search-worker.min.js");
     console.info("Generating an off-thread worker for CSV population");
     worker.addEventListener("message", function(e) {
-      var file, html, selector;
+      var error2, file, html, postCallback;
       html = e.data.html;
       file = e.data.file;
       options = e.data.options;
       console.info("CSV Web worker returned", e.data);
-      selector = options.selector;
-      if (options.create === true) {
-        return $(selector).append(html);
+      postCallback = function() {
+        var selector;
+        selector = options.selector;
+        if (options.create === true) {
+          $(selector).append(html);
+        } else {
+          $(selector).attr("download", options.downloadFile).attr("href", file);
+        }
+        return false;
+      };
+      if (typeof callback === "function") {
+        try {
+          return callback(function() {
+            return postCallback();
+          });
+        } catch (error2) {
+          return postCallback();
+        }
       } else {
-        return $(selector).attr("download", options.downloadFile).attr("href", file);
+        return postCallback();
       }
     });
     worker.postMessage(postMessageContent);
@@ -2160,27 +2175,28 @@ cancelAsyncOperation = function(caller, asyncOperation) {
 };
 
 generateCSVFromResults = function(resultArray, caller, selector) {
-  var error2, file, html, options;
+  var error2, options;
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
   animateLoad();
-  toastStatusMessage("This may take a few seconds, please wait");
-  console.info("Given", resultArray);
-  $("#download-file").remove();
-  html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
-  $(caller).replaceWith(html);
+  console.info("Source CSV data:", resultArray);
   options = {
     objectAsValues: true,
     downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
     acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
   };
   try {
-    file = downloadCSVFile(resultArray, options);
-    $(selector + " #download-file paper-button").removeAttr("disabled");
-    stopLoad();
+    downloadCSVFile(resultArray, options, function() {
+      var html;
+      $("#download-file").remove();
+      html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
+      $(caller).replaceWith(html);
+      $(selector + " #download-file paper-button").removeAttr("disabled");
+      return stopLoad();
+    });
   } catch (error2) {
-    stopLoadError("Sorry, there was a problem with this dataset and we can't do that right now.");
+    stopLoadError("Sorry, there was a problem with this dataset and we can't generate a downloadable file.");
   }
   return false;
 };

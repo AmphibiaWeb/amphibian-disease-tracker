@@ -1134,6 +1134,9 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     $("body").append html
     $("#generate-download").click ->
       generateCSVFromResults(outputData, this)
+    # Pre-populate download immediately, if possible
+    try
+      generateCSVFromResults outputData, document.getElementById("generate-download")
     for el in $(".code-box")
       try
         Prism.highlightElement(el, true)
