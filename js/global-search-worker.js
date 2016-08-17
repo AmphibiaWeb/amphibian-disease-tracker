@@ -170,7 +170,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
       prevalence = roundNumberSigfig(prevalence, 2);
       summaryRow = "<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>";
       summaryTableRows[disease].push(summaryRow);
-      summaryTableRowsSortable[disease][species](summaryRow);
+      summaryTableRowsSortable[disease][species] = summaryRow;
     }
   }
   summaryTable = "";

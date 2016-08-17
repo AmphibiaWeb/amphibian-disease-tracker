@@ -155,7 +155,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
       </tr>
       """
       summaryTableRows[disease].push summaryRow
-      summaryTableRowsSortable[disease][species] summaryRow
+      summaryTableRowsSortable[disease][species] = summaryRow
   summaryTable = ""
   # for disease, tableRows of summaryTableRows
   for disease, tableRows of summaryTableRowsSortable
