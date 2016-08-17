@@ -12,7 +12,13 @@ self.addEventListener "message", (e) ->
       jResultsList = e.data.resultsList
       tableMap = e.data.tableToProjectMap
       getSampleSummaryDialog jResultsList, tableMap, e.data.windowWidth
-
+    when "csv"
+      data = e.data.data
+      options = e.data.options
+      response = downloadCSVFile data, options
+      console.info "CSV file successfully generated"
+      self.postMessage response
+      self.close()
 
 getPrettySpecies = (rowData) ->
   genus = rowData.genus
@@ -809,14 +815,28 @@ downloadCSVFile = (data, options) ->
   if textAsset.slice(-1) is ","
     textAsset = textAsset.slice(0, -1)
   file = "data:text/csv;charset=utf-8;header=#{header}," + encodeURIComponent(textAsset)
-  file
+  selector = options.selector
+  if options.create is true
+    c = randomInt 0, 9999
+    id = "#{selector.slice(1)}-download-button-#{c}"
+    html = """
+    <a id="#{id}" class="#{options.classes}" href="#{file}" download="#{options.downloadFile}">
+      #{options.iconHtml}
+      #{options.buttonText}
+    </a>
+    """
+  else
+    html = ""
+  response =
+    file: file
+    options: options
+    html: html
+  response
 
 
 
 generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-list") ->
-  animateLoad()
-  toastStatusMessage "This may take a few seconds, please wait"
-  console.info "Given", resultArray
+  console.info "Worker CSV: Given", resultArray
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
@@ -844,14 +864,15 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
       "fimsextra"
       "originaltaxa"
       ]
-  # TODO migrate this to a Web Worker
-  # http://www.html5rocks.com/en/tutorials/workers/basics/
   try
-    file = downloadCSVFile(resultArray, options)
-    stopLoad()
+    response = downloadCSVFile(resultArray, options)
   catch
-    stopLoadError "Sorry, there was a problem with this dataset and we can't do that right now."
-  false
+    console.error "Sorry, there was a problem with this dataset and we can't do that right now."
+    response =
+      file: ""
+      options: options
+      html: ""
+  response
 
 
 

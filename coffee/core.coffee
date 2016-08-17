@@ -1330,6 +1330,45 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   ###
+  try
+    postMessageContent =
+      data: data
+      options: options
+    # Send the message
+    worker = new Worker "js/global-search-worker.min.js"
+    console.info "Generating an off-thread worker for CSV population"
+    worker.addEventListener "message", (e) ->
+      # Web worker callback
+      html = e.data.html
+      file = e.data.file
+      options = e.data.options
+      console.info "CSV Web worker returned", e.data
+      # Insert it into the DOM
+      selector = options.selector
+      if options.create is true
+        $(selector).append html
+      else
+        $(selector)
+        .attr("download", options.downloadFile)
+        .attr("href",file)
+    worker.postMessage postMessageContent
+  catch e
+    ###
+    # Classic way! Do it on thread
+    ###
+    console.warn "Web workers aren't supported or otherwise failed"
+    console.warn e.message
+    console.warn "Doing work on-thread"
+    downloadCSVFileOnThread data, options
+  false
+
+
+downloadCSVFileOnThread = (data, options) ->
+  ###
+  # On-Thread fallback for Web Worker
+  #
+  # Check downloadCSVFile for canonical version
+  ###
   textAsset = ""
   if isJson data
     console.info "Parsing as JSON string"

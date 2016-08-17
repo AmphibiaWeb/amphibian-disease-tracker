@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1755,6 +1755,49 @@ downloadCSVFile = function(data, options) {
   options.iconHtml ?= """<iron-icon icon="icons:cloud-download"></iron-icon>"""
   options.selector ?= "#download-file"
   options.splitValues ?= false
+   */
+  var error2, postMessageContent, worker;
+  try {
+    postMessageContent = {
+      data: data,
+      options: options
+    };
+    worker = new Worker("js/global-search-worker.min.js");
+    console.info("Generating an off-thread worker for CSV population");
+    worker.addEventListener("message", function(e) {
+      var file, html, selector;
+      html = e.data.html;
+      file = e.data.file;
+      options = e.data.options;
+      console.info("CSV Web worker returned", e.data);
+      selector = options.selector;
+      if (options.create === true) {
+        return $(selector).append(html);
+      } else {
+        return $(selector).attr("download", options.downloadFile).attr("href", file);
+      }
+    });
+    worker.postMessage(postMessageContent);
+  } catch (error2) {
+    e = error2;
+
+    /*
+     * Classic way! Do it on thread
+     */
+    console.warn("Web workers aren't supported or otherwise failed");
+    console.warn(e.message);
+    console.warn("Doing work on-thread");
+    downloadCSVFileOnThread(data, options);
+  }
+  return false;
+};
+
+downloadCSVFileOnThread = function(data, options) {
+
+  /*
+   * On-Thread fallback for Web Worker
+   *
+   * Check downloadCSVFile for canonical version
    */
   var c, col, file, header, headerPlaceholder, headerStr, html, id, jsonObject, k, len, m, parser, selector, textAsset;
   textAsset = "";

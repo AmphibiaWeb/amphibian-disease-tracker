@@ -12,7 +12,13 @@ self.addEventListener "message", (e) ->
       jResultsList = e.data.resultsList
       tableMap = e.data.tableToProjectMap
       getSampleSummaryDialog jResultsList, tableMap, e.data.windowWidth
-
+    when "csv"
+      data = e.data.data
+      options = e.data.options
+      response = downloadCSVFile data, options
+      console.info "CSV file successfully generated"
+      self.postMessage response
+      self.close()
 
 getPrettySpecies = (rowData) ->
   genus = rowData.genus
