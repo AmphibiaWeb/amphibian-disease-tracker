@@ -686,7 +686,7 @@ function checkProjectIdAuthorized($projectId, $simple = false) {
         $accessResult = authorizedProjectAccess($access);
     } catch (Exception $e) {
         $accessResult = array(
-            "status" => false
+            "status" => false,
             "error" => $e->getMessage(),
             "human_error" => "Bad access result; defaulting no access",
         );
