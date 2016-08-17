@@ -183,7 +183,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     providedMap: tableToProjectMap,
     providedWidth: windowWidth
   };
-  elapsed = startTime - Date.now();
+  elapsed = Date.now() - startTime;
   console.info("Worker saved " + elapsed + "ms from the main thread");
   self.postMessage(message);
   return self.close();
@@ -768,7 +768,8 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, col, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, response, selector, textAsset;
+  var c, col, elapsed, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, response, selector, startTime, textAsset;
+  startTime = Date.now();
   textAsset = "";
   if (isJson(data)) {
     console.info("Parsing as JSON string");
@@ -946,6 +947,8 @@ downloadCSVFile = function(data, options) {
     options: options,
     html: html
   };
+  elapsed = Date.now() - startTime;
+  console.debug("CSV Worker saved " + elapsed + "ms from main thread");
   return response;
 };
 

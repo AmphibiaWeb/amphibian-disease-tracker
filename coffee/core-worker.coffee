@@ -486,6 +486,7 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   ###
+  startTime = Date.now()
   textAsset = ""
   if isJson data
     console.info "Parsing as JSON string"
@@ -622,6 +623,8 @@ downloadCSVFile = (data, options) ->
     file: file
     options: options
     html: html
+  elapsed = Date.now() - startTime
+  console.debug "CSV Worker saved #{elapsed}ms from main thread"
   response
 
 

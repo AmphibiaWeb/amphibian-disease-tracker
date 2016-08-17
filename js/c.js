@@ -1759,6 +1759,7 @@ downloadCSVFile = function(data, options, callback) {
   var error2, postMessageContent, worker;
   try {
     postMessageContent = {
+      action: "csv",
       data: data,
       options: options
     };
@@ -2175,11 +2176,11 @@ cancelAsyncOperation = function(caller, asyncOperation) {
 };
 
 generateCSVFromResults = function(resultArray, caller, selector) {
-  var error2, options;
+  var error2, options, startTime;
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
-  animateLoad();
+  startTime = Date.now();
   console.info("Source CSV data:", resultArray);
   options = {
     objectAsValues: true,
@@ -2188,14 +2189,17 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   };
   try {
     downloadCSVFile(resultArray, options, function() {
-      var html;
+      var elapsed, html;
       $("#download-file").remove();
       html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
       $(caller).replaceWith(html);
       $(selector + " #download-file paper-button").removeAttr("disabled");
+      elapsed = Date.now() - startTime;
+      console.debug("GenerateCSVFromResults completed in " + elapsed + "ms");
       return stopLoad();
     });
   } catch (error2) {
+    animateLoad();
     stopLoadError("Sorry, there was a problem with this dataset and we can't generate a downloadable file.");
   }
   return false;

@@ -202,7 +202,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     providedList: resultsList
     providedMap: tableToProjectMap
     providedWidth: windowWidth
-  elapsed = startTime - Date.now()
+  elapsed = Date.now() - startTime
   console.info "Worker saved #{elapsed}ms from the main thread"
   self.postMessage message
   self.close()

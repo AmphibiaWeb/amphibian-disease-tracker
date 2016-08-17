@@ -202,7 +202,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     providedList: resultsList
     providedMap: tableToProjectMap
     providedWidth: windowWidth
-  elapsed = startTime - Date.now()
+  elapsed = Date.now() - startTime
   console.info "Worker saved #{elapsed}ms from the main thread"
   self.postMessage message
   self.close()
@@ -695,6 +695,7 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   ###
+  startTime = Date.now()
   textAsset = ""
   if isJson data
     console.info "Parsing as JSON string"
@@ -831,6 +832,8 @@ downloadCSVFile = (data, options) ->
     file: file
     options: options
     html: html
+  elapsed = Date.now() - startTime
+  console.debug "CSV Worker saved #{elapsed}ms from main thread"
   response
 
 
