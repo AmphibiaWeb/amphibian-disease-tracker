@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -63,17 +63,45 @@ isBlank = function(str) {
   return !str || /^\s*$/.test(str);
 };
 
-isNull = function(str) {
-  var error2;
+isNull = function(str, dirty) {
+  var error2, l;
+  if (dirty == null) {
+    dirty = false;
+  }
+  if (typeof str === "object") {
+    try {
+      l = str.length;
+      if (l != null) {
+        try {
+          return l === 0;
+        } catch (undefined) {}
+      }
+      return Object.size === 0;
+    } catch (undefined) {}
+  }
   try {
     if (isEmpty(str) || isBlank(str) || (str == null)) {
       if (!(str === false || str === 0)) {
         return true;
       }
+      if (dirty) {
+        if (str === false || str === 0) {
+          return true;
+        }
+      }
     }
   } catch (error2) {
     e = error2;
     return false;
+  }
+  try {
+    str = str.toString().toLowerCase();
+  } catch (undefined) {}
+  if (str === "undefined" || str === "null") {
+    return true;
+  }
+  if (dirty && (str === "false" || str === "0")) {
+    return true;
   }
   return false;
 };
@@ -116,6 +144,9 @@ toFloat = function(str) {
 
 toInt = function(str) {
   var f;
+  if (typeof str === "string") {
+    str = str.replace("px", "").replace("em", "").replace("rem", "").replace("vw", "").replace("vh", "");
+  }
   if (!isNumber(str) || isNull(str)) {
     return 0;
   }
@@ -209,6 +240,10 @@ delay = function(ms, f) {
   return setTimeout(f, ms);
 };
 
+interval = function(ms, f) {
+  return setInterval(f, ms);
+};
+
 roundNumber = function(number, digits) {
   var multiple;
   if (digits == null) {
@@ -253,7 +288,7 @@ String.prototype.stripHtml = function(stripChildren) {
 };
 
 String.prototype.unescape = function(strict) {
-  var decodeHTMLEntities, element, fixHtmlEncodings, tmp;
+  var decodeHTMLEntities, element, tmp;
   if (strict == null) {
     strict = false;
   }
@@ -289,18 +324,7 @@ String.prototype.unescape = function(strict) {
     }
     return unescape(str);
   };
-  fixHtmlEncodings = function(string) {
-    string = string.replace(/\&amp;#/mg, '&#');
-    string = string.replace(/\&quot;/mg, '"');
-    string = string.replace(/\&quote;/mg, '"');
-    string = string.replace(/\&#95;/mg, '_');
-    string = string.replace(/\&#39;/mg, "'");
-    string = string.replace(/\&#34;/mg, '"');
-    string = string.replace(/\&#62;/mg, '>');
-    string = string.replace(/\&#60;/mg, '<');
-    return string;
-  };
-  tmp = fixHtmlEncodings(this);
+  tmp = deEscape(this);
   return decodeHTMLEntities(tmp);
 };
 
@@ -428,15 +452,15 @@ bindCopyEvents = function(selector) {
     selector = ".click-copy";
   }
   loadJS("bower_components/zeroclipboard/dist/ZeroClipboard.min.js", function() {
-    var copySelector, el, identifier, l, len, ref, results, text, zcConfig;
+    var copySelector, el, identifier, len, m, ref, results, text, zcConfig;
     zcConfig = {
       swfPath: "bower_components/zeroclipboard/dist/ZeroClipboard.swf"
     };
     ZeroClipboard.config(zcConfig);
     ref = $(selector);
     results = [];
-    for (l = 0, len = ref.length; l < len; l++) {
-      el = ref[l];
+    for (m = 0, len = ref.length; m < len; m++) {
+      el = ref[m];
       identifier = md5($(el).html());
       if (_adp.copyObject == null) {
         _adp.copyObject = new Object();
@@ -721,21 +745,21 @@ loadJS = function(src, callback, doCallbackOnError) {
 };
 
 String.prototype.toTitleCase = function() {
-  var l, len, len1, lower, lowerRegEx, lowers, m, str, upper, upperRegEx, uppers;
+  var len, len1, lower, lowerRegEx, lowers, m, q, str, upper, upperRegEx, uppers;
   str = this.replace(/([^\W_]+[^\s-]*) */g, function(txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
   lowers = ["A", "An", "The", "And", "But", "Or", "For", "Nor", "As", "At", "By", "For", "From", "In", "Into", "Near", "Of", "On", "Onto", "To", "With"];
-  for (l = 0, len = lowers.length; l < len; l++) {
-    lower = lowers[l];
+  for (m = 0, len = lowers.length; m < len; m++) {
+    lower = lowers[m];
     lowerRegEx = new RegExp("\\s" + lower + "\\s", "g");
     str = str.replace(lowerRegEx, function(txt) {
       return txt.toLowerCase();
     });
   }
   uppers = ["Id", "Tv"];
-  for (m = 0, len1 = uppers.length; m < len1; m++) {
-    upper = uppers[m];
+  for (q = 0, len1 = uppers.length; q < len1; q++) {
+    upper = uppers[q];
     upperRegEx = new RegExp("\\b" + upper + "\\b", "g");
     str = str.replace(upperRegEx, upper.toUpperCase());
   }
@@ -1031,11 +1055,11 @@ toastStatusMessage = function(message, className, duration, selector) {
 };
 
 cleanupToasts = function() {
-  var l, len, ref, results, timeout;
+  var len, m, ref, results, timeout;
   ref = window.metaTracker.toastTracker;
   results = [];
-  for (l = 0, len = ref.length; l < len; l++) {
-    timeout = ref[l];
+  for (m = 0, len = ref.length; m < len; m++) {
+    timeout = ref[m];
     try {
       results.push(clearTimeout(timeout));
     } catch (undefined) {}
@@ -1732,7 +1756,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, col, file, header, headerPlaceholder, headerStr, html, id, jsonObject, k, l, len, parser, selector, textAsset;
+  var c, col, file, header, headerPlaceholder, headerStr, html, id, jsonObject, k, len, m, parser, selector, textAsset;
   textAsset = "";
   if (isJson(data)) {
     console.info("Parsing as JSON string");
@@ -1779,7 +1803,7 @@ downloadCSVFile = function(data, options) {
   }
   headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
-    var col, dataVal, error2, escapedKey, handleValue, key, l, len, results, row, tmpRow, tmpRowString, value;
+    var col, dataVal, error2, escapedKey, handleValue, key, len, m, results, row, tmpRow, tmpRowString, value;
     row = 0;
     if (options.objectAsValues) {
       options.splitValues = "::@@::";
@@ -1852,8 +1876,8 @@ downloadCSVFile = function(data, options) {
           results.push(textAsset += handleValue(value));
         } else {
           tmpRow = new Array();
-          for (l = 0, len = headerPlaceholder.length; l < len; l++) {
-            col = headerPlaceholder[l];
+          for (m = 0, len = headerPlaceholder.length; m < len; m++) {
+            col = headerPlaceholder[m];
             dataVal = value[col];
             if (typeof dataVal === "object") {
               try {
@@ -1876,8 +1900,8 @@ downloadCSVFile = function(data, options) {
   })(jsonObject, options.cascadeObjects);
   textAsset = textAsset.trim();
   k = 0;
-  for (l = 0, len = headerPlaceholder.length; l < len; l++) {
-    col = headerPlaceholder[l];
+  for (m = 0, len = headerPlaceholder.length; m < len; m++) {
+    col = headerPlaceholder[m];
     col = col.replace(/"/g, '""');
     headerPlaceholder[k] = col;
     ++k;
@@ -2002,19 +2026,19 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, givenPart, i, initials, initialsArray, issue, j, l, len, len1, m, n, published, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
     console.info("Citation base", result);
     j = result.message;
     authors = new Array();
     i = 0;
     authorJoin = ", ";
     ref = j.author;
-    for (l = 0, len = ref.length; l < len; l++) {
-      author = ref[l];
+    for (m = 0, len = ref.length; m < len; m++) {
+      author = ref[m];
       initialsArray = author.given.split(" ");
       initials = "";
-      for (m = 0, len1 = initialsArray.length; m < len1; m++) {
-        givenPart = initialsArray[m];
+      for (q = 0, len1 = initialsArray.length; q < len1; q++) {
+        givenPart = initialsArray[q];
         n = givenPart.slice(0, 1);
         initials += n;
       }
@@ -2290,7 +2314,7 @@ geo.init = function(doCallback) {
 };
 
 getMapCenter = function(bb) {
-  var bbArray, center, centerLat, centerLng, coords, i, l, len, point, totalLat, totalLng;
+  var bbArray, center, centerLat, centerLng, coords, i, len, m, point, totalLat, totalLng;
   if (bb == null) {
     bb = geo.canonicalBoundingBox;
   }
@@ -2299,8 +2323,8 @@ getMapCenter = function(bb) {
     totalLat = 0.0;
     totalLng = 0.0;
     bbArray = Object.toArray(bb);
-    for (l = 0, len = bbArray.length; l < len; l++) {
-      coords = bbArray[l];
+    for (m = 0, len = bbArray.length; m < len; m++) {
+      coords = bbArray[m];
       ++i;
       point = canonicalizePoint(coords);
       totalLat += point.lat;
@@ -2323,11 +2347,11 @@ getMapCenter = function(bb) {
 };
 
 getPointsFromBoundingBox = function(obj) {
-  var coords, corners, l, len, realCoords;
+  var coords, corners, len, m, realCoords;
   corners = [[obj.bounding_box_n, obj.bounding_box_w], [obj.bounding_box_n, obj.bounding_box_e], [obj.bounding_box_s, obj.bounding_box_e], [obj.bounding_box_s, obj.bounding_box_w]];
   realCoords = new Array();
-  for (l = 0, len = corners.length; l < len; l++) {
-    coords = corners[l];
+  for (m = 0, len = corners.length; m < len; m++) {
+    coords = corners[m];
     console.log("Pushing corner", coords);
     realCoords.push(canonicalizePoint(coords));
   }
@@ -2473,7 +2497,7 @@ createMap2 = function(pointsObj, options, callback) {
    *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
-  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, l, len, len1, len2, len3, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, ref2, ref3, selector, species, ssp, t, testString, tested, zoom;
+  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, len, len1, len2, len3, m, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, q, r, ref, ref1, ref2, ref3, selector, species, ssp, t, testString, tested, u, zoom;
   console.log("createMap2 was provided options:", options);
   if (options == null) {
     options = new Object();
@@ -2523,8 +2547,8 @@ createMap2 = function(pointsObj, options, callback) {
       if (pointList.length === 0) {
         options.skipPoints = true;
       } else {
-        for (l = 0, len = pointList.length; l < len; l++) {
-          point = pointList[l];
+        for (m = 0, len = pointList.length; m < len; m++) {
+          point = pointList[m];
           console.log("Checking", point, "in", pointList);
           points.push(canonicalizePoint(point));
         }
@@ -2537,8 +2561,8 @@ createMap2 = function(pointsObj, options, callback) {
           points.push(canonicalizePoint(options.boundingBox.se));
         } else {
           ref2 = options.boundingBox;
-          for (m = 0, len1 = ref2.length; m < len1; m++) {
-            point = ref2[m];
+          for (q = 0, len1 = ref2.length; q < len1; q++) {
+            point = ref2[q];
             points.push(canonicalizePoint(point));
           }
         }
@@ -2555,8 +2579,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipHull !== true) {
       mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-      for (q = 0, len2 = hull.length; q < len2; q++) {
-        point = hull[q];
+      for (t = 0, len2 = hull.length; t < len2; t++) {
+        point = hull[t];
         mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
       }
       mapHtml += "    </google-map-poly>";
@@ -2565,8 +2589,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipPoints !== true) {
       i = 0;
-      for (t = 0, len3 = points.length; t < len3; t++) {
-        point = points[t];
+      for (u = 0, len3 = points.length; u < len3; u++) {
+        point = points[u];
         markerHtml = "";
         markerTitle = "";
         try {
@@ -2729,14 +2753,14 @@ createMap2 = function(pointsObj, options, callback) {
 };
 
 reInitMap = function(selector) {
-  var l, len, map, newObjects, o, obj, poly, polyOptions;
+  var len, m, map, newObjects, o, obj, poly, polyOptions;
   map = p$(selector);
   map.map = null;
   o = map.objects;
   map._initGMap();
   newObjects = new Array();
-  for (l = 0, len = o.length; l < len; l++) {
-    obj = o[l];
+  for (m = 0, len = o.length; m < len; m++) {
+    obj = o[m];
     if (obj.tagName.toLowerCase() === "google-map-poly") {
       obj._points = new Array();
       $(obj).find("google-map-point").each(function() {
@@ -2862,15 +2886,15 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
   }
   BASE_MAP = geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
-    var dataLayer, error2, i, l, len, max, setTemplate, shortTable, suTemp;
+    var dataLayer, error2, i, len, m, max, setTemplate, shortTable, suTemp;
     try {
       layer.setParams("table_name", params.named_map.params.table_name);
     } catch (error2) {
       console.warn("Couldn't explicitly set table");
     }
     if (isArray(layers)) {
-      for (l = 0, len = layers.length; l < len; l++) {
-        dataLayer = layers[l];
+      for (m = 0, len = layers.length; m < len; m++) {
+        dataLayer = layers[m];
         console.info("Re-adding sublayer", dataLayer);
         layer.createSubLayer(dataLayer);
       }
@@ -3154,7 +3178,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, l, lat, lats, len, len1, ll, lng, lngs, longestStatement, lowCol, m, maxStatementLength, n, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, shortestStatement, sqlQuery, statements, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
+    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, lat, lats, len, len1, ll, lng, lngs, longestStatement, lowCol, m, maxStatementLength, n, q, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, shortestStatement, sqlQuery, statements, tempList, transectPolygon, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -3201,8 +3225,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         userTransectRing = JSON.parse(totalData.transectRing);
         userTransectRing = Object.toArray(userTransectRing);
         i = 0;
-        for (l = 0, len = userTransectRing.length; l < len; l++) {
-          coordinatePair = userTransectRing[l];
+        for (m = 0, len = userTransectRing.length; m < len; m++) {
+          coordinatePair = userTransectRing[m];
           if (coordinatePair instanceof Point) {
             coordinatePair = coordinatePair.toGeoJson();
             userTransectRing[i] = coordinatePair;
@@ -3212,8 +3236,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
               message: "Bad coordinate length for '" + coordinatePair + "'"
             };
           }
-          for (m = 0, len1 = coordinatePair.length; m < len1; m++) {
-            coordinate = coordinatePair[m];
+          for (q = 0, len1 = coordinatePair.length; q < len1; q++) {
+            coordinate = coordinatePair[q];
             if (!isNumber(coordinate)) {
               throw {
                 message: "Bad coordinate number '" + coordinate + "'"
@@ -3536,7 +3560,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
 };
 
 sortPoints = function(pointArray, asObj) {
-  var coordPoint, l, len, point, sortedPoints;
+  var coordPoint, len, m, point, sortedPoints;
   if (asObj == null) {
     asObj = true;
   }
@@ -3548,8 +3572,8 @@ sortPoints = function(pointArray, asObj) {
   window.upper = upperLeft(pointArray);
   pointArray.sort(pointSort);
   sortedPoints = new Array();
-  for (l = 0, len = pointArray.length; l < len; l++) {
-    coordPoint = pointArray[l];
+  for (m = 0, len = pointArray.length; m < len; m++) {
+    coordPoint = pointArray[m];
     if (asObj) {
       sortedPoints.push(coordPoint.getObj());
     } else {
@@ -3624,7 +3648,7 @@ canonicalizePoint = function(point) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, chConfig, cpHull, error2, error3, l, len, len1, m, obj, point, realPointArray, simplePointArray;
+  var canonicalPoint, chConfig, cpHull, error2, error3, len, len1, m, obj, point, q, realPointArray, simplePointArray;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -3642,8 +3666,8 @@ createConvexHull = function(pointsArray, returnObj) {
   realPointArray = new Array();
   console.log("createConvexHull called with " + (Object.size(pointsArray)) + " points");
   pointsArray = Object.toArray(pointsArray);
-  for (l = 0, len = pointsArray.length; l < len; l++) {
-    point = pointsArray[l];
+  for (m = 0, len = pointsArray.length; m < len; m++) {
+    point = pointsArray[m];
     canonicalPoint = canonicalizePoint(point);
     realPointArray.push(canonicalPoint);
   }
@@ -3663,8 +3687,8 @@ createConvexHull = function(pointsArray, returnObj) {
     console.warn(e.stack);
   }
   geo.canonicalBoundingBox = new Array();
-  for (m = 0, len1 = cpHull.length; m < len1; m++) {
-    point = cpHull[m];
+  for (q = 0, len1 = cpHull.length; q < len1; q++) {
+    point = cpHull[q];
     geo.canonicalBoundingBox.push(point.getObj());
   }
   obj = {
@@ -3815,7 +3839,7 @@ geo.distance = function(lat1, lng1, lat2, lng2) {
 };
 
 geo.getBoundingRectangle = function(coordinateSet) {
-  var boundingBox, coordinates, coords, eastMost, l, lat, len, lng, northMost, southMost, westMost;
+  var boundingBox, coordinates, coords, eastMost, lat, len, lng, m, northMost, southMost, westMost;
   if (coordinateSet == null) {
     coordinateSet = geo.boundingBox;
   }
@@ -3828,8 +3852,8 @@ geo.getBoundingRectangle = function(coordinateSet) {
   southMost = 90;
   westMost = 180;
   eastMost = -180;
-  for (l = 0, len = coordinateSet.length; l < len; l++) {
-    coordinates = coordinateSet[l];
+  for (m = 0, len = coordinateSet.length; m < len; m++) {
+    coordinates = coordinateSet[m];
     coords = canonicalizePoint(coordinates);
     lat = coords.lat;
     lng = coords.lng;
@@ -3936,7 +3960,7 @@ geo.geocode = function(address, filter, callback) {
       componentRestrictions: filter
     };
     return geocoder.geocode(geocoderData, function(result, status) {
-      var error3, l, len, mainResult, part, ref, tmp, type;
+      var error3, len, m, mainResult, part, ref, tmp, type;
       console.log("Geocoder fetched", result, status);
       console.log("Provided", geocoderData);
       if (status !== google.maps.GeocoderStatus.OK) {
@@ -3949,8 +3973,8 @@ geo.geocode = function(address, filter, callback) {
       tmp.human = mainResult.formatted_address;
       try {
         ref = mainResult.address_components;
-        for (l = 0, len = ref.length; l < len; l++) {
-          part = ref[l];
+        for (m = 0, len = ref.length; m < len; m++) {
+          part = ref[m];
           try {
             type = part.types[0];
             tmp.google[type] = part.long_name;
@@ -3980,7 +4004,7 @@ geo.geocode = function(address, filter, callback) {
     args = "address=" + (encodeURIComponent(address)) + "&components=" + componentsString + "&key=" + restrictionlessApiKey;
     console.log("Trying", url + "?" + args);
     $.get(url, args, "json").done(function(result) {
-      var error3, l, len, mainResult, part, ref, status, tmp, type;
+      var error3, len, m, mainResult, part, ref, status, tmp, type;
       console.log("API hit fetched", result);
       mainResult = result.results[0];
       status = result.status;
@@ -3994,8 +4018,8 @@ geo.geocode = function(address, filter, callback) {
       tmp.human = mainResult.formatted_address;
       try {
         ref = mainResult.address_components;
-        for (l = 0, len = ref.length; l < len; l++) {
-          part = ref[l];
+        for (m = 0, len = ref.length; m < len; m++) {
+          part = ref[m];
           try {
             type = part.types[0];
             tmp.google[type] = part.long_name;
@@ -4050,13 +4074,13 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
     location: ll
   };
   return geocoder.geocode(request, function(result, status) {
-    var east, googleBounds, l, len, locality, mustContain, ne, north, south, sw, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
+    var east, googleBounds, len, locality, m, mustContain, ne, north, south, sw, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
     if (status === google.maps.GeocoderStatus.OK) {
       console.info("Google said:", result);
       mustContain = geo.getBoundingRectangle(boundingBox);
       validView = null;
-      for (l = 0, len = result.length; l < len; l++) {
-        view = result[l];
+      for (m = 0, len = result.length; m < len; m++) {
+        view = result[m];
         validView = view;
         googleBounds = view.geometry.bounds;
         if (googleBounds == null) {
@@ -4105,7 +4129,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
 };
 
 toggleGoogleMapMarkers = function(diseaseStatus, selector, callback) {
-  var l, len, marker, markers, state;
+  var len, m, marker, markers, state;
   if (diseaseStatus == null) {
     diseaseStatus = "positive";
   }
@@ -4120,8 +4144,8 @@ toggleGoogleMapMarkers = function(diseaseStatus, selector, callback) {
   markers = $(selector);
   console.info("Got " + markers.length + " markers");
   state = void 0;
-  for (l = 0, len = markers.length; l < len; l++) {
-    marker = markers[l];
+  for (m = 0, len = markers.length; m < len; m++) {
+    marker = markers[m];
     if (state == null) {
       state = !p$(marker).open;
       console.info("Setting " + diseaseStatus + " markers open state to " + state);
@@ -4172,14 +4196,14 @@ setupMapMarkerToggles = function() {
  */
 
 getConvexHull = function(googleMapsMarkersArray) {
-  var error2, error3, gmm, gmmReal, l, len, len1, ll, llObj, m, marker, point, points, test;
+  var error2, error3, gmm, gmmReal, len, len1, ll, llObj, m, marker, point, points, q, test;
   try {
     test = googleMapsMarkersArray[0];
     ll = test.getPosition();
   } catch (error2) {
     gmmReal = new Array();
-    for (l = 0, len = googleMapsMarkersArray.length; l < len; l++) {
-      point = googleMapsMarkersArray[l];
+    for (m = 0, len = googleMapsMarkersArray.length; m < len; m++) {
+      point = googleMapsMarkersArray[m];
       gmm = new google.maps.Marker;
       try {
         ll = point.getLatLng();
@@ -4196,8 +4220,8 @@ getConvexHull = function(googleMapsMarkersArray) {
     googleMapsMarkersArray = gmmReal;
   }
   points = new Array();
-  for (m = 0, len1 = googleMapsMarkersArray.length; m < len1; m++) {
-    marker = googleMapsMarkersArray[m];
+  for (q = 0, len1 = googleMapsMarkersArray.length; q < len1; q++) {
+    marker = googleMapsMarkersArray[q];
     points.push(marker.getPosition());
   }
   points.sort(sortPointY);
@@ -4214,12 +4238,12 @@ sortPointY = function(a, b) {
 };
 
 getConvexHullPoints = function(points) {
-  var hullPoints, l, len, pObj, point, realHull;
+  var hullPoints, len, m, pObj, point, realHull;
   hullPoints = new Array();
   chainHull_2D(points, points.length, hullPoints);
   realHull = new Array();
-  for (l = 0, len = hullPoints.length; l < len; l++) {
-    point = hullPoints[l];
+  for (m = 0, len = hullPoints.length; m < len; m++) {
+    point = hullPoints[m];
     pObj = new Point(point.lat(), point.lng());
     realHull.push(pObj);
   }
