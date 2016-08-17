@@ -242,6 +242,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
         if (!isNull((ref = search.sampled_species) != null ? ref.data : void 0)) {
           inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  Invalid species: Please check your spelling. <a href=\"http://amphibiaweb.org/search/index.html\" class=\"click\" data-newtab=\"true\">Check AmphibiaWeb for valid species</a>\n</span>";
           $("#taxa-input-container").addClass("has-error");
+          $("#taxa-input-error").remove();
           $("#taxa-input").attr("aria-describedby", "taxa-input-error").after(inputErrorHtml).keyup(function() {
             try {
               $("#taxa-input-container").removeClass("has-error");

@@ -183,7 +183,7 @@ $loginStatus = getLoginState();
             <h3 class="col-xs-12">Search &amp; Visualize Records <span class="badge">BETA</span></h3>
             <div class="col-xs-12 col-md-6 col-lg-8">
               <div class="alert alert-info">
-                <strong><span class="glyphicon glyphicon-info-sign"></span> Tip:</strong> Your search will be restricted to the parts of the world viewable in the map. Zoom and pan to restrict your search area!
+                <strong><span class="glyphicon glyphicon-info-sign"></span> Tip:</strong> Your search will be restricted to the parts of the world viewable in the map. Zoom and pan to restrict your search area, then click "search" to perform your search.
               </div>
               <div class="form-group" id="taxa-input-container">
                 <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
