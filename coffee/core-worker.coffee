@@ -156,6 +156,12 @@ Object.size = (obj) ->
   size++ for key of obj when obj.hasOwnProperty(key)
   size
 
+Object.doOnSortedKeys = (obj, fn) ->
+  sortedKeys = Object.keys(obj).sort()
+  for key in sortedKeys
+    data = obj[key]
+    fn data
+
 delay = (ms,f) -> setTimeout(f,ms)
 
 roundNumber = (number,digits = 0) ->
