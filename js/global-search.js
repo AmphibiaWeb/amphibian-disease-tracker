@@ -1244,6 +1244,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     $("#generate-download").click(function() {
       return generateCSVFromResults(outputData, this);
     });
+    try {
+      generateCSVFromResults(outputData, document.getElementById("generate-download"));
+    } catch (undefined) {}
     ref3 = $(".code-box");
     for (l = 0, len2 = ref3.length; l < len2; l++) {
       el = ref3[l];
