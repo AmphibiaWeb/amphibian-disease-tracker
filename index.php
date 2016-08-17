@@ -195,7 +195,7 @@ $loginStatus = getLoginState();
                 <div class="col-xs-12 center-block text-center">
                   <paper-button id="toggle-global-search-filters" raised>
                     <iron-icon icon="icons:filter-list"></iron-icon>
-                    <span class="action-word">Show</span> Filters
+                    <span class="action-word">Show</span> Advanced Options
                   </paper-button>
                   <iron-collapse id="global-search-filters">
                     <div class="collapse-content text-left">
@@ -229,49 +229,50 @@ $loginStatus = getLoginState();
                           </paper-radio-group>
                         </div>
                       </div>
+                      <div class="form-group">
+                        <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
+                          Search in map view
+                        </iron-label>
+                        <div class="col-xs-5 col-sm-8">
+                          <paper-toggle-button id="use-viewport-bounds" checked>Enabled</paper-toggle-button>
+                          <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
+                        <div class="col-xs-8 col-sm-10 table-responsive">
+                          <table class="table table-bordered margin-table" id="bounds-container">
+                            <tr>
+                              <th>Point</th>
+                              <th>Latitude <span class="text-muted">(decimal degrees)</span></th>
+                              <th>Longitude <span class="text-muted">(decimal degrees)</span></th>
+                            </tr>
+                            <tr>
+                              <td>NW</td>
+                              <td>
+                                <input type="number" id="north-coordinate" placeholder="37.872483" class="form-control coord-input lat-input submit-project-search" value="90"/>
+                              </td>
+                              <td>
+                                <input type="number" id="west-coordinate" placeholder="-122.258922" class="form-control coord-input lng-input submit-project-search" value="-180"/>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>SE</td>
+                              <td>
+                                <input type="number" id="south-coordinate" placeholder="-37.7963646" class="form-control coord-input lat-input submit-project-search" value="-90"/>
+                              </td>
+                              <td>
+                                <input type="number" id="east-coordinate" placeholder="144.9589851" class="form-control coord-input lng-input submit-project-search" value="180"/>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   </iron-collapse>
                 </div>
               </div>
-              <div class="form-group">
-                <iron-label class="control-label col-xs-4 col-sm-2" for="use-viewport-bounds">
-                  Search in map view
-                </iron-label>
-                <div class="col-xs-5 col-sm-8">
-                  <paper-toggle-button id="use-viewport-bounds" checked>Enabled</paper-toggle-button>
-                  <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-xs-4 col-sm-2" for="bounds-container">Bounds</label>
-                <div class="col-xs-8 col-sm-10 table-responsive">
-                  <table class="table table-bordered margin-table" id="bounds-container">
-                    <tr>
-                      <th>Point</th>
-                      <th>Latitude <span class="text-muted">(decimal degrees)</span></th>
-                      <th>Longitude <span class="text-muted">(decimal degrees)</span></th>
-                    </tr>
-                    <tr>
-                      <td>NW</td>
-                      <td>
-                        <input type="number" id="north-coordinate" placeholder="37.872483" class="form-control coord-input lat-input submit-project-search" value="90"/>
-                      </td>
-                      <td>
-                        <input type="number" id="west-coordinate" placeholder="-122.258922" class="form-control coord-input lng-input submit-project-search" value="-180"/>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>SE</td>
-                      <td>
-                        <input type="number" id="south-coordinate" placeholder="-37.7963646" class="form-control coord-input lat-input submit-project-search" value="-90"/>
-                      </td>
-                      <td>
-                        <input type="number" id="east-coordinate" placeholder="144.9589851" class="form-control coord-input lng-input submit-project-search" value="180"/>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
+
             </div>
             <div class="form-group">
               <div class="col-xs-12 col-md-6 col-lg-4 text-center center-block">
