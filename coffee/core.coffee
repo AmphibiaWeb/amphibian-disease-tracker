@@ -38,13 +38,32 @@ isEmpty = (str) -> not str or str.length is 0
 
 isBlank = (str) -> not str or /^\s*$/.test(str)
 
-isNull = (str) ->
+isNull = (str, dirty = false) ->
+  if typeof str is "object"
+    try
+      l = str.length
+      if l?
+        try
+          return l is 0
+      return Object.size is 0
   try
     if isEmpty(str) or isBlank(str) or not str?
-      unless str is false or str is 0 then return true
+      #unless (str is false or str is 0) and not dirty
+      unless str is false or str is 0
+        return true
+      if dirty
+        if str is false or str is 0
+          return true
   catch e
     return false
+  try
+    str = str.toString().toLowerCase()
+  if str is "undefined" or str is "null"
+    return true
+  if dirty and (str is "false" or str is "0")
+    return true
   false
+
 
 isJson = (str) ->
   if typeof str is 'object' and not isArray str then return true
@@ -71,6 +90,14 @@ toFloat = (str) ->
   parseFloat(str)
 
 toInt = (str) ->
+  if typeof str is "string"
+    # Snip CSS measurements
+    str = str
+      .replace("px","")
+      .replace("em","")
+      .replace("rem","")
+      .replace("vw","")
+      .replace("vh","")
   if not isNumber(str) or isNull(str) then return 0
   f = parseFloat(str) # For stuff like 1.2e12
   parseInt(f)
@@ -134,6 +161,7 @@ Object.size = (obj) ->
   size
 
 delay = (ms,f) -> setTimeout(f,ms)
+interval = (ms,f) -> setInterval(f,ms)
 
 roundNumber = (number,digits = 0) ->
   multiple = 10 ** digits
@@ -198,18 +226,8 @@ String::unescape = (strict = false) ->
         element.textContent = ""
     unescape(str)
   # Remove encoded or double-encoded tags
-  fixHtmlEncodings = (string) ->
-    string = string.replace(/\&amp;#/mg, '&#') # The rest, for double-encodings
-    string = string.replace(/\&quot;/mg, '"')
-    string = string.replace(/\&quote;/mg, '"')
-    string = string.replace(/\&#95;/mg, '_')
-    string = string.replace(/\&#39;/mg, "'")
-    string = string.replace(/\&#34;/mg, '"')
-    string = string.replace(/\&#62;/mg, '>')
-    string = string.replace(/\&#60;/mg, '<')
-    string
+  tmp = deEscape(this)
   # Run it
-  tmp = fixHtmlEncodings(this)
   decodeHTMLEntities(tmp)
 
 
@@ -877,7 +895,7 @@ bindClicks = (selector = ".click") ->
         $(this)
         .unbind()
         .click (e) ->
-          # Prevent links from auto-triggering          
+          # Prevent links from auto-triggering
           e.preventDefault()
           e.stopPropagation()
           try
@@ -1360,7 +1378,7 @@ downloadCSVFile = (data, options) ->
               if isArray options.acceptableCols
                 if col in options.acceptableCols
                   headerPlaceholder.push col
-              else  
+              else
                 headerPlaceholder.push col
             console.log "Using as header", headerPlaceholder
         if typeof value is "object" and cascadeObjects
@@ -1401,7 +1419,7 @@ downloadCSVFile = (data, options) ->
             if typeof dataVal is "object"
               try
                 dataVal = JSON.stringify dataVal
-                dataVal = dataVal.replace(/"/g,'""')              
+                dataVal = dataVal.replace(/"/g,'""')
             tmpRow.push dataVal
           tmpRowString = tmpRow.join options.splitValues
           textAsset += handleValue tmpRowString, options
@@ -1557,7 +1575,7 @@ fetchCitation = (citationQuery, callback) ->
       ++i
       if i > 2
         ++i
-        authors.push "et al"        
+        authors.push "et al"
         break
     if i is 2
       authorJoin = " and "
@@ -1570,7 +1588,7 @@ fetchCitation = (citationQuery, callback) ->
         doiContinuous = doiNumbers.slice -8
         continuous = " #{doiContinuous}; doi: #{doi}"
       catch
-        # Go classic 
+        # Go classic
         continuous = "#{j.page}."
       citation = """
       #{authors.join(authorJoin)}. #{published} #{j.title[0]}. #{j["container-title"][0]} #{j.volume}#{issue}:#{continuous}

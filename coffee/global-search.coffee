@@ -1104,10 +1104,10 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
         #{summaryTable}
         <div class="row">
           <div class="col-xs-12">
-            <h3>Raw Data</h3>
+            <h3>Raw Data For Developers</h3>
             <table class="table table-striped">
               <tr>
-                <th colspan="4">Query Data</th>
+                <th colspan="4">Query Data (JSON)</th>
                 <th>Visit Project</th>
               </tr>
               #{projectTableRows.join("\n")}
@@ -1206,7 +1206,7 @@ firstLoadInstructionPrompt = (force = false) ->
       <div class="alert alert-warning alert-dismissable slide-alert slide-out" role="alert" id="first-load-prompt">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <div class="alert-message">
-          <p class="center-block text-center"><strong>Looks like you're new here!</strong></p>
+          <p class="center-block text-center"><strong>Welcome!</strong></p>
           <p>
             Need help getting started? We've put together some resources for you below.
           </p>
