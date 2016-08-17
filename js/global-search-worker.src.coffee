@@ -159,9 +159,18 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   summaryTable = ""
   # for disease, tableRows of summaryTableRows
   for disease, tableRows of summaryTableRowsSortable
-    tableRowsSimple = new Array()
-    Object.doOnSortedKeys tableRows, (row) ->
-      tableRowsSimple.push row
+    try
+      if typeof tableRows is "object"
+        tableRowsSimple = new Array()    
+        Object.doOnSortedKeys tableRows, (row) ->
+          tableRowsSimple.push row
+      else
+        console.warn "Warning: table rows aren't an object"
+        tableRowsSimple = tableRows
+    catch e
+      console.error "Can't sort rows: #{e.message}"
+      console.warn e.stack
+      tableRowsSimple = summaryTableRows[disease]
     summaryTable += """
     <div class="row">
       <div class="col-xs-12">

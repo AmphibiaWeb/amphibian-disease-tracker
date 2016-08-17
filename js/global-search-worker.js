@@ -56,7 +56,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, elapsed, error1, error2, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, sortRows, species, startTime, summaryRow, summaryTable, summaryTableRows, summaryTableRowsSortable, table, tableRows, tableRowsSimple, unhelpfulCols;
+  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, e, elapsed, error1, error2, error3, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, sortRows, species, startTime, summaryRow, summaryTable, summaryTableRows, summaryTableRowsSortable, table, tableRows, tableRowsSimple, unhelpfulCols;
   startTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -176,10 +176,22 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
   summaryTable = "";
   for (disease in summaryTableRowsSortable) {
     tableRows = summaryTableRowsSortable[disease];
-    tableRowsSimple = new Array();
-    Object.doOnSortedKeys(tableRows, function(row) {
-      return tableRowsSimple.push(row);
-    });
+    try {
+      if (typeof tableRows === "object") {
+        tableRowsSimple = new Array();
+        Object.doOnSortedKeys(tableRows, function(row) {
+          return tableRowsSimple.push(row);
+        });
+      } else {
+        console.warn("Warning: table rows aren't an object");
+        tableRowsSimple = tableRows;
+      }
+    } catch (error3) {
+      e = error3;
+      console.error("Can't sort rows: " + e.message);
+      console.warn(e.stack);
+      tableRowsSimple = summaryTableRows[disease];
+    }
     summaryTable += "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>" + disease + "</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (tableRowsSimple.join("\n")) + "\n    </table>\n  </div>\n</div>";
   }
   if (isNull(summaryTable)) {
