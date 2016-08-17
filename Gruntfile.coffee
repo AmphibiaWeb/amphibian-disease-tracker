@@ -105,9 +105,9 @@ module.exports = (grunt) ->
       dist:
         options:
           sourceMap:true
-          sourceMapName:"js/maps/c.map"
-          sourceMapIncludeSources:true
-          sourceMapIn:"js/maps/c.js.map"
+          # sourceMapName:"js/maps/c.map"
+          # sourceMapIncludeSources:true
+          # sourceMapIn:"js/maps/c.js.map"
           compress:
             # From https://github.com/mishoo/UglifyJS2#compressor-options
             dead_code: true
