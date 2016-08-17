@@ -107,7 +107,12 @@ module.exports = (grunt) ->
           sourceMap:true
           # sourceMapName:"js/maps/c.map"
           # sourceMapIncludeSources:true
-          # sourceMapIn:"js/maps/c.js.map"
+          sourceMapIn: (fileIn) ->
+            fileName = fileIn.split("/").pop()
+            fileNameArr = fileName.split(".")
+            fileNameArr.pop()
+            fileId = fileNameArr.join(".")
+            "js/maps/#{fileId}.js.map"
           compress:
             # From https://github.com/mishoo/UglifyJS2#compressor-options
             dead_code: true
