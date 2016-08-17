@@ -236,6 +236,18 @@ Object.size = function(obj) {
   return size;
 };
 
+Object.doOnSortedKeys = function(obj, fn) {
+  var data, key, len, m, results, sortedKeys;
+  sortedKeys = Object.keys(obj).sort();
+  results = [];
+  for (m = 0, len = sortedKeys.length; m < len; m++) {
+    key = sortedKeys[m];
+    data = obj[key];
+    results.push(fn(data));
+  }
+  return results;
+};
+
 delay = function(ms, f) {
   return setTimeout(f, ms);
 };

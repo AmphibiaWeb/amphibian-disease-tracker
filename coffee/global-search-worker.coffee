@@ -74,6 +74,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
       try
         # Clean up the provided view
         altRows = new Object()
+        sortRows = new Object()
         for n, row of projectResults.rows
           # Remove the useless-to-people cols
           for col in unhelpfulCols
@@ -107,8 +108,11 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
           dataSummary.data[species][d].samples++
           prevalence = dataSummary.data[species][d].positive / dataSummary.data[species][d].samples
           dataSummary.data[species][d].prevalence = prevalence
-          outputData.push row
+          sortRows[species] = row
+          #outputData.push row
         rowSet = altRows
+        Object.doOnSortedKeys sortRows, (rowData) ->
+          outputData.push rowData
       catch
         # Make sure we have the dat for the CSV download
         for n, row of projectResults.rows
@@ -133,13 +137,15 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     projectTableRows.push row
   # Create the pretty table
   summaryTableRows = new Object()
+  summaryTableRowsSortable = new Object()
   for species, diseases of dataSummary.data
     for disease, data of diseases
       unless summaryTableRows[disease]?
         summaryTableRows[disease] = new Array()
+        summaryTableRowSortable[disease] = new Object()
       prevalence = data.prevalence * 100
       prevalence = roundNumberSigfig prevalence, 2
-      summaryTableRows[disease].push """
+      summaryRow = """
       <tr>
         <td>#{species}</td>
         <td>#{data.samples}</td>
@@ -148,8 +154,14 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
         <td>#{prevalence}%</td>
       </tr>
       """
+      summaryTableRows[disease].push summaryRow
+      summaryTableRowsSortable[disease][species] summaryRow
   summaryTable = ""
-  for disease, tableRows of summaryTableRows
+  # for disease, tableRows of summaryTableRows
+  for disease, tableRows of summaryTableRowsSortable
+    tableRowsSimple = new Array()
+    Object.doOnSortedKeys tableRows, (row) ->
+      tableRowsSimple.push row
     summaryTable += """
     <div class="row">
       <div class="col-xs-12">
@@ -162,7 +174,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
             <th>Disease Negative</th>
             <th>Disease Prevalence</th>
           </tr>
-          #{tableRows.join("\n")}
+          #{tableRowsSimple.join("\n")}
         </table>
       </div>
     </div>

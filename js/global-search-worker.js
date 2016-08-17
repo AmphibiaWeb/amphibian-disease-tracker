@@ -56,7 +56,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, elapsed, error1, error2, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, species, startTime, summaryTable, summaryTableRows, table, tableRows, unhelpfulCols;
+  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, elapsed, error1, error2, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, sortRows, species, startTime, summaryRow, summaryTable, summaryTableRows, summaryTableRowsSortable, table, tableRows, tableRowsSimple, unhelpfulCols;
   startTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -84,6 +84,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
       rowSet = projectResults.rows;
       try {
         altRows = new Object();
+        sortRows = new Object();
         ref = projectResults.rows;
         for (n in ref) {
           row = ref[n];
@@ -126,9 +127,12 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
           dataSummary.data[species][d].samples++;
           prevalence = dataSummary.data[species][d].positive / dataSummary.data[species][d].samples;
           dataSummary.data[species][d].prevalence = prevalence;
-          outputData.push(row);
+          sortRows[species] = row;
         }
         rowSet = altRows;
+        Object.doOnSortedKeys(sortRows, function(rowData) {
+          return outputData.push(rowData);
+        });
       } catch (error1) {
         ref1 = projectResults.rows;
         for (n in ref1) {
@@ -152,6 +156,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     projectTableRows.push(row);
   }
   summaryTableRows = new Object();
+  summaryTableRowsSortable = new Object();
   ref2 = dataSummary.data;
   for (species in ref2) {
     diseases = ref2[species];
@@ -159,16 +164,23 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
       data = diseases[disease];
       if (summaryTableRows[disease] == null) {
         summaryTableRows[disease] = new Array();
+        summaryTableRowSortable[disease] = new Object();
       }
       prevalence = data.prevalence * 100;
       prevalence = roundNumberSigfig(prevalence, 2);
-      summaryTableRows[disease].push("<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>");
+      summaryRow = "<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>";
+      summaryTableRows[disease].push(summaryRow);
+      summaryTableRowsSortable[disease][species](summaryRow);
     }
   }
   summaryTable = "";
-  for (disease in summaryTableRows) {
-    tableRows = summaryTableRows[disease];
-    summaryTable += "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>" + disease + "</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (tableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
+  for (disease in summaryTableRowsSortable) {
+    tableRows = summaryTableRowsSortable[disease];
+    tableRowsSimple = new Array();
+    Object.doOnSortedKeys(tableRows, function(row) {
+      return tableRowsSimple.push(row);
+    });
+    summaryTable += "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>" + disease + "</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th>Species</th>\n        <th>Samples</th>\n        <th>Disease Positive</th>\n        <th>Disease Negative</th>\n        <th>Disease Prevalence</th>\n      </tr>\n      " + (tableRowsSimple.join("\n")) + "\n    </table>\n  </div>\n</div>";
   }
   if (isNull(summaryTable)) {
     summaryTable = "<h3><em>Sorry, we were unable to generate a summary table</em></h3>";
@@ -375,6 +387,18 @@ Object.size = function(obj) {
     }
   }
   return size;
+};
+
+Object.doOnSortedKeys = function(obj, fn) {
+  var data, j, key, len, results, sortedKeys;
+  sortedKeys = Object.keys(obj).sort();
+  results = [];
+  for (j = 0, len = sortedKeys.length; j < len; j++) {
+    key = sortedKeys[j];
+    data = obj[key];
+    results.push(fn(data));
+  }
+  return results;
 };
 
 delay = function(ms, f) {
