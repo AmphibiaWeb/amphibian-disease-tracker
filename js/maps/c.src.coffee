@@ -1332,6 +1332,7 @@ downloadCSVFile = (data, options, callback) ->
   ###
   try
     postMessageContent =
+      action: "csv"
       data: data
       options: options
     # Send the message
@@ -1686,8 +1687,8 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 
 
 generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-list") ->
-  animateLoad()
   # toastStatusMessage "This may take a few seconds, please wait"
+  startTime = Date.now()
   console.info "Source CSV data:", resultArray
   options =
     objectAsValues: true
@@ -1731,8 +1732,11 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
       """
       $(caller).replaceWith html
       $("#{selector} #download-file paper-button").removeAttr "disabled"
+      elapsed = Date.now() - startTime
+      console.debug "GenerateCSVFromResults completed in #{elapsed}ms"
       stopLoad()
   catch
+    animateLoad()
     stopLoadError "Sorry, there was a problem with this dataset and we can't generate a downloadable file."
   false
 
