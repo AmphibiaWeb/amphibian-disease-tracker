@@ -682,7 +682,15 @@ function checkProjectIdAuthorized($projectId, $simple = false) {
      * @return array. If $simple = true, @return bool
      ***/
     $access = array("project"=>$projectId);
-    $accessResult = authorizedProjectAccess($access);
+    try {
+        $accessResult = authorizedProjectAccess($access);
+    } catch (Exception $e) {
+        $accessResult = array(
+            "status" => false
+            "error" => $e->getMessage(),
+            "human_error" => "Bad access result; defaulting no access",
+        );
+    }
     return $simple ? $accessResult["status"] : $accessResult;
 }
 
