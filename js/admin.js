@@ -4236,7 +4236,7 @@ stopLoadBarsError = function(currentTimeout, message) {
   }
   if (message != null) {
     bsAlert("<strong>Data Validation Error</strong>: " + message, "danger");
-    stopLoadBarsError(null, "There was a problem validating your data");
+    stopLoadError(null, "There was a problem validating your data");
   }
   return false;
 };
