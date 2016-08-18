@@ -1490,9 +1490,20 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         $status = true;
         $validateStatus = true;
         # Check the response for errors
-        $hasError = !empty($resp['done'][0]['Samples']['errors']);
-        $hasWarning = !empty($resp['done'][0]['Samples']['warningss']);
-        if (empty($resp)) {
+        try {
+          if(isset($resp['done'][0]['Samples'])) {
+          $hasError = !empty($resp['done'][0]['Samples']['errors']);
+          $hasWarning = !empty($resp['done'][0]['Samples']['warnings']);
+          }
+          else {
+              $hasError = false;
+              $hasWarning = false;
+          }
+        } catch (Exception $e) {
+            $hasError = false;
+            $hasWarning = false;
+        }
+        if (empty($resp) || !isset($resp['done'][0])) {
             $validateStatus = 'FIMS_SERVER_DOWN';
         } elseif ($hasError) {
             $mainError = $resp['done'][0]['Samples']['errors'][0];
@@ -1872,7 +1883,7 @@ function advancedSearchProject($get)
                     $cartoObj = json_decode($val);
                     if(!is_array($cartoObj)) {
                         $cartoObj = $val;
-                    } else {                        
+                    } else {
                         foreach($cartoObj as $k=>$v) {
                             $nk = str_replace("&#95;", "_", $k);
                             try {
@@ -2006,7 +2017,7 @@ function advancedSearchProjectContains($get)
                     $cartoObj = json_decode($val);
                     if(!is_array($cartoObj)) {
                         $cartoObj = $val;
-                    } else {                        
+                    } else {
                         foreach($cartoObj as $k=>$v) {
                             $nk = str_replace("&#95;", "_", $k);
                             try {
