@@ -1622,7 +1622,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
+  var author, center, cleanValue, column, coords, coordsPoint, csvOptions, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1705,7 +1705,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
-      uniqueColumn = array();
+      uniqueColumn = new Array();
       for (column in row) {
         value = row[column];
         column = column.trim();
@@ -1909,6 +1909,13 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     } else {
       projectIdentifier = _adp.projectIdentifierString;
     }
+    try {
+      csvOptions = {
+        downloadFile: "cleaned-dataset-" + (Date.now()) + ".csv",
+        selector: "#download-server-parsed-data"
+      };
+      downloadCSVFile(parsedData, csvOptions);
+    } catch (undefined) {}
     getCoordsFromData = function() {
 
       /*
@@ -1994,7 +2001,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     }
     _adp.data.pushDataUpload = totalData;
     validateData(totalData, function(validatedData) {
-      var cladeList, csvOptions, e, error8, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
+      var cladeList, e, error8, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
       taxonList = new Array();
       cladeList = new Array();
