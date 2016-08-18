@@ -2029,6 +2029,9 @@ excelDateToUnixTime = function(excelTime, strict) {
     strict = false;
   }
   try {
+    if (!isNumber(excelTime)) {
+      throw "Bad date error";
+    }
     if ((0 < excelTime && excelTime < 10e5)) {
 
       /*

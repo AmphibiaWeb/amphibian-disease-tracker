@@ -1984,6 +1984,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
 
 excelDateToUnixTime = (excelTime, strict = false) ->
   try
+    if not isNumber excelTime
+      throw "Bad date error"
     if 0 < excelTime < 10e5
       ###
       # Excel is INSANE, and marks time as DAYS since 1900-01-01
