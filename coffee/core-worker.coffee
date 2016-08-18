@@ -494,7 +494,7 @@ downloadCSVFile = (data, options) ->
   ###
   startTime = Date.now()
   textAsset = ""
-  if isJson data
+  if isJson(data) and typeof data is "string"
     console.info "Parsing as JSON string"
     try
       jsonObject = JSON.parse data
