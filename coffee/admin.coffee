@@ -1758,7 +1758,11 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
           when "dateCollected", "dateIdentified"
             column = "dateIdentified"
             # Coerce to ISO8601
-            t = excelDateToUnixTime(value)
+            t = excelDateToUnixTime(value, true)
+            if t is false
+              console.warn "This row (##{n}) has a non-date value ! (#{value} = #{t})"
+              stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
+              return false              
             d = new Date(t)
             ucBerkeleyFounded = new Date("1868-03-23")
             if t < ucBerkeleyFounded.getTime()
@@ -1975,7 +1979,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
 
 
 
-excelDateToUnixTime = (excelTime) ->
+excelDateToUnixTime = (excelTime, strict = false) ->
   try
     if 0 < excelTime < 10e5
       ###
@@ -2005,11 +2009,13 @@ excelDateToUnixTime = (excelTime) ->
       daysFrom1904to1970 = 24107 # Mac Excel 2007 and before
       secondsPerDay = 86400
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
+      if not isNumber(t)
+        throw "Bad Number Error"
     else
       # Standard date parsing
       t = Date.parse(excelTime)
-  catch
-    t = Date.now()
+  catch    
+    t = if strict then false else Date.now()
   t
 
 
