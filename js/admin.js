@@ -4342,14 +4342,17 @@ validateFimsData = function(dataObject, callback) {
         for (errorType in ref5) {
           errorMessage = ref5[errorType];
           serverErrorMessageMain = errorMessage;
+          if (typeof serverErrorMessageMain === "object") {
+            serverErrorMessageMain = errorMessage[0];
+          }
           break;
         }
         permissibleError = (ref6 = serverErrorMessageMain.toLowerCase(), indexOf.call(fimsErrorProceedAnyway, ref6) >= 0);
       }
     } catch (undefined) {}
     errorStatus = {
-      statuses: fimsStatusProceedAnyway,
-      errors: fimsErrorProceedAnyway,
+      statusesOK: fimsStatusProceedAnyway,
+      errorsOK: fimsErrorProceedAnyway,
       message: serverErrorMessageMain,
       permissible: permissibleError,
       errorSize: Object.size(result.validate_status.errors)

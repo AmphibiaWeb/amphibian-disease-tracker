@@ -4390,15 +4390,17 @@ validateFimsData = (dataObject, callback = null) ->
       if Object.size(result.validate_status.errors) is 1
         for errorType, errorMessage of result.validate_status.errors[0]
           serverErrorMessageMain = errorMessage
+          if typeof serverErrorMessageMain is "object"
+            serverErrorMessageMain = errorMessage[0]
           break
         permissibleError = serverErrorMessageMain.toLowerCase() in fimsErrorProceedAnyway
     errorStatus =
-      statuses: fimsStatusProceedAnyway
-      errors: fimsErrorProceedAnyway
+      statusesOK: fimsStatusProceedAnyway
+      errorsOK: fimsErrorProceedAnyway
       message: serverErrorMessageMain
       permissible: permissibleError
       errorSize: Object.size(result.validate_status.errors)
-      
+
     if result.validate_status in fimsStatusProceedAnyway or permissibleError
       toastStatusMessage "Validation server is down, proceeding ..."
       bsAlert "<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning"
