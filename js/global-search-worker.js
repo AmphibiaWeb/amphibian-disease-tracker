@@ -804,7 +804,7 @@ downloadCSVFile = function(data, options) {
   options.selector ?= "#download-file"
   options.splitValues ?= false
    */
-  var c, col, elapsed, error1, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, response, selector, startTime, textAsset;
+  var c, col, e, elapsed, error1, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, response, selector, startTime, textAsset;
   startTime = Date.now();
   textAsset = "";
   if (isJson(data)) {
@@ -812,6 +812,7 @@ downloadCSVFile = function(data, options) {
     try {
       jsonObject = JSON.parse(data);
     } catch (error1) {
+      e = error1;
       console.error("COuldn't parse json! " + e.message);
       console.warn(e.stack);
       console.info(data);
@@ -859,7 +860,7 @@ downloadCSVFile = function(data, options) {
   }
   headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
-    var col, dataVal, e, error2, escapedKey, handleValue, j, key, len, results, row, tmpRow, tmpRowString, value;
+    var col, dataVal, error2, escapedKey, handleValue, j, key, len, results, row, tmpRow, tmpRowString, value;
     row = 0;
     if (options.objectAsValues) {
       options.splitValues = "::@@::";
