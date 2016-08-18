@@ -4388,7 +4388,7 @@ validateFimsData = (dataObject, callback = null) ->
     serverErrorMessageMain = ""
     try
       if Object.size(result.validate_status.errors) is 1
-        for errorType, errorMessage of result.validate_status.errors
+        for errorType, errorMessage of result.validate_status.errors[0]
           serverErrorMessageMain = errorMessage
           break
         permissibleError = serverErrorMessageMain.toLowerCase() in fimsErrorProceedAnyway
@@ -4397,6 +4397,7 @@ validateFimsData = (dataObject, callback = null) ->
       errors: fimsErrorProceedAnyway
       message: serverErrorMessageMain
       permissible: permissibleError
+      errorSize: Object.size(result.validate_status.errors)
       
     if result.validate_status in fimsStatusProceedAnyway or permissibleError
       toastStatusMessage "Validation server is down, proceeding ..."
@@ -4404,7 +4405,7 @@ validateFimsData = (dataObject, callback = null) ->
     else if statusTest isnt true
       # Bad validation
       overrideShowErrors = false
-      console.error "Bad validation"
+      console.error "Bad validation", errorStatus
       stopLoadError "There was a problem with your dataset"
       error = "<code>#{result.validate_status.error}</code>" ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
       if error.length > 255

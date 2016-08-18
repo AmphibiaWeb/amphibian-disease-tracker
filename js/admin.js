@@ -4338,7 +4338,7 @@ validateFimsData = function(dataObject, callback) {
     serverErrorMessageMain = "";
     try {
       if (Object.size(result.validate_status.errors) === 1) {
-        ref5 = result.validate_status.errors;
+        ref5 = result.validate_status.errors[0];
         for (errorType in ref5) {
           errorMessage = ref5[errorType];
           serverErrorMessageMain = errorMessage;
@@ -4351,14 +4351,15 @@ validateFimsData = function(dataObject, callback) {
       statuses: fimsStatusProceedAnyway,
       errors: fimsErrorProceedAnyway,
       message: serverErrorMessageMain,
-      permissible: permissibleError
+      permissible: permissibleError,
+      errorSize: Object.size(result.validate_status.errors)
     };
     if ((ref7 = result.validate_status, indexOf.call(fimsStatusProceedAnyway, ref7) >= 0) || permissibleError) {
       toastStatusMessage("Validation server is down, proceeding ...");
       bsAlert("<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning");
     } else if (statusTest !== true) {
       overrideShowErrors = false;
-      console.error("Bad validation");
+      console.error("Bad validation", errorStatus);
       stopLoadError("There was a problem with your dataset");
       error = (ref8 = (ref9 = (ref10 = "<code>" + result.validate_status.error + "</code>") != null ? ref10 : result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       if (error.length > 255) {
