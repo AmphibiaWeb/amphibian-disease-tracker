@@ -1753,19 +1753,19 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
             column = "dateIdentified";
             t = excelDateToUnixTime(value, true);
             if (!isNumber(t)) {
-              console.warn("This row (#" + n + ") has a non-date value ! (" + value + " = " + t + ")");
+              console.error("This row (#" + n + ") has a non-date value ! (" + value + " = " + t + ")");
               stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + n + ". Check your dates!");
               return false;
             }
             d = new Date(t);
             ucBerkeleyFounded = new Date("1868-03-23");
             if (t < ucBerkeleyFounded.getTime()) {
-              console.warn("This row (#" + n + ") has a date (" + value + " = " + t + ") too far in the past!");
+              console.error("This row (#" + n + ") has a date (" + value + " = " + t + ") too far in the past!");
               stopLoadBarsError(null, "Detected an implausibly old date '" + value + "' = <code>" + (d.toDateString()) + "</code> at row #" + n + ". Check your dates!");
               return false;
             }
             if (t > Date.now()) {
-              console.warn("This row (#" + n + ") has a date (" + value + " = " + t + ") after today!");
+              console.error("This row (#" + n + ") has a date (" + value + " = " + t + ") after today!");
               stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + n + ". Check your dates!");
               return false;
             }
@@ -2058,7 +2058,7 @@ excelDateToUnixTime = function(excelTime, strict) {
       secondsPerDay = 86400;
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000;
       if (!isNumber(t)) {
-        console.error("excelDateToUnixTime got bad number: " + excelTime + " -> " + t);
+        console.warn("excelDateToUnixTime got bad number: " + excelTime + " -> " + t);
         throw "Bad Number Error";
       }
     } else {
@@ -4233,7 +4233,7 @@ stopLoadBarsError = function(currentTimeout, message) {
   }
   if (message != null) {
     bsAlert("<strong>Data Validation Error</strong>: " + message, "danger");
-    stopLoadError("There was a problem validating your data");
+    stopLoadBarsError(null, "There was a problem validating your data");
   }
   return false;
 };
@@ -4252,7 +4252,7 @@ delayFimsRecheck = function(originalResponse, callback) {
   }).fail(function(result, status) {
     console.error(status + ": Couldn't check status on FIMS server!");
     console.warn("Server said", result.responseText);
-    return stopLoadError("There was a problem validating your data, please try again later");
+    return stopLoadBarsError(null, "There was a problem validating your data, please try again later");
   });
   return false;
 };
@@ -4273,7 +4273,7 @@ validateFimsData = function(dataObject, callback) {
   if (typeof (typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.fims) != null ? (ref1 = ref.expedition) != null ? ref1.expeditionId : void 0 : void 0 : void 0) !== "number") {
     if (_adp.hasRunMintCallback === true) {
       console.error("Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. ");
-      stopLoadError("Couldn't validate your data, please try again later");
+      stopLoadBarsError(null, "Couldn't validate your data, please try again later");
       _adp.hasRunMintCallback = false;
       return false;
     }
@@ -4319,7 +4319,7 @@ validateFimsData = function(dataObject, callback) {
   args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
   console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, errorClass, errorList, errorMessage, errorMessages, errorType, errors, fimsErrorProceedAnyway, fimsStatusProceedAnyway, html, k, key, message, overrideShowErrors, permissibleError, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, serverErrorMessageMain, statusTest;
+    var error, errorClass, errorList, errorMessage, errorMessages, errorStatus, errorType, errors, fimsErrorProceedAnyway, fimsStatusProceedAnyway, html, k, key, message, overrideShowErrors, permissibleError, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, serverErrorMessageMain, statusTest;
     console.log("FIMS validate result", result);
     if (result.status !== true) {
       stopLoadError("There was a problem talking to the server");
@@ -4330,27 +4330,34 @@ validateFimsData = function(dataObject, callback) {
     }
     statusTest = ((ref4 = result.validate_status) != null ? ref4.status : void 0) != null ? result.validate_status.status : result.validate_status;
     fimsStatusProceedAnyway = ["FIMS_SERVER_DOWN"];
-    fimsErrorProceedAnyway = ["Server Error"];
+    fimsErrorProceedAnyway = ["server error"];
     permissibleError = false;
+    serverErrorMessageMain = "";
     try {
       if (Object.size(result.validate_status.errors) === 1) {
-        serverErrorMessageMain = "";
         ref5 = result.validate_status.errors;
         for (errorType in ref5) {
           errorMessage = ref5[errorType];
           serverErrorMessageMain = errorMessage;
           break;
         }
-        permissibleError = indexOf.call(fimsErrorProceedAnyway, serverErrorMessageMain) >= 0;
+        permissibleError = (ref6 = serverErrorMessageMain.toLowerCase(), indexOf.call(fimsErrorProceedAnyway, ref6) >= 0);
       }
     } catch (undefined) {}
-    if ((ref6 = result.validate_status, indexOf.call(fimsStatusProceedAnyway, ref6) >= 0) || permissibleError) {
+    errorStatus = {
+      statuses: fimsStatusProceedAnyway,
+      errors: fimsErrorProceedAnyway,
+      message: serverErrorMessageMain,
+      permissible: permissibleError
+    };
+    if ((ref7 = result.validate_status, indexOf.call(fimsStatusProceedAnyway, ref7) >= 0) || permissibleError) {
       toastStatusMessage("Validation server is down, proceeding ...");
       bsAlert("<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning");
     } else if (statusTest !== true) {
       overrideShowErrors = false;
+      console.error("Bad validation");
       stopLoadError("There was a problem with your dataset");
-      error = (ref7 = (ref8 = (ref9 = "<code>" + result.validate_status.error + "</code>") != null ? ref9 : result.human_error) != null ? ref8 : result.error) != null ? ref7 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
+      error = (ref8 = (ref9 = (ref10 = "<code>" + result.validate_status.error + "</code>") != null ? ref10 : result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       if (error.length > 255) {
         overrideShowErrors = true;
         error = error.substr(0, 255) + "[...] and more.";
@@ -4394,7 +4401,7 @@ validateFimsData = function(dataObject, callback) {
     clearTimeout(validatorTimeout);
     console.error(status + ": Couldn't upload to FIMS server!");
     console.warn("Server said", result.responseText);
-    stopLoadError("There was a problem validating your data, please try again later");
+    stopLoadBarsError(null, "There was a problem validating your data, please try again later");
     return false;
   });
   return false;
@@ -4423,7 +4430,7 @@ mintBcid = function(projectId, datasetUri, title, callback) {
   _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log("Got", result);
     if (!result.status) {
-      stopLoadError(result.human_error);
+      stopLoadBarsError(null, result.human_error);
       console.error(result.error);
       return false;
     }
@@ -4478,7 +4485,7 @@ mintExpedition = function(projectId, title, callback) {
   _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
     console.log("Expedition got", result);
     if (!result.status) {
-      stopLoadError(result.human_error);
+      stopLoadBarsError(null, result.human_error);
       console.error(result.error);
       return false;
     }

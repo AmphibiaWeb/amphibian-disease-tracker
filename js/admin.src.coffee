@@ -1761,17 +1761,17 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             # Coerce to ISO8601
             t = excelDateToUnixTime(value, true)
             if not isNumber t
-              console.warn "This row (##{n}) has a non-date value ! (#{value} = #{t})"
+              console.error "This row (##{n}) has a non-date value ! (#{value} = #{t})"
               stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
               return false              
             d = new Date(t)
             ucBerkeleyFounded = new Date("1868-03-23")
             if t < ucBerkeleyFounded.getTime()
-              console.warn "This row (##{n}) has a date (#{value} = #{t}) too far in the past!"
+              console.error "This row (##{n}) has a date (#{value} = #{t}) too far in the past!"
               stopLoadBarsError null, "Detected an implausibly old date '#{value}' = <code>#{d.toDateString()}</code> at row ##{n}. Check your dates!"
               return false
             if t > Date.now()
-              console.warn "This row (##{n}) has a date (#{value} = #{t}) after today!"
+              console.error "This row (##{n}) has a date (#{value} = #{t}) after today!"
               stopLoadBarsError null, "Detected a future date '#{value}' at row ##{n}. Check your dates!"
               return false
             date = d.getUTCDate()
@@ -2013,7 +2013,7 @@ excelDateToUnixTime = (excelTime, strict = false) ->
       secondsPerDay = 86400
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
       if not isNumber(t)
-        console.error "excelDateToUnixTime got bad number: #{excelTime} -> #{t}"
+        console.warn "excelDateToUnixTime got bad number: #{excelTime} -> #{t}"
         throw "Bad Number Error"
     else
       # Standard date parsing
@@ -4293,7 +4293,7 @@ stopLoadBarsError = (currentTimeout, message) ->
         $(el).find("#primaryProgress").css "background", "#F44336"
   if message?
     bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
-    stopLoadError "There was a problem validating your data"
+    stopLoadBarsError null, "There was a problem validating your data"
   false
 
 
@@ -4310,7 +4310,7 @@ delayFimsRecheck = (originalResponse, callback) ->
   .fail (result, status) ->
     console.error "#{status}: Couldn't check status on FIMS server!"
     console.warn "Server said", result.responseText
-    stopLoadError "There was a problem validating your data, please try again later"
+    stopLoadBarsError null, "There was a problem validating your data, please try again later"
   false
 
 
@@ -4325,7 +4325,7 @@ validateFimsData = (dataObject, callback = null) ->
   unless typeof _adp?.fims?.expedition?.expeditionId is "number"
     if _adp.hasRunMintCallback is true
       console.error "Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. "
-      stopLoadError "Couldn't validate your data, please try again later"
+      stopLoadBarsError null, "Couldn't validate your data, please try again later"
       _adp.hasRunMintCallback = false
       return false
     _adp.hasRunMintCallback = false
@@ -4380,22 +4380,29 @@ validateFimsData = (dataObject, callback = null) ->
       "FIMS_SERVER_DOWN"
       ]
     fimsErrorProceedAnyway = [
-      "Server Error"
+      "server error"
       ]
     permissibleError = false
+    serverErrorMessageMain = ""
     try
       if Object.size(result.validate_status.errors) is 1
-        serverErrorMessageMain = ""
         for errorType, errorMessage of result.validate_status.errors
           serverErrorMessageMain = errorMessage
           break
-        permissibleError = serverErrorMessageMain in fimsErrorProceedAnyway
+        permissibleError = serverErrorMessageMain.toLowerCase() in fimsErrorProceedAnyway
+    errorStatus =
+      statuses: fimsStatusProceedAnyway
+      errors: fimsErrorProceedAnyway
+      message: serverErrorMessageMain
+      permissible: permissibleError
+      
     if result.validate_status in fimsStatusProceedAnyway or permissibleError
       toastStatusMessage "Validation server is down, proceeding ..."
       bsAlert "<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning"
     else if statusTest isnt true
       # Bad validation
       overrideShowErrors = false
+      console.error "Bad validation"
       stopLoadError "There was a problem with your dataset"
       error = "<code>#{result.validate_status.error}</code>" ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
       if error.length > 255
@@ -4453,7 +4460,7 @@ validateFimsData = (dataObject, callback = null) ->
     clearTimeout validatorTimeout
     console.error "#{status}: Couldn't upload to FIMS server!"
     console.warn "Server said", result.responseText
-    stopLoadError "There was a problem validating your data, please try again later"
+    stopLoadBarsError null, "There was a problem validating your data, please try again later"
     false
   false
 
@@ -4477,7 +4484,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
   .done (result) ->
     console.log "Got", result
     unless result.status
-      stopLoadError result.human_error
+      stopLoadBarsError null, result.human_error
       console.error result.error
       return false
     resultObj = result
@@ -4518,7 +4525,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
   .done (result) ->
     console.log "Expedition got", result
     unless result.status
-      stopLoadError result.human_error
+      stopLoadBarsError null, result.human_error
       console.error result.error
       return false
     resultObj = result
@@ -4636,8 +4643,6 @@ validateTaxonData = (dataObject, callback = null) ->
         console.info "Calling back!", dataObject
         callback(dataObject)
   false
-
-
 
 ###
 #
