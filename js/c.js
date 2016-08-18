@@ -3196,6 +3196,8 @@ getColumnObj = function(forceBase) {
     coordinateUncertaintyInMeters: "decimal",
     Collector: "varchar",
     originalTaxa: "varchar",
+    sex: "varchar",
+    datum: "text",
     fimsExtra: "json",
     the_geom: "varchar"
   };
@@ -3380,6 +3382,9 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
                 columnDef = (ref4 = columnDatatype[column]) != null ? ref4 : columnDatatype[lowCol];
                 if (typeof columnDef === "object") {
                   columnDef = columnDef.type;
+                }
+                if (isNull(columnDef)) {
+                  columnDef = "text";
                 }
                 columnNamesList.push(column + " " + columnDef);
               }
