@@ -1622,7 +1622,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1700,6 +1700,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
       p$("#data-parsing").max = rows;
     } catch (undefined) {}
     now = Date.now();
+    uniqueFieldIds = new Array();
+    duplicatedFieldIds = new Array();
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -1820,10 +1822,20 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "fieldNumber":
             try {
               trimmed = value.trim();
+              if (trimmed.toLowerCase() === "n/a") {
+                trimmed = "";
+              }
               trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
               cleanValue = trimmed;
             } catch (error3) {
               cleanValue = value;
+            }
+            if (indexOf.call(uniqueFieldIds, cleanValue) < 0) {
+              uniqueFieldIds.push(cleanValue);
+            } else {
+              if (indexOf.call(duplicatedFieldIds, cleanValue) < 0) {
+                duplicatedFieldIds.push(cleanValue);
+              }
             }
             break;
           default:
@@ -1863,6 +1875,9 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     }
     try {
       console.log("Basic validation passed");
+      if (!isNull(duplicatedFieldIds)) {
+        bsAlert("<strong>Warning</strong>: the following field IDs all had duplicates:<br/><code>" + duplicatedFieldIds + "</code></br>We <strong>strongly</strong> recommend unique IDs.", "warning");
+      }
     } catch (undefined) {}
     if (isNull(_adp.projectIdentifierString)) {
       projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now());
