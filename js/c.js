@@ -1789,7 +1789,7 @@ downloadCSVFile = function(data, options, callback) {
         if (options.create === true) {
           $(selector).append(html);
         } else {
-          $(selector).attr("download", options.downloadFile).attr("href", file);
+          $(selector).attr("download", options.downloadFile).attr("href", file).removeClass("disabled").removeAttr("disabled");
         }
         return false;
       };

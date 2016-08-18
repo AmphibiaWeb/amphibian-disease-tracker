@@ -1360,6 +1360,8 @@ downloadCSVFile = (data, options, callback) ->
           $(selector)
           .attr("download", options.downloadFile)
           .attr("href",file)
+          .removeClass "disabled"
+          .removeAttr "disabled"
         false
       # Possibly execute callback
       if typeof callback is "function"
