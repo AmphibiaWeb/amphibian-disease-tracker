@@ -169,7 +169,7 @@ validateFimsData = (dataObject, callback = null) ->
     else if statusTest isnt true
       # Bad validation
       overrideShowErrors = false
-      console.error "Bad validation"
+      console.error "Bad validation", errorStatus
       stopLoadError "There was a problem with your dataset"
       error = "<code>#{result.validate_status.error}</code>" ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
       if error.length > 255

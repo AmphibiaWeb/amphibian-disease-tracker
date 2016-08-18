@@ -4358,7 +4358,7 @@ validateFimsData = function(dataObject, callback) {
       bsAlert("<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning");
     } else if (statusTest !== true) {
       overrideShowErrors = false;
-      console.error("Bad validation");
+      console.error("Bad validation", errorStatus);
       stopLoadError("There was a problem with your dataset");
       error = (ref8 = (ref9 = (ref10 = "<code>" + result.validate_status.error + "</code>") != null ? ref10 : result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       if (error.length > 255) {
