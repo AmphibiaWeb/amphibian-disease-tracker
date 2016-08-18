@@ -1622,7 +1622,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1751,6 +1751,12 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "dateIdentified":
             column = "dateIdentified";
             t = excelDateToUnixTime(value);
+            ucBerkeleyFounded = new Date("1868-03-23");
+            if (t < ucBerkeleyFounded.getTime()) {
+              console.warn("This row (#" + n + ") has a date (" + value + " = " + t + ") too far in the past!");
+              stopLoadBarsError(null, "Detected an implausibly old date '" + value + "' = <code>" + (t.toDateString()) + "</code> at row #" + n + ". Check your dates!");
+              return false;
+            }
             if (t > Date.now()) {
               console.warn("This row (#" + n + ") has a date (" + value + " = " + t + ") after today!");
               stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + n + ". Check your dates!");
