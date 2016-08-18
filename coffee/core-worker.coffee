@@ -496,7 +496,13 @@ downloadCSVFile = (data, options) ->
   textAsset = ""
   if isJson data
     console.info "Parsing as JSON string"
-    jsonObject = JSON.parse data
+    try
+      jsonObject = JSON.parse data
+    catch
+      console.error "COuldn't parse json! #{e.message}"
+      console.warn e.stack
+      console.info data
+      throw "error"
   else if isArray data
     console.info "Parsing as array"
     jsonObject = toObject data
