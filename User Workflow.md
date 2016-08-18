@@ -65,7 +65,7 @@ At this time, to have a unrestricted user, you must meet the following criteria:
 
 | Domain | TLD |
 |--------|-----|
-| Any    | .gov, .edu |
+| Any    | .gov, .edu, .org |
 
 Once you've met those criteria, you can create a project at any time. Until you do, clicking on the badge by your name in Administration, or clicking the unrestriction button that is first in the admin panel.
 
