@@ -1622,7 +1622,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1700,6 +1700,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
       p$("#data-parsing").max = rows;
     } catch (undefined) {}
     now = Date.now();
+    uniqueFieldIds = new Array();
+    duplicatedFieldIds = new Array();
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
@@ -1814,22 +1816,56 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
             if (isBool(value)) {
               cleanValue = value.toBool();
             } else {
-              cleanValue = "NO_CONFIDENCE";
+              try {
+                if (value.trim().toLowerCase() === "negative") {
+                  cleanValue = false;
+                } else if (value.trim().toLowerCase() === "positive") {
+                  cleanValue = true;
+                } else {
+                  cleanValue = "NO_CONFIDENCE";
+                }
+              } catch (error3) {
+                cleanValue = "NO_CONFIDENCE";
+              }
+            }
+            break;
+          case "sex":
+            try {
+              value = value.trim().toLowerCase();
+              if (value.slice(0, 1) === "m") {
+                value = "male";
+              } else if (value.slice(0, 1) === "f") {
+                value = "female";
+              } else {
+                value = "not determined";
+              }
+            } catch (error4) {
+              value = "not determined";
             }
             break;
           case "fieldNumber":
             try {
               trimmed = value.trim();
+              if (trimmed.toLowerCase() === "n/a") {
+                trimmed = "";
+              }
               trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
               cleanValue = trimmed;
-            } catch (error3) {
+            } catch (error5) {
               cleanValue = value;
+            }
+            if (indexOf.call(uniqueFieldIds, cleanValue) < 0) {
+              uniqueFieldIds.push(cleanValue);
+            } else {
+              if (indexOf.call(duplicatedFieldIds, cleanValue) < 0) {
+                duplicatedFieldIds.push(cleanValue);
+              }
             }
             break;
           default:
             try {
               cleanValue = value.trim();
-            } catch (error4) {
+            } catch (error6) {
               cleanValue = value;
             }
         }
@@ -1849,7 +1885,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
       dataAttrs.fimsData.push(fimsExtra);
       try {
         tRow.fimsExtra = JSON.stringify(fimsExtra);
-      } catch (error5) {
+      } catch (error7) {
         console.warn("Couldn't store FIMS extra data", fimsExtra);
       }
       parsedData[n] = tRow;
@@ -1863,6 +1899,9 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     }
     try {
       console.log("Basic validation passed");
+      if (!isNull(duplicatedFieldIds)) {
+        bsAlert("<strong>Warning</strong>: the following field IDs all had duplicates:<br/><code>" + duplicatedFieldIds + "</code></br>We <strong>strongly</strong> recommend unique IDs.", "warning");
+      }
     } catch (undefined) {}
     if (isNull(_adp.projectIdentifierString)) {
       projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now());
@@ -1955,7 +1994,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     }
     _adp.data.pushDataUpload = totalData;
     validateData(totalData, function(validatedData) {
-      var cladeList, e, error6, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
+      var cladeList, e, error8, i, l, len, noticeHtml, originalTaxon, ref, ref1, taxon, taxonList, taxonListString, taxonString;
       taxonListString = "";
       taxonList = new Array();
       cladeList = new Array();
@@ -1984,8 +2023,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           if (ref1 = taxon.response.validated_taxon.family, indexOf.call(cladeList, ref1) < 0) {
             cladeList.push(taxon.response.validated_taxon.family);
           }
-        } catch (error6) {
-          e = error6;
+        } catch (error8) {
+          e = error8;
           console.warn("Couldn't get the family! " + e.message, taxon.response);
           console.warn(e.stack);
         }
@@ -2019,8 +2058,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
         }
       }
     });
-  } catch (error6) {
-    e = error6;
+  } catch (error8) {
+    e = error8;
     console.error("Error parsing data - " + e.message);
     console.warn(e.stack);
     message = "There was a problem parsing your data. Please check <a href=\"http://biscicol.org/biocode-fims/templates.jsp\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org FIMS requirements<span class=\"glyphicon glyphicon-new-window\"></span></a>";

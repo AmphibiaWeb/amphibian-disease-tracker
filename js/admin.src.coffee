@@ -1707,6 +1707,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
     try
       p$("#data-parsing").max = rows
     now = Date.now()
+    uniqueFieldIds = new Array()
+    duplicatedFieldIds = new Array()
     for n, row of dataObject
       tRow = new Object()
       uniqueColumn = array()
@@ -1769,7 +1771,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             if not isNumber t
               console.error "This row (##{n}) has a non-date value ! (#{value} = #{t})"
               stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
-              return false              
+              return false
             d = new Date(t)
             ucBerkeleyFounded = new Date("1868-03-23")
             if t < ucBerkeleyFounded.getTime()
@@ -1808,16 +1810,42 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             if isBool value
               cleanValue = value.toBool()
             else
-              cleanValue = "NO_CONFIDENCE"
+              try
+                if value.trim().toLowerCase() is "negative"
+                  cleanValue = false
+                else if value.trim().toLowerCase() is "positive"
+                  cleanValue = true
+                else
+                  cleanValue = "NO_CONFIDENCE"
+              catch
+                cleanValue = "NO_CONFIDENCE"
+          when "sex"
+            try
+              value = value.trim().toLowerCase()
+              if value.slice(0,1) is "m"
+                value = "male"
+              else if value.slice(0,1) is "f"
+                value = "female"
+              else
+                value = "not determined"
+            catch
+              value = "not determined"
           when "fieldNumber"
             # These are "validForUri" columns
             try
               trimmed = value.trim()
+              if trimmed.toLowerCase() is "n/a"
+                trimmed = ""
               # For field that are "PLC 123", remove the space
               trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
               cleanValue = trimmed
             catch
               cleanValue = value
+            unless cleanValue in uniqueFieldIds
+              uniqueFieldIds.push cleanValue
+            else
+              unless cleanValue in duplicatedFieldIds
+                duplicatedFieldIds.push cleanValue
           else
             try
               cleanValue = value.trim()
@@ -1847,6 +1875,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
         p$("#data-parsing").value = n + 1
     try
       console.log "Basic validation passed"
+      unless isNull duplicatedFieldIds
+        bsAlert "<strong>Warning</strong>: the following field IDs all had duplicates:<br/><code>#{duplicatedFieldIds}</code></br>We <strong>strongly</strong> recommend unique IDs.", "warning"
     if isNull _adp.projectIdentifierString
       # Create a project identifier from the user hash and project title
       projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now())
@@ -2026,7 +2056,7 @@ excelDateToUnixTime = (excelTime, strict = false) ->
     else
       # Standard date parsing
       t = Date.parse(excelTime)
-  catch    
+  catch
     t = if strict then false else Date.now()
   t
 
