@@ -419,7 +419,7 @@ loadCreateNewProject = ->
       <paper-input label="Disease Mortality" placeholder="Please upload a data file to see sample count" class="project-field col-md-6 col-xs-12" id="mortality-count" readonly type="number" data-field="disease_mortality"></paper-input>
       <h4 class="new-title col-xs-12">Species in dataset</h4>
       <iron-autogrow-textarea id="species-list" class="project-field col-md-6 col-xs-12" rows="3" placeholder="Taxon List" readonly></iron-autogrow-textarea>
-      <p class="col-xs-12">Etc</p>
+      <p class="col-xs-12"><a id="download-server-parsed-data" class="btn btn-primary disabled">Download Parsed Data</a></p>
     </div>
   </section>
   <section id="submission-section" class="col-xs-12">
@@ -1993,6 +1993,11 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
       _adp.data.taxa.clades = cladeList
       _adp.data.taxa.validated = validatedData.validated_taxa
       unless typeof skipCarto is "function" or skipCarto is true
+        try
+          csvOptions =
+            downloadFile: "cleaned-dataset-#{Date.now()}.csv"
+            selector: "#download-server-parsed-data"
+          downloadCSVFile validatedData, csvOptions
         geo.requestCartoUpload validatedData, projectIdentifier, "create", (table, coords, options) ->
           #mapOverlayPolygon validatedData.transectRing
           createMap2 coords, options, ->
