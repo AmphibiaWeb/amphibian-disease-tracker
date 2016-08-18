@@ -10300,6 +10300,10 @@ iron-autogrow-textarea.project-field,
 .adjacent-info {
   margin-top: 1.5em;
 }
+paper-toggle-button#data-encumbrance-toggle + .adjacent-info {
+  margin-top: 0.5em;
+  text-align: right;
+}
 #project-list button {
   margin-top: .5rem;
   margin-bottom: .25rem;
