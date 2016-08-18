@@ -1849,6 +1849,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
       parsedData[n] = tRow;
       if (modulo(n, 500) === 0 && n > 0) {
         toastStatusMessage("Processed " + n + " rows ...");
+        console.log("Processed " + n + " rows ...");
       }
       try {
         p$("#data-parsing").value = n + 1;
@@ -2057,6 +2058,7 @@ excelDateToUnixTime = function(excelTime, strict) {
       secondsPerDay = 86400;
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000;
       if (!isNumber(t)) {
+        console.error("excelDateToUnixTime got bad number: " + excelTime + " -> " + t);
         throw "Bad Number Error";
       }
     } else {
