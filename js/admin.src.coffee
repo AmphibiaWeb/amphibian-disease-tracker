@@ -1771,7 +1771,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             if not isNumber t
               console.error "This row (##{n}) has a non-date value ! (#{value} = #{t})"
               stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
-              return false              
+              return false
             d = new Date(t)
             ucBerkeleyFounded = new Date("1868-03-23")
             if t < ucBerkeleyFounded.getTime()
@@ -1810,7 +1810,26 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             if isBool value
               cleanValue = value.toBool()
             else
-              cleanValue = "NO_CONFIDENCE"
+              try
+                if value.trim().toLowerCase() is "negative"
+                  cleanValue = false
+                else if value.trim().toLowerCase() is "positive"
+                  cleanValue = true
+                else
+                  cleanValue = "NO_CONFIDENCE"
+              catch
+                cleanValue = "NO_CONFIDENCE"
+          when "sex"
+            try
+              value = value.trim().toLowerCase()
+              if value.slice(0,1) is "m"
+                value = "male"
+              else if value.slice(0,1) is "f"
+                value = "female"
+              else
+                value = "not determined"
+            catch
+              value = "not determined"
           when "fieldNumber"
             # These are "validForUri" columns
             try
@@ -2037,7 +2056,7 @@ excelDateToUnixTime = (excelTime, strict = false) ->
     else
       # Standard date parsing
       t = Date.parse(excelTime)
-  catch    
+  catch
     t = if strict then false else Date.now()
   t
 
