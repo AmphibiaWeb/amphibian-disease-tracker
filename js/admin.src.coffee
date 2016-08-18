@@ -1759,11 +1759,16 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             column = "dateIdentified"
             # Coerce to ISO8601
             t = excelDateToUnixTime(value)
+            d = new Date(t)
+            ucBerkeleyFounded = new Date("1868-03-23")
+            if t < ucBerkeleyFounded.getTime()
+              console.warn "This row (##{n}) has a date (#{value} = #{t}) too far in the past!"
+              stopLoadBarsError null, "Detected an implausibly old date '#{value}' = <code>#{d.toDateString()}</code> at row ##{n}. Check your dates!"
+              return false
             if t > Date.now()
               console.warn "This row (##{n}) has a date (#{value} = #{t}) after today!"
               stopLoadBarsError null, "Detected a future date '#{value}' at row ##{n}. Check your dates!"
               return false
-            d = new Date(t)
             date = d.getUTCDate()
             if date < 10
               date = "0#{date}"
