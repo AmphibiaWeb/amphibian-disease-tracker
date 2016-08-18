@@ -1654,6 +1654,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
   #
   # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters"
   ###
+  console.info "Staring geoDataHandler()"
   try
     unless geo.geocoder?
       try
@@ -1759,7 +1760,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             column = "dateIdentified"
             # Coerce to ISO8601
             t = excelDateToUnixTime(value, true)
-            if t is false
+            if not isNumber t
               console.warn "This row (##{n}) has a non-date value ! (#{value} = #{t})"
               stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
               return false              
@@ -1837,7 +1838,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
         toastStatusMessage "Processed #{n} rows ..."
       try
         p$("#data-parsing").value = n + 1
-
+    try
+      console.log "Basic validation passed"
     if isNull _adp.projectIdentifierString
       # Create a project identifier from the user hash and project title
       projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now())

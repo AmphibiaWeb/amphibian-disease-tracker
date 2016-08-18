@@ -1640,6 +1640,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
    *
    * Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters"
    */
+  console.info("Staring geoDataHandler()");
   try {
     if (geo.geocoder == null) {
       try {
@@ -1751,7 +1752,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "dateIdentified":
             column = "dateIdentified";
             t = excelDateToUnixTime(value, true);
-            if (t === false) {
+            if (!isNumber(t)) {
               console.warn("This row (#" + n + ") has a non-date value ! (" + value + " = " + t + ")");
               stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + n + ". Check your dates!");
               return false;
@@ -1853,6 +1854,9 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
         p$("#data-parsing").value = n + 1;
       } catch (undefined) {}
     }
+    try {
+      console.log("Basic validation passed");
+    } catch (undefined) {}
     if (isNull(_adp.projectIdentifierString)) {
       projectIdentifier = "t" + md5(p$("#project-title").value + author + Date.now());
       _adp.projectIdentifierString = projectIdentifier;
