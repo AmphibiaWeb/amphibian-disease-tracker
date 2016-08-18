@@ -60,7 +60,7 @@ stopLoadBarsError = (currentTimeout, message) ->
         $(el).find("#primaryProgress").css "background", "#F44336"
   if message?
     bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
-    stopLoadBarsError null, "There was a problem validating your data"
+    stopLoadError null, "There was a problem validating your data"
   false
 
 
