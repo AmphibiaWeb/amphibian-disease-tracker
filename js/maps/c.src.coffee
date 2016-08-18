@@ -2596,6 +2596,7 @@ createMap = (dataVisIdentifier = "38544c04-5e56-11e5-8515-0e4fddd5de28", targetI
       postConfig()
 
 getColumnObj = (forceBase = false) ->
+  # http://www.biscicol.org/template
   columnDatatype =
     id: "int"
     collectionID: "varchar"
@@ -2619,6 +2620,8 @@ getColumnObj = (forceBase = false) ->
     coordinateUncertaintyInMeters: "decimal"
     Collector: "varchar"
     originalTaxa: "varchar"
+    sex: "varchar"
+    datum: "text"
     fimsExtra: "json" # Text? http://www.postgresql.org/docs/9.3/static/datatype-json.html
     the_geom: "varchar"
   if _adp.activeCols? and not forceBase
@@ -2814,6 +2817,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
                 columnDef = columnDatatype[column] ? columnDatatype[lowCol]
                 if typeof columnDef is "object"
                   columnDef = columnDef.type
+                if isNull columnDef
+                  columnDef = "text"
                 columnNamesList.push "#{column} #{columnDef}"
               try
                 # Strings only!

@@ -1622,7 +1622,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, value;
+  var author, center, cleanValue, column, coords, coordsPoint, d, data, date, e, error1, error2, error3, error4, error5, error6, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1703,9 +1703,15 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     for (n in dataObject) {
       row = dataObject[n];
       tRow = new Object();
+      uniqueColumn = array();
       for (column in row) {
         value = row[column];
         column = column.trim();
+        if (indexOf.call(uniqueColumn, column) >= 0) {
+          console.error("There was a duplicate column '" + column + "'", uniqueColumn);
+          stopLoadBarsError(null, "You have at least one duplicate column '" + column + "'. Ensure all your columns are unique.");
+          return false;
+        }
         skipCol = false;
         switch (column) {
           case "ContactName":

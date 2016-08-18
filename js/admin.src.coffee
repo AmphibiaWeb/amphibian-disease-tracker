@@ -1709,8 +1709,14 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
     now = Date.now()
     for n, row of dataObject
       tRow = new Object()
+      uniqueColumn = array()
       for column, value of row
         column = column.trim()
+        if column in uniqueColumn
+          # Duplicate column
+          console.error "There was a duplicate column '#{column}'", uniqueColumn
+          stopLoadBarsError null, "You have at least one duplicate column '#{column}'. Ensure all your columns are unique."
+          return false
         skipCol = false
         switch column
           # Change FIMS to internal structure:
