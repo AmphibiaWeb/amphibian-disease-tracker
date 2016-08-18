@@ -1761,17 +1761,17 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             # Coerce to ISO8601
             t = excelDateToUnixTime(value, true)
             if not isNumber t
-              console.warn "This row (##{n}) has a non-date value ! (#{value} = #{t})"
+              console.error "This row (##{n}) has a non-date value ! (#{value} = #{t})"
               stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
               return false              
             d = new Date(t)
             ucBerkeleyFounded = new Date("1868-03-23")
             if t < ucBerkeleyFounded.getTime()
-              console.warn "This row (##{n}) has a date (#{value} = #{t}) too far in the past!"
+              console.error "This row (##{n}) has a date (#{value} = #{t}) too far in the past!"
               stopLoadBarsError null, "Detected an implausibly old date '#{value}' = <code>#{d.toDateString()}</code> at row ##{n}. Check your dates!"
               return false
             if t > Date.now()
-              console.warn "This row (##{n}) has a date (#{value} = #{t}) after today!"
+              console.error "This row (##{n}) has a date (#{value} = #{t}) after today!"
               stopLoadBarsError null, "Detected a future date '#{value}' at row ##{n}. Check your dates!"
               return false
             date = d.getUTCDate()
@@ -1984,6 +1984,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
 
 excelDateToUnixTime = (excelTime, strict = false) ->
   try
+    if not isNumber excelTime
+      throw "Bad date error"
     if 0 < excelTime < 10e5
       ###
       # Excel is INSANE, and marks time as DAYS since 1900-01-01
@@ -2013,7 +2015,7 @@ excelDateToUnixTime = (excelTime, strict = false) ->
       secondsPerDay = 86400
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
       if not isNumber(t)
-        console.error "excelDateToUnixTime got bad number: #{excelTime} -> #{t}"
+        console.warn "excelDateToUnixTime got bad number: #{excelTime} -> #{t}"
         throw "Bad Number Error"
     else
       # Standard date parsing
