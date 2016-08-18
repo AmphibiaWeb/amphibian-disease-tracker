@@ -4296,7 +4296,7 @@ validateFimsData = function(dataObject, callback) {
   args = "perform=validate&datasrc=" + src + "&link=" + _adp.projectId;
   console.info("Posting ...", "" + uri.urlString + adminParams.apiTarget + "?" + args);
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, errorClass, errorList, errorMessages, errorType, errors, html, k, key, message, overrideShowErrors, ref2, ref3, ref4, ref5, ref6, ref7, statusTest;
+    var error, errorClass, errorList, errorMessage, errorMessages, errorType, errors, fimsErrorProceedAnyway, fimsStatusProceedAnyway, html, k, key, message, overrideShowErrors, permissibleError, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, serverErrorMessageMain, statusTest;
     console.log("FIMS validate result", result);
     if (result.status !== true) {
       stopLoadError("There was a problem talking to the server");
@@ -4306,13 +4306,28 @@ validateFimsData = function(dataObject, callback) {
       return false;
     }
     statusTest = ((ref4 = result.validate_status) != null ? ref4.status : void 0) != null ? result.validate_status.status : result.validate_status;
-    if (result.validate_status === "FIMS_SERVER_DOWN") {
+    fimsStatusProceedAnyway = ["FIMS_SERVER_DOWN"];
+    fimsErrorProceedAnyway = ["Server Error"];
+    permissibleError = false;
+    try {
+      if (Object.size(result.validate_status.errors) === 1) {
+        serverErrorMessageMain = "";
+        ref5 = result.validate_status.errors;
+        for (errorType in ref5) {
+          errorMessage = ref5[errorType];
+          serverErrorMessageMain = errorMessage;
+          break;
+        }
+        permissibleError = indexOf.call(fimsErrorProceedAnyway, serverErrorMessageMain) >= 0;
+      }
+    } catch (undefined) {}
+    if ((ref6 = result.validate_status, indexOf.call(fimsStatusProceedAnyway, ref6) >= 0) || permissibleError) {
       toastStatusMessage("Validation server is down, proceeding ...");
       bsAlert("<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning");
     } else if (statusTest !== true) {
       overrideShowErrors = false;
       stopLoadError("There was a problem with your dataset");
-      error = (ref5 = (ref6 = (ref7 = result.validate_status.error) != null ? ref7 : result.human_error) != null ? ref6 : result.error) != null ? ref5 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
+      error = (ref7 = (ref8 = (ref9 = "<code>" + result.validate_status.error + "</code>") != null ? ref9 : result.human_error) != null ? ref8 : result.error) != null ? ref7 : "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again.";
       if (error.length > 255) {
         overrideShowErrors = true;
         error = error.substr(0, 255) + "[...] and more.";

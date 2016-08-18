@@ -4361,14 +4361,28 @@ validateFimsData = (dataObject, callback = null) ->
       stopLoadBarsError validatorTimeout
       return false
     statusTest = if result.validate_status?.status? then result.validate_status.status else result.validate_status
-    if result.validate_status is "FIMS_SERVER_DOWN"
+    fimsStatusProceedAnyway = [
+      "FIMS_SERVER_DOWN"
+      ]
+    fimsErrorProceedAnyway = [
+      "Server Error"
+      ]
+    permissibleError = false
+    try
+      if Object.size(result.validate_status.errors) is 1
+        serverErrorMessageMain = ""
+        for errorType, errorMessage of result.validate_status.errors
+          serverErrorMessageMain = errorMessage
+          break
+        permissibleError = serverErrorMessageMain in fimsErrorProceedAnyway
+    if result.validate_status in fimsStatusProceedAnyway or permissibleError
       toastStatusMessage "Validation server is down, proceeding ..."
       bsAlert "<strong>FIMS error</strong>: The validation server is down, we're trying to finish up anyway.", "warning"
     else if statusTest isnt true
       # Bad validation
       overrideShowErrors = false
       stopLoadError "There was a problem with your dataset"
-      error = result.validate_status.error ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
+      error = "<code>#{result.validate_status.error}</code>" ? result.human_error ? result.error ? "There was a problem with your dataset, but we couldn't understand what FIMS said. Please manually examine your data, correct it, and try again."
       if error.length > 255
         overrideShowErrors = true
         error = error.substr(0, 255) + "[...] and more."
