@@ -1750,7 +1750,12 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "dateCollected":
           case "dateIdentified":
             column = "dateIdentified";
-            t = excelDateToUnixTime(value);
+            t = excelDateToUnixTime(value, true);
+            if (t === false) {
+              console.warn("This row (#" + n + ") has a non-date value ! (" + value + " = " + t + ")");
+              stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + n + ". Check your dates!");
+              return false;
+            }
             d = new Date(t);
             ucBerkeleyFounded = new Date("1868-03-23");
             if (t < ucBerkeleyFounded.getTime()) {
@@ -2013,8 +2018,11 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
   return false;
 };
 
-excelDateToUnixTime = function(excelTime) {
+excelDateToUnixTime = function(excelTime, strict) {
   var daysFrom1900to1970, daysFrom1904to1970, error1, secondsPerDay, t;
+  if (strict == null) {
+    strict = false;
+  }
   try {
     if ((0 < excelTime && excelTime < 10e5)) {
 
@@ -2048,7 +2056,7 @@ excelDateToUnixTime = function(excelTime) {
       t = Date.parse(excelTime);
     }
   } catch (error1) {
-    t = Date.now();
+    t = strict ? false : Date.now();
   }
   return t;
 };
