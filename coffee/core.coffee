@@ -786,7 +786,7 @@ toastStatusMessage = (message, className = "", duration = 3000, selector = "#sta
     $(html).appendTo("body")
   $(selector)
   .attr("text",message)
-  .text(message)
+  .html(message)
   .addClass(className)
   try
     p$(selector).show()

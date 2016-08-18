@@ -1046,7 +1046,7 @@ toastStatusMessage = function(message, className, duration, selector) {
     html = "<paper-toast id=\"" + (selector.slice(1)) + "\" duration=\"" + duration + "\"></paper-toast>";
     $(html).appendTo("body");
   }
-  $(selector).attr("text", message).text(message).addClass(className);
+  $(selector).attr("text", message).html(message).addClass(className);
   try {
     p$(selector).show();
   } catch (undefined) {}
