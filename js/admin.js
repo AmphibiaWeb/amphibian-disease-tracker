@@ -2052,6 +2052,9 @@ excelDateToUnixTime = function(excelTime, strict) {
       daysFrom1904to1970 = 24107;
       secondsPerDay = 86400;
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000;
+      if (!isNumber(t)) {
+        throw "Bad Number Error";
+      }
     } else {
       t = Date.parse(excelTime);
     }

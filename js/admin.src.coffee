@@ -2009,6 +2009,8 @@ excelDateToUnixTime = (excelTime, strict = false) ->
       daysFrom1904to1970 = 24107 # Mac Excel 2007 and before
       secondsPerDay = 86400
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
+      if not isNumber(t)
+        throw "Bad Number Error"
     else
       # Standard date parsing
       t = Date.parse(excelTime)
