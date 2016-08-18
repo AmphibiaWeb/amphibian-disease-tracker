@@ -1711,7 +1711,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
     duplicatedFieldIds = new Array()
     for n, row of dataObject
       tRow = new Object()
-      uniqueColumn = array()
+      uniqueColumn = new Array()
       for column, value of row
         column = column.trim()
         if column in uniqueColumn
@@ -1883,6 +1883,11 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
       _adp.projectIdentifierString = projectIdentifier
     else
       projectIdentifier = _adp.projectIdentifierString
+    try
+      csvOptions =
+        downloadFile: "cleaned-dataset-#{Date.now()}.csv"
+        selector: "#download-server-parsed-data"
+      downloadCSVFile parsedData, csvOptions
     # Define the transect ring
     # If it's not already picked, let's get it from the dataset
     getCoordsFromData = ->
