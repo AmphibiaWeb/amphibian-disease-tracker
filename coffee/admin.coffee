@@ -1836,6 +1836,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
       parsedData[n] = tRow
       if n %% 500 is 0 and n > 0
         toastStatusMessage "Processed #{n} rows ..."
+        console.log "Processed #{n} rows ..."
       try
         p$("#data-parsing").value = n + 1
     try
@@ -2012,6 +2013,7 @@ excelDateToUnixTime = (excelTime, strict = false) ->
       secondsPerDay = 86400
       t = ((excelTime - daysFrom1900to1970) * secondsPerDay) * 1000 # Unix Milliseconds
       if not isNumber(t)
+        console.error "excelDateToUnixTime got bad number: #{excelTime} -> #{t}"
         throw "Bad Number Error"
     else
       # Standard date parsing
