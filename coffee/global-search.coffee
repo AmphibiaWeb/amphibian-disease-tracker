@@ -229,7 +229,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
             console.error "This taxon is invalid!", validatedTaxon
             searchFailed()
             return false
-          taxonString = "#{validatedTaxon.genus} #{validatedTaxon.species} #{validatedTaxon.subspecies}"
+          taxonString = "#{validatedTaxon.genus} #{validatedTaxon.species} #{validatedTaxon.subspecies ? ""}"
           taxonString = taxonString.trim()
           $("#taxa-input").val taxonString
           # Try again

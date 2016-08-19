@@ -264,13 +264,13 @@ doSearch = function(search, goDeep, hasRunValidated) {
           species: (ref2 = taxonArray[1]) != null ? ref2 : ""
         };
         validateAWebTaxon(taxon, function(validatedTaxon) {
-          var taxonString;
+          var ref3, taxonString;
           if (validatedTaxon.invalid === true) {
             console.error("This taxon is invalid!", validatedTaxon);
             searchFailed();
             return false;
           }
-          taxonString = validatedTaxon.genus + " " + validatedTaxon.species + " " + validatedTaxon.subspecies;
+          taxonString = validatedTaxon.genus + " " + validatedTaxon.species + " " + ((ref3 = validatedTaxon.subspecies) != null ? ref3 : "");
           taxonString = taxonString.trim();
           $("#taxa-input").val(taxonString);
           doSearch(getSearchObject(), goDeep, true);
