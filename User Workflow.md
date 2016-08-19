@@ -65,7 +65,7 @@ At this time, to have a unrestricted user, you must meet the following criteria:
 
 | Domain | TLD |
 |--------|-----|
-| Any    | .gov, .edu, .org |
+| Any    | .gov, .edu, .org, .ac.uk, .ed.co |
 
 Once you've met those criteria, you can create a project at any time. Until you do, clicking on the badge by your name in Administration, or clicking the unrestriction button that is first in the admin panel.
 
@@ -123,6 +123,8 @@ The file should either have a header row, or use the order presented at BiSciCol
 You'll find on the page a box that says "Drop your files here to upload" under the heading "Uploading your project data". You can drag and drop files from your filesystem into that box to upload files to the server. You may also use the blue button with an arrow pointing into a cloud to upload your files.
 
 You may upload more than just a datafile to your project; the system will also accept images (anything with a [MIME type](https://en.wikipedia.org/wiki/Media_type) beginning with `image/`), `zip` files, and `7z` ([7-zip](https://en.wikipedia.org/wiki/7-Zip), open-source compression better than zip) files. At the time of this writing, these are not yet exposed in your project's viewer, but the feature is incoming.
+
+**Important Note**: If you dont use an [ISO 18601](https://en.wikipedia.org/wiki/ISO_8601) date, you will run into problems. Also, since Excel handles and exposes dates poorly, our system cannot reliably identify dates from February 1905 - July 1905 (and will interpret them as a year from 1863 through current), and will fail on the Unix timestamp for December 31, 1969.
 
 When you upload your data, you'll be given several progress bars that complete sequentially. This will notify you if you have any problems with your data, and where they may occur.
 
