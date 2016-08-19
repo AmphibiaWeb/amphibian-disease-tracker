@@ -236,11 +236,17 @@ doSearch = function(search, goDeep, hasRunValidated) {
     }
     results = Object.toArray(result.result);
     if (results.length === 0) {
-      searchFailed = function() {
+      searchFailed = function(isGoodSpecies) {
         var inputErrorHtml, ref;
+        if (isGoodSpecies == null) {
+          isGoodSpecies = false;
+        }
         console.warn("The search failed!");
         if (!isNull((ref = search.sampled_species) != null ? ref.data : void 0)) {
           inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  Invalid species: Please check your spelling. <a href=\"http://amphibiaweb.org/search/index.html\" class=\"click\" data-newtab=\"true\">Check AmphibiaWeb for valid species</a>\n</span>";
+          if (isGoodSpecies) {
+            inputErrorHtml = "<span id=\"taxa-input-error\" class=\"help-block\">\n  No matching samples found.\n</span>";
+          }
           $("#taxa-input-container").addClass("has-error");
           $("#taxa-input-error").remove();
           $("#taxa-input").attr("aria-describedby", "taxa-input-error").after(inputErrorHtml).keyup(function() {
@@ -278,7 +284,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
         });
       } else {
         console.warn("No need to validate", isNull((ref3 = search.sampled_species) != null ? ref3.data : void 0), hasRunValidated);
-        searchFailed();
+        searchFailed(true);
       }
       return false;
     }
@@ -1329,7 +1335,7 @@ firstLoadInstructionPrompt = function(force) {
       if (hasLoaded) {
         console.warn("Force-showing the prompt to a logged in user");
       }
-      html = "<div class=\"alert alert-warning alert-dismissable slide-alert slide-out\" role=\"alert\" id=\"first-load-prompt\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <div class=\"alert-message\">\n    <p class=\"center-block text-center\"><strong>Welcome!</strong></p>\n    <p>\n      Need help getting started? We've put together some resources for you below.\n    </p>\n    <div class=\"center-block text-center\">\n      <a href=\"http://updates.amphibiandisease.org/portal/2016/06/30/Uploadingdata.html\" class=\"btn btn-default click\" data-newtab=\"true\">Get Involved</a>  <a href=\"http://updates.amphibiandisease.org/posts/\" class=\"click btn btn-default\" data-newtab=\"true\">Learn More</a>  <a href=\"https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/\" class=\"btn btn-default click\" data-newtab=\"true\">Read Documentation</a>\n    </div>\n    <p>\n      You can also find these resources by scrolling down on this page later.\n    </p>\n  </div>      \n</div>";
+      html = "<div class=\"alert alert-warning alert-dismissable slide-alert slide-out\" role=\"alert\" id=\"first-load-prompt\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <div class=\"alert-message\">\n    <p class=\"center-block text-center\"><strong>Welcome!</strong></p>\n    <p>\n      Need help getting started? We've put together some resources for you below.\n    </p>\n    <div class=\"center-block text-center\">\n      <a href=\"http://updates.amphibiandisease.org/portal/2016/06/30/Uploadingdata.html\" class=\"btn btn-default click\" data-newtab=\"true\">Get Involved</a>  <a href=\"http://updates.amphibiandisease.org/posts/\" class=\"click btn btn-default\" data-newtab=\"true\">Learn More</a>  <a href=\"https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/\" class=\"btn btn-default click\" data-newtab=\"true\">Read Documentation</a>\n    </div>\n    <p>\n      You can also find these resources by scrolling down on this page later.\n    </p>\n  </div>\n</div>";
       $("#first-load-prompt").remove();
       $("body").append(html);
       bindClicks();

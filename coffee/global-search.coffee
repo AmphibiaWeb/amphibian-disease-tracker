@@ -192,7 +192,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
       return false
     results = Object.toArray result.result
     if results.length is 0
-      searchFailed = ->
+      searchFailed = (isGoodSpecies = false) ->
         console.warn "The search failed!"
         unless isNull search.sampled_species?.data
           # Mark the field
@@ -201,6 +201,12 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
             Invalid species: Please check your spelling. <a href="http://amphibiaweb.org/search/index.html" class="click" data-newtab="true">Check AmphibiaWeb for valid species</a>
           </span>
           """
+          if isGoodSpecies
+            inputErrorHtml = """
+            <span id="taxa-input-error" class="help-block">
+              No matching samples found.
+            </span>
+            """
           $("#taxa-input-container").addClass "has-error"
           $("#taxa-input-error").remove()
           $("#taxa-input")
@@ -238,7 +244,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
       else
         # We already ran the AWeb async
         console.warn "No need to validate", isNull(search.sampled_species?.data), hasRunValidated
-        searchFailed()
+        searchFailed(true)
       return false
     if goDeep
       # If we're going deep, we'll let the deep take care of the rest
@@ -1220,7 +1226,7 @@ firstLoadInstructionPrompt = (force = false) ->
           <p>
             You can also find these resources by scrolling down on this page later.
           </p>
-        </div>      
+        </div>
       </div>
       """
       # Add it to the dom
