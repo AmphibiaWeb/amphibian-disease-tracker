@@ -2097,7 +2097,7 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, error4, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, error4, error5, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, url;
     console.info("Citation base", result);
     j = result.message;
     authors = new Array();
@@ -2146,8 +2146,16 @@ fetchCitation = function(citationQuery, callback) {
     console.log(citation);
     if (typeof callback === "function") {
       try {
-        callback(citation, j.link[0].URL);
+        url = j.link[0].URL;
       } catch (error4) {
+        url = "http://dx.doi.og/" + citationQuery;
+      }
+      try {
+        callback(citation, url);
+      } catch (error5) {
+        e = error5;
+        console.error("Callback failed, couldn't display citation - " + e.message);
+        console.warn(e.stack);
         stopLoadError("Failed to display citation");
       }
     }

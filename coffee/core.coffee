@@ -1662,8 +1662,14 @@ fetchCitation = (citationQuery, callback) ->
     console.log citation
     if typeof callback is "function"
       try
-        callback citation, j.link[0].URL
+        url = j.link[0].URL
       catch
+        url = "http://dx.doi.og/#{citationQuery}"
+      try
+        callback citation, url
+      catch e
+        console.error "Callback failed, couldn't display citation - #{e.message}"
+        console.warn e.stack
         stopLoadError "Failed to display citation"
     false
   .fail (result, status) ->
