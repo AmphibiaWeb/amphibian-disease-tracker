@@ -807,7 +807,7 @@ downloadCSVFile = function(data, options) {
   var c, col, e, elapsed, error1, file, header, headerPlaceholder, headerStr, html, id, j, jsonObject, k, len, parser, response, selector, startTime, textAsset;
   startTime = Date.now();
   textAsset = "";
-  if (isJson(data)) {
+  if (isJson(data) && typeof data === "string") {
     console.info("Parsing as JSON string");
     try {
       jsonObject = JSON.parse(data);

@@ -1661,10 +1661,14 @@ fetchCitation = (citationQuery, callback) ->
       """
     console.log citation
     if typeof callback is "function"
-      callback citation, j.link[0].URL
+      try
+        callback citation, j.link[0].URL
+      catch
+        stopLoadError "Failed to display citation"
     false
   .fail (result, status) ->
     console.error "Failed to fetch citation"
+    stopLoadError "Failed to fetch citation"
   false
 
 

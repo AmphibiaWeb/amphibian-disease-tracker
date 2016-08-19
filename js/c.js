@@ -2097,7 +2097,7 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, error4, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
     console.info("Citation base", result);
     j = result.message;
     authors = new Array();
@@ -2145,11 +2145,16 @@ fetchCitation = function(citationQuery, callback) {
     }
     console.log(citation);
     if (typeof callback === "function") {
-      callback(citation, j.link[0].URL);
+      try {
+        callback(citation, j.link[0].URL);
+      } catch (error4) {
+        stopLoadError("Failed to display citation");
+      }
     }
     return false;
   }).fail(function(result, status) {
-    return console.error("Failed to fetch citation");
+    console.error("Failed to fetch citation");
+    return stopLoadError("Failed to fetch citation");
   });
   return false;
 };

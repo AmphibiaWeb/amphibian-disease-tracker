@@ -917,23 +917,29 @@ showCitation = function() {
   if (!$("#citation-pop").exists()) {
     animateLoad();
     fetchCitation(doi, function(citation, url) {
-      var error1, html, pdfButton;
-      pdfButton = isNull(url) ? "" : "<paper-button class=\"click\" data-newtab=\"true\" data-href=\"" + url + "\">\n  <iron-icon icon=\"icons:open-in-new\"></iron-icon>\n  Open\n</paper-button>";
-      html = "<paper-dialog id=\"citation-pop\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\" id=\"popped-citation\" readonly>\n        " + citation + "\n      </paper-textarea>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"copy-citation\" class=\"click-copy\" data-copy-selector=\"#popped-citation\">\n      <iron-icon icon=\"icons:content-copy\"></iron-icon>\n      Copy Citation\n    </paper-button>\n    <paper-button id=\"copy-doi\" class=\"click-copy\" data-copy-selector=\"#doi-input\">\n      <iron-icon icon=\"icons:content-copy\"></iron-icon>\n      Copy DOI\n    </paper-button>\n    " + pdfButton + "\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
-      $("body").append(html);
+      var e, error1, error2, html, pdfButton;
       try {
-        p$("#popped-citation").value = citation;
-      } catch (error1) {
-        delay(500, function() {
-          try {
-            return p$("#popped-citation").value = citation;
-          } catch (undefined) {}
-        });
+        pdfButton = isNull(url) ? "" : "<paper-button class=\"click\" data-newtab=\"true\" data-href=\"" + url + "\">\n  <iron-icon icon=\"icons:open-in-new\"></iron-icon>\n  Open\n</paper-button>";
+        html = "<paper-dialog id=\"citation-pop\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div class=\"pop-contents\">\n      <paper-textarea label=\"Citation\" id=\"popped-citation\" readonly>\n        " + citation + "\n      </paper-textarea>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"copy-citation\" class=\"click-copy\" data-copy-selector=\"#popped-citation\">\n      <iron-icon icon=\"icons:content-copy\"></iron-icon>\n      Copy Citation\n    </paper-button>\n    <paper-button id=\"copy-doi\" class=\"click-copy\" data-copy-selector=\"#doi-input\">\n      <iron-icon icon=\"icons:content-copy\"></iron-icon>\n      Copy DOI\n    </paper-button>\n    " + pdfButton + "\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+        $("body").append(html);
+        try {
+          p$("#popped-citation").value = citation;
+        } catch (error1) {
+          delay(500, function() {
+            try {
+              return p$("#popped-citation").value = citation;
+            } catch (undefined) {}
+          });
+        }
+        bindClicks();
+        bindCopyEvents();
+        safariDialogHelper("#citation-pop");
+        return stopLoad();
+      } catch (error2) {
+        e = error2;
+        console.error("Couldn't show citation - " + e.message);
+        return stopLoadError("Failed to display citation");
       }
-      bindClicks();
-      bindCopyEvents();
-      safariDialogHelper("#citation-pop");
-      return stopLoad();
     });
   } else {
     p$("#citation-pop").open();
