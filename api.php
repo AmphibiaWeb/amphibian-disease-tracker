@@ -549,10 +549,14 @@ function doAWebValidate($get)
         'notices' => array(),
     );
     # We need, at minimum, genus and species
-    if (empty($get['genus']) or empty($get['species'])) {
+    if (empty($get['genus'])) {
         $response['error'] = 'MISSING_ARGUMENTS';
-        $response['human_error'] = 'You need to provide both a genus and species to validate';
+        $response['human_error'] = 'You need to a genus and species to validate';
         returnAjax($response);
+    }
+    if (empty($get['species'])) {
+        $response["notices"][] = "No species provided. Using generic species";
+        $get["species"] = "sp";
     }
     # How old is our copy?
     if (filemtime($localAWebTarget) + $dayOffset < time()) {
