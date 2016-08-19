@@ -2083,15 +2083,34 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
 };
 
 excelDateToUnixTime = function(excelTime, strict) {
-  var daysFrom1900to1970, daysFrom1904to1970, error1, secondsPerDay, t;
+  var d, daysFrom1900to1970, daysFrom1904to1970, earliestPlausibleYear, error1, parseableDate, secondsPerDay, t, thisYear;
   if (strict == null) {
     strict = false;
   }
+
+  /*
+   *
+   */
+  earliestPlausibleYear = 1863;
+  d = new Date();
+  thisYear = d.getUTCFullYear();
   try {
     if (!isNumber(excelTime)) {
       throw "Bad date error";
     }
-    if ((0 < excelTime && excelTime < 10e5)) {
+    if ((earliestPlausibleYear <= excelTime && excelTime <= thisYear)) {
+
+      /*
+       * The Excel format isn't smart enough to mark a date as a date
+       * We have to do some guessing
+       *
+       * This correction will generate bad values for samples collected
+       * between February and July 1905, casting them into the years
+       * 1863 through current.
+       */
+      parseableDate = excelTime + "-01-03";
+      t = Date.parse(parseableDate);
+    } else if ((0 < excelTime && excelTime < 10e5)) {
 
       /*
        * Excel is INSANE, and marks time as DAYS since 1900-01-01
