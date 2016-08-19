@@ -895,7 +895,10 @@ showCitation = ->
         stopLoad()
       catch e
         console.error "Couldn't show citation - #{e.message}"
-        stopLoadError "Failed to display citation"
+        try
+          p$("#citation-pop").open()
+        catch
+          stopLoadError "Failed to display citation"
   else
     p$("#citation-pop").open()
   false
