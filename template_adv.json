@@ -45,23 +45,7 @@
       "pathogen": {
       "default": "",
       "type": "sql_literal"
-    },
-      "north": {
-      "default": 90,
-      "type": "number"
-    },
-      "south": {
-      "default": -90,
-      "type": "number"
-    },
-      "east": {
-      "default": 180,
-      "type": "number"
-    },
-      "west": {
-      "default": -180,
-      "type": "number"
-    },
+      },
     "color": {
       "default": "red",
       "type": "css_color"
