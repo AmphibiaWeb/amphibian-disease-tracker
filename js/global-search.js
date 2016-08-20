@@ -1464,8 +1464,22 @@ $(function() {
     var isOpened, text;
     isOpened = !p$("#more-tips").opened;
     p$("#more-tips").toggle();
-    text = isOpened ? "Less tips..." : "More tips...";
+    text = isOpened ? "Fewer tips..." : "More tips...";
     return $("#show-more-tips").text(text);
+  });
+  $("#reset-global-map").contextmenu(function() {
+    var j, len, radioGroup, ref;
+    resetMap();
+    $("#taxa-input").val("");
+    p$("#use-viewport-bounds").checked = true;
+    ref = $("paper-radio-group");
+    for (j = 0, len = ref.length; j < len; j++) {
+      radioGroup = ref[j];
+      try {
+        p$(radioGroup).selectIndex(0);
+      } catch (undefined) {}
+    }
+    return false;
   });
   return false;
 });
