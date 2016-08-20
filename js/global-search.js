@@ -502,7 +502,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapBounds, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -558,19 +558,20 @@ doDeepSearch = function(results, namedMap) {
       })();
     }
     projectTableMap = new Object();
+    mapBounds = getSearchObject();
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
-      if (search.bounding_box_n.data > boundingBox.n) {
-        boundingBox.n = search.bounding_box_n.data;
+      if (mapBounds.bounding_box_n.data > boundingBox.n) {
+        boundingBox.n = mapBounds.bounding_box_n.data;
       }
-      if (search.bounding_box_e.data > boundingBox.e) {
-        boundingBox.e = search.bounding_box_e.data;
+      if (mapBounds.bounding_box_e.data > boundingBox.e) {
+        boundingBox.e = mapBounds.bounding_box_e.data;
       }
-      if (search.bounding_box_s.data < boundingBox.s) {
-        boundingBox.s = search.bounding_box_s.data;
+      if (mapBounds.bounding_box_s.data < boundingBox.s) {
+        boundingBox.s = mapBounds.bounding_box_s.data;
       }
-      if (search.bounding_box_w.data < boundingBox.w) {
-        boundingBox.w = search.bounding_box_w.data;
+      if (mapBounds.bounding_box_w.data < boundingBox.w) {
+        boundingBox.w = mapBounds.bounding_box_w.data;
       }
       totalSamples += project.disease_samples;
       posSamples += project.disease_positive;
