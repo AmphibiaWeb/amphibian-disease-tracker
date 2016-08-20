@@ -554,7 +554,7 @@ finalizeData = (skipFields = false, callback) ->
           years = new Array()
           methods = new Array()
           catalogNumbers = new Array()
-          fieldNumbers = new Array()
+          sampleIds = new Array()
           dispositions = new Array()
           sampleMethods = new Array()
           for row in Object.toArray uploadedData
@@ -571,7 +571,7 @@ finalizeData = (skipFields = false, callback) ->
             # Get the catalog number list
             if row.catalogNumber? # Not mandatory
               catalogNumbers.push row.catalogNumber
-            fieldNumbers.push row.fieldNumber
+            sampleIds.push row.sampleId
             # Prepare to calculate the radius
             rowLat = row.decimalLatitude
             rowLng = row.decimalLongitude
@@ -594,7 +594,7 @@ finalizeData = (skipFields = false, callback) ->
           postData.sampling_years = years.join(",")
           console.info "Got uploaded data", uploadedData
           postData.sample_catalog_numbers = catalogNumbers.join(",")
-          postData.sample_field_numbers = fieldNumbers.join(",")
+          postData.sample_field_numbers = sampleIds.join(",")
           postData.sample_methods_used = sampleMethods.join(",")
         else
           # No data, check bounding box
@@ -1727,7 +1727,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
           #  id: "int"
           #  collectionID: "varchar"
           #  catalogNumber: "varchar"
-          #  fieldNumber: "varchar"
+          #  sampleId: "varchar"
           #  diseaseTested: "varchar"
           #  diseaseStrain: "varchar"
           #  sampleMethod: "varchar"
@@ -1830,7 +1830,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
                 value = "not determined"
             catch
               value = "not determined"
-          when "fieldNumber"
+          when "sampleId"
             # These are "validForUri" columns
             try
               trimmed = value.trim()

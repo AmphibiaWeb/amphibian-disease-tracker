@@ -385,7 +385,7 @@ finalizeData = function(skipFields, callback) {
     }
     file = (ref = dataFileParams != null ? dataFileParams.filePath : void 0) != null ? ref : null;
     return mintBcid(_adp.projectId, file, title, function(result) {
-      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, fieldNumbers, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, s, sampleMethods, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, s, sampleIds, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -428,7 +428,7 @@ finalizeData = function(skipFields, callback) {
           years = new Array();
           methods = new Array();
           catalogNumbers = new Array();
-          fieldNumbers = new Array();
+          sampleIds = new Array();
           dispositions = new Array();
           sampleMethods = new Array();
           ref2 = Object.toArray(uploadedData);
@@ -448,7 +448,7 @@ finalizeData = function(skipFields, callback) {
             if (row.catalogNumber != null) {
               catalogNumbers.push(row.catalogNumber);
             }
-            fieldNumbers.push(row.fieldNumber);
+            sampleIds.push(row.sampleId);
             rowLat = row.decimalLatitude;
             rowLng = row.decimalLongitude;
             distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
@@ -476,7 +476,7 @@ finalizeData = function(skipFields, callback) {
           postData.sampling_years = years.join(",");
           console.info("Got uploaded data", uploadedData);
           postData.sample_catalog_numbers = catalogNumbers.join(",");
-          postData.sample_field_numbers = fieldNumbers.join(",");
+          postData.sample_field_numbers = sampleIds.join(",");
           postData.sample_methods_used = sampleMethods.join(",");
         } else {
           if (geo.canonicalHullObject != null) {
@@ -1843,7 +1843,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
               value = "not determined";
             }
             break;
-          case "fieldNumber":
+          case "sampleId":
             try {
               trimmed = value.trim();
               if (trimmed.toLowerCase() === "n/a") {
@@ -2457,7 +2457,7 @@ loadEditor = function(projectPreload) {
             yearPretty = "<em>(no data)</em>";
           }
           toggleChecked = (cartoParsed != null ? (ref3 = cartoParsed.raw_data) != null ? ref3.filePath : void 0 : void 0) != null ? "" : "checked disabled";
-          html = "<h2 class=\"clearfix newtitle col-xs-12\">" + project.project_title + " " + icon + " <paper-icon-button icon=\"icons:visibility\" class=\"click\" data-href=\"" + uri.urlString + "project.php?id=" + opid + "\" data-toggle=\"tooltip\" title=\"View in Project Viewer\" data-newtab=\"true\"></paper-icon-button><br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\" id=\"permissions-table\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users-button\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project Creation\" value=\"" + (creation.toLocaleString()) + "\" id=\"project_creation\" class=\"author-param\" data-key=\"entry_date\" data-value=\"" + authorData.entry_date + "\"></paper-input>\n  <paper-input readonly label=\"Project ARK\" value=\"" + project.project_obj_id + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project-title\" data-field=\"project_title\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Pathogen\" value=\"" + project.disease + "\" data-field=\"disease\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project-title\" data-field=\"pi_lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Reference\" value=\"" + project.reference_id + "\" id=\"project-reference\" data-field=\"reference_id\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Publication DOI\" value=\"" + project.publication + "\" id=\"doi\" data-field=\"publication\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"author-param\" data-key=\"name\" label=\"Project Contact\" value=\"" + authorData.name + "\" id=\"project-contact\"></paper-input>\n  <gold-email-input " + conditionalReadonly + " class=\"author-param\" data-key=\"contact_email\" label=\"Contact Email\" value=\"" + authorData.contact_email + "\" id=\"contact-email\"></gold-email-input>\n  <paper-input " + conditionalReadonly + " class=\"author-param\" data-key=\"diagnostic_lab\" label=\"Diagnostic Lab\" value=\"" + authorData.diagnostic_lab + "\" id=\"project-lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"author-param\" data-key=\"affiliation\" label=\"Affiliation\" value=\"" + authorData.affiliation + "\" id=\"project-affiliation\"></paper-input>\n</section>\n<section id=\"notes\" class=\"col-xs-12 col-md-8 clearfix\">\n  " + noteHtml + "\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append/Amend Data\n          <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"If you upload a dataset, append all rows as additional data, and modify existing ones by fieldNumber\"></span>\n        </span>\n        <paper-toggle-button id=\"replace-data-toggle\" class=\"material-red\" " + toggleChecked + ">Replace Data</paper-toggle-button>\n        <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"If you upload data, archive current data and only have new data parsed\"></span>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"reparse-project\"><iron-icon icon=\"icons:cached\" class=\"materialindigotext\"></iron-icon> Re-parse Data, Save Project &amp; Reload</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n      <paper-input readonly label=\"Sampled Species\" value=\"" + (project.sampled_species.split(",").sort().join(", ")) + "\"></paper-input>\n      <paper-input readonly label=\"Sampled Clades\" value=\"" + (project.sampled_clades.split(",").sort().join(", ")) + "\"></paper-input>\n      <p class=\"text-muted\">\n        <span class=\"glyphicon glyphicon-info-sign\"></span> There are " + (project.sampled_species.split(",").length) + " species in this dataset, across " + (project.sampled_clades.split(",").length) + " clades\n      </p>\n    <h4>Sample Metrics</h4>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n      <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(project.lat, 6)) + ", " + (roundNumberSigfig(project.lng, 6)) + ") with a sample radius of " + project.radius + "m and a resulting locality <strong class='locality'>" + project.locality + "</strong></p>\n      <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + project.disease_positive + " positive samples (" + (roundNumber(project.disease_positive * 100 / project.disease_samples)) + "%), " + project.disease_negative + " negative samples (" + (roundNumber(project.disease_negative * 100 / project.disease_samples)) + "%), and " + project.disease_no_confidence + " inconclusive samples (" + (roundNumber(project.disease_no_confidence * 100 / project.disease_samples)) + "%)</p>\n    <h4 id=\"map-header\">Locality &amp; Transect Data</h4>\n      <div id=\"carto-map-container\" class=\"clearfix\">\n      " + googleMap + "\n      </div>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      " + fundingHtml + "\n      <div class=\"row markdown-pair\" id=\"preview-funding\">\n        <span class=\"pull-left\" style=\"margin-top:1.75em;vertical-align:bottom;padding-left:15px\">$</span><paper-input " + conditionalReadonly + " class=\"project-param col-xs-11\" label=\"Additional Funding Request\" value=\"" + project.more_analysis_funding_request + "\" id=\"more-analysis-funding\" data-field=\"more_analysis_funding_request\" type=\"number\"></paper-input>\n      </div>\n</section>";
+          html = "<h2 class=\"clearfix newtitle col-xs-12\">" + project.project_title + " " + icon + " <paper-icon-button icon=\"icons:visibility\" class=\"click\" data-href=\"" + uri.urlString + "project.php?id=" + opid + "\" data-toggle=\"tooltip\" title=\"View in Project Viewer\" data-newtab=\"true\"></paper-icon-button><br/><small>Project #" + opid + "</small></h2>\n" + publicToggle + "\n<section id=\"manage-users\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Collaborators\" elevation=\"2\">\n    <div class=\"card-content\">\n      <table class=\"table table-striped table-condensed table-responsive table-hover clearfix\" id=\"permissions-table\">\n        <thead>\n          <tr>\n            <td colspan=\"5\">User</td>\n            <td>Permissions</td>\n          </tr>\n        </thead>\n        <tbody>\n          " + userHtml + "\n        </tbody>\n      </table>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button class=\"manage-users\" id=\"manage-users-button\">Manage Users</paper-button>\n    </div>\n  </paper-card>\n</section>\n<section id=\"project-basics\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Basics</h3>\n  <paper-input readonly label=\"Project Identifier\" value=\"" + project.project_id + "\" id=\"project_id\" class=\"project-param\"></paper-input>\n  <paper-input readonly label=\"Project Creation\" value=\"" + (creation.toLocaleString()) + "\" id=\"project_creation\" class=\"author-param\" data-key=\"entry_date\" data-value=\"" + authorData.entry_date + "\"></paper-input>\n  <paper-input readonly label=\"Project ARK\" value=\"" + project.project_obj_id + "\" id=\"project_creation\" class=\"project-param\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Title\" value=\"" + project.project_title + "\" id=\"project-title\" data-field=\"project_title\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Primary Pathogen\" value=\"" + project.disease + "\" data-field=\"disease\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"PI Lab\" value=\"" + project.pi_lab + "\" id=\"project-title\" data-field=\"pi_lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Project Reference\" value=\"" + project.reference_id + "\" id=\"project-reference\" data-field=\"reference_id\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"project-param\" label=\"Publication DOI\" value=\"" + project.publication + "\" id=\"doi\" data-field=\"publication\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"author-param\" data-key=\"name\" label=\"Project Contact\" value=\"" + authorData.name + "\" id=\"project-contact\"></paper-input>\n  <gold-email-input " + conditionalReadonly + " class=\"author-param\" data-key=\"contact_email\" label=\"Contact Email\" value=\"" + authorData.contact_email + "\" id=\"contact-email\"></gold-email-input>\n  <paper-input " + conditionalReadonly + " class=\"author-param\" data-key=\"diagnostic_lab\" label=\"Diagnostic Lab\" value=\"" + authorData.diagnostic_lab + "\" id=\"project-lab\"></paper-input>\n  <paper-input " + conditionalReadonly + " class=\"author-param\" data-key=\"affiliation\" label=\"Affiliation\" value=\"" + authorData.affiliation + "\" id=\"project-affiliation\"></paper-input>\n</section>\n<section id=\"notes\" class=\"col-xs-12 col-md-8 clearfix\">\n  " + noteHtml + "\n</section>\n<section id=\"data-management\" class=\"col-xs-12 col-md-4 pull-right\">\n  <paper-card class=\"clearfix\" heading=\"Project Data\" elevation=\"2\" id=\"data-card\">\n    <div class=\"card-content\">\n      <div class=\"variable-card-content\">\n      Your project does/does not have data associated with it. (Does should note overwrite, and link to cartoParsed.raw_data.filePath for current)\n      </div>\n      <div id=\"append-replace-data-toggle\">\n        <span class=\"toggle-off-label iron-label\">Append/Amend Data\n          <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"If you upload a dataset, append all rows as additional data, and modify existing ones by sampleId\"></span>\n        </span>\n        <paper-toggle-button id=\"replace-data-toggle\" class=\"material-red\" " + toggleChecked + ">Replace Data</paper-toggle-button>\n        <span class=\"glyphicon glyphicon-info-sign\" data-toggle=\"tooltip\" title=\"If you upload data, archive current data and only have new data parsed\"></span>\n      </div>\n      <div id=\"uploader-container-section\">\n      </div>\n    </div>\n  </paper-card>\n  <paper-card class=\"clearfix\" heading=\"Project Status\" elevation=\"2\" id=\"save-card\">\n    <div class=\"card-content\">\n      <p>Notice if there's unsaved data or not. Buttons below should dynamically disable/enable based on appropriate state.</p>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"save-project\"><iron-icon icon=\"icons:save\" class=\"material-green\"></iron-icon> Save Project</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"reparse-project\"><iron-icon icon=\"icons:cached\" class=\"materialindigotext\"></iron-icon> Re-parse Data, Save Project &amp; Reload</paper-button>\n    </div>\n    <div class=\"card-actions\">\n      <paper-button id=\"discard-changes-exit\"><iron-icon icon=\"icons:undo\"></iron-icon> Discard Changes &amp; Exit</paper-button>\n    </div>\n    " + deleteCardAction + "\n  </paper-card>\n</section>\n<section id=\"project-data\" class=\"col-xs-12 col-md-8 clearfix\">\n  <h3>Project Data Overview</h3>\n    <h4>Project Studies:</h4>\n      <paper-checkbox " + anuraState + ">Anura</paper-checkbox>\n      <paper-checkbox " + caudataState + ">Caudata</paper-checkbox>\n      <paper-checkbox " + gymnophionaState + ">Gymnophiona</paper-checkbox>\n      <paper-input readonly label=\"Sampled Species\" value=\"" + (project.sampled_species.split(",").sort().join(", ")) + "\"></paper-input>\n      <paper-input readonly label=\"Sampled Clades\" value=\"" + (project.sampled_clades.split(",").sort().join(", ")) + "\"></paper-input>\n      <p class=\"text-muted\">\n        <span class=\"glyphicon glyphicon-info-sign\"></span> There are " + (project.sampled_species.split(",").length) + " species in this dataset, across " + (project.sampled_clades.split(",").length) + " clades\n      </p>\n    <h4>Sample Metrics</h4>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken from " + collectionRangePretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were taken in " + monthPretty + "</p>\n      <p class=\"text-muted\"><span class=\"glyphicon glyphicon-calendar\"></span> Data were sampled in " + yearPretty + "</p>\n      <p class=\"text-muted\"><iron-icon icon=\"icons:language\"></iron-icon> The effective project center is at (" + (roundNumberSigfig(project.lat, 6)) + ", " + (roundNumberSigfig(project.lng, 6)) + ") with a sample radius of " + project.radius + "m and a resulting locality <strong class='locality'>" + project.locality + "</strong></p>\n      <p class=\"text-muted\"><iron-icon icon=\"editor:insert-chart\"></iron-icon> The dataset contains " + project.disease_positive + " positive samples (" + (roundNumber(project.disease_positive * 100 / project.disease_samples)) + "%), " + project.disease_negative + " negative samples (" + (roundNumber(project.disease_negative * 100 / project.disease_samples)) + "%), and " + project.disease_no_confidence + " inconclusive samples (" + (roundNumber(project.disease_no_confidence * 100 / project.disease_samples)) + "%)</p>\n    <h4 id=\"map-header\">Locality &amp; Transect Data</h4>\n      <div id=\"carto-map-container\" class=\"clearfix\">\n      " + googleMap + "\n      </div>\n  <h3>Project Meta Parameters</h3>\n    <h4>Project funding status</h4>\n      " + fundingHtml + "\n      <div class=\"row markdown-pair\" id=\"preview-funding\">\n        <span class=\"pull-left\" style=\"margin-top:1.75em;vertical-align:bottom;padding-left:15px\">$</span><paper-input " + conditionalReadonly + " class=\"project-param col-xs-11\" label=\"Additional Funding Request\" value=\"" + project.more_analysis_funding_request + "\" id=\"more-analysis-funding\" data-field=\"more_analysis_funding_request\" type=\"number\"></paper-input>\n      </div>\n</section>";
           $("#main-body").html(html);
           $(".pull-right paper-card .header").click(function() {
             console.info("Clicked header, triggering collapse");
@@ -3488,7 +3488,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
         return false;
       }
       _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, fieldNumber, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleLatLngArray, sqlQuery, sqlWhere, statementCount, statements, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
+        var alt, altRefVal, bb_east, bb_north, bb_south, bb_west, colArr, column, columnDatatype, columnNamesList, coordinate, coordinatePair, cv, dataGeometry, defaultPolygon, e, err, error2, error3, error4, error5, geoJson, geoJsonGeom, geoJsonVal, gjString, i, iIndex, k, l, lat, lats, len, len1, ll, lng, lngs, lookupMap, m, n, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, refGeom, refRow, refRowNum, refVal, roundCutoff, row, sampleId, sampleLatLngArray, sqlQuery, sqlWhere, statementCount, statements, transectPolygon, trimmed, userTransectRing, v, v2, value, valuesArr, valuesList;
         if (result.status) {
           console.info("Validated data", validatedData);
           sampleLatLngArray = new Array();
@@ -3570,15 +3570,15 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
             ref6 = _adp.cartoRows;
             for (i in ref6) {
               row = ref6[i];
-              fieldNumber = (ref7 = row.fieldNumber) != null ? ref7 : row.fieldnumber;
+              sampleId = (ref7 = row.sampleId) != null ? ref7 : row.sampleid;
               try {
-                trimmed = fieldNumber.trim();
+                trimmed = sampleId.trim();
               } catch (error3) {
                 continue;
               }
               trimmed = trimmed.replace(/^([a-zA-Z]+) (\d+)$/mg, "$1$2");
-              fieldNumber = trimmed;
-              lookupMap[fieldNumber] = i;
+              sampleId = trimmed;
+              lookupMap[sampleId] = i;
             }
           } catch (error4) {
             console.warn("Couldn't make lookupMap");
@@ -3602,9 +3602,9 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
               coordinates: new Array()
             };
             iIndex = i + 1;
-            fieldNumber = row.fieldNumber;
+            sampleId = row.sampleId;
             try {
-              refRowNum = lookupMap[fieldNumber];
+              refRowNum = lookupMap[sampleId];
             } catch (undefined) {}
             refRow = null;
             if (refRowNum != null) {
@@ -3626,7 +3626,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 case "decimalLatitude":
                   geoJsonGeom.coordinates[0] = value;
                   break;
-                case "fieldNumber":
+                case "sampleId":
                   if (refRow != null) {
                     continue;
                   }
@@ -3684,7 +3684,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 if (refVal === value || altRefVal === value) {
                   continue;
                 } else {
-                  console.info("Not skipping for", refVal, altRefVal, "on " + row.fieldNumber + " @ " + column + " = ", value);
+                  console.info("Not skipping for", refVal, altRefVal, "on " + row.sampleId + " @ " + column + " = ", value);
                 }
               }
               if (typeof value === "string") {
@@ -3724,7 +3724,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
               continue;
             }
             if (refRow != null) {
-              sqlWhere = " WHERE fieldnumber='" + fieldNumber + "';";
+              sqlWhere = " WHERE sampleid='" + sampleId + "';";
               sqlQuery += "UPDATE " + dataTable + " SET " + (valuesArr.join(", ")) + " " + sqlWhere;
             } else {
               sqlQuery += "INSERT INTO " + dataTable + " (" + (colArr.join(",")) + ") VALUES (" + (valuesArr.join(",")) + "); ";
@@ -3780,7 +3780,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 p$("#taxa-validation").indeterminate = false;
               } catch (undefined) {}
               validateTaxonData(faux, function(taxa) {
-                var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, fieldNumbers, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref20, rowLat, rowLng, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, u, uDate, uTime, years;
+                var arks, aweb, catalogNumbers, center, clade, cladeList, date, dates, dispositions, distanceFromCenter, error6, excursion, finalize, fullPath, key, len2, len3, len4, mString, methods, months, noticeHtml, o, originalTaxon, q, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref20, rowLat, rowLng, sampleIds, sampleMethods, taxon, taxonList, taxonListString, taxonObject, taxonString, u, uDate, uTime, years;
                 validatedData.validated_taxa = taxa.validated_taxa;
                 _adp.projectData.includes_anura = false;
                 _adp.projectData.includes_caudata = false;
@@ -3856,7 +3856,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 years = new Array();
                 methods = new Array();
                 catalogNumbers = new Array();
-                fieldNumbers = new Array();
+                sampleIds = new Array();
                 dispositions = new Array();
                 sampleMethods = new Array();
                 ref15 = Object.toArray(_adp.cartoRows);
@@ -3876,7 +3876,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                   if (row.catalogNumber != null) {
                     catalogNumbers.push(row.catalognumber);
                   }
-                  fieldNumbers.push(row.fieldnumber);
+                  sampleIds.push(row.sampleid);
                   rowLat = row.decimallatitude;
                   rowLng = row.decimallongitude;
                   distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
@@ -3903,7 +3903,7 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                 _adp.projectData.sampling_months = months.join(",");
                 _adp.projectData.sampling_years = years.join(",");
                 _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",");
-                _adp.projectData.sample_field_numbers = fieldNumbers.join(",");
+                _adp.projectData.sample_field_numbers = sampleIds.join(",");
                 _adp.projectData.sample_methods_used = sampleMethods.join(",");
                 try {
                   recalculateAndUpdateHull();

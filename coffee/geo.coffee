@@ -766,7 +766,7 @@ getColumnObj = (forceBase = false) ->
     id: "int"
     collectionID: "varchar"
     catalogNumber: "varchar"
-    fieldNumber: "varchar"
+    sampleId: "varchar"
     diseaseTested: "varchar"
     diseaseStrain: "varchar"
     sampleMethod: "varchar"
