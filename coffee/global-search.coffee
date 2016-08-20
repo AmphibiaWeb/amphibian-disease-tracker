@@ -428,6 +428,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
   # Follows up on doSearch() to then look at the shallow matches and
   # do a Carto query
   ###
+  goDeep = true
   try
     search = getSearchContainsObject()
     totalSamples = 0
@@ -465,14 +466,17 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         else ""
     projectTableMap = new Object()
     for project in results
-      if project.bounding_box_n > boundingBox.n
-        boundingBox.n = project.bounding_box_n
-      if project.bounding_box_e > boundingBox.e
-        boundingBox.e = project.bounding_box_e
-      if project.bounding_box_s < boundingBox.s
-        boundingBox.s = project.bounding_box_s
-      if project.bounding_box_w < boundingBox.w
-        boundingBox.w = project.bounding_box_w
+      unless goDeep
+        # In a deep search, we don't want a project defined by these
+        # bounds -- we want just the bounds as-is
+        if project.bounding_box_n > boundingBox.n
+          boundingBox.n = project.bounding_box_n
+        if project.bounding_box_e > boundingBox.e
+          boundingBox.e = project.bounding_box_e
+        if project.bounding_box_s < boundingBox.s
+          boundingBox.s = project.bounding_box_s
+        if project.bounding_box_w < boundingBox.w
+          boundingBox.w = project.bounding_box_w
       totalSamples += project.disease_samples
       posSamples += project.disease_positive
       spArr = project.sampled_species.split(",")
@@ -1258,6 +1262,9 @@ $ ->
   geo.tileLayer.on "load", ->
     console.info "Map ready"
     firstLoadInstructionPrompt()
+  # # CartoDB is throwing 400 bad request right now on some high zooms ...
+  # # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/175
+  # geo.lMap.options.maxZoom = 6
   $(".coord-input").keyup ->
     checkCoordinateSanity()
   # Project search event handling

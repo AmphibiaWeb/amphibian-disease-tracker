@@ -502,7 +502,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -511,6 +511,7 @@ doDeepSearch = function(results, namedMap) {
    * Follows up on doSearch() to then look at the shallow matches and
    * do a Carto query
    */
+  goDeep = true;
   try {
     search = getSearchContainsObject();
     totalSamples = 0;
@@ -559,17 +560,19 @@ doDeepSearch = function(results, namedMap) {
     projectTableMap = new Object();
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
-      if (project.bounding_box_n > boundingBox.n) {
-        boundingBox.n = project.bounding_box_n;
-      }
-      if (project.bounding_box_e > boundingBox.e) {
-        boundingBox.e = project.bounding_box_e;
-      }
-      if (project.bounding_box_s < boundingBox.s) {
-        boundingBox.s = project.bounding_box_s;
-      }
-      if (project.bounding_box_w < boundingBox.w) {
-        boundingBox.w = project.bounding_box_w;
+      if (!goDeep) {
+        if (project.bounding_box_n > boundingBox.n) {
+          boundingBox.n = project.bounding_box_n;
+        }
+        if (project.bounding_box_e > boundingBox.e) {
+          boundingBox.e = project.bounding_box_e;
+        }
+        if (project.bounding_box_s < boundingBox.s) {
+          boundingBox.s = project.bounding_box_s;
+        }
+        if (project.bounding_box_w < boundingBox.w) {
+          boundingBox.w = project.bounding_box_w;
+        }
       }
       totalSamples += project.disease_samples;
       posSamples += project.disease_positive;
