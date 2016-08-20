@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v16"
-namedMapAdvSource = "adp_specific_heatmap-v11"
+namedMapAdvSource = "adp_specific_heatmap-v12"
 
 
 checkCoordinateSanity = ->
@@ -517,6 +517,10 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             disease_detected: detected
             morbidity: fatal
             pathogen: pathogen
+            north: boundingBox.n
+            east: boundingBox.e
+            west: boundingBox.w
+            south: boundingBox.s
         layers.push layer
         projectTableMap[table] =
           id: project.project_id
@@ -533,29 +537,29 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         [boundingBox.s, boundingBox.e]
         [boundingBox.s, boundingBox.w]
         ]
-      mapCenter = getMapCenter boundingBoxArray
-      zoom = getMapZoom boundingBoxArray, ".map-container"
-      console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
-      # For leaflet, if we don't zoom first the map gets cranky with
-      # its baseLayer
-      if geo.lMap?
-        # http://leafletjs.com/reference.html#events-once
-        geo.lMap.once "zoomend", =>
-          # http://leafletjs.com/reference.html#map-zoomend
-          console.info "ZoomEnd is ensuring centering"
-          ensureCenter(0)
-        geo.lMap.setZoom zoom
-      try
-        # If we're using a Polymer map, set it's configs
-        p$("#global-data-map").latitude = mapCenter.lat
-        p$("#global-data-map").longitude = mapCenter.lng
-        p$("#global-data-map").zoom = zoom
-      try
-        # NOW we can set the leafelet center
-        geo.lMap.setView mapCenter.getObj()
-    catch e
-      console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
-      console.warn e.stack
+    #   mapCenter = getMapCenter boundingBoxArray
+    #   zoom = getMapZoom boundingBoxArray, ".map-container"
+    #   console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+    #   # For leaflet, if we don't zoom first the map gets cranky with
+    #   # its baseLayer
+    #   if geo.lMap?
+    #     # http://leafletjs.com/reference.html#events-once
+    #     geo.lMap.once "zoomend", =>
+    #       # http://leafletjs.com/reference.html#map-zoomend
+    #       console.info "ZoomEnd is ensuring centering"
+    #       ensureCenter(0)
+    #     geo.lMap.setZoom zoom
+    #   try
+    #     # If we're using a Polymer map, set it's configs
+    #     p$("#global-data-map").latitude = mapCenter.lat
+    #     p$("#global-data-map").longitude = mapCenter.lng
+    #     p$("#global-data-map").zoom = zoom
+    #   try
+    #     # NOW we can set the leafelet center
+    #     geo.lMap.setView mapCenter.getObj()
+    # catch e
+    #   console.warn "Failed to rezoom/recenter map - #{e.message}", boundingBoxArray
+    #   console.warn e.stack
     speciesCount = totalSpecies.length
     # Label the results
     console.info "Projects containing your search returned #{totalSamples} (#{posSamples} positive) among #{speciesCount} species", boundingBox

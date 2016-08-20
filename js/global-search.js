@@ -7,7 +7,7 @@ var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, firs
 
 namedMapSource = "adp_generic_heatmap-v16";
 
-namedMapAdvSource = "adp_specific_heatmap-v11";
+namedMapAdvSource = "adp_specific_heatmap-v12";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -502,7 +502,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -619,7 +619,11 @@ doDeepSearch = function(results, namedMap) {
             specific_epithet: search.sampled_species.species,
             disease_detected: detected,
             morbidity: fatal,
-            pathogen: pathogen
+            pathogen: pathogen,
+            north: boundingBox.n,
+            east: boundingBox.e,
+            west: boundingBox.w,
+            south: boundingBox.s
           }
         };
         layers.push(layer);
@@ -635,31 +639,7 @@ doDeepSearch = function(results, namedMap) {
     }
     try {
       boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
-      mapCenter = getMapCenter(boundingBoxArray);
-      zoom = getMapZoom(boundingBoxArray, ".map-container");
-      console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
-      if (geo.lMap != null) {
-        geo.lMap.once("zoomend", (function(_this) {
-          return function() {
-            console.info("ZoomEnd is ensuring centering");
-            return ensureCenter(0);
-          };
-        })(this));
-        geo.lMap.setZoom(zoom);
-      }
-      try {
-        p$("#global-data-map").latitude = mapCenter.lat;
-        p$("#global-data-map").longitude = mapCenter.lng;
-        p$("#global-data-map").zoom = zoom;
-      } catch (undefined) {}
-      try {
-        geo.lMap.setView(mapCenter.getObj());
-      } catch (undefined) {}
-    } catch (error1) {
-      e = error1;
-      console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
-      console.warn(e.stack);
-    }
+    } catch (undefined) {}
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
     subText = "Viewing data points";
@@ -696,12 +676,12 @@ doDeepSearch = function(results, namedMap) {
       $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
       args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-        var error2;
+        var error1;
         console.info("Detailed results: ", result);
         try {
           results = Object.toArray(result.parsed_responses);
           getSampleSummaryDialog(results, projectTableMap);
-        } catch (error2) {
+        } catch (error1) {
           console.warn("Couldn't parse responses from server");
         }
         return false;
@@ -755,7 +735,7 @@ doDeepSearch = function(results, namedMap) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
-          var error2;
+          var e, error1;
           if (!isNumber(maxCount)) {
             maxCount = 100;
           }
@@ -766,8 +746,8 @@ doDeepSearch = function(results, namedMap) {
           try {
             console.log("#" + count + "/" + maxCount + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
-          } catch (error2) {
-            e = error2;
+          } catch (error1) {
+            e = error1;
             console.warn("Error setting view - " + e.message);
           }
           if (count < maxCount) {
@@ -775,14 +755,14 @@ doDeepSearch = function(results, namedMap) {
           }
         });
       })(0, 100, 100);
-    } catch (error2) {
-      e = error2;
+    } catch (error1) {
+      e = error1;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }
     stopLoad();
-  } catch (error3) {
-    e = error3;
+  } catch (error2) {
+    e = error2;
     stopLoadError("There was a problem performing a sample search");
     console.error("Problem performing sample search! " + e.message);
     console.warn(e.stack);
