@@ -537,9 +537,9 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         [boundingBox.s, boundingBox.e]
         [boundingBox.s, boundingBox.w]
         ]
-    #   mapCenter = getMapCenter boundingBoxArray
-    #   zoom = getMapZoom boundingBoxArray, ".map-container"
-    #   console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
+      mapCenter = getMapCenter boundingBoxArray
+      zoom = getMapZoom boundingBoxArray, ".map-container"
+      console.info "Found @ zoom = #{zoom} center", mapCenter, "for bounding box", boundingBoxArray
     #   # For leaflet, if we don't zoom first the map gets cranky with
     #   # its baseLayer
     #   if geo.lMap?
@@ -590,7 +590,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         # summary dialog
         # Different tables may have a different col set, so we have to
         # select *
-        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%');"
+        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' #{layer.params.morbidity } and diseasetested ilike '%#{layer.params.pathogen }%' and decimallongitude <= #{layer.params.north} and decimallongitude >= #{layer.params.south} and decimallatitude <= #{layer.params.east} and decimallatitude >= #{layer.params.west});"
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
