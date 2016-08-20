@@ -672,7 +672,7 @@ doDeepSearch = function(results, namedMap) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
-        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' " + layer.params.morbidity + " and diseasetested ilike '%" + layer.params.pathogen + "%' and decimallongitude <= " + layer.params.north + " and decimallongitude >= " + layer.params.south + " and decimallatitude <= " + layer.params.east + " and decimallatitude >= " + layer.params.west + ");";
+        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' and diseasetested ilike '%" + layer.params.pathogen + "%' and decimallatitude between " + layer.params.south + " and " + layer.params.north + " and decimallongitude <= " + layer.params.west + " and " + layer.params.east + ");";
         resultQueryPile += tempQuery;
       }
       $("#post-map-subtitle").text(subText);
