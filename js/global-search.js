@@ -676,11 +676,27 @@ doDeepSearch = function(results, namedMap) {
       $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
       args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-        var error1;
+        var coordArray, error1, len3, len4, m, o, p, row, rows, tableResults;
         console.info("Detailed results: ", result);
         try {
           results = Object.toArray(result.parsed_responses);
           getSampleSummaryDialog(results, projectTableMap);
+          coordArray = new Array();
+          for (m = 0, len3 = results.length; m < len3; m++) {
+            tableResults = results[m];
+            rows = Object.toArray(tableResults.rows);
+            for (o = 0, len4 = rows.length; o < len4; o++) {
+              row = rows[o];
+              p = {
+                lat: row.decimallatitude,
+                lng: row.decimallongitude
+              };
+              coordArray.push(canonicalizePoint(p));
+            }
+          }
+          zoom = getMapZoom(coordArray, ".map-container");
+          mapCenter = getMapCenter(coordArray);
+          console.info("Recalculate data zoom = " + zoom + " center", mapCenter, "for points array", coordArray);
         } catch (error1) {
           console.warn("Couldn't parse responses from server");
         }
