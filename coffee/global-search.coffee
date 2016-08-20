@@ -613,26 +613,30 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           zoom = getMapZoom coordArray, ".map-container"
           mapCenter = getMapCenter coordArray
           console.info "Recalculate data zoom = #{zoom} center", mapCenter, "for points array", coordArray
-          # For leaflet, if we don't zoom first the map gets cranky with
-          # its baseLayer
-          if geo.lMap?
-            # http://leafletjs.com/reference.html#events-once
-            geo.lMap.once "zoomend", =>
-              # http://leafletjs.com/reference.html#map-zoomend
-              console.info "ZoomEnd is ensuring centering"
-              ensureCenter(0)
-            geo.lMap.setZoom zoom
           try
-            # If we're using a Polymer map, set it's configs
-            p$("#global-data-map").latitude = mapCenter.lat
-            p$("#global-data-map").longitude = mapCenter.lng
-            p$("#global-data-map").zoom = zoom
-          try
-            # NOW we can set the leafelet center
-            geo.lMap.setView mapCenter.getObj()
-        catch e
-          console.warn "Failed to rezoom/recenter map - #{e.message}", coordArray
-          console.warn e.stack
+            # For leaflet, if we don't zoom first the map gets cranky with
+            # its baseLayer
+            if geo.lMap?
+              # http://leafletjs.com/reference.html#events-once
+              geo.lMap.once "zoomend", =>
+                # http://leafletjs.com/reference.html#map-zoomend
+                console.info "ZoomEnd is ensuring centering"
+                ensureCenter(0)
+              geo.lMap.setZoom zoom
+            try
+              # If we're using a Polymer map, set it's configs
+              p$("#global-data-map").latitude = mapCenter.lat
+              p$("#global-data-map").longitude = mapCenter.lng
+              p$("#global-data-map").zoom = zoom
+            try
+              # NOW we can set the leafelet center
+              geo.lMap.setView mapCenter.getObj()
+            catch e
+              console.warn "Failed to recenter map - #{e.message}", coordArray
+              console.warn e.stack
+          catch e
+            console.warn "Failed to rezoom/recenter map - #{e.message}", coordArray
+            console.warn e.stack
         catch
           console.warn "Couldn't parse responses from server"
         false
