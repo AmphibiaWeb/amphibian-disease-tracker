@@ -191,7 +191,7 @@ $loginStatus = getLoginState();
                   <input type="text" id="taxa-input" class="form-control submit-project-search" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
                 </div>
                 <div class="col-xs-2 col-sm-1">
-                  <span class="glyphicon glyphicon-info-sign" title="Simple substring match against taxa represented in projects. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
+                  <span class="glyphicon glyphicon-info-sign" title="Enter a scientific name for a species or group of species, such as 'Batrachoseps attenuatus'. Simple substring match. Uses canonical AmphibiaWeb taxa." data-toggle="tooltip"></span>
                 </div>
               </div>
               <div class="row">
