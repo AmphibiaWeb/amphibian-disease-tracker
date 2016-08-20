@@ -7,7 +7,7 @@ var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, firs
 
 namedMapSource = "adp_generic_heatmap-v16";
 
-namedMapAdvSource = "adp_specific_heatmap-v13";
+namedMapAdvSource = "adp_specific_heatmap-v14";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
