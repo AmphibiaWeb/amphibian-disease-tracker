@@ -466,17 +466,16 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         else ""
     projectTableMap = new Object()
     for project in results
-      unless goDeep
-        # In a deep search, we don't want a project defined by these
-        # bounds -- we want just the bounds as-is
-        if project.bounding_box_n > boundingBox.n
-          boundingBox.n = project.bounding_box_n
-        if project.bounding_box_e > boundingBox.e
-          boundingBox.e = project.bounding_box_e
-        if project.bounding_box_s < boundingBox.s
-          boundingBox.s = project.bounding_box_s
-        if project.bounding_box_w < boundingBox.w
-          boundingBox.w = project.bounding_box_w
+      # In a deep search, we don't want a project defined by these
+      # bounds -- we want just the bounds as-is
+      if search.bounding_box_n.data > boundingBox.n
+        boundingBox.n = search.bounding_box_n.data
+      if search.bounding_box_e.data > boundingBox.e
+        boundingBox.e = search.bounding_box_e.data
+      if search.bounding_box_s.data < boundingBox.s
+        boundingBox.s = search.bounding_box_s.data
+      if search.bounding_box_w.data < boundingBox.w
+        boundingBox.w = search.bounding_box_w.data
       totalSamples += project.disease_samples
       posSamples += project.disease_positive
       spArr = project.sampled_species.split(",")

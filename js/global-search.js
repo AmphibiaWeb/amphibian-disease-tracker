@@ -560,19 +560,17 @@ doDeepSearch = function(results, namedMap) {
     projectTableMap = new Object();
     for (j = 0, len = results.length; j < len; j++) {
       project = results[j];
-      if (!goDeep) {
-        if (project.bounding_box_n > boundingBox.n) {
-          boundingBox.n = project.bounding_box_n;
-        }
-        if (project.bounding_box_e > boundingBox.e) {
-          boundingBox.e = project.bounding_box_e;
-        }
-        if (project.bounding_box_s < boundingBox.s) {
-          boundingBox.s = project.bounding_box_s;
-        }
-        if (project.bounding_box_w < boundingBox.w) {
-          boundingBox.w = project.bounding_box_w;
-        }
+      if (search.bounding_box_n.data > boundingBox.n) {
+        boundingBox.n = search.bounding_box_n.data;
+      }
+      if (search.bounding_box_e.data > boundingBox.e) {
+        boundingBox.e = search.bounding_box_e.data;
+      }
+      if (search.bounding_box_s.data < boundingBox.s) {
+        boundingBox.s = search.bounding_box_s.data;
+      }
+      if (search.bounding_box_w.data < boundingBox.w) {
+        boundingBox.w = search.bounding_box_w.data;
       }
       totalSamples += project.disease_samples;
       posSamples += project.disease_positive;
