@@ -676,7 +676,7 @@ doDeepSearch = function(results, namedMap) {
       $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
       args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-        var coordArray, error1, len3, len4, m, o, p, row, rows, tableResults;
+        var coordArray, e, error1, error2, error3, len3, len4, m, o, p, row, rows, tableResults;
         console.info("Detailed results: ", result);
         try {
           results = Object.toArray(result.parsed_responses);
@@ -697,7 +697,34 @@ doDeepSearch = function(results, namedMap) {
           zoom = getMapZoom(coordArray, ".map-container");
           mapCenter = getMapCenter(coordArray);
           console.info("Recalculate data zoom = " + zoom + " center", mapCenter, "for points array", coordArray);
-        } catch (error1) {
+          try {
+            if (geo.lMap != null) {
+              geo.lMap.once("zoomend", (function(_this) {
+                return function() {
+                  console.info("ZoomEnd is ensuring centering");
+                  return ensureCenter(0);
+                };
+              })(this));
+              geo.lMap.setZoom(zoom);
+            }
+            try {
+              p$("#global-data-map").latitude = mapCenter.lat;
+              p$("#global-data-map").longitude = mapCenter.lng;
+              p$("#global-data-map").zoom = zoom;
+            } catch (undefined) {}
+            try {
+              geo.lMap.setView(mapCenter.getObj());
+            } catch (error1) {
+              e = error1;
+              console.warn("Failed to recenter map - " + e.message, coordArray);
+              console.warn(e.stack);
+            }
+          } catch (error2) {
+            e = error2;
+            console.warn("Failed to rezoom/recenter map - " + e.message, coordArray);
+            console.warn(e.stack);
+          }
+        } catch (error3) {
           console.warn("Couldn't parse responses from server");
         }
         return false;
