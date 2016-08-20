@@ -3,7 +3,7 @@
 ###
 
 namedMapSource = "adp_generic_heatmap-v16"
-namedMapAdvSource = "adp_specific_heatmap-v12"
+namedMapAdvSource = "adp_specific_heatmap-v13"
 
 
 checkCoordinateSanity = ->
