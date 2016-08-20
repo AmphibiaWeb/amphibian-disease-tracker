@@ -1460,6 +1460,13 @@ $(function() {
   });
   showAllTables();
   checkFileVersion(false, "js/global-search.min.js");
+  $("#show-more-tips").click(function() {
+    var isOpened, text;
+    isOpened = !p$("#more-tips").opened;
+    p$("#more-tips").toggle();
+    text = isOpened ? "Less tips..." : "More tips...";
+    return $("#show-more-tips").text(text);
+  });
   return false;
 });
 

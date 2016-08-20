@@ -183,7 +183,20 @@ $loginStatus = getLoginState();
             <h3 class="col-xs-12">Search &amp; Visualize Records <span class="badge">BETA</span></h3>
             <div class="col-xs-12 col-md-6 col-lg-8">
               <div class="alert alert-info">
-                <strong><span class="glyphicon glyphicon-info-sign"></span> Tip:</strong> Your search will be restricted to the parts of the world viewable in the map. Zoom and pan to restrict your search area, then click "search" to perform your search.
+                <strong><span class="glyphicon glyphicon-info-sign"></span> Tip:</strong> Your search will be restricted to the parts of the world viewable in the map. Zoom and pan to restrict your search area, then click "search" to perform your search. <button class="btn btn-link alert-link" id="show-more-tips">More tips...</button>
+                <iron-collapse id="more-tips">
+                  <ul>
+                    <li>
+                      Search results are public data only if you're logged out
+                    </li>
+                    <li>
+                      If you're logged in, data from projects you have permission to view will also be shown
+                    </li>
+                    <li>
+                      Under "Advanced", you can toggle "Search In Map View" to always search by the numerical bounds entered, rather than merely what is visible.
+                    </li>
+                  </ul>
+                </iron-collapse>
               </div>
               <div class="form-group" id="taxa-input-container">
                 <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>

@@ -1359,4 +1359,9 @@ $ ->
   # Initial load
   showAllTables()
   checkFileVersion false, "js/global-search.min.js"
+  $("#show-more-tips").click ->
+    isOpened = !p$("#more-tips").opened
+    p$("#more-tips").toggle()
+    text = if isOpened then "Less tips..." else "More tips..."
+    $("#show-more-tips").text text
   false
