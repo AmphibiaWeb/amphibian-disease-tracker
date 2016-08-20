@@ -502,7 +502,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -639,6 +639,9 @@ doDeepSearch = function(results, namedMap) {
     }
     try {
       boundingBoxArray = [[boundingBox.n, boundingBox.w], [boundingBox.n, boundingBox.e], [boundingBox.s, boundingBox.e], [boundingBox.s, boundingBox.w]];
+      mapCenter = getMapCenter(boundingBoxArray);
+      zoom = getMapZoom(boundingBoxArray, ".map-container");
+      console.info("Found @ zoom = " + zoom + " center", mapCenter, "for bounding box", boundingBoxArray);
     } catch (undefined) {}
     speciesCount = totalSpecies.length;
     console.info("Projects containing your search returned " + totalSamples + " (" + posSamples + " positive) among " + speciesCount + " species", boundingBox);
@@ -669,7 +672,7 @@ doDeepSearch = function(results, namedMap) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
-        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' " + layer.params.morbidity + " and diseasetested ilike '%" + layer.params.pathogen + "%');";
+        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' " + layer.params.morbidity + " and diseasetested ilike '%" + layer.params.pathogen + "%' and decimallongitude <= " + layer.params.north + " and decimallongitude >= " + layer.params.south + " and decimallatitude <= " + layer.params.east + " and decimallatitude >= " + layer.params.west + ");";
         resultQueryPile += tempQuery;
       }
       $("#post-map-subtitle").text(subText);
