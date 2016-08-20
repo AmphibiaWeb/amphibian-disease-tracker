@@ -1715,6 +1715,7 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
       "collectionid"
       "catalognumber"
       "fieldnumber"
+      "sampleid"
       "diseasetested"
       "diseasestrain"
       "samplemethod"

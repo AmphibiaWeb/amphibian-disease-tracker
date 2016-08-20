@@ -2210,7 +2210,7 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   options = {
     objectAsValues: true,
     downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
-    acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
+    acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "sampleid", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
   };
   try {
     downloadCSVFile(resultArray, options, function() {
@@ -3190,7 +3190,7 @@ getColumnObj = function(forceBase) {
     id: "int",
     collectionID: "varchar",
     catalogNumber: "varchar",
-    fieldNumber: "varchar",
+    sampleId: "varchar",
     diseaseTested: "varchar",
     diseaseStrain: "varchar",
     sampleMethod: "varchar",

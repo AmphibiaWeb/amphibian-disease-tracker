@@ -294,7 +294,7 @@ loadEditor = (projectPreload) ->
                 </div>
                 <div id="append-replace-data-toggle">
                   <span class="toggle-off-label iron-label">Append/Amend Data
-                    <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data, and modify existing ones by fieldNumber"></span>
+                    <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload a dataset, append all rows as additional data, and modify existing ones by sampleId"></span>
                   </span>
                   <paper-toggle-button id="replace-data-toggle" class="material-red" #{toggleChecked}>Replace Data</paper-toggle-button>
                   <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="If you upload data, archive current data and only have new data parsed"></span>
@@ -1540,19 +1540,19 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
           # http://www.biscicol.org/biocode-fims/templates.jsp#
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
           columnDatatype = getColumnObj()
-          # Make a lookup fieldNumber -> obj map
+          # Make a lookup sampleId -> obj map
           try
             lookupMap = new Object()
             for i, row of _adp.cartoRows
-              fieldNumber = row.fieldNumber ? row.fieldnumber
+              sampleId = row.sampleId ? row.sampleid
               try
-                trimmed = fieldNumber.trim()
+                trimmed = sampleId.trim()
               catch
                 continue
               # For field that are "PLC 123", remove the space
               trimmed = trimmed.replace /^([a-zA-Z]+) (\d+)$/mg, "$1$2"
-              fieldNumber = trimmed
-              lookupMap[fieldNumber] = i
+              sampleId = trimmed
+              lookupMap[sampleId] = i
           catch
             console.warn "Couldn't make lookupMap"
           # Construct the SQL query
@@ -1576,13 +1576,13 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
               type: "Point"
               coordinates: new Array()
             iIndex = i + 1
-            fieldNumber = row.fieldNumber
+            sampleId = row.sampleId
             try
-              refRowNum = lookupMap[fieldNumber]
+              refRowNum = lookupMap[sampleId]
             refRow = null
             if refRowNum?
               refRow = _adp.cartoRows[refRowNum]
-            #console.info "For row #{i}, fn #{fieldNumber} = refrownum #{refRowNum}", refRow
+            #console.info "For row #{i}, fn #{sampleId} = refrownum #{refRowNum}", refRow
             colArr = new Array()
             for column, value of row
               # Loop data ....
@@ -1597,7 +1597,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   geoJsonGeom.coordinates[1] = value
                 when "decimalLatitude"
                   geoJsonGeom.coordinates[0] = value
-                when "fieldNumber"
+                when "sampleId"
                   if refRow?
                     continue
               if refRow?
@@ -1641,7 +1641,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   # Don't need to add it again
                     continue
                 else
-                  console.info "Not skipping for", refVal, altRefVal, "on #{row.fieldNumber} @ #{column} = ", value
+                  console.info "Not skipping for", refVal, altRefVal, "on #{row.sampleId} @ #{column} = ", value
               if typeof value is "string"
                 if refRow?
                   valuesArr.push "#{column.toLowerCase()}='#{value}'"
@@ -1673,7 +1673,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
             if valuesArr.length is 0
               continue
             if refRow?
-              sqlWhere = " WHERE fieldnumber='#{fieldNumber}';"
+              sqlWhere = " WHERE sampleid='#{sampleId}';"
               sqlQuery += "UPDATE #{dataTable} SET #{valuesArr.join(", ")} #{sqlWhere}"
             else
               # Add new row
@@ -1792,7 +1792,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 years = new Array()
                 methods = new Array()
                 catalogNumbers = new Array()
-                fieldNumbers = new Array()
+                sampleIds = new Array()
                 dispositions = new Array()
                 sampleMethods = new Array()
                 for row in Object.toArray _adp.cartoRows
@@ -1809,7 +1809,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                   # Get the catalog number list
                   if row.catalogNumber? # Not mandatory
                     catalogNumbers.push row.catalognumber
-                  fieldNumbers.push row.fieldnumber
+                  sampleIds.push row.sampleid
                   # Prepare to calculate the radius
                   rowLat = row.decimallatitude
                   rowLng = row.decimallongitude
@@ -1831,7 +1831,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 _adp.projectData.sampling_months = months.join(",")
                 _adp.projectData.sampling_years = years.join(",")
                 _adp.projectData.sample_catalog_numbers = catalogNumbers.join(",")
-                _adp.projectData.sample_field_numbers = fieldNumbers.join(",")
+                _adp.projectData.sample_field_numbers = sampleIds.join(",")
                 _adp.projectData.sample_methods_used = sampleMethods.join(",")
                 try
                   recalculateAndUpdateHull()
