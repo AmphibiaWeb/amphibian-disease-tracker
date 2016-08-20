@@ -620,11 +620,7 @@ doDeepSearch = function(results, namedMap) {
             specific_epithet: search.sampled_species.species,
             disease_detected: detected,
             morbidity: fatal,
-            pathogen: pathogen,
-            north: boundingBox.n,
-            east: boundingBox.e,
-            west: boundingBox.w,
-            south: boundingBox.s
+            pathogen: pathogen
           }
         };
         layers.push(layer);
@@ -673,7 +669,7 @@ doDeepSearch = function(results, namedMap) {
           named_map: layer
         };
         createRawCartoMap(layerSourceObj);
-        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' and diseasetested ilike '%" + layer.params.pathogen + "%' and decimallatitude between " + layer.params.south + " and " + layer.params.north + " and decimallongitude between " + layer.params.west + " and " + layer.params.east + ");";
+        tempQuery = "select * from " + layer.params.table_name + " where (genus ilike '%" + layer.params.genus + "%' and specificepithet ilike '%" + layer.params.specific_epithet + "%' and diseasedetected ilike '%" + layer.params.disease_detected + "%' and diseasetested ilike '%" + layer.params.pathogen + "%' and decimallatitude between " + boundingBox.s + " and " + boundingBox.n + " and decimallongitude between " + boundingBox.w + " and " + boundingBox.e + ");";
         resultQueryPile += tempQuery;
       }
       $("#post-map-subtitle").text(subText);

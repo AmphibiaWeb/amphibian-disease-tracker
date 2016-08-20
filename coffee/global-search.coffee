@@ -518,10 +518,6 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
             disease_detected: detected
             morbidity: fatal
             pathogen: pathogen
-            north: boundingBox.n
-            east: boundingBox.e
-            west: boundingBox.w
-            south: boundingBox.s
         layers.push layer
         projectTableMap[table] =
           id: project.project_id
@@ -591,7 +587,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         # summary dialog
         # Different tables may have a different col set, so we have to
         # select *
-        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' and diseasetested ilike '%#{layer.params.pathogen }%' and decimallatitude between #{layer.params.south} and #{layer.params.north} and decimallongitude between #{layer.params.west} and #{layer.params.east});"
+        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' and diseasetested ilike '%#{layer.params.pathogen }%' and decimallatitude between #{boundingBox.s} and #{boundingBox.n} and decimallongitude between #{boundingBox.w} and #{boundingBox.e});"
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
