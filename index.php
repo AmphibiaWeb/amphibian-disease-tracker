@@ -295,7 +295,7 @@ $loginStatus = getLoginState();
                 <button class="btn btn-success do-search" data-deep="true" id="do-global-deep-search" data-toggle="tooltip" title="Show only specific samples that match the search criteria"><iron-icon icon="icons:search"></iron-icon> <span class='hidden-xs'>Search In</span> Samples</button>
                 <button class="btn btn-primary do-search" data-deep="false" id="do-global-search" data-toggle="tooltip" title="Show all samples and species from each project containing at least one matching sample"><iron-icon icon="icons:search"></iron-icon> <span class='hidden-xs'>Search In</span> Projects</button>
 
-                <button class="btn btn-warning btn-sm" id="reset-global-map"><iron-icon icon="icons:refresh"></iron-icon> Reset Map View</button>
+                <button class="btn btn-warning btn-sm" id="reset-global-map" data-toggle="tooltip" title="Right-Click to reset the search parameters, too"><iron-icon icon="icons:refresh"></iron-icon> Reset Map View</button>
               </div>
             </div>
           </div>

@@ -1362,6 +1362,14 @@ $ ->
   $("#show-more-tips").click ->
     isOpened = !p$("#more-tips").opened
     p$("#more-tips").toggle()
-    text = if isOpened then "Less tips..." else "More tips..."
+    text = if isOpened then "Fewer tips..." else "More tips..."
     $("#show-more-tips").text text
+  $("#reset-global-map").contextmenu ->
+    resetMap()
+    $("#taxa-input").val ""
+    p$("#use-viewport-bounds").checked = true
+    for radioGroup in $("paper-radio-group")
+      try
+        p$(radioGroup).selectIndex 0
+    false
   false
