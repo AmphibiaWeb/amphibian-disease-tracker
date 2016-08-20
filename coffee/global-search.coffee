@@ -590,7 +590,7 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         # summary dialog
         # Different tables may have a different col set, so we have to
         # select *
-        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' and diseasetested ilike '%#{layer.params.pathogen }%' and decimallatitude between #{layer.params.south} and #{layer.params.north} and decimallongitude <= #{layer.params.west} and #{layer.params.east});"
+        tempQuery = "select * from #{layer.params.table_name } where (genus ilike '%#{layer.params.genus }%' and specificepithet ilike '%#{layer.params.specific_epithet }%' and diseasedetected ilike '%#{layer.params.disease_detected }%' and diseasetested ilike '%#{layer.params.pathogen }%' and decimallatitude between #{layer.params.south} and #{layer.params.north} and decimallongitude between #{layer.params.west} and #{layer.params.east});"
         resultQueryPile += tempQuery
       # Label the subtext
       $("#post-map-subtitle").text subText
