@@ -108,8 +108,7 @@ $loginStatus = getLoginState();
     <script type="text/javascript" src="bower_components/imagelightbox/dist/imagelightbox.min.js"></script>
     <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
 
-    <script type="text/javascript" src="js/c.js"></script>
-    <script type="text/javascript" src="js/global-search.js"></script>
+    <script type="text/javascript" src="js/c.min.js"></script>
 
   </head>
   <body class="container-fluid">
@@ -130,7 +129,6 @@ $loginStatus = getLoginState();
              Logged in as <span class='header-bar-user-name'><?php echo $user;
              ?></span>
            <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
-           <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
       <?php
          } else {
              # TODO replace login icon with glyphicon login icon
@@ -146,7 +144,7 @@ $loginStatus = getLoginState();
 
       <?php
          } ?>
-        <paper-icon-button icon="icons:update" class="click" data-toggle="tooltip" title="News &amp; Updates" data-href="http://updates.amphibiandisease.org" data-placement="bottom"> </paper-icon-button>
+        <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
         <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
         </p>
