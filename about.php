@@ -154,7 +154,9 @@ $loginStatus = getLoginState();
     <main>
       <h1 id="title" class="main-title">About</h1>
       <section id="main-body" class="row">
-        <p>Foo bar about text</p>
+        <div class="text-wrapper col-xs-12">
+          <p>Foo bar about text</p>
+        </div>
       </section>
     </main>
 <?php
