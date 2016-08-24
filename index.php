@@ -108,8 +108,8 @@ $loginStatus = getLoginState();
     <script type="text/javascript" src="bower_components/imagelightbox/dist/imagelightbox.min.js"></script>
     <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
 
-    <script type="text/javascript" src="js/c.js"></script>
-    <script type="text/javascript" src="js/global-search.js"></script>
+    <script type="text/javascript" src="js/c.min.js"></script>
+    <script type="text/javascript" src="js/global-search.min.js"></script>
 
   </head>
   <body class="container-fluid">
