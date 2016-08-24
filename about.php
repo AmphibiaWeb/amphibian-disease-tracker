@@ -155,7 +155,9 @@ $loginStatus = getLoginState();
       <h1 id="title" class="main-title">About</h1>
       <section id="main-body" class="row">
         <div class="text-wrapper col-xs-12">
-          <h1 id="data-use-policy-and-information">Data Use Policy and Information</h1>
+          <h2 id="data-use-policy-and-information">
+            Data Use Policy and Information
+          </h2>
 
           <p>A necessary part of a project that solicits, stores and
           shares data is a clear understanding of the data sharing and
@@ -171,69 +173,72 @@ $loginStatus = getLoginState();
           studies, particularly chytridiomycosis.</p>
 
           <h3 id="data">Data</h3>
-          <p>1) <strong>Contributors and Users</strong> <br/> We refer
-            to individuals who upload datasets and project information
-            as Contributors. We refer to individuals who download or
-            otherwise use data on the portal and the website as
-            Users. We will never share Contributor information that is
-            not public on the site.</p>
+          <ol>
+            <li><strong>Contributors and Users</strong> <br/> We refer
+              to individuals who upload datasets and project information
+              as Contributors. We refer to individuals who download or
+              otherwise use data on the portal and the website as
+              Users. We will never share Contributor information that is
+              not public on the site.</li>
 
-          <p>2) <strong>Ownership of Data</strong> <br/> The Amphibian
-            Disease Portal (http://amphibiandisease.org) is developed
-            and maintained by the AmphibiaWeb Project, Museum of
-            Vertebrate Zoology, University of California, Berkeley. As
-            a non-profit, educational and research entity, this is a
-            public domain database and website that supplies data
-            freely. We offer no guarantees or warranty, implied or
-            explicit, about the completeness or accuracy of data nor
-            its most appropriate use. We provide data for use in
-            research and education only requesting attribution to the
-            Contributor. We appreciate acknowledgement to the
-            Amphibian Disease Portal and AmphibiaWeb.</p>
+            <li><strong>Ownership of Data</strong> <br/> The Amphibian
+              Disease Portal (http://amphibiandisease.org) is developed
+              and maintained by the AmphibiaWeb Project, Museum of
+              Vertebrate Zoology, University of California, Berkeley. As
+              a non-profit, educational and research entity, this is a
+              public domain database and website that supplies data
+              freely. We offer no guarantees or warranty, implied or
+              explicit, about the completeness or accuracy of data nor
+              its most appropriate use. We provide data for use in
+              research and education only requesting attribution to the
+              Contributor. We appreciate acknowledgement to the
+              Amphibian Disease Portal and AmphibiaWeb.</li>
 
-          <p>3) <strong>Accuracy</strong> <br/> To the best of their
-            abilities, Contributors will provide accurate and complete
-            data. The expectation is one of good faith representation
-            of data that you fully own and control to be uploaded to
-            the Amphibian Disease Portal. Geocoordinates for sensitive
-            species or sites may not be purposely obscured. If there
-            are legitimate reasons to protect localities, it is
-            preferred to encumber data, i.e., keep private (see
-            Embargo Policy).</p>
+            <li><strong>Accuracy</strong> <br/> To the best of their
+              abilities, Contributors will provide accurate and complete
+              data. The expectation is one of good faith representation
+              of data that you fully own and control to be uploaded to
+              the Amphibian Disease Portal. Geocoordinates for sensitive
+              species or sites may not be purposely obscured. If there
+              are legitimate reasons to protect localities, it is
+              preferred to encumber data, i.e., keep private (see
+              Embargo Policy).</li>
 
-          <p>4) <strong>Data Licensing</strong> <br/> Contributors upon
-            uploading data to the Portal agrees to these terms and
-            specifically allowing us to assign unique digital object
-            identifiers to projects and datasets under Creative
-            Commons Attribution 3.0
-            (http://creativecommons.org/licenses/by/3.0/)</p>
+            <li><strong>Data Licensing</strong> <br/> Contributors upon
+              uploading data to the Portal agrees to these terms and
+              specifically allowing us to assign unique digital object
+              identifiers to projects and datasets under <a href="https://creativecommons.org/licenses/by/3.0/">Creative
+              Commons Attribution 3.0</a></li>
 
-          <p>5) <strong>Public Availability and Embargo
-            Policy</strong> <br> We recognize that data on some point
-            records may be deemed premature for public use, such as
-            graduate student dissertations or other active research
-            projects. We need to balance that with the intent of the
-            Portal to facilitate collaborations and aggregate data to
-            study disease. Thus, basic information on Projects will be
-            publicly viewable (e.g., Principal Investigator, Contact
-            name, basic abstract, generalized area of interest to be
-            determined by Contributor) and will be accessible on the
-            portal without user registration and be subject to search
-            engine results.  Datasets (point records) associated with
-            projects are private by default until the Contributor
-            chooses to make those data public. Once made public, it
-            may not be revoked. We recommend projects and their
-            datasets be made fully public within 2 years or whenever
-            the datasets are first published (including
-            dissertations). If Contributors have not made their data
-            public within 2 years and have not requested a
-            continuance, we reserve the right to make these data
-            public.</p>
-
+            <li><strong>Public Availability and Embargo
+                Policy</strong> <br/> We recognize that data on some point
+              records may be deemed premature for public use, such as
+              graduate student dissertations or other active research
+              projects. We need to balance that with the intent of the
+              Portal to facilitate collaborations and aggregate data to
+              study disease. Thus, basic information on Projects will be
+              publicly viewable (e.g., Principal Investigator, Contact
+              name, basic abstract, generalized area of interest to be
+              determined by Contributor) and will be accessible on the
+              portal without user registration and be subject to search
+              engine results.  Datasets (point records) associated with
+              projects are private by default until the Contributor
+              chooses to make those data public. Once made public, it
+              may not be revoked. We recommend projects and their
+              datasets be made fully public within 2 years or whenever
+              the datasets are first published (including
+              dissertations). If Contributors have not made their data
+              public within 2 years and have not requested a
+              continuance, we reserve the right to make these data
+              public.</li>
+          </ol>
           <p>Send us feedback and any
           suggestions. <a href="mailto:mkoo@berkeley.edu">Email
           Michelle Koo</a></p>
-
+          <h2> Project License </h2>
+          <p>
+            This project is <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/LICENSE">licensed under the GNU General Public License</a>. The full source code is available at <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker">https://github.com/AmphibiaWeb/amphibian-disease-tracker</a>.
+          </p>
         </div>
       </section>
     </main>

@@ -1239,6 +1239,9 @@ createOverflowMenu = ->
     <paper-item data-function="firstLoadInstructionPrompt" data-args="true" class="click">
       Show Welcome
     </paper-item>
+    <paper-item data-href="https://amphibiandisease.org/about.php" class="click">
+      About
+    </paper-item>
   </paper-menu>
 </paper-menu-button>
   """
