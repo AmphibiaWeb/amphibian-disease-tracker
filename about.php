@@ -239,6 +239,18 @@ $loginStatus = getLoginState();
           <p>
             This project is <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/LICENSE">licensed under the GNU General Public License</a>. The full source code is available at <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker">https://github.com/AmphibiaWeb/amphibian-disease-tracker</a>.
           </p>
+          <h2>
+            Privacy
+          </h2>
+          <p>
+            This site only retains basic information that you provide on registration, and basic session information such as your last login IP address.
+          </p>
+          <p>
+            We do use cookies to manage your authentication and one-time notices.
+          </p>
+          <p>
+            Your password is stored according to best practices, with a <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salted</a> <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">hash</a> stored with 10,000 of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>. Your data is physically located on servers at UC Berkeley.
+          </p>
         </div>
       </section>
     </main>
