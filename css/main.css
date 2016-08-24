@@ -10000,6 +10000,9 @@ paper-dropdown.dropdown {
   /* Override Bootstrap */
   position: absolute;
 }
+paper-menu-button .dropdown-content {
+  max-height: none !important;
+}
 paper-toggle-button {
   margin-left: 1rem;
 }
