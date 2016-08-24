@@ -1393,4 +1393,5 @@ $ ->
       try
         p$(radioGroup).selectIndex 0
     false
+  createOverflowMenu()
   false

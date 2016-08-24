@@ -1490,6 +1490,7 @@ $(function() {
     }
     return false;
   });
+  createOverflowMenu();
   return false;
 });
 
