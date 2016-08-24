@@ -921,7 +921,17 @@ bindClicks = (selector = ".click") ->
           $(this).click ->
             try
               console.log("Executing bound function #{callable}()")
-              window[callable]()
+              try
+                args = null
+                unless isNull $(this).attr "data-args"
+                  args = $(this).attr("data-args").split(",")
+              try
+                if args?
+                  window[callable](args...)
+                else
+                  window[callable]()
+              catch
+                window[callable]()
             catch e
               console.error("'#{callable}()' is a bad function - #{e.message}")
     catch e

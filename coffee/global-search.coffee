@@ -1227,6 +1227,27 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   false
 
 
+createOverflowMenu = ->
+  menu = """
+<paper-menu-button id="header-overflow-menu">
+  <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
+  <paper-menu class="dropdown-content">
+    <paper-item data-href="" class="click">
+      <iron-icon icon="icons:settings-applications"></iron-icon>
+      Account Settings
+    </paper-item>
+    <paper-item data-fn="firstLoadInstructionPrompt" data-args="true" class="click">
+      Show Welcome
+    </paper-item>
+  </paper-menu>  
+</paper-menu-button>
+  """
+  $("#header-overflow-menu").remove()
+  $("header#header-bar .logo-container + p").append menu
+  bindClicks()
+  false
+
+
 firstLoadInstructionPrompt = (force = false) ->
   loadCookie = "#{uri.domain}_firstLoadPrompt"
   try
