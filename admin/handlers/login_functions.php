@@ -1484,7 +1484,7 @@ class UserFunctions extends DBHelper
                 $regMatch = boolstr(preg_match($reg, $email));
                 $response['reg'] = $reg;
                 $response['regMatch'] = $regMatch;
-                # Match                
+                # Match
                 $baseTldMatch = in_array($tld, $this->allowedTLDs);
                 if(!empty($tldTwo)) {
                     $europeTldMatch = in_array($tldTwo, $this->allowedTLDs);
@@ -1522,12 +1522,17 @@ class UserFunctions extends DBHelper
         }
         if(is_array($this->allowedTLDs)) {
             if(sizeof($this->allowedTLDs) > 0) {
+                # Regex substring
+                $imploded = implode("|", $this->allowedTLDs);
+                $matchTlds = str_replace(".","\.", $imploded);
+                $reg = '/[\w.]+@(\w+\.)+('.$matchTlds.')/';
+                $regMatch = boolstr(preg_match($reg, $email));
                 # Match
                 $baseTldMatch = in_array($tld, $this->allowedTLDs);
                 if(!empty($tldTwo)) {
                   $europeTldMatch = in_array($tldTwo, $this->allowedTLDs);
                 } else $europeTldMatch = false;
-                if(!($baseTldMatch || $europeTldMatch)) return false;
+                if(!($baseTldMatch || $europeTldMatch || $regMatch)) return false;
             }
         }
         return true;
