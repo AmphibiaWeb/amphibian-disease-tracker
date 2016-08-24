@@ -565,8 +565,13 @@ paper-dropdown.dropdown {
     position:absolute;
 }
 
-paper-menu-button .dropdown-content {
-  max-height:none !important;
+paper-menu-button {
+    &.paper-menu-button-0 {
+        padding: 0 !important;
+    }
+    .dropdown-content {
+        max-height:none !important;
+    }
 }
 
 paper-toggle-button {
