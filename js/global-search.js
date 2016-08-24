@@ -1333,7 +1333,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
 
 createOverflowMenu = function() {
   var menu;
-  menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    <paper-item data-href=\"\" class=\"click\">\n      <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n      Account Settings\n    </paper-item>\n    <paper-item data-fn=\"firstLoadInstructionPrompt\" data-args=\"true\" class=\"click\">\n      Show Welcome\n    </paper-item>\n  </paper-menu>  \n</paper-menu-button>";
+  menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    <paper-item data-href=\"\" class=\"click\">\n      <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n      Account Settings\n    </paper-item>\n    <paper-item data-fn=\"firstLoadInstructionPrompt\" data-args=\"true\" class=\"click\">\n      Show Welcome\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
   $("#header-overflow-menu").remove();
   $("header#header-bar .logo-container + p").append(menu);
   bindClicks();

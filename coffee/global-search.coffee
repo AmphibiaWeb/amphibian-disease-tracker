@@ -1229,7 +1229,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
 
 createOverflowMenu = ->
   menu = """
-<paper-menu-button id="header-overflow-menu" vertical-align="bottom" horizontal-offset="-15">
+<paper-menu-button id="header-overflow-menu" vertical-align="bottom" horizontal-offset="-15" horizontal-align="right" vertical-offset="30">
   <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
   <paper-menu class="dropdown-content">
     <paper-item data-href="" class="click">
@@ -1239,7 +1239,7 @@ createOverflowMenu = ->
     <paper-item data-fn="firstLoadInstructionPrompt" data-args="true" class="click">
       Show Welcome
     </paper-item>
-  </paper-menu>  
+  </paper-menu>
 </paper-menu-button>
   """
   $("#header-overflow-menu").remove()
