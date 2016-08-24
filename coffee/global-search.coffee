@@ -1232,11 +1232,11 @@ createOverflowMenu = ->
 <paper-menu-button id="header-overflow-menu" vertical-align="bottom" horizontal-offset="-15" horizontal-align="right" vertical-offset="30">
   <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
   <paper-menu class="dropdown-content">
-    <paper-item data-href="" class="click">
+    <paper-item data-href="https://amphibiandisease.org/admin" class="click">
       <iron-icon icon="icons:settings-applications"></iron-icon>
       Account Settings
     </paper-item>
-    <paper-item data-fn="firstLoadInstructionPrompt" data-args="true" class="click">
+    <paper-item data-function="firstLoadInstructionPrompt" data-args="true" class="click">
       Show Welcome
     </paper-item>
   </paper-menu>
