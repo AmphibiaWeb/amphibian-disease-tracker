@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, createTemplateByProject, doDeepSearch, doSearch, firstLoadInstructionPrompt, generateColorByRecency, generateColorByRecency2, getPrettySpecies, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
+var checkCoordinateSanity, createOverflowMenu, createTemplateByProject, doDeepSearch, doSearch, firstLoadInstructionPrompt, generateColorByRecency, generateColorByRecency2, getPrettySpecies, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -1328,6 +1328,15 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     elapsed = Date.now() - startRenderTime;
     return console.info("Generated project result list in " + elapsed + "ms");
   };
+  return false;
+};
+
+createOverflowMenu = function() {
+  var menu;
+  menu = "<paper-menu-button id=\"header-overflow-menu\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    <paper-item data-href=\"\" class=\"click\">\n      <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n      Account Settings\n    </paper-item>\n    <paper-item data-fn=\"firstLoadInstructionPrompt\" data-args=\"true\" class=\"click\">\n      Show Welcome\n    </paper-item>\n  </paper-menu>  \n</paper-menu-button>";
+  $("#header-overflow-menu").remove();
+  $("header#header-bar .logo-container + p").append(menu);
+  bindClicks();
   return false;
 };
 

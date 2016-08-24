@@ -1211,12 +1211,26 @@ bindClicks = function(selector) {
         if (callable != null) {
           $(this).unbind();
           return $(this).click(function() {
-            var error4;
+            var args, error4, error5;
             try {
               console.log("Executing bound function " + callable + "()");
-              return window[callable]();
-            } catch (error4) {
-              e = error4;
+              try {
+                args = null;
+                if (!isNull($(this).attr("data-args"))) {
+                  args = $(this).attr("data-args").split(",");
+                }
+              } catch (undefined) {}
+              try {
+                if (args != null) {
+                  return window[callable].apply(window, args);
+                } else {
+                  return window[callable]();
+                }
+              } catch (error4) {
+                return window[callable]();
+              }
+            } catch (error5) {
+              e = error5;
               return console.error("'" + callable + "()' is a bad function - " + e.message);
             }
           });
