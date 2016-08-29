@@ -249,6 +249,38 @@ $loginStatus = getLoginState();
           <p>
             Your password is stored according to best practices, with a <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salted</a> <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">hash</a> stored with 10,000 of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>. Your data is physically located on servers at UC Berkeley.
           </p>
+          <h2>Disclaimer</h2>
+          <h3>Use of Data</h3>
+          <p>
+            amphibiandisease.org is a public database created for the
+            purpose of education and scientific investigation. These
+            data are not confirmed as official
+            results. amphibiandisease.org does not offer any warranty
+            or representation, expressed or implied, about data
+            accuracy, completeness, or appropriateness for a
+            particular purpose. You assume full responsibility for
+            using amphibiandisease.org data or information presented
+            on its website. You understand and agree that neither
+            amphibiandisease.org nor its Partners are responsible or
+            liable for any claim, loss or damage resulting from the
+            use of amphibiandisease.org website. See the text of the
+            GPL license for more information on warranty and liability
+            disclaimers.
+          </p>
+          <h3>
+          No Regulatory Authority
+          </h3>
+          <p>
+          amphibiandisease.org has no regulatory authority, and
+          submitting data to it does not constitute an official
+          pathogen-reporting record. Inasmuch as all ranaviruses that
+          infect amphibians and Epizootic haematopoietic necrosis
+          virus (a species of Ranavirus that infects fish) are listed
+          as notifiable pathogens by the World Organization for Animal
+          Health (OIE), you must check with the appropriate regulatory
+          agency in your country to determine if the data you submit
+          must be officially reported to your government.
+          </p>
         </div>
       </section>
     </main>
