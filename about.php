@@ -263,8 +263,8 @@ $loginStatus = getLoginState();
             on its website. You understand and agree that neither
             amphibiandisease.org nor its Partners are responsible or
             liable for any claim, loss or damage resulting from the
-            use of amphibiandisease.org website. See the text of the
-            GPL license for more information on warranty and liability
+            use of amphibiandisease.org website. See <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/LICENSE">the text of the
+            GPL license</a> for more information on warranty and liability
             disclaimers.
           </p>
           <h3>
@@ -273,13 +273,7 @@ $loginStatus = getLoginState();
           <p>
           amphibiandisease.org has no regulatory authority, and
           submitting data to it does not constitute an official
-          pathogen-reporting record. Inasmuch as all ranaviruses that
-          infect amphibians and Epizootic haematopoietic necrosis
-          virus (a species of Ranavirus that infects fish) are listed
-          as notifiable pathogens by the World Organization for Animal
-          Health (OIE), you must check with the appropriate regulatory
-          agency in your country to determine if the data you submit
-          must be officially reported to your government.
+          pathogen-reporting record. 
           </p>
         </div>
       </section>
