@@ -1672,9 +1672,12 @@ fetchCitation = (citationQuery, callback) ->
     console.log citation
     if typeof callback is "function"
       try
-        url = j.link[0].URL
+        url = unless isNull(j.URL) then j.URL else j.link[0].URL
+        if url.search("http:") isnt -1
+          # Security
+          url = url.replace(/^(http):\/\/(([a-z0-9]+\.?)+)(.*)$/g, "https://$2$4")
       catch
-        url = "http://dx.doi.og/#{citationQuery}"
+        url = "https://dx.doi.og/#{citationQuery}"
       try
         callback citation, url
       catch e
