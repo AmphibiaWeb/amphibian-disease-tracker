@@ -2160,9 +2160,12 @@ fetchCitation = function(citationQuery, callback) {
     console.log(citation);
     if (typeof callback === "function") {
       try {
-        url = j.link[0].URL;
+        url = !isNull(j.URL) ? j.URL : j.link[0].URL;
+        if (url.search("http:") !== -1) {
+          url = url.replace(/^(http):\/\/(([a-z0-9]+\.?)+)(.*)$/g, "https://$2$4");
+        }
       } catch (error4) {
-        url = "http://dx.doi.og/" + citationQuery;
+        url = "https://dx.doi.og/" + citationQuery;
       }
       try {
         callback(citation, url);
