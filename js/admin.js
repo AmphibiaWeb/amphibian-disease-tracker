@@ -2836,8 +2836,12 @@ showAddUserDialog = function(refAccessList) {
       if (isNull(search)) {
         return $("#user-search-result-container").prop("hidden", "hidden");
       } else {
+        try {
+          $("#search-user").parent().removeClass("has-error");
+          $("#search-user").parent().find(".help-block").remove();
+        } catch (undefined) {}
         return _adp.currentAsyncJqxhr = $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
-          var badge, bonusClass, html, l, len, prefix, users;
+          var badge, bonusClass, helperHtml, html, l, len, prefix, users;
           console.info(result);
           users = Object.toArray(result.result);
           if (users.length > 0) {
@@ -2889,7 +2893,20 @@ showAddUserDialog = function(refAccessList) {
               }
             });
           } else {
-            return $("#user-search-result-container").prop("hidden", "hidden");
+            $("#user-search-result-container").prop("hidden", "hidden");
+            helperHtml = "<span class=\"help-block\">\n  We couldn't find a user matching \"" + search + "\".\n  <button class=\"btn btn-xs btn-default add-listed-user\">\n    Invite Them\n  </button>\n</span>";
+            $("#search-user").after(helperHtml);
+            $("#search-user").parent().addClass("has-error");
+            return $(".add-listed-user").click(function() {
+
+              /*
+               * Perform the invitation
+               * See
+               *
+               * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/181
+               */
+              return foo();
+            });
           }
         }).fail(function(result, status) {
           return console.error(result, status);
