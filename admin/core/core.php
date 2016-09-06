@@ -29,9 +29,18 @@ if(!function_exists("returnAjax")) {
     header('Cache-Control: no-cache, must-revalidate');
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
     header('Content-type: application/json');
+    // try {
+    //     foreach($data as $col=>$val) {
+    //         $clean = deEscape($val);
+    //         if(!empty($clean)) $data[$col] = $clean;
+    //     }
+    // } catch (Exception $e) {
+    // }
     $json = json_encode($data,JSON_FORCE_OBJECT);
     $replace_array = array("&quot;","&#34;");
-    print str_replace($replace_array,"\\\"",$json);
+    $dequoted = str_replace($replace_array,"\\\"",$json);
+    # print $dequoted;
+    print htmlspecialchars_decode(html_entity_decode(urldecode($dequoted)));
     exit();
     }
 }
@@ -345,7 +354,7 @@ if (!function_exists('do_post_request')) {
             }
         }
         return $response;
-    }    
+    }
 }
 
 if (!function_exists('deEscape')) {

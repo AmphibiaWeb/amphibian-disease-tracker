@@ -78,7 +78,19 @@ if (!function_exists('elapsed')) {
 
 # parse_str($_SERVER['QUERY_STRING'],$_POST);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
-
+try {
+$test = decode64($_REQUEST["test"]);
+$test_sanitized = $db->sanitize($test);
+$test_desanitized = deEscape($test_sanitized);
+$testArr = array(
+    "encoded" => $_REQUEST["test"],
+    "decoded" => $test,
+    "written" => $test_sanitized,
+    "read_back" => $test_desanitized,
+);
+} catch (Exception $e) {
+    $testArr = array();
+}
 switch ($do) {
   case 'upload':
       # Set access-control header
@@ -112,6 +124,7 @@ switch ($do) {
         'request' => $_REQUEST,
         'post' => $_POST,
         'get' => $_GET,
+        #"debug" => $testArr,
     ));
 
 }

@@ -71,7 +71,17 @@ if(!function_exists("returnAjax")) {
         if (is_array($billingTokens)) {
             $data['billing_meta'] = $billingTokens;
         }
-        print @json_encode($data, JSON_FORCE_OBJECT);
+        // try {
+        //     foreach($data as $col=>$val) {
+        //         $data[$col] = deEscape($val);
+        //     }
+        // } catch (Exception $e) {
+        // }
+        $json = json_encode($data,JSON_FORCE_OBJECT);
+        $replace_array = array("&quot;","&#34;");
+        $dequoted = str_replace($replace_array,"\\\"",$json);
+        # print $dequoted;
+        print htmlspecialchars_decode(html_entity_decode(urldecode($dequoted)));
         exit();
     }
   }
@@ -197,8 +207,8 @@ function getLoginState($get, $default = false)
         'status' => $loginStatus,
         'defaulted' => $default,
         'login_url' => $login_url,
-        'detail' => $userDetail, 
-        "unrestricted" => $u->meetsRestrictionCriteria(), 
+        'detail' => $userDetail,
+        "unrestricted" => $u->meetsRestrictionCriteria(),
         "has_alternate" => $u->hasAlternateEmail(),
         "email_allowed" => $u->emailIsAllowed(),
         "alternate_allowed" => $u->alternateIsAllowed(),
