@@ -174,9 +174,16 @@ function inviteUser($get) {
             "target" => $destination,
           );
     }
-    # Does the invite target exist as a user?
     # Go through the process
     $u = new UserFunctions($login_status["detail"]["dblink"], 'dblink');
+    # Does the invite target exist as a user?
+    $userExists = $u->isEntry($destination, $u->userColumn);
+    if($userExists !== false) {
+      return array(
+            "status" => false,
+            "error" => "ALREADY_REGISTERED",
+          );
+    }
     require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';
     require_once dirname(__FILE__).'/admin/CONFIG.php';
     global $is_smtp,$mail_host,$mail_user,$mail_password,$is_pop3;
@@ -194,10 +201,11 @@ function inviteUser($get) {
         $mail->isPOP3();
     } # Need to expand this
     $mail->From = $u->getUsername();
-    $mail->FromName = $u->getDomain().' on behalf of '.$u->getName();
+    $mail->FromName = $u->getShortUrl().' on behalf of '.$u->getName();
     $mail->isHTML(true);
     $mail->addAddress($destination);
-    $body = "<h1>You've been invited to join a research project!</h1><p>You've been invited to join ".$u->getDomain()." by ".$u->getName()."(".$u->getUsername().").</p><p>Visit <a href='https://amphibiandisease.org/admin-login.php?q=create'>https://amphibiandisease.org/admin-login.php?q=create</a> to create a new user and get going!</p>";
+    $mail->Subject = "[".$u->getShortUrl()."] Invitation to Collaborate";
+    $body = "<h1>You've been invited to join a research project!</h1><p>You've been invited to join ".$u->getShortUrl()." by ".$u->getName()." (".$u->getUsername().").</p><p>Visit <a href='https://amphibiandisease.org/admin-login.php?q=create'>https://amphibiandisease.org/admin-login.php?q=create</a> to create a new user and get going!</p>";
     $mail->Body = $body;
     $success = $mail->send();
     if($success) {
