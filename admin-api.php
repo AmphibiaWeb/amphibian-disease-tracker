@@ -164,6 +164,18 @@ if ($as_include !== true) {
 }
 
 function inviteUser($get) {
+    # Is the invite target valid?
+    $destination = deEscape($get["invitee"]);
+    if (!preg_match('/^(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/im', $destination)) {
+      return array(
+            "status" => false,
+            "action" => "INVITE_USER",
+            "error" => "INVALID_EMAIL",
+            "target" => $destination,
+          );
+    }
+    # Does the invite target exist as a user?
+    # Go through the process
     $u = new UserFunctions($login_status["detail"]["dblink"], 'dblink');
     require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';
     require_once dirname(__FILE__).'/admin/CONFIG.php';
@@ -184,7 +196,7 @@ function inviteUser($get) {
     $mail->From = $u->getUsername();
     $mail->FromName = $u->getDomain().' on behalf of '.$u->getName();
     $mail->isHTML(true);
-    $mail->addAddress($get["invitee"]);
+    $mail->addAddress($destination);
     $body = "<h1>You've been invited to join a research project!</h1><p>You've been invited to join ".$u->getDomain()." by ".$u->getName()."(".$u->getUsername().").</p><p>Visit <a href='https://amphibiandisease.org/admin-login.php?q=create'>https://amphibiandisease.org/admin-login.php?q=create</a> to create a new user and get going!</p>";
     $mail->Body = $body;
     $success = $mail->send();
@@ -192,14 +204,15 @@ function inviteUser($get) {
         return array(
             "status" => $success,
             "action" => "INVITE_USER",
-            "invited" => $get["invitee"],
+            "invited" => $destination,
         );
     } else {
         return array(
             "status" => $success,
             "action" => "INVITE_USER",
-            "invited" => $get["invitee"],
-            "error" => $mail->ErrorInfo,
+            "invited" => $destination,
+            "error" => "MAIL_SEND_FAIL",
+            "error_detail" => $mail->ErrorInfo,
         );
     }
 }
