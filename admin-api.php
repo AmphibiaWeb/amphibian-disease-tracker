@@ -182,6 +182,8 @@ function inviteUser($get) {
       return array(
             "status" => false,
             "error" => "ALREADY_REGISTERED",
+                "target" => $destination,
+                "action" => "INVITE_USER",
           );
     }
     require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';

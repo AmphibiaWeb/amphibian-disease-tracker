@@ -2838,6 +2838,7 @@ showAddUserDialog = function(refAccessList) {
       } else {
         try {
           $("#search-user").parent().removeClass("has-error");
+          $("#search-user").parent().removeClass("has-success");
           $("#search-user").parent().find(".help-block").remove();
         } catch (undefined) {}
         return _adp.currentAsyncJqxhr = $.post(uri.urlString + "/api.php", "action=search_users&q=" + search, "json").done(function(result) {
@@ -2896,9 +2897,10 @@ showAddUserDialog = function(refAccessList) {
             $("#user-search-result-container").prop("hidden", "hidden");
             try {
               $("#search-user").parent().removeClass("has-error");
+              $("#search-user").parent().removeClass("has-success");
               $("#search-user").parent().find(".help-block").remove();
             } catch (undefined) {}
-            button = /^(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/im.test(search) ? "<button class=\"btn btn-xs btn-default add-listed-user\"> Invite Them </button> " : "Finish the email address and we can invite them.";
+            button = /^(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/im.test(search) ? "<button class=\"btn btn-xs btn-primary add-listed-user\"> Invite Them </button> " : "Finish the email address and we can invite them.";
             helperHtml = "<span class=\"help-block\">\n  We couldn't find a user matching \"" + search + "\".\n  " + button + "\n</span>";
             $("#search-user").after(helperHtml);
             $("#search-user").parent().addClass("has-error");
@@ -2910,7 +2912,37 @@ showAddUserDialog = function(refAccessList) {
                *
                * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/181
                */
-              return foo();
+              var args;
+              startLoad();
+              args = "action=invite&invitee=" + search;
+              $.post(uri.urlString + "/admin-api.php", args, "json").done(function(result) {
+                var niceError;
+                if (result.status !== true) {
+                  niceError = (function() {
+                    switch (result.error) {
+                      case "INVALID_EMAIL":
+                        return result.target + " isn't a valid email";
+                      case "ALREADY_REGISTERED":
+                        return result.target + " already has an account";
+                      default:
+                        console.error(result);
+                        return "There was a problem sending the email";
+                    }
+                  })();
+                  stopLoadError(niceError);
+                }
+                toastStatusMessage("Invitation sent");
+                try {
+                  $("#search-user").parent().removeClass("has-error");
+                  $("#search-user").parent().addClass("has-success");
+                  $("#search-user").parent().find(".help-block").text("Invitation Sent to " + result.invited);
+                  $("#search-user").val("");
+                } catch (undefined) {}
+                return stopLoad();
+              }).fail(function() {
+                return stopLoadError("Failed to contact the server");
+              });
+              return false;
             });
           }
         }).fail(function(result, status) {

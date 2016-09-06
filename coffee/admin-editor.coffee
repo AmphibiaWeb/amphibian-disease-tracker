@@ -746,6 +746,7 @@ showAddUserDialog = (refAccessList) ->
       else
         try
           $("#search-user").parent().removeClass "has-error"
+          $("#search-user").parent().removeClass "has-success"
           $("#search-user").parent().find(".help-block").remove()
         _adp.currentAsyncJqxhr = $.post "#{uri.urlString}/api.php", "action=search_users&q=#{search}", "json"
         .done (result) ->
@@ -805,6 +806,7 @@ showAddUserDialog = (refAccessList) ->
             $("#user-search-result-container").prop "hidden", "hidden"
             try
               $("#search-user").parent().removeClass "has-error"
+              $("#search-user").parent().removeClass "has-success"
               $("#search-user").parent().find(".help-block").remove()
             # Email regex from
             # http://emailregex.com/
@@ -825,7 +827,30 @@ showAddUserDialog = (refAccessList) ->
               #
               # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/181
               ###
-              foo()
+              startLoad()
+              args = "action=invite&invitee=#{search}"
+              $.post "#{uri.urlString}/admin-api.php", args, "json"
+              .done (result) ->
+                if result.status isnt true
+                  niceError = switch result.error
+                    when "INVALID_EMAIL"
+                      "#{result.target} isn't a valid email"
+                    when "ALREADY_REGISTERED"
+                      "#{result.target} already has an account"
+                    else
+                      console.error result
+                      "There was a problem sending the email"
+                  stopLoadError niceError
+                toastStatusMessage "Invitation sent"
+                try
+                  $("#search-user").parent().removeClass "has-error"
+                  $("#search-user").parent().addClass "has-success"
+                  $("#search-user").parent().find(".help-block").text "Invitation Sent to #{result.invited}"
+                  $("#search-user").val("")
+                stopLoad()
+              .fail ->
+                stopLoadError "Failed to contact the server"
+              false
         .fail (result, status) ->
           console.error result, status
     searchHelper.debounce()
