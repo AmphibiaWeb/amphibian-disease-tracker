@@ -155,8 +155,52 @@ if ($as_include !== true) {
     case 'advanced_project_search':
         returnAjax(advancedSearchProject($_REQUEST));
         break;
+    case "invite":
+        returnAjax(inviteUser($_REQUEST));
+        break;
     default:
         returnAjax(getLoginState($_REQUEST, true));
+    }
+}
+
+function inviteUser($get) {
+    $u = new UserFunctions($login_status["detail"]["dblink"], 'dblink');
+    require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';
+    require_once dirname(__FILE__).'/admin/CONFIG.php';
+    global $is_smtp,$mail_host,$mail_user,$mail_password,$is_pop3;
+    $mail = new PHPMailer();
+    if ($is_smtp) {
+        $mail->isSMTP();
+        $mail->SMTPAuth = true;
+        $mail->Host = $mail_host;
+        $mail->Username = $mail_user;
+        $mail->Password = $mail_password;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+    }
+    if ($is_pop3) {
+        $mail->isPOP3();
+    } # Need to expand this
+    $mail->From = $u->getUsername();
+    $mail->FromName = $u->getDomain().' on behalf of '.$u->getName();
+    $mail->isHTML(true);
+    $mail->addAddress($get["invitee"]);
+    $body = "<h1>You've been invited to join a research project!</h1><p>You've been invited to join ".$u->getDomain()." by ".$u->getName()."(".$u->getUsername().").</p><p>Visit <a href='https://amphibiandisease.org/admin-login.php?q=create'>https://amphibiandisease.org/admin-login.php?q=create</a> to create a new user and get going!</p>";
+    $mail->Body = $body;
+    $success = $mail->send();
+    if($success) {
+        return array(
+            "status" => $success,
+            "action" => "INVITE_USER",
+            "invited" => $get["invitee"],
+        );
+    } else {
+        return array(
+            "status" => $success,
+            "action" => "INVITE_USER",
+            "invited" => $get["invitee"],
+            "error" => $mail->ErrorInfo,
+        );
     }
 }
 
