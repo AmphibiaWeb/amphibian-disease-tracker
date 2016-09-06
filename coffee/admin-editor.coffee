@@ -744,6 +744,9 @@ showAddUserDialog = (refAccessList) ->
       if isNull search
         $("#user-search-result-container").prop "hidden", "hidden"
       else
+        try
+          $("#search-user").parent().removeClass "has-error"
+          $("#search-user").parent().find(".help-block").remove()
         _adp.currentAsyncJqxhr = $.post "#{uri.urlString}/api.php", "action=search_users&q=#{search}", "json"
         .done (result) ->
           console.info result
@@ -800,6 +803,24 @@ showAddUserDialog = (refAccessList) ->
                 return false
           else
             $("#user-search-result-container").prop "hidden", "hidden"
+            helperHtml = """
+            <span class="help-block">
+              We couldn't find a user matching "#{search}".
+              <button class="btn btn-xs btn-default add-listed-user">
+                Invite Them
+              </button>
+            </span>
+            """
+            $("#search-user").after helperHtml
+            $("#search-user").parent().addClass "has-error"
+            $(".add-listed-user").click ->
+              ###
+              # Perform the invitation
+              # See
+              #
+              # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/181
+              ###
+              foo()
         .fail (result, status) ->
           console.error result, status
     searchHelper.debounce()
@@ -1911,7 +1932,7 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
   _adp.projectPreModBackup = _adp.projectData
   try
     localStorage.projectPreModBackup = JSON.stringify _adp.projectData
-  _adp.canonicalHull = createConvexHull points, true  
+  _adp.canonicalHull = createConvexHull points, true
   if isNull _adp.canonicalHull
     return false
   simpleHull = new Array()
