@@ -2663,7 +2663,7 @@ loadEditor = (projectPreload) ->
           return false
       .fail (result, status) ->
         console.error "AJAX failure: Error from server", result, status
-        stopLoadError "We couldn't load your project. Please try again."        
+        stopLoadError "We couldn't load your project. Please try again."
         loadEditor()
     false
 
@@ -2711,12 +2711,28 @@ loadEditor = (projectPreload) ->
             viewOnlyList.push projectId
         console.info "Didn't display read-only projects", viewOnlyList
         unless hasEditableProjects
+
           html = """
-          <p class="text-muted">
+          <p class="text-muted col-xs-12" id="no-edits-available">
             Sorry, you have no projects you're eligible to edit.
           </p>
           """
           $("#project-list").before html
+          try
+            verifyLoginCredentials (result) ->
+              rawSu = toInt result.detail.userdata.su_flag
+              if rawSu.toBool()
+                console.info "NOTICE: This is an SUPERUSER Admin"
+                html = """
+                <button class="btn btn-xs btn-primary" id="su-view-projects">
+                  <iron-icon icon="icons:supervisor-account"></iron-icon>
+                   <iron-icon icon="icons:add"></iron-icon>
+                  (SU) Administrate All Projects
+                </button>
+                """
+                $("#no-edits-available").append html
+                $("#su-view-projects").click ->
+                  loadSUProjectBrowser()
         $("#project-list button")
         .unbind()
         .click ->
