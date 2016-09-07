@@ -2609,6 +2609,7 @@ loadEditor = function(projectPreload) {
           return false;
         }
       }).fail(function(result, status) {
+        console.error("AJAX failure: Error from server", result, status);
         stopLoadError("We couldn't load your project. Please try again.");
         return loadEditor();
       });
@@ -4408,7 +4409,7 @@ validateFimsData = function(dataObject, callback) {
   if (typeof (typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.fims) != null ? (ref1 = ref.expedition) != null ? ref1.expeditionId : void 0 : void 0 : void 0) !== "number") {
     if (_adp.hasRunMintCallback === true) {
       console.error("Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. ");
-      stopLoadBarsError(null, "Couldn't validate your data, please try again later");
+      stopLoadBarsError(null, "Couldn't generate an ARK for your data, please try again later (the FIMS server is down)");
       _adp.hasRunMintCallback = false;
       return false;
     }

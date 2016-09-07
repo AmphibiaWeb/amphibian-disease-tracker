@@ -482,7 +482,8 @@ loadEditor = (projectPreload) ->
           loadEditor()
           return false
       .fail (result, status) ->
-        stopLoadError "We couldn't load your project. Please try again."
+        console.error "AJAX failure: Error from server", result, status
+        stopLoadError "We couldn't load your project. Please try again."        
         loadEditor()
     false
 

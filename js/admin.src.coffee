@@ -2662,7 +2662,8 @@ loadEditor = (projectPreload) ->
           loadEditor()
           return false
       .fail (result, status) ->
-        stopLoadError "We couldn't load your project. Please try again."
+        console.error "AJAX failure: Error from server", result, status
+        stopLoadError "We couldn't load your project. Please try again."        
         loadEditor()
     false
 
@@ -4442,7 +4443,7 @@ validateFimsData = (dataObject, callback = null) ->
   unless typeof _adp?.fims?.expedition?.expeditionId is "number"
     if _adp.hasRunMintCallback is true
       console.error "Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. "
-      stopLoadBarsError null, "Couldn't validate your data, please try again later"
+      stopLoadBarsError null, "Couldn't generate an ARK for your data, please try again later (the FIMS server is down)"
       _adp.hasRunMintCallback = false
       return false
     _adp.hasRunMintCallback = false
