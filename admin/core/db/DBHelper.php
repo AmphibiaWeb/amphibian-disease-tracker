@@ -275,7 +275,7 @@ class DBHelper
             $output = self::mysql_escape_mimic($input);
         }
 
-        return $output;
+        return htmlspecialchars_decode(html_entity_decode($output));
     }
 
     public function openDB()
