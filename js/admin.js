@@ -2633,13 +2633,14 @@ loadEditor = function(projectPreload) {
       startLoad();
       args = "perform=list";
       return $.get(adminParams.apiTarget, args, "json").done(function(result) {
-        var accessIcon, authoredList, editableList, html, icon, projectId, projectTitle, publicList, ref, viewOnlyList;
+        var accessIcon, authoredList, editableList, hasEditableProjects, html, icon, projectId, projectTitle, publicList, ref, viewOnlyList;
         html = "<h2 class=\"new-title col-xs-12\">Editable Projects</h2>\n<ul id=\"project-list\" class=\"col-xs-12 col-md-6\">\n</ul>";
         $("#main-body").html(html);
         publicList = Object.toArray(result.public_projects);
         authoredList = Object.toArray(result.authored_projects);
         editableList = Object.toArray(result.editable_projects);
         viewOnlyList = new Array();
+        hasEditableProjects = false;
         ref = result.projects;
         for (projectId in ref) {
           projectTitle = ref[projectId];
@@ -2648,11 +2649,16 @@ loadEditor = function(projectPreload) {
           if (indexOf.call(editableList, projectId) >= 0) {
             html = "<li>\n  <button class=\"btn btn-primary\" data-project=\"" + projectId + "\">\n    " + accessIcon + " " + projectTitle + " / #" + (projectId.substring(0, 8)) + "\n  </button>\n  " + icon + "\n</li>";
             $("#project-list").append(html);
+            hasEditableProjects = true;
           } else {
             viewOnlyList.push(projectId);
           }
         }
         console.info("Didn't display read-only projects", viewOnlyList);
+        if (!hasEditableProjects) {
+          html = "<p class=\"text-muted\">\n  Sorry, you have no projects you're eligible to edit.\n</p>";
+          $("#project-list").before(html);
+        }
         $("#project-list button").unbind().click(function() {
           var project;
           project = $(this).attr("data-project");

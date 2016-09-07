@@ -38,10 +38,13 @@ if(!function_exists("returnAjax")) {
     // }
     $json = json_encode($data,JSON_FORCE_OBJECT);
     $replace_array = array("&quot;","&#34;");
-    $deescaped = htmlspecialchars_decode(html_entity_decode($json));
-    $dequoted = str_replace($replace_array,"\\\"",$deescaped);
-    print $deescaped;
-    #print $dequoted;
+    #$deescaped = htmlspecialchars_decode(html_entity_decode($json));
+    #$dequoted = str_replace($replace_array,"\\\"",$deescaped);
+    $dequoted_bare = str_replace($replace_array,"\\\"",$json);
+    $de2 = htmlspecialchars_decode(html_entity_decode($dequoted_bare));
+    #print $deescaped;
+    # print $dequoted_bare;
+    print $de2;
     #print htmlspecialchars_decode(html_entity_decode(urldecode($json)));
     exit();
     }
