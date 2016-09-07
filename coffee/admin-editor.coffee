@@ -512,6 +512,7 @@ loadEditor = (projectPreload) ->
         authoredList = Object.toArray result.authored_projects
         editableList = Object.toArray result.editable_projects
         viewOnlyList = new Array()
+        hasEditableProjects = false
         for projectId, projectTitle of result.projects
           accessIcon = if projectId in publicList then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
           icon = if projectId in authoredList then """<iron-icon icon="social:person" data-toggle="tooltip" title="Author"></iron-icon>""" else """<iron-icon icon="social:group" data-toggle="tooltip" title="Collaborator"></iron-icon>"""
@@ -525,9 +526,17 @@ loadEditor = (projectPreload) ->
             </li>
             """
             $("#project-list").append html
+            hasEditableProjects = true
           else
             viewOnlyList.push projectId
         console.info "Didn't display read-only projects", viewOnlyList
+        unless hasEditableProjects
+          html = """
+          <p class="text-muted">
+            Sorry, you have no projects you're eligible to edit.
+          </p>
+          """
+          $("#project-list").before html
         $("#project-list button")
         .unbind()
         .click ->
