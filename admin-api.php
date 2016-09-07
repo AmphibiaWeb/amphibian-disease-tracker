@@ -180,10 +180,10 @@ function inviteUser($get) {
     $userExists = $u->isEntry($destination, $u->userColumn);
     if($userExists !== false) {
       return array(
-            "status" => false,
-            "error" => "ALREADY_REGISTERED",
-                "target" => $destination,
-                "action" => "INVITE_USER",
+          "status" => false,
+              "error" => "ALREADY_REGISTERED",
+              "target" => $destination,
+              "action" => "INVITE_USER",
           );
     }
     require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';

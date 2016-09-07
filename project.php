@@ -274,6 +274,12 @@ $loginStatus = getLoginState();
              $search = array('project_id' => $pid);
              $result = $db->getQueryResults($search, '*', 'AND', false, true);
              $project = $result[0];
+             foreach($project as $attr=>$data) {
+                 $decoded = htmlspecialchars_decode(html_entity_decode($data));
+                 if(!empty($decoded)) {
+                     $project[$attr] = $decoded;
+                 }
+             }
              ?>
       <h1 id="title">
         <?php echo $project['project_title'];
@@ -293,7 +299,17 @@ $loginStatus = getLoginState();
               'author_data',
               'locality',
           );
-    $list = $db->getQueryResults($search, $cols, 'AND', true, true);
+    # See
+    # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/178
+    $orderBy = array(
+        "date" => "sampled_collection_end",
+        "affliation" => "", # in author_data
+        "lab" => "pi_lab",
+        "contact" => "author", # not really contact ...
+    );
+    if(empty($orderKey)) $orderKey = "date";
+    $orderColumn = $orderBy[$orderKey];
+    $list = $db->getQueryResults($search, $cols, 'AND', true, true, $orderColumn);
     $html = '';
     $i = 0;
     $count = sizeof($list);
@@ -326,7 +342,7 @@ $loginStatus = getLoginState();
             }
             $authorData = json_decode($project['author_data'], true);
             $icon = boolstr($project['public']) ? '<iron-icon icon="social:public"></iron-icon>' : '<iron-icon icon="icons:lock"></iron-icon>';
-            $shortProjectTitle = $project['project_title'];
+            $shortProjectTitle = htmlspecialchars_decode(html_entity_decode($project['project_title']));
             $tooltipTitle = "Project #".substr($project['project_id'], 0, 8)."...";
             if ( strlen($shortProjectTitle) > 43 ) {
                 $shortProjectTitle = substr($shortProjectTitle, 0, 40) . "...";
@@ -353,6 +369,7 @@ $loginStatus = getLoginState();
           # https://getbootstrap.com/components/#pagination
           $olderDisabled = $page > 1 ? '' : 'disabled';
     $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
+    $sortText = "by ";
     ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
