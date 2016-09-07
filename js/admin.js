@@ -2656,8 +2656,22 @@ loadEditor = function(projectPreload) {
         }
         console.info("Didn't display read-only projects", viewOnlyList);
         if (!hasEditableProjects) {
-          html = "<p class=\"text-muted\">\n  Sorry, you have no projects you're eligible to edit.\n</p>";
+          html = "<p class=\"text-muted col-xs-12\" id=\"no-edits-available\">\n  Sorry, you have no projects you're eligible to edit.\n</p>";
           $("#project-list").before(html);
+          try {
+            verifyLoginCredentials(function(result) {
+              var rawSu;
+              rawSu = toInt(result.detail.userdata.su_flag);
+              if (rawSu.toBool()) {
+                console.info("NOTICE: This is an SUPERUSER Admin");
+                html = "<button class=\"btn btn-xs btn-primary\" id=\"su-view-projects\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:add\"></iron-icon>\n  (SU) Administrate All Projects\n</button>";
+                $("#no-edits-available").append(html);
+                return $("#su-view-projects").click(function() {
+                  return loadSUProjectBrowser();
+                });
+              }
+            });
+          } catch (undefined) {}
         }
         $("#project-list button").unbind().click(function() {
           var project;
