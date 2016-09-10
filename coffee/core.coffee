@@ -824,20 +824,29 @@ goTo = (url) ->
 
 mapNewWindows = (stopPropagation = true) ->
   # Do new windows
-  $(".newwindow").each ->
-    # Add a click and keypress listener to
-    # open links with this class in a new window
-    curHref = $(this).attr("href")
-    if not curHref?
-      # Support non-standard elements
-      curHref = $(this).attr("data-href")
-    $(this).click (e) ->
-      if stopPropagation
-        e.preventDefault()
-        e.stopPropagation()
-      openTab(curHref)
-    $(this).keypress ->
-      openTab(curHref)
+  useSelectors = [
+    ".newwindow"
+    ".newWindow"
+    ".new-window"
+    "[newwindow]"
+    "[new-window]"
+    ]
+  for selector in useSelectors
+    $(selector).each ->
+      # Add a click and keypress listener to
+      # open links with this class in a new window
+      curHref = $(this).attr("href")
+      if not curHref?
+        # Support non-standard elements
+        curHref = $(this).attr("data-href")
+      $(this).click (e) ->
+        if stopPropagation
+          e.preventDefault()
+          e.stopPropagation()
+        openTab(curHref)
+      $(this).keypress ->
+        openTab(curHref)
+  false
 
 deepJQuery = (selector) ->
   ###
@@ -846,6 +855,8 @@ deepJQuery = (selector) ->
   # Cross-browser, works with Chrome, Firefox, Opera, Safari, and IE
   # Falls back to standard jQuery selector when everything fails.
   ###
+  if not jQuery?
+    console.warn "Danger -- jQuery isn't defined. Selectors may fail."
   try
     # Chrome uses /deep/ which has been deprecated
     # See http://dev.w3.org/csswg/css-scoping/#deep-combinator
@@ -864,8 +875,9 @@ deepJQuery = (selector) ->
         throw("Bad >>> selector")
       return $("html >>> #{selector}")
     catch e
-      # These don't match at all -- do the normal jQuery selector
-      return $(selector)
+      # These don't match at all -- try p$ wrapped in jQuery (for the
+      # expected return type)
+      return $(p$(selector))
 
 d$ = (selector) ->
   deepJQuery(selector)
