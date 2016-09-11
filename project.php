@@ -305,9 +305,13 @@ $loginStatus = getLoginState();
     # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/178
     $orderBy = array(
         "date" => "sampled_collection_end",
-        "affliation" => "", # in author_data
+        "affliation" => "author_data", # in author_data
         "lab" => "pi_lab",
-        "contact" => "author", # not really contact ...
+        "contact" => "author_data", # in author_data
+    );
+    $authorDataOrderBy = array(
+        "affiliation" => "affiliation",
+        "contact" => "name",
     );
     if(isset($_REQUEST["sort"])) {
         $orderKey = $_REQUEST["sort"];
@@ -374,6 +378,12 @@ $loginStatus = getLoginState();
                 }
                 $arrayKey = $orderData;
             } else {
+                # If we were searching by author_data, we were looking
+                # inside a key
+                if($orderColumn == "author_data") {
+                    $authorDataKey = $authorDataOrderBy[$orderKey];
+                    $orderData = $authorData[$authorDataKey];
+                }
                 # All the other keys may be redundant -- add project
                 # creation
                 $arrayKey = $orderData . $projectCreatedOn;
