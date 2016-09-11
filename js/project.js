@@ -1077,6 +1077,9 @@ $(function() {
   });
   return $("#community-map").on("google-map-ready", function() {
     var badLat, badLng, boundaryPoints, center, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
+    try {
+      fillSorterWithDropdown();
+    } catch (undefined) {}
     map = p$("#community-map");
     if (_adp.aggregateHulls != null) {
       boundaryPoints = new Array();
