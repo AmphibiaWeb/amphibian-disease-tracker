@@ -7,6 +7,50 @@ _adp.zcClient = null
 
 publicData = null
 
+try
+  do createOverflowMenu = ->
+    ###
+    # Create the overflow menu lazily
+    ###
+    checkLoggedIn (result) ->
+      accountSettings = if result.status then """    <paper-item data-href="https://amphibiandisease.org/admin" class="click">
+        <iron-icon icon="icons:settings-applications"></iron-icon>
+        Account Settings
+      </paper-item>
+      <paper-item data-href="https://amphibiandisease.org/admin-login.php?q=logout" class="click">
+        <span class="glyphicon glyphicon-log-out"></span>
+        Log Out
+      </paper-item>
+      """ else ""
+      menu = """
+    <paper-menu-button id="header-overflow-menu" vertical-align="bottom" horizontal-offset="-15" horizontal-align="right" vertical-offset="30">
+      <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
+      <paper-menu class="dropdown-content">
+        #{accountSettings}
+        <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
+          Summary Dashboard
+        </paper-item>
+        <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
+          <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
+          Documentation
+        </paper-item>
+        <paper-item data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" class="click">
+          <iron-icon icon="glyphicon-social:github"></iron-icon>
+          Github
+        </paper-item>
+        <paper-item data-href="https://amphibiandisease.org/about.php" class="click">
+          About / Legal
+        </paper-item>
+      </paper-menu>
+    </paper-menu-button>
+      """
+      $("#header-overflow-menu").remove()
+      $("header#header-bar .logo-container + p").append menu
+      unless isNull accountSettings
+        $("header#header-bar paper-icon-button[icon='icons:settings-aplications]").remove()
+      bindClicks()
+    false
+
 checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
   console.info "Checking authorization for #{projectId}"
