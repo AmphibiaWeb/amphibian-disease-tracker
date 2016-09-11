@@ -1066,7 +1066,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                             'Accept:application/json;text/html;text/*;application/*',
+                             'Accept: application/json;text/html;text/*;application/*',
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1095,7 +1095,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept:application/json;text/html;text/*;application/*\r\n'.
+                 'Accept: application/json;text/html;text/*;application/*\r\n'.
                  'Cookie: '.$cookiesString."\r\n";
         $params['http']['header'] = $headers;
         $params['http']['content'] = http_build_query($fimsMintData);
@@ -1205,7 +1205,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept:application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*',
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1234,7 +1234,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept:application/json;text/html;text/*;application/*\r\n'.
+                 'Accept: application/json;text/html;text/*;application/*\r\n'.
                  'Cookie: '.$cookiesString."\r\n";
         $params['http']['header'] = $headers;
 
@@ -1258,7 +1258,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
                 curl_setopt($ch, CURLOPT_COOKIE, $cookiesString);
                 $httpHeader = array(
                     'Content-type: application/x-www-form-urlencoded',
-                    'Accept:application/json;text/html;text/*;application/*',
+                    'Accept: application/json;text/html;text/*;application/*',
                 );
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
                 curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -1346,7 +1346,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept:application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*',
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1375,7 +1375,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept:application/json;text/html;text/*;application/*\r\n'.
+                 'Accept: application/json;text/html;text/*;application/*\r\n'.
                  'Cookie: '.$cookiesString."\r\n";
         $params['http']['header'] = $headers;
         $params['http']['content'] = http_build_query($fimsMintData);
@@ -1436,7 +1436,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $params = array('http' => array(
                 'method' => 'GET',
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept:application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*',
             ));
             $params['http']['header'] .= "\r\nCookie: ".$cookiesString."\r\n";
             $ctx = stream_context_create($params);
@@ -1512,7 +1512,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept:application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*',
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1542,7 +1542,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         # Post the args
         $headers = array();
         $header[] = 'Content-type: multipart/form-data';
-        $header[] = 'Accept:application/json;text/html;text/*;application/*';
+        $header[] = 'Accept: application/json;text/html;text/*;application/*';
         $params = array(
             'http' => array(
                 'method' => 'POST',
