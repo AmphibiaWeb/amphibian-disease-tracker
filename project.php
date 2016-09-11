@@ -308,8 +308,16 @@ $loginStatus = getLoginState();
         "lab" => "pi_lab",
         "contact" => "author", # not really contact ...
     );
+    if(isset($_REQUEST["sort"])) {
+        $orderKey = $_REQUEST["sort"];
+        if(!array_key_exists($orderKey, $orderBy)) {
+            # Invalid order key
+            $orderKey = null;
+        }
+    }
     if(empty($orderKey)) $orderKey = "date";
     $orderColumn = $orderBy[$orderKey];
+    $cols[] = $orderColumn;
     $list = $db->getQueryResults($search, $cols, 'AND', true, true, $orderColumn);
     $html = '';
     $i = 0;
@@ -331,7 +339,7 @@ $loginStatus = getLoginState();
             #  || empty($project['locality'])
             #
             # but removed to address #163
-            if (empty($project['project_id'])) { 
+            if (empty($project['project_id'])) {
                 continue;
             }
             if ($i < $skip) {
@@ -351,7 +359,8 @@ $loginStatus = getLoginState();
             }
             $affilEncode = htmlspecialchars($authorData["affiliation"]);
             $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
+            $orderData = $project[$orderColumn];
+            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
             $html .= '<li>'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
