@@ -51,6 +51,52 @@ try
       bindClicks()
     false
 
+fillSorterWithDropdown = (selector = ".sort-by-placeholder-text") ->
+  ###
+  # Replace .sort-by-placeholder-text with a dropdown for the various
+  # sort options.
+  #
+  # This should also have a corresponding list in ../project.php
+  ###
+  sortOptions = [
+    date:
+      title: "sampling date"
+      key: "date"
+    affiliation:
+      title: "affiliation"
+      key: "affiliation"
+    lab:
+      title: "PI lab"
+      key: "lab"
+    contact:
+      title: "PI contact"
+      key: "contact"
+    ]
+  matchKey = $(selector).attr "data-order-key"
+  dropdownHtml = ""
+  i = 0
+  selectedIndex = 0
+  for k, data of sortOptions
+    if data.key is matchKey
+      selectedIndex = i
+    ++i
+    dropdownHtml += """
+    <paper-item data-sort-key="#{data.key}">#{data.title}</paper-item>
+    """
+  html = """
+  <paper-dropdown-menu label="Sort Options" id="sort-options">
+    <paper-listbox class="dropdown-content" selected="#{selectedIndex}">
+      #{dropdownHtml}
+    </paper-listbox>
+  </paper-dropdown-menu>
+  """
+  $(selector).replaceWith html
+  $("#sort-options").on "iron-select", ->
+    selected = p$(this).selectedItem
+    sortKey = $(selected).attr "data-sort-key"
+    console.debug "Selected '#{sortKey}'"
+  false
+
 checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->
   startLoad()
   console.info "Checking authorization for #{projectId}"

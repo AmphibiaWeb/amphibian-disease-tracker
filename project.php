@@ -62,6 +62,10 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html"/>
     <link rel="import" href="bower_components/paper-card/paper-card.html"/>
 
+    <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html"/>
+    <link rel="import" href="bower_components/paper-listbox/paper-listbox.html"/>
+
+
     <link rel="import" href="bower_components/paper-dialog/paper-dialog.html"/>
     <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html"/>
     <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html"/>
@@ -303,6 +307,8 @@ $loginStatus = getLoginState();
           );
     # See
     # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/178
+    #
+    # This block should also have a corresponding list updated in ./coffee/project.coffee
     $orderBy = array(
         "date" => "sampled_collection_end",
         "affliation" => "author_data", # in author_data
@@ -409,7 +415,7 @@ $loginStatus = getLoginState();
           $olderDisabled = $page > 1 ? '' : 'disabled';
     $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
     $oByText = $orderKey == "date" ? "sampling date" : $orderKey;
-    $sortText = "$count, ordered by ".$oByText;
+    $sortText = "$count, ordered by <span class='sort-by-placeholder-text' data-order-key='$orderKey'>".$oByText."</span>";
     ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
