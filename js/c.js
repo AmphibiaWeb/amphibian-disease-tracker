@@ -1100,26 +1100,32 @@ goTo = function(url) {
 };
 
 mapNewWindows = function(stopPropagation) {
+  var len, m, selector, useSelectors;
   if (stopPropagation == null) {
     stopPropagation = true;
   }
-  return $(".newwindow").each(function() {
-    var curHref;
-    curHref = $(this).attr("href");
-    if (curHref == null) {
-      curHref = $(this).attr("data-href");
-    }
-    $(this).click(function(e) {
-      if (stopPropagation) {
-        e.preventDefault();
-        e.stopPropagation();
+  useSelectors = [".newwindow", ".newWindow", ".new-window", "[newwindow]", "[new-window]"];
+  for (m = 0, len = useSelectors.length; m < len; m++) {
+    selector = useSelectors[m];
+    $(selector).each(function() {
+      var curHref;
+      curHref = $(this).attr("href");
+      if (curHref == null) {
+        curHref = $(this).attr("data-href");
       }
-      return openTab(curHref);
+      $(this).click(function(e) {
+        if (stopPropagation) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        return openTab(curHref);
+      });
+      return $(this).keypress(function() {
+        return openTab(curHref);
+      });
     });
-    return $(this).keypress(function() {
-      return openTab(curHref);
-    });
-  });
+  }
+  return false;
 };
 
 deepJQuery = function(selector) {
@@ -1131,6 +1137,9 @@ deepJQuery = function(selector) {
    * Falls back to standard jQuery selector when everything fails.
    */
   var error2, error3;
+  if (typeof jQuery === "undefined" || jQuery === null) {
+    console.warn("Danger -- jQuery isn't defined. Selectors may fail.");
+  }
   try {
     if (!$("html /deep/ " + selector).exists()) {
       throw "Bad /deep/ selector";
@@ -1145,7 +1154,7 @@ deepJQuery = function(selector) {
       return $("html >>> " + selector);
     } catch (error3) {
       e = error3;
-      return $(selector);
+      return $(p$(selector));
     }
   }
 };
@@ -4563,7 +4572,11 @@ $(function() {
 
 
 /*
+ * Debug log helper.
+ * Assumes Bootstrap styles/js are included (as well as a bunch of my
+ * standard stuff)
  *
+ * Displayed elements are from the Polymer project
  */
 
 enableDebugLogging = function() {
@@ -4571,7 +4584,7 @@ enableDebugLogging = function() {
   /*
    * Overwrite console logs with custom events
    */
-  var error2, html, logHistory;
+  var css, error2, html, logHistory;
   if (window.debugLoggingEnabled) {
     return false;
   }
@@ -4592,6 +4605,18 @@ enableDebugLogging = function() {
   window.sysInfo = console.info;
   window.sysWarn = console.warn;
   window.sysError = console.error;
+  window.sysDebug = console.debug;
+  console.debug = function() {
+    var args, messageObject;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    messageObject = {
+      callType: "debug",
+      "arguments": args
+    };
+    _debug.push(messageObject);
+    sysDebug.apply(console, arguments);
+    return backupDebugLog(true);
+  };
   console.log = function() {
     var args, messageObject;
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
@@ -4647,6 +4672,8 @@ enableDebugLogging = function() {
   $("#debug-reporter").remove();
   html = "<paper-fab id=\"debug-reporter\" icon=\"icons:send\" data-toggle=\"tooltip\" title=\"Send Debug Report\" elevation=\"5\">\n</paper-fab>";
   $("body").append(html);
+  css = "<style type=\"text/css\">\n  #debug-reporter {\n    background: #F44336;\n    color: #fff!important;\n    position: fixed;\n    right: 1rem;\n    bottom: 1rem;\n    cursor: pointer;\n  }\n</style>";
+  $("#debug-reporter").before(css);
   $("#debug-reporter").click(function() {
     return reportDebugLog();
   });
@@ -4654,6 +4681,7 @@ enableDebugLogging = function() {
   try {
     p$(".debug-enable-context").disabled = true;
   } catch (undefined) {}
+  backupDebugLog();
   return false;
 };
 
@@ -4662,6 +4690,10 @@ backupDebugLog = function(suppressMessage) {
   if (suppressMessage == null) {
     suppressMessage = false;
   }
+
+  /*
+   * Saves the debug log to local storage
+   */
   if ((typeof localStorage !== "undefined" && localStorage !== null) && (window._debug != null)) {
     if (!suppressMessage) {
       console.info("Saving backup of debug log");
@@ -4680,6 +4712,10 @@ backupDebugLog = function(suppressMessage) {
 window.enableDebugLogging = enableDebugLogging;
 
 disableDebugLogging = function() {
+
+  /*
+   * Disable debug logging and replace bindings for system calls.
+   */
   if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
     delete localStorage.debugLog;
     delete _debug;
@@ -4689,6 +4725,7 @@ disableDebugLogging = function() {
     console.info = sysInfo;
     console.warn = sysWarn;
     console.error = sysError;
+    console.debug = sysDebug;
   }
   $("#debug-reporter").remove();
   window.debugLoggingEnabled = false;
@@ -4701,25 +4738,428 @@ disableDebugLogging = function() {
 window.disableDebugLogging = disableDebugLogging;
 
 reportDebugLog = function() {
-  var html;
+
+  /*
+   * Render the modal dialog to enable sending reports
+   */
+  var e1, e2, e3, e4, error2, error3, error4, error5, error6, getModalContents, html, visibleTestTime;
   if (window._debug != null) {
     backupDebugLog();
     console.info("Opening debug reporter");
-    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p>Copy the text below</p>\n      <textarea readonly rows=\"10\" class=\"form-control\">\n        " + localStorage.debugLog + "\n      </textarea>\n      <br/><br/>\n      <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
+    getModalContents = function() {
+      var modalContents;
+      modalContents = "<div>\n  <p>Copy the text below</p>\n  <textarea readonly rows=\"10\" class=\"form-control\">\n    " + localStorage.debugLog + "\n  </textarea>\n  <br/><br/>\n  <p>And email it to <a href=\"mailto:support@velociraptorsystems.com?subject=Debug%20Log\">support@velociraptorsystems.com</a></p>\n</div>";
+      return modalContents;
+    };
+    html = "<paper-dialog modal id=\"report-bug-modal\">\n  <h2>Bug Report</h2>\n  <paper-dialog-scrollable>\n    " + (getModalContents()) + "\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog-modal>";
     $("#report-bug-modal").remove();
     $("body").append(html);
-    safariDialogHelper("#report-bug-modal");
+    try {
+      safariDialogHelper("#report-bug-modal");
+    } catch (error2) {
+      e = error2;
+      console.warn("Warning -- couldn't use safariDialogHelper to open. Some browsers may have an issue seeing this alert. (" + e.message + ")");
+      console.debug(e.stack);
+      try {
+        try {
+          p$("#report-bug-modal").open();
+        } catch (error3) {
+          e1 = error3;
+          console.warn("Couldn't use p$ to show modal, trying direct ... (" + e1.message + ")");
+          document.querySelector("#report-bug-modal").open();
+        }
+        visibleTestTime = 3000;
+        delay(visibleTestTime, function() {
+          var errObj;
+          if (!$("#report-bug-modal").isVisible()) {
+            errObj = function() {
+              this.message = "Modal failed visibility test at " + visibleTestTime + "ms";
+              return this.name = "InvisibleModalError";
+            };
+            throw errObj;
+          }
+        });
+      } catch (error4) {
+        e2 = error4;
+        console.error("Unable to show bug report modal! " + e2.message);
+        console.warn(e2.stack);
+        try {
+          bsAlert(getModalContents());
+        } catch (error5) {
+          e3 = error5;
+          console.error("Couldn't show fallback bsAlert! " + e3.message);
+          console.warn(e3.stack);
+          try {
+            startLoad();
+            stopLoadError("Unable to show bug report modal!");
+          } catch (error6) {
+            e4 = error6;
+            console.error("Couldn't alert user to the problem! " + e4.message);
+            console.warn(e3.stack);
+          }
+        }
+      }
+    }
   }
   return false;
 };
 
 window.reportDebugLog = reportDebugLog;
 
+
+/*
+ * This file should be modular. Set up helper functions.
+ *
+ * This should NEVER overwrite the real versions, so we'll do these
+ * checks on a delay (except the delay helper)
+ */
+
+if (typeof delay !== "function") {
+  delay = function(ms, f) {
+    return setTimeout(f, ms);
+  };
+}
+
+delay(100, function() {
+  var ref, ref1;
+  if (typeof (typeof jQuery !== "undefined" && jQuery !== null ? (ref = jQuery.fn) != null ? ref.isVisible : void 0 : void 0) !== "function") {
+    jQuery.fn.isVisible = function() {
+      return jQuery(this).is(":visible") && jQuery(this).css("visibility") !== "hidden";
+    };
+  }
+  if (typeof (typeof jQuery !== "undefined" && jQuery !== null ? (ref1 = jQuery.fn) != null ? ref1.exists : void 0 : void 0) !== "function") {
+    jQuery.fn.exists = function() {
+      return jQuery(this).length > 0;
+    };
+  }
+  if (typeof p$ !== "function") {
+    p$ = function(selector) {
+      var error2;
+      try {
+        return $$(selector)[0];
+      } catch (error2) {
+        return $(selector).get(0);
+      }
+    };
+  }
+  if (typeof isNull !== "function") {
+    isEmpty = function(str) {
+      return !str || str.length === 0;
+    };
+    isBlank = function(str) {
+      return !str || /^\s*$/.test(str);
+    };
+    isNull = function(str, dirty) {
+      var error2, l;
+      if (dirty == null) {
+        dirty = false;
+      }
+      if (typeof str === "object") {
+        try {
+          l = str.length;
+          if (l != null) {
+            try {
+              return l === 0;
+            } catch (undefined) {}
+          }
+          return Object.size === 0;
+        } catch (undefined) {}
+      }
+      try {
+        if (isEmpty(str) || isBlank(str) || (str == null)) {
+          if (!(str === false || str === 0)) {
+            return true;
+          }
+          if (dirty) {
+            if (str === false || str === 0) {
+              return true;
+            }
+          }
+        }
+      } catch (error2) {
+        e = error2;
+        return false;
+      }
+      try {
+        str = str.toString().toLowerCase();
+      } catch (undefined) {}
+      if (str === "undefined" || str === "null") {
+        return true;
+      }
+      if (dirty && (str === "false" || str === "0")) {
+        return true;
+      }
+      return false;
+    };
+  }
+  if (typeof bsAlert !== "function") {
+    bsAlert = function(message, type, fallbackContainer, selector) {
+      var css, html, topContainer;
+      if (type == null) {
+        type = "warning";
+      }
+      if (fallbackContainer == null) {
+        fallbackContainer = "body";
+      }
+      if (selector == null) {
+        selector = "#bs-alert";
+      }
+
+      /*
+       * Pop up a status message
+       * Uses the Bootstrap alert dialog
+       *
+       * See
+       * http://getbootstrap.com/components/#alerts
+       * for available types
+       */
+      if (!$(selector).exists()) {
+        html = "<div class=\"alert alert-" + type + " alert-dismissable hanging-alert\" role=\"alert\" id=\"" + (selector.slice(1)) + "\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n    <div class=\"alert-message\"></div>\n</div>";
+        topContainer = $("main").exists() ? "main" : $("article").exists() ? "article" : fallbackContainer;
+        $(topContainer).prepend(html);
+      } else {
+        $(selector).removeClass("alert-warning alert-info alert-danger alert-success");
+        $(selector).addClass("alert-" + type);
+      }
+      $(selector + " .alert-message").html(message);
+      css = "<style type=\"text/css\">\n  .hanging-alert {\n    position: fixed;\n    top: 0;\n    width: 50%;\n    margin: 0;\n    left: 25%;\n    z-index: 5999;\n  }\n</style>";
+      $(selector).before(css);
+      bindClicks();
+      mapNewWindows();
+      return false;
+    };
+    if (typeof openTab !== "function") {
+      openLink = function(url) {
+        if (url == null) {
+          return false;
+        }
+        window.open(url);
+        return false;
+      };
+      openTab = function(url) {
+        return openLink(url);
+      };
+      goTo = function(url) {
+        if (url == null) {
+          return false;
+        }
+        window.location.href = url;
+        return false;
+      };
+    }
+    if (typeof mapNewWindows !== "function") {
+      mapNewWindows = function(stopPropagation) {
+        if (stopPropagation == null) {
+          stopPropagation = true;
+        }
+        return $(".newwindow").each(function() {
+          var curHref;
+          curHref = $(this).attr("href");
+          if (curHref == null) {
+            curHref = $(this).attr("data-href");
+          }
+          $(this).click(function(e) {
+            if (stopPropagation) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            return openTab(curHref);
+          });
+          return $(this).keypress(function() {
+            return openTab(curHref);
+          });
+        });
+      };
+    }
+    if (typeof bindClicks !== "function") {
+      bindClicks = function(selector) {
+        if (selector == null) {
+          selector = ".click";
+        }
+
+        /*
+         * Helper function. Bind everything with a selector
+         * to execute a function data-function or to go to a
+         * URL data-href.
+         */
+        $(selector).each(function() {
+          var callable, error2, error3, error4, newTab, ref2, ref3, ref4, ref5, tagType, url;
+          try {
+            url = (ref2 = $(this).attr("data-href")) != null ? ref2 : $(this).attr("href");
+            if (!isNull(url)) {
+              try {
+                tagType = $(this).prop("tagName").toLowerCase();
+              } catch (error2) {
+                tagType = null;
+              }
+              try {
+                if (url === uri.o.attr("path") && tagType === "paper-tab") {
+                  $(this).parent().prop("selected", $(this).index());
+                }
+              } catch (error3) {
+                e = error3;
+                console.warn("tagname lower case error");
+              }
+              newTab = ((ref3 = $(this).attr("newTab")) != null ? ref3.toBool() : void 0) || ((ref4 = $(this).attr("newtab")) != null ? ref4.toBool() : void 0) || ((ref5 = $(this).attr("data-newtab")) != null ? ref5.toBool() : void 0);
+              if (tagType === "a" && !newTab) {
+                return true;
+              }
+              if (tagType === "a") {
+                $(this).keypress(function() {
+                  return openTab(url);
+                });
+              }
+              $(this).unbind().click(function(e) {
+                var error4;
+                e.preventDefault();
+                e.stopPropagation();
+                try {
+                  if (newTab) {
+                    return openTab(url);
+                  } else {
+                    return goTo(url);
+                  }
+                } catch (error4) {
+                  return goTo(url);
+                }
+              });
+              return url;
+            } else {
+              callable = $(this).attr("data-function");
+              if (callable != null) {
+                $(this).unbind();
+                return $(this).click(function() {
+                  var args, error4, error5;
+                  try {
+                    console.log("Executing bound function " + callable + "()");
+                    try {
+                      args = null;
+                      if (!isNull($(this).attr("data-args"))) {
+                        args = $(this).attr("data-args").split(",");
+                      }
+                    } catch (undefined) {}
+                    try {
+                      if (args != null) {
+                        return window[callable].apply(window, args);
+                      } else {
+                        return window[callable]();
+                      }
+                    } catch (error4) {
+                      return window[callable]();
+                    }
+                  } catch (error5) {
+                    e = error5;
+                    return console.error("'" + callable + "()' is a bad function - " + e.message);
+                  }
+                });
+              }
+            }
+          } catch (error4) {
+            e = error4;
+            return console.error("There was a problem binding to #" + ($(this).attr("id")) + " - " + e.message);
+          }
+        });
+        return false;
+      };
+    }
+  }
+  if (typeof Function.debounce !== "function") {
+    Function.prototype.getName = function() {
+
+      /*
+       * Returns a unique identifier for a function
+       */
+      var name;
+      name = this.name;
+      if (name == null) {
+        name = this.toString().substr(0, this.toString().indexOf("(")).replace("function ", "");
+      }
+      if (isNull(name)) {
+        name = md5(this.toString());
+      }
+      return name;
+    };
+    return Function.prototype.debounce = function() {
+      var args, delayed, error2, execAsap, func, key, ref2, threshold, timeout;
+      threshold = arguments[0], execAsap = arguments[1], timeout = arguments[2], args = 4 <= arguments.length ? slice.call(arguments, 3) : [];
+      if (threshold == null) {
+        threshold = 300;
+      }
+      if (execAsap == null) {
+        execAsap = false;
+      }
+      if (timeout == null) {
+        timeout = window.debounce_timer;
+      }
+
+      /*
+       * Borrowed from http://coffeescriptcookbook.com/chapters/functions/debounce
+       * Only run the prototyped function once per interval.
+       *
+       * @param threshold -> Timeout in ms
+       * @param execAsap -> Do it NAOW
+       * @param timeout -> backup timeout object
+       */
+      if (((ref2 = window.core) != null ? ref2.debouncers : void 0) == null) {
+        if (window.core == null) {
+          window.core = new Object();
+        }
+        core.debouncers = new Object();
+      }
+      try {
+        key = this.getName();
+      } catch (undefined) {}
+      func = this;
+      delayed = function() {
+        if (!execAsap) {
+          return func.apply(func, args);
+        }
+      };
+      try {
+        if (core.debouncers[key] != null) {
+          timeout = core.debouncers[key];
+        }
+      } catch (undefined) {}
+      if (timeout != null) {
+        try {
+          clearTimeout(timeout);
+        } catch (error2) {
+          e = error2;
+        }
+      }
+      if (execAsap) {
+        func.apply(obj, args);
+        console.log("Executed " + key + " immediately");
+        return false;
+      }
+      if (key != null) {
+        return core.debouncers[key] = delay(threshold, function() {
+          return delayed();
+        });
+      } else {
+        return window.debounce_timer = delay(threshold, function() {
+          return delayed();
+        });
+      }
+    };
+  }
+});
+
+window.debugScriptSetup = false;
+
 $(function() {
-  var setupContext;
-  window.debugLoggingEnabled = false;
+  var bootstrapDebugSetup, setupContext;
+  (bootstrapDebugSetup = function() {
+    window.debugScriptSetup = true;
+    if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
+      window.debugLoggingEnabled = true;
+      return enableDebugLogging();
+    } else {
+      return window.debugLoggingEnabled = false;
+    }
+  })();
   (setupContext = function(count) {
-    var ref, waited;
+    var allowedBugReportElements, doShowBugReportContext, error2, html, len, m, preurl, ref, tagType, waited;
     if (!(typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.RenderStatus) != null ? ref._ready : void 0 : void 0)) {
       if (typeof Polymer !== "undefined" && Polymer !== null) {
         if (count > 20) {
@@ -4728,6 +5168,19 @@ $(function() {
           try {
             Polymer.RenderStatus._ready = true;
           } catch (undefined) {}
+        }
+      } else {
+        if (count > 20) {
+          try {
+            console.warn("Inserting Polymer components into DOM");
+            preurl = "https://cdn.rawgit.com/download/polymer-cdn/1.5.0/lib";
+            html = "<script src=\"" + preurl + "/webcomponentsjs/webcomponents-lite.min.js\"></script>\n<link rel=\"import\" href=\"" + preurl + "/polymer/polymer.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-spinner/paper-spinner.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-menu/paper-menu.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-material/paper-material.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-dialog/paper-dialog.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-dialog-scrollable/paper-dialog-scrollable.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-button/paper-button.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-icon-button/paper-icon-button.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-fab/paper-fab.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/paper-item/paper-item.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/iron-icons/iron-icons.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/iron-icons/image-icons.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/iron-icons/social-icons.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/iron-icons/editor-icons.html\"/>\n<link rel=\"import\" href=\"" + preurl + "/neon-animation/neon-animation.html\"/>\n</";
+            $("head").append(html);
+            count = -2;
+          } catch (error2) {
+            e = error2;
+            console.error("Unable to insert Polymer into DOM (" + e.message + ")");
+          }
         }
       }
       console.warn("Delaying context until Polymer.RenderStatus is ready");
@@ -4738,24 +5191,36 @@ $(function() {
       return false;
     }
     console.info("Setting up context events");
-    return $("footer paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
-      var html, inFn, outFn;
+    $("paper-icon-button[icon='icons:bug-report']").contextmenu(function(event) {
+      doShowBugReportContext.debounce(null, null, null, this, event);
+      return false;
+    });
+    allowedBugReportElements = ["paper-button", "button"];
+    for (m = 0, len = allowedBugReportElements.length; m < len; m++) {
+      tagType = allowedBugReportElements[m];
+      $(tagType).find("[icon='icons:bug-report']").parents(tagType).contextmenu(function(event) {
+        doShowBugReportContext.debounce(null, null, null, this, event);
+        return false;
+      });
+    }
+    return doShowBugReportContext = function(clickedElement, event) {
+      var inFn, outFn;
       event.preventDefault();
       console.info("Showing bug report context menu");
       html = "<paper-material class=\"bug-report-context-wrapper\" style=\"top:" + event.pageY + "px;left:" + event.pageX + "px;position:absolute\">\n  <paper-menu class=context-menu\">\n    <paper-item class=\"debug-enable-context\" data-fn=\"enableDebugLogging\">\n      Enable debug reporting\n    </paper-item>\n    <paper-item class=\"debug-disable-context\" data-fn=\"disableDebugLogging\">\n      Disable debug reporting\n    </paper-item>\n  </paper-menu>\n</paper-material>";
       $(".bug-report-context-wrapper").remove();
       $("body").append(html);
       inFn = function(el) {
-        $(this).addClass("iron-selected");
+        $(clickedElement).addClass("iron-selected");
         return false;
       };
       outFn = function(el) {
-        $(this).removeClass("iron-selected");
+        $(clickedElement).removeClass("iron-selected");
         return false;
       };
       $(".bug-report-context-wrapper paper-item").hover(inFn, outFn).click(function() {
         var fn;
-        fn = $(this).attr("data-fn");
+        fn = $(clickedElement).attr("data-fn");
         return false;
       });
       $(".debug-enable-context").click(function() {
@@ -4776,11 +5241,12 @@ $(function() {
       return delay(5000, function() {
         return $(".bug-report-context-wrapper").remove();
       });
-    });
+    };
   })(0);
-  if ((typeof localStorage !== "undefined" && localStorage !== null ? localStorage.debugLog : void 0) != null) {
-    return enableDebugLogging();
-  }
+  return window.setupDebugContext = function() {
+    bootstrapDebugSetup();
+    return setupContext();
+  };
 });
 
 //# sourceMappingURL=maps/c.js.map

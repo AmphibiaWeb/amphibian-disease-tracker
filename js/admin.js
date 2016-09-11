@@ -4429,7 +4429,7 @@ validateFimsData = function(dataObject, callback) {
   if (typeof (typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.fims) != null ? (ref1 = ref.expedition) != null ? ref1.expeditionId : void 0 : void 0 : void 0) !== "number") {
     if (_adp.hasRunMintCallback === true) {
       console.error("Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. ");
-      stopLoadBarsError(null, "Couldn't generate an ARK for your data, please try again later (the FIMS server is down)");
+      stopLoadBarsError(null, "Couldn't generate an ARK for your data, please try again later (couldn't communicate with the FIMS server)");
       _adp.hasRunMintCallback = false;
       return false;
     }
