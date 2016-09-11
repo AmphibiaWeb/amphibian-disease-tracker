@@ -58,7 +58,7 @@ fillSorterWithDropdown = (selector = ".sort-by-placeholder-text") ->
   #
   # This should also have a corresponding list in ../project.php
   ###
-  sortOptions = 
+  sortOptions =
     date:
       title: "sampling date"
       key: "date"
@@ -1038,6 +1038,8 @@ $ ->
     goTo dest
     false
   $("#community-map").on "google-map-ready", ->
+    try
+      fillSorterWithDropdown()
     map = p$("#community-map")
     if _adp.aggregateHulls?
       boundaryPoints = new Array()
