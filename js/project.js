@@ -32,20 +32,17 @@ try {
   })();
 } catch (undefined) {}
 
-fillSorterWithDropdown = function(selector) {
-  var data, dropdownHtml, html, i, k, matchKey, selectedIndex, sortOptions;
-  if (selector == null) {
-    selector = ".sort-by-placeholder-text";
-  }
+try {
+  (fillSorterWithDropdown = function(selector) {
 
-  /*
-   * Replace .sort-by-placeholder-text with a dropdown for the various
-   * sort options.
-   *
-   * This should also have a corresponding list in ../project.php
-   */
-  sortOptions = [
-    {
+    /*
+     * Replace .sort-by-placeholder-text with a dropdown for the various
+     * sort options.
+     *
+     * This should also have a corresponding list in ../project.php
+     */
+    var data, dropdownHtml, html, i, k, matchKey, selectedIndex, sortOptions;
+    sortOptions = {
       date: {
         title: "sampling date",
         key: "date"
@@ -62,30 +59,30 @@ fillSorterWithDropdown = function(selector) {
         title: "PI contact",
         key: "contact"
       }
+    };
+    matchKey = $(selector).attr("data-order-key");
+    dropdownHtml = "";
+    i = 0;
+    selectedIndex = 0;
+    for (k in sortOptions) {
+      data = sortOptions[k];
+      if (data.key === matchKey) {
+        selectedIndex = i;
+      }
+      ++i;
+      dropdownHtml += "<paper-item data-sort-key=\"" + data.key + "\">" + data.title + "</paper-item>";
     }
-  ];
-  matchKey = $(selector).attr("data-order-key");
-  dropdownHtml = "";
-  i = 0;
-  selectedIndex = 0;
-  for (k in sortOptions) {
-    data = sortOptions[k];
-    if (data.key === matchKey) {
-      selectedIndex = i;
-    }
-    ++i;
-    dropdownHtml += "<paper-item data-sort-key=\"" + data.key + "\">" + data.title + "</paper-item>";
-  }
-  html = "<paper-dropdown-menu label=\"Sort Options\" id=\"sort-options\">\n  <paper-listbox class=\"dropdown-content\" selected=\"" + selectedIndex + "\">\n    " + dropdownHtml + "\n  </paper-listbox>\n</paper-dropdown-menu>";
-  $(selector).replaceWith(html);
-  $("#sort-options").on("iron-select", function() {
-    var selected, sortKey;
-    selected = p$(this).selectedItem;
-    sortKey = $(selected).attr("data-sort-key");
-    return console.debug("Selected '" + sortKey + "'");
-  });
-  return false;
-};
+    html = "<paper-dropdown-menu label=\"Sort Options\" id=\"sort-options\">\n  <paper-listbox class=\"dropdown-content\" selected=\"" + selectedIndex + "\">\n    " + dropdownHtml + "\n  </paper-listbox>\n</paper-dropdown-menu>";
+    $(selector).replaceWith(html);
+    $("#sort-options").on("iron-select", function() {
+      var selected, sortKey;
+      selected = p$(this).selectedItem;
+      sortKey = $(selected).attr("data-sort-key");
+      return console.debug("Selected '" + sortKey + "'");
+    });
+    return false;
+  })(".sort-by-placeholder-text");
+} catch (undefined) {}
 
 checkProjectAuthorization = function(projectId, callback) {
   if (projectId == null) {
