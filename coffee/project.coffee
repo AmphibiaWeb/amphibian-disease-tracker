@@ -90,10 +90,15 @@ fillSorterWithDropdown = (selector = ".sort-by-placeholder-text") ->
   </paper-dropdown-menu>
   """
   $(selector).replaceWith html
+  selectCounter = 0
   $("#sort-options").on "iron-select", ->
     selected = p$(this).selectedItem
     sortKey = $(selected).attr "data-sort-key"
     console.debug "Selected '#{sortKey}'"
+    if selectCounter > 0
+      # Load the new sort
+      goTo "https://#{uri.domain}.org/project.php?sort=#{sortKey}"
+    ++selectCounter
   false
 
 checkProjectAuthorization = (projectId = _adp.projectId, callback = postAuthorizeRender) ->

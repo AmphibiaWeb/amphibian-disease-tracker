@@ -33,7 +33,7 @@ try {
 } catch (undefined) {}
 
 fillSorterWithDropdown = function(selector) {
-  var data, dropdownHtml, html, i, k, matchKey, selectedIndex, sortOptions;
+  var data, dropdownHtml, html, i, k, matchKey, selectCounter, selectedIndex, sortOptions;
   if (selector == null) {
     selector = ".sort-by-placeholder-text";
   }
@@ -76,11 +76,16 @@ fillSorterWithDropdown = function(selector) {
   }
   html = "<paper-dropdown-menu label=\"Sort Options\" id=\"sort-options\">\n  <paper-listbox class=\"dropdown-content\" selected=\"" + selectedIndex + "\">\n    " + dropdownHtml + "\n  </paper-listbox>\n</paper-dropdown-menu>";
   $(selector).replaceWith(html);
+  selectCounter = 0;
   $("#sort-options").on("iron-select", function() {
     var selected, sortKey;
     selected = p$(this).selectedItem;
     sortKey = $(selected).attr("data-sort-key");
-    return console.debug("Selected '" + sortKey + "'");
+    console.debug("Selected '" + sortKey + "'");
+    if (selectCounter > 0) {
+      goTo("https://" + uri.domain + ".org/project.php?sort=" + sortKey);
+    }
+    return ++selectCounter;
   });
   return false;
 };
