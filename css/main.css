@@ -9874,6 +9874,10 @@ header#header-bar {
 header#header-bar paper-button {
   font-size: 60%;
 }
+header#header-bar paper-menu paper-item iron-icon,
+header#header-bar paper-menu paper-item span.glyphicon {
+  margin-right: 0.5rem;
+}
 header#header-bar .header-bar-user-name {
   cursor: pointer;
 }
