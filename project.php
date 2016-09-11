@@ -299,6 +299,7 @@ $loginStatus = getLoginState();
               'public',
               'author_data',
               'locality',
+              "sampled_collection_end"
           );
     # See
     # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/178
@@ -317,7 +318,9 @@ $loginStatus = getLoginState();
     }
     if(empty($orderKey)) $orderKey = "date";
     $orderColumn = $orderBy[$orderKey];
-    $cols[] = $orderColumn;
+    if(!array_find($orderColumn, $cols, false, true)) {
+        $cols[] = $orderColumn;
+    }
     $list = $db->getQueryResults($search, $cols, 'AND', true, true, $orderColumn);
     $html = '';
     $i = 0;
@@ -334,6 +337,7 @@ $loginStatus = getLoginState();
     if ($skip > $count) {
         $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
     } else {
+        $htmlList = array();
         foreach ($list as $k => $project) {
             # This check also used to check for empty localities:
             #  || empty($project['locality'])
@@ -360,8 +364,22 @@ $loginStatus = getLoginState();
             $affilEncode = htmlspecialchars($authorData["affiliation"]);
             $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
             $orderData = $project[$orderColumn];
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
-            $html .= '<li>'.$projectHtml."</li>\n";
+            $projectCreatedOn = floatval($authorData["entry_date"]);
+            if($orderKey == "date") {
+                if(empty($orderData)) {
+                    # No data for the project -- sort by project creation
+                    $orderData = $projectCreatedOn;
+                } else {
+                    $orderData = floatval($orderData);
+                }
+                $arrayKey = $orderData;
+            } else {
+                # All the other keys may be redundant -- add project
+                # creation
+                $arrayKey = $orderData . $projectCreatedOn;
+            }
+            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
+            $html[$arrayKey] = '<li>'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
             $count = $i;
@@ -370,7 +388,8 @@ $loginStatus = getLoginState();
         if ($skip > 0) {
             $max = $skip.' &$8212; '.$max;
         }
-        $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">'.$html.'        </ul>';
+        ksort($htmlList);
+        $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">'.implode("\n",$htmlList).'        </ul>';
     }
           # Build the paginator
           $pages = intval($count / $originalMax);
