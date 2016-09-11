@@ -408,13 +408,14 @@ $loginStatus = getLoginState();
           # https://getbootstrap.com/components/#pagination
           $olderDisabled = $page > 1 ? '' : 'disabled';
     $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
-    $sortText = "by ";
+    $oByText = $orderKey == "date" ? "sampling date" : $orderKey;
+    $sortText = "$count, ordered by ".$oByText;
     ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
         </div>
         <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max;
-    ?> newest projects <small class="text-muted">of <?php echo $count;
+    ?> newest projects <small class="text-muted">of <?php echo $sortText;
     ?></small></h2>
 
           <?php echo $html;
