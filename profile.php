@@ -102,6 +102,7 @@ $isCollaborator = false;
     <link rel="import" href="bower_components/paper-spinner/paper-spinner.html"/>
     <link rel="import" href="bower_components/paper-slider/paper-slider.html"/>
     <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
+    <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html"/>
     <link rel="import" href="bower_components/paper-card/paper-card.html"/>
 
     <link rel="import" href="bower_components/paper-dialog/paper-dialog.html"/>
