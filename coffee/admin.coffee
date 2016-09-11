@@ -191,7 +191,7 @@ try
       $("#header-overflow-menu").remove()
       $("header#header-bar .logo-container + p").append menu
       unless isNull accountSettings
-        $("header#header-bar paper-icon-button[icon='icons:settings-aplications]").remove()
+        $("header#header-bar paper-icon-button[icon='icons:settings-applications']").remove()
       bindClicks()
     false
 

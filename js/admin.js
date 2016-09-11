@@ -160,7 +160,7 @@ try {
       $("#header-overflow-menu").remove();
       $("header#header-bar .logo-container + p").append(menu);
       if (!isNull(accountSettings)) {
-        $("header#header-bar paper-icon-button[icon='icons:settings-aplications]").remove();
+        $("header#header-bar paper-icon-button[icon='icons:settings-applications']").remove();
       }
       return bindClicks();
     });
