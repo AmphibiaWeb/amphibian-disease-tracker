@@ -389,7 +389,7 @@ $loginStatus = getLoginState();
                 $arrayKey = $orderData . $projectCreatedOn;
             }
             $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
-            $html[$arrayKey] = '<li>'.$projectHtml."</li>\n";
+            $htmlList[$arrayKey] = '<li>'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
             $count = $i;
