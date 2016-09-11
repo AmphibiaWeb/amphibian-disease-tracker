@@ -1082,7 +1082,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             }
             $loginResponse = json_decode($rawResponse, true);
             if (empty($loginResponse['url'])) {
-                throw(new Exception('Invalid Login Response'));
+                throw(new Exception('Invalid Login Response E001'));
             }
         } else {
             $loginResponse = 'NO_LOGIN_CREDENTIALS_PROVIDED';
@@ -1221,7 +1221,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             }
             $loginResponse = json_decode($rawResponse, true);
             if (empty($loginResponse['url'])) {
-                throw(new Exception('Invalid Login Response'));
+                throw(new Exception('Invalid Login Response E002'));
             }
         } else {
             $loginResponse = 'NO_LOGIN_CREDENTIALS_PROVIDED';
@@ -1362,7 +1362,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             }
             $loginResponse = json_decode($rawResponse, true);
             if (empty($loginResponse['url'])) {
-                throw(new Exception('Invalid Login Response'));
+                throw(new Exception('Invalid Login Response E003'));
             }
         } else {
             $loginResponse = 'NO_LOGIN_CREDENTIALS_PROVIDED';
@@ -1528,7 +1528,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             }
             $loginResponse = json_decode($rawResponse, true);
             if (empty($loginResponse['url'])) {
-                throw(new Exception('Invalid Login Response'));
+                throw(new Exception('Invalid Login Response E004'));
             }
         } else {
             $loginResponse = 'NO_LOGIN_CREDENTIALS_PROVIDED';

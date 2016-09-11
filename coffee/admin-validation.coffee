@@ -92,7 +92,7 @@ validateFimsData = (dataObject, callback = null) ->
   unless typeof _adp?.fims?.expedition?.expeditionId is "number"
     if _adp.hasRunMintCallback is true
       console.error "Couldn't run validateFimsData(); called itself back recursively. There may be a problem with the server. "
-      stopLoadBarsError null, "Couldn't generate an ARK for your data, please try again later (the FIMS server is down)"
+      stopLoadBarsError null, "Couldn't generate an ARK for your data, please try again later (couldn't communicate with the FIMS server)"
       _adp.hasRunMintCallback = false
       return false
     _adp.hasRunMintCallback = false
