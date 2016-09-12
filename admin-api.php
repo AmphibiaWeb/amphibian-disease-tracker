@@ -1070,6 +1070,9 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            if($rawResponse === false) {
+                throw(new Exception("Fatal FIMS communication error 001 (No Response)"));
+            }
             $loginHeaders = $http_response_header;
             $cookies = array();
             $cookiesString = '';
@@ -1101,6 +1104,9 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
+        if($rawResponse === false) {
+            throw(new Exception("Fatal FIMS communication error 002 (No Response)"));
+        }
         $resp = json_decode($rawResponse, true);
         # Get the ID in the result
         /***
@@ -1209,6 +1215,9 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            if($rawResponse === false) {
+                throw(new Exception("Fatal FIMS communication error 003 (No Response)"));
+            }
             $loginHeaders = $http_response_header;
             $cookies = array();
             $cookiesString = '';
@@ -1246,6 +1255,9 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $params['http']['content'] = http_build_query($tempAssociationData);
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
+            if($rawResponse === false) {
+                throw(new Exception("Fatal FIMS communication error 004 (No Response)"));
+            }
             $resp = json_decode($rawResponse, true);
             $associateResponses[] = $resp;
             if (empty($resp)) {
@@ -1350,6 +1362,9 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            if($rawResponse === false) {
+                throw(new Exception("Fatal FIMS communication error 005 (No Response)"));
+            }
             $loginHeaders = $http_response_header;
             $cookies = array();
             $cookiesString = '';
@@ -1381,6 +1396,9 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
+        if($rawResponse === false) {
+            throw(new Exception("Fatal FIMS communication error 006 (No Response)"));
+        }
         $resp = json_decode($rawResponse, true);
         # Get the ID in the result
         /***
@@ -1441,6 +1459,9 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $params['http']['header'] .= "\r\nCookie: ".$cookiesString."\r\n";
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsStatusUrl, false, $ctx);
+            if($rawResponse === false) {
+                throw(new Exception("Fatal FIMS communication error 007 (No Response)"));
+            }
             $rawResponse2 = file_get_contents($fimsContinueUrl, false, $ctx);
             $resp = json_decode($rawResponse, true);
             $resp2 = json_decode($rawResponse2, true);
@@ -1516,6 +1537,9 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            if($rawResponse === false) {
+                throw(new Exception("Fatal FIMS communication error 008 (No Response)"));
+            }
             $loginHeaders = $http_response_header;
             $cookies = array();
             $cookiesString = '';
