@@ -38,6 +38,12 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
       window._adp = new Object()
     window._adp.templateReady = new Object()
     window._adp.templates = new Object()
+  if typeof table is "object"
+    pid = table.project
+    table = table.table
+    doAsObject = true
+  else
+    doAsObject = false
   templateId = "infowindow_template_#{table.slice(0,63)}"
   if $("##{templateId}").exists()
     if typeof callback is "function"
@@ -45,11 +51,11 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
     return false
   window._adp.templateReady[table] = false
   query = "SELECT cartodb_id FROM #{table} LIMIT 1"
-  args = "action=fetch&sql_query=#{post64(query)}"  
-  createInfoWindow = (projectId) ->
+  args = "action=fetch&sql_query=#{post64(query)}"
+  createInfoWindow = (projectId, scriptTemplateId, tableName) ->
     detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>"""
     html = """
-        <script type="infowindow/html" id="#{templateId}">
+        <script type="infowindow/html" id="#{scriptTemplateId}">
           <div class="cartodb-popup v2">
             <a href="#close" class="cartodb-popup-close-button close">x</a>
             <div class="cartodb-popup-content-wrapper">
@@ -69,25 +75,23 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
         </script>
     """
     $("head").append html
-    window._adp.templates[table] = html
-    window._adp.templates[table.slice(0,63)] = html
-    window._adp.templateReady[table] = true
+    window._adp.templates[tableName] = html
+    window._adp.templates[tableName.slice(0,63)] = html
+    window._adp.templateReady[tableName] = true
     elapsed = Date.now() - start
-    console.info "Template set for ##{templateId} (took #{elapsed}ms)"
+    console.info "Template set for ##{scriptTemplateId} (took #{elapsed}ms)"
     if typeof callback is "function"
       callback()
     false
-  if typeof table is "object"
+  if doAsObject
     console.info "Directly provided project id"
-    pid = table.project
-    table = table.table
-    createInfoWindow pid
+    createInfoWindow pid, templateId, table
     return false
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
     projectId = result.parsed_responses?[0]?.project_id
     unless isNull projectId
-      createInfoWindow projectId
+      createInfoWindow projectId, templateId, table
     else
       console.warn "Couldn't find project ID for table #{table}", result
   false
