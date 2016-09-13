@@ -31,7 +31,7 @@ checkCoordinateSanity = ->
 
 
 
-createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5", callback) ->
+createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5", callback, limited = false) ->
   start = Date.now()
   unless window._adp?.templateReady?
     unless window._adp?
@@ -50,6 +50,7 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
   .done (result) ->
     projectId = result.parsed_responses?[0]?.project_id
     unless isNull projectId
+      detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>"""
       html = """
           <script type="infowindow/html" id="#{templateId}">
             <div class="cartodb-popup v2">
@@ -62,7 +63,7 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
                   <!-- content.data contains the field info -->
                   <h4>Species: </h4>
                   <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
-                  <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>
+                  #{detail}
                   <p><a href="https://amphibiandisease.org/project.php?id=#{projectId}">View Project</a></p>
                 </div>
               </div>
@@ -774,6 +775,8 @@ showAllTables = ->
       unless isNull table
         # Create named map layers
         table = table.unescape()
+        try
+          createTemplateByProject table, null, true
         validTables.push table
         # TODO Calculate a color based on recency ...
         layer =
