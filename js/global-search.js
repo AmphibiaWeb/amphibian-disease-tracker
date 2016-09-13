@@ -48,7 +48,7 @@ createTemplateByProject = function(table, callback) {
     }
     window._adp.templateReady = new Object();
   }
-  templateId = "infowindow_template_" + table;
+  templateId = "infowindow_template_" + (table.slice(0, 63));
   if ($("#" + templateId).exists()) {
     if (typeof callback === "function") {
       callback();
