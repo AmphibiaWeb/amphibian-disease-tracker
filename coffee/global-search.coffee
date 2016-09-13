@@ -37,6 +37,7 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
     unless window._adp?
       window._adp = new Object()
     window._adp.templateReady = new Object()
+    window._adp.templates = new Object()
   templateId = "infowindow_template_#{table.slice(0,63)}"
   if $("##{templateId}").exists()
     if typeof callback is "function"
@@ -70,6 +71,8 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
           </script>
       """
       $("body").append html
+      window._adp.templates[table] = html
+      window._adp.templates[table.slice(0,63)] = html
       window._adp.templateReady[table] = true
       elapsed = Date.now() - start
       console.info "Template set for ##{templateId} (took #{elapsed}ms)"

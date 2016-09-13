@@ -47,6 +47,7 @@ createTemplateByProject = function(table, callback) {
       window._adp = new Object();
     }
     window._adp.templateReady = new Object();
+    window._adp.templates = new Object();
   }
   templateId = "infowindow_template_" + (table.slice(0, 63));
   if ($("#" + templateId).exists()) {
@@ -64,6 +65,8 @@ createTemplateByProject = function(table, callback) {
     if (!isNull(projectId)) {
       html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + projectId + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
       $("body").append(html);
+      window._adp.templates[table] = html;
+      window._adp.templates[table.slice(0, 63)] = html;
       window._adp.templateReady[table] = true;
       elapsed = Date.now() - start;
       console.info("Template set for #" + templateId + " (took " + elapsed + "ms)");
