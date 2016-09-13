@@ -313,6 +313,9 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
         # Create named map layers
         try
           createTemplateByProject table
+        catch e
+          console.error "Warning: couldn't create project template: #{e.message}"
+          console.warn e.stack
         layer =
           name: namedMap
           type: "namedmap"
