@@ -2493,9 +2493,18 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
         shortTable = params.named_map.params.table_name.slice 0, 63
         setTemplate = (sublayerToSet, tableName, count = 0) ->
           selector = "#infowindow_template_#{tableName}"
-          if $(selector).exists()
-            sublayerToSet.infowindow.set "template", $(selector).html()
-            console.info "Successfully assigned template #{selector} to sublayer"
+          template = window._adp.templates?[tableName] ? $(selector).html()
+          if isNull template
+            template = $(selector).html()
+            if isNull template
+              console.warn "Warning: null template", template
+          unless isNull template
+            sublayerToSet.infowindow.set "template", template
+            console.info "Successfully assigned template #{selector} to sublayer #{i}"
+            if i is 0
+              try
+                layer.infowindow.set "template", template
+                console.info "Successfully assigned template to primary layer", template
           else
             if count < 100
               delay 200, ->

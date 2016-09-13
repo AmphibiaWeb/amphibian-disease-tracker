@@ -3037,14 +3037,27 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       try {
         shortTable = params.named_map.params.table_name.slice(0, 63);
         setTemplate = function(sublayerToSet, tableName, count) {
-          var selector;
+          var ref2, ref3, selector, template;
           if (count == null) {
             count = 0;
           }
           selector = "#infowindow_template_" + tableName;
-          if ($(selector).exists()) {
-            sublayerToSet.infowindow.set("template", $(selector).html());
-            return console.info("Successfully assigned template " + selector + " to sublayer");
+          template = (ref2 = (ref3 = window._adp.templates) != null ? ref3[tableName] : void 0) != null ? ref2 : $(selector).html();
+          if (isNull(template)) {
+            template = $(selector).html();
+            if (isNull(template)) {
+              console.warn("Warning: null template", template);
+            }
+          }
+          if (!isNull(template)) {
+            sublayerToSet.infowindow.set("template", template);
+            console.info("Successfully assigned template " + selector + " to sublayer " + i);
+            if (i === 0) {
+              try {
+                layer.infowindow.set("template", template);
+                return console.info("Successfully assigned template to primary layer", template);
+              } catch (undefined) {}
+            }
           } else {
             if (count < 100) {
               return delay(200, function() {
