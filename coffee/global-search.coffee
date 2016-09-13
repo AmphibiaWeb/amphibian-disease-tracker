@@ -43,11 +43,12 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
       callback()
     return false
   window._adp.templateReady[table] = false
-  query = "SELECT cartodb_id FROM #{table}"
+  query = "SELECT cartodb_id FROM #{table} LIMIT 1"
   args = "action=fetch&sql_query=#{post64(query)}"
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
-    unless isNull result.project_id
+    projectId = result.parsed_responses?[0]?.project_id
+    unless isNull projectId
       html = """
           <script type="infowindow/html" id="#{templateId}">
             <div class="cartodb-popup v2">
@@ -61,7 +62,7 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
                   <h4>Species: </h4>
                   <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
                   <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>
-                  <p><a href="https://amphibiandisease.org/project.php?id=#{result.project_id}">View Project</a></p>
+                  <p><a href="https://amphibiandisease.org/project.php?id=#{projectId}">View Project</a></p>
                 </div>
               </div>
               <div class="cartodb-popup-tip-container"></div>
