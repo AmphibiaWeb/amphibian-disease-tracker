@@ -1,6 +1,7 @@
 var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
-  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+  modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
 try {
   uri = new Object();
@@ -3033,11 +3034,10 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     i = 0;
     while (i < max) {
       suTemp = layer.getSubLayer(i);
-      suTemp.setInteraction(true);
       try {
         shortTable = params.named_map.params.table_name.slice(0, 63);
         setTemplate = function(sublayerToSet, tableName, count) {
-          var ref2, ref3, selector, template;
+          var infoWindowTemplate, ref2, ref3, selector, template;
           if (count == null) {
             count = 0;
           }
@@ -3045,29 +3045,35 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           template = (ref2 = (ref3 = window._adp.templates) != null ? ref3[tableName] : void 0) != null ? ref2 : $(selector).html();
           if (isNull(template)) {
             template = $(selector).html();
-            if (isNull(template)) {
-              console.warn("Warning: null template", template);
+            if (isNull(template) && modulo(count, 100) === 0) {
+              console.warn("Warning: null template for table '" + tableName + "'", template);
             }
           }
           if (!isNull(template)) {
+            infoWindowTemplate = {
+              template: template,
+              width: 218,
+              maxHeight: 250
+            };
             sublayerToSet.infowindow.set("template", template);
             console.info("Successfully assigned template " + selector + " to sublayer " + i);
             if (i === 0) {
               try {
                 layer.infowindow.set("template", template);
-                return console.info("Successfully assigned template to primary layer", template);
+                console.info("Successfully assigned template to primary layer", template);
               } catch (undefined) {}
             }
           } else {
             if (count < 100) {
-              return delay(200, function() {
+              delay(200, function() {
                 count = count + 1;
                 return setTemplate(sublayerToSet, tableName, count);
               });
             } else {
-              return console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154");
+              console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154");
             }
           }
+          return false;
         };
         setTemplate(suTemp, shortTable);
       } catch (undefined) {}
