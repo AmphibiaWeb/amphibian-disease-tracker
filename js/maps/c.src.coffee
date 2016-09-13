@@ -2486,42 +2486,44 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     .on "error", (err) ->
       console.warn "Error on layer feature click", err
     i = 0
+    setTemplate = (sublayerToSet, tableName, count = 0, carrySublayerIndex, workingLayer) ->
+      selector = "#infowindow_template_#{tableName}"
+      template = window._adp.templates?[tableName] ? $(selector).html()
+      if isNull template
+        template = $(selector).html()
+        if isNull(template) and count %% 100 is 0 and count > 0
+          console.warn "Warning: null template for table '#{tableName}' @ sublayer #{carrySublayerIndex}", template
+      unless isNull template
+        # https://carto.com/docs/carto-engine/carto-js/api-methods/#sublayerinfowindow
+        # https://raw.githubusercontent.com/CartoDB/cartodb.js/develop/examples/custom_infowindow.html
+        infoWindowTemplate =
+          template: template
+          width: 218
+          maxHeight: 250
+        #sublayerToSet.infowindow.set "template", template
+        sublayerToSet.infowindow.set infoWindowTemplate
+        console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex}"
+        if carrySublayerIndex is 0
+          try
+            workingLayer.infowindow.set "template", template
+            console.info "Successfully assigned template to primary layer", template
+        if carrySublayerIndex is workingLayer.getSubLayerCount() - 1
+          console.info "Showing layer for '#{tableName}' after successful template assignment for all sublayers"
+          workingLayer.show()
+      else
+        if count < 100
+          delay 200, ->
+            count = count + 1
+            setTemplate sublayerToSet, tableName, count, carrySublayerIndex, workingLayer
+        else
+          console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154"
+          workingLayer.show()
+      false # end setTemplate
     while i < max
       suTemp = layer.getSubLayer(i)
       suTemp.setInteraction(true)
       try
         shortTable = params.named_map.params.table_name.slice 0, 63
-        setTemplate = (sublayerToSet, tableName, count = 0, carrySublayerIndex, workingLayer) ->
-          selector = "#infowindow_template_#{tableName}"
-          template = window._adp.templates?[tableName] ? $(selector).html()
-          if isNull template
-            template = $(selector).html()
-            if isNull(template) and count %% 100 is 0 and count > 0
-              console.warn "Warning: null template for table '#{tableName}' @ sublayer #{carrySublayerIndex}", template
-          unless isNull template
-            # https://carto.com/docs/carto-engine/carto-js/api-methods/#sublayerinfowindow
-            infoWindowTemplate =
-              template: template
-              width: 218
-              maxHeight: 250
-            sublayerToSet.infowindow.set "template", template
-            console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex}"
-            if i is 0
-              try
-                layer.infowindow.set "template", template
-                console.info "Successfully assigned template to primary layer", template
-            if carrySublayerIndex is workingLayer.getSubLayerCount() - 1
-              console.info "Showing layer for '#{tableName}' after successful template assignment for all sublayers"
-              workingLayer.show()
-          else
-            if count < 100
-              delay 200, ->
-                count = count + 1
-                setTemplate sublayerToSet, tableName, count, carrySublayerIndex, workingLayer
-            else
-              console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154"
-              workingLayer.show()
-          false # end setTemplate
         setTemplate suTemp, shortTable, 0, i, layer
       geo.mapSublayers.push suTemp
       ++i
