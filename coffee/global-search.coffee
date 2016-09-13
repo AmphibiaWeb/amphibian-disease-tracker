@@ -37,7 +37,7 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
     unless window._adp?
       window._adp = new Object()
     window._adp.templateReady = new Object()
-  templateId = "infowindow_template_#{table}"
+  templateId = "infowindow_template_#{table.slice(0,63)}"
   if $("##{templateId}").exists()
     if typeof callback is "function"
       callback()
