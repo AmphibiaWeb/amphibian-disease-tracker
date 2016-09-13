@@ -1358,7 +1358,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal',
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1390,7 +1390,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         }
         # Post the args
         $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept: application/json;text/html;text/*;application/*\r\n'.
+                 'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal\r\n'.
                  'Cookie: '.$cookiesString."\r\n";
         $params['http']['header'] = $headers;
         $params['http']['content'] = http_build_query($fimsMintData);
@@ -1454,7 +1454,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $params = array('http' => array(
                 'method' => 'GET',
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal',
             ));
             $params['http']['header'] .= "\r\nCookie: ".$cookiesString."\r\n";
             $ctx = stream_context_create($params);
@@ -1533,7 +1533,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
                 'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*',
+                            'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal',
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1567,6 +1567,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         $headers = array();
         $header[] = 'Content-type: multipart/form-data';
         $header[] = 'Accept: application/json;text/html;text/*;application/*';
+        $header[] = 'User-Agent: Amphibian Disease Portal';
         $params = array(
             'http' => array(
                 'method' => 'POST',
