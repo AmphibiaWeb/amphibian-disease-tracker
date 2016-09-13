@@ -29,11 +29,20 @@ checkCoordinateSanity = ->
   true
 
 
-createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5") ->
+
+
+createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5", callback) ->
   start = Date.now()
+  unless window._adp?.templateReady?
+    unless window._adp?
+      window._adp = new Object()
+    window._adp.templateReady = new Object()
   templateId = "infowindow_template_#{table}"
   if $("##{templateId}").exists()
+    if typeof callback is "function"
+      callback()
     return false
+  window._adp.templateReady[table] = false
   query = "SELECT cartodb_id FROM #{table}"
   args = "action=fetch&sql_query=#{post64(query)}"
   $.post "#{uri.urlString}api.php", args, "json"
@@ -60,11 +69,16 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
           </script>
       """
       $("body").append html
+      window._adp.templateReady[table] = true
       elapsed = Date.now() - start
       console.info "Template set for ##{templateId} (took #{elapsed}ms)"
+      if typeof callback is "function"
+        callback()
     else
       console.warn "Couldn't find project ID for table #{table}", result
   false
+
+
 
 
 setViewerBounds = (map = geo.lMap) ->
@@ -347,11 +361,29 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
       # https://docs.cartodb.com/cartodb-platform/maps-api/named-maps/#cartodbjs-for-named-maps
       resetMap geo.lMap, false, false
       for layer in layers
-        layerSourceObj =
-          user_name: cartoAccount
-          type: "namedmap"
-          named_map: layer
-        createRawCartoMap layerSourceObj
+        # delay 5, ->
+        do delayedLayerRender = (count = 0, renderLayer = layer) ->
+          ###
+          # Delay the render until the template is ready
+          ###
+          if window._adp?.templateReady?[renderLayer.params.table_name] isnt true
+            if count > 50
+              console.error "Error -- timed out waiting for template to be ready"
+              overrideSkip = true
+            else
+              overrideSkip = false
+            unless overrideSkip
+              delay 50, ->
+                ++count
+                delayedLayerRender count, renderLayer
+              return false
+          # Template is ready
+          layerSourceObj =
+            user_name: cartoAccount
+            type: "namedmap"
+            named_map: renderLayer
+          createRawCartoMap layerSourceObj
+          false # end delayedLayerRender
       $("#post-map-subtitle").text "Viewing projects containing #{totalSamples} samples (#{posSamples} positive) among #{speciesCount} species"
       $("#post-map-subtitle")
       .removeClass "text-muted"

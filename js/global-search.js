@@ -36,16 +36,26 @@ checkCoordinateSanity = function() {
   return true;
 };
 
-createTemplateByProject = function(table) {
-  var args, query, start, templateId;
+createTemplateByProject = function(table, callback) {
+  var args, query, ref, start, templateId;
   if (table == null) {
     table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5";
   }
   start = Date.now();
+  if (((ref = window._adp) != null ? ref.templateReady : void 0) == null) {
+    if (window._adp == null) {
+      window._adp = new Object();
+    }
+    window._adp.templateReady = new Object();
+  }
   templateId = "infowindow_template_" + table;
   if ($("#" + templateId).exists()) {
+    if (typeof callback === "function") {
+      callback();
+    }
     return false;
   }
+  window._adp.templateReady[table] = false;
   query = "SELECT cartodb_id FROM " + table;
   args = "action=fetch&sql_query=" + (post64(query));
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
@@ -53,8 +63,12 @@ createTemplateByProject = function(table) {
     if (!isNull(result.project_id)) {
       html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + result.project_id + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
       $("body").append(html);
+      window._adp.templateReady[table] = true;
       elapsed = Date.now() - start;
-      return console.info("Template set for #" + templateId + " (took " + elapsed + "ms)");
+      console.info("Template set for #" + templateId + " (took " + elapsed + "ms)");
+      if (typeof callback === "function") {
+        return callback();
+      }
     } else {
       return console.warn("Couldn't find project ID for table " + table, result);
     }
@@ -227,7 +241,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, delayedLayerRender, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -406,12 +420,35 @@ doSearch = function(search, goDeep, hasRunValidated) {
       resetMap(geo.lMap, false, false);
       for (l = 0, len2 = layers.length; l < len2; l++) {
         layer = layers[l];
-        layerSourceObj = {
-          user_name: cartoAccount,
-          type: "namedmap",
-          named_map: layer
-        };
-        createRawCartoMap(layerSourceObj);
+        (delayedLayerRender = function(count, renderLayer) {
+
+          /*
+           * Delay the render until the template is ready
+           */
+          var layerSourceObj, overrideSkip, ref5, ref6;
+          if (((ref5 = window._adp) != null ? (ref6 = ref5.templateReady) != null ? ref6[renderLayer.params.table_name] : void 0 : void 0) !== true) {
+            if (count > 50) {
+              console.error("Error -- timed out waiting for template to be ready");
+              overrideSkip = true;
+            } else {
+              overrideSkip = false;
+            }
+            if (!overrideSkip) {
+              delay(50, function() {
+                ++count;
+                return delayedLayerRender(count, renderLayer);
+              });
+              return false;
+            }
+          }
+          layerSourceObj = {
+            user_name: cartoAccount,
+            type: "namedmap",
+            named_map: renderLayer
+          };
+          createRawCartoMap(layerSourceObj);
+          return false;
+        })(0, layer);
       }
       $("#post-map-subtitle").text("Viewing projects containing " + totalSamples + " samples (" + posSamples + " positive) among " + speciesCount + " species");
       $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
