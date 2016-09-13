@@ -36,8 +36,8 @@ checkCoordinateSanity = function() {
   return true;
 };
 
-createTemplateByProject = function(table, callback, limited) {
-  var args, query, ref, start, templateId;
+createTemplateByProject = function(table, limited, callback) {
+  var args, createInfoWindow, pid, query, ref, start, templateId;
   if (table == null) {
     table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5";
   }
@@ -62,21 +62,33 @@ createTemplateByProject = function(table, callback, limited) {
   window._adp.templateReady[table] = false;
   query = "SELECT cartodb_id FROM " + table + " LIMIT 1";
   args = "action=fetch&sql_query=" + (post64(query));
+  createInfoWindow = function(projectId) {
+    var detail, elapsed, html;
+    detail = limited ? "" : "<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>";
+    html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        " + detail + "\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + projectId + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
+    $("head").append(html);
+    window._adp.templates[table] = html;
+    window._adp.templates[table.slice(0, 63)] = html;
+    window._adp.templateReady[table] = true;
+    elapsed = Date.now() - start;
+    console.info("Template set for #" + templateId + " (took " + elapsed + "ms)");
+    if (typeof callback === "function") {
+      callback();
+    }
+    return false;
+  };
+  if (typeof table === "object") {
+    console.info("Directly provided project id");
+    pid = table.project;
+    table = table.table;
+    createInfoWindow(pid);
+    return false;
+  }
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var detail, elapsed, html, projectId, ref1, ref2;
+    var projectId, ref1, ref2;
     projectId = (ref1 = result.parsed_responses) != null ? (ref2 = ref1[0]) != null ? ref2.project_id : void 0 : void 0;
     if (!isNull(projectId)) {
-      detail = limited ? "" : "<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>";
-      html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        " + detail + "\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + projectId + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
-      $("body").append(html);
-      window._adp.templates[table] = html;
-      window._adp.templates[table.slice(0, 63)] = html;
-      window._adp.templateReady[table] = true;
-      elapsed = Date.now() - start;
-      console.info("Template set for #" + templateId + " (took " + elapsed + "ms)");
-      if (typeof callback === "function") {
-        return callback();
-      }
+      return createInfoWindow(projectId);
     } else {
       return console.warn("Couldn't find project ID for table " + table, result);
     }
@@ -249,7 +261,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, delayedLayerRender, e, ensureCenter, error, error1, error2, error3, i, j, k, key, l, layer, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, delayedLayerRender, e, ensureCenter, error, error1, error2, error3, i, j, k, key, l, layer, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, templateParam, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -373,7 +385,11 @@ doSearch = function(search, goDeep, hasRunValidated) {
       } catch (undefined) {}
       if (!isNull(table)) {
         try {
-          createTemplateByProject(table);
+          templateParam = {
+            project: project.project_id,
+            table: table
+          };
+          createTemplateByProject(templateParam);
         } catch (error1) {
           e = error1;
           console.error("Warning: couldn't create project template: " + e.message);
@@ -874,7 +890,7 @@ showAllTables = function() {
   url = uri.urlString + "admin-api.php";
   args = "perform=list";
   $.post(url, args, "json").done(function(result) {
-    var cartoTables, data, e, error, i, j, layer, layerSourceObj, layers, len, pid, table, validTables;
+    var cartoTables, data, e, error, i, j, layer, layerSourceObj, layers, len, pid, table, templateParam, validTables;
     if (result.status === false) {
       console.error("Got bad result", result);
       return false;
@@ -891,7 +907,11 @@ showAllTables = function() {
       if (!isNull(table)) {
         table = table.unescape();
         try {
-          createTemplateByProject(table, null, true);
+          templateParam = {
+            project: pid,
+            table: table
+          };
+          createTemplateByProject(templateParam, true);
         } catch (undefined) {}
         validTables.push(table);
         layer = {

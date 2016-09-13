@@ -31,7 +31,7 @@ checkCoordinateSanity = ->
 
 
 
-createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5", callback, limited = false) ->
+createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5", limited = false, callback) ->
   start = Date.now()
   unless window._adp?.templateReady?
     unless window._adp?
@@ -45,40 +45,49 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
     return false
   window._adp.templateReady[table] = false
   query = "SELECT cartodb_id FROM #{table} LIMIT 1"
-  args = "action=fetch&sql_query=#{post64(query)}"
+  args = "action=fetch&sql_query=#{post64(query)}"  
+  createInfoWindow = (projectId) ->
+    detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>"""
+    html = """
+        <script type="infowindow/html" id="#{templateId}">
+          <div class="cartodb-popup v2">
+            <a href="#close" class="cartodb-popup-close-button close">x</a>
+            <div class="cartodb-popup-content-wrapper">
+              <div class="cartodb-popup-header">
+                <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"/>
+              </div>
+              <div class="cartodb-popup-content">
+                <!-- content.data contains the field info -->
+                <h4>Species: </h4>
+                <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
+                #{detail}
+                <p><a href="https://amphibiandisease.org/project.php?id=#{projectId}">View Project</a></p>
+              </div>
+            </div>
+            <div class="cartodb-popup-tip-container"></div>
+          </div>
+        </script>
+    """
+    $("head").append html
+    window._adp.templates[table] = html
+    window._adp.templates[table.slice(0,63)] = html
+    window._adp.templateReady[table] = true
+    elapsed = Date.now() - start
+    console.info "Template set for ##{templateId} (took #{elapsed}ms)"
+    if typeof callback is "function"
+      callback()
+    false
+  if typeof table is "object"
+    console.info "Directly provided project id"
+    pid = table.project
+    table = table.table
+    createInfoWindow pid
+    return false
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
     projectId = result.parsed_responses?[0]?.project_id
     unless isNull projectId
-      detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>"""
-      html = """
-          <script type="infowindow/html" id="#{templateId}">
-            <div class="cartodb-popup v2">
-              <a href="#close" class="cartodb-popup-close-button close">x</a>
-              <div class="cartodb-popup-content-wrapper">
-                <div class="cartodb-popup-header">
-                  <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"/>
-                </div>
-                <div class="cartodb-popup-content">
-                  <!-- content.data contains the field info -->
-                  <h4>Species: </h4>
-                  <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
-                  #{detail}
-                  <p><a href="https://amphibiandisease.org/project.php?id=#{projectId}">View Project</a></p>
-                </div>
-              </div>
-              <div class="cartodb-popup-tip-container"></div>
-            </div>
-          </script>
-      """
-      $("body").append html
-      window._adp.templates[table] = html
-      window._adp.templates[table.slice(0,63)] = html
-      window._adp.templateReady[table] = true
-      elapsed = Date.now() - start
-      console.info "Template set for ##{templateId} (took #{elapsed}ms)"
-      if typeof callback is "function"
-        callback()
+      createInfoWindow projectId
     else
       console.warn "Couldn't find project ID for table #{table}", result
   false
@@ -317,7 +326,10 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
       unless isNull table
         # Create named map layers
         try
-          createTemplateByProject table
+          templateParam =
+            project: project.project_id
+            table: table
+          createTemplateByProject templateParam
         catch e
           console.error "Warning: couldn't create project template: #{e.message}"
           console.warn e.stack
@@ -776,7 +788,10 @@ showAllTables = ->
         # Create named map layers
         table = table.unescape()
         try
-          createTemplateByProject table, null, true
+          templateParam =
+            project: pid
+            table: table
+          createTemplateByProject templateParam, true
         validTables.push table
         # TODO Calculate a color based on recency ...
         layer =
