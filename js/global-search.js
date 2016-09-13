@@ -36,10 +36,13 @@ checkCoordinateSanity = function() {
   return true;
 };
 
-createTemplateByProject = function(table, callback) {
+createTemplateByProject = function(table, callback, limited) {
   var args, query, ref, start, templateId;
   if (table == null) {
     table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5";
+  }
+  if (limited == null) {
+    limited = false;
   }
   start = Date.now();
   if (((ref = window._adp) != null ? ref.templateReady : void 0) == null) {
@@ -60,10 +63,11 @@ createTemplateByProject = function(table, callback) {
   query = "SELECT cartodb_id FROM " + table + " LIMIT 1";
   args = "action=fetch&sql_query=" + (post64(query));
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var elapsed, html, projectId, ref1, ref2;
+    var detail, elapsed, html, projectId, ref1, ref2;
     projectId = (ref1 = result.parsed_responses) != null ? (ref2 = ref1[0]) != null ? ref2.project_id : void 0 : void 0;
     if (!isNull(projectId)) {
-      html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        <p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + projectId + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
+      detail = limited ? "" : "<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>";
+      html = "<script type=\"infowindow/html\" id=\"" + templateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <img style=\"width: 100%\" src=\"https://cartodb.com/assets/logos/logos_full_cartodb_light.png\"/>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p>{{content.data.genus}} {{content.data.specificepithet}}</p>\n        " + detail + "\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + projectId + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
       $("body").append(html);
       window._adp.templates[table] = html;
       window._adp.templates[table.slice(0, 63)] = html;
@@ -886,6 +890,9 @@ showAllTables = function() {
       console.log("Colors", data.creation, generateColorByRecency2(data.creation));
       if (!isNull(table)) {
         table = table.unescape();
+        try {
+          createTemplateByProject(table, null, true);
+        } catch (undefined) {}
         validTables.push(table);
         layer = {
           name: namedMapSource,
