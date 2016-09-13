@@ -2488,7 +2488,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     i = 0
     while i < max
       suTemp = layer.getSubLayer(i)
-      suTemp.setInteraction(true)
+      # suTemp.setInteraction(true)
       try
         shortTable = params.named_map.params.table_name.slice 0, 63
         setTemplate = (sublayerToSet, tableName, count = 0) ->
@@ -2496,9 +2496,14 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
           template = window._adp.templates?[tableName] ? $(selector).html()
           if isNull template
             template = $(selector).html()
-            if isNull template
-              console.warn "Warning: null template", template
+            if isNull(template) and count %% 100 is 0
+              console.warn "Warning: null template for table '#{tableName}'", template
           unless isNull template
+            # https://carto.com/docs/carto-engine/carto-js/api-methods/#sublayerinfowindow
+            infoWindowTemplate =
+              template: template
+              width: 218
+              maxHeight: 250
             sublayerToSet.infowindow.set "template", template
             console.info "Successfully assigned template #{selector} to sublayer #{i}"
             if i is 0
@@ -2512,6 +2517,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
                 setTemplate sublayerToSet, tableName, count
             else
               console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154"
+          false # end setTemplate
         setTemplate suTemp, shortTable
       geo.mapSublayers.push suTemp
       ++i
