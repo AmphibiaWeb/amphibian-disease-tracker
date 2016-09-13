@@ -378,6 +378,7 @@ doSearch = (search = getSearchObject(), goDeep = false, hasRunValidated = false)
                 delayedLayerRender count, renderLayer
               return false
           # Template is ready
+          console.info "Template script ready for table '#{window._adp.templateReady[renderLayer.params.table_name]}' after #{count} iterations, rendering on map"
           layerSourceObj =
             user_name: cartoAccount
             type: "namedmap"
