@@ -241,7 +241,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
   namedMap = goDeep ? namedMapAdvSource : namedMapSource;
   args = "perform=" + action + "&q=" + data;
   $.post(uri.urlString + "admin-api.php", args, "json").done(function(result) {
-    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, delayedLayerRender, e, ensureCenter, error, error1, error2, i, j, k, key, l, layer, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, totalSamples, totalSpecies, val, zoom;
+    var boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, delayedLayerRender, e, ensureCenter, error, error1, error2, error3, i, j, k, key, l, layer, layers, len, len1, len2, mapCenter, posSamples, project, ref, ref1, ref2, ref3, ref4, results, rlButton, searchFailed, spArr, species, speciesCount, table, taxon, taxonArray, taxonRaw, totalSamples, totalSpecies, val, zoom;
     console.info("Adv. search result", result);
     if (result.status !== true) {
       console.error(result.error);
@@ -366,7 +366,11 @@ doSearch = function(search, goDeep, hasRunValidated) {
       if (!isNull(table)) {
         try {
           createTemplateByProject(table);
-        } catch (undefined) {}
+        } catch (error1) {
+          e = error1;
+          console.error("Warning: couldn't create project template: " + e.message);
+          console.warn(e.stack);
+        }
         layer = {
           name: namedMap,
           type: "namedmap",
@@ -409,8 +413,8 @@ doSearch = function(search, goDeep, hasRunValidated) {
       try {
         geo.lMap.setView(mapCenter.getObj());
       } catch (undefined) {}
-    } catch (error1) {
-      e = error1;
+    } catch (error2) {
+      e = error2;
       console.warn("Failed to rezoom/recenter map - " + e.message, boundingBoxArray);
       console.warn(e.stack);
     }
@@ -441,6 +445,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
               return false;
             }
           }
+          console.info("Template script ready for table '" + window._adp.templateReady[renderLayer.params.table_name] + "' after " + count + " iterations, rendering on map");
           layerSourceObj = {
             user_name: cartoAccount,
             type: "namedmap",
@@ -503,7 +508,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
-          var error2;
+          var error3;
           if (!isNumber(maxCount)) {
             maxCount = 100;
           }
@@ -514,8 +519,8 @@ doSearch = function(search, goDeep, hasRunValidated) {
           try {
             console.log("#" + count + "/" + maxCount + " General setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
-          } catch (error2) {
-            e = error2;
+          } catch (error3) {
+            e = error3;
             console.warn("Error setting view - " + e.message);
           }
           if (count < maxCount) {
@@ -523,8 +528,8 @@ doSearch = function(search, goDeep, hasRunValidated) {
           }
         });
       })(0, 100, 100);
-    } catch (error2) {
-      e = error2;
+    } catch (error3) {
+      e = error3;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }
