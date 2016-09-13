@@ -2488,10 +2488,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     i = 0
     while i < max
       suTemp = layer.getSubLayer(i)
-      # suTemp.setInteraction(true)
+      suTemp.setInteraction(true)
       try
         shortTable = params.named_map.params.table_name.slice 0, 63
-        setTemplate = (sublayerToSet, tableName, count = 0, carrySublayerIndex) ->
+        setTemplate = (sublayerToSet, tableName, count = 0, carrySublayerIndex, workingLayer) ->
           selector = "#infowindow_template_#{tableName}"
           template = window._adp.templates?[tableName] ? $(selector).html()
           if isNull template
@@ -2510,18 +2510,19 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
               try
                 layer.infowindow.set "template", template
                 console.info "Successfully assigned template to primary layer", template
-            if carrySublayerIndex is max - 1
-              layer.show()
+            if carrySublayerIndex is workingLayer.getSubLayerCount() - 1
+              console.info "Showing layer for '#{tableName}' after successful template assignment for all sublayers"
+              workingLayer.show()
           else
             if count < 100
               delay 200, ->
                 count = count + 1
-                setTemplate sublayerToSet, tableName, count, carrySublayerIndex
+                setTemplate sublayerToSet, tableName, count, carrySublayerIndex, workingLayer
             else
               console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154"
-              layer.show()
+              workingLayer.show()
           false # end setTemplate
-        setTemplate suTemp, shortTable, 0, i
+        setTemplate suTemp, shortTable, 0, i, layer
       geo.mapSublayers.push suTemp
       ++i
     # layer.show()
