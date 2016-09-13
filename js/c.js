@@ -3034,9 +3034,10 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     i = 0;
     while (i < max) {
       suTemp = layer.getSubLayer(i);
+      suTemp.setInteraction(true);
       try {
         shortTable = params.named_map.params.table_name.slice(0, 63);
-        setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex) {
+        setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex, workingLayer) {
           var infoWindowTemplate, ref2, ref3, selector, template;
           if (count == null) {
             count = 0;
@@ -3063,23 +3064,24 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
                 console.info("Successfully assigned template to primary layer", template);
               } catch (undefined) {}
             }
-            if (carrySublayerIndex === max - 1) {
-              layer.show();
+            if (carrySublayerIndex === workingLayer.getSubLayerCount() - 1) {
+              console.info("Showing layer for '" + tableName + "' after successful template assignment for all sublayers");
+              workingLayer.show();
             }
           } else {
             if (count < 100) {
               delay(200, function() {
                 count = count + 1;
-                return setTemplate(sublayerToSet, tableName, count, carrySublayerIndex);
+                return setTemplate(sublayerToSet, tableName, count, carrySublayerIndex, workingLayer);
               });
             } else {
               console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154");
-              layer.show();
+              workingLayer.show();
             }
           }
           return false;
         };
-        setTemplate(suTemp, shortTable, 0, i);
+        setTemplate(suTemp, shortTable, 0, i, layer);
       } catch (undefined) {}
       geo.mapSublayers.push(suTemp);
       ++i;
