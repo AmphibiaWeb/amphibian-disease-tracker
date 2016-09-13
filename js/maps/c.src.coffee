@@ -2491,13 +2491,13 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       # suTemp.setInteraction(true)
       try
         shortTable = params.named_map.params.table_name.slice 0, 63
-        setTemplate = (sublayerToSet, tableName, count = 0) ->
+        setTemplate = (sublayerToSet, tableName, count = 0, carrySublayerIndex) ->
           selector = "#infowindow_template_#{tableName}"
           template = window._adp.templates?[tableName] ? $(selector).html()
           if isNull template
             template = $(selector).html()
-            if isNull(template) and count %% 100 is 0
-              console.warn "Warning: null template for table '#{tableName}'", template
+            if isNull(template) and count %% 100 is 0 and count > 0
+              console.warn "Warning: null template for table '#{tableName}' @ sublayer #{carrySublayerIndex}", template
           unless isNull template
             # https://carto.com/docs/carto-engine/carto-js/api-methods/#sublayerinfowindow
             infoWindowTemplate =
@@ -2505,23 +2505,26 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
               width: 218
               maxHeight: 250
             sublayerToSet.infowindow.set "template", template
-            console.info "Successfully assigned template #{selector} to sublayer #{i}"
+            console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex}"
             if i is 0
               try
                 layer.infowindow.set "template", template
                 console.info "Successfully assigned template to primary layer", template
+            if carrySublayerIndex is max - 1
+              layer.show()
           else
             if count < 100
               delay 200, ->
                 count = count + 1
-                setTemplate sublayerToSet, tableName, count
+                setTemplate sublayerToSet, tableName, count, carrySublayerIndex
             else
               console.warn "Timed out (count: #{count}) trying to assign a template for '#{tableName}'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154"
+              layer.show()
           false # end setTemplate
-        setTemplate suTemp, shortTable
+        setTemplate suTemp, shortTable, 0, i
       geo.mapSublayers.push suTemp
       ++i
-    layer.show()
+    # layer.show()
     try
       console.log "Layer counts:", BASE_MAP.overlayMapTypes.length
     if typeof callback is "function"

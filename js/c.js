@@ -3036,7 +3036,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       suTemp = layer.getSubLayer(i);
       try {
         shortTable = params.named_map.params.table_name.slice(0, 63);
-        setTemplate = function(sublayerToSet, tableName, count) {
+        setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex) {
           var infoWindowTemplate, ref2, ref3, selector, template;
           if (count == null) {
             count = 0;
@@ -3045,8 +3045,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           template = (ref2 = (ref3 = window._adp.templates) != null ? ref3[tableName] : void 0) != null ? ref2 : $(selector).html();
           if (isNull(template)) {
             template = $(selector).html();
-            if (isNull(template) && modulo(count, 100) === 0) {
-              console.warn("Warning: null template for table '" + tableName + "'", template);
+            if (isNull(template) && modulo(count, 100) === 0 && count > 0) {
+              console.warn("Warning: null template for table '" + tableName + "' @ sublayer " + carrySublayerIndex, template);
             }
           }
           if (!isNull(template)) {
@@ -3056,31 +3056,34 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
               maxHeight: 250
             };
             sublayerToSet.infowindow.set("template", template);
-            console.info("Successfully assigned template " + selector + " to sublayer " + i);
+            console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex);
             if (i === 0) {
               try {
                 layer.infowindow.set("template", template);
                 console.info("Successfully assigned template to primary layer", template);
               } catch (undefined) {}
             }
+            if (carrySublayerIndex === max - 1) {
+              layer.show();
+            }
           } else {
             if (count < 100) {
               delay(200, function() {
                 count = count + 1;
-                return setTemplate(sublayerToSet, tableName, count);
+                return setTemplate(sublayerToSet, tableName, count, carrySublayerIndex);
               });
             } else {
               console.warn("Timed out (count: " + count + ") trying to assign a template for '" + tableName + "'", selector, "https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/154");
+              layer.show();
             }
           }
           return false;
         };
-        setTemplate(suTemp, shortTable);
+        setTemplate(suTemp, shortTable, 0, i);
       } catch (undefined) {}
       geo.mapSublayers.push(suTemp);
       ++i;
     }
-    layer.show();
     try {
       console.log("Layer counts:", BASE_MAP.overlayMapTypes.length);
     } catch (undefined) {}
