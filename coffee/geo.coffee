@@ -604,12 +604,12 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     try
       layer.unbind "featureClick"
     layer
-    .on "featureClick", (e, latlng, pos, data, layerIndex) ->
-      # console.log "Clicked feature", data, pos, latlng
-      # if geo.infoWindow?
-      #   geo.infoWindow.remove()
-      clickEvent.debounce 150, false, null, e, latlng, pos, data, layer
-      false
+    # .on "featureClick", (e, latlng, pos, data, layerIndex) ->
+    #   # console.log "Clicked feature", data, pos, latlng
+    #   # if geo.infoWindow?
+    #   #   geo.infoWindow.remove()
+    #   clickEvent.debounce 150, false, null, e, latlng, pos, data, layer
+    #   false
     .on "error", (err) ->
       console.warn "Error on layer feature click", err
     i = 0
