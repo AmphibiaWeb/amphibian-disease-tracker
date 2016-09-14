@@ -69,7 +69,7 @@ if ($as_include !== true) {
         if ($admin_req == "advanced_project_search") {
             returnAjax(advancedSearchProject($_REQUEST));
         }
- 
+
         $login_status['error'] = 'Invalid user';
         $login_status['human_error'] = "You're not logged in as a valid user to do this. Please log in and try again.";
         returnAjax($login_status);
@@ -994,6 +994,8 @@ function readProjectData($get, $precleaned = false, $debug = false)
     return $response;
 }
 
+
+
 function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addToExpedition = false, $fimsAuthCookiesAsString = null)
 {
     /***
@@ -1020,7 +1022,12 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
      *   place in a POST header
      * @return array
      ***/
-    global $db;
+     global $db;
+       $fimsDefaultHeaders = array(
+          'Content-type: application/x-www-form-urlencoded',
+          'Accept: application/json',
+          'User-Agent: amphibian disease portal',
+          );
     # FIMS probably already does this, but let's be a good net citizen.
     $datasetRelativeUri = $db->sanitize($datasetRelativeUri);
     $datasetTitle = $db->sanitize($datasetTitle);
@@ -1347,6 +1354,11 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
      * @return array
      ***/
     global $db;
+    $fimsDefaultHeaders = array(
+        'Content-type: application/x-www-form-urlencoded',
+        'Accept: application/json',
+        'User-Agent: amphibian disease portal',
+        );
     # Does the project exist?
     $projectLink = $db->sanitize($projectLink);
     $projectUri = 'https://amphibiandisease.org/project.php?id='.$projectLink;
@@ -1374,11 +1386,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             $params = array('http' => array(
                 'method' => 'POST',
                 'content' => $postData,
-                'header' => implode("\r\n", array(
-                    'Content-type: application/x-www-form-urlencoded',
-                        'Accept: application/json',
-                        'User-Agent: amphibian disease portal',
-                ))."\r\n",
+                'header' => implode("\r\n", $fimsDefaultHeaders)."\r\n",
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1409,13 +1417,10 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             );
         }
         # Post the args
-        $headers = implode("\r\n", array(
-            'Content-type: application/x-www-form-urlencoded',
-            'Accept: application/json',
-            'User-Agent: amphibian disease portal',
-            'Cookie: '.$cookiesString,
-        ))."\r\n";
-        $params['http']['header'] = $headers;
+        $headers = $fimsDefaultHeaders;
+        $headers[] = 'Cookie: '.$cookiesString;
+        $header = implode("\r\n", $headers)."\r\n";
+        $params['http']['header'] = $header;
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
@@ -1596,9 +1601,9 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         }
         # Post the args
         $headers = array();
-        $header[] = 'Content-type: multipart/form-data';
-        $header[] = 'Accept: application/json';
-        $header[] = 'User-Agent: amphibian disease portal';
+        $headers[] = 'Content-type: multipart/form-data';
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'User-Agent: amphibian disease portal';
         $params = array(
             'http' => array(
                 'method' => 'POST',
@@ -1616,6 +1621,8 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fimsValidateData);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_COOKIE, $cookiesString);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        #curl_setopt($ch, CURLOPT_USERAGENT, "amphibian disease portal");
         #curl_setopt( $ch, CURLOPT_HEADER, 1);
         $rawResponse = curl_exec($ch);
         curl_close($ch);
