@@ -1110,7 +1110,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
     console.log "Estimate #{estimate} seconds"
     window._adp.uploader = true
     $("#data-sync").removeAttr "indeterminate"
-    max = estimate * 30 # 30fps
+    max = estimate * 30 # 30fps    
     try
       p$("#data-sync").max = max
     do updateUploadProgress = (prog = 0) ->
@@ -1141,9 +1141,13 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
     catch e2
       console.error "Can't show backup upload notices! #{e2.message}"
       console.warn e2.stack
+  estimateStartRef = Date.now()
   $.post "api.php", args, "json"
   .done (result) ->
     console.log "Got back", result
+    try
+      realDuration = roundNumber (Date.now() - estimateStartRef) / 1000, 1
+      console.info "Really took #{realDuration}s (estimated #{estimate}s)", realDuration/estimate
     if result.status isnt true
       console.error "Got an error from the server!"
       console.warn result
