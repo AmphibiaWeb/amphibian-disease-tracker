@@ -537,13 +537,14 @@ function editAccess($link, $deltas)
             } elseif ($newRole == 'read') {
                 $addToList = 'viewList';
             } elseif ($newRole == 'authorList' || $newRole == "author") {
-                $addToList = 'authorList';
+                # $addToList = 'authorList';
+                $addToList = 'editList';
             } else {
                 $notices[] = "Unrecognized new role '".strtoupper($newRole)."'";
                 continue;
             }
-
-            if ($newRole == 'edit' || $newRole == 'read') {
+            $useAuthorQuery = false;
+            if ($newRole == 'edit' || $newRole == 'read' || $newRole == "author") {
                 $key = array_find($user['uid'], ${$observeList});
                 if ($key === false) {
                     $notices[] = 'Invalid current role for '.$user['uid'];
@@ -556,19 +557,34 @@ function editAccess($link, $deltas)
                 }
                 array_push(${$addToList}, $user['uid']);
                 $operations[] = 'Removed '.$user['uid']." from $observeList and added to $addToList";
-            } elseif ($newRole == 'author') {
-                # Need to do fanciness
-            } else {
+                if ($newRole == 'author') {
+                    # Need to do fanciness
+                    $useAuthorQuery = true;
+                    $authorQuery = 'UPDATE `'.$db->getTable()."` SET `author`='".$user['uid']."' WHERE `project_id`='".$pid."'";
+                    $db->closeLink();
+                    $r = mysqli_query($db->getLink(), $authorQuery);
+                    if ($r !== true) {
+                        throw(new Exception(mysqli_error($db->getLink())));
+                    }
+                    $operations[] = "Changed project author to ".$user['uid'];
+                }
+            }  else {
                 $notices[] = 'Invalid role assignment for user '.$user['uid'];
             }
         }
         # Write the new lists back out
         $newList = array();
+        $editListTracker =array();
+        $readListTracker = array();
         foreach ($editList as $user) {
+            if(array_key_exists($user, $editListTracker)) continue;
             $newList[] = $user.':EDIT';
+            $editListTracker[$user] = true;
         }
         foreach ($viewList as $user) {
+            if(array_key_exists($user, $readListTracker)) continue;
             $newList[] = $user.':READ';
+            $readListTracker[$user] = true;
         }
         $newListString = implode(',', $newList);
         $newListString = $db->sanitize($newListString);
