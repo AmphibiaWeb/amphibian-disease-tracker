@@ -2940,12 +2940,6 @@ featureClickEvent = function(e, latlng, pos, data, layer) {
     colNames.push(col);
   }
   colNamesManual = ["genus", "specificepithet", "diseasedetected"];
-  geo.infoWindow = cartodb.vis.Vis.addInfowindow(geo.lMap, layer, colNamesManual);
-  try {
-    geo.infoWindow.on("close", function() {
-      return this.remove();
-    });
-  } catch (undefined) {}
   return false;
 };
 
