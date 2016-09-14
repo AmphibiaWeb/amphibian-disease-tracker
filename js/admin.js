@@ -2314,7 +2314,7 @@ loadEditor = function(projectPreload) {
       projectId = encodeURIComponent(projectId);
       args = "perform=get&project=" + projectId;
       return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, fundingHtml, googleMap, gymnophionaState, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ref5, ta, toggleChecked, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
+        var affixOptions, anuraState, authorData, bb, cartoParsed, caudataState, centerPoint, collectionRangePretty, conditionalReadonly, createMapOptions, creation, d1, d2, deleteCardAction, e, error, error1, error2, error3, error4, fundingHtml, googleMap, gymnophionaState, hasDisplayedUser, html, i, icon, l, len, len1, len2, m, mapHtml, mdFunding, mdNotes, month, monthPretty, months, monthsReal, noteHtml, o, poly, project, publicToggle, ref, ref1, ref2, ref3, ref4, ref5, ta, toggleChecked, topPosition, uid, userHtml, year, yearPretty, years, yearsReal;
         try {
           console.info("Server said", result);
           if (result.status !== true) {
@@ -2350,11 +2350,16 @@ loadEditor = function(projectPreload) {
           _adp.originalProjectId = project.project_id;
           _adp.fetchResult = result;
           userHtml = "";
+          hasDisplayedUser = new Array();
           ref1 = project.access_data.total;
           for (l = 0, len = ref1.length; l < len; l++) {
             user = ref1[l];
             try {
               uid = project.access_data.composite[user]["user_id"];
+              if (indexOf.call(hasDisplayedUser, uid) >= 0) {
+                continue;
+              }
+              hasDisplayedUser.push(uid);
             } catch (undefined) {}
             icon = "";
             if (user === project.access_data.author) {

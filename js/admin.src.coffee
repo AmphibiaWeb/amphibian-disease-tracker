@@ -2308,9 +2308,13 @@ loadEditor = (projectPreload) ->
           ## Real DOM stuff
           # Userlist
           userHtml = ""
+          hasDisplayedUser = new Array()
           for user in project.access_data.total
             try
               uid = project.access_data.composite[user]["user_id"]
+              if uid in hasDisplayedUser
+                continue
+              hasDisplayedUser.push uid
             icon = ""
             if user is project.access_data.author
               icon = """
