@@ -2927,12 +2927,12 @@ buildMap = function(mapBuilderObj, options, callback) {
   return false;
 };
 
-featureClickEvent = function(e, latlng, pos, data, layer) {
+featureClickEvent = function(e, latlng, pos, data, layer, template) {
 
   /*
    * Generalized click event
    */
-  var col, colNames, colNamesManual, val;
+  var col, colNames, colNamesManual, options, val;
   console.log("Clicked feature event", data, pos, latlng);
   colNames = new Array();
   for (col in data) {
@@ -2940,6 +2940,14 @@ featureClickEvent = function(e, latlng, pos, data, layer) {
     colNames.push(col);
   }
   colNamesManual = ["genus", "specificepithet", "diseasedetected"];
+  if (template != null) {
+    options = {
+      infowindowTemplate: template,
+      templateType: 'mustache'
+    };
+  } else {
+    options = null;
+  }
   return false;
 };
 
@@ -3019,12 +3027,15 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     try {
       layer.unbind("featureClick");
     } catch (undefined) {}
-    layer.on("error", function(err) {
+    layer.on("featureClick", function(e, latlng, pos, data, layerIndex) {
+      clickEvent.debounce(150, false, null, e, latlng, pos, data, layer, $("#infowindow_template_" + tableName).outerHtml());
+      return false;
+    }).on("error", function(err) {
       return console.warn("Error on layer feature click", err);
     });
     i = 0;
     setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex, workingLayer) {
-      var infoWindowTemplate, ref2, ref3, selector, template;
+      var colNamesManual, infoWindowTemplate, ref2, ref3, selector, template;
       if (count == null) {
         count = 0;
       }
@@ -3043,7 +3054,15 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           maxHeight: 250
         };
         sublayerToSet.infowindow.set(infoWindowTemplate);
-        console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex);
+        console.info("Successfully set template " + selector + " on sublayer " + carrySublayerIndex);
+        try {
+          colNamesManual = ["genus", "specificepithet", "diseasedetected"];
+          options = {
+            infowindowTemplate: template,
+            templateType: 'mustache'
+          };
+          cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis"));
+        } catch (undefined) {}
         if (carrySublayerIndex === 0) {
           try {
             workingLayer.infowindow.set("template", template);
