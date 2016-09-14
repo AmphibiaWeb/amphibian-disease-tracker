@@ -2379,7 +2379,7 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
 
 
 
-featureClickEvent = (e, latlng, pos, data, layer) ->
+featureClickEvent = (e, latlng, pos, data, layer, template) ->
   ###
   # Generalized click event
   ###
@@ -2392,7 +2392,13 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
     "specificepithet"
     "diseasedetected"
     ]
-  # geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNamesManual
+  if template?
+    options =
+      infowindowTemplate: template
+      templateType: 'mustache'
+  else
+    options = null
+  # geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNames, options
   # try
   #   geo.infoWindow.on "close", ->
   #     this.remove()
@@ -2477,12 +2483,12 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     try
       layer.unbind "featureClick"
     layer
-    # .on "featureClick", (e, latlng, pos, data, layerIndex) ->
-    #   # console.log "Clicked feature", data, pos, latlng
-    #   # if geo.infoWindow?
-    #   #   geo.infoWindow.remove()
-    #   clickEvent.debounce 150, false, null, e, latlng, pos, data, layer
-    #   false
+    .on "featureClick", (e, latlng, pos, data, layerIndex) ->
+      # console.log "Clicked feature", data, pos, latlng
+      # if geo.infoWindow?
+      #   geo.infoWindow.remove()
+      clickEvent.debounce 150, false, null, e, latlng, pos, data, layer, $("#infowindow_template_#{tableName}").outerHtml()
+      false
     .on "error", (err) ->
       console.warn "Error on layer feature click", err
     i = 0
@@ -2502,7 +2508,18 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
           maxHeight: 250
         #sublayerToSet.infowindow.set "template", template
         sublayerToSet.infowindow.set infoWindowTemplate
-        console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex}"
+        console.info "Successfully set template #{selector} on sublayer #{carrySublayerIndex}"
+        try
+          colNamesManual = [
+            "genus"
+            "specificepithet"
+            "diseasedetected"
+            ]
+          options =
+            infowindowTemplate: template
+            templateType: 'mustache'
+          cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, 
+          console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex} in vis"
         if carrySublayerIndex is 0
           try
             workingLayer.infowindow.set "template", template
@@ -2983,7 +3000,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
     console.log "Estimate #{estimate} seconds"
     window._adp.uploader = true
     $("#data-sync").removeAttr "indeterminate"
-    max = estimate * 30 # 30fps    
+    max = estimate * 30 # 30fps
     try
       p$("#data-sync").max = max
     do updateUploadProgress = (prog = 0) ->
