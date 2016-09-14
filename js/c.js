@@ -3065,6 +3065,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           };
           cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
           console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis");
+          console.debug("template", template);
+          console.debug("selector", $(selector).html());
         } catch (undefined) {}
         if (carrySublayerIndex === 0) {
           try {
