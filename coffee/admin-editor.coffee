@@ -576,10 +576,10 @@ popManageUserAccess = (project = _adp.projectData, result = _adp.fetchResult) ->
     userHtml = ""
     hasDisplayedUser = new Array()
     for user in project.access_data.total
-      if user in hasDisplayedUser
-        continue
-      hasDisplayedUser.push user
       uid = project.access_data.composite[user]["user_id"]
+      if uid in hasDisplayedUser
+        continue
+      hasDisplayedUser.push uid
       theirHtml = "#{user} <span class='set-permission-block' data-user='#{uid}'>"
       isAuthor = user is project.access_data.author
       isEditor =  user in project.access_data.editors_list
