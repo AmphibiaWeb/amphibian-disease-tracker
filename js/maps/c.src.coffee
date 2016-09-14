@@ -2392,10 +2392,10 @@ featureClickEvent = (e, latlng, pos, data, layer) ->
     "specificepithet"
     "diseasedetected"
     ]
-  geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNamesManual
-  try
-    geo.infoWindow.on "close", ->
-      this.remove()
+  # geo.infoWindow = cartodb.vis.Vis.addInfowindow geo.lMap, layer, colNamesManual
+  # try
+  #   geo.infoWindow.on "close", ->
+  #     this.remove()
   false
 
 
