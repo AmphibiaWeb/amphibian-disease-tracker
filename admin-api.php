@@ -5,11 +5,13 @@
  ***/
 #$debug = true;
 
+
 if ($debug) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
     error_log('AdminAPI is running in debug mode!');
 }
+
 
 $print_login_state = false;
 require_once 'DB_CONFIG.php';
@@ -67,9 +69,11 @@ if ($as_include !== true) {
         if ($admin_req == "advanced_project_search") {
             returnAjax(advancedSearchProject($_REQUEST));
         }
+
         $login_status['error'] = 'Invalid user';
         $login_status['human_error'] = "You're not logged in as a valid user to do this. Please log in and try again.";
         returnAjax($login_status);
+
     }
 
     switch ($admin_req) {
@@ -525,21 +529,22 @@ function editAccess($link, $deltas)
             } elseif ($currentRole == 'authorList') {
                 $observeList = 'authorList';
             } else {
-                $notices[] = "Unrecognized current role '".strotupper($currentRole)."'";
+                $notices[] = "Unrecognized current role '".strtoupper($currentRole)."'";
                 continue;
             }
             if ($newRole == 'edit') {
                 $addToList = 'editList';
             } elseif ($newRole == 'read') {
                 $addToList = 'viewList';
-            } elseif ($newRole == 'authorList') {
-                $addToList = 'authorList';
+            } elseif ($newRole == 'authorList' || $newRole == "author") {
+                # $addToList = 'authorList';
+                $addToList = 'editList';
             } else {
-                $notices[] = "Unrecognized new role '".strotupper($newRole)."'";
+                $notices[] = "Unrecognized new role '".strtoupper($newRole)."'";
                 continue;
             }
-
-            if ($newRole == 'edit' || $newRole == 'read') {
+            $useAuthorQuery = false;
+            if ($newRole == 'edit' || $newRole == 'read' || $newRole == "author") {
                 $key = array_find($user['uid'], ${$observeList});
                 if ($key === false) {
                     $notices[] = 'Invalid current role for '.$user['uid'];
@@ -552,19 +557,34 @@ function editAccess($link, $deltas)
                 }
                 array_push(${$addToList}, $user['uid']);
                 $operations[] = 'Removed '.$user['uid']." from $observeList and added to $addToList";
-            } elseif ($newRole == 'author') {
-                # Need to do fanciness
-            } else {
+                if ($newRole == 'author') {
+                    # Need to do fanciness
+                    $useAuthorQuery = true;
+                    $authorQuery = 'UPDATE `'.$db->getTable()."` SET `author`='".$user['uid']."' WHERE `project_id`='".$pid."'";
+                    $db->closeLink();
+                    $r = mysqli_query($db->getLink(), $authorQuery);
+                    if ($r !== true) {
+                        throw(new Exception(mysqli_error($db->getLink())));
+                    }
+                    $operations[] = "Changed project author to ".$user['uid'];
+                }
+            }  else {
                 $notices[] = 'Invalid role assignment for user '.$user['uid'];
             }
         }
         # Write the new lists back out
         $newList = array();
+        $editListTracker =array();
+        $readListTracker = array();
         foreach ($editList as $user) {
+            if(array_key_exists($user, $editListTracker)) continue;
             $newList[] = $user.':EDIT';
+            $editListTracker[$user] = true;
         }
         foreach ($viewList as $user) {
+            if(array_key_exists($user, $readListTracker)) continue;
             $newList[] = $user.':READ';
+            $readListTracker[$user] = true;
         }
         $newListString = implode(',', $newList);
         $newListString = $db->sanitize($newListString);
@@ -990,6 +1010,8 @@ function readProjectData($get, $precleaned = false, $debug = false)
     return $response;
 }
 
+
+
 function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addToExpedition = false, $fimsAuthCookiesAsString = null)
 {
     /***
@@ -1016,7 +1038,12 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
      *   place in a POST header
      * @return array
      ***/
-    global $db;
+     global $db;
+       $fimsDefaultHeaders = array(
+          'Content-type: application/x-www-form-urlencoded',
+          'Accept: application/json',
+          'User-Agent: amphibian disease portal',
+          );
     # FIMS probably already does this, but let's be a good net citizen.
     $datasetRelativeUri = $db->sanitize($datasetRelativeUri);
     $datasetTitle = $db->sanitize($datasetTitle);
@@ -1065,8 +1092,11 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             $params = array('http' => array(
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
-                'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                             'Accept: application/json;text/html;text/*;application/*',
+                'header' =>   implode("\r\n", array(
+                    'Content-type: application/x-www-form-urlencoded',
+                    'Accept: application/json',
+                    'User-Agent: amphibian disease portal',
+                ))."\r\n",
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1097,9 +1127,12 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             );
         }
         # Post the args
-        $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept: application/json;text/html;text/*;application/*\r\n'.
-                 'Cookie: '.$cookiesString."\r\n";
+        $headers = implode("\r\n", array(
+            'Content-type: application/x-www-form-urlencoded',
+            'Accept: application/json',
+            'User-Agent: amphibian disease portal',
+            'Cookie: '.$cookiesString,
+        ))."\r\n";
         $params['http']['header'] = $headers;
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
@@ -1210,8 +1243,11 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $params = array('http' => array(
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
-                'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*',
+                'header' => implode("\r\n", array(
+                    'Content-type: application/x-www-form-urlencoded',
+                    'Accept: application/json',
+                    'User-Agent: amphibian disease portal',
+                ))."\r\n",
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1242,9 +1278,12 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             );
         }
         # Post the args
-        $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept: application/json;text/html;text/*;application/*\r\n'.
-                 'Cookie: '.$cookiesString."\r\n";
+        $headers = implode("\r\n", array(
+            'Content-type: application/x-www-form-urlencoded',
+            'Accept: application/json',
+            'User-Agent: amphibian disease portal',
+            'Cookie: '.$cookiesString,
+        ))."\r\n";
         $params['http']['header'] = $headers;
 
         $associateResponses = array();
@@ -1270,7 +1309,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
                 curl_setopt($ch, CURLOPT_COOKIE, $cookiesString);
                 $httpHeader = array(
                     'Content-type: application/x-www-form-urlencoded',
-                    'Accept: application/json;text/html;text/*;application/*',
+                    'Accept: application/json',
                 );
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
                 curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -1331,6 +1370,11 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
      * @return array
      ***/
     global $db;
+    $fimsDefaultHeaders = array(
+        'Content-type: application/x-www-form-urlencoded',
+        'Accept: application/json',
+        'User-Agent: amphibian disease portal',
+        );
     # Does the project exist?
     $projectLink = $db->sanitize($projectLink);
     $projectUri = 'https://amphibiandisease.org/project.php?id='.$projectLink;
@@ -1354,11 +1398,11 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 'password' => $fimsPassCredential,
             );
             # Post the login
+            $postData = http_build_query($fimsAuthData);
             $params = array('http' => array(
                 'method' => 'POST',
-                'content' => http_build_query($fimsAuthData),
-                'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal',
+                'content' => $postData,
+                'header' => implode("\r\n", $fimsDefaultHeaders)."\r\n",
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1389,10 +1433,10 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             );
         }
         # Post the args
-        $headers = "Content-type: application/x-www-form-urlencoded\r\n".
-                 'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal\r\n'.
-                 'Cookie: '.$cookiesString."\r\n";
-        $params['http']['header'] = $headers;
+        $headers = $fimsDefaultHeaders;
+        $headers[] = 'Cookie: '.$cookiesString;
+        $header = implode("\r\n", $headers)."\r\n";
+        $params['http']['header'] = $header;
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
@@ -1430,6 +1474,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
 
         return $response;
     } catch (Exception $e) {
+        unset($params["http"]["content"]);
         return array(
             'status' => false,
             'error' => $e->getMessage(),
@@ -1437,6 +1482,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             'response' => $resp,
             "raw_response" => $rawResponse,
             "action" => "mintExpedition",
+            "params_headers" => $params,
         );
     }
 }
@@ -1453,10 +1499,13 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $fimsContinueUrl = $fimsValidateUrl.'/continue';
             $params = array('http' => array(
                 'method' => 'GET',
-                'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal',
+                'header' => implode("\r\n", array(
+                    'Content-type: application/x-www-form-urlencoded',
+                    'Accept: application/json',
+                    'User-Agent: amphibian disease portal',
+                ))."\r\n",
             ));
-            $params['http']['header'] .= "\r\nCookie: ".$cookiesString."\r\n";
+            $params['http']['header'] .= "Cookie: ".$cookiesString."\r\n";
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsStatusUrl, false, $ctx);
             if($rawResponse === false) {
@@ -1532,8 +1581,11 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $params = array('http' => array(
                 'method' => 'POST',
                 'content' => http_build_query($fimsAuthData),
-                'header' => 'Content-type: application/x-www-form-urlencoded\r\n'.
-                            'Accept: application/json;text/html;text/*;application/*\r\n'.                            'User-Agent: Amphibian Disease Portal',
+                'header' =>  implode("\r\n", array(
+                    'Content-type: application/x-www-form-urlencoded',
+                    'Accept: application/json',
+                    'User-Agent: amphibian disease portal',
+                ))."\r\n",
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
@@ -1565,9 +1617,9 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         }
         # Post the args
         $headers = array();
-        $header[] = 'Content-type: multipart/form-data';
-        $header[] = 'Accept: application/json;text/html;text/*;application/*';
-        $header[] = 'User-Agent: Amphibian Disease Portal';
+        $headers[] = 'Content-type: multipart/form-data';
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'User-Agent: amphibian disease portal';
         $params = array(
             'http' => array(
                 'method' => 'POST',
@@ -1585,6 +1637,8 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         curl_setopt($ch, CURLOPT_POSTFIELDS, $fimsValidateData);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_COOKIE, $cookiesString);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        #curl_setopt($ch, CURLOPT_USERAGENT, "amphibian disease portal");
         #curl_setopt( $ch, CURLOPT_HEADER, 1);
         $rawResponse = curl_exec($ch);
         curl_close($ch);

@@ -3535,7 +3535,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
 };
 
 geo.postToCarto = function(sqlQuery, dataTable, callback) {
-  var apiPostSqlQuery, args, doStillWorking, e2, error2, error3, estimate, max, postTimeStart, story, updateUploadProgress, workingIter;
+  var apiPostSqlQuery, args, doStillWorking, e2, error2, error3, estimate, estimateStartRef, max, postTimeStart, story, updateUploadProgress, workingIter;
   apiPostSqlQuery = encodeURIComponent(encode64(sqlQuery));
   args = "action=upload&sql_query=" + apiPostSqlQuery;
   console.info("Querying:");
@@ -3601,9 +3601,14 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       console.warn(e2.stack);
     }
   }
+  estimateStartRef = Date.now();
   $.post("api.php", args, "json").done(function(result) {
-    var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, key, parentCallback, prettyHtml, response, val;
+    var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, key, parentCallback, prettyHtml, realDuration, response, val;
     console.log("Got back", result);
+    try {
+      realDuration = roundNumber((Date.now() - estimateStartRef) / 1000, 1);
+      console.info("Really took " + realDuration + "s (estimated " + estimate + "s)", realDuration / estimate);
+    } catch (undefined) {}
     if (result.status !== true) {
       console.error("Got an error from the server!");
       console.warn(result);
