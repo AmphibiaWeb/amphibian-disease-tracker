@@ -614,6 +614,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
       # console.log "Clicked feature", data, pos, latlng
       # if geo.infoWindow?
       #   geo.infoWindow.remove()
+      tableName = params.named_map.params.table_name.slice 0, 63
       clickEvent.debounce 150, false, null, e, latlng, pos, data, layer, $("#infowindow_template_#{tableName}").outerHtml()
       false
     .on "error", (err) ->
