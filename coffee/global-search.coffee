@@ -62,19 +62,19 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
   query = "SELECT cartodb_id FROM #{table} LIMIT 1"
   args = "action=fetch&sql_query=#{post64(query)}"
   createInfoWindow = (projectId, scriptTemplateId, tableName) ->
-    detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p>"""
+    detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as {{content.data.diseasedetected}} (Fatal: {{content.data.fatal}})</p><p>Sample was taken in YYYY of a Living|Preserved specimen</p>"""
     html = """
         <script type="infowindow/html" id="#{scriptTemplateId}">
           <div class="cartodb-popup v2">
             <a href="#close" class="cartodb-popup-close-button close">x</a>
             <div class="cartodb-popup-content-wrapper">
               <div class="cartodb-popup-header">
-                <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"/>
+                <h1>Sample Info</h1>
               </div>
               <div class="cartodb-popup-content">
                 <!-- content.data contains the field info -->
                 <h4>Species: </h4>
-                <p>{{content.data.genus}} {{content.data.specificepithet}}</p>
+                <p><i>{{content.data.genus}} {{content.data.specificepithet}}</i></p>
                 #{detail}
                 <p><a href="https://amphibiandisease.org/project.php?id=#{projectId}">View Project</a></p>
               </div>
