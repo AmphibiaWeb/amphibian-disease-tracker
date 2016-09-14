@@ -2725,11 +2725,11 @@ popManageUserAccess = function(project, result) {
     ref = project.access_data.total;
     for (l = 0, len = ref.length; l < len; l++) {
       user = ref[l];
-      if (indexOf.call(hasDisplayedUser, user) >= 0) {
+      uid = project.access_data.composite[user]["user_id"];
+      if (indexOf.call(hasDisplayedUser, uid) >= 0) {
         continue;
       }
-      hasDisplayedUser.push(user);
-      uid = project.access_data.composite[user]["user_id"];
+      hasDisplayedUser.push(uid);
       theirHtml = user + " <span class='set-permission-block' data-user='" + uid + "'>";
       isAuthor = user === project.access_data.author;
       isEditor = indexOf.call(project.access_data.editors_list, user) >= 0;
