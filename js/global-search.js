@@ -69,10 +69,14 @@ createTemplateByProject = function(table, limited, callback) {
   }
   templateId = "infowindow_template_" + (table.slice(0, 63));
   if ($("#" + templateId).exists()) {
-    if (typeof callback === "function") {
-      callback();
+    if (limited) {
+      if (typeof callback === "function") {
+        callback();
+      }
+      return false;
+    } else {
+      $("#" + templateId).remove();
     }
-    return false;
   }
   window._adp.templateReady[table] = false;
   query = "SELECT cartodb_id FROM " + table + " LIMIT 1";

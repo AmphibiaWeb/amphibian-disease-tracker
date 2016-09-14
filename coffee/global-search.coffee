@@ -52,9 +52,12 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
       return false
   templateId = "infowindow_template_#{table.slice(0,63)}"
   if $("##{templateId}").exists()
-    if typeof callback is "function"
-      callback()
-    return false
+    if limited
+      if typeof callback is "function"
+        callback()
+      return false
+    else
+      $("##{templateId}").remove()
   window._adp.templateReady[table] = false
   query = "SELECT cartodb_id FROM #{table} LIMIT 1"
   args = "action=fetch&sql_query=#{post64(query)}"
