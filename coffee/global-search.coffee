@@ -38,12 +38,18 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
       window._adp = new Object()
     window._adp.templateReady = new Object()
     window._adp.templates = new Object()
+  doAsObject = false
   if typeof table is "object"
-    pid = table.project
-    table = table.table
-    doAsObject = true
-  else
-    doAsObject = false
+    if not isNull(table.table)
+      if not isNull(table.project)
+        pid = table.project
+        table = table.table
+        doAsObject = true
+      else
+        table = table.table
+    else
+      console.error "Couldn't create template for project -- undefined table", table
+      return false
   templateId = "infowindow_template_#{table.slice(0,63)}"
   if $("##{templateId}").exists()
     if typeof callback is "function"
@@ -82,11 +88,12 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
     console.info "Template set for ##{scriptTemplateId} (took #{elapsed}ms)"
     if typeof callback is "function"
       callback()
-    false
+    false # end createInfoWindow
   if doAsObject
     console.info "Directly provided project id"
     createInfoWindow pid, templateId, table
     return false
+  console.info "Creating template after pinging API endpoint"
   $.post "#{uri.urlString}api.php", args, "json"
   .done (result) ->
     projectId = result.parsed_responses?[0]?.project_id

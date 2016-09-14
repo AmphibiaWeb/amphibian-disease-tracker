@@ -52,12 +52,20 @@ createTemplateByProject = function(table, limited, callback) {
     window._adp.templateReady = new Object();
     window._adp.templates = new Object();
   }
+  doAsObject = false;
   if (typeof table === "object") {
-    pid = table.project;
-    table = table.table;
-    doAsObject = true;
-  } else {
-    doAsObject = false;
+    if (!isNull(table.table)) {
+      if (!isNull(table.project)) {
+        pid = table.project;
+        table = table.table;
+        doAsObject = true;
+      } else {
+        table = table.table;
+      }
+    } else {
+      console.error("Couldn't create template for project -- undefined table", table);
+      return false;
+    }
   }
   templateId = "infowindow_template_" + (table.slice(0, 63));
   if ($("#" + templateId).exists()) {
@@ -89,6 +97,7 @@ createTemplateByProject = function(table, limited, callback) {
     createInfoWindow(pid, templateId, table);
     return false;
   }
+  console.info("Creating template after pinging API endpoint");
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
     var projectId, ref1, ref2;
     projectId = (ref1 = result.parsed_responses) != null ? (ref2 = ref1[0]) != null ? ref2.project_id : void 0 : void 0;
