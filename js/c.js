@@ -3063,7 +3063,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
             infowindowTemplate: template,
             templateType: 'mustache'
           };
-          cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis"));
+          cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
+          console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis");
         } catch (undefined) {}
         if (carrySublayerIndex === 0) {
           try {

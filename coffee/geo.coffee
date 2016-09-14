@@ -646,7 +646,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
           options =
             infowindowTemplate: template
             templateType: 'mustache'
-          cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, 
+          cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options
           console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex} in vis"
         if carrySublayerIndex is 0
           try
