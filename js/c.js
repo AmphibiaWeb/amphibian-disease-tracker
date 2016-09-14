@@ -3028,6 +3028,8 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
       layer.unbind("featureClick");
     } catch (undefined) {}
     layer.on("featureClick", function(e, latlng, pos, data, layerIndex) {
+      var tableName;
+      tableName = params.named_map.params.table_name.slice(0, 63);
       clickEvent.debounce(150, false, null, e, latlng, pos, data, layer, $("#infowindow_template_" + tableName).outerHtml());
       return false;
     }).on("error", function(err) {
