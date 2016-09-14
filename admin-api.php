@@ -529,17 +529,17 @@ function editAccess($link, $deltas)
             } elseif ($currentRole == 'authorList') {
                 $observeList = 'authorList';
             } else {
-                $notices[] = "Unrecognized current role '".strotupper($currentRole)."'";
+                $notices[] = "Unrecognized current role '".strtoupper($currentRole)."'";
                 continue;
             }
             if ($newRole == 'edit') {
                 $addToList = 'editList';
             } elseif ($newRole == 'read') {
                 $addToList = 'viewList';
-            } elseif ($newRole == 'authorList') {
+            } elseif ($newRole == 'authorList' || $newRole == "author") {
                 $addToList = 'authorList';
             } else {
-                $notices[] = "Unrecognized new role '".strotupper($newRole)."'";
+                $notices[] = "Unrecognized new role '".strtoupper($newRole)."'";
                 continue;
             }
 
