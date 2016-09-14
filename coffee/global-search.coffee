@@ -571,6 +571,14 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
         table = table.unescape()
       unless isNull table
         # Create named map layers
+        try
+          templateParam =
+            project: project.project_id
+            table: table
+          createTemplateByProject templateParam
+        catch e
+          console.error "Warning: couldn't create project template: #{e.message}"
+          console.warn e.stack
         layer =
           name: namedMap
           type: "namedmap"

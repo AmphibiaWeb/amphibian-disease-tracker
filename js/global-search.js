@@ -586,7 +586,7 @@ doSearch = function(search, goDeep, hasRunValidated) {
 };
 
 doDeepSearch = function(results, namedMap) {
-  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapBounds, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, totalSamples, totalSpecies, val, zoom;
+  var args, boundingBox, boundingBoxArray, cartoParsed, cartoPreParsed, cleanKey, cleanVal, detected, diseaseWord, e, ensureCenter, error, error1, error2, error3, fatal, fatalSimple, goDeep, i, j, k, key, l, layer, layerSourceObj, layers, len, len1, len2, mapBounds, mapCenter, pathogen, posSamples, project, projectTableMap, ref, ref1, ref2, ref3, ref4, resultQueryPile, search, spArr, spText, species, speciesCount, subText, table, tempQuery, templateParam, totalSamples, totalSpecies, val, zoom;
   if (namedMap == null) {
     namedMap = namedMapAdvSource;
   }
@@ -689,6 +689,17 @@ doDeepSearch = function(results, namedMap) {
         table = table.unescape();
       } catch (undefined) {}
       if (!isNull(table)) {
+        try {
+          templateParam = {
+            project: project.project_id,
+            table: table
+          };
+          createTemplateByProject(templateParam);
+        } catch (error1) {
+          e = error1;
+          console.error("Warning: couldn't create project template: " + e.message);
+          console.warn(e.stack);
+        }
         layer = {
           name: namedMap,
           type: "namedmap",
@@ -760,7 +771,7 @@ doDeepSearch = function(results, namedMap) {
       $("#post-map-subtitle").removeClass("text-muted").addClass("bg-success");
       args = "action=fetch&sql_query=" + (post64(resultQueryPile));
       $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-        var coordArray, e, error1, error2, error3, len3, len4, m, o, p, row, rows, tableResults;
+        var coordArray, error2, error3, error4, len3, len4, m, o, p, row, rows, tableResults;
         console.info("Detailed results: ", result);
         try {
           results = Object.toArray(result.parsed_responses);
@@ -798,17 +809,17 @@ doDeepSearch = function(results, namedMap) {
             } catch (undefined) {}
             try {
               geo.lMap.setView(mapCenter.getObj());
-            } catch (error1) {
-              e = error1;
+            } catch (error2) {
+              e = error2;
               console.warn("Failed to recenter map - " + e.message, coordArray);
               console.warn(e.stack);
             }
-          } catch (error2) {
-            e = error2;
+          } catch (error3) {
+            e = error3;
             console.warn("Failed to rezoom/recenter map - " + e.message, coordArray);
             console.warn(e.stack);
           }
-        } catch (error3) {
+        } catch (error4) {
           console.warn("Couldn't parse responses from server");
         }
         return false;
@@ -862,7 +873,7 @@ doDeepSearch = function(results, namedMap) {
         }
         ++count;
         return _adp.centerTimeout = delay(timeout, function() {
-          var e, error1;
+          var error2;
           if (!isNumber(maxCount)) {
             maxCount = 100;
           }
@@ -873,8 +884,8 @@ doDeepSearch = function(results, namedMap) {
           try {
             console.log("#" + count + "/" + maxCount + " Deep setting view to", mapCenter.getObj(), [pctOffLat, pctOffLng]);
             geo.lMap.setView(mapCenter.getObj());
-          } catch (error1) {
-            e = error1;
+          } catch (error2) {
+            e = error2;
             console.warn("Error setting view - " + e.message);
           }
           if (count < maxCount) {
@@ -882,14 +893,14 @@ doDeepSearch = function(results, namedMap) {
           }
         });
       })(0, 100, 100);
-    } catch (error1) {
-      e = error1;
+    } catch (error2) {
+      e = error2;
       console.error("Couldn't create map! " + e.message);
       console.warn(e.stack);
     }
     stopLoad();
-  } catch (error2) {
-    e = error2;
+  } catch (error3) {
+    e = error3;
     stopLoadError("There was a problem performing a sample search");
     console.error("Problem performing sample search! " + e.message);
     console.warn(e.stack);
