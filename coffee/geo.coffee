@@ -644,7 +644,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             "diseasedetected"
             ]
           options =
-            infowindowTemplate: template
+            infowindowTemplate: $(selector).html()
             templateType: 'mustache'
           cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options
           console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex} in vis"

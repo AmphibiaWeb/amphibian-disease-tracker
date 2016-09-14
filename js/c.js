@@ -3060,7 +3060,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
         try {
           colNamesManual = ["genus", "specificepithet", "diseasedetected"];
           options = {
-            infowindowTemplate: template,
+            infowindowTemplate: $(selector).html(),
             templateType: 'mustache'
           };
           cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
