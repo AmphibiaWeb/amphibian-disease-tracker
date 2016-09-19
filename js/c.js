@@ -3061,11 +3061,18 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           colNamesManual = ["genus", "specificepithet", "diseasedetected"];
           infoWindowParser = function(inputHtml) {
             var outputHtml;
+            console.debug("Running infowindow parser on ", inputHtml);
             $("body .temp-parser").remove();
             $("body").append("<div class='temp-parser'>\n  " + inputHtml + "\n</div>");
             $(".temp-parser").find(".unix-date").each(function() {
               var d, dateMs, y;
               dateMs = $(this).text();
+              if (isNull(dateMs)) {
+                $(this).parent().remove();
+              }
+              if (isNumber(dateMs)) {
+                dateMs = toInt(dateMs);
+              }
               d = new Date(dateMs);
               y = d.getUTCFullYear();
               return $(this).replaceWith(y);
@@ -3080,6 +3087,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
             });
             outputHtml = $(".temp-parser").html();
             $(".temp-parser").remove();
+            console.debug("Parser output", outputHtml);
             return outputHtml;
           };
           options = {
