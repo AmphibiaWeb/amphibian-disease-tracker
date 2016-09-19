@@ -2518,6 +2518,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             ]
           infoWindowParser = (inputHtml) ->
             # Override the default sanitizer
+            console.debug "Running infowindow parser on ", inputHtml
             $("body .temp-parser").remove()
             $("body").append """
             <div class='temp-parser'>
@@ -2528,6 +2529,10 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/174
             $(".temp-parser").find(".unix-date").each ->
               dateMs = $(this).text()
+              if isNull dateMs
+                $(this).parent().remove()
+              if isNumber dateMs
+                dateMs = toInt dateMs
               d = new Date(dateMs)
               y = d.getUTCFullYear()
               $(this).replaceWith y
@@ -2543,6 +2548,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             outputHtml = $(".temp-parser").html()
             # Cleanup
             $(".temp-parser").remove()
+            console.debug "Parser output", outputHtml
             outputHtml
           # https://carto.com/docs/carto-engine/carto-js/api-methods/#sublayerinfowindow
           options =
