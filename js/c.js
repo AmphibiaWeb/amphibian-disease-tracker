@@ -3037,7 +3037,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     });
     i = 0;
     setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex, workingLayer) {
-      var colNamesManual, infoWindowTemplate, ref2, ref3, selector, template;
+      var colNamesManual, infoWindowParser, infoWindowTemplate, ref2, ref3, selector, template;
       if (count == null) {
         count = 0;
       }
@@ -3059,9 +3059,33 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
         console.info("Successfully set template " + selector + " on sublayer " + carrySublayerIndex);
         try {
           colNamesManual = ["genus", "specificepithet", "diseasedetected"];
+          infoWindowParser = function(inputHtml) {
+            var outputHtml;
+            $("body .temp-parser").remove();
+            $("body").append("<div class='temp-parser'>\n  " + inputHtml + "\n</div>");
+            $(".temp-parser").find(".unix-date").each(function() {
+              var d, dateMs, y;
+              dateMs = $(this).text();
+              d = new Date(dateMs);
+              y = d.getUTCFullYear();
+              return $(this).replaceWith(y);
+            });
+            $(".temp-parser").find(".disposition").each(function() {
+              var label;
+              label = $(this).find(".disposition-label");
+              if (isNull(label)) {
+                console.debug("Removed empty disposition from label");
+                return $(this).remove();
+              }
+            });
+            outputHtml = $(".temp-parser").html();
+            $(".temp-parser").remove();
+            return outputHtml;
+          };
           options = {
             infowindowTemplate: $(selector).html(),
-            templateType: 'mustache'
+            templateType: 'mustache',
+            sanitizeTemplate: infoWindowParser
           };
           cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
           console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis");

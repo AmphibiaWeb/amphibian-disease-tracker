@@ -643,9 +643,39 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             "specificepithet"
             "diseasedetected"
             ]
+          infoWindowParser = (inputHtml) ->
+            # Override the default sanitizer
+            $("body .temp-parser").remove()
+            $("body").append """
+            <div class='temp-parser'>
+              #{inputHtml}
+            </div>
+            """
+            # Trim dates to year only
+            # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/174
+            $(".temp-parser").find(".unix-date").each ->
+              dateMs = $(this).text()
+              d = new Date(dateMs)
+              y = d.getUTCFullYear()
+              $(this).replaceWith y
+            # Show the disposition, if avaiable
+            # See
+            # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/174
+            $(".temp-parser").find(".disposition").each ->
+              label = $(this).find(".disposition-label")
+              if isNull label
+                console.debug "Removed empty disposition from label"
+                $(this).remove()
+            # Store it
+            outputHtml = $(".temp-parser").html()
+            # Cleanup
+            $(".temp-parser").remove()
+            outputHtml
+          # https://carto.com/docs/carto-engine/carto-js/api-methods/#sublayerinfowindow
           options =
             infowindowTemplate: $(selector).html()
             templateType: 'mustache'
+            sanitizeTemplate: infoWindowParser
           cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options
           console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex} in vis"
           console.debug "template", template
