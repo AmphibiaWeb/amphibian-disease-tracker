@@ -2391,6 +2391,7 @@ featureClickEvent = (e, latlng, pos, data, layer, template) ->
     "genus"
     "specificepithet"
     "diseasedetected"
+    "dateidentified"
     ]
   if template?
     options =
@@ -2515,6 +2516,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             "genus"
             "specificepithet"
             "diseasedetected"
+            "dateidentified"
             ]
           infoWindowParser = (inputHtml) ->
             # Override the default sanitizer

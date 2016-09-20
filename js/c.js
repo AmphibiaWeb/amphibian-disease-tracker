@@ -2939,7 +2939,7 @@ featureClickEvent = function(e, latlng, pos, data, layer, template) {
     val = data[col];
     colNames.push(col);
   }
-  colNamesManual = ["genus", "specificepithet", "diseasedetected"];
+  colNamesManual = ["genus", "specificepithet", "diseasedetected", "dateidentified"];
   if (template != null) {
     options = {
       infowindowTemplate: template,
@@ -3058,7 +3058,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
         sublayerToSet.infowindow.set(infoWindowTemplate);
         console.info("Successfully set template " + selector + " on sublayer " + carrySublayerIndex);
         try {
-          colNamesManual = ["genus", "specificepithet", "diseasedetected"];
+          colNamesManual = ["genus", "specificepithet", "diseasedetected", "dateidentified"];
           infoWindowParser = function(inputHtml) {
             var outputHtml;
             console.debug("Running infowindow parser on ", inputHtml);

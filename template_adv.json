@@ -9,6 +9,7 @@
             "diseasedetected",
             "diseasetested",
             "fatal",
+            "dateidentified",
             "genus",
             "specificepithet"
           ],
@@ -51,7 +52,7 @@
       "type": "css_color"
     }
   },
-  "name": "adp_specific_heatmap-v11",
+  "name": "adp_specific_heatmap-v15",
   "version": "0.0.1",
   "auth": {
     "method": "open"
