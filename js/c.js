@@ -3037,7 +3037,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     });
     i = 0;
     setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex, workingLayer) {
-      var colNamesManual, infoWindowParser, infoWindowTemplate, ref2, ref3, selector, template;
+      var colNamesManual, error3, infoWindowParser, infoWindowTemplate, ref2, ref3, selector, template;
       if (count == null) {
         count = 0;
       }
@@ -3098,7 +3098,12 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
           cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
           try {
             workingLayer.getSubLayer(carrySublayerIndex).infowindow.sanitizeTemplate = infoWindowParser;
-          } catch (undefined) {}
+            console.debug("Assigned template parser to sublayer");
+          } catch (error3) {
+            e = error3;
+            console.warn("Couldn't assign template parser - " + e.message);
+            console.warn(e.stack);
+          }
           console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis");
           console.debug("template", template);
           console.debug("selector", $(selector).html());
