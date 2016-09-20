@@ -7,7 +7,7 @@ var checkCoordinateSanity, createOverflowMenu, createTemplateByProject, doDeepSe
 
 namedMapSource = "adp_generic_heatmap-v16";
 
-namedMapAdvSource = "adp_specific_heatmap-v11";
+namedMapAdvSource = "adp_specific_heatmap-v15";
 
 checkCoordinateSanity = function() {
   var bounds, isGood;
@@ -949,7 +949,7 @@ showAllTables = function() {
           layers: [
             {
               layer_name: "layer-" + layers.length,
-              interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet"
+              interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet, dateidentified, specimendisposition"
             }
           ],
           params: {
