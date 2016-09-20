@@ -3095,7 +3095,6 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
             templateType: 'mustache',
             sanitizeTemplate: infoWindowParser
           };
-          cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
           try {
             workingLayer.getSubLayer(carrySublayerIndex).infowindow.sanitizeTemplate = infoWindowParser;
             console.debug("Assigned template parser to sublayer");
@@ -3104,6 +3103,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
             console.warn("Couldn't assign template parser - " + e.message);
             console.warn(e.stack);
           }
+          cartodb.vis.Vis.addInfowindow(geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options);
           console.info("Successfully assigned template " + selector + " to sublayer " + carrySublayerIndex + " in vis");
           console.debug("template", template);
           console.debug("selector", $(selector).html());

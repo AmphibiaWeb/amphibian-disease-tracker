@@ -682,13 +682,13 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
             infowindowTemplate: $(selector).html()
             templateType: 'mustache'
             sanitizeTemplate: infoWindowParser
-          cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options
           try
             workingLayer.getSubLayer(carrySublayerIndex).infowindow.sanitizeTemplate = infoWindowParser
             console.debug "Assigned template parser to sublayer"
           catch e
             console.warn "Couldn't assign template parser - #{e.message}"
             console.warn e.stack
+          cartodb.vis.Vis.addInfowindow geo.lMap, workingLayer.getSubLayer(carrySublayerIndex), colNamesManual, options
           console.info "Successfully assigned template #{selector} to sublayer #{carrySublayerIndex} in vis"
           console.debug "template", template
           console.debug "selector", $(selector).html()
