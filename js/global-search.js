@@ -83,7 +83,7 @@ createTemplateByProject = function(table, limited, callback) {
   args = "action=fetch&sql_query=" + (post64(query));
   createInfoWindow = function(projectId, scriptTemplateId, tableName) {
     var detail, elapsed, html;
-    detail = limited ? "" : "<p>Tested {{content.data.diseasetested}} as <strong>{{content.data.diseasedetected}}</strong> (Fatal: <strong>{{content.data.fatal}}</strong>)</p><p>Sample was taken <span class=\"date-group\">in <span class=\"unix-date\">{{content.data.dateidentified}}</span></span> of a <span class=\"disposition\"><span class=\"disposition-label\">{{content.data.specimendisposition}}</span> specimen</span></p>";
+    detail = limited ? "" : "<p>Tested {{content.data.diseasetested}} as <strong>{{content.data.diseasedetected}}</strong> (Fatal: <strong>{{content.data.fatal}}</strong>)</p><p><span class=\"date-group\">Sample was taken in <span class=\"unix-date\">{{content.data.dateidentified}}</span>.</span></p>";
     html = "<script type=\"infowindow/html\" id=\"" + scriptTemplateId + "\">\n  <div class=\"cartodb-popup v2\">\n    <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n    <div class=\"cartodb-popup-content-wrapper\">\n      <div class=\"cartodb-popup-header\">\n        <h2>Sample Info</h2>\n      </div>\n      <div class=\"cartodb-popup-content\">\n        <!-- content.data contains the field info -->\n        <h4>Species: </h4>\n        <p><i>{{content.data.genus}} {{content.data.specificepithet}}</i></p>\n        " + detail + "\n        <p><a href=\"https://amphibiandisease.org/project.php?id=" + projectId + "\">View Project</a></p>\n      </div>\n    </div>\n    <div class=\"cartodb-popup-tip-container\"></div>\n  </div>\n</script>";
     $("head").append(html);
     window._adp.templates[tableName] = html;
@@ -949,7 +949,7 @@ showAllTables = function() {
           layers: [
             {
               layer_name: "layer-" + layers.length,
-              interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet, dateidentified, specimendisposition"
+              interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet, dateidentified"
             }
           ],
           params: {

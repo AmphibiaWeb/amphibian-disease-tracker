@@ -62,7 +62,7 @@ createTemplateByProject = (table = "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828
   query = "SELECT cartodb_id FROM #{table} LIMIT 1"
   args = "action=fetch&sql_query=#{post64(query)}"
   createInfoWindow = (projectId, scriptTemplateId, tableName) ->
-    detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as <strong>{{content.data.diseasedetected}}</strong> (Fatal: <strong>{{content.data.fatal}}</strong>)</p><p>Sample was taken <span class="date-group">in <span class="unix-date">{{content.data.dateidentified}}</span></span> of a <span class="disposition"><span class="disposition-label">{{content.data.specimendisposition}}</span> specimen</span></p>"""
+    detail = if limited then "" else """<p>Tested {{content.data.diseasetested}} as <strong>{{content.data.diseasedetected}}</strong> (Fatal: <strong>{{content.data.fatal}}</strong>)</p><p><span class="date-group">Sample was taken in <span class="unix-date">{{content.data.dateidentified}}</span>.</span></p>"""
     html = """
         <script type="infowindow/html" id="#{scriptTemplateId}">
           <div class="cartodb-popup v2">
@@ -821,7 +821,7 @@ showAllTables = ->
           type: "namedmap"
           layers: [
             layer_name: "layer-#{layers.length}"
-            interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet, dateidentified, specimendisposition"
+            interactivity: "cartodb_id, id, diseasedetected, genus, specificepithet, dateidentified"
             ]
           params:
             table_name: table
