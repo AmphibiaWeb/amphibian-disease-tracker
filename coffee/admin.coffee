@@ -730,16 +730,28 @@ finalizeData = (skipFields = false, callback) ->
             return postData
           _adp.currentAsyncJqxhr = $.post adminParams.apiTarget, args, "json"
           .done (result) ->
-            if result.status is true
-              bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
-              stopLoad()
-              delay 1000, ->
-                loadEditor _adp.projectId
-              toastStatusMessage "Data successfully saved to server"
-            else
-              console.error result.error.error
-              console.log result
-              stopLoadError result.human_error
+            try
+              if result.status is true
+                bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+                stopLoad()
+                delay 1000, ->
+                  loadEditor _adp.projectId
+                toastStatusMessage "Data successfully saved to server"
+              else
+                console.error result.error.error
+                console.log result
+                stopLoadError result.human_error
+                bsAlert result.human_error, "error"
+            catch e
+              stopLoadError "There was a verifying your save data"
+              try
+                jsonResponse = JSON.stringify result
+              catch
+                jsonResponse = "BAD_OBJECT"
+              try
+                bsAlert "There was a problem verifying your save data<br/><br/>Application said: <code>#{jsonResponse}</code><code>#{e.message}</code><code>#{e.stack}</code>", "error"
+              console.error "JavaScript error in save data callback! FinalizeData said: #{e.message}"
+              console.warn e.stack
             false
           .fail (result, status) ->
             stopLoadError "There was a problem saving your data. Please try again"
@@ -789,6 +801,8 @@ finalizeData = (skipFields = false, callback) ->
   catch e
     # Function try
     stopLoadError "There was a problem with the application. Please try again later. (E-004)"
+    try
+      bsAlert "There was a problem with the application. Please try again later. (E-004)<br/><br/>Application said: <code>#{e.message}</code><code>#{e.stack}</code>", "error"
     console.error "JavaScript error in saving data (E-004)! FinalizeData said: #{e.message}"
     console.warn e.stack
 
