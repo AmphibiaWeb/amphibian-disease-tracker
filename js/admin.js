@@ -2625,6 +2625,9 @@ loadEditor = function(projectPreload) {
             return false;
           });
           $("#reparse-project").click(function() {
+            try {
+              recalculateAndUpdateHull();
+            } catch (undefined) {}
             revalidateAndUpdateData();
             return false;
           });
@@ -3580,6 +3583,11 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
         geo.requestCartoUpload(validatedData, projectIdentifier, "create", function(table, coords, options) {
           bsAlert("Hang on for a moment while we reprocess this for saving", "info");
           cartoData.table = geo.dataTable;
+          try {
+            if (isArray(points)) {
+              cartoData = recalculateAndUpdateHull();
+            }
+          } catch (undefined) {}
           _adp.projectData.carto_id = JSON.stringify(cartoData);
           path = dataFileParams.filePath;
           revalidateAndUpdateData(path);

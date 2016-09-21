@@ -1358,6 +1358,11 @@ downloadCSVFile = (data, options, callback) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   ###
+  # unless options?
+  #   options =
+  #     downloadFile: "cleaned-dataset-#{Date.now()}.csv"
+  #     selector: "#download-server-parsed-data"
+  #     create: true
   try
     postMessageContent =
       action: "csv"
@@ -1436,7 +1441,7 @@ downloadCSVFileOnThread = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   options.cascadeObjects ?= false
-  options.objectAsValues ?= false
+  options.objectAsValues ?= true # false
   # Parse it
   headerPlaceholder = new Array()
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
@@ -1475,7 +1480,8 @@ downloadCSVFileOnThread = (data, options) ->
               providedValue = JSON.stringify providedValue
             providedValue = providedValue.toString()
             tempValue = providedValue.replace(/"/g,'""')
-            tempValue = providedValue.replace(/<\/p><p>/g,'","')
+            tempValue = tempValue.replace(/,/g,'\,')
+            tempValue = tempValue.replace(/<\/p><p>/g,'","')
             if typeof providedOptions.splitValues is "string"
               tempValueArr = tempValue.split providedOptions.splitValues
               tempValue = tempValueArr.join "\",\""

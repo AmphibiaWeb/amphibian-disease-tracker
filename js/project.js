@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, postAuthorizeRender, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -849,6 +849,68 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
     $(selector).get(0).scrollIntoView(false);
   }
   return selector;
+};
+
+prepParsedDataDownload = function(projectData) {
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, options, parseableData;
+  options = {
+    selector: "main",
+    create: true,
+    objectAsValues: true
+  };
+  parseableData = new Object();
+  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoTable = cartoData.table;
+  if (isNull(cartoTable)) {
+    console.warn("WARNING: This project has no data associated with it. Not creating download.");
+    return false;
+  }
+  cartoQuery = "SELECT *, ST_asGeoJSON(the_geom) FROM " + cartoTable + ";";
+  console.info("Would ping cartodb with", cartoQuery);
+  apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
+  args = "action=fetch&sql_query=" + apiPostSqlQuery;
+  $.post("api.php", args, "json").done(function(result) {
+    var col, data, dataObj, error, error1, fims, geoJson, k, lat, lng, ref, row, rows;
+    if (!result.status) {
+      error = (ref = result.human_error) != null ? ref : result.error;
+      if (error == null) {
+        error = "Unknown error";
+      }
+      stopLoadError("Sorry, we couldn't retrieve your information at the moment (" + error + ")");
+      return false;
+    }
+    rows = result.parsed_responses[0].rows;
+    dataObj = new Array();
+    for (k in rows) {
+      row = rows[k];
+      geoJson = JSON.parse(row.st_asgeojson);
+      lat = geoJson.coordinates[1];
+      lng = geoJson.coordinates[0];
+      row.decimalLatitude = lat;
+      row.decimalLongitude = lng;
+      delete row.st_asgeojson;
+      try {
+        try {
+          fims = JSON.parse(row.fimsextra);
+        } catch (error1) {
+          fims = row.fimsextra;
+        }
+        if (typeof fims === "object") {
+          for (col in fims) {
+            data = fims[col];
+            row[col] = data;
+          }
+          delete row.fimsextra;
+        }
+      } catch (undefined) {}
+      dataObj.push(row);
+    }
+    return downloadCSVFile(dataObj, options);
+  }).fail(function(result, status) {
+    console.error("Couldn't create");
+    return console.error(result, status);
+  });
+  return false;
 };
 
 sqlQueryBox = function() {

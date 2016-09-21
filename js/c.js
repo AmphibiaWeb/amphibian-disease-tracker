@@ -1894,7 +1894,7 @@ downloadCSVFileOnThread = function(data, options) {
     options.cascadeObjects = false;
   }
   if (options.objectAsValues == null) {
-    options.objectAsValues = false;
+    options.objectAsValues = true;
   }
   headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
@@ -1950,7 +1950,8 @@ downloadCSVFileOnThread = function(data, options) {
             }
             providedValue = providedValue.toString();
             tempValue = providedValue.replace(/"/g, '""');
-            tempValue = providedValue.replace(/<\/p><p>/g, '","');
+            tempValue = tempValue.replace(/,/g, '\,');
+            tempValue = tempValue.replace(/<\/p><p>/g, '","');
             if (typeof providedOptions.splitValues === "string") {
               tempValueArr = tempValue.split(providedOptions.splitValues);
               tempValue = tempValueArr.join("\",\"");

@@ -2699,6 +2699,8 @@ loadEditor = (projectPreload) ->
             showEditList()
             false
           $("#reparse-project").click ->
+            try
+              recalculateAndUpdateHull()
             revalidateAndUpdateData()
             false
           topPosition = $("#data-management").offset().top
@@ -3754,6 +3756,9 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
           bsAlert "Hang on for a moment while we reprocess this for saving", "info"
           cartoData.table = geo.dataTable
           # Call back and re-parse all this
+          try
+            if isArray points
+              cartoData = recalculateAndUpdateHull()
           _adp.projectData.carto_id = JSON.stringify cartoData
           path = dataFileParams.filePath
           revalidateAndUpdateData(path)
