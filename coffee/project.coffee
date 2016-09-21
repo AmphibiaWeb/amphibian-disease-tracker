@@ -810,6 +810,57 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
   selector
 
 
+prepParsedDataDownload = (projectData) ->
+  options =
+    selector: "main"
+    create: true
+    objectAsValues: true
+  parseableData = new Object()
+  # Ping carto for full dataset
+  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoTable = cartoData.table
+  if isNull cartoTable
+    console.warn "WARNING: This project has no data associated with it. Not creating download."
+    return false
+  cartoQuery = "SELECT *, ST_asGeoJSON(the_geom) FROM #{cartoTable};"
+  console.info "Would ping cartodb with", cartoQuery
+  apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
+  args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  $.post "api.php", args, "json"
+  .done (result) ->
+    unless result.status
+      error = result.human_error ? result.error
+      unless error?
+        error = "Unknown error"
+      stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
+      return false
+    # take fimsExtra for each and slot into own columns
+    rows = result.parsed_responses[0].rows
+    dataObj = new Array()
+    for k, row of rows
+      geoJson = JSON.parse row.st_asgeojson
+      # cartoDB works in lng, lat
+      lat = geoJson.coordinates[1]
+      lng = geoJson.coordinates[0]
+      row.decimalLatitude = lat
+      row.decimalLongitude = lng
+      delete row.st_asgeojson
+      try
+        try
+          fims = JSON.parse row.fimsextra
+        catch
+          fims = row.fimsextra
+        if typeof fims is "object"
+          for col, data of fims
+            row[col] = data
+          delete row.fimsextra
+      dataObj.push row
+    downloadCSVFile dataObj, options
+  .fail (result, status) ->
+    console.error "Couldn't create"
+    console.error result, status
+  false
+
 
 sqlQueryBox = ->
   ###
