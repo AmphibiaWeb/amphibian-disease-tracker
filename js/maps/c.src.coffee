@@ -3111,7 +3111,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
   estimateStartRef = Date.now()
   $.post "api.php", args, "json"
   .done (result) ->
-    console.log "Got back", result
+    console.log "Got back response from carto", result
     try
       realDuration = roundNumber (Date.now() - estimateStartRef) / 1000, 1
       console.info "Really took #{realDuration}s (estimated #{estimate}s)", realDuration/estimate
@@ -3132,7 +3132,8 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
           if key is "error"
             cartoHasError = val
     unless cartoHasError is false
-      bsAlert "Error uploading your data: #{cartoHasError}", "danger"
+      console.error "There was an error communicating with cartoDB!"
+      bsAlert "Error uploading your data to CartoDB: <code>#{cartoHasError}</code>", "danger"
       stopLoadError "CartoDB returned an error: #{cartoHasError}"
       return false
     console.info "Carto was successful! Got results", cartoResults

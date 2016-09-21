@@ -3701,7 +3701,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
   estimateStartRef = Date.now();
   $.post("api.php", args, "json").done(function(result) {
     var cartoHasError, cartoResults, dataBlobUrl, dataVisUrl, error, j, key, parentCallback, prettyHtml, realDuration, response, val;
-    console.log("Got back", result);
+    console.log("Got back response from carto", result);
     try {
       realDuration = roundNumber((Date.now() - estimateStartRef) / 1000, 1);
       console.info("Really took " + realDuration + "s (estimated " + estimate + "s)", realDuration / estimate);
@@ -3731,7 +3731,8 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       } catch (undefined) {}
     }
     if (cartoHasError !== false) {
-      bsAlert("Error uploading your data: " + cartoHasError, "danger");
+      console.error("There was an error communicating with cartoDB!");
+      bsAlert("Error uploading your data to CartoDB: <code>" + cartoHasError + "</code>", "danger");
       stopLoadError("CartoDB returned an error: " + cartoHasError);
       return false;
     }
