@@ -500,6 +500,11 @@ finalizeData = function(skipFields, callback) {
           postData.sample_field_numbers = sampleIds.join(",");
           postData.sample_methods_used = sampleMethods.join(",");
         } else {
+          if (geo.canonicalHullObject == null) {
+            try {
+              createConvexHullFINISHME;
+            } catch (undefined) {}
+          }
           if (geo.canonicalHullObject != null) {
             hull = geo.canonicalHullObject.hull;
             for (o = 0, len2 = hull.length; o < len2; o++) {
@@ -718,8 +723,8 @@ pointStringToLatLng = function(pointString, reverseLatLngOrder) {
   latKey = Math.abs(pointArr[0]) > 90 || reverseLatLngOrder ? 1 : 0;
   lngKey = latKey === 1 ? 0 : 1;
   pointObj = {
-    lat: pointArr[0],
-    lng: pointArr[1]
+    lat: pointArr[latKey],
+    lng: pointArr[lngKey]
   };
   return pointObj;
 };

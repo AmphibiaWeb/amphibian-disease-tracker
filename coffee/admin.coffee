@@ -645,6 +645,9 @@ finalizeData = (skipFields = false, callback) ->
           postData.sample_methods_used = sampleMethods.join(",")
         else
           # No data, check bounding box
+          unless geo.canonicalHullObject?
+            try
+              createConvexHullFINISHME
           if geo.canonicalHullObject?
             hull = geo.canonicalHullObject.hull
             for point in hull
@@ -822,8 +825,8 @@ pointStringToLatLng = (pointString, reverseLatLngOrder = false) ->
   latKey = if Math.abs(pointArr[0]) > 90 or reverseLatLngOrder then 1 else 0
   lngKey = if latKey is 1 then 0 else 1
   pointObj =
-    lat: pointArr[0]
-    lng: pointArr[1]
+    lat: pointArr[latKey]
+    lng: pointArr[lngKey]
   pointObj
 
 pointStringToPoint = (pointString, reverseLatLngOrder = false) ->

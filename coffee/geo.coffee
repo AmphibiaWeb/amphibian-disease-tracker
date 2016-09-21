@@ -520,7 +520,10 @@ getPointsFromCartoResult = (cartoResultRows, sorted = false) ->
     for row in rows
       pointString = row.st_asgeojson
       pointObj = JSON.parse pointString
-      coords = pointObj.coordinates
+      cartoCoords = pointObj.coordinates
+      coords =
+        lat: cartoCoords[1]
+        lng: cartoCoords[0]
       p = canonicalizePoint coords
       points.push p
     if sorted
@@ -1345,7 +1348,7 @@ sortPoints = (pointArray, asObj = true) ->
   sortedPoints
 
 
-canonicalizePoint = (point) ->
+canonicalizePoint = (point, swapConvention = false) ->
   ###
   # Take really any type of point, and return a Point
   ###
@@ -1356,13 +1359,21 @@ canonicalizePoint = (point) ->
   try
     tempLat = toFloat point.lat
     if tempLat.toString() is point.lat
-      point.lat = toFloat point.lat
-      point.lng = toFloat point.lng
+      unless swapConvention
+        point.lat = toFloat point.lat
+        point.lng = toFloat point.lng
+      else
+        point.lat = toFloat point.lng
+        point.lng = toFloat point.lat
     else
       tempLat = toFloat point[0]
       if tempLat.toString() is point[0]
-        point[0] = toFloat point[0]
-        point[1] = toFloat point[1]
+        unless swapConvention
+          point[0] = toFloat point[0]
+          point[1] = toFloat point[1]
+        else
+          point[0] = toFloat point[1]
+          point[1] = toFloat point[0]
   # Tests
   if typeof point?.lat is "number"
     pointObj = point
@@ -1414,8 +1425,18 @@ createConvexHull = (pointsArray, returnObj = false) ->
   startTime = Date.now()
   console.log "createConvexHull called with #{Object.size(pointsArray)} points"
   pointsArray = Object.toArray pointsArray
+  # Quickly check conventions
+  swapConventions = false
   for point in pointsArray
-    canonicalPoint = canonicalizePoint point
+    if Math.abs(point.lng) > 90
+      # We know that these are really lngs
+      break
+    if Math.abs(point.lat) > 90
+      # These "lats" should be "lngs"
+      swapConventions = true
+      break
+  for point in pointsArray
+    canonicalPoint = canonicalizePoint point, swapConventions
     realPointArray.push canonicalPoint
   try
     console.info "Getting convex hull (original: #{pointsArray.length}; canonical: #{realPointArray.length})", realPointArray
@@ -1896,7 +1917,7 @@ getConvexHullPoints = (points) ->
   # Get the actual convex hull.
   #
   # You almost never want to call this directly -- call
-  # getConvexHull() instead.
+  # createConvexHull() instead.
   #
   # @param array points -> pre-configured and pre-sorted points.
   #
@@ -1917,7 +1938,7 @@ getConvexHullConfig = (points, map = geo.googleMap) ->
   # for a Google Map object.
   #
   # Expects everything to be "pretty" -- you almost certainly want to
-  # call getConvexHull() instead.
+  # call createConvexHull() instead.
   #
   # @param array points -> well-formed array of points
   # @param GoogleMap map -> Google Map object
