@@ -1,0 +1,60 @@
+{
+  "layergroup": {
+    "layers": [
+      {
+        "options": {
+          "interactivity": [
+            "cartodb_id",
+            "id",
+            "diseasedetected",
+            "diseasetested",
+            "fatal",
+            "dateidentified",
+            "genus",
+            "specificepithet"
+          ],
+          "sql": "select * from <%= table_name %> where genus ilike '<%= genus %>' and specificepithet ilike '<%= specific_epithet %>' and diseasedetected ilike '%<%= disease_detected %>%' and diseasetested ilike '%<%= pathogen %>%'",
+          "cartocss": "#layer { marker-fill: <%= color %>; marker-opacity: 0.75}",
+          "cartocss_version": "2.1.1"
+        },
+        "type": "cartodb"
+      }
+    ],
+    "version": "1.0.1"
+  },
+  "placeholders": {
+    "table_name": {
+      "default": "t2627cbcbb4d7597f444903b2e7a5ce5c_6d6d454828c05e8ceea03c99cc5f5",
+      "type": "sql_literal"
+    },
+    "genus": {
+      "default": "",
+      "type": "sql_literal"
+    },
+    "specific_epithet": {
+      "default": "",
+      "type": "sql_literal"
+    },
+      "disease_detected": {
+      "default": "",
+      "type": "sql_literal"
+    },
+      "morbidity": {
+      "default": "",
+      "type": "sql_literal"
+    },
+      "pathogen": {
+      "default": "",
+      "type": "sql_literal"
+      },
+    "color": {
+      "default": "red",
+      "type": "css_color"
+    }
+  },
+  "name": "adp_specific_exact_heatmap-v1",
+  "version": "0.0.1",
+  "auth": {
+    "method": "open"
+  }
+}
