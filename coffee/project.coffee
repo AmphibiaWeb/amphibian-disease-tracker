@@ -559,6 +559,8 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   bindClicks(".authorized-action")
   cartoData = JSON.parse deEscape projectData.carto_id
   renderMapWithData(projectData) # Stops load
+  try
+    prepParsedDataDownload projectData
   false
 
 
@@ -811,10 +813,13 @@ checkArkDataset = (projectData, forceDownload = false, forceReparse = false) ->
 
 
 prepParsedDataDownload = (projectData) ->
+  d = new Date()
   options =
-    selector: "main"
+    selector: "#data-download-buttons"
     create: true
     objectAsValues: true
+    buttonText: "Download Parsed Dataset"
+    downloadFile: "datalist-#{projectData.project_id}-#{d.toISOString()}.csv"
   parseableData = new Object()
   # Ping carto for full dataset
   cartoData = JSON.parse deEscape projectData.carto_id
@@ -854,6 +859,10 @@ prepParsedDataDownload = (projectData) ->
           for col, data of fims
             row[col] = data
           delete row.fimsextra
+      delete row.cartodb_id
+      delete row.id
+      delete row.the_geom
+      delete row.the_geom_webmercator
       dataObj.push row
     downloadCSVFile dataObj, options
   .fail (result, status) ->

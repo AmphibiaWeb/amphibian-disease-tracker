@@ -571,6 +571,9 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   bindClicks(".authorized-action");
   cartoData = JSON.parse(deEscape(projectData.carto_id));
   renderMapWithData(projectData);
+  try {
+    prepParsedDataDownload(projectData);
+  } catch (undefined) {}
   return false;
 };
 
@@ -852,11 +855,14 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
 };
 
 prepParsedDataDownload = function(projectData) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, options, parseableData;
+  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, d, options, parseableData;
+  d = new Date();
   options = {
-    selector: "main",
+    selector: "#data-download-buttons",
     create: true,
-    objectAsValues: true
+    objectAsValues: true,
+    buttonText: "Download Parsed Dataset",
+    downloadFile: "datalist-" + projectData.project_id + "-" + (d.toISOString()) + ".csv"
   };
   parseableData = new Object();
   cartoData = JSON.parse(deEscape(projectData.carto_id));
@@ -903,6 +909,10 @@ prepParsedDataDownload = function(projectData) {
           delete row.fimsextra;
         }
       } catch (undefined) {}
+      delete row.cartodb_id;
+      delete row.id;
+      delete row.the_geom;
+      delete row.the_geom_webmercator;
       dataObj.push(row);
     }
     return downloadCSVFile(dataObj, options);

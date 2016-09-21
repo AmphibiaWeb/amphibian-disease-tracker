@@ -911,8 +911,9 @@ downloadCSVFile = function(data, options) {
               providedValue = JSON.stringify(providedValue);
             }
             providedValue = providedValue.toString();
-            tempValue = providedValue.replace(/"/g, '""');
-            tempValue = providedValue.replace(/<\/p><p>/g, '","');
+            tempValue = providedValue.replace(/,/g, '\,');
+            tempValue = tempValue.replace(/"/g, '""');
+            tempValue = tempValue.replace(/<\/p><p>/g, '","');
             if (typeof providedOptions.splitValues === "string") {
               tempValueArr = tempValue.split(providedOptions.splitValues);
               tempValue = tempValueArr.join("\",\"");
