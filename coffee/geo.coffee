@@ -505,6 +505,33 @@ buildMap = (mapBuilderObj = window.mapBuilder, options, callback) ->
   false
 
 
+getPointsFromCartoResult = (cartoResultRows, sorted = false) ->
+  ###
+  # From a cartoDB result row, return an array of points
+  #
+  # @param obj|array cartoResultRows -> The returned carto result rows
+  # @param bool sorted -> Should the results be sorted?
+  #
+  # @return array
+  ###
+  try
+    rows = Object.toArray cartoResultRows
+    points = new Array()
+    for row in rows
+      pointString = row.st_asgeojson
+      pointObj = JSON.parse pointString
+      coords = pointObj.coordinates
+      p = canonicalizePoint coords
+      points.push p
+    if sorted
+      oldPoints = points.slice 0
+      points = sortPoints oldPoints
+    return points
+  catch e
+    console.error "Couldn't get points: #{e.message}"
+    console.warn e.stack
+  false
+
 
 featureClickEvent = (e, latlng, pos, data, layer, template) ->
   ###
@@ -1384,6 +1411,7 @@ createConvexHull = (pointsArray, returnObj = false) ->
   ###
   simplePointArray = new Array()
   realPointArray = new Array()
+  startTime = Date.now()
   console.log "createConvexHull called with #{Object.size(pointsArray)} points"
   pointsArray = Object.toArray pointsArray
   for point in pointsArray
@@ -1408,6 +1436,9 @@ createConvexHull = (pointsArray, returnObj = false) ->
     hull: cpHull
     points: realPointArray
   geo.canonicalHullObject = obj
+  try
+    elapsed = Date.now() - startTime
+    console.debug "createConvexHull completed in #{elapsed}ms"
   if returnObj is true
     return obj
   cpHull
@@ -1834,12 +1865,14 @@ getConvexHull = (googleMapsMarkersArray) ->
         ll = new google.maps.LatLng llObj
       gmm.setPosition ll
       gmmReal.push gmm
-    googleMapsMarkersArray = gmmReal
+    googleMapsMarkersArray = gmmReal.slice 0
   points = new Array()
   for marker in googleMapsMarkersArray
     points.push marker.getPosition()
   points.sort sortPointY
   points.sort sortPointX
+  try
+    console.debug "Convex hull being formed from", points.slice 0
   getConvexHullConfig(points)
 
 sortPointX = (a, b) ->
@@ -1849,8 +1882,27 @@ sortPointY = (a, b) ->
   a.lat() - b.lat()
 
 
+sortPointsXY = (pointArray) ->
+  ###
+  # Sort an array of points by first Y then X
+  ###
+  pointArray.sort sortPointY
+  pointArray.sort sortPointX
+  pointArray
+
+
 getConvexHullPoints = (points) ->
-  hullPoints = new Array()
+  ###
+  # Get the actual convex hull.
+  #
+  # You almost never want to call this directly -- call
+  # getConvexHull() instead.
+  #
+  # @param array points -> pre-configured and pre-sorted points.
+  #
+  # @return array
+  ###
+  hullPoints = new Array() # The array to be filled
   chainHull_2D points, points.length, hullPoints
   realHull = new Array()
   for point in hullPoints
@@ -1860,6 +1912,16 @@ getConvexHullPoints = (points) ->
   realHull
 
 getConvexHullConfig = (points, map = geo.googleMap) ->
+  ###
+  # Gets the convex hull with all the standard configuration helpers
+  # for a Google Map object.
+  #
+  # Expects everything to be "pretty" -- you almost certainly want to
+  # call getConvexHull() instead.
+  #
+  # @param array points -> well-formed array of points
+  # @param GoogleMap map -> Google Map object
+  ###
   hullPoints = getConvexHullPoints points
   polygonConfig =
     map: map
@@ -1931,13 +1993,6 @@ function displayHullPts() {
 //    Return: >0 for P2 left of the line through P0 and P1
 //            =0 for P2 on the line
 //            <0 for P2 right of the line
-
-function sortPointX(a, b) {
-    return a.lng() - b.lng();
-}
-function sortPointY(a, b) {
-    return a.lat() - b.lat();
-}
 
 function isLeft(P0, P1, P2) {
     return (P1.lng() - P0.lng()) * (P2.lat() - P0.lat()) - (P2.lng() - P0.lng()) * (P1.lat() - P0.lat());
