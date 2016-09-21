@@ -521,9 +521,9 @@ function doCartoSqlApiPush($get)
             "query_type" => $sqlAction,
             "parsed_query" => $originalQuery,
             "checked_tables" => $checkedTablePermissions,
-            "foo" => base64_decode(urldecode($get["sql_query"])),
-            "bar" => base64_decode($get["sql_query"]),
-            "baz" => urldecode(base64_decode($get["sql_query"])),
+            #"foo" => base64_decode(urldecode($get["sql_query"])),
+            #"bar" => base64_decode($get["sql_query"]),
+            #"baz" => urldecode(base64_decode($get["sql_query"])),
             # "urls_posted" => $urls,
         );
         if(boolstr($get['blobby'])) {

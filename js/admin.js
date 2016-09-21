@@ -500,6 +500,11 @@ finalizeData = function(skipFields, callback) {
           postData.sample_field_numbers = sampleIds.join(",");
           postData.sample_methods_used = sampleMethods.join(",");
         } else {
+          if (geo.canonicalHullObject == null) {
+            try {
+              createConvexHullFINISHME;
+            } catch (undefined) {}
+          }
           if (geo.canonicalHullObject != null) {
             hull = geo.canonicalHullObject.hull;
             for (o = 0, len2 = hull.length; o < len2; o++) {
@@ -601,17 +606,34 @@ finalizeData = function(skipFields, callback) {
             return postData;
           }
           return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            if (result.status === true) {
-              bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
-              stopLoad();
-              delay(1000, function() {
-                return loadEditor(_adp.projectId);
-              });
-              toastStatusMessage("Data successfully saved to server");
-            } else {
-              console.error(result.error.error);
-              console.log(result);
-              stopLoadError(result.human_error);
+            var e, error2, error3, jsonResponse;
+            try {
+              if (result.status === true) {
+                bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+                stopLoad();
+                delay(1000, function() {
+                  return loadEditor(_adp.projectId);
+                });
+                toastStatusMessage("Data successfully saved to server");
+              } else {
+                console.error(result.error.error);
+                console.log(result);
+                stopLoadError(result.human_error);
+                bsAlert(result.human_error, "error");
+              }
+            } catch (error2) {
+              e = error2;
+              stopLoadError("There was a verifying your save data");
+              try {
+                jsonResponse = JSON.stringify(result);
+              } catch (error3) {
+                jsonResponse = "BAD_OBJECT";
+              }
+              try {
+                bsAlert("There was a problem verifying your save data<br/><br/>Application said: <code>" + jsonResponse + "</code><code>" + e.message + "</code><code>" + e.stack + "</code>", "error");
+              } catch (undefined) {}
+              console.error("JavaScript error in save data callback! FinalizeData said: " + e.message);
+              console.warn(e.stack);
             }
             return false;
           }).fail(function(result, status) {
@@ -669,6 +691,9 @@ finalizeData = function(skipFields, callback) {
   } catch (error1) {
     e = error1;
     stopLoadError("There was a problem with the application. Please try again later. (E-004)");
+    try {
+      bsAlert("There was a problem with the application. Please try again later. (E-004)<br/><br/>Application said: <code>" + e.message + "</code><code>" + e.stack + "</code>", "error");
+    } catch (undefined) {}
     console.error("JavaScript error in saving data (E-004)! FinalizeData said: " + e.message);
     return console.warn(e.stack);
   }
@@ -718,8 +743,8 @@ pointStringToLatLng = function(pointString, reverseLatLngOrder) {
   latKey = Math.abs(pointArr[0]) > 90 || reverseLatLngOrder ? 1 : 0;
   lngKey = latKey === 1 ? 0 : 1;
   pointObj = {
-    lat: pointArr[0],
-    lng: pointArr[1]
+    lat: pointArr[latKey],
+    lng: pointArr[lngKey]
   };
   return pointObj;
 };

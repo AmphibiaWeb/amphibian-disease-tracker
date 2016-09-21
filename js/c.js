@@ -2928,7 +2928,7 @@ buildMap = function(mapBuilderObj, options, callback) {
 };
 
 getPointsFromCartoResult = function(cartoResultRows, sorted) {
-  var coords, error2, len, m, oldPoints, p, pointObj, pointString, points, row, rows;
+  var cartoCoords, coords, error2, len, m, oldPoints, p, pointObj, pointString, points, row, rows;
   if (sorted == null) {
     sorted = false;
   }
@@ -2948,7 +2948,11 @@ getPointsFromCartoResult = function(cartoResultRows, sorted) {
       row = rows[m];
       pointString = row.st_asgeojson;
       pointObj = JSON.parse(pointString);
-      coords = pointObj.coordinates;
+      cartoCoords = pointObj.coordinates;
+      coords = {
+        lat: cartoCoords[1],
+        lng: cartoCoords[0]
+      };
       p = canonicalizePoint(coords);
       points.push(p);
     }
@@ -3826,12 +3830,15 @@ sortPoints = function(pointArray, asObj) {
   return sortedPoints;
 };
 
-canonicalizePoint = function(point) {
+canonicalizePoint = function(point, swapConvention) {
+  var error2, error3, error4, gLatLng, pReal, pointObj, tempLat;
+  if (swapConvention == null) {
+    swapConvention = false;
+  }
 
   /*
    * Take really any type of point, and return a Point
    */
-  var error2, error3, error4, gLatLng, pReal, pointObj, tempLat;
   pointObj = {
     lat: null,
     lng: null
@@ -3839,13 +3846,23 @@ canonicalizePoint = function(point) {
   try {
     tempLat = toFloat(point.lat);
     if (tempLat.toString() === point.lat) {
-      point.lat = toFloat(point.lat);
-      point.lng = toFloat(point.lng);
+      if (!swapConvention) {
+        point.lat = toFloat(point.lat);
+        point.lng = toFloat(point.lng);
+      } else {
+        point.lat = toFloat(point.lng);
+        point.lng = toFloat(point.lat);
+      }
     } else {
       tempLat = toFloat(point[0]);
       if (tempLat.toString() === point[0]) {
-        point[0] = toFloat(point[0]);
-        point[1] = toFloat(point[1]);
+        if (!swapConvention) {
+          point[0] = toFloat(point[0]);
+          point[1] = toFloat(point[1]);
+        } else {
+          point[0] = toFloat(point[1]);
+          point[1] = toFloat(point[0]);
+        }
       }
     }
   } catch (undefined) {}
@@ -3889,7 +3906,7 @@ canonicalizePoint = function(point) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, chConfig, cpHull, elapsed, error2, error3, len, len1, m, obj, point, q, realPointArray, simplePointArray, startTime;
+  var canonicalPoint, chConfig, cpHull, elapsed, error2, error3, len, len1, len2, m, obj, point, q, realPointArray, simplePointArray, startTime, swapConventions, t;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -3908,9 +3925,20 @@ createConvexHull = function(pointsArray, returnObj) {
   startTime = Date.now();
   console.log("createConvexHull called with " + (Object.size(pointsArray)) + " points");
   pointsArray = Object.toArray(pointsArray);
+  swapConventions = false;
   for (m = 0, len = pointsArray.length; m < len; m++) {
     point = pointsArray[m];
-    canonicalPoint = canonicalizePoint(point);
+    if (Math.abs(point.lng) > 90) {
+      break;
+    }
+    if (Math.abs(point.lat) > 90) {
+      swapConventions = true;
+      break;
+    }
+  }
+  for (q = 0, len1 = pointsArray.length; q < len1; q++) {
+    point = pointsArray[q];
+    canonicalPoint = canonicalizePoint(point, swapConventions);
     realPointArray.push(canonicalPoint);
   }
   try {
@@ -3929,8 +3957,8 @@ createConvexHull = function(pointsArray, returnObj) {
     console.warn(e.stack);
   }
   geo.canonicalBoundingBox = new Array();
-  for (q = 0, len1 = cpHull.length; q < len1; q++) {
-    point = cpHull[q];
+  for (t = 0, len2 = cpHull.length; t < len2; t++) {
+    point = cpHull[t];
     geo.canonicalBoundingBox.push(point.getObj());
   }
   obj = {
@@ -4502,7 +4530,7 @@ getConvexHullPoints = function(points) {
    * Get the actual convex hull.
    *
    * You almost never want to call this directly -- call
-   * getConvexHull() instead.
+   * createConvexHull() instead.
    *
    * @param array points -> pre-configured and pre-sorted points.
    *
@@ -4532,7 +4560,7 @@ getConvexHullConfig = function(points, map) {
    * for a Google Map object.
    *
    * Expects everything to be "pretty" -- you almost certainly want to
-   * call getConvexHull() instead.
+   * call createConvexHull() instead.
    *
    * @param array points -> well-formed array of points
    * @param GoogleMap map -> Google Map object
