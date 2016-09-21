@@ -5,6 +5,9 @@
 namedMapSource = "adp_generic_heatmap-v16"
 namedMapAdvSource = "adp_specific_heatmap-v15" #11
 
+try
+  if p$("#exact-species-search").checked
+    namedMapAdvSource = "adp_specific_exact_heatmap-v1"
 
 checkCoordinateSanity = ->
   isGood = true

@@ -9,6 +9,12 @@ namedMapSource = "adp_generic_heatmap-v16";
 
 namedMapAdvSource = "adp_specific_heatmap-v15";
 
+try {
+  if (p$("#exact-species-search").checked) {
+    namedMapAdvSource = "adp_specific_exact_heatmap-v1";
+  }
+} catch (undefined) {}
+
 checkCoordinateSanity = function() {
   var bounds, isGood;
   isGood = true;
