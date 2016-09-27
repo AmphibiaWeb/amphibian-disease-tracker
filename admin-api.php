@@ -1441,7 +1441,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
         if($rawResponse === false) {
-            throw(new Exception("Fatal FIMS communication error 006 (No Response)"));
+            throw(new Exception("Fatal FIMS communication error 006 (No Response) [".print_r(error_get_last(),true)."]"));
         }
         $resp = json_decode($rawResponse, true);
         # Get the ID in the result

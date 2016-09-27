@@ -296,7 +296,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
     console.log "Expedition got", result
     unless result.status
       stopLoadBarsError null, result.human_error
-      console.error result.error
+      console.error result.error, "#{adminParams.apiTarget}?#{args}"
       return false
     resultObj = result
     unless _adp?.fims?
