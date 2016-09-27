@@ -4710,7 +4710,7 @@ mintExpedition = function(projectId, title, callback) {
     console.log("Expedition got", result);
     if (!result.status) {
       stopLoadBarsError(null, result.human_error);
-      console.error(result.error);
+      console.error(result.error, adminParams.apiTarget + "?" + args);
       return false;
     }
     resultObj = result;
