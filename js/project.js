@@ -1183,10 +1183,12 @@ $(function() {
     }
     return false;
   });
-  return $(".self-citation").click(function() {
-    $(this).selectText();
-    return false;
-  });
+  try {
+    return $(".self-citation").click(function() {
+      $(this).selectText();
+      return false;
+    });
+  } catch (undefined) {}
 });
 
 //# sourceMappingURL=maps/project.js.map
