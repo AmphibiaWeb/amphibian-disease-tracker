@@ -482,7 +482,7 @@ $loginStatus = getLoginState();
     ?>
         <?php
           $authorData = json_decode($project['author_data'], true);
-          $authorParts = explode(",", $authorData["name"]);
+          $authorParts = explode(" ", $authorData["name"]);
           $authorNameFormal = $authorParts[1] . " " . substr($authorParts[0], 0, 1);
           $creationTime = $authorData["entry_date"];
           $today = date("d M Y");
@@ -490,7 +490,7 @@ $loginStatus = getLoginState();
           $creationYear = date("Y", $phpTime);
           ?>
         <cite class="self-citation col-xs-12" data-project="Project #<?php echo $pid; ?>">
-          <?php echo $authorNameFormal; ?> <?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>
+          <span class="author-name"><?php echo $authorNameFormal; ?></span> <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>
         </cite>
         <h2 class="col-xs-12">
           <span class="text-muted small">
