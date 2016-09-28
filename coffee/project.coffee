@@ -1123,3 +1123,8 @@ $ ->
         console.info "Recentered map"
       map.zoom = zoom
     false
+  try
+    # Set up easy citation highlight
+    $(".self-citation").click ->
+      $(this).selectText()
+      false
