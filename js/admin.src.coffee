@@ -490,17 +490,14 @@ loadCreateNewProject = ->
     false
   $("#init-map-build").click ->
     doMapBuilder window.mapBuilder, null, (map) ->
+      console.debug "doMapBuilder callback initialized ..."
       html = """
       <p class="text-muted" id="computed-locality">
-        Computed locality: <strong>#{map.locality}</strong>          
+        Computed locality: <strong>#{map.locality}</strong>
       </p>
-      <div class="alert alert-info" id="using-computed-locality">
-        <p>
-          This is your currently active locality. Entering points below will take priority over this.
-        </p>
-      </div>
       """
       $("#computed-locality").remove()
+      $("#using-computed-locality").remove()
       $("#transect-input-container").after html
       false
   $("#reset-map-builder").click ->
@@ -892,9 +889,22 @@ bootstrapTransect = ->
           $("#carto-rendered-map").prepend """
           <div class="alert alert-info alert-dismissable" role="alert" id="locality-lookup-result">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>Location Found</strong>: <span class="lookup-name"></span>
+            <strong>Location Found</strong>: <span class="lookup-name">#{result[0].formatted_address}</span>
           </div>
           """
+        infoHtml = """
+        <p class="text-muted" id="computed-locality">
+          Computed locality: <strong>#{result[0].formatted_address}</strong>
+        </p>
+        <div class="alert alert-info" id="using-computed-locality">
+          <p>
+            This is your currently active locality. Entering points below will take priority over this.
+          </p>
+        </div>
+        """
+        $("#computed-locality").remove()
+        $("#using-computed-locality").remove()
+        $("#transect-input-container").after infoHtml
         $("#locality-lookup-result .lookup-name").text result[0].formatted_address
         _adp.locality = result[0].formatted_address
         # Render the carto map
