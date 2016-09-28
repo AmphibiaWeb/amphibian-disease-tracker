@@ -489,15 +489,14 @@ $loginStatus = getLoginState();
           $phpTime = intval($creationTime) / 1000;
           $creationYear = date("Y", $phpTime);
           ?>
-        <cite class="self-citation col-xs-12" data-project="Project #<?php echo $pid; ?>">
-          <span class="author-name"><?php echo $authorNameFormal; ?></span> <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>
-        </cite>
-        <h2 class="col-xs-12">
-          <span class="text-muted small">
-            Project
-            #<?php echo $pid; ?>
-          </span>
-        </h2>
+        <div class="citation-block col-xs-12">
+          <p class="text-muted">
+            Recommended citation:
+          </p>
+          <cite class="self-citation" data-project="Project #<?php echo $pid; ?>">
+            <span class="author-name"><?php echo $authorNameFormal; ?></span> <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>
+          </cite>
+        </div>
         <h2 class="col-xs-12">
           Project Abstract
         </h2>
@@ -648,6 +647,12 @@ $loginStatus = getLoginState();
     ?>;
           </script>
         </div>
+        <h2 class="col-xs-12">
+          <span class="text-muted small">
+            Project
+            #<?php echo $pid; ?>
+          </span>
+        </h2>
         <?php
 } ?>
       </section>
