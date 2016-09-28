@@ -1026,7 +1026,11 @@ sqlQueryBox = function() {
   };
   if (!$("#project-sql-query-box").exists()) {
     html = "<div id=\"project-sql-query-box\" class=\"row\">\n  <h2 class=\"col-xs-12\">Raw Project Queries</h2>\n  <textarea class=\"form-control code col-xs-10 col-xs-offset-1\" rows=\"3\" id=\"query-input\" placeholder=\"SQL Query\" aria-describedby=\"query-cheats\"></textarea>\n  <div class=\"col-xs-12\">\n    <label class=\"text-muted col-xs-2 col-md-1\" for=\"interpreted-query\">Real Query:</label>\n    <code class=\"language-sql col-xs-10 col-md-11\" id=\"interpreted-query\">\n    </code>\n  </div>\n  <div class=\"col-xs-12 col-sm-9\">\n    <span class=\"text-muted\" id=\"query-cheats\">Tips: <ol><li>You're querying PostgreSQL</li><li>Type <kbd>@@</kbd> as a placeholder for the table name</li><li>Type <kbd>!@</kbd> as a placeholder for <code>SELECT * FROM @@</code></li><li>Multiple queries at once is just fine. They're broken at <kbd>);</kbd>, so enclosing your <code>WHERE</code> in parentheses is good enough.</li></ol></span>\n  </div>\n  <div class=\"col-xs-12 col-sm-3\">\n    <button class=\"btn btn-default do-sql-query pull-right\">Execute Query</button>\n  </div>\n  <h3 class=\"col-xs-12\">Result:</h3>\n  <pre class=\"code col-xs-12\" id=\"query-immediate-result\"></pre>\n</div>";
-    $("main").append(html);
+    if ($("h2.project-identifier").exists()) {
+      $("h2.project-identifier").before(html);
+    } else {
+      $("main").append(html);
+    }
   }
   startQuery = function() {
     var input, query;
