@@ -492,8 +492,13 @@ loadCreateNewProject = ->
     doMapBuilder window.mapBuilder, null, (map) ->
       html = """
       <p class="text-muted" id="computed-locality">
-        Computed locality: <strong>#{map.locality}</strong>
+        Computed locality: <strong>#{map.locality}</strong>          
       </p>
+      <div class="alert alert-info" id="using-computed-locality">
+        <p>
+          This is your currently active locality. Entering points below will take priority over this.
+        </p>
+      </div>
       """
       $("#computed-locality").remove()
       $("#transect-input-container").after html
@@ -503,6 +508,9 @@ loadCreateNewProject = ->
     $("#init-map-build").attr "disabled", "disabled"
     $("#init-map-build .points-count").text window.mapBuilder.points.length
     # Remove the points
+    $("google-map google-map-marker").remove()
+    # Remove current polygons
+    $("google-map google-map-poly").remove()
   ta = p$("#project-notes").textarea
   $(ta).keyup ->
     p$("#note-preview").markdown = $(this).val()

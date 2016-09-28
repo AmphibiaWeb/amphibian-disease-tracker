@@ -322,7 +322,7 @@ loadCreateNewProject = function() {
   });
   $("#init-map-build").click(function() {
     return doMapBuilder(window.mapBuilder, null, function(map) {
-      html = "<p class=\"text-muted\" id=\"computed-locality\">\n  Computed locality: <strong>" + map.locality + "</strong>\n</p>";
+      html = "<p class=\"text-muted\" id=\"computed-locality\">\n  Computed locality: <strong>" + map.locality + "</strong>          \n</p>\n<div class=\"alert alert-info\" id=\"using-computed-locality\">\n  <p>\n    This is your currently active locality. Entering points below will take priority over this.\n  </p>\n</div>";
       $("#computed-locality").remove();
       $("#transect-input-container").after(html);
       return false;
@@ -331,7 +331,9 @@ loadCreateNewProject = function() {
   $("#reset-map-builder").click(function() {
     window.mapBuilder.points = new Array();
     $("#init-map-build").attr("disabled", "disabled");
-    return $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+    $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+    $("google-map google-map-marker").remove();
+    return $("google-map google-map-poly").remove();
   });
   ta = p$("#project-notes").textarea;
   $(ta).keyup(function() {
