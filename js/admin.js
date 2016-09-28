@@ -322,8 +322,10 @@ loadCreateNewProject = function() {
   });
   $("#init-map-build").click(function() {
     return doMapBuilder(window.mapBuilder, null, function(map) {
-      html = "<p class=\"text-muted\" id=\"computed-locality\">\n  Computed locality: <strong>" + map.locality + "</strong>          \n</p>\n<div class=\"alert alert-info\" id=\"using-computed-locality\">\n  <p>\n    This is your currently active locality. Entering points below will take priority over this.\n  </p>\n</div>";
+      console.debug("doMapBuilder callback initialized ...");
+      html = "<p class=\"text-muted\" id=\"computed-locality\">\n  Computed locality: <strong>" + map.locality + "</strong>\n</p>";
       $("#computed-locality").remove();
+      $("#using-computed-locality").remove();
       $("#transect-input-container").after(html);
       return false;
     });
@@ -794,12 +796,16 @@ bootstrapTransect = function() {
       address: locality
     };
     return geocoder.geocode(request, function(result, status) {
-      var bbEW, bbNS, boundingBox, bounds, doCallback, e, error1, lat, lng, loc;
+      var bbEW, bbNS, boundingBox, bounds, doCallback, e, error1, infoHtml, lat, lng, loc;
       if (status === google.maps.GeocoderStatus.OK) {
         console.info("Google said:", result);
         if (!$("#locality-lookup-result").exists()) {
-          $("#carto-rendered-map").prepend("<div class=\"alert alert-info alert-dismissable\" role=\"alert\" id=\"locality-lookup-result\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Location Found</strong>: <span class=\"lookup-name\"></span>\n</div>");
+          $("#carto-rendered-map").prepend("<div class=\"alert alert-info alert-dismissable\" role=\"alert\" id=\"locality-lookup-result\">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n  <strong>Location Found</strong>: <span class=\"lookup-name\">" + result[0].formatted_address + "</span>\n</div>");
         }
+        infoHtml = "<p class=\"text-muted\" id=\"computed-locality\">\n  Computed locality: <strong>" + result[0].formatted_address + "</strong>\n</p>\n<div class=\"alert alert-info\" id=\"using-computed-locality\">\n  <p>\n    This is your currently active locality. Entering points below will take priority over this.\n  </p>\n</div>";
+        $("#computed-locality").remove();
+        $("#using-computed-locality").remove();
+        $("#transect-input-container").after(infoHtml);
         $("#locality-lookup-result .lookup-name").text(result[0].formatted_address);
         _adp.locality = result[0].formatted_address;
         loc = result[0].geometry.location;
