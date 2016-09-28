@@ -647,7 +647,7 @@ $loginStatus = getLoginState();
     ?>;
           </script>
         </div>
-        <h2 class="col-xs-12">
+        <h2 class="col-xs-12 project-identifier">
           <span class="text-muted small">
             Project
             #<?php echo $pid; ?>

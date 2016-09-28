@@ -971,7 +971,10 @@ sqlQueryBox = ->
       <pre class="code col-xs-12" id="query-immediate-result"></pre>
     </div>
     """
-    $("main").append html
+    if $("h2.project-identifier").exists()
+      $("h2.project-identifier").before html
+    else
+      $("main").append html
   # Events
   startQuery = ->
     console.info "Executing query ..."
