@@ -487,7 +487,7 @@ $loginStatus = getLoginState();
           $phpTime = intval($creationTime) / 1000;
           $creationYear = date("Y", $phpTime);
           ?>
-        <cite class="self-citation" data-project="Project #<?php echo $pid; ?>">
+        <cite class="self-citation col-xs-12" data-project="Project #<?php echo $pid; ?>">
           LAST, F <?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>
         </cite>
         <h2 class="col-xs-12">

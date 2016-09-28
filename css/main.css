@@ -13179,3 +13179,6 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   text-shadow: 0px 1px 0px #fff;
   color: #555;
 }
+.self-citation {
+  font-style: none;
+}
