@@ -415,6 +415,8 @@ createMap2 = (pointsObj, options, callback) ->
           window.mapBuilder.selector = "#" + $(mapElement).attr "id"
           window.mapBuilder.points = new Array()
         window.mapBuilder.points.push point
+        try
+          $("#using-computed-locality").remove()
         $("#init-map-build").removeAttr "disabled"
         $("#init-map-build .points-count").text window.mapBuilder.points.length
         # https://github.com/GoogleWebComponents/google-map/issues/180

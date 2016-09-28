@@ -2824,6 +2824,9 @@ createMap2 = function(pointsObj, options, callback) {
           window.mapBuilder.points = new Array();
         }
         window.mapBuilder.points.push(point);
+        try {
+          $("#using-computed-locality").remove();
+        } catch (undefined) {}
         $("#init-map-build").removeAttr("disabled");
         $("#init-map-build .points-count").text(window.mapBuilder.points.length);
         marker = document.createElement("google-map-marker");
