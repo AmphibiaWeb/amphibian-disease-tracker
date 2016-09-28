@@ -1147,7 +1147,7 @@ $(function() {
     goTo(dest);
     return false;
   });
-  return $("#community-map").on("google-map-ready", function() {
+  $("#community-map").on("google-map-ready", function() {
     var badLat, badLng, boundaryPoints, center, hull, hulls, j, l, len, len1, map, p, point, points, zoom;
     try {
       fillSorterWithDropdown();
@@ -1181,6 +1181,10 @@ $(function() {
       } catch (undefined) {}
       map.zoom = zoom;
     }
+    return false;
+  });
+  return $(".self-citation").click(function() {
+    $(this).selectText();
     return false;
   });
 });
