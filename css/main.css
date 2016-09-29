@@ -10366,6 +10366,9 @@ section#notes marked-element {
     height: 75vh;
   }
 }
+#carto-rendered-map {
+  height: 60vh;
+}
 #carto-rendered-map .map .cartodb-share-dialog {
   display: none;
 }
