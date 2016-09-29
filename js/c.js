@@ -4423,6 +4423,11 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
       } else {
         return console.warn("No callback provided to geo.reverseGeocode()!");
       }
+    } else {
+      console.error("There was a problem getting the locality", result, status);
+      if (typeof callback === "function") {
+        return callback("Bad Locality");
+      }
     }
   });
 };
