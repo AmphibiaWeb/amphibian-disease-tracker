@@ -331,9 +331,12 @@ loadCreateNewProject = function() {
     });
   });
   $("#reset-map-builder").click(function() {
-    window.mapBuilder.points = new Array();
+    delete window.mapBuilder;
     $("#init-map-build").attr("disabled", "disabled");
     $("#init-map-build .points-count").text(window.mapBuilder.points.length);
+    try {
+      p$("google-map").clear();
+    } catch (undefined) {}
     $("google-map google-map-marker").remove();
     return $("google-map google-map-poly").remove();
   });

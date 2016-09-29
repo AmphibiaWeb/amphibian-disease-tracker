@@ -3704,6 +3704,10 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
         callback(locality)
       else
         console.warn "No callback provided to geo.reverseGeocode()!"
+    else
+      console.error "There was a problem getting the locality", result, status
+      if typeof callback is "function"
+        callback("Bad Locality")
 
 
 

@@ -501,9 +501,12 @@ loadCreateNewProject = ->
       $("#transect-input-container").after html
       false
   $("#reset-map-builder").click ->
-    window.mapBuilder.points = new Array()
+    delete window.mapBuilder
+    #window.mapBuilder.points = new Array()
     $("#init-map-build").attr "disabled", "disabled"
     $("#init-map-build .points-count").text window.mapBuilder.points.length
+    try
+      p$("google-map").clear()
     # Remove the points
     $("google-map google-map-marker").remove()
     # Remove current polygons
