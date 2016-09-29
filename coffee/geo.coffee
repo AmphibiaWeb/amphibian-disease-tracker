@@ -1809,6 +1809,8 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
     else
       console.error "There was a problem getting the locality", result, status
       if typeof callback is "function"
+        console.warn "Proceeding anyway with fake locality 'Bad Locality'"
+        geo.computedLocality = "Bad Locality"
         callback("Bad Locality")
 
 
