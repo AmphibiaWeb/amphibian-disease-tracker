@@ -4426,6 +4426,8 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
     } else {
       console.error("There was a problem getting the locality", result, status);
       if (typeof callback === "function") {
+        console.warn("Proceeding anyway with fake locality 'Bad Locality'");
+        geo.computedLocality = "Bad Locality";
         return callback("Bad Locality");
       }
     }
