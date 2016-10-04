@@ -1474,7 +1474,7 @@ singleDataFileHelper = function(newFile, callback) {
 };
 
 excelHandler = function(path, hasHeaders, callbackSkipsGeoHandler) {
-  var args, correctedPath, helperApi, input, l, len, ref;
+  var args, correctedPath, hasInvalid, helperApi, input, l, len, ref;
   if (hasHeaders == null) {
     hasHeaders = true;
   }
@@ -1499,17 +1499,24 @@ excelHandler = function(path, hasHeaders, callbackSkipsGeoHandler) {
   }
   console.info("Pinging for " + correctedPath);
   args = "action=parse&path=" + correctedPath + "&sheets=Samples";
+  hasInvalid = false;
   try {
     ref = $("paper-input[required]");
     for (l = 0, len = ref.length; l < len; l++) {
       input = ref[l];
       if (p$(input).invalid) {
+        hasInvalid = true;
         stopLoadError("Please fill out all required fields before uploading data");
+        bsAlert("Please fill out all required fields before uploading data");
         removeDataFile();
         return false;
       }
     }
   } catch (undefined) {}
+  if (hasInvalid) {
+    console.error("Exiting handler -- invalid inputs");
+    return false;
+  }
   $.get(helperApi, args, "json").done(function(result) {
     console.info("Got result", result);
     if (result.status === false) {
