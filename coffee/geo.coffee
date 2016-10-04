@@ -1936,6 +1936,7 @@ getConvexHullPoints = (points) ->
   unless isArray points
     console.error "Function requires an array"
     return false
+  realHull = new Array()
   try
     ###
     # Set up for algorithm from
@@ -1950,6 +1951,9 @@ getConvexHullPoints = (points) ->
       for point in oldPoints
         points.push canonicalizePoint point
       hullPoints = convexHull points
+    for point in hullPoints
+      pObj = new Point point.lat, point.lng
+      realHull.push pObj
   catch
     ###
     # Set up for algorith from
@@ -1965,10 +1969,9 @@ getConvexHullPoints = (points) ->
         points.push point.toSimplePoint()
       console.debug "Converted Point array to fPoint array", points.slice 0
     chainHull_2D points, points.length, hullPoints
-  realHull = new Array()
-  for point in hullPoints
-    pObj = new Point point.lat(), point.lng()
-    realHull.push pObj
+    for point in hullPoints
+      pObj = new Point point.lat(), point.lng()
+      realHull.push pObj
   console.info "Got hull from #{points.length} points:", realHull
   realHull
 
