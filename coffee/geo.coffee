@@ -84,13 +84,15 @@ speculativeApiLoader = ->
       """
       $("head").append mapsApiElement
       $("google-maps-api").on "api-load", ->
-        window.gMapsCallback()
+        try
+          window.gMapsCallback()
       delay 300, ->
         directLoadApi()
     else
       directLoadApi()
   else
-    window.gMapsCallback()
+    try
+      window.gMapsCallback()
 
 
 getMapCenter = (bb = geo.canonicalBoundingBox) ->
@@ -2236,5 +2238,6 @@ function chainHull_2D(P, n, H) {
 $ ->
   if $("google-maps-api").exists()
     $("google-maps-api").on "api-load", ->
-      window.gMapsCallback()
+      try
+        window.gMapsCallback()
   speculativeApiLoader()
