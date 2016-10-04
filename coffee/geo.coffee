@@ -61,7 +61,23 @@ geo.init = (doCallback) ->
     doCallback()
   # First, we have to load the Google Maps library
   unless google?.maps?
-    loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
+    ###
+    # Use maps element in attempt to address
+    #
+    # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/137
+    # https://github.com/GoogleWebComponents/google-map/issues/308
+    ###
+    mapsApiElement = """
+    <google-maps-api
+      api-key="#{gMapsApiKey}"
+      callback="gMapsCallback"
+    >
+    </google-maps-api>
+    """
+    $("head").append mapsApiElement
+    delay 300, ->
+      unless isNull google?.maps?.Geocoder
+        loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
   else
     window.gMapsCallback()
 

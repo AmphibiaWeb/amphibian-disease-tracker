@@ -2423,7 +2423,7 @@ geo.init = function(doCallback) {
    * Urls are taken from
    * http://docs.cartodb.com/cartodb-platform/cartodb-js.html
    */
-  var cartoDBCSS;
+  var cartoDBCSS, mapsApiElement;
   try {
     window.locationData.lat = 37.871527;
     window.locationData.lng = -122.262113;
@@ -2443,7 +2443,21 @@ geo.init = function(doCallback) {
     return doCallback();
   };
   if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
-    return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
+
+    /*
+     * Use maps element in attempt to address
+     *
+     * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/137
+     * https://github.com/GoogleWebComponents/google-map/issues/308
+     */
+    mapsApiElement = "<google-maps-api\n  api-key=\"" + gMapsApiKey + "\"\n  callback=\"gMapsCallback\"\n>\n</google-maps-api>";
+    $("head").append(mapsApiElement);
+    return delay(300, function() {
+      var ref;
+      if (!isNull(typeof google !== "undefined" && google !== null ? (ref = google.maps) != null ? ref.Geocoder : void 0 : void 0)) {
+        return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
+      }
+    });
   } else {
     return window.gMapsCallback();
   }
