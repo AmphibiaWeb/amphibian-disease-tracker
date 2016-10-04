@@ -1563,6 +1563,12 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
     correctedPath = path.slice helperDir.length
   console.info "Pinging for #{correctedPath}"
   args = "action=parse&path=#{correctedPath}&sheets=Samples"
+  try
+    for input in $("paper-input[required]")
+      if p$(input).invalid
+        stopLoadError "Please fill out all required fields before uploading data"
+        removeDataFile()
+        return false
   $.get helperApi, args, "json"
   .done (result) ->
     console.info "Got result", result
