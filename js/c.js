@@ -2450,11 +2450,17 @@ geo.init = function(doCallback) {
      * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/137
      * https://github.com/GoogleWebComponents/google-map/issues/308
      */
-    mapsApiElement = "<google-maps-api\n  api-key=\"" + gMapsApiKey + "\"\n  callback=\"gMapsCallback\"\n>\n</google-maps-api>";
+    mapsApiElement = "<google-maps-api\n  api-key=\"" + gMapsApiKey + "\" >\n</google-maps-api>";
     $("head").append(mapsApiElement);
+    $("google-maps-api").on("api-load", function() {
+      return window.gMapsCallback();
+    });
     return delay(300, function() {
       var ref;
       if (!isNull(typeof google !== "undefined" && google !== null ? (ref = google.maps) != null ? ref.Geocoder : void 0 : void 0)) {
+        try {
+          console.debug("API element was insufficient. Loading direct API");
+        } catch (undefined) {}
         return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
       }
     });

@@ -1967,14 +1967,16 @@ geo.init = (doCallback) ->
     ###
     mapsApiElement = """
     <google-maps-api
-      api-key="#{gMapsApiKey}"
-      callback="gMapsCallback"
-    >
+      api-key="#{gMapsApiKey}" >
     </google-maps-api>
     """
     $("head").append mapsApiElement
+    $("google-maps-api").on "api-load", ->
+      window.gMapsCallback()    
     delay 300, ->
       unless isNull google?.maps?.Geocoder
+        try
+          console.debug "API element was insufficient. Loading direct API"
         loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
   else
     window.gMapsCallback()
