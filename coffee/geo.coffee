@@ -59,27 +59,36 @@ geo.init = (doCallback) ->
     # Now that that's loaded, we can load CartoDB ...
     # loadJS "https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js", doCallback, false
     doCallback()
+  speculativeApiLoader()
+
+
+speculativeApiLoader = ->
   # First, we have to load the Google Maps library
-  unless google?.maps?
+  unless isNull google?.maps?.Geocoder
     ###
     # Use maps element in attempt to address
     #
     # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/137
     # https://github.com/GoogleWebComponents/google-map/issues/308
     ###
-    mapsApiElement = """
-    <google-maps-api
-      api-key="#{gMapsApiKey}" >
-    </google-maps-api>
-    """
-    $("head").append mapsApiElement
-    $("google-maps-api").on "api-load", ->
-      window.gMapsCallback()    
-    delay 300, ->
+    directLoadApi = ->
       unless isNull google?.maps?.Geocoder
         try
           console.debug "API element was insufficient. Loading direct API"
         loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}&callback=gMapsCallback"
+    unless $("google-maps-api").exists()
+      mapsApiElement = """
+      <google-maps-api
+        api-key="#{gMapsApiKey}" >
+      </google-maps-api>
+      """
+      $("head").append mapsApiElement
+      $("google-maps-api").on "api-load", ->
+        window.gMapsCallback()
+      delay 300, ->
+        directLoadApi()
+    else
+      directLoadApi()
   else
     window.gMapsCallback()
 
@@ -2225,6 +2234,7 @@ function chainHull_2D(P, n, H) {
 
 
 $ ->
-  unless google?.maps?
-    # First, we have to load the Google Maps library
-    loadJS "https://maps.googleapis.com/maps/api/js?key=#{gMapsApiKey}"
+  if $("google-maps-api").exists()
+    $("google-maps-api").on "api-load", ->
+      window.gMapsCallback()
+  speculativeApiLoader()
