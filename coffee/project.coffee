@@ -831,6 +831,7 @@ prepParsedDataDownload = (projectData) ->
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  _adp.dataPoints = new Object()
   $.post "api.php", args, "json"
   .done (result) ->
     unless result.status
@@ -847,6 +848,11 @@ prepParsedDataDownload = (projectData) ->
       # cartoDB works in lng, lat
       lat = geoJson.coordinates[1]
       lng = geoJson.coordinates[0]
+      coordObj =
+        lat: lat
+        lng: lng
+      pTmp = canonicalizePoint coordObj
+      _adp.dataPoints.push pTmp
       row.decimalLatitude = lat
       row.decimalLongitude = lng
       delete row.st_asgeojson
