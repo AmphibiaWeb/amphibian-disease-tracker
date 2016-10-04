@@ -54,7 +54,7 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"/>
     <link rel="import" href="bower_components/paper-button/paper-button.html"/>
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
-    
+
     <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
     <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html"/>
 
@@ -254,6 +254,15 @@ $loginStatus = getLoginState();
                         </iron-label>
                         <div class="col-xs-5 col-sm-8">
                           <paper-toggle-button id="use-viewport-bounds" checked>Enabled</paper-toggle-button>
+                          <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <iron-label class="control-label col-xs-4 col-sm-2" for="exact-species-search">
+                          Exact Search
+                        </iron-label>
+                        <div class="col-xs-5 col-sm-8">
+                          <paper-toggle-button id="exact-species-search">Enabled</paper-toggle-button>
                           <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
                         </div>
                       </div>
