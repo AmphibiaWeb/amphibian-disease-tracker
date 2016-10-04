@@ -1569,8 +1569,10 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
       if p$(input).invalid
         hasInvalid = true
         stopLoadError "Please fill out all required fields before uploading data"
-        bsAlert "Please fill out all required fields before uploading data"
-        removeDataFile()
+        bsAlert "Please fill out all required fields before uploading data", "error"
+        try
+          stopLoadBarsError()
+        removeDataFile(correctedPath)
         return false
   if hasInvalid
     console.error "Exiting handler -- invalid inputs"
