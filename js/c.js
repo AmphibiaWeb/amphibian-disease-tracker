@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -2423,7 +2423,7 @@ geo.init = function(doCallback) {
    * Urls are taken from
    * http://docs.cartodb.com/cartodb-platform/cartodb-js.html
    */
-  var cartoDBCSS, mapsApiElement;
+  var cartoDBCSS;
   try {
     window.locationData.lat = 37.871527;
     window.locationData.lng = -122.262113;
@@ -2442,7 +2442,12 @@ geo.init = function(doCallback) {
   window.gMapsCallback = function() {
     return doCallback();
   };
-  if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
+  return speculativeApiLoader();
+};
+
+speculativeApiLoader = function() {
+  var directLoadApi, mapsApiElement, ref;
+  if (!isNull(typeof google !== "undefined" && google !== null ? (ref = google.maps) != null ? ref.Geocoder : void 0 : void 0)) {
 
     /*
      * Use maps element in attempt to address
@@ -2450,20 +2455,27 @@ geo.init = function(doCallback) {
      * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/137
      * https://github.com/GoogleWebComponents/google-map/issues/308
      */
-    mapsApiElement = "<google-maps-api\n  api-key=\"" + gMapsApiKey + "\" >\n</google-maps-api>";
-    $("head").append(mapsApiElement);
-    $("google-maps-api").on("api-load", function() {
-      return window.gMapsCallback();
-    });
-    return delay(300, function() {
-      var ref;
-      if (!isNull(typeof google !== "undefined" && google !== null ? (ref = google.maps) != null ? ref.Geocoder : void 0 : void 0)) {
+    directLoadApi = function() {
+      var ref1;
+      if (!isNull(typeof google !== "undefined" && google !== null ? (ref1 = google.maps) != null ? ref1.Geocoder : void 0 : void 0)) {
         try {
           console.debug("API element was insufficient. Loading direct API");
         } catch (undefined) {}
         return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey + "&callback=gMapsCallback");
       }
-    });
+    };
+    if (!$("google-maps-api").exists()) {
+      mapsApiElement = "<google-maps-api\n  api-key=\"" + gMapsApiKey + "\" >\n</google-maps-api>";
+      $("head").append(mapsApiElement);
+      $("google-maps-api").on("api-load", function() {
+        return window.gMapsCallback();
+      });
+      return delay(300, function() {
+        return directLoadApi();
+      });
+    } else {
+      return directLoadApi();
+    }
   } else {
     return window.gMapsCallback();
   }
@@ -4881,9 +4893,12 @@ function chainHull_2D(P, n, H) {
 ;
 
 $(function() {
-  if ((typeof google !== "undefined" && google !== null ? google.maps : void 0) == null) {
-    return loadJS("https://maps.googleapis.com/maps/api/js?key=" + gMapsApiKey);
+  if ($("google-maps-api").exists()) {
+    $("google-maps-api").on("api-load", function() {
+      return window.gMapsCallback();
+    });
   }
+  return speculativeApiLoader();
 });
 
 
