@@ -2468,7 +2468,9 @@ speculativeApiLoader = function() {
       mapsApiElement = "<google-maps-api\n  api-key=\"" + gMapsApiKey + "\" >\n</google-maps-api>";
       $("head").append(mapsApiElement);
       $("google-maps-api").on("api-load", function() {
-        return window.gMapsCallback();
+        try {
+          return window.gMapsCallback();
+        } catch (undefined) {}
       });
       return delay(300, function() {
         return directLoadApi();
@@ -2477,7 +2479,9 @@ speculativeApiLoader = function() {
       return directLoadApi();
     }
   } else {
-    return window.gMapsCallback();
+    try {
+      return window.gMapsCallback();
+    } catch (undefined) {}
   }
 };
 
@@ -4895,7 +4899,9 @@ function chainHull_2D(P, n, H) {
 $(function() {
   if ($("google-maps-api").exists()) {
     $("google-maps-api").on("api-load", function() {
-      return window.gMapsCallback();
+      try {
+        return window.gMapsCallback();
+      } catch (undefined) {}
     });
   }
   return speculativeApiLoader();
