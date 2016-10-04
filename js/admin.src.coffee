@@ -1569,7 +1569,7 @@ excelHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
       if p$(input).invalid
         hasInvalid = true
         stopLoadError "Please fill out all required fields before uploading data"
-        bsAlert "Please fill out all required fields before uploading data", "error"
+        bsAlert "Please fill out all required fields before uploading data", "danger"
         try
           stopLoadBarsError()
         removeDataFile(correctedPath)
