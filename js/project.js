@@ -875,7 +875,7 @@ prepParsedDataDownload = function(projectData) {
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
-  _adp.dataPoints = new Object();
+  _adp.dataPoints = new Array();
   $.post("api.php", args, "json").done(function(result) {
     var col, coordObj, data, dataObj, error, error1, fims, geoJson, k, lat, lng, pTmp, ref, row, rows;
     if (!result.status) {
