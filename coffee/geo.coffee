@@ -1933,7 +1933,38 @@ getConvexHullPoints = (points) ->
   # @return array
   ###
   hullPoints = new Array() # The array to be filled
-  chainHull_2D points, points.length, hullPoints
+  unless isArray points
+    console.error "Function requires an array"
+    return false
+  try
+    ###
+    # Set up for algorithm from
+    # https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain#JavaScript
+    #
+    #
+    # This successfully plots project 9eb9fc11cf289dd2c7b68665a5eaa018
+    ###
+    unless points[0] instanceof Point
+      oldPoints = points.slice 0
+      points = new Array()
+      for point in oldPoints
+        points.push canonicalizePoint point
+      hullPoints = convexHull points
+  catch
+    ###
+    # Set up for algorith from
+    # https://github.com/mgomes/ConvexHull
+    #
+    # Usually works, but fails for
+    # 9eb9fc11cf289dd2c7b68665a5eaa018
+    ###
+    if points[0] instanceof Point
+      oldPoints = points.slice 0
+      points = new Array()
+      for point in oldPoints
+        points.push point.toSimplePoint()
+      console.debug "Converted Point array to fPoint array", points.slice 0
+    chainHull_2D points, points.length, hullPoints
   realHull = new Array()
   for point in hullPoints
     pObj = new Point point.lat(), point.lng()
@@ -1963,6 +1994,42 @@ getConvexHullConfig = (points, map = geo.googleMap) ->
     strokeOpacity: 0.5
   # cHullPoly = new google.maps.Polygon polygonConfig
   # false
+
+
+`
+function cross(o, a, b) {
+   return (a.lat - o.lat) * (b.lng - o.lng) - (a.lng - o.lng) * (b.lat - o.lat)
+}
+
+/**
+ * @param points An array of [X, Y] coordinates
+ */
+function convexHull(points) {
+   points.sort(function(a, b) {
+      return a.lat == b.lat ? a.lng - b.lng : a.lat - b.lat;
+   });
+
+   var lower = [];
+   for (var i = 0; i < points.length; i++) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
+         lower.pop();
+      }
+      lower.push(points[i]);
+   }
+
+   var upper = [];
+   for (var i = points.length - 1; i >= 0; i--) {
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], points[i]) <= 0) {
+         upper.pop();
+      }
+      upper.push(points[i]);
+   }
+
+   upper.pop();
+   lower.pop();
+   return lower.concat(upper);
+}
+`
 
 `
     var gmarkers = [];
