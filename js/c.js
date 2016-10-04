@@ -4568,12 +4568,13 @@ getConvexHullPoints = function(points) {
    *
    * @return array
    */
-  var error2, hullPoints, len, len1, len2, m, oldPoints, pObj, point, q, realHull, t;
+  var error2, hullPoints, len, len1, len2, len3, m, oldPoints, pObj, point, q, realHull, t, u;
   hullPoints = new Array();
   if (!isArray(points)) {
     console.error("Function requires an array");
     return false;
   }
+  realHull = new Array();
   try {
 
     /*
@@ -4592,6 +4593,11 @@ getConvexHullPoints = function(points) {
       }
       hullPoints = convexHull(points);
     }
+    for (q = 0, len1 = hullPoints.length; q < len1; q++) {
+      point = hullPoints[q];
+      pObj = new Point(point.lat, point.lng);
+      realHull.push(pObj);
+    }
   } catch (error2) {
 
     /*
@@ -4604,19 +4610,18 @@ getConvexHullPoints = function(points) {
     if (points[0] instanceof Point) {
       oldPoints = points.slice(0);
       points = new Array();
-      for (q = 0, len1 = oldPoints.length; q < len1; q++) {
-        point = oldPoints[q];
+      for (t = 0, len2 = oldPoints.length; t < len2; t++) {
+        point = oldPoints[t];
         points.push(point.toSimplePoint());
       }
       console.debug("Converted Point array to fPoint array", points.slice(0));
     }
     chainHull_2D(points, points.length, hullPoints);
-  }
-  realHull = new Array();
-  for (t = 0, len2 = hullPoints.length; t < len2; t++) {
-    point = hullPoints[t];
-    pObj = new Point(point.lat(), point.lng());
-    realHull.push(pObj);
+    for (u = 0, len3 = hullPoints.length; u < len3; u++) {
+      point = hullPoints[u];
+      pObj = new Point(point.lat(), point.lng());
+      realHull.push(pObj);
+    }
   }
   console.info("Got hull from " + points.length + " points:", realHull);
   return realHull;
