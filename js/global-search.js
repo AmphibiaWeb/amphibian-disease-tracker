@@ -2,7 +2,7 @@
 /*
  * Do global searches, display global points.
  */
-var checkCoordinateSanity, createOverflowMenu, createTemplateByProject, doDeepSearch, doSearch, firstLoadInstructionPrompt, generateColorByRecency, generateColorByRecency2, getPrettySpecies, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
+var checkCoordinateSanity, createOverflowMenu, createTemplateByProject, doDeepSearch, doSearch, firstLoadInstructionPrompt, generateColorByRecency, generateColorByRecency2, getPrettySpecies, getProjectResultDialog, getSampleSummaryDialog, getSearchContainsObject, getSearchObject, makePageCitationOverflow, namedMapAdvSource, namedMapSource, resetMap, setViewerBounds, showAllTables,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 namedMapSource = "adp_generic_heatmap-v16";
@@ -1496,6 +1496,29 @@ firstLoadInstructionPrompt = function(force) {
   }
   return false;
 };
+
+
+/*
+ * Show page citationsin the overflow for non-project pages
+ */
+
+makePageCitationOverflow = function() {
+  var j, len, param, projectPageRequiredParams;
+  projectPageRequiredParams = ["project_id", "id", "projectid"];
+  for (j = 0, len = projectPageRequiredParams.length; j < len; j++) {
+    param = projectPageRequiredParams[j];
+    if (!isNull(uri.o.param(param))) {
+      console.info("Not creating overflow citation - page is project-specific");
+      return false;
+    }
+  }
+  return false;
+};
+
+
+/*
+ * Startup initializations
+ */
 
 $(function() {
   var initProjectSearch, lMap, lTopoOptions, leafletOptions, updateViewportBounds;
