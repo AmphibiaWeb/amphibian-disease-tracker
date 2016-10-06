@@ -133,6 +133,18 @@ module.exports = (grunt) ->
           "js/profile.min.js":["js/profile.js"]
           "js/global-search.min.js":["js/global-search.js"]
           "js/global-search-worker.min.js":["js/global-search-worker.js"]
+      mingeoxml:
+        options:
+          sourceMap:true
+          sourceMapName: (fileIn) ->
+            fileName = fileIn.split("/").pop()
+            fileNameArr = fileName.split(".")
+            fileNameArr.pop()
+            fileId = fileNameArr.join(".")
+            "js/maps/#{fileId}.map"
+        files:
+          "js/geoxml3.min.js": ["geoxml3/kmz/geoxml3.js"]
+          "js/geoxml3_gxParse_kmz.min.js": ["geoxml3/kmz/geoxml3_gxParse_kmz.js"]
       minpurl:
         options:
           sourceMap:true
