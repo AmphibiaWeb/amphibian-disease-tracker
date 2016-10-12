@@ -628,15 +628,17 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     #center_lon: window.locationData.lng
     #zoom: 5
 
-  # # Google Map Setup
-  # googleMapOptions =
-  #   center: new google.maps.LatLng(mapOptions.center_lat, mapOptions.center_lon)
-  #   zoom: mapOptions.zoom
-  #   mapTypeId: google.maps.MapTypeId.TERRAIN
-  # geo.googleMap = new google.maps.Map
-  # document.getElementById(mapSelector.slice(1)), googleMapOptions
-  # BASE_MAP = p$(mapSelector).map
-  # # BASE_MAP = geo.googleMap
+  try
+    # Google Map Setup
+    googleMapOptions =
+      center: new google.maps.LatLng(mapOptions.center_lat ? 0, mapOptions.center_lon ? 0)
+      zoom: mapOptions.zoom
+      mapTypeId: google.maps.MapTypeId.TERRAIN
+    # geo.googleMap = new google.maps.Map
+    geo.googleMap = p$(mapSelector).map
+    # document.getElementById(mapSelector.slice(1)), googleMapOptions
+    # BASE_MAP = p$(mapSelector).map
+    # BASE_MAP = geo.googleMap
 
   ## Leflet Map Setup
   leafletOptions =
@@ -648,7 +650,7 @@ createRawCartoMap = (layers, callback, options, mapSelector = "#global-data-map"
     lTopoOptions =
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo lMap
-  BASE_MAP = geo.lMap
+  BASE_MAP = if localStorage.useTestMap then geo.googleMap else  geo.lMap
 
   cartodb
   .createLayer(BASE_MAP, params, mapOptions)
