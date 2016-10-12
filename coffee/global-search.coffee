@@ -1412,6 +1412,35 @@ firstLoadInstructionPrompt = (force = false) ->
   false
 
 
+
+
+###
+# Show page citationsin the overflow for non-project pages
+###
+makePageCitationOverflow = ->
+  # Are we on a project-specific page
+  projectPageRequiredParams = [
+    "project_id"
+    "id"
+    "projectid"
+    ]
+  for param in projectPageRequiredParams
+    unless isNull uri.o.param param
+      console.info "Not creating overflow citation - page is project-specific"
+      return false
+  # Create the citation
+  # Insert the menu item
+  # Bind the item
+  false
+
+
+
+
+
+###
+# Startup initializations
+###
+
 $ ->
   geo.initLocation()
   # If the user hasn't granted location permissions, default to Berkeley

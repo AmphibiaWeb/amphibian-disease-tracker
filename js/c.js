@@ -3054,7 +3054,7 @@ featureClickEvent = function(e, latlng, pos, data, layer, template) {
 };
 
 createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent) {
-  var BASE_MAP, lMap, lTopoOptions, leafletOptions, mapOptions, params, ref, ref1;
+  var BASE_MAP, googleMapOptions, lMap, lTopoOptions, leafletOptions, mapOptions, params, ref, ref1, ref2, ref3;
   if (mapSelector == null) {
     mapSelector = "#global-data-map";
   }
@@ -3091,6 +3091,14 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     https: true,
     mobile_layout: true
   };
+  try {
+    googleMapOptions = {
+      center: new google.maps.LatLng((ref2 = mapOptions.center_lat) != null ? ref2 : 0, (ref3 = mapOptions.center_lon) != null ? ref3 : 0),
+      zoom: mapOptions.zoom,
+      mapTypeId: google.maps.MapTypeId.TERRAIN
+    };
+    geo.googleMap = p$(mapSelector).map;
+  } catch (undefined) {}
   leafletOptions = {
     center: [window.locationData.lat, window.locationData.lng],
     zoom: 5
@@ -3103,7 +3111,7 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     };
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', lTopoOptions).addTo(lMap);
   }
-  BASE_MAP = geo.lMap;
+  BASE_MAP = localStorage.useTestMap ? geo.googleMap : geo.lMap;
   cartodb.createLayer(BASE_MAP, params, mapOptions).addTo(BASE_MAP, 1).on("done", function(layer) {
     var dataLayer, error2, i, len, m, max, setTemplate, shortTable, suTemp;
     try {
@@ -3139,12 +3147,12 @@ createRawCartoMap = function(layers, callback, options, mapSelector, clickEvent)
     });
     i = 0;
     setTemplate = function(sublayerToSet, tableName, count, carrySublayerIndex, workingLayer) {
-      var colNamesManual, error3, infoWindowParser, infoWindowTemplate, ref2, ref3, selector, template;
+      var colNamesManual, error3, infoWindowParser, infoWindowTemplate, ref4, ref5, selector, template;
       if (count == null) {
         count = 0;
       }
       selector = "#infowindow_template_" + tableName;
-      template = (ref2 = (ref3 = window._adp.templates) != null ? ref3[tableName] : void 0) != null ? ref2 : $(selector).html();
+      template = (ref4 = (ref5 = window._adp.templates) != null ? ref5[tableName] : void 0) != null ? ref4 : $(selector).html();
       if (isNull(template)) {
         template = $(selector).html();
         if (isNull(template) && modulo(count, 100) === 0 && count > 0) {
