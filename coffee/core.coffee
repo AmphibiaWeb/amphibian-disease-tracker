@@ -1693,9 +1693,13 @@ fetchCitation = (citationQuery, callback) ->
     if i is 2
       authorJoin = " and "
     published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
-    issue = if j.issue? then "(#{j.issue})" else ""
-    if isNull issue
-      issue = ""
+    issue = unless isNull j.issue then "(#{j.issue})" else ""
+    if isNull j.volume
+      j.volume = ""
+    if isNull(j.volume) and isNull(issue)
+      volBlob = ""
+    else
+      volBlob = "#{j.volume}#{issue}:"
     try
       try
         doi = j.DOI
@@ -1706,7 +1710,7 @@ fetchCitation = (citationQuery, callback) ->
         # Go classic
         continuous = "#{j.page}."
       citation = """
-      #{authors.join(authorJoin)}. #{published} #{j.title[0]}. #{j["container-title"][0]} #{j.volume}#{issue}:#{continuous}
+      #{authors.join(authorJoin)}. #{published} #{j.title[0]}. #{j["container-title"][0]} #{volBlob}#{continuous}
       """
     catch e
       console.warn "Couldn't generate full citation"
