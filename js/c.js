@@ -2382,9 +2382,11 @@ makePageCitationOverflow = function() {
   }
   $("#page-citation").remove();
   $("body").append(citationHtml);
-  $("#" + itemId).click(function() {
-    console.debug("Clicked trigger item");
-    return p$("#page-citation").open();
+  delay(250, function() {
+    return $("#" + itemId).click(function() {
+      console.debug("Clicked trigger item");
+      return p$("#page-citation").open();
+    });
   });
   return citationString;
 };
