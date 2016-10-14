@@ -1503,7 +1503,7 @@ firstLoadInstructionPrompt = function(force) {
  */
 
 makePageCitationOverflow = function() {
-  var j, len, param, projectPageRequiredParams;
+  var citationHtml, citationString, d, item, j, len, month, param, projectPageRequiredParams;
   projectPageRequiredParams = ["project_id", "id", "projectid"];
   for (j = 0, len = projectPageRequiredParams.length; j < len; j++) {
     param = projectPageRequiredParams[j];
@@ -1512,7 +1512,23 @@ makePageCitationOverflow = function() {
       return false;
     }
   }
-  return false;
+
+  /*
+   * Sample:
+   *
+   * AmphibiaWeb. 2016. Amphibian Disease Portal <http://amphibiandisease.org>. University of California, Berkeley, CA, USA. Accessed 27 Sep 2016.
+   */
+  d = new Date();
+  month = dateMonthToString(d.getMonth());
+  citationString = "AmphibiaWeb. " + (d.getUTCFullYear()) + ". " + ($("title").text()) + " &lt;" + uri.o.data.attr.source + "&gt;. University of California, Berkeley, CA, USA.\nAccessed " + (d.getUTCDate()) + " " + month + " " + (d.getUTCFullYear()) + ".";
+  citationHtml = "<paper-dialog id=\"page-citation\">\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div>\n      " + citationString + "\n      <paper-input value=\"" + (escape(citationString)) + "\" label=\"Citation\" readonly></paper-input>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  item = "<paper-item id=\"dialog-trigger-item\">\n  Show Citation\n</paper-item>";
+  $("#page-citation").remove();
+  $("body").append(citationHtml);
+  $("#dialog-trigger-item").click(function() {
+    return p$("#page-citation").open();
+  });
+  return citationString;
 };
 
 
