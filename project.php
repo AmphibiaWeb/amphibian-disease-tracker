@@ -483,7 +483,8 @@ $loginStatus = getLoginState();
     ?>
         <?php
           $authorData = json_decode($project['author_data'], true);
-          $authorParts = explode(" ", $authorData["name"]);
+          $authorName = preg_replace('!\s+!', ' ', $authorData["name"]);
+          $authorParts = explode(" ", $authorName);
           $authorNameFormal = $authorParts[1] . " " . substr($authorParts[0], 0, 1);
           $creationTime = $authorData["entry_date"];
           $today = date("d M Y");
