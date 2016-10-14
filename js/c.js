@@ -2149,7 +2149,7 @@ fetchCitation = function(citationQuery, callback) {
   eQ = encodeURIComponent(citationQuery);
   totalUrl = "" + postUrl + citationQuery;
   $.get(totalUrl, "", "json").done(function(result) {
-    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, error4, error5, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, url;
+    var author, authorJoin, authorString, authors, citation, continuous, doi, doiContinuous, doiNumbers, error2, error3, error4, error5, givenPart, i, initials, initialsArray, issue, j, len, len1, m, n, published, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, url, volBlob;
     console.info("Citation base", result);
     j = result.message;
     authors = new Array();
@@ -2178,9 +2178,14 @@ fetchCitation = function(citationQuery, callback) {
       authorJoin = " and ";
     }
     published = (ref1 = (ref2 = (ref3 = j["published-print"]) != null ? (ref4 = ref3["date-parts"]) != null ? (ref5 = ref4[0]) != null ? ref5[0] : void 0 : void 0 : void 0) != null ? ref2 : (ref6 = j["published-online"]) != null ? (ref7 = ref6["date-parts"]) != null ? (ref8 = ref7[0]) != null ? ref8[0] : void 0 : void 0 : void 0) != null ? ref1 : "In press";
-    issue = j.issue != null ? "(" + j.issue + ")" : "";
-    if (isNull(issue)) {
-      issue = "";
+    issue = !isNull(j.issue) ? "(" + j.issue + ")" : "";
+    if (isNull(j.volume)) {
+      j.volume = "";
+    }
+    if (isNull(j.volume) && isNull(issue)) {
+      volBlob = "";
+    } else {
+      volBlob = "" + j.volume + issue + ":";
     }
     try {
       try {
@@ -2191,7 +2196,7 @@ fetchCitation = function(citationQuery, callback) {
       } catch (error2) {
         continuous = j.page + ".";
       }
-      citation = (authors.join(authorJoin)) + ". " + published + " " + j.title[0] + ". " + j["container-title"][0] + " " + j.volume + issue + ":" + continuous;
+      citation = (authors.join(authorJoin)) + ". " + published + " " + j.title[0] + ". " + j["container-title"][0] + " " + volBlob + continuous;
     } catch (error3) {
       e = error3;
       console.warn("Couldn't generate full citation");
