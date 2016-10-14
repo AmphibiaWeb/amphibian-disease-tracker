@@ -2368,7 +2368,7 @@ makePageCitationOverflow = function() {
   d = new Date();
   month = dateMonthToString(d.getMonth());
   citationString = "AmphibiaWeb. " + (d.getUTCFullYear()) + ". " + ($("title").text()) + " &lt;" + uri.o.data.attr.source + "&gt;. University of California, Berkeley, CA, USA. Accessed " + (d.getUTCDate()) + " " + month + " " + (d.getUTCFullYear()) + ".";
-  citationHtml = "<paper-dialog id=\"page-citation\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <paper-input value=\"" + (citationString.escapeQuotes()) + "\" label=\"Citation\" readonly></paper-input>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  citationHtml = "<paper-dialog id=\"page-citation\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <p style=\"opacity:0\">\n        " + citationString + "\n      </p>\n      <paper-input value=\"" + (citationString.escapeQuotes()) + "\" label=\"Citation\" readonly></paper-input>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   itemId = "dialog-trigger-item";
   try {
     item = document.createElement("paper-item");
