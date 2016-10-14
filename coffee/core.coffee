@@ -1694,6 +1694,8 @@ fetchCitation = (citationQuery, callback) ->
       authorJoin = " and "
     published = j["published-print"]?["date-parts"]?[0]?[0] ? j["published-online"]?["date-parts"]?[0]?[0] ? "In press"
     issue = if j.issue? then "(#{j.issue})" else ""
+    if isNull issue
+      issue = ""
     try
       try
         doi = j.DOI
