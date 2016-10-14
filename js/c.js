@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -2335,6 +2335,41 @@ validateAWebTaxon = function(taxonObj, callback) {
     return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
   });
   return false;
+};
+
+
+/*
+ * Show page citationsin the overflow for non-project pages
+ */
+
+makePageCitationOverflow = function() {
+  var citationHtml, citationString, d, item, len, m, month, param, projectPageRequiredParams;
+  projectPageRequiredParams = ["project_id", "id", "projectid"];
+  for (m = 0, len = projectPageRequiredParams.length; m < len; m++) {
+    param = projectPageRequiredParams[m];
+    if (!isNull(uri.o.param(param))) {
+      console.info("Not creating overflow citation - page is project-specific");
+      return false;
+    }
+  }
+
+  /*
+   * Sample:
+   *
+   * AmphibiaWeb. 2016. Amphibian Disease Portal <http://amphibiandisease.org>. University of California, Berkeley, CA, USA. Accessed 27 Sep 2016.
+   */
+  d = new Date();
+  month = dateMonthToString(d.getMonth());
+  citationString = "AmphibiaWeb. " + (d.getUTCFullYear()) + ". " + ($("title").text()) + " &lt;" + uri.o.data.attr.source + "&gt;. University of California, Berkeley, CA, USA.\nAccessed " + (d.getUTCDate()) + " " + month + " " + (d.getUTCFullYear()) + ".";
+  citationHtml = "<paper-dialog id=\"page-citation\">\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div>\n      " + citationString + "\n      <paper-input value=\"" + (escape(citationString)) + "\" label=\"Citation\" readonly></paper-input>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  item = "<paper-item id=\"dialog-trigger-item\">\n  Show Citation\n</paper-item>";
+  $("header iron-dropdown .paper-menu").append(item);
+  $("#page-citation").remove();
+  $("body").append(citationHtml);
+  $("#dialog-trigger-item").click(function() {
+    return p$("#page-citation").open();
+  });
+  return citationString;
 };
 
 $(function() {
