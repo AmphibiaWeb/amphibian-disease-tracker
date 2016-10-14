@@ -1927,9 +1927,11 @@ makePageCitationOverflow = ->
   # Bind the item
   $("#page-citation").remove()
   $("body").append citationHtml
-  $("##{itemId}").click ->
-    console.debug "Clicked trigger item"
-    p$("#page-citation").open()
+  # dom appendchild can be slow, let's wait a tick.
+  delay 250, ->
+    $("##{itemId}").click ->
+      console.debug "Clicked trigger item"
+      p$("#page-citation").open()
   citationString
 
 
