@@ -2429,7 +2429,10 @@ $(function() {
       return goTo(uri.urlString + "profile.php");
     });
   } catch (undefined) {}
-  return loadJS(uri.urlString + "js/prism.js");
+  loadJS(uri.urlString + "js/prism.js");
+  try {
+    return makePageCitationOverflow();
+  } catch (undefined) {}
 });
 
 

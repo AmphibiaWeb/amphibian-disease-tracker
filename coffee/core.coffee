@@ -1972,3 +1972,5 @@ $ ->
       goTo "#{uri.urlString}profile.php"
   # Lazy-load syntax highlighter
   loadJS "#{uri.urlString}js/prism.js"
+  try
+    makePageCitationOverflow()
