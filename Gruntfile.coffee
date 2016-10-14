@@ -130,6 +130,7 @@ module.exports = (grunt) ->
           "js/c.min.js":["js/c.js"]
           "js/admin.min.js":["js/admin.js"]
           "js/project.min.js":["js/project.js"]
+          "js/kml.min.js":["js/kml.js"]
           "js/profile.min.js":["js/profile.js"]
           "js/global-search.min.js":["js/global-search.js"]
           "js/global-search-worker.min.js":["js/global-search-worker.js"]
@@ -144,6 +145,8 @@ module.exports = (grunt) ->
             "js/maps/#{fileId}.map"
         files:
           "js/geoxml3.min.js": ["geoxml3/kmz/geoxml3.js"]
+          "js/ZipFile.complete.min.js": ["geoxml3/kmz/ZipFile.complete.js"]
+          "js/ProjectedOverlay.min.js": ["geoxml3/ProjectedOverlay.js"]
           "js/geoxml3_gxParse_kmz.min.js": ["geoxml3/kmz/geoxml3_gxParse_kmz.js"]
       minpurl:
         options:
@@ -191,6 +194,7 @@ module.exports = (grunt) ->
           "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee", "coffee/admin-su.coffee"]
           "js/project.js":["coffee/project.coffee"]
           "js/profile.js":["coffee/profile.coffee"]
+          "js/kml.js":["coffee/kml.coffee"]
           "js/global-search.js":["coffee/global-search.coffee"]
           "js/global-search-worker.js":["coffee/global-search-worker.coffee", "coffee/core-worker.coffee"]
     phpcsfixer:
@@ -236,7 +240,7 @@ module.exports = (grunt) ->
   grunt.registerTask("compile","Compile coffeescript",["coffee:compile","uglify:dist","shell:movesrc"])
   ## The minification tasks
   # Part 1
-  grunt.registerTask("minifyIndependent","Minify Bower components that aren't distributed min'd",["uglify:minpurl","uglify:minxmljson","uglify:minjcookie"])
+  grunt.registerTask("minifyIndependent","Minify Bower components that aren't distributed min'd",["uglify:minpurl","uglify:minxmljson","uglify:minjcookie", "uglify:mingeoxml"])
   # Part 2
   grunt.registerTask("minifyBulk","Minify the major things",["uglify:combine","uglify:dist"])
   grunt.registerTask "css", "Process LESS -> CSS", ["less","postcss","cssmin"]
