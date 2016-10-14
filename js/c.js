@@ -2350,7 +2350,7 @@ validateAWebTaxon = function(taxonObj, callback) {
  */
 
 makePageCitationOverflow = function() {
-  var citationHtml, citationString, d, error2, item, len, m, menu, month, param, projectPageRequiredParams;
+  var citationHtml, citationString, d, error2, item, itemId, len, m, menu, month, param, projectPageRequiredParams;
   projectPageRequiredParams = ["project_id", "id", "projectid"];
   for (m = 0, len = projectPageRequiredParams.length; m < len; m++) {
     param = projectPageRequiredParams[m];
@@ -2369,19 +2369,21 @@ makePageCitationOverflow = function() {
   month = dateMonthToString(d.getMonth());
   citationString = "AmphibiaWeb. " + (d.getUTCFullYear()) + ". " + ($("title").text()) + " &lt;" + uri.o.data.attr.source + "&gt;. University of California, Berkeley, CA, USA. Accessed " + (d.getUTCDate()) + " " + month + " " + (d.getUTCFullYear()) + ".";
   citationHtml = "<paper-dialog id=\"page-citation\" modal>\n  <h2>Citation</h2>\n  <paper-dialog-scrollable>\n    <div>\n      <paper-input value=\"" + (citationString.escapeQuotes()) + "\" label=\"Citation\" readonly></paper-input>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  itemId = "dialog-trigger-item";
   try {
     item = document.createElement("paper-item");
-    item.setAttribute("id", "dialog-trigger-item");
+    item.setAttribute("id", itemId);
     item.textContent = "Show Citation";
     menu = p$("header paper-menu");
     Polymer.dom(menu).appendChild(item);
   } catch (error2) {
-    item = "<paper-item id=\"dialog-trigger-item\">\n  Show Citation\n</paper-item>";
+    item = "<paper-item id=\"" + itemId + "\">\n  Show Citation\n</paper-item>";
     $("header paper-menu-button .paper-menu").append(item);
   }
   $("#page-citation").remove();
   $("body").append(citationHtml);
-  $("#dialog-trigger-item").click(function() {
+  $("#" + itemId).click(function() {
+    console.debug("Clicked trigger item");
     return p$("#page-citation").open();
   });
   return citationString;

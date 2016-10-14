@@ -1910,15 +1910,16 @@ makePageCitationOverflow = ->
   </paper-dialog>
   """
   # Insert the menu item
+  itemId = "dialog-trigger-item"
   try
     item = document.createElement "paper-item"
-    item.setAttribute "id", "dialog-trigger-item"
+    item.setAttribute "id", itemId
     item.textContent = "Show Citation"
     menu = p$("header paper-menu")
     Polymer.dom(menu).appendChild item
   catch
     item = """
-    <paper-item id="dialog-trigger-item">
+    <paper-item id="#{itemId}">
       Show Citation
     </paper-item>
     """
@@ -1926,7 +1927,8 @@ makePageCitationOverflow = ->
   # Bind the item
   $("#page-citation").remove()
   $("body").append citationHtml
-  $("#dialog-trigger-item").click ->
+  $("##{itemId}").click ->
+    console.debug "Clicked trigger item"
     p$("#page-citation").open()
   citationString
 
