@@ -1864,6 +1864,65 @@ validateAWebTaxon = (taxonObj, callback = null) ->
 
 
 
+
+###
+# Show page citationsin the overflow for non-project pages
+###
+makePageCitationOverflow = ->
+  # Are we on a project-specific page
+  projectPageRequiredParams = [
+    "project_id"
+    "id"
+    "projectid"
+    ]
+  for param in projectPageRequiredParams
+    unless isNull uri.o.param param
+      console.info "Not creating overflow citation - page is project-specific"
+      return false
+  # Create the citation
+  ###
+  # Sample:
+  #
+  # AmphibiaWeb. 2016. Amphibian Disease Portal <http://amphibiandisease.org>. University of California, Berkeley, CA, USA. Accessed 27 Sep 2016.
+  ###
+  d = new Date()
+  month = dateMonthToString d.getMonth()
+  citationString = """
+    AmphibiaWeb. #{d.getUTCFullYear()}. #{$("title").text()} &lt;#{uri.o.data.attr.source}&gt;. University of California, Berkeley, CA, USA.
+    Accessed #{d.getUTCDate()} #{month} #{d.getUTCFullYear()}.
+  """
+  citationHtml = """
+  <paper-dialog id="page-citation">
+    <h2>Citation</h2>
+    <paper-dialog-scrollable>
+      <div>
+        #{citationString}
+        <paper-input value="#{escape citationString}" label="Citation" readonly></paper-input>
+      </div>
+    </paper-dialog-scrollable>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Close</paper-button>
+    </div>
+  </paper-dialog>
+  """
+  # Insert the menu item
+  item = """
+  <paper-item id="dialog-trigger-item">
+    Show Citation
+  </paper-item>
+  """
+  $("header iron-dropdown .paper-menu").append item
+  # Bind the item
+  $("#page-citation").remove()
+  $("body").append citationHtml
+  $("#dialog-trigger-item").click ->
+    p$("#page-citation").open()
+  citationString
+
+
+
+
+
 $ ->
   bindClicks()
   formatScientificNames()
