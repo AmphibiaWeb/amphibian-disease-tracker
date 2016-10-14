@@ -1901,6 +1901,9 @@ makePageCitationOverflow = ->
     <h2>Citation</h2>
     <paper-dialog-scrollable>
       <div>
+        <p style="opacity:0">
+          #{citationString}
+        </p>
         <paper-input value="#{citationString.escapeQuotes()}" label="Citation" readonly></paper-input>
       </div>
     </paper-dialog-scrollable>
