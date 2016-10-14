@@ -249,6 +249,12 @@ deEscape = (string) ->
   string
 
 
+String::escapeQuotes = ->
+  str = this.replace /"/mg, "&#34;"
+  str = str.replace /'/mg, "&#39;"
+  str
+
+
 getElementHtml = (el) ->
   el.outerHTML
 
@@ -272,7 +278,7 @@ jQuery.fn.selectText = function(){
         range.moveToElementText(element);
         range.select();
     } else if (window.getSelection) {
-        selection = window.getSelection();        
+        selection = window.getSelection();
         range = document.createRange();
         range.selectNodeContents(element);
         selection.removeAllRanges();
@@ -1897,7 +1903,7 @@ makePageCitationOverflow = ->
     <paper-dialog-scrollable>
       <div>
         #{citationString}
-        <paper-input value="#{escape citationString}" label="Citation" readonly></paper-input>
+        <paper-input value="#{citationString.escapeQuotes()}" label="Citation" readonly></paper-input>
       </div>
     </paper-dialog-scrollable>
     <div class="buttons">
@@ -1911,7 +1917,8 @@ makePageCitationOverflow = ->
     Show Citation
   </paper-item>
   """
-  $("header iron-dropdown .paper-menu").append item
+  # $("header paper-menu-button .paper-menu").append item
+  $("header paper-menu").append item
   # Bind the item
   $("#page-citation").remove()
   $("body").append citationHtml
