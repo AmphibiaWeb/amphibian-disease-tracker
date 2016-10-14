@@ -1894,15 +1894,13 @@ makePageCitationOverflow = ->
   d = new Date()
   month = dateMonthToString d.getMonth()
   citationString = """
-    AmphibiaWeb. #{d.getUTCFullYear()}. #{$("title").text()} &lt;#{uri.o.data.attr.source}&gt;. University of California, Berkeley, CA, USA.
-    Accessed #{d.getUTCDate()} #{month} #{d.getUTCFullYear()}.
+    AmphibiaWeb. #{d.getUTCFullYear()}. #{$("title").text()} &lt;#{uri.o.data.attr.source}&gt;. University of California, Berkeley, CA, USA. Accessed #{d.getUTCDate()} #{month} #{d.getUTCFullYear()}.
   """
   citationHtml = """
-  <paper-dialog id="page-citation">
+  <paper-dialog id="page-citation" modal>
     <h2>Citation</h2>
     <paper-dialog-scrollable>
       <div>
-        #{citationString}
         <paper-input value="#{citationString.escapeQuotes()}" label="Citation" readonly></paper-input>
       </div>
     </paper-dialog-scrollable>
@@ -1912,13 +1910,19 @@ makePageCitationOverflow = ->
   </paper-dialog>
   """
   # Insert the menu item
-  item = """
-  <paper-item id="dialog-trigger-item">
-    Show Citation
-  </paper-item>
-  """
-  # $("header paper-menu-button .paper-menu").append item
-  $("header paper-menu").append item
+  try
+    item = document.createElement "paper-item"
+    item.setAttribute "id", "dialog-trigger-item"
+    item.textContent = "Show Citation"
+    menu = p$("header paper-menu")
+    Polymer.dom(menu).appendChild item
+  catch
+    item = """
+    <paper-item id="dialog-trigger-item">
+      Show Citation
+    </paper-item>
+    """
+    $("header paper-menu-button .paper-menu").append item
   # Bind the item
   $("#page-citation").remove()
   $("body").append citationHtml
