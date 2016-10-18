@@ -391,7 +391,7 @@ renderMapWithData = function(projectData, force) {
           create: true,
           downloadFile: "species-list-" + projectData.project_id + "-" + (d.toISOString()) + ".csv",
           selector: ".download-buttons",
-          buttonText: "Download Species List",
+          buttonText: "Download Species Stats",
           splitValues: " ",
           header: ["Genus", "Species", "Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count", "Totals"]
         };
