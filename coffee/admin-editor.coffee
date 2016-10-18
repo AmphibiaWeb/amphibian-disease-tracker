@@ -276,12 +276,18 @@ loadEditor = (projectPreload) ->
             <h3>Project Basics</h3>
             <paper-input readonly label="Project Identifier" value="#{project.project_id}" id="project_id" class="project-param"></paper-input>
             <paper-input readonly label="Project Creation" value="#{creation.toLocaleString()}" id="project_creation" class="author-param" data-key="entry_date" data-value="#{authorData.entry_date}"></paper-input>
-            <paper-input readonly label="Project ARK" value="#{project.project_obj_id}" id="project_creation" class="project-param"></paper-input>
+            <div class="row">
+              <paper-input readonly label="Project ARK" value="#{project.project_obj_id}" id="project_creation" class="project-param col-xs-11"></paper-input>
+              #{getInfoTooltip("ARK or Archival Resource Key identifier is a persistent, citable identifier for this project and maybe used to cite these data in a publication or report. We use the California Digital Library Name Assigning Authority")}
+            </div>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Title" value="#{project.project_title}" id="project-title" data-field="project_title"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Primary Pathogen" value="#{project.disease}" data-field="disease"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="PI Lab" value="#{project.pi_lab}" id="project-title" data-field="pi_lab"></paper-input>
             <paper-input #{conditionalReadonly} class="project-param" label="Project Reference" value="#{project.reference_id}" id="project-reference" data-field="reference_id"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Publication DOI" value="#{project.publication}" id="doi" data-field="publication"></paper-input>
+            <div class="row">
+              <paper-input #{conditionalReadonly} class="project-param col-xs-11" label="Publication DOI" value="#{project.publication}" id="doi" data-field="publication"></paper-input>
+              #{getInfoTooltip("Publication DOI citing these datasets may be added here.")}
+            </div>
             <paper-input #{conditionalReadonly} class="author-param" data-key="name" label="Project Contact" value="#{authorData.name}" id="project-contact"></paper-input>
             <gold-email-input #{conditionalReadonly} class="author-param" data-key="contact_email" label="Contact Email" value="#{authorData.contact_email}" id="contact-email"></gold-email-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="diagnostic_lab" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project-lab"></paper-input>

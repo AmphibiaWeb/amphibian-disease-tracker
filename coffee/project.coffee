@@ -391,7 +391,7 @@ renderMapWithData = (projectData, force = false) ->
           create: true
           downloadFile: "species-list-#{projectData.project_id}-#{d.toISOString()}.csv"
           selector: ".download-buttons"
-          buttonText: "Download Species List"
+          buttonText: "Download Species Stats"
           splitValues: " " # Split genus, species, ssp into their own cols
           header: ["Genus","Species","Subspecies", "Positive Samples?", "Negative Samples?", "Inconclusive Samples?", "Positive Count", "Negative Count", "Inconclusive Count", "Totals"]
         adjustedList = new Array()
