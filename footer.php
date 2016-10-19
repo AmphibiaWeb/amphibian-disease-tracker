@@ -1,6 +1,6 @@
     <footer class="row">
       <div class="col-md-7 col-xs-12">
-        <copyright-statement copyrightStart="2015">AmphibiaWeb &amp; AmphibianDisease.org</copyright-statement>
+        <copyright-statement copyrightStart="2015">AmphibiaWeb&#39;s Amphibian Disease Portal</copyright-statement>
       </div>
       <div class="col-md-1 col-xs-4">
         <paper-icon-button icon="icons:chrome-reader-mode" class="click" data-href="https://amphibian-disease-tracker.readthedocs.org" data-toggle="tooltip" title="Documentation" data-newtab="true"></paper-icon-button>
