@@ -1,3 +1,14 @@
+
+/*
+ * KML handling
+ *
+ *
+ * Test this code:
+  loadJS("js/kml.js"); delay(500, function() { loadKML("geoxml3/KML_Samples.kml"); });
+ *
+ * @path ./coffee/kml.coffee
+ * @author Philip Kahn
+ */
 var initializeParser, loadKML;
 
 loadKML = function(filePath) {
@@ -21,7 +32,7 @@ loadKML = function(filePath) {
   }
 };
 
-initializeParser = function(mapSelector) {
+initializeParser = function(mapSelector, callback) {
   if (mapSelector == null) {
     mapSelector = "google-map";
   }
@@ -36,6 +47,9 @@ initializeParser = function(mapSelector) {
         map: m,
         parser: p
       };
+      if (typeof callback === "function") {
+        callback();
+      }
       return false;
     });
     return false;
@@ -43,7 +57,9 @@ initializeParser = function(mapSelector) {
 };
 
 $(function() {
-  initializeParser();
+  if (geo.inhibitKMLInit !== true) {
+    initializeParser();
+  }
   return false;
 });
 
