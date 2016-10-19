@@ -1,3 +1,14 @@
+###
+# KML handling
+#
+#
+# Test this code:
+  loadJS("js/kml.js"); delay(500, function() { loadKML("geoxml3/KML_Samples.kml"); });
+#
+# @path ./coffee/kml.coffee
+# @author Philip Kahn
+###
+
 
 loadKML = (filePath) ->
   if isNull filePath
@@ -15,7 +26,7 @@ loadKML = (filePath) ->
       geo.kml.parser.parse filePath
 
 
-initializeParser = (mapSelector = "google-map") ->
+initializeParser = (mapSelector = "google-map", callback) ->
   loadJS "js/geoxml3.min.js", ->
     loadJS "js/ProjectedOverlay.min.js", ->
       m = p$(mapSelector).map
@@ -23,10 +34,13 @@ initializeParser = (mapSelector = "google-map") ->
       geo.kml =
         map: m
         parser: p
+      if typeof callback is "function"
+        callback()
       false
     false
 
 
 $ ->
-  initializeParser()
+  unless geo.inhibitKMLInit is true
+    initializeParser()
   false
