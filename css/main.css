@@ -7117,12 +7117,14 @@ html >>> a:focus {
 }
 .glyphicons.flip {
   transform: scaleX(-1);
-  filter: FlipH;
+  -webkit-filter: FlipH;
+          filter: FlipH;
   -ms-filter: "FlipH";
 }
 .glyphicons.flipv {
   transform: scaleY(-1);
-  filter: FlipV;
+  -webkit-filter: FlipV;
+          filter: FlipV;
   -ms-filter: "FlipV";
 }
 .glyphicons.rotate90 {
@@ -9973,7 +9975,8 @@ paper-dialog .h3 {
   font-size: 18px;
 }
 paper-card.card-tile .header iron-image img {
-  filter: grayscale(50%) opacity(0.25);
+  -webkit-filter: grayscale(50%) opacity(0.25);
+          filter: grayscale(50%) opacity(0.25);
 }
 .form-group iron-label {
   font-weight: bold;
@@ -10534,7 +10537,8 @@ section#notes marked-element {
 :root .fa-rotate-270,
 :root .fa-flip-horizontal,
 :root .fa-flip-vertical {
-  filter: none;
+  -webkit-filter: none;
+          filter: none;
 }
 .fa-stack {
   position: relative;
