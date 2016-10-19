@@ -124,7 +124,6 @@
       </Placemark>
       <Placemark>
         <name>Floating placemark</name>
-        <visibility>0</visibility>
         <description>Floats a defined distance above the ground.</description>
         <LookAt>
           <longitude>-122.0839597145766</longitude>
@@ -142,7 +141,6 @@
       </Placemark>
       <Placemark>
         <name>Extruded placemark</name>
-        <visibility>0</visibility>
         <description>Tethered to the ground by a customizable
           &quot;tail&quot;</description>
         <LookAt>
@@ -163,7 +161,7 @@
     </Folder>
     <Folder>
       <name>Styles and Markup</name>
-      <visibility>0</visibility>
+      
       <description>With KML it is easy to create rich, descriptive markup to
         annotate and enrich your placemarks</description>
       <LookAt>
@@ -177,7 +175,7 @@
       <styleUrl>#noDrivingDirections</styleUrl>
       <Document>
         <name>Highlighted Icon</name>
-        <visibility>0</visibility>
+        
         <description>Place your mouse over the icon to see it display the new
           icon</description>
         <LookAt>
@@ -214,7 +212,6 @@
         </StyleMap>
         <Placemark>
           <name>Roll over this icon</name>
-          <visibility>0</visibility>
           <styleUrl>#exampleStyleMap</styleUrl>
           <Point>
             <coordinates>-122.0856545755255,37.42243077405461,0</coordinates>
@@ -223,7 +220,6 @@
       </Document>
       <Placemark>
         <name>Descriptive HTML</name>
-        <visibility>0</visibility>
         <description><![CDATA[Click on the blue link!<br><br>
 Placemark descriptions can be enriched by using many standard HTML tags.<br>
 For example:
@@ -327,11 +323,11 @@ Simple Tables:<br>
     </Folder>
     <Folder>
       <name>Ground Overlays</name>
-      <visibility>0</visibility>
+      
       <description>Examples of ground overlays</description>
       <GroundOverlay>
         <name>Large-scale overlay on terrain</name>
-        <visibility>0</visibility>
+        
         <description>Overlay shows Mount Etna erupting on July 13th, 2001.</description>
         <LookAt>
           <longitude>15.02468937557116</longitude>
@@ -355,12 +351,12 @@ Simple Tables:<br>
     </Folder>
     <Folder>
       <name>Screen Overlays</name>
-      <visibility>0</visibility>
+      
       <description>Screen overlays have to be authored directly in KML. These
         examples illustrate absolute and dynamic positioning in screen space.</description>
       <ScreenOverlay>
         <name>Simple crosshairs</name>
-        <visibility>0</visibility>
+        
         <description>This screen overlay uses fractional positioning to put the
           image in the exact center of the screen</description>
         <Icon>
@@ -373,7 +369,7 @@ Simple Tables:<br>
       </ScreenOverlay>
       <ScreenOverlay>
         <name>Absolute Positioning: Top left</name>
-        <visibility>0</visibility>
+        
         <Icon>
           <href>http://developers.google.com/kml/documentation/images/top_left.jpg</href>
         </Icon>
@@ -384,7 +380,7 @@ Simple Tables:<br>
       </ScreenOverlay>
       <ScreenOverlay>
         <name>Absolute Positioning: Top right</name>
-        <visibility>0</visibility>
+        
         <Icon>
           <href>http://developers.google.com/kml/documentation/images/top_right.jpg</href>
         </Icon>
@@ -395,7 +391,7 @@ Simple Tables:<br>
       </ScreenOverlay>
       <ScreenOverlay>
         <name>Absolute Positioning: Bottom left</name>
-        <visibility>0</visibility>
+        
         <Icon>
           <href>http://developers.google.com/kml/documentation/images/bottom_left.jpg</href>
         </Icon>
@@ -406,7 +402,7 @@ Simple Tables:<br>
       </ScreenOverlay>
       <ScreenOverlay>
         <name>Absolute Positioning: Bottom right</name>
-        <visibility>0</visibility>
+        
         <Icon>
           <href>http://developers.google.com/kml/documentation/images/bottom_right.jpg</href>
         </Icon>
@@ -417,7 +413,7 @@ Simple Tables:<br>
       </ScreenOverlay>
       <ScreenOverlay>
         <name>Dynamic Positioning: Top of screen</name>
-        <visibility>0</visibility>
+        
         <Icon>
           <href>http://developers.google.com/kml/documentation/images/dynamic_screenoverlay.jpg</href>
         </Icon>
@@ -428,7 +424,7 @@ Simple Tables:<br>
       </ScreenOverlay>
       <ScreenOverlay>
         <name>Dynamic Positioning: Right of screen</name>
-        <visibility>0</visibility>
+        
         <Icon>
           <href>http://developers.google.com/kml/documentation/images/dynamic_right.jpg</href>
         </Icon>
@@ -440,13 +436,12 @@ Simple Tables:<br>
     </Folder>
     <Folder>
       <name>Paths</name>
-      <visibility>0</visibility>
+      
       <description>Examples of paths. Note that the tessellate tag is by default
         set to 0. If you want to create tessellated lines, they must be authored
         (or edited) directly in KML.</description>
       <Placemark>
         <name>Tessellated</name>
-        <visibility>0</visibility>
         <description><![CDATA[If the <tessellate> tag has a value of 1, the line will contour to the underlying terrain]]></description>
         <LookAt>
           <longitude>-112.0822680013139</longitude>
@@ -464,7 +459,6 @@ Simple Tables:<br>
       </Placemark>
       <Placemark>
         <name>Untessellated</name>
-        <visibility>0</visibility>
         <description><![CDATA[If the <tessellate> tag has a value of 0, the line follow a simple straight-line path from point to point]]></description>
         <LookAt>
           <longitude>-112.0822680013139</longitude>
@@ -482,7 +476,6 @@ Simple Tables:<br>
       </Placemark>
       <Placemark>
         <name>Absolute</name>
-        <visibility>0</visibility>
         <description>Transparent purple line</description>
         <LookAt>
           <longitude>-112.2719329043177</longitude>
@@ -511,7 +504,6 @@ Simple Tables:<br>
       </Placemark>
       <Placemark>
         <name>Absolute Extruded</name>
-        <visibility>0</visibility>
         <description>Transparent green wall with yellow outlines</description>
         <LookAt>
           <longitude>-112.2643334742529</longitude>
@@ -541,7 +533,6 @@ Simple Tables:<br>
       </Placemark>
       <Placemark>
         <name>Relative</name>
-        <visibility>0</visibility>
         <description>Black line (10 pixels wide), height tracks terrain</description>
         <LookAt>
           <longitude>-112.2580438551384</longitude>
@@ -570,7 +561,6 @@ Simple Tables:<br>
       </Placemark>
       <Placemark>
         <name>Relative Extruded</name>
-        <visibility>0</visibility>
         <description>Opaque blue walls with red outline, height tracks terrain</description>
         <LookAt>
           <longitude>-112.2683594333433</longitude>
@@ -601,11 +591,9 @@ Simple Tables:<br>
     </Folder>
     <Folder>
       <name>Polygons</name>
-      <visibility>0</visibility>
       <description>Examples of polygon shapes</description>
       <Folder>
         <name>Google Campus</name>
-        <visibility>0</visibility>
         <description>A collection showing how easy it is to create 3-dimensional
           buildings</description>
         <LookAt>
@@ -618,7 +606,6 @@ Simple Tables:<br>
         </LookAt>
         <Placemark>
           <name>Building 40</name>
-          <visibility>0</visibility>
           <styleUrl>#transRedPoly</styleUrl>
           <Polygon>
             <extrude>1</extrude>
@@ -653,7 +640,7 @@ Simple Tables:<br>
         </Placemark>
         <Placemark>
           <name>Building 41</name>
-          <visibility>0</visibility>
+          
           <styleUrl>#transBluePoly</styleUrl>
           <Polygon>
             <extrude>1</extrude>
@@ -685,7 +672,7 @@ Simple Tables:<br>
         </Placemark>
         <Placemark>
           <name>Building 42</name>
-          <visibility>0</visibility>
+          
           <styleUrl>#transGreenPoly</styleUrl>
           <Polygon>
             <extrude>1</extrude>
@@ -722,7 +709,7 @@ Simple Tables:<br>
         </Placemark>
         <Placemark>
           <name>Building 43</name>
-          <visibility>0</visibility>
+          
           <styleUrl>#transYellowPoly</styleUrl>
           <Polygon>
             <extrude>1</extrude>
@@ -799,7 +786,7 @@ Simple Tables:<br>
       </Folder>
       <Folder>
         <name>Absolute and Relative</name>
-        <visibility>0</visibility>
+        
         <description>Four structures whose roofs meet exactly. Turn on/off
           terrain to see the difference between relative and absolute
           positioning.</description>
@@ -813,7 +800,7 @@ Simple Tables:<br>
         </LookAt>
         <Placemark>
           <name>Absolute</name>
-          <visibility>0</visibility>
+          
           <styleUrl>#transBluePoly</styleUrl>
           <Polygon>
             <tessellate>1</tessellate>
@@ -831,7 +818,7 @@ Simple Tables:<br>
         </Placemark>
         <Placemark>
           <name>Absolute Extruded</name>
-          <visibility>0</visibility>
+          
           <styleUrl>#transRedPoly</styleUrl>
           <Polygon>
             <extrude>1</extrude>
@@ -850,7 +837,7 @@ Simple Tables:<br>
         </Placemark>
         <Placemark>
           <name>Relative</name>
-          <visibility>0</visibility>
+          
           <LookAt>
             <longitude>-112.3350152490417</longitude>
             <latitude>36.14943123077423</latitude>
@@ -879,8 +866,7 @@ Simple Tables:<br>
           </Polygon>
         </Placemark>
         <Placemark>
-          <name>Relative Extruded</name>
-          <visibility>0</visibility>
+          <name>Relative Extruded</name>          
           <LookAt>
             <longitude>-112.3351587892382</longitude>
             <latitude>36.14979247129029</latitude>
