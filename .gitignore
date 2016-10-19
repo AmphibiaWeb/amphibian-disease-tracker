@@ -73,6 +73,7 @@ meta/*.xls
 .dropbox
 .dropbox*
 info.php
+aweb_list.txt
 grav/vendor/bin/*
 grav/vendor/erusev/*
 # Don't track user profile images
