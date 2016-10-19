@@ -75,11 +75,17 @@ meta/*.xls
 info.php
 grav/vendor/bin/*
 grav/vendor/erusev/*
+# Don't track user profile images
 users/profiles/*.png
+users/profiles/*.PNG
 users/profiles/*.jpg
+users/profiles/*.JPG
 users/profiles/*.jpeg
+users/profiles/*.JPEG
 users/profiles/*.bmp
+users/profiles/*.BMP
 users/profiles/*.gif
+users/profiles/*.GIF
 # Allow test sensitive queries in the directory to be synced and saved but not committed
 testQuery.sql
 *.bak
