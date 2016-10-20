@@ -949,6 +949,11 @@ showAddUserDialog = (refAccessList) ->
           email: user
           user_id: uid
           permission: "READ"
+        try
+          unless isArray _adp.projectData.access_data.total
+            _adp.projectData.access_data.total = Object.toArray _adp.projectData.access_data.total 
+            _adp.projectData.access_data.viewers_list = Object.toArray _adp.projectData.access_data.viewers_list
+            _adp.projectData.access_data.viewers = Object.toArray _adp.projectData.access_data.viewers 
         _adp.projectData.access_data.total.push user
         _adp.projectData.access_data.viewers_list.push user
         _adp.projectData.access_data.viewers.push userObj

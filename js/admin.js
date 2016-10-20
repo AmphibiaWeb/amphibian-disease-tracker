@@ -3113,6 +3113,13 @@ showAddUserDialog = function(refAccessList) {
           user_id: uid,
           permission: "READ"
         };
+        try {
+          if (!isArray(_adp.projectData.access_data.total)) {
+            _adp.projectData.access_data.total = Object.toArray(_adp.projectData.access_data.total);
+            _adp.projectData.access_data.viewers_list = Object.toArray(_adp.projectData.access_data.viewers_list);
+            _adp.projectData.access_data.viewers = Object.toArray(_adp.projectData.access_data.viewers);
+          }
+        } catch (undefined) {}
         _adp.projectData.access_data.total.push(user);
         _adp.projectData.access_data.viewers_list.push(user);
         _adp.projectData.access_data.viewers.push(userObj);
