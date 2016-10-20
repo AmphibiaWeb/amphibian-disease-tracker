@@ -476,7 +476,7 @@ $loginStatus = getLoginState();
 } elseif (!$validProject) {
     ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
-        <p>Did you want to <a href="projects.php">browse our projects instead?</a></p>
+        <p>Did you want to <a href="project.php">browse our projects instead?</a></p>
         <?php
 } else {
             $projectCitation = "";
