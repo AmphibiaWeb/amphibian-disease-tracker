@@ -2392,6 +2392,8 @@ createMap2 = (pointsObj, options, callback) ->
     if options.onlyOne is true
       selector = $("google-map").get(0)
     unless $(selector).exists()
+      try
+        console.debug "Selector does not exist:", selector
       selector = "#carto-map-container"
       unless $(selector).exists()
         selector = "body"
@@ -3327,7 +3329,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
       # Callback
       console.info "Post init"
       getCanonicalDataCoords geo.dataTable, null, (coords, options) ->
-        console.info "gcdc callback successful"
+        console.info "gcdc callback successful", coords
         parentCallback(coords)
       false
   .fail (result, status) ->

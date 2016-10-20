@@ -1275,8 +1275,8 @@ getCanonicalDataCoords = (table, options = _adp.defaultMapOptions, callback = cr
           textPoint = row.st_astext
           if isNull row.infraspecificepithet
             row.infraspecificepithet = ""
-          #point = pointStringToPoint textPoint
-          point = pointStringToLatLng textPoint
+          # CartoDB returns these data reversed, as lng/lat
+          point = pointStringToLatLng textPoint, true
           data =
             title: "#{row.catalognumber}: #{row.genus} #{row.specificepithet} #{row.infraspecificepithet}"
             html: """
@@ -1754,7 +1754,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
   #
   # Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters"
   ###
-  console.info "Staring geoDataHandler()"
+  console.info "Starting geoDataHandler()"
   try
     unless geo.geocoder?
       try

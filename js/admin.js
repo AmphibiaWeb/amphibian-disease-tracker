@@ -1246,7 +1246,7 @@ getCanonicalDataCoords = function(table, options, callback) {
           if (isNull(row.infraspecificepithet)) {
             row.infraspecificepithet = "";
           }
-          point = pointStringToLatLng(textPoint);
+          point = pointStringToLatLng(textPoint, true);
           data = {
             title: row.catalognumber + ": " + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet,
             html: "<p>\n  <span class=\"sciname italic\">" + row.genus + " " + row.specificepithet + " " + row.infraspecificepithet + "</span> collected on " + row.dateidentified + "\n</p>\n<p>\n  <strong>Status:</strong>\n  Sampled by " + row.samplemethod + ", disease status " + row.diseasedetected + " for " + row.diseasetested + "\n</p>"
@@ -1718,7 +1718,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
    *
    * Requires columns "decimalLatitude", "decimalLongitude", "coordinateUncertaintyInMeters"
    */
-  console.info("Staring geoDataHandler()");
+  console.info("Starting geoDataHandler()");
   try {
     if (geo.geocoder == null) {
       try {

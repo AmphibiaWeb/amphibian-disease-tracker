@@ -2911,6 +2911,9 @@ createMap2 = function(pointsObj, options, callback) {
       selector = $("google-map").get(0);
     }
     if (!$(selector).exists()) {
+      try {
+        console.debug("Selector does not exist:", selector);
+      } catch (undefined) {}
       selector = "#carto-map-container";
       if (!$(selector).exists()) {
         selector = "body";
@@ -3914,7 +3917,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
     return geo.init(function() {
       console.info("Post init");
       getCanonicalDataCoords(geo.dataTable, null, function(coords, options) {
-        console.info("gcdc callback successful");
+        console.info("gcdc callback successful", coords);
         return parentCallback(coords);
       });
       return false;
