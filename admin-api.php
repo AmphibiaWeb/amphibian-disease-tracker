@@ -1647,9 +1647,9 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         $validateStatus = true;
         # Check the response for errors
         try {
-          if(isset($resp['done'][0]['Samples'])) {
-          $hasError = !empty($resp['done'][0]['Samples']['errors']);
-          $hasWarning = !empty($resp['done'][0]['Samples']['warnings']);
+          if(isset($resp['done']['worksheets'][0]['Samples'])) {
+              $hasError = !empty($resp['done']['worksheets'][0]['Samples']['errors']);
+              $hasWarning = !empty($resp['done']['worksheets'][0]['Samples']['warnings']);
           }
           else {
               $hasError = false;
@@ -1659,10 +1659,10 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $hasError = false;
             $hasWarning = false;
         }
-        if (empty($resp) || !isset($resp['done'][0])) {
+        if (empty($resp) || !isset($resp['done']['worksheets'][0])) {
             $validateStatus = 'FIMS_SERVER_DOWN';
         } elseif ($hasError) {
-            $mainError = $resp['done'][0]['Samples']['errors'][0];
+            $mainError = $resp['done']['worksheets'][0]['Samples']['errors'][0];
             $meK = key($mainError);
             $errorMessage = $meK.': '.$mainError[$meK][0];
             if (!empty($mainError[0][0])) {
@@ -1672,8 +1672,8 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
                 'status' => false,
                 'error' => $errorMessage,
                 'main_error' => $mainError,
-                'errors' => $resp['done'][0]['Samples']['errors'],
-                'warnings' => $resp['done'][0]['Samples']['warnings'],
+                'errors' => $resp['done']['worksheets'][0]['Samples']['errors'],
+                'warnings' => $resp['done']['worksheets'][0]['Samples']['warnings'],
             );
         }
         # Make the response
