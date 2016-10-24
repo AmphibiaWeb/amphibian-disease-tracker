@@ -91,3 +91,4 @@ users/profiles/*.GIF
 testQuery.sql
 *.bak
 aweb_list.txt
+npm-debug.log
