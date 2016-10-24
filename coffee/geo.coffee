@@ -269,6 +269,8 @@ createMap2 = (pointsObj, options, callback) ->
     selector = options.selector
   else
     selector = "#carto-map-container"
+  if isNull options.onlyOne
+    options.onlyOne = true
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
       poly = options.polyParams

@@ -1292,6 +1292,13 @@ animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, 
   false
 
 
+allError = (message) ->
+  stopLoadError message
+  bsAlert message, "danger"
+  console.error message
+  false
+
+
 checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
   ###
   # Check to see if the file on the server is up-to-date with what the
@@ -2252,6 +2259,8 @@ createMap2 = (pointsObj, options, callback) ->
     selector = options.selector
   else
     selector = "#carto-map-container"
+  if isNull options.onlyOne
+    options.onlyOne = true
   try
     if options?.polyParams?.fillColor? and options?.polyParams?.fillOpacity?
       poly = options.polyParams

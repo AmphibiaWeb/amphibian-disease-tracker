@@ -1496,6 +1496,12 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", ca
                     zipHandler(linkPath)
                 when "x-7z-compressed"
                   _7zHandler(linkPath)
+                when "vnd.google-earth.kml+xml", "vnd.google-earth.kmz"
+                  kmlHandler(linkPath)
+                else
+                  console.warn "Unknown mime type application/#{longType}"
+                  allError "Sorry, we can't processes files of type application/#{longType}"
+                  return false
             when "text" then csvHandler(linkPath)
             when "image" then imageHandler(linkPath)
         catch e
@@ -1642,6 +1648,21 @@ csvHandler = (path, hasHeaders = true, callbackSkipsGeoHandler) ->
     # Parse out the CSV here
     geoDataHandler()
   false
+
+
+
+kmlHandler = (path, callback) ->
+  ###
+  # Load a KML file
+  ###
+  geo.inhibitKMLInit = true
+  loadJS "js/kml.min.js", ->
+    initializeParser null, ->
+      # UI handling after parsing
+      if typeof callback is "function"
+        callback(geo.kml)
+  false
+
 
 
 copyMarkdown = (selector, zeroClipEvent, html5 = true) ->

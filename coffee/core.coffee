@@ -1292,6 +1292,13 @@ animateHoverShadows = (selector = "paper-card.card-tile", defaultElevation = 2, 
   false
 
 
+allError = (message) ->
+  stopLoadError message
+  bsAlert message, "danger"
+  console.error message
+  false
+
+
 checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
   ###
   # Check to see if the file on the server is up-to-date with what the
