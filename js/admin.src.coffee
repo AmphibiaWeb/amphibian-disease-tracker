@@ -1492,12 +1492,19 @@ bootstrapUploader = (uploadFormId = "file-uploader", bsColWidth = "col-md-4", ca
                   #
                   if file.type is "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or extension is "xlsx"
                     excelHandler(linkPath)
+                  else if extension is "kmz"
+                    kmlHandler(linkPath)
                   else
                     zipHandler(linkPath)
                 when "x-7z-compressed"
                   _7zHandler(linkPath)
-                when "vnd.google-earth.kml+xml", "vnd.google-earth.kmz"
-                  kmlHandler(linkPath)
+                when "vnd.google-earth.kml+xml", "vnd.google-earth.kmz", "xml"
+                  if extension is "kml" or extension is "kmz"
+                    kmlHandler(linkPath)
+                  else
+                    console.warn "Non-KML xml"
+                    allError "Sorry, we can't processes files of type application/#{longType}"
+                    return false
                 else
                   console.warn "Unknown mime type application/#{longType}"
                   allError "Sorry, we can't processes files of type application/#{longType}"

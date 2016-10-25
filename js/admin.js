@@ -1419,6 +1419,8 @@ bootstrapUploader = function(uploadFormId, bsColWidth, callback) {
                 case "x-zip-compressed":
                   if (file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || extension === "xlsx") {
                     return excelHandler(linkPath);
+                  } else if (extension === "kmz") {
+                    return kmlHandler(linkPath);
                   } else {
                     return zipHandler(linkPath);
                   }
@@ -1427,7 +1429,15 @@ bootstrapUploader = function(uploadFormId, bsColWidth, callback) {
                   return _7zHandler(linkPath);
                 case "vnd.google-earth.kml+xml":
                 case "vnd.google-earth.kmz":
-                  return kmlHandler(linkPath);
+                case "xml":
+                  if (extension === "kml" || extension === "kmz") {
+                    return kmlHandler(linkPath);
+                  } else {
+                    console.warn("Non-KML xml");
+                    allError("Sorry, we can't processes files of type application/" + longType);
+                    return false;
+                  }
+                  break;
                 default:
                   console.warn("Unknown mime type application/" + longType);
                   allError("Sorry, we can't processes files of type application/" + longType);
