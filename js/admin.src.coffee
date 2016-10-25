@@ -1662,9 +1662,12 @@ kmlHandler = (path, callback) ->
   ###
   # Load a KML file
   ###
+  try
+    console.debug "Loading KML file"
   geo.inhibitKMLInit = true
   loadJS "js/kml.min.js", ->
     initializeParser null, ->
+      loadKML path
       # UI handling after parsing
       if typeof callback is "function"
         callback(geo.kml)

@@ -1610,9 +1610,13 @@ kmlHandler = function(path, callback) {
   /*
    * Load a KML file
    */
+  try {
+    console.debug("Loading KML file");
+  } catch (undefined) {}
   geo.inhibitKMLInit = true;
   loadJS("js/kml.min.js", function() {
     return initializeParser(null, function() {
+      loadKML(path);
       if (typeof callback === "function") {
         return callback(geo.kml);
       }
