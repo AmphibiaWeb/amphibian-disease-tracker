@@ -85,7 +85,7 @@
     }
     uploadButton = "<button class=\"upload-image media-uploader btn btn-primary pull-right\" id=\"do-upload-file\" type=\"button\"><span class=\"glyphicon glyphicon-cloud-upload\"></span></button>";
     window.dropperParams.clickTargets = ["#do-upload-file"];
-    window.dropperParams.mimeTypes = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/zip,application/x-7z-compressed,application/x-zip-compressed,image/*,application/7z";
+    window.dropperParams.mimeTypes = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/zip,application/x-7z-compressed,application/x-zip-compressed,image/*,application/7z,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz";
     console.log(window.dropperParams);
     return (window.dropperParams.initialize = function() {
       return loadJS(window.dropperParams.metaPath + "js/drop-upload.min.js", function() {
