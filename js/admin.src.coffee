@@ -368,7 +368,7 @@ loadCreateNewProject = ->
   startAdminActionHelper()
   html = """
   <h2 class="new-title col-xs-12">Project Title</h2>
-  <paper-input label="Project Title" id="project-title" class="project-field col-md-6 col-xs-11" required auto-validate data-field="project_title"></paper-input>
+  <paper-input label="Descriptive, unique project title" id="project-title" class="project-field col-md-6 col-xs-11" required auto-validate data-field="project_title"></paper-input>
   #{getInfoTooltip("A descriptive title is most useful. Tell us the main focus of the project and whether a monitoring effort or project that just occurred in the Spring of 2015.")}
   <h2 class="new-title col-xs-12">Project Parameters</h2>
   <section class="project-inputs clearfix col-xs-12">
@@ -478,6 +478,15 @@ loadCreateNewProject = ->
   </section>
   """
   $("main #main-body").append html
+  try
+    $("#project-title").blur ->
+      testTitle = p$(this).value.toLowerCase()
+      noDiseaseTitle = testTitle.replace(/ *b(sal|d\W) */mg, " ")
+      cleanedTitle = noDiseaseTitle.replace(/  /mg, " ")
+      titleArr = cleanedTitle.split " "
+      if titleArr.length <= 3
+        bsAlert "Your title seems very short. Read it again, and make sure it is both <strong>unique</strong> and <strong>descriptive</strong>"
+      false
   mapNewWindows()
   try
     for input in $("paper-input[required]")
