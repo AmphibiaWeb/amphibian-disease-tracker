@@ -24,12 +24,10 @@ loadKML = function(filePath, callback) {
   }
   isKmz = filePath.split(".").pop() === "kmz";
   if (!isKmz) {
-    geo.kml.parser.parse(filePath, null, function() {
+    return geo.kml.parser.parse(filePath, null, function() {
       var elapsed;
       elapsed = Date.now() - startTime;
-      return console.debug("Test callback fired after " + elapsed + "ms");
-    });
-    return delay(500, function() {
+      console.debug("KML parsing complete after " + elapsed + "ms");
       if (typeof callback === "function") {
         return callback();
       }
@@ -37,12 +35,10 @@ loadKML = function(filePath, callback) {
   } else {
     console.info("Loading Zip handling");
     return loadJS("js/ZipFile.complete.min.js", function() {
-      geo.kml.parser.parse(filePath, null, function() {
+      return geo.kml.parser.parse(filePath, null, function() {
         var elapsed;
         elapsed = Date.now() - startTime;
-        return console.debug("Test callback (kmz) fired after " + elapsed + "ms");
-      });
-      return delay(500, function() {
+        console.debug("KMZ parsing complete after " + elapsed + "ms");
         if (typeof callback === "function") {
           return callback();
         }

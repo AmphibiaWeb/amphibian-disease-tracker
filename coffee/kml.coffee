@@ -22,8 +22,7 @@ loadKML = (filePath, callback) ->
   unless isKmz
     geo.kml.parser.parse filePath, null, ->
       elapsed = Date.now() - startTime
-      console.debug "Test callback fired after #{elapsed}ms"
-    delay 500, ->
+      console.debug "KML parsing complete after #{elapsed}ms"
       if typeof callback is "function"
         callback()
   else
@@ -31,8 +30,7 @@ loadKML = (filePath, callback) ->
     loadJS "js/ZipFile.complete.min.js", ->
       geo.kml.parser.parse filePath, null, ->
         elapsed = Date.now() - startTime
-        console.debug "Test callback (kmz) fired after #{elapsed}ms"
-      delay 500, ->
+        console.debug "KMZ parsing complete after #{elapsed}ms"
         if typeof callback is "function"
           callback()
 
