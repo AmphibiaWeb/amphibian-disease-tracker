@@ -1671,6 +1671,7 @@ kmlHandler = (path, callback) ->
       loadKML path
       # UI handling after parsing
       parsedKmlData = geo.kml.parser.docsByUrl[path]
+      console.debug "Using parsed data from path '#{path}'", parsedKmlData
       polygons = new Array()
       polygonFills = new Array()
       polygonOpacities = new Array()

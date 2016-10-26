@@ -1621,6 +1621,7 @@ kmlHandler = function(path, callback) {
       var boundingPolygon, e, error1, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
       loadKML(path);
       parsedKmlData = geo.kml.parser.docsByUrl[path];
+      console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
       polygons = new Array();
       polygonFills = new Array();
       polygonOpacities = new Array();
