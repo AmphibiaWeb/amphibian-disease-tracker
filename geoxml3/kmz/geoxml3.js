@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Renders KML on the Google Maps JavaScript API Version 3
  * @name GeoXML3
@@ -164,11 +165,11 @@ geoXML3.parser = function (options) {
       }
       thisDoc.url       = urls[i];
       thisDoc.internals = internals;
-        fetchDoc(thisDoc.url, thisDoc, callback);
+        fetchDoc(thisDoc.url, thisDoc, null, callback);
     }
   };
 
-  function fetchDoc(url, doc, resFunc) {
+    function fetchDoc(url, doc, resFunc, callback) {
       resFunc = resFunc || function (responseXML) { render(responseXML, doc, callback); };
 
     if (typeof ZipFile === 'function' && typeof JSIO === 'object' && typeof JSIO.guessFileType === 'function') {  // KMZ support requires these modules loaded
