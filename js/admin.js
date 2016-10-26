@@ -1610,13 +1610,13 @@ kmlHandler = function(path, callback) {
   /*
    * Load a KML file
    */
-  var ref;
+  var jsPath, ref;
   try {
     console.debug("Loading KML file");
   } catch (undefined) {}
   geo.inhibitKMLInit = true;
-  path = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
-  loadJS(path, function() {
+  jsPath = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
+  loadJS(jsPath, function() {
     return initializeParser(null, function() {
       var boundingPolygon, e, error1, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
       loadKML(path);

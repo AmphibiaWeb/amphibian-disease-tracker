@@ -1665,8 +1665,8 @@ kmlHandler = (path, callback) ->
   try
     console.debug "Loading KML file"
   geo.inhibitKMLInit = true
-  path = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
-  loadJS path, ->
+  jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
+  loadJS jsPath, ->
     initializeParser null, ->
       loadKML path
       # UI handling after parsing
