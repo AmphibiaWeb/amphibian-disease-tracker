@@ -1666,59 +1666,66 @@ kmlHandler = (path, callback) ->
     console.debug "Loading KML file"
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
+  startLoad()
   loadJS jsPath, ->
     initializeParser null, ->
       loadKML path, ->
-        # UI handling after parsing
-        parsedKmlData = geo.kml.parser.docsByUrl[path]
-        if isNull parsedKmlData
-          # When it's in a subdirectory, the path needs a leading slash
-          path = "/#{path}"
+        try
+          # UI handling after parsing
           parsedKmlData = geo.kml.parser.docsByUrl[path]
           if isNull parsedKmlData
-            console.warn "Could not resolve KML by url, using first doc"
-            parsedKmlData = geo.kml.parser.docs[0]
-        console.debug "Using parsed data from path '#{path}'", parsedKmlData
-        polygons = new Array()
-        polygonFills = new Array()
-        polygonOpacities = new Array()
-        for polygon in parsedKmlData.gpolygons
-          # Read out and parse the polys
-          # https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polygon
-          polyBounds = new Array()
-          polygonFills.push polygon.fillColor
-          polygonOpacities.push polygon.fillOpacity
-          for segment in polygon.getPaths().getArray()
-            for segmentPoint in segement.getArray()
-              # https://developers.google.com/maps/documentation/javascript/3.exp/reference#LatLng
-              tmpPoint = canonicalizePoint segmentPoint
-              polyBounds.push tmpPoint
-          polygons.push polyBounds
-        # We now have a multipart polygon
-        try
-          simpleBCPoly = polygons[0]
-          if polygons.length is 1
-            polygons = polygons[0]
-          # Save it normalish
-          boundingPolygon =
-            fillOpacity: polygonOpacities[0]
-            fillColor: polygonFills[0]
-            paths: simpleBCPoly
-          if isNull geo
-            window.geo = new Object()
-          if isNull geo.canonicalHullObject
-            geo.canonicalHullObject = new Object()
-          geo.canonicalHullObject.hull = simpleBCPoly
-          geo.canonicalBoundingBox = boundingPolygon
-          unless isNull _adp?.projectData
-            _adp.projectData.carto_id = JSON.stringify boundingPolygon
+            # When it's in a subdirectory, the path needs a leading slash
+            path = "/#{path}"
+            parsedKmlData = geo.kml.parser.docsByUrl[path]
+            if isNull parsedKmlData
+              console.warn "Could not resolve KML by url, using first doc"
+              parsedKmlData = geo.kml.parser.docs[0]
+          console.debug "Using parsed data from path '#{path}'", parsedKmlData
+          polygons = new Array()
+          polygonFills = new Array()
+          polygonOpacities = new Array()
+          for polygon in parsedKmlData.gpolygons
+            # Read out and parse the polys
+            # https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polygon
+            polyBounds = new Array()
+            polygonFills.push polygon.fillColor
+            polygonOpacities.push polygon.fillOpacity
+            for segment in polygon.getPaths().getArray()
+              for segmentPoint in segement.getArray()
+                # https://developers.google.com/maps/documentation/javascript/3.exp/reference#LatLng
+                tmpPoint = canonicalizePoint segmentPoint
+                polyBounds.push tmpPoint
+            polygons.push polyBounds
+          # We now have a multipart polygon
+          try
+            simpleBCPoly = polygons[0]
+            if polygons.length is 1
+              polygons = polygons[0]
+            # Save it normalish
+            boundingPolygon =
+              fillOpacity: polygonOpacities[0]
+              fillColor: polygonFills[0]
+              paths: simpleBCPoly
+            if isNull geo
+              window.geo = new Object()
+            if isNull geo.canonicalHullObject
+              geo.canonicalHullObject = new Object()
+            geo.canonicalHullObject.hull = simpleBCPoly
+            geo.canonicalBoundingBox = boundingPolygon
+            unless isNull _adp?.projectData
+              _adp.projectData.carto_id = JSON.stringify boundingPolygon
 
+          catch e
+            console.warn "WARNING: Couldn't write polygon data to globals"
+          if typeof callback is "function"
+            callback(parsedKmlData)
+          else
+            console.info "kmlHandler wasn't given a callback function"
+          stopLoad()
         catch e
-          console.warn "WARNING: Couldn't write polygon data to globals"
-        if typeof callback is "function"
-          callback(parsedKmlData)
-        else
-          console.info "kmlHandler wasn't given a callback function"
+          allError "There was a problem parsing this KML file"
+          console.warn e.message
+          console.warn e.stack
         false # Ends loadKML callback
       false # 
     false

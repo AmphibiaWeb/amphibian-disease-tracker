@@ -20,14 +20,16 @@ loadKML = (filePath, callback) ->
   isKmz = filePath.split(".").pop() is "kmz"
   unless isKmz
     geo.kml.parser.parse filePath
-    if typeof callback is "function"
-      callback()
+    delay 500, ->
+      if typeof callback is "function"
+        callback()
   else
     console.info "Loading Zip handling"
     loadJS "js/ZipFile.complete.min.js", ->
       geo.kml.parser.parse filePath
-      if typeof callback is "function"
-        callback()
+      delay 500, ->
+        if typeof callback is "function"
+          callback()
 
 
 initializeParser = (mapSelector = "google-map", callback) ->

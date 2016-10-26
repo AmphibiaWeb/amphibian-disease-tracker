@@ -24,16 +24,20 @@ loadKML = function(filePath, callback) {
   isKmz = filePath.split(".").pop() === "kmz";
   if (!isKmz) {
     geo.kml.parser.parse(filePath);
-    if (typeof callback === "function") {
-      return callback();
-    }
+    return delay(500, function() {
+      if (typeof callback === "function") {
+        return callback();
+      }
+    });
   } else {
     console.info("Loading Zip handling");
     return loadJS("js/ZipFile.complete.min.js", function() {
       geo.kml.parser.parse(filePath);
-      if (typeof callback === "function") {
-        return callback();
-      }
+      return delay(500, function() {
+        if (typeof callback === "function") {
+          return callback();
+        }
+      });
     });
   }
 };
