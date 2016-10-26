@@ -282,7 +282,8 @@
               return callback();
             } catch (_error) {
               e = _error;
-              return console.error("Postload callback error - " + e.message);
+              console.error("Postload callback error - " + e.message);
+              return console.warn(e.stack);
             }
           }
         }
