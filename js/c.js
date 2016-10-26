@@ -1713,7 +1713,7 @@ allError = function(message) {
   return false;
 };
 
-checkFileVersion = function(forceNow, file) {
+checkFileVersion = function(forceNow, file, callback) {
   var checkVersion, error2, key, keyExists;
   if (forceNow == null) {
     forceNow = false;
@@ -1765,9 +1765,12 @@ checkFileVersion = function(forceNow, file) {
     }).fail(function() {
       return console.warn("Couldn't check file version!!");
     }).always(function() {
-      return delay(5 * 60 * 1000, function() {
+      delay(5 * 60 * 1000, function() {
         return checkVersion(filePath, modKey);
       });
+      if (typeof callback === "function") {
+        return callback();
+      }
     });
   };
   try {

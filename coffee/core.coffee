@@ -1299,7 +1299,7 @@ allError = (message) ->
   false
 
 
-checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
+checkFileVersion = (forceNow = false, file = "js/c.min.js", callback) ->
   ###
   # Check to see if the file on the server is up-to-date with what the
   # user sees.
@@ -1339,6 +1339,8 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js") ->
       delay 5*60*1000, ->
         # Delay 5 minutes
         checkVersion(filePath, modKey)
+      if typeof callback is "function"
+        callback()
   try
     keyExists = window._adp.lastMod[key]
   catch
