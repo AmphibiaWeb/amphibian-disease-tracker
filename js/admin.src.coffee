@@ -1723,7 +1723,7 @@ kmlHandler = (path, callback) ->
             console.info "kmlHandler wasn't given a callback function"
           stopLoad()
         catch e
-          allError "There was a problem parsing this KML file"
+          allError "There was a importing the data from this KML file"
           console.warn e.message
           console.warn e.stack
         false # Ends loadKML callback
