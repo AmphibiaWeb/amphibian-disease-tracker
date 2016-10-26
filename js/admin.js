@@ -312,7 +312,7 @@ loadCreateNewProject = function() {
       cleanedTitle = noDiseaseTitle.replace(/  /mg, " ");
       titleArr = cleanedTitle.trim().split(" ");
       if (titleArr.length <= 3) {
-        bsAlert("Your title seems very short. Read it again, and make sure it is both <strong>unique</strong> and <strong>descriptive</strong>");
+        bsAlert("Your title seems very short/generic. Read it again, and make sure it is both <strong>unique</strong> and <strong>descriptive</strong>.");
       }
       return false;
     });
