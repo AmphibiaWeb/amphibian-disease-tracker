@@ -1691,7 +1691,7 @@ kmlHandler = (path, callback) ->
             polygonFills.push polygon.fillColor
             polygonOpacities.push polygon.fillOpacity
             for segment in polygon.getPaths().getArray()
-              for segmentPoint in segement.getArray()
+              for segmentPoint in segment.getArray()
                 # https://developers.google.com/maps/documentation/javascript/3.exp/reference#LatLng
                 tmpPoint = canonicalizePoint segmentPoint
                 polyBounds.push tmpPoint

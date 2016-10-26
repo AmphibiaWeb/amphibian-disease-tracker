@@ -1644,7 +1644,7 @@ kmlHandler = function(path, callback) {
             ref2 = polygon.getPaths().getArray();
             for (m = 0, len1 = ref2.length; m < len1; m++) {
               segment = ref2[m];
-              ref3 = segement.getArray();
+              ref3 = segment.getArray();
               for (o = 0, len2 = ref3.length; o < len2; o++) {
                 segmentPoint = ref3[o];
                 tmpPoint = canonicalizePoint(segmentPoint);
