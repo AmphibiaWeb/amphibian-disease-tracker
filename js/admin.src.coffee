@@ -1665,12 +1665,50 @@ kmlHandler = (path, callback) ->
   try
     console.debug "Loading KML file"
   geo.inhibitKMLInit = true
-  loadJS "js/kml.min.js", ->
+  path = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
+  loadJS path, ->
     initializeParser null, ->
       loadKML path
       # UI handling after parsing
+      parsedKmlData = geo.kml.parser.docsByUrl[path]
+      polygons = new Array()
+      polygonFills = new Array()
+      polygonOpacities = new Array()
+      for polygon in parsedKmlData.gpolygons
+        # Read out and parse the polys
+        # https://developers.google.com/maps/documentation/javascript/3.exp/reference#Polygon
+        polyBounds = new Array()
+        polygonFills.push polygon.fillColor
+        polygonOpacities.push polygon.fillOpacity
+        for segment in polygon.getPaths().getArray()
+          for segmentPoint in segement.getArray()
+            # https://developers.google.com/maps/documentation/javascript/3.exp/reference#LatLng
+            tmpPoint = canonicalizePoint segmentPoint
+            polyBounds.push tmpPoint
+        polygons.push polyBounds
+      # We now have a multipart polygon
+      try
+        simpleBCPoly = polygons[0]
+        if polygons.length is 1
+          polygons = polygons[0]
+        # Save it normalish
+        boundingPolygon =
+          fillOpacity: polygonOpacities[0]
+          fillColor: polygonFills[0]
+          paths: simpleBCPoly
+        if isNull geo
+          window.geo = new Object()
+        if isNull geo.canonicalHullObject
+          geo.canonicalHullObject = new Object()
+        geo.canonicalHullObject.hull = simpleBCPoly
+        geo.canonicalBoundingBox = boundingPolygon
+        unless isNull _adp?.projectData
+          _adp.projectData.carto_id = JSON.stringify boundingPolygon
+        
+      catch e
+        console.warn "WARNING: Couldn't write polygon data to globals"
       if typeof callback is "function"
-        callback(geo.kml)
+        callback(parsedKmlData)
   false
 
 
@@ -2308,6 +2346,8 @@ $ ->
   .unbind("click")
   .click ->
     populateAdminActions()
+  try
+    checkFileVersion true, "js/kml.min.js"
 
 ###
 # Split-out coffeescript file for adminstrative editor.

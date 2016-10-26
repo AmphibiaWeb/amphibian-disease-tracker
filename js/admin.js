@@ -1610,15 +1610,65 @@ kmlHandler = function(path, callback) {
   /*
    * Load a KML file
    */
+  var ref;
   try {
     console.debug("Loading KML file");
   } catch (undefined) {}
   geo.inhibitKMLInit = true;
-  loadJS("js/kml.min.js", function() {
+  path = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
+  loadJS(path, function() {
     return initializeParser(null, function() {
+      var boundingPolygon, e, error1, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
       loadKML(path);
+      parsedKmlData = geo.kml.parser.docsByUrl[path];
+      polygons = new Array();
+      polygonFills = new Array();
+      polygonOpacities = new Array();
+      ref1 = parsedKmlData.gpolygons;
+      for (l = 0, len = ref1.length; l < len; l++) {
+        polygon = ref1[l];
+        polyBounds = new Array();
+        polygonFills.push(polygon.fillColor);
+        polygonOpacities.push(polygon.fillOpacity);
+        ref2 = polygon.getPaths().getArray();
+        for (m = 0, len1 = ref2.length; m < len1; m++) {
+          segment = ref2[m];
+          ref3 = segement.getArray();
+          for (o = 0, len2 = ref3.length; o < len2; o++) {
+            segmentPoint = ref3[o];
+            tmpPoint = canonicalizePoint(segmentPoint);
+            polyBounds.push(tmpPoint);
+          }
+        }
+        polygons.push(polyBounds);
+      }
+      try {
+        simpleBCPoly = polygons[0];
+        if (polygons.length === 1) {
+          polygons = polygons[0];
+        }
+        boundingPolygon = {
+          fillOpacity: polygonOpacities[0],
+          fillColor: polygonFills[0],
+          paths: simpleBCPoly
+        };
+        if (isNull(geo)) {
+          window.geo = new Object();
+        }
+        if (isNull(geo.canonicalHullObject)) {
+          geo.canonicalHullObject = new Object();
+        }
+        geo.canonicalHullObject.hull = simpleBCPoly;
+        geo.canonicalBoundingBox = boundingPolygon;
+        if (!isNull(typeof _adp !== "undefined" && _adp !== null ? _adp.projectData : void 0)) {
+          _adp.projectData.carto_id = JSON.stringify(boundingPolygon);
+        }
+      } catch (error1) {
+        e = error1;
+        console.warn("WARNING: Couldn't write polygon data to globals");
+      }
       if (typeof callback === "function") {
-        return callback(geo.kml);
+        return callback(parsedKmlData);
       }
     });
   });
@@ -2360,9 +2410,12 @@ $(function() {
     });
   });
   checkFileVersion(false, "js/admin.min.js");
-  return $("paper-icon-button[icon='icons:dashboard']").removeAttr("data-href").unbind("click").click(function() {
+  $("paper-icon-button[icon='icons:dashboard']").removeAttr("data-href").unbind("click").click(function() {
     return populateAdminActions();
   });
+  try {
+    return checkFileVersion(true, "js/kml.min.js");
+  } catch (undefined) {}
 });
 
 
