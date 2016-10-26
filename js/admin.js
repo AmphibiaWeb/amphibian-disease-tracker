@@ -294,7 +294,7 @@ alertBadProject = function(projectId) {
 };
 
 loadCreateNewProject = function() {
-  var error1, html, input, l, len, ref, state, ta, url;
+  var e, error1, error2, html, input, l, len, ref, state, ta, url;
   url = uri.urlString + "admin-page.html#action:create-project";
   state = {
     "do": "action",
@@ -308,15 +308,19 @@ loadCreateNewProject = function() {
     $("#project-title").blur(function() {
       var cleanedTitle, noDiseaseTitle, testTitle, titleArr;
       testTitle = p$(this).value.toLowerCase();
-      noDiseaseTitle = testTitle.replace(/ *b(sal|d\W) */mg, " ");
+      noDiseaseTitle = testTitle.replace(/ *b(sal|d\W) *|(19|20)[0-9]{2}|\s+\W|\s+(for|the|and|of|in|from|a|an)\s+/img, " ");
       cleanedTitle = noDiseaseTitle.replace(/  /mg, " ");
-      titleArr = cleanedTitle.split(" ");
+      titleArr = cleanedTitle.trim().split(" ");
       if (titleArr.length <= 3) {
         bsAlert("Your title seems very short. Read it again, and make sure it is both <strong>unique</strong> and <strong>descriptive</strong>");
       }
       return false;
     });
-  } catch (undefined) {}
+  } catch (error1) {
+    e = error1;
+    console.warn("Couldn't set up blur event - " + e.message);
+    console.warn(e.stack);
+  }
   mapNewWindows();
   try {
     ref = $("paper-input[required]");
@@ -324,7 +328,7 @@ loadCreateNewProject = function() {
       input = ref[l];
       p$(input).validate();
     }
-  } catch (error1) {
+  } catch (error2) {
     console.warn("Couldn't pre-validate fields");
   }
   $(".fill-pathogen").click(function() {

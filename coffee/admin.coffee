@@ -481,12 +481,15 @@ loadCreateNewProject = ->
   try
     $("#project-title").blur ->
       testTitle = p$(this).value.toLowerCase()
-      noDiseaseTitle = testTitle.replace(/ *b(sal|d\W) */mg, " ")
+      noDiseaseTitle = testTitle.replace(/ *b(sal|d\W) *|(19|20)[0-9]{2}|\s+\W|\s+(for|the|and|of|in|from|a|an)\s+/img, " ")
       cleanedTitle = noDiseaseTitle.replace(/  /mg, " ")
-      titleArr = cleanedTitle.split " "
+      titleArr = cleanedTitle.trim().split " "
       if titleArr.length <= 3
         bsAlert "Your title seems very short. Read it again, and make sure it is both <strong>unique</strong> and <strong>descriptive</strong>"
       false
+  catch e
+    console.warn "Couldn't set up blur event - #{e.message}"
+    console.warn e.stack
   mapNewWindows()
   try
     for input in $("paper-input[required]")
