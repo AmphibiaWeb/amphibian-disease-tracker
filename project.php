@@ -341,7 +341,7 @@ $loginStatus = getLoginState();
     if ($page > 1) {
         $multiplier = $page - 1;
         $skip = $multiplier * $max;
-        echo "<!-- Skipping $skip on page $page with multiplier $multiplier for max $max for total results $count -->";
+        #echo "<!-- Skipping $skip on page $page with multiplier $multiplier for max $max for total results $count -->";
     } else {
         $skip = 0;
     }
@@ -357,7 +357,7 @@ $loginStatus = getLoginState();
             #
             # but removed to address #163
             if (empty($project['project_id'])) {
-                echo "<!-- Skipping item $i for empty project -->";
+                #echo "<!-- Skipping item $i for empty project -->";
                 $count--;
                 continue;
             }
@@ -366,7 +366,7 @@ $loginStatus = getLoginState();
                 continue;
             }
             if(!$announcedStartSpot) {
-                echo "<!-- Starting list from item $i after skipping $skip (total: $count) -->";
+                #echo "<!-- Starting list from item $i after skipping $skip (total: $count) -->";
                 $announcedStartSpot = true;
             }
             if ($i >= $max + $skip) {
@@ -420,13 +420,13 @@ $loginStatus = getLoginState();
     }
           # Build the paginator
           $pages = intval($count / $originalMax);
-    echo "<!-- pages breakdown: iv = $pages with $count items and orig $originalMax -->";
+    #echo "<!-- pages breakdown: iv = $pages with $count items and orig $originalMax -->";
     if(($count % $originalMax) > 0) {
         $pages++;
     }
-    echo "<!-- revised pages = $pages / " . $count % $originalMax . " -->";
-          # https://getbootstrap.com/components/#pagination
-          $olderDisabled = $page > 1 ? '' : 'disabled';
+    #echo "<!-- revised pages = $pages / " . $count % $originalMax . " -->";
+    # https://getbootstrap.com/components/#pagination
+    $olderDisabled = $page > 1 ? '' : 'disabled';
     $nextPage = $page + 1;
     $previousPage = $page - 1;
     $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
