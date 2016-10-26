@@ -10,7 +10,7 @@
 ###
 
 
-loadKML = (filePath) ->
+loadKML = (filePath, callback) ->
   if isNull filePath
     console.error "No file provided"
     return false
@@ -20,10 +20,14 @@ loadKML = (filePath) ->
   isKmz = filePath.split(".").pop() is "kmz"
   unless isKmz
     geo.kml.parser.parse filePath
+    if typeof callback is "function"
+      callback()
   else
     console.info "Loading Zip handling"
     loadJS "js/ZipFile.complete.min.js", ->
       geo.kml.parser.parse filePath
+      if typeof callback is "function"
+        callback()
 
 
 initializeParser = (mapSelector = "google-map", callback) ->

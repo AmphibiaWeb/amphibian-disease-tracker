@@ -11,7 +11,7 @@
  */
 var initializeParser, loadKML;
 
-loadKML = function(filePath) {
+loadKML = function(filePath, callback) {
   var isKmz;
   if (isNull(filePath)) {
     console.error("No file provided");
@@ -23,11 +23,17 @@ loadKML = function(filePath) {
   }
   isKmz = filePath.split(".").pop() === "kmz";
   if (!isKmz) {
-    return geo.kml.parser.parse(filePath);
+    geo.kml.parser.parse(filePath);
+    if (typeof callback === "function") {
+      return callback();
+    }
   } else {
     console.info("Loading Zip handling");
     return loadJS("js/ZipFile.complete.min.js", function() {
-      return geo.kml.parser.parse(filePath);
+      geo.kml.parser.parse(filePath);
+      if (typeof callback === "function") {
+        return callback();
+      }
     });
   }
 };

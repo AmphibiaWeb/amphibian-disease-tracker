@@ -1618,69 +1618,71 @@ kmlHandler = function(path, callback) {
   jsPath = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
   loadJS(jsPath, function() {
     initializeParser(null, function() {
-      var boundingPolygon, e, error1, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
-      loadKML(path);
-      parsedKmlData = geo.kml.parser.docsByUrl[path];
-      if (isNull(parsedKmlData)) {
-        path = "/" + path;
+      loadKML(path, function() {
+        var boundingPolygon, e, error1, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
         parsedKmlData = geo.kml.parser.docsByUrl[path];
         if (isNull(parsedKmlData)) {
-          console.warn("Could not resolve KML by url, using first doc");
-          parsedKmlData = geo.kml.parser.docs[0];
-        }
-      }
-      console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
-      polygons = new Array();
-      polygonFills = new Array();
-      polygonOpacities = new Array();
-      ref1 = parsedKmlData.gpolygons;
-      for (l = 0, len = ref1.length; l < len; l++) {
-        polygon = ref1[l];
-        polyBounds = new Array();
-        polygonFills.push(polygon.fillColor);
-        polygonOpacities.push(polygon.fillOpacity);
-        ref2 = polygon.getPaths().getArray();
-        for (m = 0, len1 = ref2.length; m < len1; m++) {
-          segment = ref2[m];
-          ref3 = segement.getArray();
-          for (o = 0, len2 = ref3.length; o < len2; o++) {
-            segmentPoint = ref3[o];
-            tmpPoint = canonicalizePoint(segmentPoint);
-            polyBounds.push(tmpPoint);
+          path = "/" + path;
+          parsedKmlData = geo.kml.parser.docsByUrl[path];
+          if (isNull(parsedKmlData)) {
+            console.warn("Could not resolve KML by url, using first doc");
+            parsedKmlData = geo.kml.parser.docs[0];
           }
         }
-        polygons.push(polyBounds);
-      }
-      try {
-        simpleBCPoly = polygons[0];
-        if (polygons.length === 1) {
-          polygons = polygons[0];
+        console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
+        polygons = new Array();
+        polygonFills = new Array();
+        polygonOpacities = new Array();
+        ref1 = parsedKmlData.gpolygons;
+        for (l = 0, len = ref1.length; l < len; l++) {
+          polygon = ref1[l];
+          polyBounds = new Array();
+          polygonFills.push(polygon.fillColor);
+          polygonOpacities.push(polygon.fillOpacity);
+          ref2 = polygon.getPaths().getArray();
+          for (m = 0, len1 = ref2.length; m < len1; m++) {
+            segment = ref2[m];
+            ref3 = segement.getArray();
+            for (o = 0, len2 = ref3.length; o < len2; o++) {
+              segmentPoint = ref3[o];
+              tmpPoint = canonicalizePoint(segmentPoint);
+              polyBounds.push(tmpPoint);
+            }
+          }
+          polygons.push(polyBounds);
         }
-        boundingPolygon = {
-          fillOpacity: polygonOpacities[0],
-          fillColor: polygonFills[0],
-          paths: simpleBCPoly
-        };
-        if (isNull(geo)) {
-          window.geo = new Object();
+        try {
+          simpleBCPoly = polygons[0];
+          if (polygons.length === 1) {
+            polygons = polygons[0];
+          }
+          boundingPolygon = {
+            fillOpacity: polygonOpacities[0],
+            fillColor: polygonFills[0],
+            paths: simpleBCPoly
+          };
+          if (isNull(geo)) {
+            window.geo = new Object();
+          }
+          if (isNull(geo.canonicalHullObject)) {
+            geo.canonicalHullObject = new Object();
+          }
+          geo.canonicalHullObject.hull = simpleBCPoly;
+          geo.canonicalBoundingBox = boundingPolygon;
+          if (!isNull(typeof _adp !== "undefined" && _adp !== null ? _adp.projectData : void 0)) {
+            _adp.projectData.carto_id = JSON.stringify(boundingPolygon);
+          }
+        } catch (error1) {
+          e = error1;
+          console.warn("WARNING: Couldn't write polygon data to globals");
         }
-        if (isNull(geo.canonicalHullObject)) {
-          geo.canonicalHullObject = new Object();
+        if (typeof callback === "function") {
+          callback(parsedKmlData);
+        } else {
+          console.info("kmlHandler wasn't given a callback function");
         }
-        geo.canonicalHullObject.hull = simpleBCPoly;
-        geo.canonicalBoundingBox = boundingPolygon;
-        if (!isNull(typeof _adp !== "undefined" && _adp !== null ? _adp.projectData : void 0)) {
-          _adp.projectData.carto_id = JSON.stringify(boundingPolygon);
-        }
-      } catch (error1) {
-        e = error1;
-        console.warn("WARNING: Couldn't write polygon data to globals");
-      }
-      if (typeof callback === "function") {
-        callback(parsedKmlData);
-      } else {
-        console.info("kmlHandler wasn't given a callback function");
-      }
+        return false;
+      });
       return false;
     });
     return false;
