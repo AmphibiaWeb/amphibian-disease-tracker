@@ -341,10 +341,12 @@ $loginStatus = getLoginState();
     if ($page > 1) {
         $multiplier = $page - 1;
         $skip = $multiplier * $max;
+        echo "<!-- Skipping $skip on page $page with multiplier $multiplier for max $max for total results $count -->";
     } else {
         $skip = 0;
     }
     $originalMax = $max;
+    $announcedStartSpot = false;
     if ($skip > $count) {
         $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
     } else {
@@ -355,12 +357,18 @@ $loginStatus = getLoginState();
             #
             # but removed to address #163
             if (empty($project['project_id'])) {
-                continue;
-            }
-            if ($i < $skip) {
+                echo "<!-- Skipping item $i for empty project -->";
+                $count--;
                 continue;
             }
             ++$i;
+            if ($i < $skip + 1) {
+                continue;
+            }
+            if(!$announcedStartSpot) {
+                echo "<!-- Starting list from item $i after skipping $skip (total: $count) -->";
+                $announcedStartSpot = true;
+            }
             if ($i >= $max + $skip) {
                 break;
             }
@@ -403,20 +411,30 @@ $loginStatus = getLoginState();
             $max = $i;
         }
         if ($skip > 0) {
-            $max = $skip.' &$8212; '.$max;
+            $upperBound = $max + $skip > $count ? $count : $max + $skip;
+            $lowerBound = $skip + 1;
+            $max = $lowerBound.' &#8212; '.$upperBound;
         }
         ksort($htmlList);
         $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">'.implode("\n",$htmlList).'        </ul>';
     }
           # Build the paginator
           $pages = intval($count / $originalMax);
-    $pages += $count % $orignalMax > 0 ? 1 : 0;
-    $pages = 1;
+    echo "<!-- pages breakdown: iv = $pages with $count items and orig $originalMax -->";
+    if(($count % $originalMax) > 0) {
+        $pages++;
+    }
+    echo "<!-- revised pages = $pages / " . $count % $originalMax . " -->";
           # https://getbootstrap.com/components/#pagination
           $olderDisabled = $page > 1 ? '' : 'disabled';
+    $nextPage = $page + 1;
+    $previousPage = $page - 1;
     $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
     $oByText = $orderKey == "date" ? "sampling date" : $orderKey;
     $sortText = "$count, ordered by <span class='sort-by-placeholder-text' data-order-key='$orderKey'>".$oByText."</span>";
+    if($upperBound != $count) {
+        $sortText = "about ".$sortText;
+    }
     ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
@@ -457,7 +475,7 @@ $loginStatus = getLoginState();
           <ul class="pagination">
             <li class="<?php echo $olderDisabled;
     ?>">
-              <a href="#"><span aria-hidden="true">&larr;</span> Older</a>
+              <a href="?page=<?php echo $previousPage; ?>"><span aria-hidden="true">&larr;</span> Previous</a>
             </li>
             <?php
           $k = 1;
@@ -468,7 +486,7 @@ $loginStatus = getLoginState();
     ?>
             <li class="<?php echo $newerDisabled;
     ?>">
-              <a href="#">Newer <span aria-hidden="true">&rarr;</span></a>
+              <a href="?page=<?php echo $nextPage; ?>">Next <span aria-hidden="true">&rarr;</span></a>
             </li>
           </ul>
         </nav>
