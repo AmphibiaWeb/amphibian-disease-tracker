@@ -1624,6 +1624,10 @@ kmlHandler = function(path, callback) {
       if (isNull(parsedKmlData)) {
         path = "/" + path;
         parsedKmlData = geo.kml.parser.docsByUrl[path];
+        if (isNull(parsedKmlData)) {
+          console.warn("Could not resolve KML by url, using first doc");
+          parsedKmlData = geo.kml.parser.docs[0];
+        }
       }
       console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
       polygons = new Array();
