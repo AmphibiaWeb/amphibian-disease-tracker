@@ -385,7 +385,11 @@ loadCreateNewProject = ->
       <h2 class="new-title col-xs-12">Lab Parameters</h2>
       <paper-input label="Project PI" id="project-pi" class="project-field col-md-6 col-xs-12"  required auto-validate data-field="pi_lab"></paper-input>
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
+      #{getInfoTooltip("This will be the identity used for the project citation")}
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
+      <paper-input label="Project Contact" id="project-technical-contact" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
+      #{getInfoTooltip("This will be the identity suggested for technical communications about the project")}
+      <gold-email-input label="Contact Email" id="technical-contact-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input>
       #{getInfoTooltip("Name or PI responsible for lab results")}
       <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
@@ -701,6 +705,12 @@ finalizeData = (skipFields = false, callback) ->
             postData.bounding_box_e = geo.computedBoundingRectangle.east
             postData.bounding_box_w = geo.computedBoundingRectangle.west
           postData.author = $.cookie("#{adminParams.domain}_link")
+          try
+            postData.technical_contact = p$("#project-technical-contact").value
+            postData.technical_contact_email = p$("#project-technical-contact-email").value
+          try
+            if typeof kmlInfo is "object"
+              postData.transect_file = JSON.stringify kmlInfo
           unless _adp?.projectData?.author_data?
             authorData =
               name: p$("#project-author").value
@@ -1712,6 +1722,8 @@ kmlHandler = (path, callback) ->
                 polyBounds.push tmpPoint
             polygons.push polyBounds
           # We now have a multipart polygon
+          window.kmlInfo = new Object()
+          kmlInfo.path = path
           try
             simpleBCPoly = polygons[0]
             if polygons.length is 1
@@ -1722,6 +1734,8 @@ kmlHandler = (path, callback) ->
               fillColor: polygonFills[0]
               paths: simpleBCPoly
               multibounds: polygons
+            kmlInfo.parameters = boundingPolygon
+            kmlInfo.polys = polygons
             if isNull geo
               window.geo = new Object()
             if isNull geo.canonicalHullObject
@@ -1743,7 +1757,7 @@ kmlHandler = (path, callback) ->
           console.warn e.message
           console.warn e.stack
         false # Ends loadKML callback
-      false # 
+      false #
     false
   false
 
@@ -2679,6 +2693,8 @@ loadEditor = (projectPreload) ->
             <gold-email-input #{conditionalReadonly} class="author-param" data-key="contact_email" label="Contact Email" value="#{authorData.contact_email}" id="contact-email"></gold-email-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="diagnostic_lab" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project-lab"></paper-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="affiliation" label="Affiliation" value="#{authorData.affiliation}" id="project-affiliation"></paper-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Technical Contact" value="#{project.technical_contact}" data-field="technical_contact" id="technical-contact"></paper-input>
+            <gold-email-input #{conditionalReadonly} class="project-param" label="Technical Contact_email" value="#{project.technical_contact_email}" data-field="technical_contact_email" id="technical-contact-email"></gold-email-input>
           </section>
           <section id="notes" class="col-xs-12 col-md-8 clearfix">
             #{noteHtml}
@@ -3338,9 +3354,9 @@ showAddUserDialog = (refAccessList) ->
           permission: "READ"
         try
           unless isArray _adp.projectData.access_data.total
-            _adp.projectData.access_data.total = Object.toArray _adp.projectData.access_data.total 
+            _adp.projectData.access_data.total = Object.toArray _adp.projectData.access_data.total
             _adp.projectData.access_data.viewers_list = Object.toArray _adp.projectData.access_data.viewers_list
-            _adp.projectData.access_data.viewers = Object.toArray _adp.projectData.access_data.viewers 
+            _adp.projectData.access_data.viewers = Object.toArray _adp.projectData.access_data.viewers
         _adp.projectData.access_data.total.push user
         _adp.projectData.access_data.viewers_list.push user
         _adp.projectData.access_data.viewers.push userObj
