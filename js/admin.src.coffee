@@ -1692,6 +1692,9 @@ kmlHandler = (path, callback) ->
             if isNull parsedKmlData
               console.warn "Could not resolve KML by url, using first doc"
               parsedKmlData = geo.kml.parser.docs[0]
+          if isNull parsedKmlData
+            allError "Bad KML provided"
+            return false
           console.debug "Using parsed data from path '#{path}'", parsedKmlData
           polygons = new Array()
           polygonFills = new Array()

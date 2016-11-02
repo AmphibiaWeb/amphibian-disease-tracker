@@ -1648,6 +1648,10 @@ kmlHandler = function(path, callback) {
               parsedKmlData = geo.kml.parser.docs[0];
             }
           }
+          if (isNull(parsedKmlData)) {
+            allError("Bad KML provided");
+            return false;
+          }
           console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
           polygons = new Array();
           polygonFills = new Array();
