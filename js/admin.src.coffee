@@ -1718,6 +1718,7 @@ kmlHandler = (path, callback) ->
               fillOpacity: polygonOpacities[0]
               fillColor: polygonFills[0]
               paths: simpleBCPoly
+              multibounds: polygons
             if isNull geo
               window.geo = new Object()
             if isNull geo.canonicalHullObject

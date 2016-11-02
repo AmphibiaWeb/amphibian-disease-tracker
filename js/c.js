@@ -2377,6 +2377,9 @@ makePageCitationOverflow = function() {
       return false;
     }
   }
+  if (uri.o.data.seg.path[0] === "admin-login.php") {
+    return false;
+  }
 
   /*
    * Sample:

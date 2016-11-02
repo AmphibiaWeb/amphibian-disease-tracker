@@ -1900,6 +1900,8 @@ makePageCitationOverflow = ->
     unless isNull uri.o.param param
       console.info "Not creating overflow citation - page is project-specific"
       return false
+  if uri.o.data.seg.path[0] is "admin-login.php"
+    return false
   # Create the citation
   ###
   # Sample:
