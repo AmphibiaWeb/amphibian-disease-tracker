@@ -2650,6 +2650,10 @@ loadEditor = (projectPreload) ->
           if months.length is 0 or isNull monthPretty then monthPretty = "<em>(no data)</em>"
           if years.length is 0 or isNull yearPretty then yearPretty = "<em>(no data)</em>"
           toggleChecked = if cartoParsed?.raw_data?.filePath? then "" else "checked disabled"
+          if isNull project.technical_contact
+            project.technical_contact = authorData.name
+          if isNull project.technical_contact_email
+            project.technical_contact_email = authorData.contact_email
           html = """
           <h2 class="clearfix newtitle col-xs-12">#{project.project_title} #{icon} <paper-icon-button icon="icons:visibility" class="click" data-href="#{uri.urlString}project.php?id=#{opid}" data-toggle="tooltip" title="View in Project Viewer" data-newtab="true"></paper-icon-button><br/><small>Project ##{opid}</small></h2>
           #{publicToggle}
