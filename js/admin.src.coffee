@@ -387,9 +387,9 @@ loadCreateNewProject = ->
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
       #{getInfoTooltip("This will be the identity used for the project citation")}
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
-      <paper-input label="Project Contact" id="project-technical-contact" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
+      <paper-input label="Technical/Data Contact" id="project-technical-contact" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
       #{getInfoTooltip("This will be the identity suggested for technical communications about the project")}
-      <gold-email-input label="Contact Email" id="technical-contact-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
+      <gold-email-input label="Technical/Data Contact Email" id="technical-contact-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input>
       #{getInfoTooltip("Name or PI responsible for lab results")}
       <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
@@ -2693,8 +2693,8 @@ loadEditor = (projectPreload) ->
             <gold-email-input #{conditionalReadonly} class="author-param" data-key="contact_email" label="Contact Email" value="#{authorData.contact_email}" id="contact-email"></gold-email-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="diagnostic_lab" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project-lab"></paper-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="affiliation" label="Affiliation" value="#{authorData.affiliation}" id="project-affiliation"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Technical Contact" value="#{project.technical_contact}" data-field="technical_contact" id="technical-contact"></paper-input>
-            <gold-email-input #{conditionalReadonly} class="project-param" label="Technical Contact_email" value="#{project.technical_contact_email}" data-field="technical_contact_email" id="technical-contact-email"></gold-email-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Technical/Data Contact" value="#{project.technical_contact}" data-field="technical_contact" id="technical-contact"></paper-input>
+            <gold-email-input #{conditionalReadonly} class="project-param" label="Technical/Data Contact_email" value="#{project.technical_contact_email}" data-field="technical_contact_email" id="technical-contact-email"></gold-email-input>
           </section>
           <section id="notes" class="col-xs-12 col-md-8 clearfix">
             #{noteHtml}

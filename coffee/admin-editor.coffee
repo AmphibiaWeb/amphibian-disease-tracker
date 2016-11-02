@@ -292,8 +292,8 @@ loadEditor = (projectPreload) ->
             <gold-email-input #{conditionalReadonly} class="author-param" data-key="contact_email" label="Contact Email" value="#{authorData.contact_email}" id="contact-email"></gold-email-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="diagnostic_lab" label="Diagnostic Lab" value="#{authorData.diagnostic_lab}" id="project-lab"></paper-input>
             <paper-input #{conditionalReadonly} class="author-param" data-key="affiliation" label="Affiliation" value="#{authorData.affiliation}" id="project-affiliation"></paper-input>
-            <paper-input #{conditionalReadonly} class="project-param" label="Technical Contact" value="#{project.technical_contact}" data-field="technical_contact" id="technical-contact"></paper-input>
-            <gold-email-input #{conditionalReadonly} class="project-param" label="Technical Contact_email" value="#{project.technical_contact_email}" data-field="technical_contact_email" id="technical-contact-email"></gold-email-input>
+            <paper-input #{conditionalReadonly} class="project-param" label="Technical/Data Contact" value="#{project.technical_contact}" data-field="technical_contact" id="technical-contact"></paper-input>
+            <gold-email-input #{conditionalReadonly} class="project-param" label="Technical/Data Contact_email" value="#{project.technical_contact_email}" data-field="technical_contact_email" id="technical-contact-email"></gold-email-input>
           </section>
           <section id="notes" class="col-xs-12 col-md-8 clearfix">
             #{noteHtml}

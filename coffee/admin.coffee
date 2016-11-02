@@ -387,9 +387,9 @@ loadCreateNewProject = ->
       <paper-input label="Project Contact" id="project-author" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
       #{getInfoTooltip("This will be the identity used for the project citation")}
       <gold-email-input label="Contact Email" id="author-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
-      <paper-input label="Project Contact" id="project-technical-contact" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
+      <paper-input label="Technical/Data Contact" id="project-technical-contact" class="project-field col-md-6 col-xs-12" value="#{userFullname}"  required auto-validate></paper-input>
       #{getInfoTooltip("This will be the identity suggested for technical communications about the project")}
-      <gold-email-input label="Contact Email" id="technical-contact-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
+      <gold-email-input label="Technical/Data Contact Email" id="technical-contact-email" class="project-field col-md-6 col-xs-12" value="#{userEmail}"  required auto-validate></gold-email-input>
       <paper-input label="Diagnostic Lab" id="project-lab" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input>
       #{getInfoTooltip("Name or PI responsible for lab results")}
       <paper-input label="Affiliation" id="project-affiliation" class="project-field col-md-6 col-xs-11"  required auto-validate></paper-input> #{getInfoTooltip("Of project PI. e.g., UC Berkeley")}
