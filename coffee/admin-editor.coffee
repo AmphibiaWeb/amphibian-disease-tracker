@@ -1285,6 +1285,9 @@ startEditorUploader = ->
         mediaType = result.mime_provided.split("/")[0]
         longType = result.mime_provided.split("/")[1]
         linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
+        checkPath = linkPath.slice 0
+        cp2 = linkPath.slice 0
+        extension = cp2.split(".").pop()
       catch e
         console.warn "Warning - #{e.message}"
         console.warn e.stack

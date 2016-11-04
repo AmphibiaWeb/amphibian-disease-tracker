@@ -3602,7 +3602,7 @@ startEditorUploader = function() {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var checkKml, dialogHtml, e, error1, error2, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      var checkKml, checkPath, cp2, dialogHtml, e, error1, error2, extension, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
       try {
         pathPrefix = "helpers/js-dragdrop/uploaded/" + (getUploadIdentifier()) + "/";
         fileName = result.full_path.split("/").pop();
@@ -3610,6 +3610,9 @@ startEditorUploader = function() {
         mediaType = result.mime_provided.split("/")[0];
         longType = result.mime_provided.split("/")[1];
         linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.wrote_file : "" + pathPrefix + thumbPath;
+        checkPath = linkPath.slice(0);
+        cp2 = linkPath.slice(0);
+        extension = cp2.split(".").pop();
       } catch (error1) {
         e = error1;
         console.warn("Warning - " + e.message);
