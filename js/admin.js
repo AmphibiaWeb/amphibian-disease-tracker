@@ -1646,7 +1646,7 @@ kmlHandler = function(path, callback) {
   loadJS(jsPath, function() {
     initializeParser(null, function() {
       loadKML(path, function() {
-        var boundingPolygon, e, error1, error2, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
+        var boundingPolygon, cartoDataParsed, e, error1, error2, error3, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
         try {
           parsedKmlData = geo.kml.parser.docsByUrl[path];
           if (isNull(parsedKmlData)) {
@@ -1707,10 +1707,17 @@ kmlHandler = function(path, callback) {
             geo.canonicalHullObject.hull = simpleBCPoly;
             geo.canonicalBoundingBox = boundingPolygon;
             if (!isNull(typeof _adp !== "undefined" && _adp !== null ? _adp.projectData : void 0)) {
-              _adp.projectData.carto_id = JSON.stringify(boundingPolygon);
+              try {
+                cartoDataParsed = JSON.parse(_adp.projectData.carto_id);
+                cartoDataParsed.bounding_polygon = boundingPolygon;
+                _adp.projectData.carto_id = JSON.stringify(cartoDataParsed);
+              } catch (error1) {
+                e = error1;
+                allError("Warning: there may have been a problem saving your carto data");
+              }
             }
-          } catch (error1) {
-            e = error1;
+          } catch (error2) {
+            e = error2;
             console.warn("WARNING: Couldn't write polygon data to globals");
           }
           if (typeof callback === "function") {
@@ -1719,8 +1726,8 @@ kmlHandler = function(path, callback) {
             console.info("kmlHandler wasn't given a callback function");
           }
           stopLoad();
-        } catch (error2) {
-          e = error2;
+        } catch (error3) {
+          e = error3;
           allError("There was a importing the data from this KML file");
           console.warn(e.message);
           console.warn(e.stack);

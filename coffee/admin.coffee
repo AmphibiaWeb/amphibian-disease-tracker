@@ -1743,7 +1743,12 @@ kmlHandler = (path, callback) ->
             geo.canonicalHullObject.hull = simpleBCPoly
             geo.canonicalBoundingBox = boundingPolygon
             unless isNull _adp?.projectData
-              _adp.projectData.carto_id = JSON.stringify boundingPolygon
+              try
+                cartoDataParsed = JSON.parse _adp.projectData.carto_id
+                cartoDataParsed.bounding_polygon = boundingPolygon
+                _adp.projectData.carto_id = JSON.stringify cartoDataParsed
+              catch e
+                allError "Warning: there may have been a problem saving your carto data"
 
           catch e
             console.warn "WARNING: Couldn't write polygon data to globals"
