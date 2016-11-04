@@ -2498,9 +2498,17 @@ kmlLoader = function(path, callback) {
    * @param string path -> the  relative path to the file
    * @param function callback -> Callback function to execute
    */
-  var googleMap, jsPath, mapData, ref;
+  var googleMap, jsPath, kmlData, mapData, ref;
   try {
-    console.debug("Loading KML file");
+    if (typeof path === "object") {
+      kmlData = path;
+      path = kmlData.path;
+    } else {
+      kmlData = {
+        path: path
+      };
+    }
+    console.debug("Loading KML file", path);
   } catch (undefined) {}
   geo.inhibitKMLInit = true;
   jsPath = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;

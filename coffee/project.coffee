@@ -582,7 +582,13 @@ kmlLoader = (path, callback) ->
   # @param function callback -> Callback function to execute
   ###
   try
-    console.debug "Loading KML file"
+    if typeof path is "object"
+      kmlData = path
+      path = kmlData.path
+    else
+      kmlData =
+        path: path
+    console.debug "Loading KML file", path
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
   startLoad()
