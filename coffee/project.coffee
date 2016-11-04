@@ -539,6 +539,10 @@ renderMapWithData = (projectData, force = false) ->
 postAuthorizeRender = (projectData, authorizationDetails) ->
   ###
   # Takes in project data, then renders the appropriate bits
+  #
+  # @param object projectData -> the full projectData array from an
+  #   authorized lookup
+  # @param object authorizationDetails -> the permissions object
   ###
   if projectData.public
     console.info "Project is already public, not rerendering"
@@ -571,13 +575,36 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
 
 kmlLoader = (path, callback) ->
   ###
-  # Load a KML file
+  # Load a KML file. The parser handles displaying it on any
+  # google-map compatible objects.
+  #
+  # @param string path -> the  relative path to the file
+  # @param function callback -> Callback function to execute
   ###
   try
     console.debug "Loading KML file"
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
   startLoad()
+  unless $("google-map").exists()
+    # We don't yet have a Google Map element.
+    # Create one.
+    googleMap = """
+    <google-map id="transect-viewport" class="col-xs-12 col-md-9 col-lg-6 kml-lazy-map" api-key="#{gMapsApiKey}" map-type="hybrid">
+    </google-map>
+    """
+    mapData = """
+    <div class="row">
+      <h2 class="col-xs-12">Mapping Data</h2>
+      #{googleMap}
+    </div>
+    """
+    if $("#auth-block").exists()
+      $("#auth-block").append mapData
+    else
+      console.warn "Couldn't find an authorization block to render the KML map in!"
+      return false
+    _adp.mapRendered = true
   loadJS jsPath, ->
     initializeParser null, ->
       loadKML path, ->
@@ -609,7 +636,7 @@ kmlLoader = (path, callback) ->
       false #
     false
   false
-  
+
 
 
 copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->

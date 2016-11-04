@@ -552,6 +552,10 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
 
   /*
    * Takes in project data, then renders the appropriate bits
+   *
+   * @param object projectData -> the full projectData array from an
+   *   authorized lookup
+   * @param object authorizationDetails -> the permissions object
    */
   var adminButton, authorData, cartoData, editButton;
   if (projectData["public"]) {
@@ -587,15 +591,30 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
 kmlLoader = function(path, callback) {
 
   /*
-   * Load a KML file
+   * Load a KML file. The parser handles displaying it on any
+   * google-map compatible objects.
+   *
+   * @param string path -> the  relative path to the file
+   * @param function callback -> Callback function to execute
    */
-  var jsPath, ref;
+  var googleMap, jsPath, mapData, ref;
   try {
     console.debug("Loading KML file");
   } catch (undefined) {}
   geo.inhibitKMLInit = true;
   jsPath = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
   startLoad();
+  if (!$("google-map").exists()) {
+    googleMap = "<google-map id=\"transect-viewport\" class=\"col-xs-12 col-md-9 col-lg-6 kml-lazy-map\" api-key=\"" + gMapsApiKey + "\" map-type=\"hybrid\">\n</google-map>";
+    mapData = "<div class=\"row\">\n  <h2 class=\"col-xs-12\">Mapping Data</h2>\n  " + googleMap + "\n</div>";
+    if ($("#auth-block").exists()) {
+      $("#auth-block").append(mapData);
+    } else {
+      console.warn("Couldn't find an authorization block to render the KML map in!");
+      return false;
+    }
+    _adp.mapRendered = true;
+  }
   loadJS(jsPath, function() {
     initializeParser(null, function() {
       loadKML(path, function() {
