@@ -3712,7 +3712,9 @@ startEditorUploader = ->
         ]
       if longType in checkKml
         if extension is "kml" or extension is "kmz"
-          return kmlHandler(linkPath)
+          finKml = ->
+            bsAlert "Your KML will take over your current bounding polygon once you save and refresh this page"
+          return kmlHandler(linkPath, finKml)
         else
           console.warn "Non-KML xml"
           allError "Sorry, we can't processes files of type application/#{longType}"

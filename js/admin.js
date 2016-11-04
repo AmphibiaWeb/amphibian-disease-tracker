@@ -3602,7 +3602,7 @@ startEditorUploader = function() {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var checkKml, checkPath, cp2, dialogHtml, e, error1, error2, extension, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      var checkKml, checkPath, cp2, dialogHtml, e, error1, error2, extension, fileName, finKml, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
       try {
         pathPrefix = "helpers/js-dragdrop/uploaded/" + (getUploadIdentifier()) + "/";
         fileName = result.full_path.split("/").pop();
@@ -3635,7 +3635,10 @@ startEditorUploader = function() {
       checkKml = ["vnd.google-earth.kml+xml", "vnd.google-earth.kmz", "xml"];
       if (indexOf.call(checkKml, longType) >= 0) {
         if (extension === "kml" || extension === "kmz") {
-          return kmlHandler(linkPath);
+          finKml = function() {
+            return bsAlert("Your KML will take over your current bounding polygon once you save and refresh this page");
+          };
+          return kmlHandler(linkPath, finKml);
         } else {
           console.warn("Non-KML xml");
           allError("Sorry, we can't processes files of type application/" + longType);
