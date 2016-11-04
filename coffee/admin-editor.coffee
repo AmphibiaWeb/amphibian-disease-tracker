@@ -24,8 +24,12 @@ kmlLoader = (path, callback) ->
       kmlData = path
       path = kmlData.path
     else
-      kmlData =
-        path: path
+      try
+        kmlData = JSON.parse path
+        path = kmlData.path
+      catch
+        kmlData =
+          path: path
     console.debug "Loading KML file", path
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"

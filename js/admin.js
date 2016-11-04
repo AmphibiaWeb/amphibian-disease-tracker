@@ -2498,15 +2498,20 @@ kmlLoader = function(path, callback) {
    * @param string path -> the  relative path to the file
    * @param function callback -> Callback function to execute
    */
-  var googleMap, jsPath, kmlData, mapData, ref;
+  var error1, googleMap, jsPath, kmlData, mapData, ref;
   try {
     if (typeof path === "object") {
       kmlData = path;
       path = kmlData.path;
     } else {
-      kmlData = {
-        path: path
-      };
+      try {
+        kmlData = JSON.parse(path);
+        path = kmlData.path;
+      } catch (error1) {
+        kmlData = {
+          path: path
+        };
+      }
     }
     console.debug("Loading KML file", path);
   } catch (undefined) {}
@@ -2527,7 +2532,7 @@ kmlLoader = function(path, callback) {
   loadJS(jsPath, function() {
     initializeParser(null, function() {
       loadKML(path, function() {
-        var e, error1, parsedKmlData;
+        var e, error2, parsedKmlData;
         try {
           parsedKmlData = geo.kml.parser.docsByUrl[path];
           if (isNull(parsedKmlData)) {
@@ -2549,8 +2554,8 @@ kmlLoader = function(path, callback) {
             console.info("kmlHandler wasn't given a callback function");
           }
           stopLoad();
-        } catch (error1) {
-          e = error1;
+        } catch (error2) {
+          e = error2;
           allError("There was a importing the data from this KML file");
           console.warn(e.message);
           console.warn(e.stack);
