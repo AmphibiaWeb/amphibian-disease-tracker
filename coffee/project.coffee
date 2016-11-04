@@ -180,6 +180,9 @@ renderMapWithData = (projectData, force = false) ->
   cartoData = JSON.parse deEscape projectData.carto_id
   _adp.cartoDataParsed = cartoData
   raw = cartoData.raw_data
+  if isNull raw
+    console.warn "No raw data to render"
+    return false
   if raw.hasDataFile
     helperDir = "helpers/"
     filePath = raw.filePath
@@ -586,8 +589,12 @@ kmlLoader = (path, callback) ->
       kmlData = path
       path = kmlData.path
     else
-      kmlData =
-        path: path
+      try
+        kmlData = JSON.parse path
+        path = kmlData.path
+      catch
+        kmlData =
+          path: path
     console.debug "Loading KML file", path
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
