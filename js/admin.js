@@ -3655,7 +3655,13 @@ startEditorUploader = function() {
       checkKml = ["vnd.google-earth.kml+xml", "vnd.google-earth.kmz", "xml"];
       if (indexOf.call(checkKml, longType) >= 0) {
         if (extension === "kml" || extension === "kmz") {
-          finKml = function() {
+          finKml = function(kdata) {
+            var transectFileObj;
+            transectFileObj = {
+              path: linkPath,
+              data: kdata
+            };
+            _adp.projectData.transect_file = JSON.stringify(transectFileObj);
             return bsAlert("Your KML will take over your current bounding polygon once you save and refresh this page");
           };
           return kmlHandler(linkPath, finKml);

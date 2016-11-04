@@ -3727,7 +3727,11 @@ startEditorUploader = ->
         ]
       if longType in checkKml
         if extension is "kml" or extension is "kmz"
-          finKml = ->
+          finKml = (kdata) ->
+            transectFileObj =
+              path: linkPath
+              data: kdata
+            _adp.projectData.transect_file = JSON.stringify transectFileObj
             bsAlert "Your KML will take over your current bounding polygon once you save and refresh this page"
           return kmlHandler(linkPath, finKml)
         else
