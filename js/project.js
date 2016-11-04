@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -574,6 +574,65 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   try {
     prepParsedDataDownload(projectData);
   } catch (undefined) {}
+  try {
+    if (!isNull(projectData.transect_file)) {
+      kmlLoader(projectData.transect_file, function() {
+        return console.debug("Loaded KML file successfully");
+      });
+    }
+  } catch (undefined) {}
+  return false;
+};
+
+kmlLoader = function(path, callback) {
+
+  /*
+   * Load a KML file
+   */
+  var jsPath, ref;
+  try {
+    console.debug("Loading KML file");
+  } catch (undefined) {}
+  geo.inhibitKMLInit = true;
+  jsPath = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
+  startLoad();
+  loadJS(jsPath, function() {
+    initializeParser(null, function() {
+      loadKML(path, function() {
+        var e, error1, parsedKmlData;
+        try {
+          parsedKmlData = geo.kml.parser.docsByUrl[path];
+          if (isNull(parsedKmlData)) {
+            path = "/" + path;
+            parsedKmlData = geo.kml.parser.docsByUrl[path];
+            if (isNull(parsedKmlData)) {
+              console.warn("Could not resolve KML by url, using first doc");
+              parsedKmlData = geo.kml.parser.docs[0];
+            }
+          }
+          if (isNull(parsedKmlData)) {
+            allError("Bad KML provided");
+            return false;
+          }
+          console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
+          if (typeof callback === "function") {
+            callback(parsedKmlData);
+          } else {
+            console.info("kmlHandler wasn't given a callback function");
+          }
+          stopLoad();
+        } catch (error1) {
+          e = error1;
+          allError("There was a importing the data from this KML file");
+          console.warn(e.message);
+          console.warn(e.stack);
+        }
+        return false;
+      });
+      return false;
+    });
+    return false;
+  });
   return false;
 };
 

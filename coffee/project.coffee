@@ -561,7 +561,55 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   renderMapWithData(projectData) # Stops load
   try
     prepParsedDataDownload projectData
+  try
+    unless isNull projectData.transect_file
+      kmlLoader projectData.transect_file, ->
+        console.debug "Loaded KML file successfully"
   false
+
+
+
+kmlLoader = (path, callback) ->
+  ###
+  # Load a KML file
+  ###
+  try
+    console.debug "Loading KML file"
+  geo.inhibitKMLInit = true
+  jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
+  startLoad()
+  loadJS jsPath, ->
+    initializeParser null, ->
+      loadKML path, ->
+        # At this point, any map elements should be rendered.
+        try
+          # UI handling after parsing
+          parsedKmlData = geo.kml.parser.docsByUrl[path]
+          if isNull parsedKmlData
+            # When it's in a subdirectory, the path needs a leading slash
+            path = "/#{path}"
+            parsedKmlData = geo.kml.parser.docsByUrl[path]
+            if isNull parsedKmlData
+              console.warn "Could not resolve KML by url, using first doc"
+              parsedKmlData = geo.kml.parser.docs[0]
+          if isNull parsedKmlData
+            allError "Bad KML provided"
+            return false
+          console.debug "Using parsed data from path '#{path}'", parsedKmlData
+          if typeof callback is "function"
+            callback(parsedKmlData)
+          else
+            console.info "kmlHandler wasn't given a callback function"
+          stopLoad()
+        catch e
+          allError "There was a importing the data from this KML file"
+          console.warn e.message
+          console.warn e.stack
+        false # Ends loadKML callback
+      false #
+    false
+  false
+  
 
 
 copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
