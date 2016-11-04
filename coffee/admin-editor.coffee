@@ -10,6 +10,72 @@
 ###
 
 
+
+kmlLoader = (path, callback) ->
+  ###
+  # Load a KML file. The parser handles displaying it on any
+  # google-map compatible objects.
+  #
+  # @param string path -> the  relative path to the file
+  # @param function callback -> Callback function to execute
+  ###
+  try
+    console.debug "Loading KML file"
+  geo.inhibitKMLInit = true
+  jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
+  startLoad()
+  unless $("google-map").exists()
+    # We don't yet have a Google Map element.
+    # Create one.
+    googleMap = """
+    <google-map id="transect-viewport" class="col-xs-12 col-md-9 col-lg-6 kml-lazy-map" api-key="#{gMapsApiKey}" map-type="hybrid">
+    </google-map>
+    """
+    mapData = """
+    <div class="row">
+      <h2 class="col-xs-12">Mapping Data</h2>
+      #{googleMap}
+    </div>
+    """
+    if $("#auth-block").exists()
+      $("#auth-block").append mapData
+    else
+      console.warn "Couldn't find an authorization block to render the KML map in!"
+      return false
+    _adp.mapRendered = true
+  loadJS jsPath, ->
+    initializeParser null, ->
+      loadKML path, ->
+        # At this point, any map elements should be rendered.
+        try
+          # UI handling after parsing
+          parsedKmlData = geo.kml.parser.docsByUrl[path]
+          if isNull parsedKmlData
+            # When it's in a subdirectory, the path needs a leading slash
+            path = "/#{path}"
+            parsedKmlData = geo.kml.parser.docsByUrl[path]
+            if isNull parsedKmlData
+              console.warn "Could not resolve KML by url, using first doc"
+              parsedKmlData = geo.kml.parser.docs[0]
+          if isNull parsedKmlData
+            allError "Bad KML provided"
+            return false
+          console.debug "Using parsed data from path '#{path}'", parsedKmlData
+          if typeof callback is "function"
+            callback(parsedKmlData)
+          else
+            console.info "kmlHandler wasn't given a callback function"
+          stopLoad()
+        catch e
+          allError "There was a importing the data from this KML file"
+          console.warn e.message
+          console.warn e.stack
+        false # Ends loadKML callback
+      false #
+    false
+  false
+
+
 loadEditor = (projectPreload) ->
   ###
   # Load up the editor interface for projects with access
@@ -392,6 +458,9 @@ loadEditor = (projectPreload) ->
             p$("#project-notes").bindValue = project.sample_notes.unescape()
           try
             p$("#project-funding").bindValue = project.extended_funding_reach_goals.unescape()
+          unless isNull project.transect_file
+            kmlLoader project.transect_file, ->
+              console.debug "Editor loaded KML file"
           # Watch for changes and toggle save watcher state
           # Events
           ## Events for notes
@@ -1209,6 +1278,16 @@ startEditorUploader = ->
       # When invoked, it calls the "self" helper methods to actually do
       # the file sending.
       ###
+      try
+        pathPrefix = "helpers/js-dragdrop/uploaded/#{getUploadIdentifier()}/"
+        fileName = result.full_path.split("/").pop()
+        thumbPath = result.wrote_thumb
+        mediaType = result.mime_provided.split("/")[0]
+        longType = result.mime_provided.split("/")[1]
+        linkPath = if file.size < 5*1024*1024 or mediaType isnt "image" then "#{pathPrefix}#{result.wrote_file}" else "#{pathPrefix}#{thumbPath}"
+      catch e
+        console.warn "Warning - #{e.message}"
+        console.warn e.stack
       # Clear out the file uploader
       window.dropperParams.dropzone.removeAllFiles()
 
@@ -1222,6 +1301,18 @@ startEditorUploader = ->
         toastStatusMessage "#{result.human_error}"
         console.error("Error uploading!",result)
         return false
+      checkKml = [
+        "vnd.google-earth.kml+xml"
+        "vnd.google-earth.kmz"
+        "xml"
+        ]
+      if longType in checkKml
+        if extension is "kml" or extension is "kmz"
+          return kmlHandler(linkPath)
+        else
+          console.warn "Non-KML xml"
+          allError "Sorry, we can't processes files of type application/#{longType}"
+          return false
       try
         # Open up dialog
         html = renderValidateProgress("dont-exist", true)
@@ -1333,9 +1424,24 @@ startEditorUploader = ->
                   excelHandler2(linkPath)
                 else
                   zipHandler(linkPath)
+                  p$("#upload-progress-dialog").close()
               when "x-7z-compressed"
                 _7zHandler(linkPath)
                 p$("#upload-progress-dialog").close()
+              when "vnd.google-earth.kml+xml", "vnd.google-earth.kmz", "xml"
+                if extension is "kml" or extension is "kmz"
+                  kmlHandler(linkPath)
+                  p$("#upload-progress-dialog").close()
+                else
+                  console.warn "Non-KML xml"
+                  allError "Sorry, we can't processes files of type application/#{longType}"
+                  p$("#upload-progress-dialog").close()
+                  return false
+              else
+                console.warn "Unknown mime type application/#{longType}"
+                allError "Sorry, we can't processes files of type application/#{longType}"
+                p$("#upload-progress-dialog").close()
+                return false
           when "text"
             csvHandler()
             p$("#upload-progress-dialog").close()

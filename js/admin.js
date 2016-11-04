@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, createOverflowMenu, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, kmlHandler, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, createOverflowMenu, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, kmlHandler, kmlLoader, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -2489,6 +2489,73 @@ $(function() {
  * @author Philip Kahn
  */
 
+kmlLoader = function(path, callback) {
+
+  /*
+   * Load a KML file. The parser handles displaying it on any
+   * google-map compatible objects.
+   *
+   * @param string path -> the  relative path to the file
+   * @param function callback -> Callback function to execute
+   */
+  var googleMap, jsPath, mapData, ref;
+  try {
+    console.debug("Loading KML file");
+  } catch (undefined) {}
+  geo.inhibitKMLInit = true;
+  jsPath = isNull(typeof _adp !== "undefined" && _adp !== null ? (ref = _adp.lastMod) != null ? ref.kml : void 0 : void 0) ? "js/kml.min.js" : "js/kml.min.js?t=" + _adp.lastMod.kml;
+  startLoad();
+  if (!$("google-map").exists()) {
+    googleMap = "<google-map id=\"transect-viewport\" class=\"col-xs-12 col-md-9 col-lg-6 kml-lazy-map\" api-key=\"" + gMapsApiKey + "\" map-type=\"hybrid\">\n</google-map>";
+    mapData = "<div class=\"row\">\n  <h2 class=\"col-xs-12\">Mapping Data</h2>\n  " + googleMap + "\n</div>";
+    if ($("#auth-block").exists()) {
+      $("#auth-block").append(mapData);
+    } else {
+      console.warn("Couldn't find an authorization block to render the KML map in!");
+      return false;
+    }
+    _adp.mapRendered = true;
+  }
+  loadJS(jsPath, function() {
+    initializeParser(null, function() {
+      loadKML(path, function() {
+        var e, error1, parsedKmlData;
+        try {
+          parsedKmlData = geo.kml.parser.docsByUrl[path];
+          if (isNull(parsedKmlData)) {
+            path = "/" + path;
+            parsedKmlData = geo.kml.parser.docsByUrl[path];
+            if (isNull(parsedKmlData)) {
+              console.warn("Could not resolve KML by url, using first doc");
+              parsedKmlData = geo.kml.parser.docs[0];
+            }
+          }
+          if (isNull(parsedKmlData)) {
+            allError("Bad KML provided");
+            return false;
+          }
+          console.debug("Using parsed data from path '" + path + "'", parsedKmlData);
+          if (typeof callback === "function") {
+            callback(parsedKmlData);
+          } else {
+            console.info("kmlHandler wasn't given a callback function");
+          }
+          stopLoad();
+        } catch (error1) {
+          e = error1;
+          allError("There was a importing the data from this KML file");
+          console.warn(e.message);
+          console.warn(e.stack);
+        }
+        return false;
+      });
+      return false;
+    });
+    return false;
+  });
+  return false;
+};
+
 loadEditor = function(projectPreload) {
 
   /*
@@ -2730,6 +2797,11 @@ loadEditor = function(projectPreload) {
           try {
             p$("#project-funding").bindValue = project.extended_funding_reach_goals.unescape();
           } catch (undefined) {}
+          if (!isNull(project.transect_file)) {
+            kmlLoader(project.transect_file, function() {
+              return console.debug("Editor loaded KML file");
+            });
+          }
           ta = p$("#project-notes").textarea;
           $(ta).keyup(function() {
             return p$("#note-preview").markdown = $(this).val();
@@ -3530,7 +3602,19 @@ startEditorUploader = function() {
        * When invoked, it calls the "self" helper methods to actually do
        * the file sending.
        */
-      var dialogHtml, e, error1, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      var checkKml, dialogHtml, e, error1, error2, fileName, html, linkPath, longType, mediaType, pathPrefix, previewHtml, thumbPath;
+      try {
+        pathPrefix = "helpers/js-dragdrop/uploaded/" + (getUploadIdentifier()) + "/";
+        fileName = result.full_path.split("/").pop();
+        thumbPath = result.wrote_thumb;
+        mediaType = result.mime_provided.split("/")[0];
+        longType = result.mime_provided.split("/")[1];
+        linkPath = file.size < 5 * 1024 * 1024 || mediaType !== "image" ? "" + pathPrefix + result.wrote_file : "" + pathPrefix + thumbPath;
+      } catch (error1) {
+        e = error1;
+        console.warn("Warning - " + e.message);
+        console.warn(e.stack);
+      }
       window.dropperParams.dropzone.removeAllFiles();
       if (typeof result !== "object") {
         console.error("Dropzone returned an error - " + result);
@@ -3544,6 +3628,16 @@ startEditorUploader = function() {
         toastStatusMessage("" + result.human_error);
         console.error("Error uploading!", result);
         return false;
+      }
+      checkKml = ["vnd.google-earth.kml+xml", "vnd.google-earth.kmz", "xml"];
+      if (indexOf.call(checkKml, longType) >= 0) {
+        if (extension === "kml" || extension === "kmz") {
+          return kmlHandler(linkPath);
+        } else {
+          console.warn("Non-KML xml");
+          allError("Sorry, we can't processes files of type application/" + longType);
+          return false;
+        }
       }
       try {
         html = renderValidateProgress("dont-exist", true);
@@ -3591,11 +3685,31 @@ startEditorUploader = function() {
                   excelHandler2(linkPath);
                 } else {
                   zipHandler(linkPath);
+                  p$("#upload-progress-dialog").close();
                 }
                 break;
               case "x-7z-compressed":
                 _7zHandler(linkPath);
                 p$("#upload-progress-dialog").close();
+                break;
+              case "vnd.google-earth.kml+xml":
+              case "vnd.google-earth.kmz":
+              case "xml":
+                if (extension === "kml" || extension === "kmz") {
+                  kmlHandler(linkPath);
+                  p$("#upload-progress-dialog").close();
+                } else {
+                  console.warn("Non-KML xml");
+                  allError("Sorry, we can't processes files of type application/" + longType);
+                  p$("#upload-progress-dialog").close();
+                  return false;
+                }
+                break;
+              default:
+                console.warn("Unknown mime type application/" + longType);
+                allError("Sorry, we can't processes files of type application/" + longType);
+                p$("#upload-progress-dialog").close();
+                return false;
             }
             break;
           case "text":
@@ -3606,8 +3720,8 @@ startEditorUploader = function() {
             imageHandler();
             p$("#upload-progress-dialog").close();
         }
-      } catch (error1) {
-        e = error1;
+      } catch (error2) {
+        e = error2;
         toastStatusMessage("Your file uploaded successfully, but there was a problem in the post-processing.");
       }
       return false;
