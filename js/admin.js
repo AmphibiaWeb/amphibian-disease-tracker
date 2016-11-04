@@ -3474,7 +3474,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       if (filePath.search(helperDir) === -1) {
         filePath = "" + helperDir + filePath;
       }
-      html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace this existing data.</p>";
+      html = "<p>\n  Your project already has data associated with it. <span id=\"last-modified-file\"></span>\n</p>\n<button id=\"download-project-file\" class=\"btn btn-primary center-block click download-file\" data-href=\"" + filePath + "\"><iron-icon icon=\"icons:cloud-download\"></iron-icon> Download File</button>\n<p>You can upload more data below, or replace existing data of the same type.</p>\n<br/><br/>\n<p class=\"text-muted\">\n  Allowed types (single type of each): <code>*.kml</code>, <code>*.kmz</code>, <code>*.xls</code>, <code>*.xlsx</code>\n  <br/>\n  Allowed types (inifinite copies): <code>image/*</code>, <code>*.pdf</code>, <code>*.7z</code>, <code>*.zip</code>\n</p>";
       $("#data-card .card-content .variable-card-content").html(html);
       args = "do=get_last_mod&file=" + filePath;
       console.info("Timestamp: ", uri.urlString + "meta.php?" + args);

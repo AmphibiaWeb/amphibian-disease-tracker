@@ -1145,7 +1145,13 @@ getProjectCartoData = (cartoObj, mapOptions) ->
         Your project already has data associated with it. <span id="last-modified-file"></span>
       </p>
       <button id="download-project-file" class="btn btn-primary center-block click download-file" data-href="#{filePath}"><iron-icon icon="icons:cloud-download"></iron-icon> Download File</button>
-      <p>You can upload more data below, or replace this existing data.</p>
+      <p>You can upload more data below, or replace existing data of the same type.</p>
+      <br/><br/>
+      <p class="text-muted">
+        Allowed types (single type of each): <code>*.kml</code>, <code>*.kmz</code>, <code>*.xls</code>, <code>*.xlsx</code>
+        <br/>
+        Allowed types (inifinite copies): <code>image/*</code>, <code>*.pdf</code>, <code>*.7z</code>, <code>*.zip</code>
+      </p>
       """
       $("#data-card .card-content .variable-card-content").html html
       args = "do=get_last_mod&file=#{filePath}"
