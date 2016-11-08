@@ -224,12 +224,38 @@ $loginStatus = getLoginState();
                  $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
                  } else {
                      $polyColor = '#9C27B0'; # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/64
-                 $coords = array();
-                     $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
-                     $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_e']);
-                     $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_e']);
-                     $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_w']);
-                     $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
+                     $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
+                     if(!empty($bpoly["multibounds"])) {
+                       # Replace this with an approximation
+                       $boringMultiBounds = array();
+                       foreach($bpoly["multibounds"] as $polySet) {
+                         # We want to get the four corners of each polySet
+                         $polySetBoundingBox = array();
+                         $north = -90;
+                         $south = 90;
+                         $west = 180;
+                         $east = -180;
+                         foreach($polySet as $points) {
+                           if($points["lat"] > $north) $north = $points["lat"];
+                           if($points["lng"] > $east) $east = $points["lng"];
+                           if($points["lng"] > $west) $west = $points["lng"];
+                           if($points["lat"] < $south) $south = $points["lat"];
+                         }
+                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $east);
+                         $polySetBoundingBox[] = array("lat" => $south, "lng" => $east);
+                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
+                         $polySetBoundingBox[] = array("lat" => $south, "lng" => $west);
+                         $boringMultiBounds[] = $polySetBoundingBox;
+                       }
+                       $bpoly["multibounds"] = $boringMultiBounds;
+                     } else {
+                       $coords = array();
+                       $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
+                       $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_e']);
+                       $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_e']);
+                       $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_w']);
+                       $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
+                     }
                  }
                  $superCoords[] = $coords;
              # If we don't do this by project first, the center is
@@ -255,6 +281,7 @@ $loginStatus = getLoginState();
                } else {
                  # We have a multibounds-type display
                  foreach($bpoly["multibounds"] as $boundSet) {
+                   # We'll repeat this for each set of points in the multibounds object
                    $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
                        foreach ($boundSet as $point) {
                            ++$points;
