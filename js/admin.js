@@ -1728,7 +1728,7 @@ kmlHandler = function(path, callback) {
           stopLoad();
         } catch (error3) {
           e = error3;
-          allError("There was a importing the data from this KML file");
+          allError("There was an error importing the data from this KML file");
           console.warn(e.message);
           console.warn(e.stack);
         }
@@ -3656,12 +3656,20 @@ startEditorUploader = function() {
       if (indexOf.call(checkKml, longType) >= 0) {
         if (extension === "kml" || extension === "kmz") {
           finKml = function(kdata) {
-            var transectFileObj;
+            var error2, transectFileObj;
             transectFileObj = {
               path: linkPath,
               data: kdata
             };
-            _adp.projectData.transect_file = JSON.stringify(transectFileObj);
+            try {
+              _adp.projectData.transect_file = JSON.stringify(transectFileObj);
+            } catch (error2) {
+              e = error2;
+              try {
+                console.warn("Couldn't stringify json - " + e.message, linkPath, kdata);
+              } catch (undefined) {}
+              _adp.projectData.transect_file = linkPath;
+            }
             return bsAlert("Your KML will take over your current bounding polygon once you save and refresh this page");
           };
           return kmlHandler(linkPath, finKml);

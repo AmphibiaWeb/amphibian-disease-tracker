@@ -1325,7 +1325,12 @@ startEditorUploader = ->
             transectFileObj =
               path: linkPath
               data: kdata
-            _adp.projectData.transect_file = JSON.stringify transectFileObj
+            try
+              _adp.projectData.transect_file = JSON.stringify transectFileObj
+            catch e
+              try
+                console.warn "Couldn't stringify json - #{e.message}", linkPath, kdata
+              _adp.projectData.transect_file = linkPath
             bsAlert "Your KML will take over your current bounding polygon once you save and refresh this page"
           return kmlHandler(linkPath, finKml)
         else

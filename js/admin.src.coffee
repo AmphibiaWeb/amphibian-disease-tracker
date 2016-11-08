@@ -1758,7 +1758,7 @@ kmlHandler = (path, callback) ->
             console.info "kmlHandler wasn't given a callback function"
           stopLoad()
         catch e
-          allError "There was a importing the data from this KML file"
+          allError "There was an error importing the data from this KML file"
           console.warn e.message
           console.warn e.stack
         false # Ends loadKML callback
@@ -3731,7 +3731,12 @@ startEditorUploader = ->
             transectFileObj =
               path: linkPath
               data: kdata
-            _adp.projectData.transect_file = JSON.stringify transectFileObj
+            try
+              _adp.projectData.transect_file = JSON.stringify transectFileObj
+            catch e
+              try
+                console.warn "Couldn't stringify json - #{e.message}", linkPath, kdata
+              _adp.projectData.transect_file = linkPath
             bsAlert "Your KML will take over your current bounding polygon once you save and refresh this page"
           return kmlHandler(linkPath, finKml)
         else
