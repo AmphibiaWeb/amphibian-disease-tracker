@@ -214,17 +214,17 @@ $loginStatus = getLoginState();
                  if (empty($project['project_id']) || empty($project['locality'])) {
                      continue;
                  }
-                 if (boolstr($project['public'])) {
-                     $polyColor = '#ff7800';
-                     $carto = json_decode(deEscape($project['carto_id']), true);
+                 $carto = json_decode(deEscape($project['carto_id']), true);
                  # Escaped or unescaped
                  $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
-                 # Depending on the type of data stored, it could be
-                 # in paths or not
-                 $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
+                 if (boolstr($project['public'])) {
+                   $polyColor = '#ff7800';
+                   # Depending on the type of data stored, it could be
+                   # in paths or not
+                   $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
                  } else {
+                   # Private
                      $polyColor = '#9C27B0'; # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/64
-                     $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
                      if(!empty($bpoly["multibounds"])) {
                        # Replace this with an approximation
                        $boringMultiBounds = array();
