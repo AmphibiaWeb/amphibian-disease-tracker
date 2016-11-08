@@ -242,7 +242,7 @@ $loginStatus = getLoginState();
                          foreach($polySet as $points) {
                            if($points["lat"] > $north) $north = $points["lat"];
                            if($points["lng"] > $east) $east = $points["lng"];
-                           if($points["lng"] > $west) $west = $points["lng"];
+                           if($points["lng"] < $west) $west = $points["lng"];
                            if($points["lat"] < $south) $south = $points["lat"];
                          }
                          $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
