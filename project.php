@@ -245,10 +245,11 @@ $loginStatus = getLoginState();
                            if($points["lng"] > $west) $west = $points["lng"];
                            if($points["lat"] < $south) $south = $points["lat"];
                          }
+                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
                          $polySetBoundingBox[] = array("lat" => $north, "lng" => $east);
                          $polySetBoundingBox[] = array("lat" => $south, "lng" => $east);
-                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
                          $polySetBoundingBox[] = array("lat" => $south, "lng" => $west);
+                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
                          $boringMultiBounds[] = $polySetBoundingBox;
                        }
                        $bpoly["multibounds"] = $boringMultiBounds;
@@ -278,7 +279,7 @@ $loginStatus = getLoginState();
                      $lng = $point['lng'];
                      $projAverageLat = $projAverageLat + $lat;
                      $projAverageLng = $projAverageLng + $lng;
-                     $html .= "<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
+                     $html .= "\n\t<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
                  }
                  $html .= "</google-map-poly>\n";
                  $polyHtml .= $html;
@@ -286,14 +287,14 @@ $loginStatus = getLoginState();
                  # We have a multibounds-type display
                  foreach($bpoly["multibounds"] as $boundSet) {
                    # We'll repeat this for each set of points in the multibounds object
-                   $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
+                     $html = "\n<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>\n <!-- Points: ".print_r($boundSet, true)."\n -->\n";
                        foreach ($boundSet as $point) {
                            ++$points;
                            $lat = $point['lat'];
                            $lng = $point['lng'];
                            $projAverageLat = $projAverageLat + $lat;
                            $projAverageLng = $projAverageLng + $lng;
-                           $html .= "<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
+                           $html .= "\n\t<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
                        }
                        $html .= "</google-map-poly>\n";
                        $polyHtml .= $html;
