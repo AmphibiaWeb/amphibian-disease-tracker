@@ -245,10 +245,11 @@ $loginStatus = getLoginState();
                            if($points["lng"] > $west) $west = $points["lng"];
                            if($points["lat"] < $south) $south = $points["lat"];
                          }
+                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
                          $polySetBoundingBox[] = array("lat" => $north, "lng" => $east);
                          $polySetBoundingBox[] = array("lat" => $south, "lng" => $east);
-                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
                          $polySetBoundingBox[] = array("lat" => $south, "lng" => $west);
+                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
                          $boringMultiBounds[] = $polySetBoundingBox;
                        }
                        $bpoly["multibounds"] = $boringMultiBounds;
