@@ -1758,7 +1758,7 @@ kmlHandler = (path, callback) ->
           catch e
             console.warn "WARNING: Couldn't write polygon data to globals"
           if typeof callback is "function"
-            callback(parsedKmlData)
+            callback(kmlInfo)
           else
             console.info "kmlHandler wasn't given a callback function"
           stopLoad()

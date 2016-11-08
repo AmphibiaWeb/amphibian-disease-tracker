@@ -1729,7 +1729,7 @@ kmlHandler = function(path, callback) {
             console.warn("WARNING: Couldn't write polygon data to globals");
           }
           if (typeof callback === "function") {
-            callback(parsedKmlData);
+            callback(kmlInfo);
           } else {
             console.info("kmlHandler wasn't given a callback function");
           }
