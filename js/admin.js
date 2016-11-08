@@ -559,7 +559,7 @@ finalizeData = function(skipFields, callback) {
           postData.disease_samples = toInt(s.positive) + toInt(s.negative) + toInt(s.no_confidence);
         }
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, error1, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, e, error1, error2, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -575,7 +575,15 @@ finalizeData = function(skipFields, callback) {
           } catch (undefined) {}
           try {
             if (typeof kmlInfo === "object") {
-              postData.transect_file = JSON.stringify(kmlInfo);
+              try {
+                postData.transect_file = JSON.stringify(kmlInfo);
+              } catch (error1) {
+                e = error1;
+                console.warn("Couldn't stringify data - " + e.message, kmlInfo);
+                if (kmlInfo.path != null) {
+                  postData.transect_file = kmlInfo.path;
+                }
+              }
             }
           } catch (undefined) {}
           if ((typeof _adp !== "undefined" && _adp !== null ? (ref9 = _adp.projectData) != null ? ref9.author_data : void 0 : void 0) == null) {
@@ -601,7 +609,7 @@ finalizeData = function(skipFields, callback) {
           postData.project_id = _adp.projectId;
           try {
             postData.project_obj_id = _adp.fims.expedition.ark;
-          } catch (error1) {
+          } catch (error2) {
             mintExpedition(_adp.projectId, null, function() {
               return postBBLocality();
             });
@@ -639,7 +647,7 @@ finalizeData = function(skipFields, callback) {
             return postData;
           }
           return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            var e, error2, error3, jsonResponse;
+            var error3, error4, jsonResponse;
             try {
               if (result.status === true) {
                 bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
@@ -654,12 +662,12 @@ finalizeData = function(skipFields, callback) {
                 stopLoadError(result.human_error);
                 bsAlert(result.human_error, "error");
               }
-            } catch (error2) {
-              e = error2;
+            } catch (error3) {
+              e = error3;
               stopLoadError("There was a verifying your save data");
               try {
                 jsonResponse = JSON.stringify(result);
-              } catch (error3) {
+              } catch (error4) {
                 jsonResponse = "BAD_OBJECT";
               }
               try {

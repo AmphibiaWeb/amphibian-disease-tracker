@@ -710,7 +710,12 @@ finalizeData = (skipFields = false, callback) ->
             postData.technical_contact_email = p$("#project-technical-contact-email").value
           try
             if typeof kmlInfo is "object"
-              postData.transect_file = JSON.stringify kmlInfo
+              try
+                postData.transect_file = JSON.stringify kmlInfo
+              catch e
+                console.warn "Couldn't stringify data - #{e.message}", kmlInfo
+                if kmlInfo.path?
+                  postData.transect_file = kmlInfo.path
           unless _adp?.projectData?.author_data?
             authorData =
               name: p$("#project-author").value
