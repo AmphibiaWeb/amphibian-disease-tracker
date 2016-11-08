@@ -240,6 +240,7 @@ $loginStatus = getLoginState();
                  $projAverageLat = 0;
                  $projAverageLng = 0;
              # Need to enable both click-events and clickable
+             if(empty($bpoly["multibounds"])) {
              $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
                  foreach ($coords as $point) {
                      ++$points;
@@ -251,6 +252,22 @@ $loginStatus = getLoginState();
                  }
                  $html .= "</google-map-poly>\n";
                  $polyHtml .= $html;
+               } else {
+                 # We have a multibounds-type display
+                 foreach($bpoly["multibounds"] as $boundSet) {
+                   $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
+                       foreach ($boundSet as $point) {
+                           ++$points;
+                           $lat = $point['lat'];
+                           $lng = $point['lng'];
+                           $projAverageLat = $projAverageLat + $lat;
+                           $projAverageLng = $projAverageLng + $lng;
+                           $html .= "<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
+                       }
+                       $html .= "</google-map-poly>\n";
+                       $polyHtml .= $html;
+                 }
+               }
                  $projAverageLat = $projAverageLat / $points;
                  $projAverageLng = $projAverageLng / $points;
                  $averageLat = $averageLat + $projAverageLat;
