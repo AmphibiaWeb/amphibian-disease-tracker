@@ -211,12 +211,16 @@ $loginStatus = getLoginState();
              $polys = 0;
              $polyHtml = '';
              foreach ($list as $project) {
-                 if (empty($project['project_id']) || empty($project['locality'])) {
-                     continue;
-                 }
+               try {
                  $carto = json_decode(deEscape($project['carto_id']), true);
                  # Escaped or unescaped
                  $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
+               } catch(Exception $e) {
+
+               }
+               if (empty($project['project_id']) || empty($project['locality'])) {
+                  if(empty($bpoly["multibounds"])) continue;
+               }
                  if (boolstr($project['public'])) {
                    $polyColor = '#ff7800';
                    # Depending on the type of data stored, it could be
@@ -267,7 +271,7 @@ $loginStatus = getLoginState();
                  $projAverageLng = 0;
              # Need to enable both click-events and clickable
              if(empty($bpoly["multibounds"])) {
-             $html = "<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
+             $html = "\n<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
                  foreach ($coords as $point) {
                      ++$points;
                      $lat = $point['lat'];
