@@ -174,14 +174,21 @@ showEmailField = (email) ->
 
 
 renderMapWithData = (projectData, force = false) ->
+  showKml = ->
+    try
+      unless isNull projectData.transect_file
+        kmlLoader projectData.transect_file, ->
+          console.debug "Loaded KML file successfully"
   if _adp.mapRendered is true and force isnt true
-    console.warn "The map was asked to be rendered again, but it has already been rendered!"
+    console.warn "Carto: The map was asked to be rendered again, but it has already been rendered!"
+    showKml()
     return false
   cartoData = JSON.parse deEscape projectData.carto_id
   _adp.cartoDataParsed = cartoData
   raw = cartoData.raw_data
   if isNull raw
     console.warn "No raw data to render"
+    showKml()
     return false
   if raw.hasDataFile
     helperDir = "helpers/"
@@ -215,6 +222,7 @@ renderMapWithData = (projectData, force = false) ->
   cartoTable = cartoData.table
   if isNull cartoTable
     console.warn "WARNING: This project has no data associated with it. Not doing map render."
+    showKml()
     return false
   try
     zoomPaths = cartoData.bounding_polygon.paths ? cartoData.bounding_polygon
@@ -250,10 +258,12 @@ renderMapWithData = (projectData, force = false) ->
   console.info "Would ping cartodb with", cartoQuery
   apiPostSqlQuery = encodeURIComponent encode64 cartoQuery
   args = "action=fetch&sql_query=#{apiPostSqlQuery}"
+  console.debug "Hitting endpoint for carto lookup", "#{uri.urlString}api.php?#{args}"
   $.post "api.php", args, "json"
   .done (result) ->
     if _adp.mapRendered is true
       console.warn "Duplicate map render! Skipping thread"
+      showKml()
       return false
     console.info "Carto query got result:", result
     unless result.status
@@ -261,6 +271,7 @@ renderMapWithData = (projectData, force = false) ->
       unless error?
         error = "Unknown error"
       stopLoadError "Sorry, we couldn't retrieve your information at the moment (#{error})"
+      showKml()
       return false
     rows = result.parsed_responses[0].rows
     points = new Array()
@@ -530,9 +541,13 @@ renderMapWithData = (projectData, force = false) ->
         $(el)
         .attr "data-negative", "false"
         .attr "data-inconclusive", "false"
+    console.info "Carto lookup complete"
+    showKml()
     stopLoad()
   .fail (result, status) ->
+    console.error "Couldn't render map and carto data"
     console.error result, status
+    showKml()
     stopLoadError "Couldn't render map"
   false
 
@@ -568,10 +583,6 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   renderMapWithData(projectData) # Stops load
   try
     prepParsedDataDownload projectData
-  try
-    unless isNull projectData.transect_file
-      kmlLoader projectData.transect_file, ->
-        console.debug "Loaded KML file successfully"
   false
 
 

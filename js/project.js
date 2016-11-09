@@ -171,12 +171,22 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, title, tmp, usedPoints, zoom, zoomPaths;
+  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, showKml, title, tmp, usedPoints, zoom, zoomPaths;
   if (force == null) {
     force = false;
   }
+  showKml = function() {
+    try {
+      if (!isNull(projectData.transect_file)) {
+        return kmlLoader(projectData.transect_file, function() {
+          return console.debug("Loaded KML file successfully");
+        });
+      }
+    } catch (undefined) {}
+  };
   if (_adp.mapRendered === true && force !== true) {
-    console.warn("The map was asked to be rendered again, but it has already been rendered!");
+    console.warn("Carto: The map was asked to be rendered again, but it has already been rendered!");
+    showKml();
     return false;
   }
   cartoData = JSON.parse(deEscape(projectData.carto_id));
@@ -184,6 +194,7 @@ renderMapWithData = function(projectData, force) {
   raw = cartoData.raw_data;
   if (isNull(raw)) {
     console.warn("No raw data to render");
+    showKml();
     return false;
   }
   if (raw.hasDataFile) {
@@ -218,6 +229,7 @@ renderMapWithData = function(projectData, force) {
   cartoTable = cartoData.table;
   if (isNull(cartoTable)) {
     console.warn("WARNING: This project has no data associated with it. Not doing map render.");
+    showKml();
     return false;
   }
   try {
@@ -261,10 +273,12 @@ renderMapWithData = function(projectData, force) {
   console.info("Would ping cartodb with", cartoQuery);
   apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
+  console.debug("Hitting endpoint for carto lookup", uri.urlString + "api.php?" + args);
   $.post("api.php", args, "json").done(function(result) {
     var adjustedList, collectionRangePretty, d, d1, d2, el, error, geoJson, googleMap, isPositive, k, lat, len2, len3, len4, len5, lng, m, mapData, marker, month, monthPretty, months, note, o, options, perTaxaStatus, pointPoints, points, q, ref2, ref3, ref4, row, rows, speciesItem, t, taxa, year, yearPretty, years;
     if (_adp.mapRendered === true) {
       console.warn("Duplicate map render! Skipping thread");
+      showKml();
       return false;
     }
     console.info("Carto query got result:", result);
@@ -274,6 +288,7 @@ renderMapWithData = function(projectData, force) {
         error = "Unknown error";
       }
       stopLoadError("Sorry, we couldn't retrieve your information at the moment (" + error + ")");
+      showKml();
       return false;
     }
     rows = result.parsed_responses[0].rows;
@@ -544,9 +559,13 @@ renderMapWithData = function(projectData, force) {
         $(el).attr("data-negative", "false").attr("data-inconclusive", "false");
       }
     }
+    console.info("Carto lookup complete");
+    showKml();
     return stopLoad();
   }).fail(function(result, status) {
+    console.error("Couldn't render map and carto data");
     console.error(result, status);
+    showKml();
     return stopLoadError("Couldn't render map");
   });
   return false;
@@ -581,13 +600,6 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   renderMapWithData(projectData);
   try {
     prepParsedDataDownload(projectData);
-  } catch (undefined) {}
-  try {
-    if (!isNull(projectData.transect_file)) {
-      kmlLoader(projectData.transect_file, function() {
-        return console.debug("Loaded KML file successfully");
-      });
-    }
   } catch (undefined) {}
   return false;
 };
