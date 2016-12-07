@@ -4664,13 +4664,24 @@ saveEditorData = (force = false, callback) ->
       shadowAdp = _adp
       delete shadowAdp.currentAsyncJqxhr
       localStorage._adp = JSON.stringify shadowAdp
+      console.debug "Local storage backup succeeded"
+      backupMessage = "An offline backup has been made."
     catch e
       console.warn "Couldn't backup to local storage! #{e.message}"
       console.warn e.stack
-      $("#offline-backup-status").replaceWith "Offline backup failed (said: <code>#{e.message}</code>)"
-    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>An offline backup has been made.</span>", "danger"
+      backupMessage = "Offline backup failed (said: <code>#{e.message}</code>)"
+      delay 250, ->
+        delete shadowAdp.currentAsyncJqxhr
+        delete _adp.currentAsyncJqxhr
+        try
+          localStorage._adp = JSON.stringify _adp
+          backupMessage = "An offline backup has been made."
+          $("#offline-backup-status").replaceWith backupMessage
+      $("#offline-backup-status").replaceWith backupMessage
+    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>#{backupMessage}</span>", "danger"
     console.error result, status
     console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+    console.warn "Raw post data", postData
   .always ->
     if typeof callback is "function"
       callback()
