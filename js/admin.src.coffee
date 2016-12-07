@@ -4632,6 +4632,57 @@ saveEditorData = (force = false, callback) ->
     if _adp.originalProjectId isnt _adp.projectId
       console.warn "Mismatched IDs!", _adp.originalProjectId, _adp.projectId
       postData.project_id = _adp.originalProjectId
+  try
+    ###
+    # POST data craps out with too many points
+    # Known failure at 4584
+    ###
+    maxPathCount = 4000
+    try
+      cd = JSON.parse postData.carto_id
+      paths = cd.bounding_polygon.paths
+    catch
+      paths = []
+    try
+      tf = JSON.parse postData.transect_file
+      tfPaths = tf.data.parameters.paths
+    catch
+      tfPaths = []
+    bpPathCount = Object.size paths
+    try
+      for multi in cd.bounding_polygon.multibounds
+        bpPathCount += Object.size multi
+    tfPathCount = Objects.size tfPaths
+    try
+      for multi in tf.data.polys
+        tfPathCount += Object.size multi
+    pointCount = bpPathCount + tfPathCount
+    if pointCount > maxPathCount
+      console.warn "Danger: Have #{pointCount} paths. The recommended max is #{maxPathCount}"
+      if tfPathCount is bpPathCount
+        tf.data.parameters.paths = "SEE_BOUNDING_POLY"
+        try
+          i = 0
+          for pathSet in tf.data.polys
+            tf.data.polys[i] = "SEE_BOUNDING_POLY"
+            ++i
+        postData.transect_file = JSON.stringify tf
+        tfPathCount = tf.data.parameters.paths.length
+      try
+        cd.bounding_polygon.paths = false
+        postData.carto_id = JSON.stringify cd
+        bpPathCount = 0
+      try
+        for multi in cd.bounding_polygon.multibounds
+          bpPathCount += Object.size multi
+      try
+        for multi in tf.data.polys
+          tfPathCount += Object.size multi
+      pointCount = bpPathCount + tfPathCount
+      console.debug "Shrunk to reduced data size #{pointCount}. May have compatability errors."
+  catch e
+    console.error "Couldn't check path count -- #{e.message}. Faking it."
+    pointCount = maxPathCount + 1
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
@@ -4663,6 +4714,12 @@ saveEditorData = (force = false, callback) ->
     try
       shadowAdp = _adp
       delete shadowAdp.currentAsyncJqxhr
+      if pointCount > maxPathCount
+        try
+          tf = JSON.parse shadowAdp.projectData.transect_file
+          tf.data.parameters.paths = "REMOVED_FOR_LOCAL_SAVE"
+          tf.data.polys = "REMOVED_FOR_LOCAL_SAVE"
+          shadowAdp.projectData.transect_file = JSON.stringify tf
       localStorage._adp = JSON.stringify shadowAdp
       console.debug "Local storage backup succeeded"
       backupMessage = "An offline backup has been made."

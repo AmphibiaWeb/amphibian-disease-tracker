@@ -225,6 +225,9 @@ renderMapWithData = (projectData, force = false) ->
     showKml()
     return false
   try
+    try
+      if cartoData.bounding_polygon.paths.toBool() is false and not isNull cartoData.bounding_polygon.multibounds
+        cartoData.bounding_polygon.paths = cartoData.bounding_polygon.multibounds[0]
     zoomPaths = cartoData.bounding_polygon.paths ? cartoData.bounding_polygon
     zoom = getMapZoom zoomPaths, "#transect-viewport"
     console.info "Got zoom", zoom

@@ -4532,7 +4532,7 @@ recalculateAndUpdateHull = function(points) {
 };
 
 saveEditorData = function(force, callback) {
-  var args, authorObj, data, el, isChangingPublic, key, l, len, len1, m, postData, ref, ref1, ref2;
+  var args, authorObj, bpPathCount, cd, data, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
   if (force == null) {
     force = false;
   }
@@ -4595,13 +4595,92 @@ saveEditorData = function(force, callback) {
       postData.project_id = _adp.originalProjectId;
     }
   }
+  try {
+
+    /*
+     * POST data craps out with too many points
+     * Known failure at 4584
+     */
+    maxPathCount = 4000;
+    try {
+      cd = JSON.parse(postData.carto_id);
+      paths = cd.bounding_polygon.paths;
+    } catch (error1) {
+      paths = [];
+    }
+    try {
+      tf = JSON.parse(postData.transect_file);
+      tfPaths = tf.data.parameters.paths;
+    } catch (error2) {
+      tfPaths = [];
+    }
+    bpPathCount = Object.size(paths);
+    try {
+      ref3 = cd.bounding_polygon.multibounds;
+      for (o = 0, len2 = ref3.length; o < len2; o++) {
+        multi = ref3[o];
+        bpPathCount += Object.size(multi);
+      }
+    } catch (undefined) {}
+    tfPathCount = Objects.size(tfPaths);
+    try {
+      ref4 = tf.data.polys;
+      for (q = 0, len3 = ref4.length; q < len3; q++) {
+        multi = ref4[q];
+        tfPathCount += Object.size(multi);
+      }
+    } catch (undefined) {}
+    pointCount = bpPathCount + tfPathCount;
+    if (pointCount > maxPathCount) {
+      console.warn("Danger: Have " + pointCount + " paths. The recommended max is " + maxPathCount);
+      if (tfPathCount === bpPathCount) {
+        tf.data.parameters.paths = "SEE_BOUNDING_POLY";
+        try {
+          i = 0;
+          ref5 = tf.data.polys;
+          for (u = 0, len4 = ref5.length; u < len4; u++) {
+            pathSet = ref5[u];
+            tf.data.polys[i] = "SEE_BOUNDING_POLY";
+            ++i;
+          }
+        } catch (undefined) {}
+        postData.transect_file = JSON.stringify(tf);
+        tfPathCount = tf.data.parameters.paths.length;
+      }
+      try {
+        cd.bounding_polygon.paths = false;
+        postData.carto_id = JSON.stringify(cd);
+        bpPathCount = 0;
+      } catch (undefined) {}
+      try {
+        ref6 = cd.bounding_polygon.multibounds;
+        for (w = 0, len5 = ref6.length; w < len5; w++) {
+          multi = ref6[w];
+          bpPathCount += Object.size(multi);
+        }
+      } catch (undefined) {}
+      try {
+        ref7 = tf.data.polys;
+        for (x = 0, len6 = ref7.length; x < len6; x++) {
+          multi = ref7[x];
+          tfPathCount += Object.size(multi);
+        }
+      } catch (undefined) {}
+      pointCount = bpPathCount + tfPathCount;
+      console.debug("Shrunk to reduced data size " + pointCount + ". May have compatability errors.");
+    }
+  } catch (error3) {
+    e = error3;
+    console.error("Couldn't check path count -- " + e.message + ". Faking it.");
+    pointCount = maxPathCount + 1;
+  }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, newStatus, ref3, ref4;
+    var error, newStatus, ref8, ref9;
     console.info("Save result: server said", result);
     if (result.status !== true) {
-      error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
+      error = (ref8 = (ref9 = result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was an error saving to the server";
       stopLoadError("There was an error saving to the server");
       localStorage._adp = JSON.stringify(_adp);
       bsAlert("<strong>Save Error:</strong> " + error + ". An offline backup has been made.", "danger");
@@ -4622,16 +4701,24 @@ saveEditorData = function(force, callback) {
       }
     }
   }).fail(function(result, status) {
-    var backupMessage, e, error1, shadowAdp;
+    var backupMessage, error4, shadowAdp;
     stopLoadError("Sorry, there was an error communicating with the server");
     try {
       shadowAdp = _adp;
       delete shadowAdp.currentAsyncJqxhr;
+      if (pointCount > maxPathCount) {
+        try {
+          tf = JSON.parse(shadowAdp.projectData.transect_file);
+          tf.data.parameters.paths = "REMOVED_FOR_LOCAL_SAVE";
+          tf.data.polys = "REMOVED_FOR_LOCAL_SAVE";
+          shadowAdp.projectData.transect_file = JSON.stringify(tf);
+        } catch (undefined) {}
+      }
       localStorage._adp = JSON.stringify(shadowAdp);
       console.debug("Local storage backup succeeded");
       backupMessage = "An offline backup has been made.";
-    } catch (error1) {
-      e = error1;
+    } catch (error4) {
+      e = error4;
       console.warn("Couldn't backup to local storage! " + e.message);
       console.warn(e.stack);
       backupMessage = "Offline backup failed (said: <code>" + e.message + "</code>)";
