@@ -4746,7 +4746,7 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, bupid, d, error1;
+  var alertHtml, bupid, d, error1, error2;
   try {
     _adp.originalProjectId = _adp.projectData.project_id;
     bupid = _adp.projectData.project_id;
@@ -4762,7 +4762,13 @@ $(function() {
     });
   }
   if (localStorage._adp != null) {
-    window._adp = JSON.parse(localStorage._adp);
+    try {
+      window._adp = JSON.parse(localStorage._adp);
+    } catch (error2) {
+      if (window._adp == null) {
+        window._adp = new Object();
+      }
+    }
     try {
       _adp.originalProjectId = bupid;
     } catch (undefined) {}

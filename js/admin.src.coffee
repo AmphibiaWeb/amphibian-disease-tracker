@@ -4759,7 +4759,10 @@ $ ->
       catch
         console.warn "Warning: COuldn't backup project id"
   if localStorage._adp?
-    window._adp = JSON.parse localStorage._adp
+    try
+      window._adp = JSON.parse localStorage._adp
+    catch
+      window._adp ?= new Object()
     try
       _adp.originalProjectId = bupid
     d = new Date _adp.postedSaveTimestamp
