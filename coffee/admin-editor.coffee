@@ -2354,26 +2354,30 @@ $ ->
       window._adp ?= new Object()
     try
       _adp.originalProjectId = bupid
-    d = new Date _adp.postedSaveTimestamp
-    alertHtml = """
-    <strong>You have offline save information</strong> &#8212; did you want to save it?
-    <br/><br/>
-    Project ##{_adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
-    <br/><br/>
-    <button class="btn btn-success" id="offline-save">
-      Save Now &amp; Refresh Page
-    </button>
-    <button class="btn btn-danger" id="offline-trash">
-      Remove Offline Backup
-    </button>
-    """
-    bsAlert alertHtml, "info"
-    $("#outdated-warning").remove()
-    delay 300, ->
+    try
+      d = new Date _adp.postedSaveTimestamp
+      alertHtml = """
+      <strong>You have offline save information</strong> &#8212; did you want to save it?
+      <br/><br/>
+      Project ##{_adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
+      <br/><br/>
+      <button class="btn btn-success" id="offline-save">
+        Save Now &amp; Refresh Page
+      </button>
+      <button class="btn btn-danger" id="offline-trash">
+        Remove Offline Backup
+      </button>
+      """
+      bsAlert alertHtml, "info"
       $("#outdated-warning").remove()
-    $("#offline-save").click ->
-      saveEditorData false,  ->
-        document.location.reload(true)
-    $("#offline-trash").click ->
+      delay 300, ->
+        $("#outdated-warning").remove()
+      $("#offline-save").click ->
+        saveEditorData false,  ->
+          document.location.reload(true)
+      $("#offline-trash").click ->
+        delete localStorage._adp
+        $(".hanging-alert").alert("close")
+    catch e
+      console.warn "Backup corrupted, removing -- #{e.message}"
       delete localStorage._adp
-      $(".hanging-alert").alert("close")

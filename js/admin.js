@@ -4746,7 +4746,7 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, bupid, d, error1, error2;
+  var alertHtml, bupid, d, e, error1, error2, error3;
   try {
     _adp.originalProjectId = _adp.projectData.project_id;
     bupid = _adp.projectData.project_id;
@@ -4772,22 +4772,28 @@ $(function() {
     try {
       _adp.originalProjectId = bupid;
     } catch (undefined) {}
-    d = new Date(_adp.postedSaveTimestamp);
-    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>\n<button class=\"btn btn-danger\" id=\"offline-trash\">\n  Remove Offline Backup\n</button>";
-    bsAlert(alertHtml, "info");
-    $("#outdated-warning").remove();
-    delay(300, function() {
-      return $("#outdated-warning").remove();
-    });
-    $("#offline-save").click(function() {
-      return saveEditorData(false, function() {
-        return document.location.reload(true);
+    try {
+      d = new Date(_adp.postedSaveTimestamp);
+      alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>\n<button class=\"btn btn-danger\" id=\"offline-trash\">\n  Remove Offline Backup\n</button>";
+      bsAlert(alertHtml, "info");
+      $("#outdated-warning").remove();
+      delay(300, function() {
+        return $("#outdated-warning").remove();
       });
-    });
-    return $("#offline-trash").click(function() {
-      delete localStorage._adp;
-      return $(".hanging-alert").alert("close");
-    });
+      $("#offline-save").click(function() {
+        return saveEditorData(false, function() {
+          return document.location.reload(true);
+        });
+      });
+      return $("#offline-trash").click(function() {
+        delete localStorage._adp;
+        return $(".hanging-alert").alert("close");
+      });
+    } catch (error3) {
+      e = error3;
+      console.warn("Backup corrupted, removing -- " + e.message);
+      return delete localStorage._adp;
+    }
   }
 });
 
