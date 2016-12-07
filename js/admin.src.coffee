@@ -4660,9 +4660,17 @@ saveEditorData = (force = false, callback) ->
         console.warn "We sent a change to public, but it didn't update server-side."
   .fail (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
-    localStorage._adp = JSON.stringify _adp
-    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger"
+    try
+      shadowAdp = _adp
+      delete shadowAdp.currentAsyncJqxhr
+      localStorage._adp = JSON.stringify shadowAdp
+    catch e
+      console.warn "Couldn't backup to local storage! #{e.message}"
+      console.warn e.stack
+      $("#offline-backup-status").replaceWith "Offline backup failed (said: <code>#{e.message}</code>)"
+    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>An offline backup has been made.</span>", "danger"
     console.error result, status
+    console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
   .always ->
     if typeof callback is "function"
       callback()
