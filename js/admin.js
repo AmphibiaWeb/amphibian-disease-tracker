@@ -4622,7 +4622,7 @@ saveEditorData = function(force, callback) {
         bpPathCount += Object.size(multi);
       }
     } catch (undefined) {}
-    tfPathCount = Objects.size(tfPaths);
+    tfPathCount = Object.size(tfPaths);
     try {
       ref4 = tf.data.polys;
       for (q = 0, len3 = ref4.length; q < len3; q++) {
@@ -4735,7 +4735,6 @@ saveEditorData = function(force, callback) {
     }
     bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>" + backupMessage + "</span>", "danger");
     console.error(result, status);
-    console.error("Tried", "" + uri.urlString + adminParams.apiTarget + "?" + args);
     return console.warn("Raw post data", postData);
   }).always(function() {
     if (typeof callback === "function") {

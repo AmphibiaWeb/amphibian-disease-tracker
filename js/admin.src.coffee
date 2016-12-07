@@ -4652,7 +4652,7 @@ saveEditorData = (force = false, callback) ->
     try
       for multi in cd.bounding_polygon.multibounds
         bpPathCount += Object.size multi
-    tfPathCount = Objects.size tfPaths
+    tfPathCount = Object.size tfPaths
     try
       for multi in tf.data.polys
         tfPathCount += Object.size multi
@@ -4737,7 +4737,7 @@ saveEditorData = (force = false, callback) ->
       $("#offline-backup-status").replaceWith backupMessage
     bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>#{backupMessage}</span>", "danger"
     console.error result, status
-    console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+    # console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     console.warn "Raw post data", postData
   .always ->
     if typeof callback is "function"
