@@ -37,7 +37,7 @@ module.exports = (grunt) ->
       npm:
         command: ["npm install", "npm update"].join("&&")
       movesrc:
-        command: ["mv js/c.src.coffee js/maps/c.src.coffee"].join("&&")
+        command: ["mv js/c.src.coffee js/maps/c.src.coffee","mv js/admin.src.coffee js/maps/admin.src.coffee", "mv js/project.src.coffee js/maps/project.src.coffee","mv js/profile.src.coffee js/maps/profile.src.coffee","mv js/kml.src.coffee js/maps/kml.src.coffee","mv js/global-searach.src.coffee js/maps/global-search.src.coffee","mv js/global-search-worker.src.coffee js/maps/global-search-worker.src.coffee"].join("; ")
       updateglobals:
         command: ["npm install -g coffee-script npm-check-updates bower grunt-cli npm autoprefixer-core less"].join("&&")
       vulcanize:

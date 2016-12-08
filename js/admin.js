@@ -2513,7 +2513,7 @@ kmlLoader = function(path, callback) {
    * @param string path -> the  relative path to the file
    * @param function callback -> Callback function to execute
    */
-  var error1, googleMap, jsPath, kmlData, mapData, ref;
+  var error1, error2, googleMap, jsPath, kmlData, mapData, pathJson, ref;
   try {
     if (typeof path === "object") {
       kmlData = path;
@@ -2523,9 +2523,23 @@ kmlLoader = function(path, callback) {
         kmlData = JSON.parse(path);
         path = kmlData.path;
       } catch (error1) {
-        kmlData = {
-          path: path
-        };
+        try {
+          kmlData = JSON.parse(deEscape(path));
+          path = kmlData.path;
+        } catch (error2) {
+          if (path.length > 511) {
+            pathJson = fixTruncatedJson(path);
+            if (typeof pathJson === "object") {
+              kmlData = pathJson;
+              path = kmlData.path;
+            }
+          }
+          if (isNull(kmlData)) {
+            kmlData = {
+              path: path
+            };
+          }
+        }
       }
     }
     console.debug("Loading KML file", path);
@@ -2547,7 +2561,7 @@ kmlLoader = function(path, callback) {
   loadJS(jsPath, function() {
     initializeParser(null, function() {
       loadKML(path, function() {
-        var e, error2, parsedKmlData;
+        var e, error3, parsedKmlData;
         try {
           parsedKmlData = geo.kml.parser.docsByUrl[path];
           if (isNull(parsedKmlData)) {
@@ -2569,8 +2583,8 @@ kmlLoader = function(path, callback) {
             console.info("kmlHandler wasn't given a callback function");
           }
           stopLoad();
-        } catch (error2) {
-          e = error2;
+        } catch (error3) {
+          e = error3;
           allError("There was a importing the data from this KML file");
           console.warn(e.message);
           console.warn(e.stack);
@@ -3396,15 +3410,32 @@ getProjectCartoData = function(cartoObj, mapOptions) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var args, cartoData, cartoTable, error1, getCols, zoom;
+  var args, cartoData, cartoJson, cartoTable, e, err1, error1, error2, getCols, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
     } catch (error1) {
-      console.error("cartoObj must be JSON string or obj, given", cartoObj);
-      console.warn("Cleaned obj:", deEscape(cartoObj));
-      stopLoadError("Couldn't parse data");
-      return false;
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told", err1, e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
     }
   } else {
     cartoData = cartoObj;
@@ -3425,11 +3456,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
   _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, e, error2, filePath, html, k, r, ref, type, v;
+    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, error3, filePath, html, k, r, ref, type, v;
     try {
       r = JSON.parse(result.post_response[0]);
-    } catch (error2) {
-      e = error2;
+    } catch (error3) {
+      e = error3;
       console.error("Couldn't load carto data! (" + e.message + ")", result);
       console.warn("post_response: (want key 0)", result.post_response);
       console.warn("Base data source:", cartoData);
@@ -3461,7 +3492,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var base, base1, center, error, error3, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
+      var base, base1, center, error, error4, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
       console.info("Carto query got result:", result);
       if (!result.status) {
         error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -3485,7 +3516,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       truncateLength = 0 - "</google-map>".length;
       try {
         workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
-      } catch (error3) {
+      } catch (error4) {
         workingMap = "<google-map>";
       }
       pointArr = new Array();
@@ -4532,7 +4563,7 @@ recalculateAndUpdateHull = function(points) {
 };
 
 saveEditorData = function(force, callback) {
-  var args, authorObj, data, el, isChangingPublic, key, l, len, len1, m, postData, ref, ref1, ref2;
+  var args, authorObj, bpPathCount, cd, data, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
   if (force == null) {
     force = false;
   }
@@ -4595,13 +4626,92 @@ saveEditorData = function(force, callback) {
       postData.project_id = _adp.originalProjectId;
     }
   }
+  try {
+
+    /*
+     * POST data craps out with too many points
+     * Known failure at 4584
+     */
+    maxPathCount = 4000;
+    try {
+      cd = JSON.parse(postData.carto_id);
+      paths = cd.bounding_polygon.paths;
+    } catch (error1) {
+      paths = [];
+    }
+    try {
+      tf = JSON.parse(postData.transect_file);
+      tfPaths = tf.data.parameters.paths;
+    } catch (error2) {
+      tfPaths = [];
+    }
+    bpPathCount = Object.size(paths);
+    try {
+      ref3 = cd.bounding_polygon.multibounds;
+      for (o = 0, len2 = ref3.length; o < len2; o++) {
+        multi = ref3[o];
+        bpPathCount += Object.size(multi);
+      }
+    } catch (undefined) {}
+    tfPathCount = Object.size(tfPaths);
+    try {
+      ref4 = tf.data.polys;
+      for (q = 0, len3 = ref4.length; q < len3; q++) {
+        multi = ref4[q];
+        tfPathCount += Object.size(multi);
+      }
+    } catch (undefined) {}
+    pointCount = bpPathCount + tfPathCount;
+    if (pointCount > maxPathCount) {
+      console.warn("Danger: Have " + pointCount + " paths. The recommended max is " + maxPathCount);
+      if (tfPathCount === bpPathCount) {
+        tf.data.parameters.paths = "SEE_BOUNDING_POLY";
+        try {
+          i = 0;
+          ref5 = tf.data.polys;
+          for (u = 0, len4 = ref5.length; u < len4; u++) {
+            pathSet = ref5[u];
+            tf.data.polys[i] = "SEE_BOUNDING_POLY";
+            ++i;
+          }
+        } catch (undefined) {}
+        postData.transect_file = JSON.stringify(tf);
+        tfPathCount = tf.data.parameters.paths.length;
+      }
+      try {
+        cd.bounding_polygon.paths = false;
+        postData.carto_id = JSON.stringify(cd);
+        bpPathCount = 0;
+      } catch (undefined) {}
+      try {
+        ref6 = cd.bounding_polygon.multibounds;
+        for (w = 0, len5 = ref6.length; w < len5; w++) {
+          multi = ref6[w];
+          bpPathCount += Object.size(multi);
+        }
+      } catch (undefined) {}
+      try {
+        ref7 = tf.data.polys;
+        for (x = 0, len6 = ref7.length; x < len6; x++) {
+          multi = ref7[x];
+          tfPathCount += Object.size(multi);
+        }
+      } catch (undefined) {}
+      pointCount = bpPathCount + tfPathCount;
+      console.debug("Shrunk to reduced data size " + pointCount + ". May have compatability errors.");
+    }
+  } catch (error3) {
+    e = error3;
+    console.error("Couldn't check path count -- " + e.message + ". Faking it.");
+    pointCount = maxPathCount + 1;
+  }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, newStatus, ref3, ref4;
+    var error, newStatus, ref8, ref9;
     console.info("Save result: server said", result);
     if (result.status !== true) {
-      error = (ref3 = (ref4 = result.human_error) != null ? ref4 : result.error) != null ? ref3 : "There was an error saving to the server";
+      error = (ref8 = (ref9 = result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was an error saving to the server";
       stopLoadError("There was an error saving to the server");
       localStorage._adp = JSON.stringify(_adp);
       bsAlert("<strong>Save Error:</strong> " + error + ". An offline backup has been made.", "danger");
@@ -4622,10 +4732,41 @@ saveEditorData = function(force, callback) {
       }
     }
   }).fail(function(result, status) {
+    var backupMessage, error4, shadowAdp;
     stopLoadError("Sorry, there was an error communicating with the server");
-    localStorage._adp = JSON.stringify(_adp);
-    bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger");
-    return console.error(result, status);
+    try {
+      shadowAdp = _adp;
+      delete shadowAdp.currentAsyncJqxhr;
+      if (pointCount > maxPathCount) {
+        try {
+          tf = JSON.parse(shadowAdp.projectData.transect_file);
+          tf.data.parameters.paths = "REMOVED_FOR_LOCAL_SAVE";
+          tf.data.polys = "REMOVED_FOR_LOCAL_SAVE";
+          shadowAdp.projectData.transect_file = JSON.stringify(tf);
+        } catch (undefined) {}
+      }
+      localStorage._adp = JSON.stringify(shadowAdp);
+      console.debug("Local storage backup succeeded");
+      backupMessage = "An offline backup has been made.";
+    } catch (error4) {
+      e = error4;
+      console.warn("Couldn't backup to local storage! " + e.message);
+      console.warn(e.stack);
+      backupMessage = "Offline backup failed (said: <code>" + e.message + "</code>)";
+      delay(250, function() {
+        delete shadowAdp.currentAsyncJqxhr;
+        delete _adp.currentAsyncJqxhr;
+        try {
+          localStorage._adp = JSON.stringify(_adp);
+          backupMessage = "An offline backup has been made.";
+          return $("#offline-backup-status").replaceWith(backupMessage);
+        } catch (undefined) {}
+      });
+      $("#offline-backup-status").replaceWith(backupMessage);
+    }
+    bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>" + backupMessage + "</span>", "danger");
+    console.error(result, status);
+    return console.warn("Raw post data", postData);
   }).always(function() {
     if (typeof callback === "function") {
       return callback();
@@ -4635,7 +4776,7 @@ saveEditorData = function(force, callback) {
 };
 
 $(function() {
-  var alertHtml, bupid, d, error1;
+  var alertHtml, bupid, d, e, error1, error2, error3;
   try {
     _adp.originalProjectId = _adp.projectData.project_id;
     bupid = _adp.projectData.project_id;
@@ -4651,26 +4792,38 @@ $(function() {
     });
   }
   if (localStorage._adp != null) {
-    window._adp = JSON.parse(localStorage._adp);
+    try {
+      window._adp = JSON.parse(localStorage._adp);
+    } catch (error2) {
+      if (window._adp == null) {
+        window._adp = new Object();
+      }
+    }
     try {
       _adp.originalProjectId = bupid;
     } catch (undefined) {}
-    d = new Date(_adp.postedSaveTimestamp);
-    alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>\n<button class=\"btn btn-danger\" id=\"offline-trash\">\n  Remove Offline Backup\n</button>";
-    bsAlert(alertHtml, "info");
-    $("#outdated-warning").remove();
-    delay(300, function() {
-      return $("#outdated-warning").remove();
-    });
-    $("#offline-save").click(function() {
-      return saveEditorData(false, function() {
-        return document.location.reload(true);
+    try {
+      d = new Date(_adp.postedSaveTimestamp);
+      alertHtml = "<strong>You have offline save information</strong> &#8212; did you want to save it?\n<br/><br/>\nProject #" + _adp.postedSaveData.project_id + " on " + (d.toLocaleDateString()) + " at " + (d.toLocaleTimeString()) + "\n<br/><br/>\n<button class=\"btn btn-success\" id=\"offline-save\">\n  Save Now &amp; Refresh Page\n</button>\n<button class=\"btn btn-danger\" id=\"offline-trash\">\n  Remove Offline Backup\n</button>";
+      bsAlert(alertHtml, "info");
+      $("#outdated-warning").remove();
+      delay(300, function() {
+        return $("#outdated-warning").remove();
       });
-    });
-    return $("#offline-trash").click(function() {
-      delete localStorage._adp;
-      return $(".hanging-alert").alert("close");
-    });
+      $("#offline-save").click(function() {
+        return saveEditorData(false, function() {
+          return document.location.reload(true);
+        });
+      });
+      return $("#offline-trash").click(function() {
+        delete localStorage._adp;
+        return $(".hanging-alert").alert("close");
+      });
+    } catch (error3) {
+      e = error3;
+      console.warn("Backup corrupted, removing -- " + e.message);
+      return delete localStorage._adp;
+    }
   }
 });
 

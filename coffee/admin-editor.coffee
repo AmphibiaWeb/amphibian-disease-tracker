@@ -28,8 +28,19 @@ kmlLoader = (path, callback) ->
         kmlData = JSON.parse path
         path = kmlData.path
       catch
-        kmlData =
-          path: path
+        try
+          kmlData = JSON.parse deEscape path
+          path = kmlData.path
+        catch
+          if path.length > 511
+            # Might be broken?
+            pathJson = fixTruncatedJson path
+            if typeof pathJson is "object"
+              kmlData = pathJson
+              path = kmlData.path
+          if isNull kmlData
+            kmlData =
+              path: path
     console.debug "Loading KML file", path
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
@@ -1061,11 +1072,22 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   unless typeof cartoObj is "object"
     try
       cartoData = JSON.parse deEscape cartoObj
-    catch
-      console.error "cartoObj must be JSON string or obj, given", cartoObj
-      console.warn "Cleaned obj:", deEscape cartoObj
-      stopLoadError "Couldn't parse data"
-      return false
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told", err1, e.message
+          stopLoadError "Couldn't parse data"
+          return false
   else
     cartoData = cartoObj
   cartoTable = cartoData.table
@@ -2221,6 +2243,57 @@ saveEditorData = (force = false, callback) ->
     if _adp.originalProjectId isnt _adp.projectId
       console.warn "Mismatched IDs!", _adp.originalProjectId, _adp.projectId
       postData.project_id = _adp.originalProjectId
+  try
+    ###
+    # POST data craps out with too many points
+    # Known failure at 4584
+    ###
+    maxPathCount = 4000
+    try
+      cd = JSON.parse postData.carto_id
+      paths = cd.bounding_polygon.paths
+    catch
+      paths = []
+    try
+      tf = JSON.parse postData.transect_file
+      tfPaths = tf.data.parameters.paths
+    catch
+      tfPaths = []
+    bpPathCount = Object.size paths
+    try
+      for multi in cd.bounding_polygon.multibounds
+        bpPathCount += Object.size multi
+    tfPathCount = Object.size tfPaths
+    try
+      for multi in tf.data.polys
+        tfPathCount += Object.size multi
+    pointCount = bpPathCount + tfPathCount
+    if pointCount > maxPathCount
+      console.warn "Danger: Have #{pointCount} paths. The recommended max is #{maxPathCount}"
+      if tfPathCount is bpPathCount
+        tf.data.parameters.paths = "SEE_BOUNDING_POLY"
+        try
+          i = 0
+          for pathSet in tf.data.polys
+            tf.data.polys[i] = "SEE_BOUNDING_POLY"
+            ++i
+        postData.transect_file = JSON.stringify tf
+        tfPathCount = tf.data.parameters.paths.length
+      try
+        cd.bounding_polygon.paths = false
+        postData.carto_id = JSON.stringify cd
+        bpPathCount = 0
+      try
+        for multi in cd.bounding_polygon.multibounds
+          bpPathCount += Object.size multi
+      try
+        for multi in tf.data.polys
+          tfPathCount += Object.size multi
+      pointCount = bpPathCount + tfPathCount
+      console.debug "Shrunk to reduced data size #{pointCount}. May have compatability errors."
+  catch e
+    console.error "Couldn't check path count -- #{e.message}. Faking it."
+    pointCount = maxPathCount + 1
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
@@ -2249,9 +2322,34 @@ saveEditorData = (force = false, callback) ->
         console.warn "We sent a change to public, but it didn't update server-side."
   .fail (result, status) ->
     stopLoadError "Sorry, there was an error communicating with the server"
-    localStorage._adp = JSON.stringify _adp
-    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. An offline backup has been made.", "danger"
+    try
+      shadowAdp = _adp
+      delete shadowAdp.currentAsyncJqxhr
+      if pointCount > maxPathCount
+        try
+          tf = JSON.parse shadowAdp.projectData.transect_file
+          tf.data.parameters.paths = "REMOVED_FOR_LOCAL_SAVE"
+          tf.data.polys = "REMOVED_FOR_LOCAL_SAVE"
+          shadowAdp.projectData.transect_file = JSON.stringify tf
+      localStorage._adp = JSON.stringify shadowAdp
+      console.debug "Local storage backup succeeded"
+      backupMessage = "An offline backup has been made."
+    catch e
+      console.warn "Couldn't backup to local storage! #{e.message}"
+      console.warn e.stack
+      backupMessage = "Offline backup failed (said: <code>#{e.message}</code>)"
+      delay 250, ->
+        delete shadowAdp.currentAsyncJqxhr
+        delete _adp.currentAsyncJqxhr
+        try
+          localStorage._adp = JSON.stringify _adp
+          backupMessage = "An offline backup has been made."
+          $("#offline-backup-status").replaceWith backupMessage
+      $("#offline-backup-status").replaceWith backupMessage
+    bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>#{backupMessage}</span>", "danger"
     console.error result, status
+    # console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
+    console.warn "Raw post data", postData
   .always ->
     if typeof callback is "function"
       callback()
@@ -2272,29 +2370,36 @@ $ ->
       catch
         console.warn "Warning: COuldn't backup project id"
   if localStorage._adp?
-    window._adp = JSON.parse localStorage._adp
+    try
+      window._adp = JSON.parse localStorage._adp
+    catch
+      window._adp ?= new Object()
     try
       _adp.originalProjectId = bupid
-    d = new Date _adp.postedSaveTimestamp
-    alertHtml = """
-    <strong>You have offline save information</strong> &#8212; did you want to save it?
-    <br/><br/>
-    Project ##{_adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
-    <br/><br/>
-    <button class="btn btn-success" id="offline-save">
-      Save Now &amp; Refresh Page
-    </button>
-    <button class="btn btn-danger" id="offline-trash">
-      Remove Offline Backup
-    </button>
-    """
-    bsAlert alertHtml, "info"
-    $("#outdated-warning").remove()
-    delay 300, ->
+    try
+      d = new Date _adp.postedSaveTimestamp
+      alertHtml = """
+      <strong>You have offline save information</strong> &#8212; did you want to save it?
+      <br/><br/>
+      Project ##{_adp.postedSaveData.project_id} on #{d.toLocaleDateString()} at #{d.toLocaleTimeString()}
+      <br/><br/>
+      <button class="btn btn-success" id="offline-save">
+        Save Now &amp; Refresh Page
+      </button>
+      <button class="btn btn-danger" id="offline-trash">
+        Remove Offline Backup
+      </button>
+      """
+      bsAlert alertHtml, "info"
       $("#outdated-warning").remove()
-    $("#offline-save").click ->
-      saveEditorData false,  ->
-        document.location.reload(true)
-    $("#offline-trash").click ->
+      delay 300, ->
+        $("#outdated-warning").remove()
+      $("#offline-save").click ->
+        saveEditorData false,  ->
+          document.location.reload(true)
+      $("#offline-trash").click ->
+        delete localStorage._adp
+        $(".hanging-alert").alert("close")
+    catch e
+      console.warn "Backup corrupted, removing -- #{e.message}"
       delete localStorage._adp
-      $(".hanging-alert").alert("close")

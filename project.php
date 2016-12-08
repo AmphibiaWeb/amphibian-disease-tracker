@@ -225,6 +225,9 @@ $loginStatus = getLoginState();
                    $polyColor = '#ff7800';
                    # Depending on the type of data stored, it could be
                    # in paths or not
+                   if(toBool($bpoly['paths']) === false && !empty($bpoly["multibounds"])) {
+                     $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
+                   }
                    $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
                  } else {
                    # Private

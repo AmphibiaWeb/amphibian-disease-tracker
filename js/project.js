@@ -233,6 +233,11 @@ renderMapWithData = function(projectData, force) {
     return false;
   }
   try {
+    try {
+      if (cartoData.bounding_polygon.paths.toBool() === false && !isNull(cartoData.bounding_polygon.multibounds)) {
+        cartoData.bounding_polygon.paths = cartoData.bounding_polygon.multibounds[0];
+      }
+    } catch (undefined) {}
     zoomPaths = (ref = cartoData.bounding_polygon.paths) != null ? ref : cartoData.bounding_polygon;
     zoom = getMapZoom(zoomPaths, "#transect-viewport");
     console.info("Got zoom", zoom);
