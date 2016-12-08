@@ -1311,7 +1311,8 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js", callback) ->
     $.get("#{uri.urlString}meta.php","do=get_last_mod&file=#{filePath}","json")
     .done (result) ->
       if forceNow
-        console.log("Forced version check:",result)
+        # console.log("Forced version check:",result)
+        doNothing()
       unless isNumber result.last_mod
         return false
       unless _adp.lastMod?
@@ -1332,7 +1333,8 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js", callback) ->
             document.location.reload(true)
         console.warn "Your current version of this page is out of date! Please refresh the page."
       else if forceNow
-        console.info "Your version of this page is up to date: have #{window._adp.lastMod[modKey]}, got #{result.last_mod}"
+        doNothing()
+        # console.info "Your version of this page is up to date: have #{window._adp.lastMod[modKey]}, got #{result.last_mod}"
     .fail ->
       console.warn("Couldn't check file version!!")
     .always ->
@@ -1377,6 +1379,9 @@ checkLoggedIn = (callback) ->
     callback(response)
   false
 
+
+doNothing = ->
+  return null
 
 
 downloadCSVFile = (data, options, callback) ->
