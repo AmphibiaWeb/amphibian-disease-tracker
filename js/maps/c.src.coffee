@@ -1355,6 +1355,41 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js", callback) ->
 window.checkFileVersion = checkFileVersion
 
 
+fixTruncatedJson = (str) ->
+  # Converted from
+  # https://gist.github.com/kekscom/10925007
+  json = str
+  chunk = json
+  q = false
+  m = false
+  stack = []
+  while m = chunk.match /[^\{\[\]\}"]*([\{\[\]\}"])/
+    switch m[1]
+      when "{"
+        stack.push "}"
+      when "["
+        stack.push "]"
+      when "}", "]"
+        stack.pop()
+      when '"'
+        unless q
+          q = true
+          stack.push '"'
+        else
+          q = false
+          stack.pop()
+    chunk = chunk.substring m[0].length
+    # End stack builder
+  if chunk[chunk.length - 1] is ":"
+    json += '""'
+
+  while stack.length
+    json += stack.pop()
+  try
+    return JSON.parse json
+  catch
+    return false
+
 
 checkLoggedIn = (callback) ->
   ###

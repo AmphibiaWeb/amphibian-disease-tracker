@@ -2439,8 +2439,19 @@ kmlLoader = (path, callback) ->
         kmlData = JSON.parse path
         path = kmlData.path
       catch
-        kmlData =
-          path: path
+        try
+          kmlData = JSON.parse deEscape path
+          path = kmlData.path
+        catch
+          if path.length > 511
+            # Might be broken?
+            pathJson = fixTruncatedJson path
+            if typeof pathJson is "object"
+              kmlData = pathJson
+              path = kmlData.path
+          if isNull kmlData
+            kmlData =
+              path: path
     console.debug "Loading KML file", path
   geo.inhibitKMLInit = true
   jsPath = if isNull(_adp?.lastMod?.kml) then "js/kml.min.js" else "js/kml.min.js?t=#{_adp.lastMod.kml}"
@@ -3472,11 +3483,22 @@ getProjectCartoData = (cartoObj, mapOptions) ->
   unless typeof cartoObj is "object"
     try
       cartoData = JSON.parse deEscape cartoObj
-    catch
-      console.error "cartoObj must be JSON string or obj, given", cartoObj
-      console.warn "Cleaned obj:", deEscape cartoObj
-      stopLoadError "Couldn't parse data"
-      return false
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told", err1, e.message
+          stopLoadError "Couldn't parse data"
+          return false
   else
     cartoData = cartoObj
   cartoTable = cartoData.table

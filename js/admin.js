@@ -2513,7 +2513,7 @@ kmlLoader = function(path, callback) {
    * @param string path -> the  relative path to the file
    * @param function callback -> Callback function to execute
    */
-  var error1, googleMap, jsPath, kmlData, mapData, ref;
+  var error1, error2, googleMap, jsPath, kmlData, mapData, pathJson, ref;
   try {
     if (typeof path === "object") {
       kmlData = path;
@@ -2523,9 +2523,23 @@ kmlLoader = function(path, callback) {
         kmlData = JSON.parse(path);
         path = kmlData.path;
       } catch (error1) {
-        kmlData = {
-          path: path
-        };
+        try {
+          kmlData = JSON.parse(deEscape(path));
+          path = kmlData.path;
+        } catch (error2) {
+          if (path.length > 511) {
+            pathJson = fixTruncatedJson(path);
+            if (typeof pathJson === "object") {
+              kmlData = pathJson;
+              path = kmlData.path;
+            }
+          }
+          if (isNull(kmlData)) {
+            kmlData = {
+              path: path
+            };
+          }
+        }
       }
     }
     console.debug("Loading KML file", path);
@@ -2547,7 +2561,7 @@ kmlLoader = function(path, callback) {
   loadJS(jsPath, function() {
     initializeParser(null, function() {
       loadKML(path, function() {
-        var e, error2, parsedKmlData;
+        var e, error3, parsedKmlData;
         try {
           parsedKmlData = geo.kml.parser.docsByUrl[path];
           if (isNull(parsedKmlData)) {
@@ -2569,8 +2583,8 @@ kmlLoader = function(path, callback) {
             console.info("kmlHandler wasn't given a callback function");
           }
           stopLoad();
-        } catch (error2) {
-          e = error2;
+        } catch (error3) {
+          e = error3;
           allError("There was a importing the data from this KML file");
           console.warn(e.message);
           console.warn(e.stack);
@@ -3396,15 +3410,32 @@ getProjectCartoData = function(cartoObj, mapOptions) {
    *
    * @param string|Object cartoObj -> the (JSON formatted) carto data blob.
    */
-  var args, cartoData, cartoTable, error1, getCols, zoom;
+  var args, cartoData, cartoJson, cartoTable, e, err1, error1, error2, getCols, zoom;
   if (typeof cartoObj !== "object") {
     try {
       cartoData = JSON.parse(deEscape(cartoObj));
     } catch (error1) {
-      console.error("cartoObj must be JSON string or obj, given", cartoObj);
-      console.warn("Cleaned obj:", deEscape(cartoObj));
-      stopLoadError("Couldn't parse data");
-      return false;
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told", err1, e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
     }
   } else {
     cartoData = cartoObj;
@@ -3425,11 +3456,11 @@ getProjectCartoData = function(cartoObj, mapOptions) {
   getCols = "SELECT * FROM " + cartoTable + " WHERE FALSE";
   args = "action=fetch&sql_query=" + (post64(getCols));
   _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, e, error2, filePath, html, k, r, ref, type, v;
+    var apiPostSqlQuery, cartoQuery, col, colRemap, cols, colsArr, error3, filePath, html, k, r, ref, type, v;
     try {
       r = JSON.parse(result.post_response[0]);
-    } catch (error2) {
-      e = error2;
+    } catch (error3) {
+      e = error3;
       console.error("Couldn't load carto data! (" + e.message + ")", result);
       console.warn("post_response: (want key 0)", result.post_response);
       console.warn("Base data source:", cartoData);
@@ -3461,7 +3492,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
     apiPostSqlQuery = encodeURIComponent(encode64(cartoQuery));
     args = "action=fetch&sql_query=" + apiPostSqlQuery;
     _adp.currentAsyncJqxhr = $.post("api.php", args, "json").done(function(result) {
-      var base, base1, center, error, error3, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
+      var base, base1, center, error, error4, geoJson, i, infoWindow, lat, lng, marker, note, point, pointArr, realCol, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rows, taxa, totalRows, truncateLength, val, workingMap;
       console.info("Carto query got result:", result);
       if (!result.status) {
         error = (ref1 = result.human_error) != null ? ref1 : result.error;
@@ -3485,7 +3516,7 @@ getProjectCartoData = function(cartoObj, mapOptions) {
       truncateLength = 0 - "</google-map>".length;
       try {
         workingMap = geo.googleMapWebComponent.slice(0, truncateLength);
-      } catch (error3) {
+      } catch (error4) {
         workingMap = "<google-map>";
       }
       pointArr = new Array();
