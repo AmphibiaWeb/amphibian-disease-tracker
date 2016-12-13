@@ -2248,7 +2248,7 @@ saveEditorData = (force = false, callback) ->
     # POST data craps out with too many points
     # Known failure at 4594*4
     ###
-    maxPathCount = 5000
+    maxPathCount = 4000
     try
       cd = JSON.parse postData.carto_id
       paths = cd.bounding_polygon.paths
@@ -2350,6 +2350,7 @@ saveEditorData = (force = false, callback) ->
     console.error result, status
     # console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     console.warn "Raw post data", postData
+    console.warn "args length was '#{args.length}'"
   .always ->
     if typeof callback is "function"
       callback()

@@ -1749,7 +1749,28 @@ kmlHandler = (path, callback) ->
             geo.canonicalBoundingBox = boundingPolygon
             unless isNull _adp?.projectData
               try
-                cartoDataParsed = JSON.parse _adp.projectData.carto_id
+                cartoObj = _adp.projectData.carto_id
+                unless typeof cartoObj is "object"
+                  try
+                    cartoDataParsed = JSON.parse deEscape cartoObj
+                  catch e
+                    err1 = e.message
+                    try
+                      cartoDataParsed = JSON.parse cartoObj
+                    catch e
+                      if cartoObj.length > 511
+                        cartoJson = fixTruncatedJson cartoObj
+                        if typeof cartoJson is "object"
+                          console.debug "The carto data object was truncated, but rebuilt."
+                          cartoDataParsed = cartoJson
+                      if isNull cartoDataParsed
+                        console.error "cartoObj must be JSON string or obj, given", cartoObj
+                        console.warn "Cleaned obj:", deEscape cartoObj
+                        console.warn "Told '#{err1}' then", e.message
+                        stopLoadError "Couldn't parse data"
+                        return false
+                else
+                  cartoDataParsed = cartoObj
                 cartoDataParsed.bounding_polygon = boundingPolygon
                 _adp.projectData.carto_id = JSON.stringify cartoDataParsed
               catch e
