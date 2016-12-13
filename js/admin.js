@@ -4738,12 +4738,12 @@ saveEditorData = function(force, callback) {
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
-  _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json");
   debugInfoDelay = delay(10000, function() {
     console.warn("POST may have hung after 10 seconds");
     console.warn("args length was '" + args.length + "' = " + (args.length * 8) + " bytes");
     return false;
-  }).done(function(result) {
+  });
+  _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
     var error, newStatus, ref8, ref9;
     console.info("Save result: server said", result);
     if (result.status !== true) {

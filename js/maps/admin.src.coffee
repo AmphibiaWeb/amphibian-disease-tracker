@@ -4730,11 +4730,11 @@ saveEditorData = (force = false, callback) ->
     pointCount = maxPathCount + 1
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
-  _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   debugInfoDelay = delay 10000, ->
     console.warn "POST may have hung after 10 seconds"
     console.warn "args length was '#{args.length}' = #{args.length * 8} bytes"
     false
+  _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.info "Save result: server said", result
     unless result.status is true
@@ -4787,7 +4787,7 @@ saveEditorData = (force = false, callback) ->
     bsAlert "<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>#{backupMessage}</span>", "danger"
     console.error result, status
     # console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
-    console.warn "Raw post data", postData    
+    console.warn "Raw post data", postData
     console.warn "args length was '#{args.length}' = #{args.length * 8} bytes"
   .always ->
     clearTimeout debugInfoDelay
