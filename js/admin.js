@@ -4741,7 +4741,7 @@ saveEditorData = function(force, callback) {
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json");
   debugInfoDelay = delay(10000, function() {
     console.warn("POST may have hung after 10 seconds");
-    console.warn("args length was '" + args.length + "'");
+    console.warn("args length was '" + args.length + "' = " + (args.length * 8) + " bytes");
     return false;
   }).done(function(result) {
     var error, newStatus, ref8, ref9;
@@ -4803,7 +4803,7 @@ saveEditorData = function(force, callback) {
     bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>" + backupMessage + "</span>", "danger");
     console.error(result, status);
     console.warn("Raw post data", postData);
-    return console.warn("args length was '" + args.length + "'");
+    return console.warn("args length was '" + args.length + "' = " + (args.length * 8) + " bytes");
   }).always(function() {
     clearTimeout(debugInfoDelay);
     if (typeof callback === "function") {

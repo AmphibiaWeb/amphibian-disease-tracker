@@ -1714,7 +1714,7 @@ allError = function(message) {
 };
 
 checkFileVersion = function(forceNow, file, callback) {
-  var checkVersion, error2, key, keyExists;
+  var checkVersion, error2, error3, key, keyExists;
   if (forceNow == null) {
     forceNow = false;
   }
@@ -1728,6 +1728,12 @@ checkFileVersion = function(forceNow, file, callback) {
    *
    * @param bool forceNow force a check now
    */
+  if ((typeof _adp !== "undefined" && _adp !== null ? _adp.lastModChecked : void 0) == null) {
+    if (window._adp == null) {
+      window._adp = new Object();
+    }
+    window._adp.lastModChecked = new Object();
+  }
   key = file.split("/").pop().split(".")[0];
   checkVersion = function(filePath, modKey) {
     if (filePath == null) {
@@ -1738,6 +1744,7 @@ checkFileVersion = function(forceNow, file, callback) {
     }
     return $.get(uri.urlString + "meta.php", "do=get_last_mod&file=" + filePath, "json").done(function(result) {
       var html;
+      window._adp.lastModChecked[modKey] = Date.now();
       if (forceNow) {
         doNothing();
       }
@@ -1779,7 +1786,13 @@ checkFileVersion = function(forceNow, file, callback) {
     keyExists = false;
   }
   if (forceNow || (window._adp.lastMod == null) || !keyExists) {
-    checkVersion(file, key);
+    try {
+      if (!((Date.now() - toInt(window._adp.lastModChecked[key])) < (15 * 1000))) {
+        checkVersion(file, key);
+      }
+    } catch (error3) {
+      checkVersion(file, key);
+    }
     return true;
   }
   return false;
