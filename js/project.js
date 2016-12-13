@@ -171,7 +171,7 @@ showEmailField = function(email) {
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, showKml, title, tmp, usedPoints, zoom, zoomPaths;
+  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoJson, cartoObj, cartoQuery, cartoTable, data, downloadButton, e, err1, error1, error2, error3, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, showKml, title, tmp, usedPoints, zoom, zoomPaths;
   if (force == null) {
     force = false;
   }
@@ -189,7 +189,36 @@ renderMapWithData = function(projectData, force) {
     showKml();
     return false;
   }
-  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoObj = projectData.carto_id;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(deEscape(cartoObj));
+    } catch (error1) {
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told", err1, e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
+    }
+  } else {
+    cartoData = cartoObj;
+  }
   _adp.cartoDataParsed = cartoData;
   raw = cartoData.raw_data;
   if (isNull(raw)) {
@@ -241,7 +270,7 @@ renderMapWithData = function(projectData, force) {
     zoomPaths = (ref = cartoData.bounding_polygon.paths) != null ? ref : cartoData.bounding_polygon;
     zoom = getMapZoom(zoomPaths, "#transect-viewport");
     console.info("Got zoom", zoom);
-  } catch (error1) {
+  } catch (error3) {
     zoom = "";
   }
   poly = cartoData.bounding_polygon;
@@ -483,7 +512,7 @@ renderMapWithData = function(projectData, force) {
         return copyFn(zcClient);
       });
       copyFn = function(zcClient, zcEvent) {
-        var clip, e, error2;
+        var clip, error4;
         if (zcClient == null) {
           zcClient = zcClientInitial;
         }
@@ -495,8 +524,8 @@ renderMapWithData = function(projectData, force) {
           document.dispatchEvent(clip);
           toastStatusMessage("ARK resolver path copied to clipboard");
           return false;
-        } catch (error2) {
-          e = error2;
+        } catch (error4) {
+          e = error4;
           console.error("Error creating copy: " + e.message);
           console.warn(e.stack);
           console.warn("Can't use HTML5");
@@ -585,7 +614,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
    *   authorized lookup
    * @param object authorizationDetails -> the permissions object
    */
-  var adminButton, authorData, cartoData, editButton;
+  var adminButton, authorData, cartoData, cartoJson, cartoObj, e, editButton, err1, error1, error2;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -601,7 +630,36 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   authorData = JSON.parse(projectData.author_data);
   showEmailField(authorData.contact_email);
   bindClicks(".authorized-action");
-  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoObj = projectData.carto_id;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(deEscape(cartoObj));
+    } catch (error1) {
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told", err1, e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
+    }
+  } else {
+    cartoData = cartoObj;
+  }
   renderMapWithData(projectData);
   try {
     prepParsedDataDownload(projectData);
@@ -967,7 +1025,7 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
 };
 
 prepParsedDataDownload = function(projectData) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, d, options, parseableData;
+  var apiPostSqlQuery, args, cartoData, cartoJson, cartoObj, cartoQuery, cartoTable, d, e, err1, error1, error2, options, parseableData;
   d = new Date();
   options = {
     selector: "#data-download-buttons",
@@ -977,7 +1035,36 @@ prepParsedDataDownload = function(projectData) {
     downloadFile: "datalist-" + projectData.project_id + "-" + (d.toISOString()) + ".csv"
   };
   parseableData = new Object();
-  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoObj = projectData.carto_id;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(deEscape(cartoObj));
+    } catch (error1) {
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told", err1, e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
+    }
+  } else {
+    cartoData = cartoObj;
+  }
   cartoTable = cartoData.table;
   if (isNull(cartoTable)) {
     console.warn("WARNING: This project has no data associated with it. Not creating download.");
@@ -989,7 +1076,7 @@ prepParsedDataDownload = function(projectData) {
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   _adp.dataPoints = new Array();
   $.post("api.php", args, "json").done(function(result) {
-    var col, coordObj, data, dataObj, error, error1, fims, geoJson, k, lat, lng, pTmp, ref, row, rows;
+    var col, coordObj, data, dataObj, error, error3, fims, geoJson, k, lat, lng, pTmp, ref, row, rows;
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
       if (error == null) {
@@ -1017,7 +1104,7 @@ prepParsedDataDownload = function(projectData) {
       try {
         try {
           fims = JSON.parse(row.fimsextra);
-        } catch (error1) {
+        } catch (error3) {
           fims = row.fimsextra;
         }
         if (typeof fims === "object") {

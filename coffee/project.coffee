@@ -183,7 +183,28 @@ renderMapWithData = (projectData, force = false) ->
     console.warn "Carto: The map was asked to be rendered again, but it has already been rendered!"
     showKml()
     return false
-  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoObj = projectData.carto_id
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse deEscape cartoObj
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told", err1, e.message
+          stopLoadError "Couldn't parse data"
+          return false
+  else
+    cartoData = cartoObj
   _adp.cartoDataParsed = cartoData
   raw = cartoData.raw_data
   if isNull raw
@@ -582,7 +603,28 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   authorData = JSON.parse projectData.author_data
   showEmailField authorData.contact_email
   bindClicks(".authorized-action")
-  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoObj = projectData.carto_id
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse deEscape cartoObj
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told", err1, e.message
+          stopLoadError "Couldn't parse data"
+          return false
+  else
+    cartoData = cartoObj
   renderMapWithData(projectData) # Stops load
   try
     prepParsedDataDownload projectData
@@ -924,7 +966,28 @@ prepParsedDataDownload = (projectData) ->
     downloadFile: "datalist-#{projectData.project_id}-#{d.toISOString()}.csv"
   parseableData = new Object()
   # Ping carto for full dataset
-  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoObj = projectData.carto_id
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse deEscape cartoObj
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told", err1, e.message
+          stopLoadError "Couldn't parse data"
+          return false
+  else
+    cartoData = cartoObj
   cartoTable = cartoData.table
   if isNull cartoTable
     console.warn "WARNING: This project has no data associated with it. Not creating download."
