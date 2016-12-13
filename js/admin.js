@@ -4594,7 +4594,7 @@ recalculateAndUpdateHull = function(points) {
 };
 
 saveEditorData = function(force, callback) {
-  var args, authorObj, bpPathCount, cd, data, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
+  var args, authorObj, bpPathCount, cd, data, debugInfoDelay, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
   if (force == null) {
     force = false;
   }
@@ -4738,7 +4738,12 @@ saveEditorData = function(force, callback) {
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
-  _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
+  _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json");
+  debugInfoDelay = delay(10000, function() {
+    console.warn("POST may have hung after 10 seconds");
+    console.warn("args length was '" + args.length + "'");
+    return false;
+  }).done(function(result) {
     var error, newStatus, ref8, ref9;
     console.info("Save result: server said", result);
     if (result.status !== true) {
@@ -4800,6 +4805,7 @@ saveEditorData = function(force, callback) {
     console.warn("Raw post data", postData);
     return console.warn("args length was '" + args.length + "'");
   }).always(function() {
+    clearTimeout(debugInfoDelay);
     if (typeof callback === "function") {
       return callback();
     }

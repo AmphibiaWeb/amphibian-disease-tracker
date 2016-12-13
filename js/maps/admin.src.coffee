@@ -4731,6 +4731,10 @@ saveEditorData = (force = false, callback) ->
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
+  debugInfoDelay = delay 10000, ->
+    console.warn "POST may have hung after 10 seconds"
+    console.warn "args length was '#{args.length}'"
+    false
   .done (result) ->
     console.info "Save result: server said", result
     unless result.status is true
@@ -4786,6 +4790,7 @@ saveEditorData = (force = false, callback) ->
     console.warn "Raw post data", postData
     console.warn "args length was '#{args.length}'"
   .always ->
+    clearTimeout debugInfoDelay
     if typeof callback is "function"
       callback()
   false
