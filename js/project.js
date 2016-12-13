@@ -210,7 +210,7 @@ renderMapWithData = function(projectData, force) {
         if (isNull(cartoData)) {
           console.error("cartoObj must be JSON string or obj, given", cartoObj);
           console.warn("Cleaned obj:", deEscape(cartoObj));
-          console.warn("Told", err1, e.message);
+          console.warn("Told '" + err1 + "' then", e.message);
           stopLoadError("Couldn't parse data");
           return false;
         }
@@ -651,7 +651,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
         if (isNull(cartoData)) {
           console.error("cartoObj must be JSON string or obj, given", cartoObj);
           console.warn("Cleaned obj:", deEscape(cartoObj));
-          console.warn("Told", err1, e.message);
+          console.warn("Told '" + err1 + "' then", e.message);
           stopLoadError("Couldn't parse data");
           return false;
         }
@@ -1056,7 +1056,7 @@ prepParsedDataDownload = function(projectData) {
         if (isNull(cartoData)) {
           console.error("cartoObj must be JSON string or obj, given", cartoObj);
           console.warn("Cleaned obj:", deEscape(cartoObj));
-          console.warn("Told", err1, e.message);
+          console.warn("Told '" + err1 + "' then", e.message);
           stopLoadError("Couldn't parse data");
           return false;
         }

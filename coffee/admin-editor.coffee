@@ -2246,9 +2246,9 @@ saveEditorData = (force = false, callback) ->
   try
     ###
     # POST data craps out with too many points
-    # Known failure at 4584
+    # Known failure at 4594*4
     ###
-    maxPathCount = 4000
+    maxPathCount = 5000
     try
       cd = JSON.parse postData.carto_id
       paths = cd.bounding_polygon.paths

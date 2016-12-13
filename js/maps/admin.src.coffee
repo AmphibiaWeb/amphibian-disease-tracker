@@ -1753,6 +1753,8 @@ kmlHandler = (path, callback) ->
                 cartoDataParsed.bounding_polygon = boundingPolygon
                 _adp.projectData.carto_id = JSON.stringify cartoDataParsed
               catch e
+                console.error e.message
+                console.warn e.stack
                 allError "Warning: there may have been a problem saving your carto data"
 
           catch e
@@ -4657,9 +4659,9 @@ saveEditorData = (force = false, callback) ->
   try
     ###
     # POST data craps out with too many points
-    # Known failure at 4584
+    # Known failure at 4594*4
     ###
-    maxPathCount = 4000
+    maxPathCount = 5000
     try
       cd = JSON.parse postData.carto_id
       paths = cd.bounding_polygon.paths

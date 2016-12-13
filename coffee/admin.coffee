@@ -1753,6 +1753,8 @@ kmlHandler = (path, callback) ->
                 cartoDataParsed.bounding_polygon = boundingPolygon
                 _adp.projectData.carto_id = JSON.stringify cartoDataParsed
               catch e
+                console.error e.message
+                console.warn e.stack
                 allError "Warning: there may have been a problem saving your carto data"
 
           catch e

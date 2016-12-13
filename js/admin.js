@@ -1721,6 +1721,8 @@ kmlHandler = function(path, callback) {
                 _adp.projectData.carto_id = JSON.stringify(cartoDataParsed);
               } catch (error1) {
                 e = error1;
+                console.error(e.message);
+                console.warn(e.stack);
                 allError("Warning: there may have been a problem saving your carto data");
               }
             }
@@ -4630,9 +4632,9 @@ saveEditorData = function(force, callback) {
 
     /*
      * POST data craps out with too many points
-     * Known failure at 4584
+     * Known failure at 4594*4
      */
-    maxPathCount = 4000;
+    maxPathCount = 5000;
     try {
       cd = JSON.parse(postData.carto_id);
       paths = cd.bounding_polygon.paths;
