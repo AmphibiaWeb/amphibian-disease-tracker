@@ -2268,7 +2268,7 @@ getPointsFromBoundingBox = (obj) ->
           # End Poly loop
         superPoints = new Array()
         for bbSet in boringMultiBounds
-          superPoints.concat bbSet
+          superPoints = superPoints.concat bbSet
         corners = getCorners superPoints
         # End multibound check
       else

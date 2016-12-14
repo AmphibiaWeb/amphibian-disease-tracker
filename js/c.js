@@ -2776,7 +2776,7 @@ getPointsFromBoundingBox = function(obj) {
         superPoints = new Array();
         for (v = 0, len2 = boringMultiBounds.length; v < len2; v++) {
           bbSet = boringMultiBounds[v];
-          superPoints.concat(bbSet);
+          superPoints = superPoints.concat(bbSet);
         }
         corners = getCorners(superPoints);
       } else {
