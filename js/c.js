@@ -2657,11 +2657,133 @@ getMapCenter = function(bb) {
 };
 
 getPointsFromBoundingBox = function(obj) {
-  var coords, corners, len, realCoords, t;
-  corners = [[obj.bounding_box_n, obj.bounding_box_w], [obj.bounding_box_n, obj.bounding_box_e], [obj.bounding_box_s, obj.bounding_box_e], [obj.bounding_box_s, obj.bounding_box_w]];
+
+  /*
+   * @param Object obj -> either an object with bounding box corners,
+   *   or a projectData object.
+   */
+  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, getCorners, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordsBounds, u, v, w;
+  testCoordsBounds = ["n", "e", "w", "s"];
+  failCase = false;
+  for (t = 0, len = testCoordBounds.length; t < len; t++) {
+    direction = testCoordBounds[t];
+    key = "bounding_box_" + direction;
+    if (isNull(obj[key])) {
+      failCase = true;
+      break;
+    }
+  }
+  if (!failCase) {
+    corners = [[obj.bounding_box_n, obj.bounding_box_w], [obj.bounding_box_n, obj.bounding_box_e], [obj.bounding_box_s, obj.bounding_box_e], [obj.bounding_box_s, obj.bounding_box_w]];
+  } else {
+    cartoObj = obj.carto_id;
+    if (typeof cartoObj !== "object") {
+      try {
+        cartoData = JSON.parse(deEscape(cartoObj));
+      } catch (error2) {
+        e = error2;
+        err1 = e.message;
+        try {
+          cartoData = JSON.parse(cartoObj);
+        } catch (error3) {
+          e = error3;
+          if (cartoObj.length > 511) {
+            cartoJson = fixTruncatedJson(cartoObj);
+            if (typeof cartoJson === "object") {
+              console.debug("The carto data object was truncated, but rebuilt.");
+              cartoData = cartoJson;
+            }
+          }
+          if (isNull(cartoData)) {
+            console.error("Couldn't get bounding points: cartoObj must be JSON string or obj");
+            return false;
+          }
+        }
+      }
+    } else {
+      cartoData = cartoObj;
+    }
+    boundingPolygon = (ref = cartoData.bounding_polygon) != null ? ref : cartoData['bounding&#95;polygon'];
+    if (!isNull(boundingPolygon)) {
+      if (!isNull(boundingPolygon.multibounds)) {
+        boringMultiBounds = new Array();
+        getCorners = function(coordSet) {
+
+          /*
+           * Get the corners of a coordinate set
+           */
+          var east, edge, len1, north, points, polyBoundingBox, south, u, west;
+          polyBoundingBox = new Array();
+          north = -90;
+          south = 90;
+          west = 180;
+          east = -180;
+          for (u = 0, len1 = coordSet.length; u < len1; u++) {
+            points = coordSet[u];
+            if (points.lat > north) {
+              north = points.lat;
+            }
+            if (points.lng > east) {
+              east = points.lng;
+            }
+            if (points.lng < west) {
+              west = points.lng;
+            }
+            if (points.lat < south) {
+              south = points.lat;
+            }
+          }
+          edge = {
+            lat: north,
+            lng: west
+          };
+          polyBoundingBox.push(edge);
+          edge = {
+            lat: north,
+            lng: east
+          };
+          polyBoundingBox.push(edge);
+          edge = {
+            lat: south,
+            lng: east
+          };
+          polyBoundingBox.push(edge);
+          edge = {
+            lat: south,
+            lng: west
+          };
+          polyBoundingBox.push(edge);
+          edge = {
+            lat: north,
+            lng: west
+          };
+          polyBoundingBox.push(edge);
+          return polyBoundingBox;
+        };
+        ref1 = boundingPolygon.multibounds;
+        for (u = 0, len1 = ref1.length; u < len1; u++) {
+          polygon = ref1[u];
+          tempBoundingBox = getCorners(polygon);
+          boringMultiBounds.push(tempBoundingBox);
+        }
+        superPoints = new Array();
+        for (v = 0, len2 = boringMultiBounds.length; v < len2; v++) {
+          bbSet = boringMultiBounds[v];
+          superPoints.concat(bbSet);
+        }
+        corners = getCorners(superPoints);
+      } else {
+        console.error("Project objects with no intrinsic bounding box and no multibounds are not supported yet");
+        return false;
+      }
+    } else {
+      console.error("Bad bounding box set, and not a projectData object");
+      return false;
+    }
+  }
   realCoords = new Array();
-  for (t = 0, len = corners.length; t < len; t++) {
-    coords = corners[t];
+  for (w = 0, len3 = corners.length; w < len3; w++) {
+    coords = corners[w];
     console.log("Pushing corner", coords);
     realCoords.push(canonicalizePoint(coords));
   }
