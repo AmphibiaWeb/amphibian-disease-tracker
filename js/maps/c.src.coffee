@@ -2227,7 +2227,11 @@ getPointsFromBoundingBox = (obj) ->
           west = 180
           east = -180
           # Get the edges for this poly
+          i = 0
           for points in coordSet
+            if i is 0
+              console.debug "Sample point:", points
+            ++i
             if points.lat > north then north = points.lat
             if points.lng > east then east = points.lng
             if points.lng < west then west = points.lng
@@ -2259,6 +2263,7 @@ getPointsFromBoundingBox = (obj) ->
         # Loop over each polygon
         for polygon in boundingPolygon.multibounds
           tempBoundingBox = getCorners polygon
+          console.debug "Poly got corners #{JSON.stringify tempBoundingBox}", tempBoundingBox
           boringMultiBounds.push tempBoundingBox
           # End Poly loop
         superPoints = new Array()

@@ -2713,14 +2713,19 @@ getPointsFromBoundingBox = function(obj) {
           /*
            * Get the corners of a coordinate set
            */
-          var east, edge, len1, north, points, polyBoundingBox, south, u, west;
+          var east, edge, i, len1, north, points, polyBoundingBox, south, u, west;
           polyBoundingBox = new Array();
           north = -90;
           south = 90;
           west = 180;
           east = -180;
+          i = 0;
           for (u = 0, len1 = coordSet.length; u < len1; u++) {
             points = coordSet[u];
+            if (i === 0) {
+              console.debug("Sample point:", points);
+            }
+            ++i;
             if (points.lat > north) {
               north = points.lat;
             }
@@ -2765,6 +2770,7 @@ getPointsFromBoundingBox = function(obj) {
         for (u = 0, len1 = ref1.length; u < len1; u++) {
           polygon = ref1[u];
           tempBoundingBox = getCorners(polygon);
+          console.debug("Poly got corners " + (JSON.stringify(tempBoundingBox)), tempBoundingBox);
           boringMultiBounds.push(tempBoundingBox);
         }
         superPoints = new Array();
