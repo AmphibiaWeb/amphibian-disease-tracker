@@ -2171,7 +2171,7 @@ getPointsFromBoundingBox = (obj) ->
   # @param Object obj -> either an object with bounding box corners,
   #   or a projectData object.
   ###
-  testCoordsBounds = [
+  testCoordBounds = [
     "n"
     "e"
     "w"
@@ -2180,7 +2180,7 @@ getPointsFromBoundingBox = (obj) ->
   failCase = false
   for direction in testCoordBounds
     key = "bounding_box_#{direction}"
-    if isNull obj[key]
+    if isNull(obj[key]) or toInt(obj[key]) is 0
       failCase = true
       break
   unless failCase
@@ -2215,6 +2215,7 @@ getPointsFromBoundingBox = (obj) ->
     boundingPolygon = cartoData.bounding_polygon ? cartoData['bounding&#95;polygon']
     unless isNull boundingPolygon
       unless isNull boundingPolygon.multibounds
+        console.debug "Using multibound coordinate assignment"
         boringMultiBounds = new Array()
         getCorners = (coordSet) ->
           ###

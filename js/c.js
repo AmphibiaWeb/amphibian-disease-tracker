@@ -2662,13 +2662,13 @@ getPointsFromBoundingBox = function(obj) {
    * @param Object obj -> either an object with bounding box corners,
    *   or a projectData object.
    */
-  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, getCorners, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordsBounds, u, v, w;
-  testCoordsBounds = ["n", "e", "w", "s"];
+  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, getCorners, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordBounds, u, v, w;
+  testCoordBounds = ["n", "e", "w", "s"];
   failCase = false;
   for (t = 0, len = testCoordBounds.length; t < len; t++) {
     direction = testCoordBounds[t];
     key = "bounding_box_" + direction;
-    if (isNull(obj[key])) {
+    if (isNull(obj[key]) || toInt(obj[key]) === 0) {
       failCase = true;
       break;
     }
@@ -2706,6 +2706,7 @@ getPointsFromBoundingBox = function(obj) {
     boundingPolygon = (ref = cartoData.bounding_polygon) != null ? ref : cartoData['bounding&#95;polygon'];
     if (!isNull(boundingPolygon)) {
       if (!isNull(boundingPolygon.multibounds)) {
+        console.debug("Using multibound coordinate assignment");
         boringMultiBounds = new Array();
         getCorners = function(coordSet) {
 
