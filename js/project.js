@@ -870,7 +870,7 @@ setPublicData = function(projectData) {
 };
 
 renderPublicMap = function(projectData) {
-  var cartoData, coordArr, e, error, error1, error2, error3, error4, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  var cartoData, coordArr, e, error, error1, error2, error3, error4, googleMap, j, len, mapCenter, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
   if (projectData == null) {
     projectData = publicData;
   }
@@ -935,7 +935,8 @@ renderPublicMap = function(projectData) {
       }
     }
     mapHtml += "    </google-map-poly>";
-    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Project Area of Interest</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  api-key=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
+    mapCenter = getMapCenter(coordArr);
+    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Project Area of Interest</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + mapCenter.lat + "\" longitude=\"" + mapCenter.lng + "\" map-type=\"hybrid\" zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  api-key=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
     $("#auth-block").append(googleMap);
     try {
       zoom = getMapZoom(paths, "#transect-viewport");

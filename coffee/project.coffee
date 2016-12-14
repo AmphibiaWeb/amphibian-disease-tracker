@@ -873,10 +873,11 @@ renderPublicMap = (projectData = publicData) ->
         <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
         """
     mapHtml += "    </google-map-poly>"
+    mapCenter = getMapCenter coordArr
     googleMap = """
     <div class="row" id="public-map">
       <h2 class="col-xs-12">Project Area of Interest</h2>
-      <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" map-type="hybrid" zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  api-key="#{gMapsApiKey}">
+      <google-map id="transect-viewport" latitude="#{mapCenter.lat}" longitude="#{mapCenter.lng}" map-type="hybrid" zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  api-key="#{gMapsApiKey}">
             #{mapHtml}
       </google-map>
     </div>
