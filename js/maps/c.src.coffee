@@ -2166,7 +2166,54 @@ getMapCenter = (bb = geo.canonicalBoundingBox) ->
   center
 
 
-getPointsFromBoundingBox = (obj) ->
+getCorners = (coordSet) ->
+  ###
+  # Get the corners of a coordinate set
+  ###
+  polyBoundingBox = new Array()
+  north = -90
+  south = 90
+  west = 180
+  east = -180
+  # Get the edges for this poly
+  i = 0
+  for points in coordSet
+    if i is 0
+      console.debug "Sample point:", points
+    ++i
+    if points.lat > north then north = points.lat
+    if points.lng > east then east = points.lng
+    if points.lng < west then west = points.lng
+    if points.lat < south then south = points.lat
+  # Create a bounding box for this poly
+  edge =
+    lat: north
+    lng: west
+  polyBoundingBox.push edge
+  edge =
+    lat: north
+    lng: east
+  polyBoundingBox.push edge
+  edge =
+    lat: south
+    lng: east
+  polyBoundingBox.push edge
+  edge =
+    lat: south
+    lng: west
+  polyBoundingBox.push edge
+  # We want this last duplicate to "close the loop"
+  edge =
+    lat: north
+    lng: west
+  polyBoundingBox.push edge
+  # Return it
+  return polyBoundingBox
+
+
+
+
+getPointsFromBoundingBox = (obj, asObj = false) ->
   ###
   # @param Object obj -> either an object with bounding box corners,
   #   or a projectData object.
@@ -2217,49 +2264,6 @@ getPointsFromBoundingBox = (obj) ->
       unless isNull boundingPolygon.multibounds
         console.debug "Using multibound coordinate assignment"
         boringMultiBounds = new Array()
-        getCorners = (coordSet) ->
-          ###
-          # Get the corners of a coordinate set
-          ###
-          polyBoundingBox = new Array()
-          north = -90
-          south = 90
-          west = 180
-          east = -180
-          # Get the edges for this poly
-          i = 0
-          for points in coordSet
-            if i is 0
-              console.debug "Sample point:", points
-            ++i
-            if points.lat > north then north = points.lat
-            if points.lng > east then east = points.lng
-            if points.lng < west then west = points.lng
-            if points.lat < south then south = points.lat
-          # Create a bounding box for this poly
-          edge =
-            lat: north
-            lng: west
-          polyBoundingBox.push edge
-          edge =
-            lat: north
-            lng: east
-          polyBoundingBox.push edge
-          edge =
-            lat: south
-            lng: east
-          polyBoundingBox.push edge
-          edge =
-            lat: south
-            lng: west
-          polyBoundingBox.push edge
-          # We want this last duplicate to "close the loop"
-          edge =
-            lat: north
-            lng: west
-          polyBoundingBox.push edge
-          # Return it
-          return polyBoundingBox
         # Loop over each polygon
         for polygon in boundingPolygon.multibounds
           tempBoundingBox = getCorners polygon

@@ -900,24 +900,27 @@ renderPublicMap = function(projectData) {
     }
     mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
     usedPoints = new Array();
+    coordArr = getPointsFromBoundingBox(projectData);
+    if (coordArr[0].lat == null) {
+      coordArr = getCorners(coordArr);
+    }
     nw = {
-      lat: projectData.bounding_box_n,
-      lng: projectData.bounding_box_w
+      lat: coordArr[0].lat,
+      lng: coordArr[0].lng
     };
     ne = {
-      lat: projectData.bounding_box_n,
-      lng: projectData.bounding_box_e
+      lat: coordArr[1].lat,
+      lng: coordArr[1].lng
     };
     se = {
-      lat: projectData.bounding_box_s,
-      lng: projectData.bounding_box_e
+      lat: coordArr[2].lat,
+      lng: coordArr[2].lng
     };
     sw = {
-      lat: projectData.bounding_box_s,
-      lng: projectData.bounding_box_w
+      lat: coordArr[3].lat,
+      lng: coordArr[3].lng
     };
     paths = [nw, ne, se, sw];
-    coordArr = getPointsFromBoundingBox(projectData);
     try {
       zoom = getMapZoom(coordArr, "#transect-viewport");
       console.info("Got public zoom", zoom);

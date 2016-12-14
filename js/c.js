@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -2656,13 +2656,75 @@ getMapCenter = function(bb) {
   return center;
 };
 
-getPointsFromBoundingBox = function(obj) {
+getCorners = function(coordSet) {
+
+  /*
+   * Get the corners of a coordinate set
+   */
+  var east, edge, i, len, north, points, polyBoundingBox, south, t, west;
+  polyBoundingBox = new Array();
+  north = -90;
+  south = 90;
+  west = 180;
+  east = -180;
+  i = 0;
+  for (t = 0, len = coordSet.length; t < len; t++) {
+    points = coordSet[t];
+    if (i === 0) {
+      console.debug("Sample point:", points);
+    }
+    ++i;
+    if (points.lat > north) {
+      north = points.lat;
+    }
+    if (points.lng > east) {
+      east = points.lng;
+    }
+    if (points.lng < west) {
+      west = points.lng;
+    }
+    if (points.lat < south) {
+      south = points.lat;
+    }
+  }
+  edge = {
+    lat: north,
+    lng: west
+  };
+  polyBoundingBox.push(edge);
+  edge = {
+    lat: north,
+    lng: east
+  };
+  polyBoundingBox.push(edge);
+  edge = {
+    lat: south,
+    lng: east
+  };
+  polyBoundingBox.push(edge);
+  edge = {
+    lat: south,
+    lng: west
+  };
+  polyBoundingBox.push(edge);
+  edge = {
+    lat: north,
+    lng: west
+  };
+  polyBoundingBox.push(edge);
+  return polyBoundingBox;
+};
+
+getPointsFromBoundingBox = function(obj, asObj) {
+  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordBounds, u, v, w;
+  if (asObj == null) {
+    asObj = false;
+  }
 
   /*
    * @param Object obj -> either an object with bounding box corners,
    *   or a projectData object.
    */
-  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, getCorners, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordBounds, u, v, w;
   testCoordBounds = ["n", "e", "w", "s"];
   failCase = false;
   for (t = 0, len = testCoordBounds.length; t < len; t++) {
@@ -2708,64 +2770,6 @@ getPointsFromBoundingBox = function(obj) {
       if (!isNull(boundingPolygon.multibounds)) {
         console.debug("Using multibound coordinate assignment");
         boringMultiBounds = new Array();
-        getCorners = function(coordSet) {
-
-          /*
-           * Get the corners of a coordinate set
-           */
-          var east, edge, i, len1, north, points, polyBoundingBox, south, u, west;
-          polyBoundingBox = new Array();
-          north = -90;
-          south = 90;
-          west = 180;
-          east = -180;
-          i = 0;
-          for (u = 0, len1 = coordSet.length; u < len1; u++) {
-            points = coordSet[u];
-            if (i === 0) {
-              console.debug("Sample point:", points);
-            }
-            ++i;
-            if (points.lat > north) {
-              north = points.lat;
-            }
-            if (points.lng > east) {
-              east = points.lng;
-            }
-            if (points.lng < west) {
-              west = points.lng;
-            }
-            if (points.lat < south) {
-              south = points.lat;
-            }
-          }
-          edge = {
-            lat: north,
-            lng: west
-          };
-          polyBoundingBox.push(edge);
-          edge = {
-            lat: north,
-            lng: east
-          };
-          polyBoundingBox.push(edge);
-          edge = {
-            lat: south,
-            lng: east
-          };
-          polyBoundingBox.push(edge);
-          edge = {
-            lat: south,
-            lng: west
-          };
-          polyBoundingBox.push(edge);
-          edge = {
-            lat: north,
-            lng: west
-          };
-          polyBoundingBox.push(edge);
-          return polyBoundingBox;
-        };
         ref1 = boundingPolygon.multibounds;
         for (u = 0, len1 = ref1.length; u < len1; u++) {
           polygon = ref1[u];
