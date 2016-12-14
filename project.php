@@ -630,10 +630,12 @@ $loginStatus = getLoginState();
    $limitedProject = array();
     $cleanCarto = deEscape($project['carto_id']);
     $carto = json_decode($cleanCarto, true);
+    # TODO RECONSTRUCT LIMITED MULTIBOUNDS HERE
     $cartoLimited = array(
        'bounding_polygon' => array(
            'fillColor' => $carto['bounding_polygon']['fillColor'],
            'fillOpacity' => $carto['bounding_polygon']['fillOpacity'],
+           "multibounds" => $carto["multibounds"], # TEMPORARY
        ),
    );
     $limitedProjectCols = array(
