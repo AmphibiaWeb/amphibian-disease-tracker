@@ -635,7 +635,7 @@ $loginStatus = getLoginState();
        'bounding_polygon' => array(
            'fillColor' => $carto['bounding_polygon']['fillColor'],
            'fillOpacity' => $carto['bounding_polygon']['fillOpacity'],
-           "multibounds" => $carto["multibounds"], # TEMPORARY
+           "multibounds" => $carto["bounding_polygon"]["multibounds"], # TEMPORARY
        ),
    );
     $limitedProjectCols = array(
