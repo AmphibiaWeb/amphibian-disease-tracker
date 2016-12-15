@@ -631,7 +631,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
    *   authorized lookup
    * @param object authorizationDetails -> the permissions object
    */
-  var adminButton, authorData, cartoData, cartoJson, cartoObj, e, editButton, err1, error1, error2;
+  var adminButton, authorData, cartoData, cartoJson, cartoObj, e, editButton, err1, error1, error2, label, ref, ref1;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -646,6 +646,10 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   $("#title").append(editButton);
   authorData = JSON.parse(projectData.author_data);
   showEmailField(authorData.contact_email);
+  if (!isNull((ref = projectData.technical) != null ? ref.name : void 0) && !isNull((ref1 = projectData.technical) != null ? ref1.email : void 0)) {
+    label = "Technical Contact " + projectData.technical.name;
+    showEmailField(projectData.technical.email, label, "technical-email-send");
+  }
   bindClicks(".authorized-action");
   cartoObj = projectData.carto_id;
   if (typeof cartoObj !== "object") {
