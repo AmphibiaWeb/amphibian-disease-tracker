@@ -566,7 +566,7 @@ $loginStatus = getLoginState();
             Recommended citation:
           </p>
           <cite class="self-citation" data-project="Project #<?php echo $pid; ?>">
-            <span class="author-name"><?php echo $authorNameFormal; ?></span., <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal. &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>.
+            <span class="author-name"><?php echo $authorNameFormal; ?></span>. <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal. &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>.
           </cite>
         </div>
         <h2 class="col-xs-12">
