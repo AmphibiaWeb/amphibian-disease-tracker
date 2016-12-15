@@ -923,7 +923,7 @@ function validateCaptcha($get)
                 "technical_contact",
                 "technical_contact_email",
             );
-            $result = $db->getQueryResults($query, 'author_data', 'AND', false, true);
+            $result = $db->getQueryResults($query, $resultCols, 'AND', false, true);
             $author_data = json_decode($result[0]['author_data'], true);
             $a = array(
                 'status' => true,
