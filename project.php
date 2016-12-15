@@ -631,11 +631,46 @@ $loginStatus = getLoginState();
     $cleanCarto = deEscape($project['carto_id']);
     $carto = json_decode($cleanCarto, true);
     # TODO RECONSTRUCT LIMITED MULTIBOUNDS HERE
+    $multiBounds = $carto["bounding_polygon"]["multibounds"];
+    $north = -90;
+    $south = 90;
+    $west = 180;
+    $east = -180;
+    foreach($multiBounds as $polygon) {
+        foreach($polygon as $point) {
+            if($point["lat"] > $north) $north = $point["lat"];
+            if($point["lng"] > $east) $east = $point["lng"];
+            if($point["lng"] < $west) $west = $point["lng"];
+            if($point["lat"] < $south) $south = $point["lat"];
+        }
+    }
+    $corners = array(
+        array(
+            "lat" => $north,
+            "lng" => $west,
+        ),
+        array(
+            "lat" => $north,
+            "lng" => $east,
+        ),
+        array(
+            "lat" => $south,
+            "lng" => $east,
+        ),
+        array(
+            "lat" => $south,
+            "lng" => $west,
+        ),
+        array(
+            "lat" => $north,
+            "lng" => $west,
+        ),
+    );
     $cartoLimited = array(
        'bounding_polygon' => array(
            'fillColor' => $carto['bounding_polygon']['fillColor'],
            'fillOpacity' => $carto['bounding_polygon']['fillOpacity'],
-           "multibounds" => $carto["bounding_polygon"]["multibounds"], # TEMPORARY
+           "multibounds" => $corners, # $carto["bounding_polygon"]["multibounds"], # TEMPORARY
        ),
    );
     $limitedProjectCols = array(
