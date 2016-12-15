@@ -154,6 +154,9 @@ renderEmail = (response) ->
     console.log result
     authorData = result.author_data
     showEmailField authorData.contact_email
+    if not isNull(result.technical?.name) and not isNull(result.technical?.email)
+      label = "Technical Contact #{result.technical.name}"
+      showEmailField result.technical.email, label, "technical-email-send"
     stopLoad()
   .fail (result, status) ->
     stopLoadError "Sorry, there was a problem getting the contact email"
@@ -161,15 +164,21 @@ renderEmail = (response) ->
   false
 
 
-showEmailField = (email) ->
+showEmailField = (email, fieldLabel = "Contact Email", fieldId = "contact-email-send") ->
   html = """
-  <div class="row">
-    <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{email}"></paper-input>
-    <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
+  <div class="row appended-email-field">
+    <paper-input readonly class="col-xs-8 col-md-11" label="#{fieldLabel}" value="#{email}"></paper-input>
+    <paper-fab icon="communication:email" class="click materialblue" id="#{fieldId}" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
   </div>
   """
-  $("#email-fill").replaceWith html
-  bindClicks("#contact-email-send")
+  if $("#email-fill").exists()
+    $("#email-fill").replaceWith html
+  else
+    fields = $(".appended-email-field")
+    i = fields.length - 1
+    lastField = $(".appended-email-field").get i
+    $(lastField).after html
+  bindClicks("##{fieldId}")
   false
 
 
@@ -183,7 +192,28 @@ renderMapWithData = (projectData, force = false) ->
     console.warn "Carto: The map was asked to be rendered again, but it has already been rendered!"
     showKml()
     return false
-  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoObj = projectData.carto_id
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse deEscape cartoObj
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told '#{err1}' then", e.message
+          stopLoadError "Couldn't parse data"
+          return false
+  else
+    cartoData = cartoObj
   _adp.cartoDataParsed = cartoData
   raw = cartoData.raw_data
   if isNull raw
@@ -581,8 +611,33 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   $("#title").append editButton # + adminButton
   authorData = JSON.parse projectData.author_data
   showEmailField authorData.contact_email
+  try
+    if not isNull(projectData.technical_contact) and not isNull(projectData.technical_contact_email)
+      label = "Technical Contact #{projectData.technical_contact}"
+      showEmailField projectData.technical_contact_email, label, "technical-email-send"
   bindClicks(".authorized-action")
-  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoObj = projectData.carto_id
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse deEscape cartoObj
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told '#{err1}' then", e.message
+          stopLoadError "Couldn't parse data"
+          return false
+  else
+    cartoData = cartoObj
   renderMapWithData(projectData) # Stops load
   try
     prepParsedDataDownload projectData
@@ -798,25 +853,27 @@ renderPublicMap = (projectData = publicData) ->
     <google-map-poly closed fill-color="#{poly.fillColor}" fill-opacity="#{poly.fillOpacity}" stroke-weight="1">
     """
     usedPoints = new Array()
+    coordArr = getPointsFromBoundingBox projectData
+    unless coordArr[0].lat?
+      coordArr = getCorners coordArr
     nw =
-      lat: projectData.bounding_box_n
-      lng: projectData.bounding_box_w
+      lat: coordArr[0].lat
+      lng: coordArr[0].lng
     ne =
-      lat: projectData.bounding_box_n
-      lng: projectData.bounding_box_e
+      lat: coordArr[1].lat
+      lng: coordArr[1].lng
     se =
-      lat: projectData.bounding_box_s
-      lng: projectData.bounding_box_e
+      lat: coordArr[2].lat
+      lng: coordArr[2].lng
     sw =
-      lat: projectData.bounding_box_s
-      lng: projectData.bounding_box_w
+      lat: coordArr[3].lat
+      lng: coordArr[3].lng
     paths = [
       nw
       ne
       se
       sw
       ]
-    coordArr = getPointsFromBoundingBox projectData
     try
       zoom = getMapZoom coordArr, "#transect-viewport"
       console.info "Got public zoom", zoom
@@ -829,10 +886,11 @@ renderPublicMap = (projectData = publicData) ->
         <google-map-point latitude="#{point.lat}" longitude="#{point.lng}"> </google-map-point>
         """
     mapHtml += "    </google-map-poly>"
+    mapCenter = getMapCenter coordArr
     googleMap = """
     <div class="row" id="public-map">
       <h2 class="col-xs-12">Project Area of Interest</h2>
-      <google-map id="transect-viewport" latitude="#{projectData.lat}" longitude="#{projectData.lng}" map-type="hybrid" zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  api-key="#{gMapsApiKey}">
+      <google-map id="transect-viewport" latitude="#{mapCenter.lat}" longitude="#{mapCenter.lng}" map-type="hybrid" zoom="#{zoom}" class="col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map"  api-key="#{gMapsApiKey}">
             #{mapHtml}
       </google-map>
     </div>
@@ -924,7 +982,28 @@ prepParsedDataDownload = (projectData) ->
     downloadFile: "datalist-#{projectData.project_id}-#{d.toISOString()}.csv"
   parseableData = new Object()
   # Ping carto for full dataset
-  cartoData = JSON.parse deEscape projectData.carto_id
+  cartoObj = projectData.carto_id
+  unless typeof cartoObj is "object"
+    try
+      cartoData = JSON.parse deEscape cartoObj
+    catch e
+      err1 = e.message
+      try
+        cartoData = JSON.parse cartoObj
+      catch e
+        if cartoObj.length > 511
+          cartoJson = fixTruncatedJson cartoObj
+          if typeof cartoJson is "object"
+            console.debug "The carto data object was truncated, but rebuilt."
+            cartoData = cartoJson
+        if isNull cartoData
+          console.error "cartoObj must be JSON string or obj, given", cartoObj
+          console.warn "Cleaned obj:", deEscape cartoObj
+          console.warn "Told '#{err1}' then", e.message
+          stopLoadError "Couldn't parse data"
+          return false
+  else
+    cartoData = cartoObj
   cartoTable = cartoData.table
   if isNull cartoTable
     console.warn "WARNING: This project has no data associated with it. Not creating download."

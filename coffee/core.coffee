@@ -1306,10 +1306,15 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js", callback) ->
   #
   # @param bool forceNow force a check now
   ###
+  unless _adp?.lastModChecked?
+    unless window._adp?
+      window._adp = new Object()
+    window._adp.lastModChecked = new Object()
   key = file.split("/").pop().split(".")[0]
   checkVersion = (filePath = file, modKey = key) ->
     $.get("#{uri.urlString}meta.php","do=get_last_mod&file=#{filePath}","json")
     .done (result) ->
+      window._adp.lastModChecked[modKey] = Date.now()
       if forceNow
         # console.log("Forced version check:",result)
         doNothing()
@@ -1348,7 +1353,13 @@ checkFileVersion = (forceNow = false, file = "js/c.min.js", callback) ->
   catch
     keyExists = false
   if forceNow or not window._adp.lastMod? or not keyExists
-    checkVersion(file, key)
+    try
+      # For fifteen seconds, ignore a force
+      unless (Date.now() - toInt window._adp.lastModChecked[key]) < (15 * 1000)
+        checkVersion(file, key)
+    catch
+      # Fail safely
+      checkVersion(file, key)
     return true
   false
 

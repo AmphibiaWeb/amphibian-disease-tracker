@@ -2246,7 +2246,7 @@ saveEditorData = (force = false, callback) ->
   try
     ###
     # POST data craps out with too many points
-    # Known failure at 4584
+    # Known failure at 4594*4
     ###
     maxPathCount = 4000
     try
@@ -2296,6 +2296,10 @@ saveEditorData = (force = false, callback) ->
     pointCount = maxPathCount + 1
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
+  debugInfoDelay = delay 10000, ->
+    console.warn "POST may have hung after 10 seconds"
+    console.warn "args length was '#{args.length}' = #{args.length * 8} bytes"
+    false
   _adp.currentAsyncJqxhr = $.post "#{uri.urlString}#{adminParams.apiTarget}", args, "json"
   .done (result) ->
     console.info "Save result: server said", result
@@ -2350,7 +2354,9 @@ saveEditorData = (force = false, callback) ->
     console.error result, status
     # console.error "Tried", "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     console.warn "Raw post data", postData
+    console.warn "args length was '#{args.length}' = #{args.length * 8} bytes"
   .always ->
+    clearTimeout debugInfoDelay
     if typeof callback is "function"
       callback()
   false

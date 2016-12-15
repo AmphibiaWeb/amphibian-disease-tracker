@@ -149,11 +149,15 @@ renderEmail = function(response) {
   dest = uri.urlString + "api.php";
   args = "action=is_human&recaptcha_response=" + response + "&project=" + _adp.projectId;
   $.post(dest, args, "json").done(function(result) {
-    var authorData;
+    var authorData, label, ref, ref1;
     console.info("Checked response");
     console.log(result);
     authorData = result.author_data;
     showEmailField(authorData.contact_email);
+    if (!isNull((ref = result.technical) != null ? ref.name : void 0) && !isNull((ref1 = result.technical) != null ? ref1.email : void 0)) {
+      label = "Technical Contact " + result.technical.name;
+      showEmailField(result.technical.email, label, "technical-email-send");
+    }
     return stopLoad();
   }).fail(function(result, status) {
     stopLoadError("Sorry, there was a problem getting the contact email");
@@ -162,16 +166,29 @@ renderEmail = function(response) {
   return false;
 };
 
-showEmailField = function(email) {
-  var html;
-  html = "<div class=\"row\">\n  <paper-input readonly class=\"col-xs-8 col-md-11\" label=\"Contact Email\" value=\"" + email + "\"></paper-input>\n  <paper-fab icon=\"communication:email\" class=\"click materialblue\" id=\"contact-email-send\" data-href=\"mailto:" + email + "\" data-toggle=\"tooltip\" title=\"Send Email\"></paper-fab>\n</div>";
-  $("#email-fill").replaceWith(html);
-  bindClicks("#contact-email-send");
+showEmailField = function(email, fieldLabel, fieldId) {
+  var fields, html, i, lastField;
+  if (fieldLabel == null) {
+    fieldLabel = "Contact Email";
+  }
+  if (fieldId == null) {
+    fieldId = "contact-email-send";
+  }
+  html = "<div class=\"row appended-email-field\">\n  <paper-input readonly class=\"col-xs-8 col-md-11\" label=\"" + fieldLabel + "\" value=\"" + email + "\"></paper-input>\n  <paper-fab icon=\"communication:email\" class=\"click materialblue\" id=\"" + fieldId + "\" data-href=\"mailto:" + email + "\" data-toggle=\"tooltip\" title=\"Send Email\"></paper-fab>\n</div>";
+  if ($("#email-fill").exists()) {
+    $("#email-fill").replaceWith(html);
+  } else {
+    fields = $(".appended-email-field");
+    i = fields.length - 1;
+    lastField = $(".appended-email-field").get(i);
+    $(lastField).after(html);
+  }
+  bindClicks("#" + fieldId);
   return false;
 };
 
 renderMapWithData = function(projectData, force) {
-  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoQuery, cartoTable, data, downloadButton, error1, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, showKml, title, tmp, usedPoints, zoom, zoomPaths;
+  var apiPostSqlQuery, args, ark, arkId, arkIdentifiers, baseFilePath, cartoData, cartoJson, cartoObj, cartoQuery, cartoTable, data, downloadButton, e, err1, error1, error2, error3, extraClasses, filePath, helperDir, html, i, j, l, len, len1, mapHtml, paths, point, poly, raw, ref, ref1, showKml, title, tmp, usedPoints, zoom, zoomPaths;
   if (force == null) {
     force = false;
   }
@@ -189,7 +206,36 @@ renderMapWithData = function(projectData, force) {
     showKml();
     return false;
   }
-  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoObj = projectData.carto_id;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(deEscape(cartoObj));
+    } catch (error1) {
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told '" + err1 + "' then", e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
+    }
+  } else {
+    cartoData = cartoObj;
+  }
   _adp.cartoDataParsed = cartoData;
   raw = cartoData.raw_data;
   if (isNull(raw)) {
@@ -241,7 +287,7 @@ renderMapWithData = function(projectData, force) {
     zoomPaths = (ref = cartoData.bounding_polygon.paths) != null ? ref : cartoData.bounding_polygon;
     zoom = getMapZoom(zoomPaths, "#transect-viewport");
     console.info("Got zoom", zoom);
-  } catch (error1) {
+  } catch (error3) {
     zoom = "";
   }
   poly = cartoData.bounding_polygon;
@@ -483,7 +529,7 @@ renderMapWithData = function(projectData, force) {
         return copyFn(zcClient);
       });
       copyFn = function(zcClient, zcEvent) {
-        var clip, e, error2;
+        var clip, error4;
         if (zcClient == null) {
           zcClient = zcClientInitial;
         }
@@ -495,8 +541,8 @@ renderMapWithData = function(projectData, force) {
           document.dispatchEvent(clip);
           toastStatusMessage("ARK resolver path copied to clipboard");
           return false;
-        } catch (error2) {
-          e = error2;
+        } catch (error4) {
+          e = error4;
           console.error("Error creating copy: " + e.message);
           console.warn(e.stack);
           console.warn("Can't use HTML5");
@@ -585,7 +631,7 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
    *   authorized lookup
    * @param object authorizationDetails -> the permissions object
    */
-  var adminButton, authorData, cartoData, editButton;
+  var adminButton, authorData, cartoData, cartoJson, cartoObj, e, editButton, err1, error1, error2, label;
   if (projectData["public"]) {
     console.info("Project is already public, not rerendering");
     false;
@@ -600,8 +646,43 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   $("#title").append(editButton);
   authorData = JSON.parse(projectData.author_data);
   showEmailField(authorData.contact_email);
+  try {
+    if (!isNull(projectData.technical_contact) && !isNull(projectData.technical_contact_email)) {
+      label = "Technical Contact " + projectData.technical_contact;
+      showEmailField(projectData.technical_contact_email, label, "technical-email-send");
+    }
+  } catch (undefined) {}
   bindClicks(".authorized-action");
-  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoObj = projectData.carto_id;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(deEscape(cartoObj));
+    } catch (error1) {
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told '" + err1 + "' then", e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
+    }
+  } else {
+    cartoData = cartoObj;
+  }
   renderMapWithData(projectData);
   try {
     prepParsedDataDownload(projectData);
@@ -812,7 +893,7 @@ setPublicData = function(projectData) {
 };
 
 renderPublicMap = function(projectData) {
-  var cartoData, coordArr, e, error, error1, error2, error3, error4, googleMap, j, len, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
+  var cartoData, coordArr, e, error, error1, error2, error3, error4, googleMap, j, len, mapCenter, mapHtml, ne, nw, paths, point, poly, se, sw, usedPoints, zoom;
   if (projectData == null) {
     projectData = publicData;
   }
@@ -842,24 +923,27 @@ renderPublicMap = function(projectData) {
     }
     mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
     usedPoints = new Array();
+    coordArr = getPointsFromBoundingBox(projectData);
+    if (coordArr[0].lat == null) {
+      coordArr = getCorners(coordArr);
+    }
     nw = {
-      lat: projectData.bounding_box_n,
-      lng: projectData.bounding_box_w
+      lat: coordArr[0].lat,
+      lng: coordArr[0].lng
     };
     ne = {
-      lat: projectData.bounding_box_n,
-      lng: projectData.bounding_box_e
+      lat: coordArr[1].lat,
+      lng: coordArr[1].lng
     };
     se = {
-      lat: projectData.bounding_box_s,
-      lng: projectData.bounding_box_e
+      lat: coordArr[2].lat,
+      lng: coordArr[2].lng
     };
     sw = {
-      lat: projectData.bounding_box_s,
-      lng: projectData.bounding_box_w
+      lat: coordArr[3].lat,
+      lng: coordArr[3].lng
     };
     paths = [nw, ne, se, sw];
-    coordArr = getPointsFromBoundingBox(projectData);
     try {
       zoom = getMapZoom(coordArr, "#transect-viewport");
       console.info("Got public zoom", zoom);
@@ -874,7 +958,8 @@ renderPublicMap = function(projectData) {
       }
     }
     mapHtml += "    </google-map-poly>";
-    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Project Area of Interest</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + projectData.lat + "\" longitude=\"" + projectData.lng + "\" map-type=\"hybrid\" zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  api-key=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
+    mapCenter = getMapCenter(coordArr);
+    googleMap = "<div class=\"row\" id=\"public-map\">\n  <h2 class=\"col-xs-12\">Project Area of Interest</h2>\n  <google-map id=\"transect-viewport\" latitude=\"" + mapCenter.lat + "\" longitude=\"" + mapCenter.lng + "\" map-type=\"hybrid\" zoom=\"" + zoom + "\" class=\"col-xs-12 col-md-9 col-lg-6 center-block clearfix public-fuzzy-map\"  api-key=\"" + gMapsApiKey + "\">\n        " + mapHtml + "\n  </google-map>\n</div>";
     $("#auth-block").append(googleMap);
     try {
       zoom = getMapZoom(paths, "#transect-viewport");
@@ -967,7 +1052,7 @@ checkArkDataset = function(projectData, forceDownload, forceReparse) {
 };
 
 prepParsedDataDownload = function(projectData) {
-  var apiPostSqlQuery, args, cartoData, cartoQuery, cartoTable, d, options, parseableData;
+  var apiPostSqlQuery, args, cartoData, cartoJson, cartoObj, cartoQuery, cartoTable, d, e, err1, error1, error2, options, parseableData;
   d = new Date();
   options = {
     selector: "#data-download-buttons",
@@ -977,7 +1062,36 @@ prepParsedDataDownload = function(projectData) {
     downloadFile: "datalist-" + projectData.project_id + "-" + (d.toISOString()) + ".csv"
   };
   parseableData = new Object();
-  cartoData = JSON.parse(deEscape(projectData.carto_id));
+  cartoObj = projectData.carto_id;
+  if (typeof cartoObj !== "object") {
+    try {
+      cartoData = JSON.parse(deEscape(cartoObj));
+    } catch (error1) {
+      e = error1;
+      err1 = e.message;
+      try {
+        cartoData = JSON.parse(cartoObj);
+      } catch (error2) {
+        e = error2;
+        if (cartoObj.length > 511) {
+          cartoJson = fixTruncatedJson(cartoObj);
+          if (typeof cartoJson === "object") {
+            console.debug("The carto data object was truncated, but rebuilt.");
+            cartoData = cartoJson;
+          }
+        }
+        if (isNull(cartoData)) {
+          console.error("cartoObj must be JSON string or obj, given", cartoObj);
+          console.warn("Cleaned obj:", deEscape(cartoObj));
+          console.warn("Told '" + err1 + "' then", e.message);
+          stopLoadError("Couldn't parse data");
+          return false;
+        }
+      }
+    }
+  } else {
+    cartoData = cartoObj;
+  }
   cartoTable = cartoData.table;
   if (isNull(cartoTable)) {
     console.warn("WARNING: This project has no data associated with it. Not creating download.");
@@ -989,7 +1103,7 @@ prepParsedDataDownload = function(projectData) {
   args = "action=fetch&sql_query=" + apiPostSqlQuery;
   _adp.dataPoints = new Array();
   $.post("api.php", args, "json").done(function(result) {
-    var col, coordObj, data, dataObj, error, error1, fims, geoJson, k, lat, lng, pTmp, ref, row, rows;
+    var col, coordObj, data, dataObj, error, error3, fims, geoJson, k, lat, lng, pTmp, ref, row, rows;
     if (!result.status) {
       error = (ref = result.human_error) != null ? ref : result.error;
       if (error == null) {
@@ -1017,7 +1131,7 @@ prepParsedDataDownload = function(projectData) {
       try {
         try {
           fims = JSON.parse(row.fimsextra);
-        } catch (error1) {
+        } catch (error3) {
           fims = row.fimsextra;
         }
         if (typeof fims === "object") {

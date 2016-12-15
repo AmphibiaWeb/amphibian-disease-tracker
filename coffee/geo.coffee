@@ -121,13 +121,122 @@ getMapCenter = (bb = geo.canonicalBoundingBox) ->
   center
 
 
-getPointsFromBoundingBox = (obj) ->
-  corners = [
-    [obj.bounding_box_n, obj.bounding_box_w]
-    [obj.bounding_box_n, obj.bounding_box_e]
-    [obj.bounding_box_s, obj.bounding_box_e]
-    [obj.bounding_box_s, obj.bounding_box_w]
+getCorners = (coordSet) ->
+  ###
+  # Get the corners of a coordinate set
+  ###
+  polyBoundingBox = new Array()
+  north = -90
+  south = 90
+  west = 180
+  east = -180
+  # Get the edges for this poly
+  i = 0
+  for points in coordSet
+    if i is 0
+      console.debug "Sample point:", points
+    ++i
+    if points.lat > north then north = points.lat
+    if points.lng > east then east = points.lng
+    if points.lng < west then west = points.lng
+    if points.lat < south then south = points.lat
+  # Create a bounding box for this poly
+  edge =
+    lat: north
+    lng: west
+  polyBoundingBox.push edge
+  edge =
+    lat: north
+    lng: east
+  polyBoundingBox.push edge
+  edge =
+    lat: south
+    lng: east
+  polyBoundingBox.push edge
+  edge =
+    lat: south
+    lng: west
+  polyBoundingBox.push edge
+  # We want this last duplicate to "close the loop"
+  edge =
+    lat: north
+    lng: west
+  polyBoundingBox.push edge
+  # Return it
+  return polyBoundingBox
+
+
+
+
+getPointsFromBoundingBox = (obj, asObj = false) ->
+  ###
+  # @param Object obj -> either an object with bounding box corners,
+  #   or a projectData object.
+  ###
+  testCoordBounds = [
+    "n"
+    "e"
+    "w"
+    "s"
     ]
+  failCase = false
+  for direction in testCoordBounds
+    key = "bounding_box_#{direction}"
+    if isNull(obj[key]) or toInt(obj[key]) is 0
+      failCase = true
+      break
+  unless failCase
+    # Default
+    corners = [
+      [obj.bounding_box_n, obj.bounding_box_w]
+      [obj.bounding_box_n, obj.bounding_box_e]
+      [obj.bounding_box_s, obj.bounding_box_e]
+      [obj.bounding_box_s, obj.bounding_box_w]
+      ]
+  else
+    # Those base edges don't exist. Try the alternate method.
+    cartoObj = obj.carto_id
+    unless typeof cartoObj is "object"
+      try
+        cartoData = JSON.parse deEscape cartoObj
+      catch e
+        err1 = e.message
+        try
+          cartoData = JSON.parse cartoObj
+        catch e
+          if cartoObj.length > 511
+            cartoJson = fixTruncatedJson cartoObj
+            if typeof cartoJson is "object"
+              console.debug "The carto data object was truncated, but rebuilt."
+              cartoData = cartoJson
+          if isNull cartoData
+            console.error "Couldn't get bounding points: cartoObj must be JSON string or obj"
+            return false
+    else
+      cartoData = cartoObj
+    boundingPolygon = cartoData.bounding_polygon ? cartoData['bounding&#95;polygon']
+    unless isNull boundingPolygon
+      unless isNull boundingPolygon.multibounds
+        console.debug "Using multibound coordinate assignment"
+        boringMultiBounds = new Array()
+        # Loop over each polygon
+        for polygon in boundingPolygon.multibounds
+          tempBoundingBox = getCorners polygon
+          console.debug "Poly got corners #{JSON.stringify tempBoundingBox}", tempBoundingBox
+          boringMultiBounds.push tempBoundingBox
+          # End Poly loop
+        superPoints = new Array()
+        for bbSet in boringMultiBounds
+          superPoints = superPoints.concat bbSet
+        corners = getCorners superPoints
+        # End multibound check
+      else
+        # No multibounds
+        console.error "Project objects with no intrinsic bounding box and no multibounds are not supported yet"
+        return false
+    else
+      console.error "Bad bounding box set, and not a projectData object"
+      return false
   realCoords = new Array()
   for coords in corners
     console.log "Pushing corner", coords

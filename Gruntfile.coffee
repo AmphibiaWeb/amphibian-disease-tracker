@@ -106,7 +106,7 @@ module.exports = (grunt) ->
         options:
           sourceMap:true
           # sourceMapName:"js/maps/c.map"
-          # sourceMapIncludeSources:true
+          sourceMapIncludeSources:true
           sourceMapIn: (fileIn) ->
             fileName = fileIn.split("/").pop()
             fileNameArr = fileName.split(".")

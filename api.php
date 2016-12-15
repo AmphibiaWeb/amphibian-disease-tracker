@@ -918,11 +918,20 @@ function validateCaptcha($get)
             $query = array(
                 'project_id' => $project,
             );
-            $result = $db->getQueryResults($query, 'author_data', 'AND', false, true);
+            $resultCols = array(
+                "author_data",
+                "technical_contact",
+                "technical_contact_email",
+            );
+            $result = $db->getQueryResults($query, $resultCols, 'AND', false, true);
             $author_data = json_decode($result[0]['author_data'], true);
             $a = array(
                 'status' => true,
                 'author_data' => $author_data,
+                "technical" => array(
+                    "name" => $result[0]["technical_contact"],
+                    "email" => $result[0]["technical_contact_email"],
+                ),
                 'raw_result' => $result[0],
             );
         }

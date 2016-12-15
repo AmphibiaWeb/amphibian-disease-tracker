@@ -12,6 +12,12 @@ if ($debug) {
     error_log('AdminAPI is running in debug mode!');
 }
 
+try {
+    ini_set('post_max_size', '500M');
+    ini_set('upload_max_filesize', '500M');
+} catch (Exception $e) {
+    
+}
 
 $print_login_state = false;
 require_once 'DB_CONFIG.php';

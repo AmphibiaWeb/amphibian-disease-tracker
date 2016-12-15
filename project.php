@@ -555,7 +555,7 @@ $loginStatus = getLoginState();
           $authorData = json_decode($project['author_data'], true);
           $authorName = preg_replace('!\s+!', ' ', $authorData["name"]);
           $authorParts = explode(" ", $authorName);
-          $authorNameFormal = $authorParts[1] . ". " . substr($authorParts[0], 0, 1);
+          $authorNameFormal = $authorParts[1] . ", " . substr($authorParts[0], 0, 1);
           $creationTime = $authorData["entry_date"];
           $today = date("d M Y");
           $phpTime = intval($creationTime) / 1000;
@@ -566,7 +566,7 @@ $loginStatus = getLoginState();
             Recommended citation:
           </p>
           <cite class="self-citation" data-project="Project #<?php echo $pid; ?>">
-            <span class="author-name"><?php echo $authorNameFormal; ?></span>, <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal. &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>.
+            <span class="author-name"><?php echo $authorNameFormal; ?></span>. <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal. &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>.
           </cite>
         </div>
         <h2 class="col-xs-12">
@@ -630,10 +630,47 @@ $loginStatus = getLoginState();
    $limitedProject = array();
     $cleanCarto = deEscape($project['carto_id']);
     $carto = json_decode($cleanCarto, true);
+    # TODO RECONSTRUCT LIMITED MULTIBOUNDS HERE
+    $multiBounds = $carto["bounding_polygon"]["multibounds"];
+    $north = -90;
+    $south = 90;
+    $west = 180;
+    $east = -180;
+    foreach($multiBounds as $polygon) {
+        foreach($polygon as $point) {
+            if($point["lat"] > $north) $north = $point["lat"];
+            if($point["lng"] > $east) $east = $point["lng"];
+            if($point["lng"] < $west) $west = $point["lng"];
+            if($point["lat"] < $south) $south = $point["lat"];
+        }
+    }
+    $corners = array(
+        array(
+            "lat" => $north,
+            "lng" => $west,
+        ),
+        array(
+            "lat" => $north,
+            "lng" => $east,
+        ),
+        array(
+            "lat" => $south,
+            "lng" => $east,
+        ),
+        array(
+            "lat" => $south,
+            "lng" => $west,
+        ),
+        array(
+            "lat" => $north,
+            "lng" => $west,
+        ),
+    );
     $cartoLimited = array(
        'bounding_polygon' => array(
            'fillColor' => $carto['bounding_polygon']['fillColor'],
            'fillOpacity' => $carto['bounding_polygon']['fillOpacity'],
+           "multibounds" => array($corners), # $carto["bounding_polygon"]["multibounds"], # TEMPORARY
        ),
    );
     $limitedProjectCols = array(

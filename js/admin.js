@@ -1654,7 +1654,7 @@ kmlHandler = function(path, callback) {
   loadJS(jsPath, function() {
     initializeParser(null, function() {
       loadKML(path, function() {
-        var boundingPolygon, cartoDataParsed, e, error1, error2, error3, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
+        var boundingPolygon, cartoDataParsed, cartoJson, cartoObj, e, err1, error1, error2, error3, error4, error5, l, len, len1, len2, m, o, parsedKmlData, polyBounds, polygon, polygonFills, polygonOpacities, polygons, ref1, ref2, ref3, segment, segmentPoint, simpleBCPoly, tmpPoint;
         try {
           parsedKmlData = geo.kml.parser.docsByUrl[path];
           if (isNull(parsedKmlData)) {
@@ -1716,16 +1716,47 @@ kmlHandler = function(path, callback) {
             geo.canonicalBoundingBox = boundingPolygon;
             if (!isNull(typeof _adp !== "undefined" && _adp !== null ? _adp.projectData : void 0)) {
               try {
-                cartoDataParsed = JSON.parse(_adp.projectData.carto_id);
+                cartoObj = _adp.projectData.carto_id;
+                if (typeof cartoObj !== "object") {
+                  try {
+                    cartoDataParsed = JSON.parse(deEscape(cartoObj));
+                  } catch (error1) {
+                    e = error1;
+                    err1 = e.message;
+                    try {
+                      cartoDataParsed = JSON.parse(cartoObj);
+                    } catch (error2) {
+                      e = error2;
+                      if (cartoObj.length > 511) {
+                        cartoJson = fixTruncatedJson(cartoObj);
+                        if (typeof cartoJson === "object") {
+                          console.debug("The carto data object was truncated, but rebuilt.");
+                          cartoDataParsed = cartoJson;
+                        }
+                      }
+                      if (isNull(cartoDataParsed)) {
+                        console.error("cartoObj must be JSON string or obj, given", cartoObj);
+                        console.warn("Cleaned obj:", deEscape(cartoObj));
+                        console.warn("Told '" + err1 + "' then", e.message);
+                        stopLoadError("Couldn't parse data");
+                        return false;
+                      }
+                    }
+                  }
+                } else {
+                  cartoDataParsed = cartoObj;
+                }
                 cartoDataParsed.bounding_polygon = boundingPolygon;
                 _adp.projectData.carto_id = JSON.stringify(cartoDataParsed);
-              } catch (error1) {
-                e = error1;
+              } catch (error3) {
+                e = error3;
+                console.error(e.message);
+                console.warn(e.stack);
                 allError("Warning: there may have been a problem saving your carto data");
               }
             }
-          } catch (error2) {
-            e = error2;
+          } catch (error4) {
+            e = error4;
             console.warn("WARNING: Couldn't write polygon data to globals");
           }
           if (typeof callback === "function") {
@@ -1734,8 +1765,8 @@ kmlHandler = function(path, callback) {
             console.info("kmlHandler wasn't given a callback function");
           }
           stopLoad();
-        } catch (error3) {
-          e = error3;
+        } catch (error5) {
+          e = error5;
           allError("There was an error importing the data from this KML file");
           console.warn(e.message);
           console.warn(e.stack);
@@ -4563,7 +4594,7 @@ recalculateAndUpdateHull = function(points) {
 };
 
 saveEditorData = function(force, callback) {
-  var args, authorObj, bpPathCount, cd, data, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
+  var args, authorObj, bpPathCount, cd, data, debugInfoDelay, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
   if (force == null) {
     force = false;
   }
@@ -4630,7 +4661,7 @@ saveEditorData = function(force, callback) {
 
     /*
      * POST data craps out with too many points
-     * Known failure at 4584
+     * Known failure at 4594*4
      */
     maxPathCount = 4000;
     try {
@@ -4707,6 +4738,11 @@ saveEditorData = function(force, callback) {
   }
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
+  debugInfoDelay = delay(10000, function() {
+    console.warn("POST may have hung after 10 seconds");
+    console.warn("args length was '" + args.length + "' = " + (args.length * 8) + " bytes");
+    return false;
+  });
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
     var error, newStatus, ref8, ref9;
     console.info("Save result: server said", result);
@@ -4766,8 +4802,10 @@ saveEditorData = function(force, callback) {
     }
     bsAlert("<strong>Save Error</strong>: We had trouble communicating with the server and your data was NOT saved. Please try again in a bit. <span id='offline-backup-status'>" + backupMessage + "</span>", "danger");
     console.error(result, status);
-    return console.warn("Raw post data", postData);
+    console.warn("Raw post data", postData);
+    return console.warn("args length was '" + args.length + "' = " + (args.length * 8) + " bytes");
   }).always(function() {
+    clearTimeout(debugInfoDelay);
     if (typeof callback === "function") {
       return callback();
     }
