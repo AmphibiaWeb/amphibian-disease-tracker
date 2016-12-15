@@ -611,7 +611,7 @@ postAuthorizeRender = (projectData, authorizationDetails) ->
   $("#title").append editButton # + adminButton
   authorData = JSON.parse projectData.author_data
   showEmailField authorData.contact_email
-  if not isNull(projectData.technical?.name) and not isNull(projectData.technical?.email)
+  if not isNull(projectData.technical_contact) and not isNull(projectData.technical_contact_email)
     label = "Technical Contact #{projectData.technical.name}"
     showEmailField projectData.technical.email, label, "technical-email-send"
   bindClicks(".authorized-action")
