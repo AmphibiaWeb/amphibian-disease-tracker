@@ -646,10 +646,12 @@ postAuthorizeRender = function(projectData, authorizationDetails) {
   $("#title").append(editButton);
   authorData = JSON.parse(projectData.author_data);
   showEmailField(authorData.contact_email);
-  if (!isNull(projectData.technical_contact) && !isNull(projectData.technical_contact_email)) {
-    label = "Technical Contact " + projectData.technical.name;
-    showEmailField(projectData.technical.email, label, "technical-email-send");
-  }
+  try {
+    if (!isNull(projectData.technical_contact) && !isNull(projectData.technical_contact_email)) {
+      label = "Technical Contact " + projectData.technical_contact;
+      showEmailField(projectData.technical_contact_email, label, "technical-email-send");
+    }
+  } catch (undefined) {}
   bindClicks(".authorized-action");
   cartoObj = projectData.carto_id;
   if (typeof cartoObj !== "object") {
