@@ -149,11 +149,15 @@ renderEmail = function(response) {
   dest = uri.urlString + "api.php";
   args = "action=is_human&recaptcha_response=" + response + "&project=" + _adp.projectId;
   $.post(dest, args, "json").done(function(result) {
-    var authorData;
+    var authorData, label, ref, ref1;
     console.info("Checked response");
     console.log(result);
     authorData = result.author_data;
     showEmailField(authorData.contact_email);
+    if (!isNull((ref = result.technical) != null ? ref.name : void 0) && !isNull((ref1 = result.technical) != null ? ref1.email : void 0)) {
+      label = "Technical Contact " + result.technical.name;
+      showEmailField(result.technical.email, label, "technical-email-send");
+    }
     return stopLoad();
   }).fail(function(result, status) {
     stopLoadError("Sorry, there was a problem getting the contact email");
@@ -162,11 +166,24 @@ renderEmail = function(response) {
   return false;
 };
 
-showEmailField = function(email) {
-  var html;
-  html = "<div class=\"row\">\n  <paper-input readonly class=\"col-xs-8 col-md-11\" label=\"Contact Email\" value=\"" + email + "\"></paper-input>\n  <paper-fab icon=\"communication:email\" class=\"click materialblue\" id=\"contact-email-send\" data-href=\"mailto:" + email + "\" data-toggle=\"tooltip\" title=\"Send Email\"></paper-fab>\n</div>";
-  $("#email-fill").replaceWith(html);
-  bindClicks("#contact-email-send");
+showEmailField = function(email, fieldLabel, fieldId) {
+  var fields, html, i, lastField;
+  if (fieldLabel == null) {
+    fieldLabel = "Contact Email";
+  }
+  if (fieldId == null) {
+    fieldId = "contact-email-send";
+  }
+  html = "<div class=\"row appended-email-field\">\n  <paper-input readonly class=\"col-xs-8 col-md-11\" label=\"" + fieldLabel + "\" value=\"" + email + "\"></paper-input>\n  <paper-fab icon=\"communication:email\" class=\"click materialblue\" id=\"" + fieldId + "\" data-href=\"mailto:" + email + "\" data-toggle=\"tooltip\" title=\"Send Email\"></paper-fab>\n</div>";
+  if ($("#email-fill").exists()) {
+    $("#email-fill").replaceWith(html);
+  } else {
+    fields = $(".appended-email-field");
+    i = fields.length - 1;
+    lastField = $(".appended-email-field").get(i);
+    $(lastField).after(html);
+  }
+  bindClicks("#" + fieldId);
   return false;
 };
 

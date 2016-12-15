@@ -928,6 +928,10 @@ function validateCaptcha($get)
             $a = array(
                 'status' => true,
                 'author_data' => $author_data,
+                "technical" => array(
+                    "name" => $result[0]["technical_contact"],
+                    "email" => $result[0]["technical_contact_email"],
+                ),
                 'raw_result' => $result[0],
             );
         }

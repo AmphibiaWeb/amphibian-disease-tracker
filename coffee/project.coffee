@@ -154,6 +154,9 @@ renderEmail = (response) ->
     console.log result
     authorData = result.author_data
     showEmailField authorData.contact_email
+    if not isNull(result.technical?.name) and not isNull(result.technical?.email)
+      label = "Technical Contact #{result.technical.name}"
+      showEmailField result.technical.email, label, "technical-email-send"
     stopLoad()
   .fail (result, status) ->
     stopLoadError "Sorry, there was a problem getting the contact email"
@@ -161,15 +164,21 @@ renderEmail = (response) ->
   false
 
 
-showEmailField = (email) ->
+showEmailField = (email, fieldLabel = "Contact Email", fieldId = "contact-email-send") ->
   html = """
-  <div class="row">
-    <paper-input readonly class="col-xs-8 col-md-11" label="Contact Email" value="#{email}"></paper-input>
-    <paper-fab icon="communication:email" class="click materialblue" id="contact-email-send" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
+  <div class="row appended-email-field">
+    <paper-input readonly class="col-xs-8 col-md-11" label="#{fieldLabel}" value="#{email}"></paper-input>
+    <paper-fab icon="communication:email" class="click materialblue" id="#{fieldId}" data-href="mailto:#{email}" data-toggle="tooltip" title="Send Email"></paper-fab>
   </div>
   """
-  $("#email-fill").replaceWith html
-  bindClicks("#contact-email-send")
+  if $("#email-fill").exists()
+    $("#email-fill").replaceWith html
+  else
+    fields = $(".appended-email-field")
+    i = fields.length - 1
+    lastField = $(".appended-email-field").get i
+    $(lastField).after html
+  bindClicks("##{fieldId}")
   false
 
 
