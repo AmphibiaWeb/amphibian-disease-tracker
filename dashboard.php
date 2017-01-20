@@ -128,8 +128,9 @@ $loginStatus = getLoginState();
     <script type="text/javascript" src="bower_components/JavaScript-MD5/js/md5.min.js"></script>
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
     <script type="text/javascript" src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
+    <script type="text/javascript" src="bower_components/chart.js/dist/Chart.bundle.min.js"></script>
     <script type="text/javascript" src="js/c.min.js"></script>
-    <script type="text/javascript" src="js/project.js"></script>
+    <script type="text/javascript" src="js/dashboard.js"></script>
     <script type="text/javascript">
       // Initial script
     </script>
@@ -183,6 +184,39 @@ $loginStatus = getLoginState();
     </p>
   </header>
   <main>
+    <?php
+            # See
+            # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176
+            # for scope and features
+
+            # Fetch aggregate stats
+            /***
+             * Create opportunities for several bins
+             *
+             * Bin by:
+             * - location
+             * - time
+             * - species
+             * - positive species
+             *
+             ***/
+            switch($_REQUEST["sort"]) {
+              case "time":
+              # Sort by time
+                break;
+              case "species":
+              # Sort by species alphabetically
+                break;
+              case "infection":
+              # Sort by `disease_positive`
+                break;
+              default:
+                # Location bin
+              # Have to hit the Google API for each one to check the
+              # country per coordinate
+            }
+
+      ?>
   </main>
   <?php
     require_once("./footer.php");

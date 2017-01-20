@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "dashboard.js",
+  "sourceRoot": "../../coffee/",
+  "sources": [
+    "dashboard.coffee"
+  ],
+  "names": [],
+  "mappings": "AAGA,CAAA,CAAE,SAAA;EACA,OAAO,CAAC,GAAR,CAAY,kBAAZ;SACA;AAFA,CAAF"
+}
