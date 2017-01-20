@@ -31,11 +31,14 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   sampleDatasets = [
     sampleBarData
     ]
+  # The actual data object
+  sampleData =
+    labels: ["January", "February", "March", "April", "May", "June", "July"]
+    datasets: sampleDatasets
   ###
   # Sample bits for a sample bar graph
   ###
-  chartData.labels ?= ["January", "February", "March", "April", "May", "June", "July"]
-  chartData.data ?= sampleDatasets
+  chartData.data ?= sampleData
   chartData.type ?= "bar"
   unless typeof chartData.options is "object"
     chartData.options =

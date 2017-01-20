@@ -1,7 +1,7 @@
 var createChart;
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
-  var chart, chartCtx, html, newId, sampleBarData, sampleDatasets;
+  var chart, chartCtx, html, newId, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -24,15 +24,16 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
     backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)']
   };
   sampleDatasets = [sampleBarData];
+  sampleData = {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: sampleDatasets
+  };
 
   /*
    * Sample bits for a sample bar graph
    */
-  if (chartData.labels == null) {
-    chartData.labels = ["January", "February", "March", "April", "May", "June", "July"];
-  }
   if (chartData.data == null) {
-    chartData.data = sampleDatasets;
+    chartData.data = sampleData;
   }
   if (chartData.type == null) {
     chartData.type = "bar";
