@@ -964,3 +964,42 @@ function validateCaptcha($get)
     }
     returnAjax($a);
 }
+
+
+
+
+function getChartData() {
+    global $default_table;
+    $mapType = "";
+    /***
+     * Create opportunities for several bins
+     *
+     * Bin by:
+     * - location
+     * - time
+     * - species
+     * - positive species
+     *
+     ***/
+    switch($_REQUEST["sort"]) {
+    case "time":
+        # Sort by time
+        break;
+    case "species":
+        # Sort by species alphabetically
+        break;
+    case "location":
+        # Location bin
+        # Have to hit the Google API for each one to check the
+        # country per coordinate
+        break;
+    case "infection":
+    default:
+        # Sort by `disease_positive`
+        $query = "SELECT * FROM `$default_table` ORDER BY `disease_positive`";
+        # do the query
+        // construct a count per count as obj, eg, 10projects for 100
+        // positive, etc.
+        break;
+    }
+}

@@ -190,31 +190,6 @@ $loginStatus = getLoginState();
             # for scope and features
 
             # Fetch aggregate stats
-            /***
-             * Create opportunities for several bins
-             *
-             * Bin by:
-             * - location
-             * - time
-             * - species
-             * - positive species
-             *
-             ***/
-            switch($_REQUEST["sort"]) {
-              case "time":
-              # Sort by time
-                break;
-              case "species":
-              # Sort by species alphabetically
-                break;
-              case "infection":
-              # Sort by `disease_positive`
-                break;
-              default:
-                # Location bin
-              # Have to hit the Google API for each one to check the
-              # country per coordinate
-            }
 
       ?>
   </main>
