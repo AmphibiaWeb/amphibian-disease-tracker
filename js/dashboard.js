@@ -1,7 +1,7 @@
 var createChart;
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
-  var chart, chartCtx, html, newId;
+  var chart, chartCtx, html, newId, sampleBarData;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -12,14 +12,18 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
     console.error("Can't create a chart without a data object");
     return false;
   }
-  if (chartData.data == null) {
-    chartData.data = [1, 2, 3, 4, 5];
+  sampleBarData = {
+    label: "Sample Data",
+    data: [1, 2, 3, 4, 5]
+  };
+  if (chartData.labels == null) {
+    chartData.labels = ["Label1", "Label2", "Label3", "Label4", "Label5"];
+  }
+  if (chartData.datasets == null) {
+    chartData.datasets = [sampleBarData];
   }
   if (chartData.type == null) {
     chartData.type = "bar";
-  }
-  if (chartData.labels == null) {
-    chartData.labels = ["Label1", "Label2", "Label3", "Label4", "Label5"];
   }
   if (typeof chartData.options !== "object") {
     chartData.options = {

@@ -3,9 +3,15 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   unless typeof chartData is "object"
     console.error "Can't create a chart without a data object"
     return false
-  chartData.data ?= [1,2,3,4,5]
-  chartData.type ?= "bar"
+
+  sampleBarData =
+    label: "Sample Data"
+    data: [1,2,3,4,5]
   chartData.labels ?= ["Label1", "Label2", "Label3", "Label4", "Label5"]
+  chartData.datasets ?= [
+    sampleBarData
+    ]
+  chartData.type ?= "bar"
   unless typeof chartData.options is "object"
     chartData.options =
       responsive: true
