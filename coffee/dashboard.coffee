@@ -2,6 +2,7 @@
 createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main") ->
   unless typeof chartData is "object"
     console.error "Can't create a chart without a data object"
+    return false
   chartData.data ?= [1,2,3,4,5]
   chartData.type ?= "bar"
   chartData.labels ?= ["Label1", "Label2", "Label3", "Label4", "Label5"]
@@ -24,5 +25,5 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
 
 $ ->
   console.log "Loaded dashboard"
-  createChart("#sample")
+  createChart("#sample", {})
   false

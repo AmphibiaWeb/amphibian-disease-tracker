@@ -10,6 +10,7 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   }
   if (typeof chartData !== "object") {
     console.error("Can't create a chart without a data object");
+    return false;
   }
   if (chartData.data == null) {
     chartData.data = [1, 2, 3, 4, 5];
@@ -36,7 +37,7 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
 
 $(function() {
   console.log("Loaded dashboard");
-  createChart("#sample");
+  createChart("#sample", {});
   return false;
 });
 
