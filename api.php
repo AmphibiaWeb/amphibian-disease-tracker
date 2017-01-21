@@ -1249,4 +1249,9 @@ function getChartData($chartDataParams) {
         }
         break;
       }
+      returnAjax(array(
+        "status" => false,
+        "error" => "NO_CAUGHT_CASE",
+        "human_error" => "There was an application error parsing your chart data request",
+      ));
     }

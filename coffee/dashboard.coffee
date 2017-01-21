@@ -99,7 +99,7 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   unless $(chartSelector).exists()
     newId = if chartSelector.slice(0,1) is "#" then chartSelector.slice(1) else "dataChart-#{$("canvas").length}"
     html = """
-    <canvas id="#{newId}" class="chart dynamic-chart">
+    <canvas id="#{newId}" class="chart dynamic-chart col-xs-12">
     </canvas>
     """
     $(appendTo).append html
@@ -119,14 +119,20 @@ getRandomDataColor = ->
   colors
 
 
-getServerChart = ->
+getServerChart = (chartType = "infection", chartParams) ->
   # Get the chart
-  args = "action=chart"
+  args = "action=chart&sort=#{chartType}"
+  if typeof chartParams is "object"
+    cp = new Array()
+    for requestKey, requestValue of chartParams
+      cp.push "#{requestKey}=#{requestValue}"
+    args += "&#{cp.join "&"}"
   $.post apiTarget, args, "json"
   .done (result) ->
     if result.status is false
       console.error "Server had a problem fetching chart data - #{result.human_error}"
       console.warn result
+      toastStatusMessage result.human_error
       return false
     chartData = result.data
     datasets = Object.toArray chartData.datasets
@@ -152,11 +158,37 @@ getServerChart = ->
     createChart "#chart-#{datasets[0].label.replace(" ","-")}", chartObj
     false
   .fail (result, status) ->
+    console.error "AJAX error", result, status
+    toastStatusMessage "There was a problem communicating with the server"
     false
   false
 
 
+renderNewChart = ->
+  # Parse the request
+  chartOptions = new Object()
+  for option in $(".chart-param")
+    key = $(option).attr "data-key"
+    try
+      if p$(option).checked?
+        chartOptions[key] = p$(option).checked
+      else
+        throw "Not Toggle"
+    catch
+      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase()
+  # Remove the old one
+  $(".chart.dynamic-chart").remove()
+  # Get the new one
+  chartType = chartOptions.view ? "infection"
+  delete chartOptions.view
+  getServerChart chartType, chartOptions
+  chartOptions
+
+
+
 $ ->
   console.log "Loaded dashboard"
-  createChart("#sample", {})
+  getServerChart()
+  $("#generate-chart").click ->
+    renderNewChart.debounce 50
   false

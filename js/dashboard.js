@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart;
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart;
 
 apiTarget = uri.urlString + "/api.php";
 
@@ -76,7 +76,7 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   }
   if (!$(chartSelector).exists()) {
     newId = chartSelector.slice(0, 1) === "#" ? chartSelector.slice(1) : "dataChart-" + ($("canvas").length);
-    html = "<canvas id=\"" + newId + "\" class=\"chart dynamic-chart\">\n</canvas>";
+    html = "<canvas id=\"" + newId + "\" class=\"chart dynamic-chart col-xs-12\">\n</canvas>";
     $(appendTo).append(html);
   }
   chartCtx = $(chartSelector);
@@ -95,14 +95,26 @@ getRandomDataColor = function() {
   return colors;
 };
 
-getServerChart = function() {
-  var args;
-  args = "action=chart";
+getServerChart = function(chartType, chartParams) {
+  var args, cp, requestKey, requestValue;
+  if (chartType == null) {
+    chartType = "infection";
+  }
+  args = "action=chart&sort=" + chartType;
+  if (typeof chartParams === "object") {
+    cp = new Array();
+    for (requestKey in chartParams) {
+      requestValue = chartParams[requestKey];
+      cp.push(requestKey + "=" + requestValue);
+    }
+    args += "&" + (cp.join("&"));
+  }
   $.post(apiTarget, args, "json").done(function(result) {
     var chartData, chartDataJs, chartObj, colors, data, dataItem, datasets, i, j, k, len, len1, ref, ref1;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
+      toastStatusMessage(result.human_error);
       return false;
     }
     chartData = result.data;
@@ -139,14 +151,43 @@ getServerChart = function() {
     createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartObj);
     return false;
   }).fail(function(result, status) {
+    console.error("AJAX error", result, status);
+    toastStatusMessage("There was a problem communicating with the server");
     return false;
   });
   return false;
 };
 
+renderNewChart = function() {
+  var chartOptions, chartType, error, j, key, len, option, ref, ref1;
+  chartOptions = new Object();
+  ref = $(".chart-param");
+  for (j = 0, len = ref.length; j < len; j++) {
+    option = ref[j];
+    key = $(option).attr("data-key");
+    try {
+      if (p$(option).checked != null) {
+        chartOptions[key] = p$(option).checked;
+      } else {
+        throw "Not Toggle";
+      }
+    } catch (error) {
+      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase();
+    }
+  }
+  $(".chart.dynamic-chart").remove();
+  chartType = (ref1 = chartOptions.view) != null ? ref1 : "infection";
+  delete chartOptions.view;
+  getServerChart(chartType, chartOptions);
+  return chartOptions;
+};
+
 $(function() {
   console.log("Loaded dashboard");
-  createChart("#sample", {});
+  getServerChart();
+  $("#generate-chart").click(function() {
+    return renderNewChart.debounce(50);
+  });
   return false;
 });
 
