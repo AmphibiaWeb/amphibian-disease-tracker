@@ -111,6 +111,14 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   chart
 
 
+getRandomDataColor = ->
+  colorString = "rgba(#{randomInt(0,255)},#{randomInt(0,255)},#{randomInt(0,255)}"
+  colors =
+    border: "#{colorString},1)"
+    background: "#{colorString},0.2"
+  colors
+
+
 getServerChart = ->
   # Get the chart
   args = "action=chart"
@@ -125,6 +133,11 @@ getServerChart = ->
     i = 0
     for data in datasets
       data.data = Object.toArray data.data
+      data.borderWidth ?= 1
+      unless data.backgroundColor?
+        colors = getRandomDataColor()
+        data.borderColor = colors.border
+        data.backgroundColor = colors.background
       datasets[i] = data
       ++i
     chartDataJs =

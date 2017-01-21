@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getServerChart;
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart;
 
 apiTarget = uri.urlString + "/api.php";
 
@@ -85,11 +85,21 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   return chart;
 };
 
+getRandomDataColor = function() {
+  var colorString, colors;
+  colorString = "rgba(" + (randomInt(0, 255)) + "," + (randomInt(0, 255)) + "," + (randomInt(0, 255));
+  colors = {
+    border: colorString + ",1)",
+    background: colorString + ",0.2"
+  };
+  return colors;
+};
+
 getServerChart = function() {
   var args;
   args = "action=chart";
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, chartDataJs, chartObj, data, datasets, i, j, len, ref;
+    var chartData, chartDataJs, chartObj, colors, data, datasets, i, j, len, ref;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -101,6 +111,14 @@ getServerChart = function() {
     for (j = 0, len = datasets.length; j < len; j++) {
       data = datasets[j];
       data.data = Object.toArray(data.data);
+      if (data.borderWidth == null) {
+        data.borderWidth = 1;
+      }
+      if (data.backgroundColor == null) {
+        colors = getRandomDataColor();
+        data.borderColor = colors.border;
+        data.backgroundColor = colors.background;
+      }
       datasets[i] = data;
       ++i;
     }
