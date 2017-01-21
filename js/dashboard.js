@@ -110,6 +110,7 @@ getServerChart = function(chartType, chartParams) {
     }
     args += "&" + (cp.join("&"));
   }
+  console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
     var chartData, chartDataJs, chartObj, colors, data, dataItem, datasets, i, j, k, len, len1, ref, ref1;
     if (result.status === false) {

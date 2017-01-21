@@ -1237,6 +1237,8 @@ function getChartData($chartDataParams) {
             "data" => $chartData,
             "rows" => $rowCount,
             "format" => "chart.js",
+            "provided" => $chartDataParams,
+            "parsed_options" => array("group" => $group, "percent" => $percent),
                      // "query" => $query,
                      // "returned_rows" => $returnedRows,
           ));

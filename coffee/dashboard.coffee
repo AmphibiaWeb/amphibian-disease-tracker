@@ -128,6 +128,7 @@ getServerChart = (chartType = "infection", chartParams) ->
     for requestKey, requestValue of chartParams
       cp.push "#{requestKey}=#{requestValue}"
     args += "&#{cp.join "&"}"
+  console.debug "Fetching chart with", "#{apiTarget}?#{args}"
   $.post apiTarget, args, "json"
   .done (result) ->
     if result.status is false
