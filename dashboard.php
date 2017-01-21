@@ -195,38 +195,39 @@ $loginStatus = getLoginState();
     <h2 class="col-xs-12">
       Disease Summary Dashboard
     </h2>
-    <div class="form form-horizontal row">
-      <h3 class="col-xs-12">Create a chart</h3>
-      <div class="col-xs-12 col-lg-3">
-        <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
-          <paper-listbox class="dropdown-content" selected="0">
-            <paper-item>Project Count</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
+    <section class="col-xs-12">
+      <div class="form form-horizontal row">
+        <h3 class="col-xs-12">Create a chart</h3>
+        <div class="col-xs-12 col-lg-3">
+          <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
+            <paper-listbox class="dropdown-content" selected="0">
+              <paper-item>Project Count</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <div class="col-xs-12 col-lg-3">
+          <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
+            <paper-listbox class="dropdown-content" selected="0">
+              <paper-item>
+                Infection
+              </paper-item>
+              <paper-item disabled>Species</paper-item>
+              <paper-item disabled>Location</paper-item>
+              <paper-item disabled>Time</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <div class="col-xs-12 col-lg-3">
+          <paper-toggle-button id="group-values" data-key="group" class="chart-param">Group Values</paper-toggle-button>
+        </div>
+        <div class="col-xs-12 col-lg-3">
+          <paper-toggle-button id="percent-values" data-key="percent" class="chart-param" checked>Show Percents</paper-toggle-button>
+        </div>
+        <div class="col-xs-12">
+          <button class="btn btn-success" id="generate-chart">Generate Chart</button>
+        </div>
       </div>
-      <div class="col-xs-12 col-lg-3">
-        Sort by: [infected count / time / etc]
-        <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
-          <paper-listbox class="dropdown-content" selected="0">
-            <paper-item>
-              Infection
-            </paper-item>
-            <paper-item disabled>Species</paper-item>
-            <paper-item disabled>Location</paper-item>
-            <paper-item disabled>Time</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-      <div class="col-xs-12 col-lg-3">
-        <paper-toggle-button id="group-values" data-key="group" class="chart-param">Group Values</paper-toggle-button>
-      </div>
-      <div class="col-xs-12 col-lg-3">
-        <paper-toggle-button id="percent-values" data-key="percent" class="chart-param" checked>Show Percents</paper-toggle-button>
-      </div>
-    </div>
-    <div class="col-xs-12">
-      <button class="btn btn-success" id="generate-chart">Generate Chart</button>
-    </div>
+    </section>
   </main>
   <?php
     require_once("./footer.php");
