@@ -178,7 +178,7 @@ renderNewChart = ->
       else
         throw "Not Toggle"
     catch
-      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase()
+      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase().replace(" ", "-")
   # Remove the old one
   $(".chart.dynamic-chart").remove()
   # Get the new one

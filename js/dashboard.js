@@ -175,7 +175,7 @@ renderNewChart = function() {
         throw "Not Toggle";
       }
     } catch (error) {
-      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase();
+      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase().replace(" ", "-");
     }
   }
   $(".chart.dynamic-chart").remove();
