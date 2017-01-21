@@ -1,8 +1,8 @@
 var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart;
 
-apiTarget = uri.urlString + "/api.php";
+apiTarget = uri.urlString + "api.php";
 
-adminApiTarget = uri.urlString + "/admin-api.php";
+adminApiTarget = uri.urlString + "admin-api.php";
 
 window._adp = new Object();
 
@@ -167,7 +167,7 @@ renderNewChart = function() {
   ref = $(".chart-param");
   for (j = 0, len = ref.length; j < len; j++) {
     option = ref[j];
-    key = $(option).attr("data-key");
+    key = $(option).attr("data-key").replace(" ", "-");
     try {
       if (p$(option).checked != null) {
         chartOptions[key] = p$(option).checked;
@@ -179,8 +179,8 @@ renderNewChart = function() {
     }
   }
   $(".chart.dynamic-chart").remove();
-  chartType = (ref1 = chartOptions.view) != null ? ref1 : "infection";
-  delete chartOptions.view;
+  chartType = (ref1 = chartOptions.sort) != null ? ref1 : "infection";
+  delete chartOptions.sort;
   console.info("Going to generate a new chart with the following options", chartOptions);
   getServerChart(chartType, chartOptions);
   return chartOptions;

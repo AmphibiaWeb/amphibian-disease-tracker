@@ -1,5 +1,5 @@
-apiTarget = "#{uri.urlString}/api.php"
-adminApiTarget = "#{uri.urlString}/admin-api.php"
+apiTarget = "#{uri.urlString}api.php"
+adminApiTarget = "#{uri.urlString}admin-api.php"
 
 window._adp = new Object()
 
@@ -171,7 +171,7 @@ renderNewChart = ->
   # Parse the request
   chartOptions = new Object()
   for option in $(".chart-param")
-    key = $(option).attr "data-key"
+    key = $(option).attr("data-key").replace(" ", "-")
     try
       if p$(option).checked?
         chartOptions[key] = p$(option).checked
@@ -182,8 +182,8 @@ renderNewChart = ->
   # Remove the old one
   $(".chart.dynamic-chart").remove()
   # Get the new one
-  chartType = chartOptions.view ? "infection"
-  delete chartOptions.view
+  chartType = chartOptions.sort ? "infection"
+  delete chartOptions.sort
   console.info "Going to generate a new chart with the following options", chartOptions
   getServerChart chartType, chartOptions
   chartOptions
