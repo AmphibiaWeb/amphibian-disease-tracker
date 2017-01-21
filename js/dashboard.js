@@ -90,7 +90,7 @@ getRandomDataColor = function() {
   colorString = "rgba(" + (randomInt(0, 255)) + "," + (randomInt(0, 255)) + "," + (randomInt(0, 255));
   colors = {
     border: colorString + ",1)",
-    background: colorString + ",0.2"
+    background: colorString + ",0.2)"
   };
   return colors;
 };
@@ -99,7 +99,7 @@ getServerChart = function() {
   var args;
   args = "action=chart";
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, chartDataJs, chartObj, colors, data, datasets, i, j, len, ref;
+    var chartData, chartDataJs, chartObj, colors, data, dataItem, datasets, i, j, k, len, len1, ref, ref1;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -115,9 +115,15 @@ getServerChart = function() {
         data.borderWidth = 1;
       }
       if (data.backgroundColor == null) {
-        colors = getRandomDataColor();
-        data.borderColor = colors.border;
-        data.backgroundColor = colors.background;
+        data.borderColor = new Array();
+        data.backgroundColor = new Array();
+        ref = data.data;
+        for (k = 0, len1 = ref.length; k < len1; k++) {
+          dataItem = ref[k];
+          colors = getRandomDataColor();
+          data.borderColor.push(colors.border);
+          data.backgroundColor.push(colors.background);
+        }
       }
       datasets[i] = data;
       ++i;
@@ -128,7 +134,7 @@ getServerChart = function() {
     };
     chartObj = {
       data: chartDataJs,
-      type: (ref = chartData.type) != null ? ref : "bar"
+      type: (ref1 = chartData.type) != null ? ref1 : "bar"
     };
     createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartObj);
     return false;

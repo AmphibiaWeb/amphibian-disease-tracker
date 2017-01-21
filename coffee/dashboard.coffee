@@ -115,7 +115,7 @@ getRandomDataColor = ->
   colorString = "rgba(#{randomInt(0,255)},#{randomInt(0,255)},#{randomInt(0,255)}"
   colors =
     border: "#{colorString},1)"
-    background: "#{colorString},0.2"
+    background: "#{colorString},0.2)"
   colors
 
 
@@ -135,9 +135,12 @@ getServerChart = ->
       data.data = Object.toArray data.data
       data.borderWidth ?= 1
       unless data.backgroundColor?
-        colors = getRandomDataColor()
-        data.borderColor = colors.border
-        data.backgroundColor = colors.background
+        data.borderColor = new Array()
+        data.backgroundColor = new Array()
+        for dataItem in data.data
+          colors = getRandomDataColor()
+          data.borderColor.push colors.border
+          data.backgroundColor.push colors.background
       datasets[i] = data
       ++i
     chartDataJs =
