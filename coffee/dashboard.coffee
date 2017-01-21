@@ -121,6 +121,7 @@ getRandomDataColor = ->
 
 getServerChart = (chartType = "infection", chartParams) ->
   # Get the chart
+  startLoad()
   args = "action=chart&sort=#{chartType}"
   if typeof chartParams is "object"
     cp = new Array()
@@ -132,7 +133,7 @@ getServerChart = (chartType = "infection", chartParams) ->
     if result.status is false
       console.error "Server had a problem fetching chart data - #{result.human_error}"
       console.warn result
-      toastStatusMessage result.human_error
+      stopLoadError result.human_error
       return false
     chartData = result.data
     datasets = Object.toArray chartData.datasets
@@ -156,10 +157,11 @@ getServerChart = (chartType = "infection", chartParams) ->
       data: chartDataJs
       type: chartData.type ? "bar"
     createChart "#chart-#{datasets[0].label.replace(" ","-")}", chartObj
+    stopLoad()
     false
   .fail (result, status) ->
     console.error "AJAX error", result, status
-    toastStatusMessage "There was a problem communicating with the server"
+    stopLoadError "There was a problem communicating with the server"
     false
   false
 
@@ -181,6 +183,7 @@ renderNewChart = ->
   # Get the new one
   chartType = chartOptions.view ? "infection"
   delete chartOptions.view
+  console.info "Going to generate a new chart with the following options", chartOptions
   getServerChart chartType, chartOptions
   chartOptions
 

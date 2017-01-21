@@ -100,6 +100,7 @@ getServerChart = function(chartType, chartParams) {
   if (chartType == null) {
     chartType = "infection";
   }
+  startLoad();
   args = "action=chart&sort=" + chartType;
   if (typeof chartParams === "object") {
     cp = new Array();
@@ -114,7 +115,7 @@ getServerChart = function(chartType, chartParams) {
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
-      toastStatusMessage(result.human_error);
+      stopLoadError(result.human_error);
       return false;
     }
     chartData = result.data;
@@ -149,10 +150,11 @@ getServerChart = function(chartType, chartParams) {
       type: (ref1 = chartData.type) != null ? ref1 : "bar"
     };
     createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartObj);
+    stopLoad();
     return false;
   }).fail(function(result, status) {
     console.error("AJAX error", result, status);
-    toastStatusMessage("There was a problem communicating with the server");
+    stopLoadError("There was a problem communicating with the server");
     return false;
   });
   return false;
@@ -178,6 +180,7 @@ renderNewChart = function() {
   $(".chart.dynamic-chart").remove();
   chartType = (ref1 = chartOptions.view) != null ? ref1 : "infection";
   delete chartOptions.view;
+  console.info("Going to generate a new chart with the following options", chartOptions);
   getServerChart(chartType, chartOptions);
   return chartOptions;
 };
