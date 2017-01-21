@@ -1,3 +1,52 @@
+apiTarget = "#{uri.urlString}/api.php"
+adminApiTarget = "#{uri.urlString}/admin-api.php"
+
+window._adp = new Object()
+
+try
+  do createOverflowMenu = ->
+    ###
+    # Create the overflow menu lazily
+    ###
+    checkLoggedIn (result) ->
+      accountSettings = if result.status then """    <paper-item data-href="https://amphibiandisease.org/admin" class="click">
+        <iron-icon icon="icons:settings-applications"></iron-icon>
+        Account Settings
+      </paper-item>
+      <paper-item data-href="https://amphibiandisease.org/admin-login.php?q=logout" class="click">
+        <span class="glyphicon glyphicon-log-out"></span>
+        Log Out
+      </paper-item>
+      """ else ""
+      menu = """
+    <paper-menu-button id="header-overflow-menu" vertical-align="bottom" horizontal-offset="-15" horizontal-align="right" vertical-offset="30">
+      <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
+      <paper-menu class="dropdown-content">
+        #{accountSettings}
+        <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
+          Summary Dashboard
+        </paper-item>
+        <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
+          <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
+          Documentation
+        </paper-item>
+        <paper-item data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker" class="click">
+          <iron-icon icon="glyphicon-social:github"></iron-icon>
+          Github
+        </paper-item>
+        <paper-item data-href="https://amphibiandisease.org/about.php" class="click">
+          About / Legal
+        </paper-item>
+      </paper-menu>
+    </paper-menu-button>
+      """
+      $("#header-overflow-menu").remove()
+      $("header#header-bar .logo-container + p").append menu
+      unless isNull accountSettings
+        $("header#header-bar paper-icon-button[icon='icons:settings-applications']").remove()
+      bindClicks()
+    false
+
 
 createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main") ->
   unless typeof chartData is "object"
@@ -57,6 +106,32 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   chart = new Chart chartCtx, chartData
   console.info "Chart created with", chartData
   chart
+
+
+getServerChart = ->
+  # Get the chart
+  args = "action=chart"
+  $.post apiTarget, args, "json"
+  .done (result) ->
+    if result.status is false
+      console.error "Server had a problem fetching chart data - #{result.human_error}"
+      console.warn result
+      return false
+    chartData = result.data
+    datasets = Object.toArray chartData.datasets
+    i = 0
+    for data in datasets
+      data.data = Object.toArray data.data
+      datasets[i] = data
+      ++i
+    chartDataJs =
+      labels: Object.toArray chartData.labels
+      datasets: datasets
+    createChart "#chart-#{datasets[0].label.replace(" ","-")}", chartDataJs
+    false
+  .fail (result, status) ->
+    false
+  false
 
 
 $ ->

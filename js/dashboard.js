@@ -1,4 +1,31 @@
-var createChart;
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, getServerChart;
+
+apiTarget = uri.urlString + "/api.php";
+
+adminApiTarget = uri.urlString + "/admin-api.php";
+
+window._adp = new Object();
+
+try {
+  (createOverflowMenu = function() {
+
+    /*
+     * Create the overflow menu lazily
+     */
+    checkLoggedIn(function(result) {
+      var accountSettings, menu;
+      accountSettings = result.status ? "    <paper-item data-href=\"https://amphibiandisease.org/admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"https://amphibiandisease.org/admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
+      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item disabled data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"https://amphibiandisease.org/about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
+      $("#header-overflow-menu").remove();
+      $("header#header-bar .logo-container + p").append(menu);
+      if (!isNull(accountSettings)) {
+        $("header#header-bar paper-icon-button[icon='icons:settings-applications']").remove();
+      }
+      return bindClicks();
+    });
+    return false;
+  })();
+} catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   var chart, chartCtx, html, newId, sampleBarData, sampleData, sampleDatasets;
@@ -52,6 +79,37 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   chart = new Chart(chartCtx, chartData);
   console.info("Chart created with", chartData);
   return chart;
+};
+
+getServerChart = function() {
+  var args;
+  args = "action=chart";
+  $.post(apiTarget, args, "json").done(function(result) {
+    var chartData, chartDataJs, data, datasets, i, j, len;
+    if (result.status === false) {
+      console.error("Server had a problem fetching chart data - " + result.human_error);
+      console.warn(result);
+      return false;
+    }
+    chartData = result.data;
+    datasets = Object.toArray(chartData.datasets);
+    i = 0;
+    for (j = 0, len = datasets.length; j < len; j++) {
+      data = datasets[j];
+      data.data = Object.toArray(data.data);
+      datasets[i] = data;
+      ++i;
+    }
+    chartDataJs = {
+      labels: Object.toArray(chartData.labels),
+      datasets: datasets
+    };
+    createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartDataJs);
+    return false;
+  }).fail(function(result, status) {
+    return false;
+  });
+  return false;
 };
 
 $(function() {
