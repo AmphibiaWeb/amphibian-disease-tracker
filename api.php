@@ -1179,11 +1179,11 @@ function getChartData($chartDataParams) {
             # Construct the counts based on the case above
             switch($countCase) {
               case 1:
-              $calcPercent = ceil(intval($row["disease_positive"]) / intval($row["disease_samples"]));
+              $calcPercent = ceil(100 * intval($row["disease_positive"]) / intval($row["disease_samples"]));
               $countedProjects[$calcPercent]++;
               break;
               case 2:
-              $calcPercent = ceil(intval($row["disease_positive"]) / intval($row["disease_samples"]));
+              $calcPercent = ceil(100 * intval($row["disease_positive"]) / intval($row["disease_samples"]));
               foreach($checkRange as $range)  {
                 $key = $range["key"];
                 if(!$hasConstructedLabels) $labels[] = $key;
