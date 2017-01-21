@@ -1086,8 +1086,9 @@ function getChartData($chartDataParams) {
             while($i <= 100) {
               $countedProjects[$i] = 0;
               $labels[] = $i."%";
-              $hasConstructedLabels = true;
+              $i++;
             }
+            $hasConstructedLabels = true;
           }
         } else {
           if ($group) {
