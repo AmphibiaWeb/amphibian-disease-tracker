@@ -1018,7 +1018,7 @@ function getChartData($chartDataParams) {
         $percent = toBool($chartDataParams["percent"]);
         # By default, we want it grouped, unless it's a percent.
         if(empty($chartDataParams["group"])) $chartDataParams["group"] = $percent ? false:true;
-        $grouped = toBool($chartDataParams["group"]);
+        $group = toBool($chartDataParams["group"]);
         /***
         * We have a few potential counting methods.
         *
