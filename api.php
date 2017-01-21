@@ -115,6 +115,9 @@ switch ($do) {
   // case 'advanced_project_search':
   //   advancedSearchProject($_REQUEST);
   //   break;
+  case 'chart':
+      getChartData($_REQUEST);
+      break;
   default:
     returnAjax(array(
         'status' => false,
@@ -968,8 +971,8 @@ function validateCaptcha($get)
 
 
 
-function getChartData() {
-    global $default_table;
+function getChartData($chartDataParams) {
+    global $default_table, $db;
     $mapType = "";
     /***
      * Create opportunities for several bins
@@ -981,7 +984,7 @@ function getChartData() {
      * - positive species
      *
      ***/
-    switch($_REQUEST["sort"]) {
+    switch($chartDataParams["sort"]) {
     case "time":
         # Sort by time
         break;
@@ -996,10 +999,250 @@ function getChartData() {
     case "infection":
     default:
         # Sort by `disease_positive`
-        $query = "SELECT * FROM `$default_table` ORDER BY `disease_positive`";
+        $query = "SELECT `disease_positive`, `disease_samples` FROM `$default_table` ORDER BY `disease_positive`";
         # do the query
-        // construct a count per count as obj, eg, 10projects for 100
-        // positive, etc.
+        $db->invalidateLink();
+        $result = mysqli_query($db->getLink(), $query);
+        if($result === false) {
+          returnAjax(array(
+            "status" => false,
+            "error" => mysqli_error($db->getLink()),
+            "human_error" => "There was an application error getting your chart data",
+          ));
+        }
+        # Set up how we'll count this
+        $countedProjects = array();
+        # By default, we want to view a percentage distribution
+        if(empty($chartDataParams["percent"])) $chartDataParams["percent"] = true;
+        $percent = toBool($chartDataParams["percent"]);
+        # By default, we want it grouped, unless it's a percent.
+        if(empty($chartDataParams["group"])) $chartDataParams["group"] = $percent ? false:true;
+        $grouped = toBool($chartDataParams["group"]);
+        /***
+        * We have a few potential counting methods.
+        *
+        * 1) Binned by percent -- CEIL(disease_positive /
+        * diesase_samples)
+        * 2) Binned by grouped percent -- 0-10%, 11%-25%, 26%-50%,
+        * 51%-75%, 76%-89%, 90%+
+        * 3) Binned by count range -- 0-10, 11-25, 26-50, 51-100, 101-250,
+        * 251-500, 501-1000, 1001-2000, 2001-5000, 5001-9999, 10000+
+        * 4) A raw count list.
+        ***/
+        $countCase = null;
+        $checkRange = null;
+        $labels = array();
+        $hasConstructedLabels = false;
+        $rowCount = 0;
+        if ($percent) {
+          if ($group) {
+            # Grouped percentages
+            $countCase = 2;
+            $countedProjects = array(
+              "0-10" => 0,
+              "11-25" => 0,
+              "26-50" => 0,
+              "51-75" => 0,
+              "76-89" => 0,
+              "90+" => 0,
+
+            );
+            $checkRange = array(
+              array(
+                "min" => 0,
+                "max" => 10,
+                "key" => "0-10",
+              ),
+              array(
+                "min" => 11,
+                "max" => 25,
+                "key" => "11-25",
+              ),
+              array(
+                "min" => 26,
+                "max" => 50,
+                "key" => "26-50",
+              ),
+              array(
+                "min" => 51,
+                "max" => 75,
+                "key" => "51-75",
+              ),
+              array(
+                "min" => 76,
+                "max" => 89,
+                "key" => "76-89",
+              ),
+              array(
+                "min" => 90,
+                "max" => 100,
+                "key" => "90+",
+              ),
+            );
+          } else {
+            # Raw percentages
+            $countCase = 1;
+            $i = 0;
+            while($i <= 100) {
+              $countedProjects[$i] = 0;
+              $labels[] = $i."%";
+              $hasConstructedLabels = true;
+            }
+          }
+        } else {
+          if ($group) {
+            $countCase = 3;
+            $countedProjects = array(
+              "0-10" => 0,
+              "11-25" => 0,
+              "26-50" => 0,
+              "51-100" => 0,
+              "101-250" => 0,
+              "251-500" => 0,
+              "501-1000" => 0,
+              "1001-2000" => 0,
+              "2001-5000" => 0,
+              "5001-9999" => 0,
+              "10000+" => 0,
+
+            );
+            $checkRange = array(
+              array(
+                "min" => 0,
+                "max" => 10,
+                "key" => "0-10",
+              ),
+              array(
+                "min" => 11,
+                "max" => 25,
+                "key" => "11-25",
+              ),
+              array(
+                "min" => 26,
+                "max" => 50,
+                "key" => "26-50",
+              ),
+              array(
+                "min" => 51,
+                "max" => 100,
+                "key" => "51-100",
+              ),
+              array(
+                "min" => 101,
+                "max" => 250,
+                "key" => "101-250",
+              ),
+              array(
+                "min" => 251,
+                "max" => 500,
+                "key" => "251-500",
+              ),
+              array(
+                "min" => 501,
+                "max" => 1000,
+                "key" => "501-1000",
+              ),
+              array(
+                "min" => 1001,
+                "max" => 2000,
+                "key" => "1001-2000",
+              ),
+              array(
+                "min" => 2001,
+                "max" => 5000,
+                "key" => "2001-5000",
+              ),
+              array(
+                "min" => 5001,
+                "max" => 9999,
+                "key" => "5001-9999",
+              ),
+              array(
+                "min" => 10000,
+                "max" => PHP_INT_MAX,
+                "key" => "10000+",
+              ),
+            );
+          } else {
+            $countCase = 4;
+          }
+        }
+        # We now have the parameters to build the chart data
+        try {
+          # Iterate over each row of the data
+          while ($row = mysql_fetch_assoc($result)) {
+            # Skip entries with no data
+            if(intval($row["disease_samples"]) == 0) continue;
+            $rowCount++;
+            # Construct the counts based on the case above
+            switch($countCase) {
+              case 1:
+              $calcPercent = ceil(intval($row["disease_positive"]) / intval($row["disease_samples"]));
+              $countedProjects[$calcPercent]++;
+              break;
+              case 2:
+              $calcPercent = ceil(intval($row["disease_positive"]) / intval($row["disease_samples"]));
+              foreach($checkRange as $range)  {
+                $key = $range["key"];
+                if(!$hasConstructedLabels) $labels[] = $key;
+                if($calcPercent <= $range["max"]) {
+                  # Array order is guaranteed, so this is fine
+                  $countedProjects[$key]++;
+                  if($hasConstructedLabels) break;
+
+                }
+              }
+              break;
+              case 3:
+              foreach($checkRange as $range)  {
+                $key = $range["key"];
+                if(!$hasConstructedLabels) $labels[] = $key;
+                if($row["disease_samples"] <= $range["max"]) {
+                  # Array order is guaranteed, so this is fine
+                  $countedProjects[$key]++;
+                  if($hasConstructedLabels) break;
+
+                }
+              }
+              break;
+              case 4:
+              $count = $row["disease_samples"];
+              if(empty($countedProjects[$count])) $countedProjects[$count] = 0;
+              $countedProjects[$count]++;
+              break;
+            }
+            $hasConstructedLabels = true;
+          }
+          if ($countCase == 4) {
+            ksort($countedProjects);
+            # Build the labels
+            foreach($countedProjects as $countSamples => $projectCount ) {
+              $labels[] = $countSamples;
+            }
+          }
+          # We now have a valid countedProjects value, and some labels
+          $chartData = array(
+            "labels" => $labels,
+            "datasets" => array(
+              array(
+                "label" => "Project Count",
+                "data" => $countedProjects,
+              ),
+            ),
+          );
+          returnAjax(array(
+            "status" => true,
+            "data" => $chartData,
+            "rows" => $rowCount,
+            "format" => "chart.js"
+          ));
+        } catch (Exception $e) {
+          returnAjax(array(
+            "status" => false,
+            "error" => $e->getMessage(),
+            "human_error" => "There was an error fetching your dataset",
+          ));
+        }
         break;
+      }
     }
-}
