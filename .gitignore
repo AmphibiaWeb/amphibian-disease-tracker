@@ -93,3 +93,4 @@ testQuery.sql
 *.bak
 aweb_list.txt
 npm-debug.log
+amphibiandisease-*error_log
