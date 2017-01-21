@@ -28,7 +28,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
-  var chart, chartCtx, html, newId, sampleBarData, sampleData, sampleDatasets;
+  var chart, chartCtx, html, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -60,7 +60,8 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
    * Sample bits for a sample bar graph
    */
   if (isNull(chartData.data)) {
-    console.warn("No data for chart, will use sample data", chartData);
+    origChartData = chartData;
+    console.warn("No data for chart, will use sample data", origChartData);
   }
   if (chartData.data == null) {
     chartData.data = sampleData;
@@ -111,7 +112,7 @@ getServerChart = function() {
       data: chartDataJs,
       type: (ref = chartData.type) != null ? ref : "bar"
     };
-    createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartDataJs);
+    createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartObj);
     return false;
   }).fail(function(result, status) {
     return false;
