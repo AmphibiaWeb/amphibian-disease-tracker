@@ -59,6 +59,9 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   /*
    * Sample bits for a sample bar graph
    */
+  if (isNull(chartData.data)) {
+    console.warn("No data for chart, will use sample data", chartData);
+  }
   if (chartData.data == null) {
     chartData.data = sampleData;
   }
@@ -85,7 +88,7 @@ getServerChart = function() {
   var args;
   args = "action=chart";
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, chartDataJs, data, datasets, i, j, len;
+    var chartData, chartDataJs, chartObj, data, datasets, i, j, len, ref;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -103,6 +106,10 @@ getServerChart = function() {
     chartDataJs = {
       labels: Object.toArray(chartData.labels),
       datasets: datasets
+    };
+    chartObj = {
+      data: chartDataJs,
+      type: (ref = chartData.type) != null ? ref : "bar"
     };
     createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartDataJs);
     return false;

@@ -87,6 +87,8 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   ###
   # Sample bits for a sample bar graph
   ###
+  if isNull chartData.data
+    console.warn "No data for chart, will use sample data", chartData
   chartData.data ?= sampleData
   chartData.type ?= "bar"
   unless typeof chartData.options is "object"
@@ -127,6 +129,9 @@ getServerChart = ->
     chartDataJs =
       labels: Object.toArray chartData.labels
       datasets: datasets
+    chartObj =
+      data: chartDataJs
+      type: chartData.type ? "bar"
     createChart "#chart-#{datasets[0].label.replace(" ","-")}", chartDataJs
     false
   .fail (result, status) ->
