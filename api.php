@@ -999,7 +999,7 @@ function getChartData($chartDataParams) {
     case "infection":
     default:
         # Sort by `disease_positive`
-        $query = "SELECT `disease_positive`, `disease_samples` FROM `$default_table` ORDER BY `disease_positive`";
+        $query = "SELECT `disease_positive`, `disease_samples` FROM `$default_table`";
         # do the query
         $db->invalidateLink();
         $result = mysqli_query($db->getLink(), $query);
@@ -1010,6 +1010,7 @@ function getChartData($chartDataParams) {
             "human_error" => "There was an application error getting your chart data",
           ));
         }
+        $returnedRows = mysqli_num_rows($result);
         # Set up how we'll count this
         $countedProjects = array();
         # By default, we want to view a percentage distribution
@@ -1171,7 +1172,7 @@ function getChartData($chartDataParams) {
         # We now have the parameters to build the chart data
         try {
           # Iterate over each row of the data
-          while ($row = mysql_fetch_assoc($result)) {
+          while ($row = mysqli_fetch_assoc($result)) {
             # Skip entries with no data
             if(intval($row["disease_samples"]) == 0) continue;
             $rowCount++;
@@ -1235,7 +1236,9 @@ function getChartData($chartDataParams) {
             "status" => true,
             "data" => $chartData,
             "rows" => $rowCount,
-            "format" => "chart.js"
+            "format" => "chart.js",
+                     // "query" => $query,
+                     // "returned_rows" => $returnedRows,
           ));
         } catch (Exception $e) {
           returnAjax(array(
