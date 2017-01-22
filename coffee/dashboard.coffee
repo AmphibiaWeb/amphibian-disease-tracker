@@ -175,17 +175,17 @@ getServerChart = (chartType = "infection", chartParams) ->
             data = datablob.data
             for pointSet in data
               unless isNull pointSet
-                console.log "Looking at point set", pointSet
                 # The data should be an array of coordinates
                 builder =
                   points: []
-                for point in pointSet
+                for point in Object.toArray pointSet
                   try
                     tempPoint = canonicalizePoint point
                     builder.points.push tempPoint
                     builtPoints++
+                console.log "Looking at point set", builder, pointSet
                 localityFromMapBuilder builder, (locality) ->
-                  console.info "Got locality", locality
+                  console.info "Got locality from builder", locality
                   console.log JSON.stringify geo.geocoderViews
           # Bin to countries
           # Reconstruct the dataset data

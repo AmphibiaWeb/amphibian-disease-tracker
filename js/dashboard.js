@@ -162,7 +162,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, datablob, l, len2, len3, len4, m, n, point, pointSet, tempPoint;
+          var builder, builtPoints, datablob, l, len2, len3, len4, m, n, point, pointSet, ref2, tempPoint;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           for (l = 0, len2 = datasets.length; l < len2; l++) {
@@ -171,20 +171,21 @@ getServerChart = function(chartType, chartParams) {
             for (m = 0, len3 = data.length; m < len3; m++) {
               pointSet = data[m];
               if (!isNull(pointSet)) {
-                console.log("Looking at point set", pointSet);
                 builder = {
                   points: []
                 };
-                for (n = 0, len4 = pointSet.length; n < len4; n++) {
-                  point = pointSet[n];
+                ref2 = Object.toArray(pointSet);
+                for (n = 0, len4 = ref2.length; n < len4; n++) {
+                  point = ref2[n];
                   try {
                     tempPoint = canonicalizePoint(point);
                     builder.points.push(tempPoint);
                     builtPoints++;
                   } catch (undefined) {}
                 }
+                console.log("Looking at point set", builder, pointSet);
                 localityFromMapBuilder(builder, function(locality) {
-                  console.info("Got locality", locality);
+                  console.info("Got locality from builder", locality);
                   return console.log(JSON.stringify(geo.geocoderViews));
                 });
               }
