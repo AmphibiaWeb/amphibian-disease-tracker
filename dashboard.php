@@ -212,7 +212,7 @@ $loginStatus = getLoginState();
                 Infection
               </paper-item>
               <paper-item disabled>Species</paper-item>
-              <paper-item disabled>Location</paper-item>
+              <paper-item>Location</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
