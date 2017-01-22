@@ -168,13 +168,13 @@ getServerChart = function(chartType, chartParams) {
           for (l = 0, len2 = datasets.length; l < len2; l++) {
             datablob = datasets[l];
             data = datablob.data;
-            builder = {
-              points: []
-            };
             for (m = 0, len3 = data.length; m < len3; m++) {
               pointSet = data[m];
               if (!isNull(pointSet)) {
                 console.log("Looking at point set", pointSet);
+                builder = {
+                  points: []
+                };
                 for (n = 0, len4 = pointSet.length; n < len4; n++) {
                   point = pointSet[n];
                   try {

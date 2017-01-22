@@ -173,12 +173,12 @@ getServerChart = (chartType = "infection", chartParams) ->
           builtPoints = 0
           for datablob in datasets
             data = datablob.data
-            # The data should be an array of coordinates
-            builder =
-              points: []
             for pointSet in data
               unless isNull pointSet
                 console.log "Looking at point set", pointSet
+                # The data should be an array of coordinates
+                builder =
+                  points: []
                 for point in pointSet
                   try
                     tempPoint = canonicalizePoint point
