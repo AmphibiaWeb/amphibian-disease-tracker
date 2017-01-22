@@ -163,10 +163,38 @@ getServerChart = (chartType = "infection", chartParams) ->
       data: chartDataJs
       type: chartData.type ? "bar"
     chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
-    createChart chartSelector, chartObj, ->
-      unless isNull result.full_description
-        $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
-    stopLoad()
+    switch result.use_preprocessor
+      when "geocoder"
+        preprocessorFn = (callback) ->
+          # Check the bounds of each and use localityFromMapBuilder to
+          # check the bounds
+          builtPoints = 0
+          for datablob in datasets
+            data = datablob.data
+            # The data should be an array of coordinates
+            builder =
+              points: []
+            for point in data
+              try
+                tempPoint = canonicalizePoint point
+                builder.points.push tempPoint
+                builtPoints++
+            localityFromMapBuilder builder, (locality) ->
+              console.info "Got locality", locality
+              console.log JSON.stringify geo.geocoderViews
+          # Bin to countries
+          # Reconstruct the dataset data
+          # Reconstruct the labels
+          # Finally call back
+          callback()
+      else
+        preprocessorFn = (callback) ->
+          callback()
+    preprocessorFn ->
+      createChart chartSelector, chartObj, ->
+        unless isNull result.full_description
+          $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
+      stopLoad()
     false
   .fail (result, status) ->
     console.error "AJAX error", result, status

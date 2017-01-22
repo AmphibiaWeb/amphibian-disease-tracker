@@ -995,6 +995,48 @@ function getChartData($chartDataParams) {
         # Location bin
         # Have to hit the Google API for each one to check the
         # country per coordinate
+        # Look up the carto id fields
+        $query = "SELECT `carto_id` FROM `$default_table`";
+        $db->invalidateLink();
+        $result = mysqli_query($db->getLink(), $query);
+        if($result === false) {
+          returnAjax(array(
+            "status" => false,
+            "error" => mysqli_query($db->getLink()),
+            "human_error" => "Error looking up bounding boxes",
+          ));
+        }
+        $chartData = array();
+        $chartDatasetData = array();
+        while($row = mysqli_fetch_row($result)) {
+          if(empty($row[0])) continue;
+          $carto = json_decode(deEscape($row[0]), true);
+          # Escaped or unescaped
+          $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
+          if(toBool($bpoly['paths']) === false && !empty($bpoly["multibounds"])) {
+            $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
+          }
+          $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
+          $chartDatasetDatas[] = $coords;
+        }
+        $chartData = array(
+          "labels" => array(),
+          "datasets" => array(
+            array(
+              "label" => "Project Count",
+              "data" => $chartDatasetData,
+            ),
+          ),
+        );
+        returnAjax(array(
+          "status" => true,
+          "data" => $chartData,
+          "use_preprocessor" => "geocoder",
+          "rows" => $rowCount,
+          "format" => "chart.js",
+          "provided" => $chartDataParams,
+          "full_description" => "Project representation per country",
+        ));
         break;
     case "infection":
     default:

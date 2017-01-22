@@ -4509,6 +4509,13 @@ localityFromMapBuilder = function(builder, callback) {
   if (builder == null) {
     builder = window.mapBuilder;
   }
+
+  /*
+   *
+   *
+   * @param builder -> an object with an array of (canonicalized) points under
+   *   mapBuilder.points, and a selector under mapBuilder.selector
+   */
   center = getMapCenter(builder.points);
   geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality) {
     console.info("Got locality '" + locality + "'");
@@ -4697,6 +4704,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
     var east, googleBounds, len, locality, mustContain, ne, north, south, sw, t, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
     if (status === google.maps.GeocoderStatus.OK) {
       console.info("Google said:", result);
+      geo.geocoderViews = result;
       mustContain = geo.getBoundingRectangle(boundingBox);
       validView = null;
       for (t = 0, len = result.length; t < len; t++) {

@@ -3811,6 +3811,12 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
 
 
 localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
+  ###
+  #
+  #
+  # @param builder -> an object with an array of (canonicalized) points under
+  #   mapBuilder.points, and a selector under mapBuilder.selector
+  ###
   center = getMapCenter builder.points
   geo.reverseGeocode center.lat, center.lng, builder.points, (locality) ->
     console.info "Got locality '#{locality}'"
@@ -3955,6 +3961,7 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
   geocoder.geocode request, (result, status) ->
     if status is google.maps.GeocoderStatus.OK
       console.info "Google said:", result
+      geo.geocoderViews = result
       mustContain = geo.getBoundingRectangle(boundingBox)
       validView = null
       for view in result

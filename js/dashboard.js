@@ -119,7 +119,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, chartDataJs, chartObj, chartSelector, colors, data, dataItem, datasets, i, j, k, len, len1, ref, ref1;
+    var chartData, chartDataJs, chartObj, chartSelector, colors, data, dataItem, datasets, i, j, k, len, len1, preprocessorFn, ref, ref1;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -158,12 +158,46 @@ getServerChart = function(chartType, chartParams) {
       type: (ref1 = chartData.type) != null ? ref1 : "bar"
     };
     chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
-    createChart(chartSelector, chartObj, function() {
-      if (!isNull(result.full_description)) {
-        return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
-      }
+    switch (result.use_preprocessor) {
+      case "geocoder":
+        preprocessorFn = function(callback) {
+          var builder, builtPoints, datablob, l, len2, len3, m, point, tempPoint;
+          builtPoints = 0;
+          for (l = 0, len2 = datasets.length; l < len2; l++) {
+            datablob = datasets[l];
+            data = datablob.data;
+            builder = {
+              points: []
+            };
+            for (m = 0, len3 = data.length; m < len3; m++) {
+              point = data[m];
+              try {
+                tempPoint = canonicalizePoint(point);
+                builder.points.push(tempPoint);
+                builtPoints++;
+              } catch (undefined) {}
+            }
+            localityFromMapBuilder(builder, function(locality) {
+              console.info("Got locality", locality);
+              return console.log(JSON.stringify(geo.geocoderViews));
+            });
+          }
+          return callback();
+        };
+        break;
+      default:
+        preprocessorFn = function(callback) {
+          return callback();
+        };
+    }
+    preprocessorFn(function() {
+      createChart(chartSelector, chartObj, function() {
+        if (!isNull(result.full_description)) {
+          return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
+        }
+      });
+      return stopLoad();
     });
-    stopLoad();
     return false;
   }).fail(function(result, status) {
     console.error("AJAX error", result, status);
