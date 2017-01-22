@@ -1232,13 +1232,14 @@ function getChartData($chartDataParams) {
               ),
             ),
           );
+          $adj = $countCase < 3 ? "percent":"number";
           returnAjax(array(
             "status" => true,
             "data" => $chartData,
             "rows" => $rowCount,
             "format" => "chart.js",
             "provided" => $chartDataParams,
-            "full_description" => "Project representation for number of positive samples",
+            "full_description" => "Project representation for $adj of positive samples",
             "parsed_options" => array("group" => $group, "percent" => $percent),
                      // "query" => $query,
                      // "returned_rows" => $returnedRows,
