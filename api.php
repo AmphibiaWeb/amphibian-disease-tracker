@@ -1020,7 +1020,7 @@ function getChartData($chartDataParams) {
             $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
           }
           $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
-          $chartDatasetDatas[] = $coords;
+          $chartDatasetData[] = $coords;
         }
         $chartData = array(
           "labels" => array(),
