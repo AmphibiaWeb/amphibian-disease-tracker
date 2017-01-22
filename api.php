@@ -1199,7 +1199,7 @@ function getChartData($chartDataParams) {
               foreach($checkRange as $range)  {
                 $key = $range["key"];
                 if(!$hasConstructedLabels) $labels[] = $key;
-                if($row["disease_samples"] <= $range["max"]) {
+                if($row["disease_positive"] <= $range["max"]) {
                   # Array order is guaranteed, so this is fine
                   $countedProjects[$key]++;
                   if($hasConstructedLabels) break;
@@ -1208,7 +1208,7 @@ function getChartData($chartDataParams) {
               }
               break;
               case 4:
-              $count = $row["disease_samples"];
+              $count = $row["disease_positive"];
               if(empty($countedProjects[$count])) $countedProjects[$count] = 0;
               $countedProjects[$count]++;
               break;
@@ -1238,6 +1238,7 @@ function getChartData($chartDataParams) {
             "rows" => $rowCount,
             "format" => "chart.js",
             "provided" => $chartDataParams,
+            "full_description" => "Project representation for number of positive samples",
             "parsed_options" => array("group" => $group, "percent" => $percent),
                      // "query" => $query,
                      // "returned_rows" => $returnedRows,
