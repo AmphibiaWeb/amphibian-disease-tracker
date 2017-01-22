@@ -98,6 +98,11 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   unless typeof chartData.options is "object"
     chartData.options =
       responsive: true
+      scales:
+        yAxes: [{
+          ticks:
+            beginAtZero: true
+          }]
 
   unless $(chartSelector).exists()
     newId = if chartSelector.slice(0,1) is "#" then chartSelector.slice(1) else "dataChart-#{$("canvas").length}"

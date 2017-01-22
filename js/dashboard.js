@@ -76,7 +76,16 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
   }
   if (typeof chartData.options !== "object") {
     chartData.options = {
-      responsive: true
+      responsive: true,
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true
+            }
+          }
+        ]
+      }
     };
   }
   if (!$(chartSelector).exists()) {
