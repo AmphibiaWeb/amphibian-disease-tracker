@@ -1006,10 +1006,13 @@ function getChartData($chartDataParams) {
             "human_error" => "Error looking up bounding boxes",
           ));
         }
+        $rowCount = 0;
+        $returnedRows = mysqli_num_rows($result);
         $chartData = array();
         $chartDatasetData = array();
         while($row = mysqli_fetch_row($result)) {
           if(empty($row[0])) continue;
+          $rowCount++;
           $carto = json_decode(deEscape($row[0]), true);
           # Escaped or unescaped
           $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
@@ -1036,6 +1039,8 @@ function getChartData($chartDataParams) {
           "format" => "chart.js",
           "provided" => $chartDataParams,
           "full_description" => "Project representation per country",
+                   "query" => $query,
+                   "returned_rows" => $returnedRows,
         ));
         break;
     case "infection":
