@@ -160,8 +160,10 @@ getServerChart = function(chartType, chartParams) {
     chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
     switch (result.use_preprocessor) {
       case "geocoder":
+        console.log("Got results", result);
         preprocessorFn = function(callback) {
           var builder, builtPoints, datablob, l, len2, len3, m, point, tempPoint;
+          console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           for (l = 0, len2 = datasets.length; l < len2; l++) {
             datablob = datasets[l];

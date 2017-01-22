@@ -165,9 +165,11 @@ getServerChart = (chartType = "infection", chartParams) ->
     chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
     switch result.use_preprocessor
       when "geocoder"
+        console.log "Got results", result
         preprocessorFn = (callback) ->
           # Check the bounds of each and use localityFromMapBuilder to
           # check the bounds
+          console.log "Starting geocoder preprocessor", datasets
           builtPoints = 0
           for datablob in datasets
             data = datablob.data
