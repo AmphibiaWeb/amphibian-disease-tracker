@@ -120,7 +120,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, colors, data, dataItem, datasets, i, k, l, len, len1, preprocessorFn, ref;
+    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -130,8 +130,8 @@ getServerChart = function(chartType, chartParams) {
     chartData = result.data;
     datasets = Object.toArray(chartData.datasets);
     i = 0;
-    for (k = 0, len = datasets.length; k < len; k++) {
-      data = datasets[k];
+    for (l = 0, len = datasets.length; l < len; l++) {
+      data = datasets[l];
       data.data = Object.toArray(data.data);
       if (data.borderWidth == null) {
         data.borderWidth = 1;
@@ -140,8 +140,8 @@ getServerChart = function(chartType, chartParams) {
         data.borderColor = new Array();
         data.backgroundColor = new Array();
         ref = data.data;
-        for (l = 0, len1 = ref.length; l < len1; l++) {
-          dataItem = ref[l];
+        for (m = 0, len1 = ref.length; m < len1; m++) {
+          dataItem = ref[m];
           colors = getRandomDataColor();
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
@@ -154,7 +154,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, labels, len2, len3, len4, m, n, o, point, pointSet, ref1, results, tempPoint, waitFinished;
+          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, len4, n, o, p, point, pointSet, ref1, results, tempPoint, waitFinished;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           labels = new Array();
@@ -163,36 +163,45 @@ getServerChart = function(chartType, chartParams) {
           i = 0;
           waitFinished = false;
           results = [];
-          for (m = 0, len2 = datasets.length; m < len2; m++) {
-            datablob = datasets[m];
+          for (n = 0, len2 = datasets.length; n < len2; n++) {
+            datablob = datasets[n];
             data = datablob.data;
+            console.log("Data blob", data);
             if (!waitFinished) {
               finished = false;
               currentDataset = i;
+              k = 0;
+              kprime = 0;
             }
             j = 0;
-            for (n = 0, len3 = data.length; n < len3; n++) {
-              pointSet = data[n];
+            for (o = 0, len3 = data.length; o < len3; o++) {
+              pointSet = data[o];
               ++j;
               if (!isNull(pointSet)) {
                 builder = {
                   points: []
                 };
+                builtPoints = 0;
                 ref1 = Object.toArray(pointSet);
-                for (o = 0, len4 = ref1.length; o < len4; o++) {
-                  point = ref1[o];
+                for (p = 0, len4 = ref1.length; p < len4; p++) {
+                  point = ref1[p];
                   try {
                     tempPoint = canonicalizePoint(point);
                     builder.points.push(tempPoint);
                     builtPoints++;
                   } catch (undefined) {}
                 }
+                if (builtPoints === 0) {
+                  continue;
+                }
+                k++;
                 localityFromMapBuilder(builder, function(locality) {
-                  var binKey, country, error, len5, p, ref2, view;
+                  var binKey, country, error, len5, q, ref2, view;
+                  kprime++;
                   try {
                     ref2 = geo.geocoderViews;
-                    for (p = 0, len5 = ref2.length; p < len5; p++) {
-                      view = ref2[p];
+                    for (q = 0, len5 = ref2.length; q < len5; q++) {
+                      view = ref2[q];
                       if (indexOf.call(view.types, "country") < 0) {
                         continue;
                       }
@@ -214,9 +223,11 @@ getServerChart = function(chartType, chartParams) {
                     binKey = dataKeyMap[country];
                     dataBin[binKey]++;
                   }
-                  if (finished) {
+                  if (kprime === k) {
                     datablob.data = dataBin;
                     datasets[currentDataset] = datablob;
+                    kprime = 0;
+                    k = 0;
                     waitFinished = false;
                     if (i === datasets.length) {
                       chartData.labels = labels;
@@ -268,11 +279,11 @@ getServerChart = function(chartType, chartParams) {
 };
 
 renderNewChart = function() {
-  var chartOptions, chartType, error, k, key, len, option, ref, ref1;
+  var chartOptions, chartType, error, key, l, len, option, ref, ref1;
   chartOptions = new Object();
   ref = $(".chart-param");
-  for (k = 0, len = ref.length; k < len; k++) {
-    option = ref[k];
+  for (l = 0, len = ref.length; l < len; l++) {
+    option = ref[l];
     key = $(option).attr("data-key").replace(" ", "-");
     try {
       if (p$(option).checked != null) {

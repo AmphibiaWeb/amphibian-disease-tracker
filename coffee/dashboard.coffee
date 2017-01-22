@@ -171,9 +171,12 @@ getServerChart = (chartType = "infection", chartParams) ->
           waitFinished = false
           for datablob in datasets
             data = datablob.data
+            console.log "Data blob", data
             unless waitFinished
               finished = false
               currentDataset = i
+              k = 0
+              kprime = 0
             j = 0
             for pointSet in data
               ++j
@@ -181,13 +184,18 @@ getServerChart = (chartType = "infection", chartParams) ->
                 # The data should be an array of coordinates
                 builder =
                   points: []
+                builtPoints = 0
                 for point in Object.toArray pointSet
                   try
                     tempPoint = canonicalizePoint point
                     builder.points.push tempPoint
                     builtPoints++
+                if builtPoints is 0
+                  continue
                 # Get the country
+                k++
                 localityFromMapBuilder builder, (locality) ->
+                  kprime++
                   try
                     for view in geo.geocoderViews
                       unless "country" in view.types
@@ -208,10 +216,12 @@ getServerChart = (chartType = "infection", chartParams) ->
                   else
                     binKey = dataKeyMap[country]
                     dataBin[binKey]++
-                  if finished
+                  if kprime is k
                     # Reconstruct the dataset data
                     datablob.data = dataBin
                     datasets[currentDataset] = datablob
+                    kprime = 0
+                    k = 0
                     waitFinished = false
                     if i is datasets.length
                       # Reconstruct the labels
