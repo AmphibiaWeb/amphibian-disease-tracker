@@ -27,7 +27,7 @@ try {
   })();
 } catch (undefined) {}
 
-createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
+createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
   var chart, chartCtx, html, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
@@ -38,6 +38,10 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   if (typeof chartData !== "object") {
     console.error("Can't create a chart without a data object");
     return false;
+  }
+  if (typeof isSimpleData === "function" && isNull(callback)) {
+    callback = isSimpleData;
+    isSimpleData = false;
   }
 
   /*
@@ -82,6 +86,9 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo) {
   chartCtx = $(chartSelector);
   chart = new Chart(chartCtx, chartData);
   console.info("Chart created with", chartData);
+  if (typeof callback === "function") {
+    callback();
+  }
   return chart;
 };
 
@@ -112,7 +119,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, chartDataJs, chartObj, colors, data, dataItem, datasets, i, j, k, len, len1, ref, ref1;
+    var chartData, chartDataJs, chartObj, chartSelector, colors, data, dataItem, datasets, i, j, k, len, len1, ref, ref1;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -150,7 +157,12 @@ getServerChart = function(chartType, chartParams) {
       data: chartDataJs,
       type: (ref1 = chartData.type) != null ? ref1 : "bar"
     };
-    createChart("#chart-" + (datasets[0].label.replace(" ", "-")), chartObj);
+    chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
+    createChart(chartSelector, chartObj, function() {
+      if (!isNull(result.full_description)) {
+        return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
+      }
+    });
     stopLoad();
     return false;
   }).fail(function(result, status) {
@@ -179,6 +191,7 @@ renderNewChart = function() {
     }
   }
   $(".chart.dynamic-chart").remove();
+  $(".chart-title").remove();
   chartType = (ref1 = chartOptions.sort) != null ? ref1 : "infection";
   delete chartOptions.sort;
   console.info("Going to generate a new chart with the following options", chartOptions);

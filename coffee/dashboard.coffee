@@ -48,10 +48,13 @@ try
     false
 
 
-createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main") ->
+createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main", callback) ->
   unless typeof chartData is "object"
     console.error "Can't create a chart without a data object"
     return false
+  if typeof isSimpleData is "function" and isNull callback
+    callback = isSimpleData
+    isSimpleData = false
   ###
   # Sample build
   ###
@@ -108,6 +111,8 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   chartCtx = $(chartSelector)
   chart = new Chart chartCtx, chartData
   console.info "Chart created with", chartData
+  if typeof callback is "function"
+    callback()
   chart
 
 
@@ -157,7 +162,10 @@ getServerChart = (chartType = "infection", chartParams) ->
     chartObj =
       data: chartDataJs
       type: chartData.type ? "bar"
-    createChart "#chart-#{datasets[0].label.replace(" ","-")}", chartObj
+    chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
+    createChart chartSelector, chartObj, ->
+      unless isNull result.full_description
+        $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
     stopLoad()
     false
   .fail (result, status) ->
@@ -181,6 +189,7 @@ renderNewChart = ->
       chartOptions[key] = p$(option).selectedItemLabel.toLowerCase().replace(" ", "-")
   # Remove the old one
   $(".chart.dynamic-chart").remove()
+  $(".chart-title").remove()
   # Get the new one
   chartType = chartOptions.sort ? "infection"
   delete chartOptions.sort
