@@ -162,7 +162,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, datablob, l, len2, len3, m, point, tempPoint;
+          var builder, builtPoints, datablob, l, len2, len3, len4, m, n, point, pointSet, tempPoint;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           for (l = 0, len2 = datasets.length; l < len2; l++) {
@@ -172,17 +172,23 @@ getServerChart = function(chartType, chartParams) {
               points: []
             };
             for (m = 0, len3 = data.length; m < len3; m++) {
-              point = data[m];
-              try {
-                tempPoint = canonicalizePoint(point);
-                builder.points.push(tempPoint);
-                builtPoints++;
-              } catch (undefined) {}
+              pointSet = data[m];
+              if (!isNull(pointSet)) {
+                console.log("Looking at point set", pointSet);
+                for (n = 0, len4 = pointSet.length; n < len4; n++) {
+                  point = pointSet[n];
+                  try {
+                    tempPoint = canonicalizePoint(point);
+                    builder.points.push(tempPoint);
+                    builtPoints++;
+                  } catch (undefined) {}
+                }
+                localityFromMapBuilder(builder, function(locality) {
+                  console.info("Got locality", locality);
+                  return console.log(JSON.stringify(geo.geocoderViews));
+                });
+              }
             }
-            localityFromMapBuilder(builder, function(locality) {
-              console.info("Got locality", locality);
-              return console.log(JSON.stringify(geo.geocoderViews));
-            });
           }
           return callback();
         };

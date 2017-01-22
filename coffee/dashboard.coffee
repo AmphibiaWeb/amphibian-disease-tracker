@@ -176,14 +176,17 @@ getServerChart = (chartType = "infection", chartParams) ->
             # The data should be an array of coordinates
             builder =
               points: []
-            for point in data
-              try
-                tempPoint = canonicalizePoint point
-                builder.points.push tempPoint
-                builtPoints++
-            localityFromMapBuilder builder, (locality) ->
-              console.info "Got locality", locality
-              console.log JSON.stringify geo.geocoderViews
+            for pointSet in data
+              unless isNull pointSet
+                console.log "Looking at point set", pointSet
+                for point in pointSet
+                  try
+                    tempPoint = canonicalizePoint point
+                    builder.points.push tempPoint
+                    builtPoints++
+                localityFromMapBuilder builder, (locality) ->
+                  console.info "Got locality", locality
+                  console.log JSON.stringify geo.geocoderViews
           # Bin to countries
           # Reconstruct the dataset data
           # Reconstruct the labels
