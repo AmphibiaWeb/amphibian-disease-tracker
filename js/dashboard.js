@@ -187,18 +187,20 @@ getServerChart = function(chartType, chartParams) {
                     builtPoints++;
                   } catch (undefined) {}
                 }
-                console.log("Looking at point set", builder, pointSet);
                 localityFromMapBuilder(builder, function(locality) {
-                  var binKey, country, len5, p, ref2, view;
-                  console.info("Got locality from builder", locality);
-                  ref2 = geo.geocoderViews;
-                  for (p = 0, len5 = ref2.length; p < len5; p++) {
-                    view = ref2[p];
-                    if (indexOf.call(view.types, "country") < 0) {
-                      continue;
+                  var binKey, country, error, len5, p, ref2, view;
+                  try {
+                    ref2 = geo.geocoderViews;
+                    for (p = 0, len5 = ref2.length; p < len5; p++) {
+                      view = ref2[p];
+                      if (indexOf.call(view.types, "country") < 0) {
+                        continue;
+                      }
+                      country = view.formatted_address;
                     }
-                    country = view.formatted_address;
-                    console.log("Fetched country '" + country + "'");
+                  } catch (error) {
+                    console.warn("Skipping bad builder", builder);
+                    return false;
                   }
                   if (isNull(country)) {
                     country = locality;

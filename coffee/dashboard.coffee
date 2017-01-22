@@ -186,14 +186,17 @@ getServerChart = (chartType = "infection", chartParams) ->
                     tempPoint = canonicalizePoint point
                     builder.points.push tempPoint
                     builtPoints++
-                console.log "Looking at point set", builder, pointSet
+                # Get the country
                 localityFromMapBuilder builder, (locality) ->
-                  console.info "Got locality from builder", locality
-                  for view in geo.geocoderViews
-                    unless "country" in view.types
-                      continue
-                    country = view.formatted_address
-                    console.log "Fetched country '#{country}'"
+                  try
+                    for view in geo.geocoderViews
+                      unless "country" in view.types
+                        continue
+                      country = view.formatted_address
+                  catch
+                    # Bad point, skip the rest of it
+                    console.warn "Skipping bad builder", builder
+                    return false
                   if isNull country
                     country = locality
                   console.log "Final locality '#{country}'"
