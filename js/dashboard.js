@@ -1,4 +1,5 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart;
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
 
@@ -119,7 +120,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, chartDataJs, chartObj, chartSelector, colors, data, dataItem, datasets, i, j, k, len, len1, preprocessorFn, ref, ref1;
+    var chartData, colors, data, dataItem, datasets, i, k, l, len, len1, preprocessorFn, ref;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -129,8 +130,8 @@ getServerChart = function(chartType, chartParams) {
     chartData = result.data;
     datasets = Object.toArray(chartData.datasets);
     i = 0;
-    for (j = 0, len = datasets.length; j < len; j++) {
-      data = datasets[j];
+    for (k = 0, len = datasets.length; k < len; k++) {
+      data = datasets[k];
       data.data = Object.toArray(data.data);
       if (data.borderWidth == null) {
         data.borderWidth = 1;
@@ -139,8 +140,8 @@ getServerChart = function(chartType, chartParams) {
         data.borderColor = new Array();
         data.backgroundColor = new Array();
         ref = data.data;
-        for (k = 0, len1 = ref.length; k < len1; k++) {
-          dataItem = ref[k];
+        for (l = 0, len1 = ref.length; l < len1; l++) {
+          dataItem = ref[l];
           colors = getRandomDataColor();
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
@@ -149,34 +150,37 @@ getServerChart = function(chartType, chartParams) {
       datasets[i] = data;
       ++i;
     }
-    chartDataJs = {
-      labels: Object.toArray(chartData.labels),
-      datasets: datasets
-    };
-    chartObj = {
-      data: chartDataJs,
-      type: (ref1 = chartData.type) != null ? ref1 : "bar"
-    };
-    chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
     switch (result.use_preprocessor) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, datablob, l, len2, len3, len4, m, n, point, pointSet, ref2, tempPoint;
+          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, labels, len2, len3, len4, m, n, o, point, pointSet, ref1, results, tempPoint, waitFinished;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
-          for (l = 0, len2 = datasets.length; l < len2; l++) {
-            datablob = datasets[l];
+          labels = new Array();
+          dataBin = new Array();
+          dataKeyMap = new Object();
+          i = 0;
+          waitFinished = false;
+          results = [];
+          for (m = 0, len2 = datasets.length; m < len2; m++) {
+            datablob = datasets[m];
             data = datablob.data;
-            for (m = 0, len3 = data.length; m < len3; m++) {
-              pointSet = data[m];
+            if (!waitFinished) {
+              finished = false;
+              currentDataset = i;
+            }
+            j = 0;
+            for (n = 0, len3 = data.length; n < len3; n++) {
+              pointSet = data[n];
+              ++j;
               if (!isNull(pointSet)) {
                 builder = {
                   points: []
                 };
-                ref2 = Object.toArray(pointSet);
-                for (n = 0, len4 = ref2.length; n < len4; n++) {
-                  point = ref2[n];
+                ref1 = Object.toArray(pointSet);
+                for (o = 0, len4 = ref1.length; o < len4; o++) {
+                  point = ref1[o];
                   try {
                     tempPoint = canonicalizePoint(point);
                     builder.points.push(tempPoint);
@@ -185,13 +189,48 @@ getServerChart = function(chartType, chartParams) {
                 }
                 console.log("Looking at point set", builder, pointSet);
                 localityFromMapBuilder(builder, function(locality) {
+                  var binKey, country, len5, p, ref2, view;
                   console.info("Got locality from builder", locality);
-                  return console.log(JSON.stringify(geo.geocoderViews));
+                  ref2 = geo.geocoderViews;
+                  for (p = 0, len5 = ref2.length; p < len5; p++) {
+                    view = ref2[p];
+                    if (indexOf.call(view.types, "country") < 0) {
+                      continue;
+                    }
+                    country = view.formatted_address;
+                    console.log("Fetched country '" + country + "'");
+                  }
+                  if (isNull(country)) {
+                    country = locality;
+                  }
+                  console.log("Final locality '" + country + "'");
+                  if (indexOf.call(labels, country) < 0) {
+                    labels.push(country);
+                    dataKeyMap[country] = dataBin.length;
+                    dataBin.push(1);
+                  } else {
+                    binKey = dataKeyMap[country];
+                    dataBin[binKey]++;
+                  }
+                  if (finished) {
+                    datablob.data = dataBin;
+                    datasets[currentDataset] = datablob;
+                    waitFinished = false;
+                    if (i === datasets.length) {
+                      chartData.labels = labels;
+                      return callback();
+                    }
+                  }
                 });
               }
+              if (j === data.length) {
+                finished = true;
+                waitFinished = true;
+              }
             }
+            results.push(++i);
           }
-          return callback();
+          return results;
         };
         break;
       default:
@@ -200,6 +239,16 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
+      var chartDataJs, chartObj, chartSelector, ref1;
+      chartDataJs = {
+        labels: Object.toArray(chartData.labels),
+        datasets: datasets
+      };
+      chartObj = {
+        data: chartDataJs,
+        type: (ref1 = chartData.type) != null ? ref1 : "bar"
+      };
+      chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
       createChart(chartSelector, chartObj, function() {
         if (!isNull(result.full_description)) {
           return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
@@ -217,11 +266,11 @@ getServerChart = function(chartType, chartParams) {
 };
 
 renderNewChart = function() {
-  var chartOptions, chartType, error, j, key, len, option, ref, ref1;
+  var chartOptions, chartType, error, k, key, len, option, ref, ref1;
   chartOptions = new Object();
   ref = $(".chart-param");
-  for (j = 0, len = ref.length; j < len; j++) {
-    option = ref[j];
+  for (k = 0, len = ref.length; k < len; k++) {
+    option = ref[k];
     key = $(option).attr("data-key").replace(" ", "-");
     try {
       if (p$(option).checked != null) {

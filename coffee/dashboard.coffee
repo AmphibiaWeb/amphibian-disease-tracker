@@ -156,13 +156,6 @@ getServerChart = (chartType = "infection", chartParams) ->
           data.backgroundColor.push colors.background
       datasets[i] = data
       ++i
-    chartDataJs =
-      labels: Object.toArray chartData.labels
-      datasets: datasets
-    chartObj =
-      data: chartDataJs
-      type: chartData.type ? "bar"
-    chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
     switch result.use_preprocessor
       when "geocoder"
         console.log "Got results", result
@@ -171,9 +164,19 @@ getServerChart = (chartType = "infection", chartParams) ->
           # check the bounds
           console.log "Starting geocoder preprocessor", datasets
           builtPoints = 0
+          labels = new Array()
+          dataBin = new Array()
+          dataKeyMap = new Object()
+          i = 0
+          waitFinished = false
           for datablob in datasets
             data = datablob.data
+            unless waitFinished
+              finished = false
+              currentDataset = i
+            j = 0
             for pointSet in data
+              ++j
               unless isNull pointSet
                 # The data should be an array of coordinates
                 builder =
@@ -186,16 +189,47 @@ getServerChart = (chartType = "infection", chartParams) ->
                 console.log "Looking at point set", builder, pointSet
                 localityFromMapBuilder builder, (locality) ->
                   console.info "Got locality from builder", locality
-                  console.log JSON.stringify geo.geocoderViews
-          # Bin to countries
-          # Reconstruct the dataset data
-          # Reconstruct the labels
-          # Finally call back
-          callback()
+                  for view in geo.geocoderViews
+                    unless "country" in view.types
+                      continue
+                    country = view.formatted_address
+                    console.log "Fetched country '#{country}'"
+                  if isNull country
+                    country = locality
+                  console.log "Final locality '#{country}'"
+                  # Bin to countries
+                  unless country in labels
+                    labels.push country
+                    dataKeyMap[country] = dataBin.length
+                    dataBin.push 1
+                  else
+                    binKey = dataKeyMap[country]
+                    dataBin[binKey]++
+                  if finished
+                    # Reconstruct the dataset data
+                    datablob.data = dataBin
+                    datasets[currentDataset] = datablob
+                    waitFinished = false
+                    if i is datasets.length
+                      # Reconstruct the labels
+                      chartData.labels = labels
+                      # Finally call back
+                      callback()
+              if j is data.length
+                finished = true
+                waitFinished = true
+            ++i
       else
         preprocessorFn = (callback) ->
           callback()
     preprocessorFn ->
+      chartDataJs =
+        labels: Object.toArray chartData.labels
+        datasets: datasets
+      chartObj =
+        data: chartDataJs
+        type: chartData.type ? "bar"
+      chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
