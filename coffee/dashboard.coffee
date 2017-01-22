@@ -208,8 +208,9 @@ getServerChart = (chartType = "infection", chartParams) ->
                       country = view.formatted_address
                   catch
                     # Bad point, skip the rest of it
-                    console.warn "Skipping bad builder", builder
-                    return false
+                    country = "Multiple Countries"
+                    # console.warn "Skipping bad builder", builder
+                    # return false
                   if isNull country
                     country = locality
                   console.log "Final locality '#{country}'"

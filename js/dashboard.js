@@ -217,8 +217,7 @@ getServerChart = function(chartType, chartParams) {
                       country = view.formatted_address;
                     }
                   } catch (error) {
-                    console.warn("Skipping bad builder", builder);
-                    return false;
+                    country = "Multiple Countries";
                   }
                   if (isNull(country)) {
                     country = locality;
