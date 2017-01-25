@@ -178,7 +178,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, len4, n, o, p, point, pointSet, ref1, results, tempPoint, title, waitFinished, waitTime;
+          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, len4, n, o, p, point, pointSet, project, ref1, results, tempPoint, title, waitFinished, waitTime;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           labels = new Array();
@@ -208,9 +208,7 @@ getServerChart = function(chartType, chartParams) {
                 builtPoints = 0;
                 console.debug("Using pointset", pointSet);
                 title = pointSet.title;
-                if (pointSet.points == null) {
-                  pointSet.points = new Array();
-                }
+                project = pointSet.project_id;
                 ref1 = pointSet.points;
                 for (p = 0, len4 = ref1.length; p < len4; p++) {
                   point = ref1[p];

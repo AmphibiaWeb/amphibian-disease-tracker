@@ -204,7 +204,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                 builtPoints = 0
                 console.debug "Using pointset", pointSet
                 title = pointSet.title
-                pointSet.points ?= new Array()
+                project = pointSet.project_id
                 for point in pointSet.points
                   console.log "Looking at project ##{project}, '#{title}'"
                   try
