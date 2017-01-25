@@ -119,6 +119,9 @@ wait = function(ms) {
   end = start;
   while (end < start + ms) {
     end = start = new Date().getTime();
+    if (window.endWait === true) {
+      end = start + ms + 1;
+    }
   }
   console.log("Waiting " + ms + "ms");
   return end;
@@ -203,8 +206,10 @@ getServerChart = function(chartType, chartParams) {
                   points: []
                 };
                 builtPoints = 0;
+                console.debug("USing pointset", pointSet);
                 for (project in pointSet) {
                   projectData = pointSet[project];
+                  console.debug("Got project data", projectData);
                   point = projectData.points;
                   title = projectData.title;
                   console.log("Looking at project #" + project + ", '" + title + "'");
