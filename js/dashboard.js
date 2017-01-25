@@ -201,12 +201,12 @@ getServerChart = function(chartType, chartParams) {
             for (o = 0, len3 = data.length; o < len3; o++) {
               pointSet = data[o];
               ++j;
-              if (!isNull(pointSet)) {
+              if (!isNull(pointSet.points)) {
                 builder = {
                   points: []
                 };
                 builtPoints = 0;
-                console.debug("USing pointset", pointSet);
+                console.debug("Using pointset", pointSet);
                 title = pointSet.title;
                 if (pointSet.points == null) {
                   pointSet.points = new Array();
@@ -222,6 +222,7 @@ getServerChart = function(chartType, chartParams) {
                   } catch (undefined) {}
                 }
                 if (builtPoints === 0) {
+                  console.log("Skipping project #" + project + " = '" + title + "' with no points");
                   continue;
                 }
                 k++;

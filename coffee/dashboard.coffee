@@ -197,12 +197,12 @@ getServerChart = (chartType = "infection", chartParams) ->
             j = 0
             for pointSet in data
               ++j
-              unless isNull pointSet
+              unless isNull pointSet.points
                 # The data should be an array of coordinates
                 builder =
                   points: []
                 builtPoints = 0
-                console.debug "USing pointset", pointSet
+                console.debug "Using pointset", pointSet
                 title = pointSet.title
                 pointSet.points ?= new Array()
                 for point in pointSet.points
@@ -212,6 +212,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                     builder.points.push tempPoint
                     builtPoints++
                 if builtPoints is 0
+                  console.log "Skipping project ##{project} = '#{title}' with no points"
                   continue
                 # Get the country
                 k++
