@@ -202,6 +202,7 @@ $loginStatus = getLoginState();
           <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Project Count</paper-item>
+              <paper-item disabled>Sample Counts</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

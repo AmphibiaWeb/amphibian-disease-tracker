@@ -996,7 +996,7 @@ function getChartData($chartDataParams) {
         # Have to hit the Google API for each one to check the
         # country per coordinate
         # Look up the carto id fields
-        $query = "SELECT `carto_id` FROM `$default_table`";
+        $query = "SELECT `project_id`,`project_title`,`carto_id` FROM `$default_table`";
         $db->invalidateLink();
         $result = mysqli_query($db->getLink(), $query);
         if($result === false) {
@@ -1020,7 +1020,10 @@ function getChartData($chartDataParams) {
             $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
           }
           $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
-          $chartDatasetData[] = $coords;
+          $chartDatasetData[$row['project_id']] = array(
+              "points" => $coords,
+              "title" => $row["project_title"],
+          );
         }
         $chartData = array(
           "labels" => array(),
@@ -1082,6 +1085,7 @@ function getChartData($chartDataParams) {
         $labels = array();
         $hasConstructedLabels = false;
         $rowCount = 0;
+        $binningProjectResults = array();
         if ($percent) {
           if ($group) {
             # Grouped percentages
@@ -1217,7 +1221,6 @@ function getChartData($chartDataParams) {
           }
         }
         # We now have the parameters to build the chart data
-        $binningProjectResults = array();
         try {
           # Iterate over each row of the data
           while ($row = mysqli_fetch_assoc($result)) {

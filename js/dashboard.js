@@ -163,7 +163,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, len4, n, o, p, point, pointSet, ref1, results, tempPoint, waitFinished;
+          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, n, o, point, pointSet, project, projectData, results, tempPoint, title, waitFinished;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           labels = new Array();
@@ -191,9 +191,11 @@ getServerChart = function(chartType, chartParams) {
                   points: []
                 };
                 builtPoints = 0;
-                ref1 = Object.toArray(pointSet);
-                for (p = 0, len4 = ref1.length; p < len4; p++) {
-                  point = ref1[p];
+                for (project in pointSet) {
+                  projectData = pointSet[project];
+                  point = projectData.points;
+                  title = projectData.title;
+                  console.log("Looking at project #" + project + ", '" + title + "'");
                   try {
                     tempPoint = canonicalizePoint(point);
                     builder.points.push(tempPoint);
@@ -205,12 +207,12 @@ getServerChart = function(chartType, chartParams) {
                 }
                 k++;
                 localityFromMapBuilder(builder, function(locality) {
-                  var binKey, country, error, len5, q, ref2, view;
+                  var binKey, country, error, len4, p, ref1, view;
                   kprime++;
                   try {
-                    ref2 = geo.geocoderViews;
-                    for (q = 0, len5 = ref2.length; q < len5; q++) {
-                      view = ref2[q];
+                    ref1 = geo.geocoderViews;
+                    for (p = 0, len4 = ref1.length; p < len4; p++) {
+                      view = ref1[p];
                       if (indexOf.call(view.types, "country") < 0) {
                         continue;
                       }

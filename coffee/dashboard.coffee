@@ -190,7 +190,10 @@ getServerChart = (chartType = "infection", chartParams) ->
                 builder =
                   points: []
                 builtPoints = 0
-                for point in Object.toArray pointSet
+                for project, projectData of pointSet
+                  point = projectData.points
+                  title = projectData.title
+                  console.log "Looking at project ##{project}, '#{title}'"
                   try
                     tempPoint = canonicalizePoint point
                     builder.points.push tempPoint
