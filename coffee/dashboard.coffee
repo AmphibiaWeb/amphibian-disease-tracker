@@ -129,6 +129,15 @@ getRandomDataColor = ->
   colors
 
 
+wait = (ms) ->
+  start = Date.now()
+  end = start
+  while end < start + ms
+    end = Date.now()
+  console.log "Waiting #{ms}ms"
+  end
+
+
 getServerChart = (chartType = "infection", chartParams) ->
   # Get the chart
   startLoad()
@@ -202,6 +211,12 @@ getServerChart = (chartType = "infection", chartParams) ->
                   continue
                 # Get the country
                 k++
+                # Google Maps query limit:
+                # https://developers.google.com/maps/documentation/geocoding/usage-limits
+                #
+                # 50 requests per second, client + server
+                waitTime = 1000 / 25
+                wait waitTime
                 localityFromMapBuilder builder, (locality) ->
                   kprime++
                   try

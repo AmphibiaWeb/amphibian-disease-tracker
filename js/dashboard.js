@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart, wait,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -112,6 +112,17 @@ getRandomDataColor = function() {
   return colors;
 };
 
+wait = function(ms) {
+  var end, start;
+  start = Date.now();
+  end = start;
+  while (end < start + ms) {
+    end = Date.now();
+  }
+  console.log("Waiting " + ms + "ms");
+  return end;
+};
+
 getServerChart = function(chartType, chartParams) {
   var args, cp, requestKey, requestValue;
   if (chartType == null) {
@@ -163,7 +174,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, n, o, point, pointSet, project, projectData, results, tempPoint, title, waitFinished;
+          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, n, o, point, pointSet, project, projectData, results, tempPoint, title, waitFinished, waitTime;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           labels = new Array();
@@ -206,6 +217,8 @@ getServerChart = function(chartType, chartParams) {
                   continue;
                 }
                 k++;
+                waitTime = 1000 / 25;
+                wait(waitTime);
                 localityFromMapBuilder(builder, function(locality) {
                   var binKey, country, error, len4, p, ref1, view;
                   kprime++;
