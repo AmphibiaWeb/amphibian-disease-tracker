@@ -209,7 +209,7 @@ getServerChart = function(chartType, chartParams) {
                 console.debug("Using pointset", pointSet);
                 title = pointSet.title;
                 project = pointSet.project_id;
-                ref1 = pointSet.points;
+                ref1 = Object.toArray(pointSet.points);
                 for (p = 0, len4 = ref1.length; p < len4; p++) {
                   point = ref1[p];
                   console.log("Looking at project #" + project + ", '" + title + "'");
