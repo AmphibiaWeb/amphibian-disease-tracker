@@ -1010,10 +1010,10 @@ function getChartData($chartDataParams) {
         $returnedRows = mysqli_num_rows($result);
         $chartData = array();
         $chartDatasetData = array();
-        while($row = mysqli_fetch_row($result)) {
-          if(empty($row[0])) continue;
+        while($row = mysqli_fetch_assoc($result)) {
+          if(empty($row['carto_id'])) continue;
           $rowCount++;
-          $carto = json_decode(deEscape($row[0]), true);
+          $carto = json_decode(deEscape($row['carto_id']), true);
           # Escaped or unescaped
           $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
           if(toBool($bpoly['paths']) === false && !empty($bpoly["multibounds"])) {
