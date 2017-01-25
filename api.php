@@ -1036,7 +1036,7 @@ function getChartData($chartDataParams) {
           "data" => $chartData,
           "use_preprocessor" => "geocoder",
           "rows" => $rowCount,
-          "format" => "chart.js",
+          "format" => "raw",
           "provided" => $chartDataParams,
           "full_description" => "Project representation per country",
                    "query" => $query,
@@ -1238,7 +1238,7 @@ function getChartData($chartDataParams) {
                     $labels[] = $key;
                     $binningProjectResults[$key] = array();
                 }
-                if($calcPercent <= $range["max"]) {
+                if($calcPercent <= $range["max"] && $calcPercent >= $range["min"]) {
                   # Array order is guaranteed, so this is fine
                   $countedProjects[$key]++;
                   $binningProjectResults[$key][] = array($row['project_id'] => $row['project_title']);
@@ -1251,7 +1251,7 @@ function getChartData($chartDataParams) {
               foreach($checkRange as $range)  {
                 $key = $range["key"];
                 if(!$hasConstructedLabels) $labels[] = $key;
-                if($row["disease_positive"] <= $range["max"]) {
+                if($row["disease_positive"] <= $range["max"] && $row["disease_positive"] >= $range["min"]) {
                   # Array order is guaranteed, so this is fine
                   $countedProjects[$key]++;
                   if($hasConstructedLabels) break;
