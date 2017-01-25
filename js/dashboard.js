@@ -208,6 +208,9 @@ getServerChart = function(chartType, chartParams) {
                 builtPoints = 0;
                 console.debug("USing pointset", pointSet);
                 title = pointSet.title;
+                if (pointSet.points == null) {
+                  pointSet.points = new Array();
+                }
                 ref1 = pointSet.points;
                 for (p = 0, len4 = ref1.length; p < len4; p++) {
                   point = ref1[p];
