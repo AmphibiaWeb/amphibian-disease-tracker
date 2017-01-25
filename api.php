@@ -1046,7 +1046,7 @@ function getChartData($chartDataParams) {
     case "infection":
     default:
         # Sort by `disease_positive`
-        $query = "SELECT `disease_positive`, `disease_samples` FROM `$default_table`";
+        $query = "SELECT `project_id`,`project_title`,`disease_positive`, `disease_samples` FROM `$default_table`";
         # do the query
         $db->invalidateLink();
         $result = mysqli_query($db->getLink(), $query);
@@ -1217,6 +1217,7 @@ function getChartData($chartDataParams) {
           }
         }
         # We now have the parameters to build the chart data
+        $binningProjectResults = array();
         try {
           # Iterate over each row of the data
           while ($row = mysqli_fetch_assoc($result)) {
@@ -1233,10 +1234,14 @@ function getChartData($chartDataParams) {
               $calcPercent = ceil(100 * intval($row["disease_positive"]) / intval($row["disease_samples"]));
               foreach($checkRange as $range)  {
                 $key = $range["key"];
-                if(!$hasConstructedLabels) $labels[] = $key;
+                if(!$hasConstructedLabels) {
+                    $labels[] = $key;
+                    $binningProjectResults[$key] = array();
+                }
                 if($calcPercent <= $range["max"]) {
                   # Array order is guaranteed, so this is fine
                   $countedProjects[$key]++;
+                  $binningProjectResults[$key][] = array($row['project_id'] => $row['project_title']);
                   if($hasConstructedLabels) break;
 
                 }
