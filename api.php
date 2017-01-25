@@ -1288,6 +1288,7 @@ function getChartData($chartDataParams) {
           returnAjax(array(
             "status" => true,
             "data" => $chartData,
+            "data_details" => $binningProjectResults,
             "rows" => $rowCount,
             "format" => "chart.js",
             "provided" => $chartDataParams,
