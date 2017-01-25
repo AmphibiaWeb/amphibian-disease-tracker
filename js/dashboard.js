@@ -178,7 +178,7 @@ getServerChart = function(chartType, chartParams) {
       case "geocoder":
         console.log("Got results", result);
         preprocessorFn = function(callback) {
-          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, n, o, point, pointSet, project, projectData, results, tempPoint, title, waitFinished, waitTime;
+          var builder, builtPoints, currentDataset, dataBin, dataKeyMap, datablob, finished, j, k, kprime, labels, len2, len3, len4, n, o, p, point, pointSet, ref1, results, tempPoint, title, waitFinished, waitTime;
           console.log("Starting geocoder preprocessor", datasets);
           builtPoints = 0;
           labels = new Array();
@@ -207,11 +207,10 @@ getServerChart = function(chartType, chartParams) {
                 };
                 builtPoints = 0;
                 console.debug("USing pointset", pointSet);
-                for (project in pointSet) {
-                  projectData = pointSet[project];
-                  console.debug("Got project data", projectData);
-                  point = projectData.points;
-                  title = projectData.title;
+                title = pointSet.title;
+                ref1 = pointSet.points;
+                for (p = 0, len4 = ref1.length; p < len4; p++) {
+                  point = ref1[p];
                   console.log("Looking at project #" + project + ", '" + title + "'");
                   try {
                     tempPoint = canonicalizePoint(point);
@@ -226,12 +225,12 @@ getServerChart = function(chartType, chartParams) {
                 waitTime = 1000 / 25;
                 wait(waitTime);
                 localityFromMapBuilder(builder, function(locality) {
-                  var binKey, country, error, len4, p, ref1, view;
+                  var binKey, country, error, len5, q, ref2, view;
                   kprime++;
                   try {
-                    ref1 = geo.geocoderViews;
-                    for (p = 0, len4 = ref1.length; p < len4; p++) {
-                      view = ref1[p];
+                    ref2 = geo.geocoderViews;
+                    for (q = 0, len5 = ref2.length; q < len5; q++) {
+                      view = ref2[q];
                       if (indexOf.call(view.types, "country") < 0) {
                         continue;
                       }

@@ -203,10 +203,8 @@ getServerChart = (chartType = "infection", chartParams) ->
                   points: []
                 builtPoints = 0
                 console.debug "USing pointset", pointSet
-                for project, projectData of pointSet
-                  console.debug "Got project data", projectData
-                  point = projectData.points
-                  title = projectData.title
+                title = pointSet.title
+                for point in pointSet.points
                   console.log "Looking at project ##{project}, '#{title}'"
                   try
                     tempPoint = canonicalizePoint point
