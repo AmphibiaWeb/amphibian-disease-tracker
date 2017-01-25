@@ -130,10 +130,11 @@ getRandomDataColor = ->
 
 
 wait = (ms) ->
-  start = Date.now()
+  start = new Date().getTime()
+  console.log "Will wait #{ms}ms after #{start}"
   end = start
   while end < start + ms
-    end = Date.now()
+    end = start = new Date().getTime()
   console.log "Waiting #{ms}ms"
   end
 
