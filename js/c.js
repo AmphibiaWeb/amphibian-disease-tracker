@@ -4548,8 +4548,8 @@ localityFromMapBuilder = function(builder, callback) {
   center = getMapCenter(builder.points);
   geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality, googleResult) {
     var error2;
-    console.info("Got locality '" + locality + "'", result);
-    builder.views = result;
+    console.info("Got locality '" + locality + "'", googleResult);
+    builder.views = googleResult;
     if (typeof callback === "function") {
       try {
         return callback(locality, builder);

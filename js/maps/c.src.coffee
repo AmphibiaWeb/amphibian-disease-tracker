@@ -3841,8 +3841,8 @@ localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   window.lastRanGeocoder = Date.now()
   center = getMapCenter builder.points
   geo.reverseGeocode center.lat, center.lng, builder.points, (locality, googleResult) ->
-    console.info "Got locality '#{locality}'", result
-    builder.views = result
+    console.info "Got locality '#{locality}'", googleResult
+    builder.views = googleResult
     if typeof callback is "function"
       try
         callback locality, builder
