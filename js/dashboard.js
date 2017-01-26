@@ -118,7 +118,7 @@ wait = function(ms) {
   console.log("Will wait " + ms + "ms after " + start);
   end = start;
   while (end < start + ms) {
-    end = start = new Date().getTime();
+    end = new Date().getTime();
     if (window.endWait === true) {
       end = start + ms + 1;
     }
