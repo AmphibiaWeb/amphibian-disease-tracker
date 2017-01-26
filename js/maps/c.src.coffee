@@ -3961,6 +3961,7 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
     lng: toFloat lng
   request =
     location: ll
+  console.debug "Starting reverse geocoder"
   geocoder.geocode request, (result, status) ->
     if status is google.maps.GeocoderStatus.OK
       console.info "Google said:", result

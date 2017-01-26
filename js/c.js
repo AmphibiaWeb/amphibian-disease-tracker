@@ -4705,6 +4705,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
   request = {
     location: ll
   };
+  console.debug("Starting reverse geocoder");
   return geocoder.geocode(request, function(result, status) {
     var east, googleBounds, len, locality, mustContain, ne, north, south, sw, t, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
     if (status === google.maps.GeocoderStatus.OK) {
