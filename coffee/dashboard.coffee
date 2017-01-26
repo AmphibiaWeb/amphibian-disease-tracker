@@ -259,6 +259,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                       chartData.labels = labels
                       # Finally call back
                       callback()
+                wait 50
               if j is data.length
                 finished = true
                 waitFinished = true

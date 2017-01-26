@@ -267,6 +267,7 @@ getServerChart = function(chartType, chartParams) {
                     }
                   }
                 });
+                wait(50);
               }
               if (j === data.length) {
                 finished = true;
