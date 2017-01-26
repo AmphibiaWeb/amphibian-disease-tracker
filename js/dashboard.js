@@ -123,7 +123,7 @@ wait = function(ms) {
       end = start + ms + 1;
     }
   }
-  console.log("Waiting " + ms + "ms");
+  console.log("Waited " + ms + "ms");
   return end;
 };
 
@@ -209,10 +209,10 @@ getServerChart = function(chartType, chartParams) {
                 console.debug("Using pointset", pointSet);
                 title = pointSet.title;
                 project = pointSet.project_id;
+                console.log("Looking at project #" + project + ", '" + title + "'");
                 ref1 = Object.toArray(pointSet.points);
                 for (p = 0, len4 = ref1.length; p < len4; p++) {
                   point = ref1[p];
-                  console.log("Looking at project #" + project + ", '" + title + "'");
                   try {
                     tempPoint = canonicalizePoint(point);
                     builder.points.push(tempPoint);
@@ -224,7 +224,7 @@ getServerChart = function(chartType, chartParams) {
                   continue;
                 }
                 k++;
-                waitTime = 1000 / 25;
+                waitTime = 1000 / 12.5;
                 wait(waitTime);
                 localityFromMapBuilder(builder, function(locality) {
                   var binKey, country, error, len5, q, ref2, view;

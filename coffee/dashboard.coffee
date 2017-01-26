@@ -137,7 +137,7 @@ wait = (ms) ->
     end = new Date().getTime()
     if window.endWait is true
       end = start + ms + 1
-  console.log "Waiting #{ms}ms"
+  console.log "Waited #{ms}ms"
   end
 
 
@@ -205,8 +205,8 @@ getServerChart = (chartType = "infection", chartParams) ->
                 console.debug "Using pointset", pointSet
                 title = pointSet.title
                 project = pointSet.project_id
+                console.log "Looking at project ##{project}, '#{title}'"
                 for point in Object.toArray pointSet.points
-                  console.log "Looking at project ##{project}, '#{title}'"
                   try
                     tempPoint = canonicalizePoint point
                     builder.points.push tempPoint
@@ -220,7 +220,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                 # https://developers.google.com/maps/documentation/geocoding/usage-limits
                 #
                 # 50 requests per second, client + server
-                waitTime = 1000 / 25
+                waitTime = 1000 / 12.5
                 wait waitTime
                 localityFromMapBuilder builder, (locality) ->
                   kprime++
