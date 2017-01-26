@@ -3821,7 +3821,10 @@ localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   geo.reverseGeocode center.lat, center.lng, builder.points, (locality) ->
     console.info "Got locality '#{locality}'"
     if typeof callback is "function"
-      callback locality
+      try
+        callback locality, builder
+      catch
+        callback locality
   false
 
 

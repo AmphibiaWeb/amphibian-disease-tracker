@@ -199,12 +199,14 @@ getServerChart = (chartType = "infection", chartParams) ->
               ++j
               unless isNull pointSet.points
                 # The data should be an array of coordinates
-                builder =
-                  points: []
-                builtPoints = 0
                 console.debug "Using pointset", pointSet
                 title = pointSet.title
                 project = pointSet.project_id
+                builder =
+                  points: []
+                  title: title
+                  project: project
+                builtPoints = 0
                 console.log "Looking at project ##{project}, '#{title}'"
                 for point in Object.toArray pointSet.points
                   try
@@ -222,7 +224,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                 # 50 requests per second, client + server
                 waitTime = 125
                 wait waitTime
-                localityFromMapBuilder builder, (locality) ->
+                localityFromMapBuilder builder, (locality, cbBuilder) ->
                   kprime++
                   try
                     for view in geo.geocoderViews
@@ -236,7 +238,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                     # return false
                   if isNull country
                     country = locality
-                  console.log "Final locality '#{country}' for #{title}"
+                  console.log "Final locality '#{country}' for #{cbBuilder.title}"
                   # Bin to countries
                   unless country in labels
                     labels.push country

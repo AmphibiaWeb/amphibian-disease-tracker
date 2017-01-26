@@ -202,13 +202,15 @@ getServerChart = function(chartType, chartParams) {
               pointSet = data[o];
               ++j;
               if (!isNull(pointSet.points)) {
-                builder = {
-                  points: []
-                };
-                builtPoints = 0;
                 console.debug("Using pointset", pointSet);
                 title = pointSet.title;
                 project = pointSet.project_id;
+                builder = {
+                  points: [],
+                  title: title,
+                  project: project
+                };
+                builtPoints = 0;
                 console.log("Looking at project #" + project + ", '" + title + "'");
                 ref1 = Object.toArray(pointSet.points);
                 for (p = 0, len4 = ref1.length; p < len4; p++) {
@@ -226,7 +228,7 @@ getServerChart = function(chartType, chartParams) {
                 k++;
                 waitTime = 125;
                 wait(waitTime);
-                localityFromMapBuilder(builder, function(locality) {
+                localityFromMapBuilder(builder, function(locality, cbBuilder) {
                   var binKey, country, error, len5, q, ref2, view;
                   kprime++;
                   try {
@@ -244,7 +246,7 @@ getServerChart = function(chartType, chartParams) {
                   if (isNull(country)) {
                     country = locality;
                   }
-                  console.log("Final locality '" + country + "' for " + title);
+                  console.log("Final locality '" + country + "' for " + cbBuilder.title);
                   if (indexOf.call(labels, country) < 0) {
                     labels.push(country);
                     dataKeyMap[country] = dataBin.length;

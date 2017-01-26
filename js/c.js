@@ -4518,9 +4518,14 @@ localityFromMapBuilder = function(builder, callback) {
    */
   center = getMapCenter(builder.points);
   geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality) {
+    var error2;
     console.info("Got locality '" + locality + "'");
     if (typeof callback === "function") {
-      return callback(locality);
+      try {
+        return callback(locality, builder);
+      } catch (error2) {
+        return callback(locality);
+      }
     }
   });
   return false;
