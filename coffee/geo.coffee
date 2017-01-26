@@ -1785,7 +1785,7 @@ localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   #   mapBuilder.points, and a selector under mapBuilder.selector
   ###
   MAX_QUERIES_PER_SECOND = 50
-  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 10
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 15
   maxQueryRate = 1000 / maxQueryRateEff
   sinceLastGeocoder = Date.now() - window.lastRanGeocoder
   if sinceLastGeocoder < maxQueryRate
