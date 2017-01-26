@@ -1785,16 +1785,19 @@ localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   #   mapBuilder.points, and a selector under mapBuilder.selector
   ###
   MAX_QUERIES_PER_SECOND = 50
-  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 8
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 10
   maxQueryRate = 1000 / maxQueryRateEff
-  if Date.now() - window.lastRanGeocoder < maxQueryRate
+  sinceLastGeocoder = Date.now() - window.lastRanGeocoder
+  if sinceLastGeocoder < maxQueryRate
+    console.debug "It's been #{sinceLastGeocoder}ms since last attempt to geocode (min: #{maxQueryRate}ms), delaying"
     delay maxQueryRate, ->
       localityFromMapBuilder builder, callback
     return false
   window.lastRanGeocoder = Date.now()
   center = getMapCenter builder.points
-  geo.reverseGeocode center.lat, center.lng, builder.points, (locality) ->
-    console.info "Got locality '#{locality}'"
+  geo.reverseGeocode center.lat, center.lng, builder.points, (locality, googleResult) ->
+    console.info "Got locality '#{locality}'", result
+    builder.views = result
     if typeof callback is "function"
       try
         callback locality, builder
@@ -1978,7 +1981,10 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
       console.info "Computed locality: '#{locality}'"
       geo.computedLocality = locality
       if typeof callback is "function"
-        callback(locality)
+        try
+          callback locality, result
+        catch
+          callback(locality)
       else
         console.warn "No callback provided to geo.reverseGeocode()!"
     else

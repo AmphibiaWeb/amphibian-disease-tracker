@@ -215,7 +215,8 @@ getServerChart = (chartType = "infection", chartParams) ->
                 localityFromMapBuilder builder, (locality, cbBuilder) ->
                   kprime++
                   try
-                    for view in geo.geocoderViews
+                    views = cbBuilder.views ? geo.geocoderViews
+                    for view in views
                       unless "country" in view.types
                         continue
                       country = view.formatted_address

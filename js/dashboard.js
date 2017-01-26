@@ -213,12 +213,12 @@ getServerChart = function(chartType, chartParams) {
                 k++;
                 waitTime = 1000 / 12.5;
                 localityFromMapBuilder(builder, function(locality, cbBuilder) {
-                  var binKey, country, error, len5, q, ref2, view;
+                  var binKey, country, error, len5, q, ref2, view, views;
                   kprime++;
                   try {
-                    ref2 = geo.geocoderViews;
-                    for (q = 0, len5 = ref2.length; q < len5; q++) {
-                      view = ref2[q];
+                    views = (ref2 = cbBuilder.views) != null ? ref2 : geo.geocoderViews;
+                    for (q = 0, len5 = views.length; q < len5; q++) {
+                      view = views[q];
                       if (indexOf.call(view.types, "country") < 0) {
                         continue;
                       }

@@ -4522,7 +4522,7 @@ wait = function(ms) {
 };
 
 localityFromMapBuilder = function(builder, callback) {
-  var MAX_QUERIES_PER_SECOND, center, maxQueryRate, maxQueryRateEff;
+  var MAX_QUERIES_PER_SECOND, center, maxQueryRate, maxQueryRateEff, sinceLastGeocoder;
   if (builder == null) {
     builder = window.mapBuilder;
   }
@@ -4534,9 +4534,11 @@ localityFromMapBuilder = function(builder, callback) {
    *   mapBuilder.points, and a selector under mapBuilder.selector
    */
   MAX_QUERIES_PER_SECOND = 50;
-  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 8;
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 10;
   maxQueryRate = 1000 / maxQueryRateEff;
-  if (Date.now() - window.lastRanGeocoder < maxQueryRate) {
+  sinceLastGeocoder = Date.now() - window.lastRanGeocoder;
+  if (sinceLastGeocoder < maxQueryRate) {
+    console.debug("It's been " + sinceLastGeocoder + "ms since last attempt to geocode (min: " + maxQueryRate + "ms), delaying");
     delay(maxQueryRate, function() {
       return localityFromMapBuilder(builder, callback);
     });
@@ -4544,9 +4546,10 @@ localityFromMapBuilder = function(builder, callback) {
   }
   window.lastRanGeocoder = Date.now();
   center = getMapCenter(builder.points);
-  geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality) {
+  geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality, googleResult) {
     var error2;
-    console.info("Got locality '" + locality + "'");
+    console.info("Got locality '" + locality + "'", result);
+    builder.views = result;
     if (typeof callback === "function") {
       try {
         return callback(locality, builder);
@@ -4734,7 +4737,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
   };
   console.debug("Starting reverse geocoder");
   return geocoder.geocode(request, function(result, status) {
-    var east, googleBounds, len, locality, mustContain, ne, north, south, sw, t, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
+    var east, error3, googleBounds, len, locality, mustContain, ne, north, south, sw, t, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
     if (status === google.maps.GeocoderStatus.OK) {
       console.info("Google said:", result);
       geo.geocoderViews = result;
@@ -4781,7 +4784,11 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
       console.info("Computed locality: '" + locality + "'");
       geo.computedLocality = locality;
       if (typeof callback === "function") {
-        return callback(locality);
+        try {
+          return callback(locality, result);
+        } catch (error3) {
+          return callback(locality);
+        }
       } else {
         return console.warn("No callback provided to geo.reverseGeocode()!");
       }
