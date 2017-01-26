@@ -224,7 +224,7 @@ getServerChart = function(chartType, chartParams) {
                   continue;
                 }
                 k++;
-                waitTime = 1000 / 12.5;
+                waitTime = 125;
                 wait(waitTime);
                 localityFromMapBuilder(builder, function(locality) {
                   var binKey, country, error, len5, q, ref2, view;
@@ -244,7 +244,7 @@ getServerChart = function(chartType, chartParams) {
                   if (isNull(country)) {
                     country = locality;
                   }
-                  console.log("Final locality '" + country + "'");
+                  console.log("Final locality '" + country + "' for " + title);
                   if (indexOf.call(labels, country) < 0) {
                     labels.push(country);
                     dataKeyMap[country] = dataBin.length;

@@ -220,7 +220,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                 # https://developers.google.com/maps/documentation/geocoding/usage-limits
                 #
                 # 50 requests per second, client + server
-                waitTime = 1000 / 12.5
+                waitTime = 125
                 wait waitTime
                 localityFromMapBuilder builder, (locality) ->
                   kprime++
@@ -236,7 +236,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                     # return false
                   if isNull country
                     country = locality
-                  console.log "Final locality '#{country}'"
+                  console.log "Final locality '#{country}' for #{title}"
                   # Bin to countries
                   unless country in labels
                     labels.push country
