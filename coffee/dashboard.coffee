@@ -129,17 +129,6 @@ getRandomDataColor = ->
   colors
 
 
-wait = (ms) ->
-  start = new Date().getTime()
-  console.log "Will wait #{ms}ms after #{start}"
-  end = start
-  while end < start + ms
-    end = new Date().getTime()
-    if window.endWait is true
-      end = start + ms + 1
-  console.log "Waited #{ms}ms"
-  end
-
 
 getServerChart = (chartType = "infection", chartParams) ->
   # Get the chart
@@ -258,8 +247,6 @@ getServerChart = (chartType = "infection", chartParams) ->
                       chartData.labels = labels
                       # Finally call back
                       callback()
-                # Give it a break ...
-                wait waitTime
               if j is data.length
                 finished = true
                 waitFinished = true

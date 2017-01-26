@@ -3809,6 +3809,18 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
   geo.computedBoundingRectangle = boundingBox
   boundingBox
 
+window.lastRanGeocoder = 0
+
+wait = (ms) ->
+  start = new Date().getTime()
+  console.log "Will wait #{ms}ms after #{start}"
+  end = start
+  while end < start + ms
+    end = new Date().getTime()
+    if window.endWait is true
+      end = start + ms + 1
+  console.log "Waited #{ms}ms"
+  end
 
 localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   ###
@@ -3817,6 +3829,15 @@ localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
   # @param builder -> an object with an array of (canonicalized) points under
   #   mapBuilder.points, and a selector under mapBuilder.selector
   ###
+  MAX_QUERIES_PER_SECOND = 50
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 4
+  maxQueryRate = 1000 / maxQueryRateEff
+  if Date.now() - window.lastRanGeocoder < maxQueryRate
+    wait 25
+    delay maxQueryRate, ->
+      localityFromMapBuilder builder, callback
+    return false
+  window.lastRanGeocoder = Date.now()
   center = getMapCenter builder.points
   geo.reverseGeocode center.lat, center.lng, builder.points, (locality) ->
     console.info "Got locality '#{locality}'"

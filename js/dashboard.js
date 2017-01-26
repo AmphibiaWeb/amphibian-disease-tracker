@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart, wait,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -110,21 +110,6 @@ getRandomDataColor = function() {
     background: colorString + ",0.2)"
   };
   return colors;
-};
-
-wait = function(ms) {
-  var end, start;
-  start = new Date().getTime();
-  console.log("Will wait " + ms + "ms after " + start);
-  end = start;
-  while (end < start + ms) {
-    end = new Date().getTime();
-    if (window.endWait === true) {
-      end = start + ms + 1;
-    }
-  }
-  console.log("Waited " + ms + "ms");
-  return end;
 };
 
 getServerChart = function(chartType, chartParams) {
@@ -266,7 +251,6 @@ getServerChart = function(chartType, chartParams) {
                     }
                   }
                 });
-                wait(waitTime);
               }
               if (j === data.length) {
                 finished = true;
