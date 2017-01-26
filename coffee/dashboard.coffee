@@ -222,8 +222,7 @@ getServerChart = (chartType = "infection", chartParams) ->
                 # https://developers.google.com/maps/documentation/geocoding/usage-limits
                 #
                 # 50 requests per second, client + server
-                waitTime = 500
-                wait waitTime
+                waitTime = 1000 / 12.5
                 localityFromMapBuilder builder, (locality, cbBuilder) ->
                   kprime++
                   try
@@ -259,7 +258,8 @@ getServerChart = (chartType = "infection", chartParams) ->
                       chartData.labels = labels
                       # Finally call back
                       callback()
-                wait 50
+                # Give it a break ...
+                wait waitTime
               if j is data.length
                 finished = true
                 waitFinished = true

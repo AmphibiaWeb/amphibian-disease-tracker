@@ -226,8 +226,7 @@ getServerChart = function(chartType, chartParams) {
                   continue;
                 }
                 k++;
-                waitTime = 500;
-                wait(waitTime);
+                waitTime = 1000 / 12.5;
                 localityFromMapBuilder(builder, function(locality, cbBuilder) {
                   var binKey, country, error, len5, q, ref2, view;
                   kprime++;
@@ -267,7 +266,7 @@ getServerChart = function(chartType, chartParams) {
                     }
                   }
                 });
-                wait(50);
+                wait(waitTime);
               }
               if (j === data.length) {
                 finished = true;
