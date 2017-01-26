@@ -226,7 +226,7 @@ getServerChart = function(chartType, chartParams) {
                   continue;
                 }
                 k++;
-                waitTime = 125;
+                waitTime = 250;
                 wait(waitTime);
                 localityFromMapBuilder(builder, function(locality, cbBuilder) {
                   var binKey, country, error, len5, q, ref2, view;
