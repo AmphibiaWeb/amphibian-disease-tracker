@@ -4534,10 +4534,9 @@ localityFromMapBuilder = function(builder, callback) {
    *   mapBuilder.points, and a selector under mapBuilder.selector
    */
   MAX_QUERIES_PER_SECOND = 50;
-  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 4;
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 8;
   maxQueryRate = 1000 / maxQueryRateEff;
   if (Date.now() - window.lastRanGeocoder < maxQueryRate) {
-    wait(25);
     delay(maxQueryRate, function() {
       return localityFromMapBuilder(builder, callback);
     });
