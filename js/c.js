@@ -1907,7 +1907,7 @@ downloadCSVFile = function(data, options, callback) {
       postCallback = function() {
         var selector;
         selector = options.selector;
-        if (options.create === true) {
+        if (options.create === true && !$(selector).exists()) {
           $(selector).append(html);
         } else {
           $(selector).attr("download", options.downloadFile).attr("href", file).removeClass("disabled").removeAttr("disabled");
@@ -2346,12 +2346,20 @@ generateCSVFromResults = function(resultArray, caller, selector) {
     acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "sampleid", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
   };
   try {
-    downloadCSVFile(resultArray, options, function() {
-      var elapsed, html;
+    downloadCSVFile(resultArray, options, function(postCallback) {
+      var elapsed, error2, html;
       $("#download-file").remove();
       html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
       $(caller).replaceWith(html);
       $(selector + " #download-file paper-button").removeAttr("disabled");
+      if (typeof postCallback === "function") {
+        try {
+          postCallback();
+        } catch (error2) {
+          e = error2;
+          console.warn("Couldn't run postCallbacak after downloadCSV file -- " + e.message);
+        }
+      }
       elapsed = Date.now() - startTime;
       console.debug("GenerateCSVFromResults completed in " + elapsed + "ms");
       return stopLoad();

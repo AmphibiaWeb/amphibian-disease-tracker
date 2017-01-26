@@ -1466,7 +1466,7 @@ downloadCSVFile = (data, options, callback) ->
       postCallback = ->
         # Insert it into the DOM
         selector = options.selector
-        if options.create is true
+        if options.create is true and not $(selector).exists()
           $(selector).append html
         else
           $(selector)
@@ -1858,10 +1858,9 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
       "fimsextra"
       "originaltaxa"
       ]
-  # TODO migrate this to a Web Worker
-  # http://www.html5rocks.com/en/tutorials/workers/basics/
+  # Fire up the web worker
   try
-    downloadCSVFile resultArray, options, ->
+    downloadCSVFile resultArray, options, (postCallback) ->
       $("#download-file").remove()
       html = """
           <a tabindex="-1" id="download-file" class="paper-button-link">
@@ -1873,6 +1872,11 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
       """
       $(caller).replaceWith html
       $("#{selector} #download-file paper-button").removeAttr "disabled"
+      if typeof postCallback is "function"
+        try
+          postCallback()
+        catch e
+          console.warn "Couldn't run postCallbacak after downloadCSV file -- #{e.message}"
       elapsed = Date.now() - startTime
       console.debug "GenerateCSVFromResults completed in #{elapsed}ms"
       stopLoad()
