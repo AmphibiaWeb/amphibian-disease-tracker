@@ -4025,6 +4025,7 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
 
       console.info "Computed locality: '#{locality}'"
       geo.computedLocality = locality
+      window.lastRanGeocoder = Date.now()
       if typeof callback is "function"
         try
           callback locality, result

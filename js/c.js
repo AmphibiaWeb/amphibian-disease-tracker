@@ -4783,6 +4783,7 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
       }
       console.info("Computed locality: '" + locality + "'");
       geo.computedLocality = locality;
+      window.lastRanGeocoder = Date.now();
       if (typeof callback === "function") {
         try {
           return callback(locality, result);
