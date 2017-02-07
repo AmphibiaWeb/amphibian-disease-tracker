@@ -17,7 +17,7 @@
   },
   "homepage": "https://amphibiandisease.org/",
   "devDependencies": {
-    "autoprefixer": "^6.5.4",
+    "autoprefixer": "^6.7.2",
     "autoprefixer-core": "^6.0.1",
     "bootlint": "^0.14.2",
     "bower": "^1.7.9",

@@ -4542,9 +4542,9 @@ localityFromMapBuilder = function(builder, callback) {
    *   mapBuilder.points, and a selector under mapBuilder.selector
    */
   MAX_QUERIES_PER_SECOND = 50;
-  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 15;
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 20;
   maxQueryRate = 1000 / maxQueryRateEff;
-  sinceLastGeocoder = Date.now() - window.lastRanGeocoder;
+  sinceLastGeocoder = Date.now() - window.lastRanGeocoder - randomInt(1, 25);
   if (sinceLastGeocoder < maxQueryRate) {
     console.debug("It's been " + sinceLastGeocoder + "ms since last attempt to geocode (min: " + maxQueryRate + "ms), delaying");
     delay(maxQueryRate, function() {
