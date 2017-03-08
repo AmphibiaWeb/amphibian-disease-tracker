@@ -2338,12 +2338,16 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
+
+  /*
+   * Main CSV record generator. Generally the one called, and may
+   * instance the web worker copy.
+   */
   startTime = Date.now();
   console.info("Source CSV data:", resultArray);
   options = {
     objectAsValues: true,
-    downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
-    acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "sampleid", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
+    downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv"
   };
   try {
     downloadCSVFile(resultArray, options, function(postCallback) {

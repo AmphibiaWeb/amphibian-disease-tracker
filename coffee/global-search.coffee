@@ -1090,8 +1090,12 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     worker.addEventListener "message", (e) ->
       # Web worker callback
       html = e.data.html
-      outputData = e.data.outputData
+      outputData = e.data.summaryRowData
+      #outputData = e.data.data.data
+      #outputData = e.data.rawProjectData
+      #outputData = e.data.outputData
       console.info "Web worker returned", e.data
+      console.log "Sending to setupDisplay", outputData
       setupDisplay html, outputData
     worker.postMessage postMessageContent
   catch e
@@ -1258,20 +1262,24 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
   # Both the web worker callback and the "classic" run need this
   ###
   setupDisplay = (html, outputData) ->
+    downloadSelector = "#generate-download"
+    csvOptions =
+      objectAsValues: true
     $("#modal-sql-details-list").remove()
     $("body").append html
-    $("#generate-download").click ->
+    console.log "SetupDisplay about to generate using", outputData
+    $(downloadSelector).click ->
       generateCSVFromResults(outputData, this)
     # Pre-populate download immediately, if possible
     try
-      generateCSVFromResults outputData, document.getElementById("generate-download")
+      generateCSVFromResults outputData, document.getElementById(downloadSelector.slice(1))
     for el in $(".code-box")
       try
         Prism.highlightElement(el, true)
     $("#modal-sql-details-list")
     .on "iron-overlay-closed", ->
       $(".leaflet-control-attribution").removeAttr "hidden"
-      $(".leaflet-control").removeAttr "hidden"
+      $(".leaflet-control").removeAttr "hidden" 
     $(".show-result-list").remove()
     rlButton = """
     <paper-icon-button class="show-result-list" icon="editor:insert-chart" data-toggle="tooltip" title="Show Sample Details" raised></paper-icon-button>

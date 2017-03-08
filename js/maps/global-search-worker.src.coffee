@@ -53,6 +53,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     return false
   console.log "Generating dialog from list of length #{resultsList.length}", resultsList
   projectTableRows = new Array()
+  projectRawData = new Array()
   outputData = new Array()
   i = 0
   unhelpfulCols = [
@@ -135,9 +136,11 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     </tr>
     """
     projectTableRows.push row
+    projectRawData.push data
   # Create the pretty table
   summaryTableRows = new Object()
   summaryTableRowsSortable = new Object()
+  summaryDataObj = new Array()
   for species, diseases of dataSummary.data
     for disease, data of diseases
       unless summaryTableRows[disease]?
@@ -154,14 +157,24 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
         <td>#{prevalence}%</td>
       </tr>
       """
+      summaryRowData =
+        genus: species.split(" ")[0]
+        species: species.split(" ")[1]
+        fullScientificName: species
+        disease: disease
+        samples: data.samples
+        positive: data.positive
+        negative: data.negative
+        prevalence: "#{prevalence}%"
+      summaryDataObj.push summaryRowData
       summaryTableRows[disease].push summaryRow
-      summaryTableRowsSortable[disease][species] = summaryRow
+      summaryTableRowsSortable[disease][species] = summaryRow 
   summaryTable = ""
   # for disease, tableRows of summaryTableRows
   for disease, tableRows of summaryTableRowsSortable
     try
       if typeof tableRows is "object"
-        tableRowsSimple = new Array()    
+        tableRowsSimple = new Array()
         Object.doOnSortedKeys tableRows, (row) ->
           tableRowsSimple.push row
       else
@@ -191,11 +204,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
   if isNull summaryTable
     summaryTable = "<h3><em>Sorry, we were unable to generate a summary table</em></h3>"
   # Create the whole thing
-  html = """
-  <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
-    <h2>Project Result List</h2>
-    <paper-dialog-scrollable>
-      #{summaryTable}
+  rawDataHtml = """
       <div class="row">
         <div class="col-xs-12">
           <h3>Raw Data</h3>
@@ -208,6 +217,13 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
           </table>
         </div>
       </div>
+  """
+  html = """
+  <paper-dialog id="modal-sql-details-list" modal always-on-top auto-fit-on-attach>
+    <h2>Project Result List</h2>
+    <paper-dialog-scrollable>
+      #{summaryTable}
+
     </paper-dialog-scrollable>
     <div class="buttons">
       <paper-button id="generate-download">Create Download</paper-button>
@@ -219,10 +235,13 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
     html: html
     outputData: outputData
     data: dataSummary
+    summaryRowData: summaryDataObj
     summaryRows: summaryTableRows
     providedList: resultsList
     providedMap: tableToProjectMap
     providedWidth: windowWidth
+    rawProjectData: projectRawData
+    rawDataHtml: rawDataHtml
   elapsed = Date.now() - startTime
   console.info "Worker saved #{elapsed}ms from the main thread"
   self.postMessage message
@@ -729,7 +748,7 @@ downloadCSVFile = (data, options) ->
     try
       jsonObject = JSON.parse data
     catch e
-      console.error "COuldn't parse json! #{e.message}"
+      console.error "COuldn't parse json! #{e.message}" 
       console.warn e.stack
       console.info data
       throw "error"
@@ -753,7 +772,7 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   options.cascadeObjects ?= false
-  options.objectAsValues ?= false
+  options.objectAsValues ?= true
   # Parse it
   headerPlaceholder = new Array()
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
@@ -877,31 +896,31 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
-    acceptableCols: [
-      "collectionid"
-      "catalognumber"
-      "fieldnumber"
-      "sampleid"
-      "diseasetested"
-      "diseasestrain"
-      "samplemethod"
-      "sampledisposition"
-      "diseasedetected"
-      "fatal"
-      "cladesampled"
-      "genus"
-      "specificepithet"
-      "infraspecificepithet"
-      "lifestage"
-      "dateidentified"
-      "decimallatitude"
-      "decimallongitude"
-      "alt"
-      "coordinateuncertaintyinmeters"
-      "collector"
-      "fimsextra"
-      "originaltaxa"
-      ]
+    # acceptableCols: [
+    #   "collectionid"
+    #   "catalognumber"
+    #   "fieldnumber"
+    #   "sampleid"
+    #   "diseasetested"
+    #   "diseasestrain"
+    #   "samplemethod"
+    #   "sampledisposition"
+    #   "diseasedetected"
+    #   "fatal"
+    #   "cladesampled"
+    #   "genus"
+    #   "specificepithet"
+    #   "infraspecificepithet"
+    #   "lifestage"
+    #   "dateidentified"
+    #   "decimallatitude"
+    #   "decimallongitude"
+    #   "alt"
+    #   "coordinateuncertaintyinmeters"
+    #   "collector"
+    #   "fimsextra"
+    #   "originaltaxa"
+    #   ]
   try
     response = downloadCSVFile(resultArray, options)
   catch

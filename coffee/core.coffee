@@ -1827,37 +1827,41 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 
 
 generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-list") ->
+  ###
+  # Main CSV record generator. Generally the one called, and may
+  # instance the web worker copy.
+  ###
   # toastStatusMessage "This may take a few seconds, please wait"
   startTime = Date.now()
   console.info "Source CSV data:", resultArray
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
-    acceptableCols: [
-      "collectionid"
-      "catalognumber"
-      "fieldnumber"
-      "sampleid"
-      "diseasetested"
-      "diseasestrain"
-      "samplemethod"
-      "sampledisposition"
-      "diseasedetected"
-      "fatal"
-      "cladesampled"
-      "genus"
-      "specificepithet"
-      "infraspecificepithet"
-      "lifestage"
-      "dateidentified"
-      "decimallatitude"
-      "decimallongitude"
-      "alt"
-      "coordinateuncertaintyinmeters"
-      "collector"
-      "fimsextra"
-      "originaltaxa"
-      ]
+    # acceptableCols: [
+    #   "collectionid"
+    #   "catalognumber"
+    #   "fieldnumber"
+    #   "sampleid"
+    #   "diseasetested"
+    #   "diseasestrain"
+    #   "samplemethod"
+    #   "sampledisposition"
+    #   "diseasedetected"
+    #   "fatal"
+    #   "cladesampled"
+    #   "genus"
+    #   "specificepithet"
+    #   "infraspecificepithet"
+    #   "lifestage"
+    #   "dateidentified"
+    #   "decimallatitude"
+    #   "decimallongitude"
+    #   "alt"
+    #   "coordinateuncertaintyinmeters"
+    #   "collector"
+    #   "fimsextra" 
+    #   "originaltaxa"
+    #   ]
   # Fire up the web worker
   try
     downloadCSVFile resultArray, options, (postCallback) ->
