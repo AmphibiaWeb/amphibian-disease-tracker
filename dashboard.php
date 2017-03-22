@@ -75,6 +75,7 @@ $loginStatus = getLoginState();
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
     <link rel="import" href="bower_components/paper-fab/paper-fab.html"/>
     <link rel="import" href="bower_components/paper-item/paper-item.html"/>
+    <link rel="import" href="bower_components/paper-listbox/paper-listbox.html"/>
     <link rel="import" href="bower_components/paper-material/paper-material.html"/>
 
     <link rel="import" href="bower_components/gold-email-input/gold-email-input.html"/>

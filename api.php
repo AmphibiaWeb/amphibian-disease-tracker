@@ -20,6 +20,8 @@ header('Access-Control-Allow-Origin: *');
 
 $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
+$flatTable = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, "records_list");
+
 $print_login_state = false;
 require_once dirname(__FILE__).'/admin/async_login_handler.php';
 
@@ -955,7 +957,7 @@ function validateCaptcha($get)
 
 
 function getChartData($chartDataParams) {
-    global $default_table, $db;
+    global $default_table, $db, $flatTable;
     $mapType = "";
     /***
      * Create opportunities for several bins
@@ -979,9 +981,10 @@ function getChartData($chartDataParams) {
         # Have to hit the Google API for each one to check the
         # country per coordinate
         # Look up the carto id fields
-        $query = "SELECT `project_id`,`project_title`,`carto_id` FROM `$default_table`";
-        $db->invalidateLink();
-        $result = mysqli_query($db->getLink(), $query);
+        $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY country";
+        $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY country";
+        $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY country";
+        $result = mysqli_query($flatTable->getLink(), $allQuery);
         if($result === false) {
           returnAjax(array(
             "status" => false,
@@ -989,25 +992,41 @@ function getChartData($chartDataParams) {
             "human_error" => "Error looking up bounding boxes",
           ));
         }
+        $posResult = mysqli_query($flatTable->getLink(), $posQuery);
+        $negResult = mysqli_query($flatTable->getLink(), $negQuery);
         $rowCount = 0;
         $returnedRows = mysqli_num_rows($result);
         $chartData = array();
         $chartDatasetData = array();
         while($row = mysqli_fetch_assoc($result)) {
-          if(empty($row['carto_id'])) continue;
-          $rowCount++;
-          $carto = json_decode(deEscape($row['carto_id']), true);
-          # Escaped or unescaped
-          $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
-          if(toBool($bpoly['paths']) === false && !empty($bpoly["multibounds"])) {
-            $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
-          }
-          $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
-          $chartDatasetData[] = array(
-              "points" => $coords,
-              "title" => $row["project_title"],
-              "project_id" => $row['project_id'],
-          );
+        if(empty($row["country"])) continue;
+        $key = $row["country"] . " total";
+        $thisChartDatasetData = array(
+        $key => $row["samples"],
+        );
+        $usePos = false;
+        while($posRow = mysqli_fetch_assoc($posResult)) {
+        if($posRow["country"] == $row["country"]) {
+        $usePos = true;
+        break;
+    }
+    }
+        while($negRow = mysqli_fetch_assoc($negResult)) {
+        if($negRow["country"] == $row["country"]) {
+        $useNeg = true;
+        break;
+    }
+    }
+        if($usePos) {
+        $key = $row["country"] . " positive total";
+        $thisChartDatasetData[$key] = $posRow["samples"];
+    }
+        if($useNeg) {
+        $key = $row["country"] . " negative total";
+        $thisChartDatasetData[$key] = $negRow["samples"];
+    }
+        $chartDatasetData[] = $thisChartDatasetData;
+
         }
         $chartData = array(
           "labels" => array(),
@@ -1021,13 +1040,11 @@ function getChartData($chartDataParams) {
         returnAjax(array(
           "status" => true,
           "data" => $chartData,
-          "use_preprocessor" => "geocoder",
+                   "use_preprocessor" => false,
           "rows" => $rowCount,
-          "format" => "raw",
+          "format" => "chart.js",
           "provided" => $chartDataParams,
           "full_description" => "Project representation per country",
-                   "query" => $query,
-                   "returned_rows" => $returnedRows,
         ));
         break;
     case "infection":

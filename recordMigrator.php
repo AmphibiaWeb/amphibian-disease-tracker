@@ -235,6 +235,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                     );
                     continue;
                 }
+                $row["project_id"] = $project;
                 /*****************************
                  * Begin Reverse Geocode Blob
                  *****************************/
@@ -624,6 +625,7 @@ foreach($newCols as $newColumn => $dataType) {
 
 $goodRows = 0;
 $skipId = array();
+$synonymizeCountries = array();
 foreach($newDbEntries as $projectId => $data) {
     try {
         foreach($data as $row) {
