@@ -625,7 +625,10 @@ foreach($newCols as $newColumn => $dataType) {
 
 $goodRows = 0;
 $skipId = array();
-$synonymizeCountries = array();
+$synonymizeCountries = array(
+    "Việt Nam" => "Vietnam",
+    "United States of America" => "United States",
+);
 foreach($newDbEntries as $projectId => $data) {
     try {
         foreach($data as $row) {
@@ -659,6 +662,9 @@ foreach($newDbEntries as $projectId => $data) {
                 }
             }
             unset($row["id"]);
+            if(array_key_exists($row["country"], $synonymizeCountries)) {
+                $row["country"] = $synonymizeCountries[$row["country"]];
+            }
             if($flagUpdate !== true) {
                 # Add a new row to the flat table
                 # Carto has already handled santization
