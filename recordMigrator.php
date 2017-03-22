@@ -65,6 +65,22 @@ if (!function_exists('elapsed')) {
  * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/215
  *******************************/
 
+$synonymizeCountries = array(
+    "Việt Nam" => "Vietnam",
+    "United States of America" => "United States",
+    "Монгол улс" => "Mongolia",
+    "ශ්‍රී ලංකාව இலங்கை" => "Sri Lanka",
+    "ປະເທດລາວ" => "Laos",
+    "မြန်မာ" => "Myanmar",
+    "Burma (Myanmar)" => "Myanmar",
+    "Burma" => "Myanmar",
+    "ព្រះរាជាណាចក្រ​កម្ពុជា" => "Cambodia",
+    "中国" => "China",
+    "Svizzera" => "Switzerland",
+    "Schweiz, Suisse, Svizzera, Svizra" => "Switzerland",
+    "Қазақстан" => "Kazakhstan",
+    "Perú" => "Peru",
+);
 
 
 $recordsUpdated = 0;
@@ -98,6 +114,7 @@ $geocodeAttempted = 0;
 $geocodeFailed = 0;
 $goodDetail = array();
 $useGeocoder = "GOOGLE";
+$dupsRemoved = 0;
 # Loop over each project ...
 while($projectRow = mysqli_fetch_row($result)) {
     $project = $projectRow[0];
@@ -596,7 +613,54 @@ while($projectRow = mysqli_fetch_row($result)) {
         $goodDetail[] = $goodInfo;
         $projectsUpdated++;
     } else {
-        # The records are up to date -- no changes needed
+        # The records are up to date -- just run a dedup
+        $query = "SELECT count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project'";
+        $result = mysqli_query($flatTable->getLink(), $query);
+        $row = mysqli_fetch_row($result);
+        $projectTotal = $row[0];
+        # Check mandatory col 1 of 2
+        $col = "sampleid";
+        $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
+        #
+        $result = mysqli_query($flatTable->getLink(), $query);
+        $rowCount = mysqli_num_rows($result);
+        if($rowCount === 1) {
+            # Check the other mandatory col
+            $col = "fieldnumber";
+            $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
+            $result = mysqli_query($flatTable->getLink(), $query);
+            $rowCount = mysqli_num_rows($result);
+            if ($rowCount === 0) {
+                # This project has no dups -- if the col was blank, the
+                # count would be the same as the project total
+                continue;
+            }
+        } else if ($rowCount === 0) {
+            # This project has no dups -- if the col was blank, the
+            # count would be the same as the project total
+            continue;
+        }
+        while($row = mysqli_fetch_assoc($result)) {
+            # Check the row for dups
+            if ($row["count"] < $projectTotal) {
+                $i = 0;
+                $query = "SELECT id FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' AND `$col`='".$row[$col]."'";
+                $subResult = mysqli_query($flatTable->getLink(), $query);
+                while($subrow = mysqli_fetch_row($subResult)) {
+                    $i++;
+                    if($i == 1) continue; # Don't remove the first copy
+                    # Remove the dups
+                    $removeId = $subrow[0];
+                    $query = "DELETE FROM `".$flatTable->getTable()."` WHERE `id`=$removeId AND `project_id`='$project'";
+                    $removalResult = mysqli_query($flatTable->getLink(), $query);
+                    $dupsRemoved++;
+                }
+            } else {
+                # The unique cols aren't actually unique.
+                # Be conservative.
+            }
+        }
+
     }
 
 }
@@ -629,22 +693,7 @@ foreach($newCols as $newColumn => $dataType) {
 
 $goodRows = 0;
 $skipId = array();
-$synonymizeCountries = array(
-    "Việt Nam" => "Vietnam",
-    "United States of America" => "United States",
-    "Монгол улс" => "Mongolia",
-    "ශ්‍රී ලංකාව இலங்கை" => "Sri Lanka",
-    "ປະເທດລາວ" => "Laos",
-    "မြန်မာ" => "Myanmar",
-    "Burma (Myanmar)" => "Myanmar",
-    "Burma" => "Myanmar",
-    "ព្រះរាជាណាចក្រ​កម្ពុជា" => "Cambodia",
-    "中国" => "China",
-    "Svizzera" => "Switzerland",
-    "Schweiz, Suisse, Svizzera, Svizra" => "Switzerland",
-    "Қазақстан" => "Kazakhstan",
-    "Perú" => "Peru",
-);
+
 foreach($newDbEntries as $projectId => $data) {
     try {
         foreach($data as $row) {
@@ -732,6 +781,7 @@ foreach($newDbEntries as $projectId => $data) {
 $response = array(
     "rows-marked-modified" => $rowsProcessed,
     "records-updated" => $recordsUpdated,
+    "dups-removed" => $dupsRemoved,
     "geocode" => array(
         "rows-geocoded-modified" => $rowsProcessedWithGeocode,
         "geocode-attempted" => $geocodeAttempted,
