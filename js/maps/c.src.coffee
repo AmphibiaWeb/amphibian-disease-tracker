@@ -1859,7 +1859,7 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
     #   "alt"
     #   "coordinateuncertaintyinmeters"
     #   "collector"
-    #   "fimsextra" 
+    #   "fimsextra"
     #   "originaltaxa"
     #   ]
   # Fire up the web worker

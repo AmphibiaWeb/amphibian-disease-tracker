@@ -1,10 +1,7 @@
 <?php
 
-		namespace WhichBrowser\Data;
-
-		Manufacturers::$TELEVISION = [
+		Manufacturers::$TELEVISION = array(
 			'BANGOLUFSEN'								=> 'Bang & Olufsen',
-			'CHANGHONG'									=> 'Changhong',
 			'inverto'									=> 'Inverto',
 			'LG Electronics'							=> 'LG',
 			'LGE'										=> 'LG',
@@ -19,4 +16,4 @@
 			'THOMSON'									=> 'Thomson',
 			'tv2n'										=> 'TV2N',
 			'VESTEL'									=> 'Vestel'
-		];
+		);

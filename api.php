@@ -55,42 +55,25 @@ if (!function_exists('elapsed')) {
     }
 }
 
-// function returnAjax($data)
-// {
-//     /***
-//      * Return the data as a JSON object
-//      *
-//      * @param array $data
-//      *
-//      ***/
-//     if (!is_array($data)) {
-//         $data = array($data);
-//     }
-//     $data['execution_time'] = elapsed();
-//     header('Cache-Control: no-cache, must-revalidate');
-//     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-//     header('Content-type: application/json');
-//     $json = json_encode($data, JSON_FORCE_OBJECT); #  | JSON_UNESCAPED_UNICODE
-//     $replace_array = array('&quot;','&#34;');
-//     print str_replace($replace_array, '\\"', $json);
-//     exit();
-// }
+
 
 # parse_str($_SERVER['QUERY_STRING'],$_POST);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
-try {
-$test = decode64($_REQUEST["test"]);
-$test_sanitized = $db->sanitize($test);
-$test_desanitized = deEscape($test_sanitized);
-$testArr = array(
-    "encoded" => $_REQUEST["test"],
-    "decoded" => $test,
-    "written" => $test_sanitized,
-    "read_back" => $test_desanitized,
-);
-} catch (Exception $e) {
-    $testArr = array();
-}
+
+// try {
+// $test = decode64($_REQUEST["test"]);
+// $test_sanitized = $db->sanitize($test);
+// $test_desanitized = deEscape($test_sanitized);
+// $testArr = array(
+//     "encoded" => $_REQUEST["test"],
+//     "decoded" => $test,
+//     "written" => $test_sanitized,
+//     "read_back" => $test_desanitized,
+// );
+// } catch (Exception $e) {
+//     $testArr = array();
+// }
+
 switch ($do) {
   case 'upload':
       # Set access-control header

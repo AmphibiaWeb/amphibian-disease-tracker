@@ -168,7 +168,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
         prevalence: "#{prevalence}%"
       summaryDataObj.push summaryRowData
       summaryTableRows[disease].push summaryRow
-      summaryTableRowsSortable[disease][species] = summaryRow 
+      summaryTableRowsSortable[disease][species] = summaryRow
   summaryTable = ""
   # for disease, tableRows of summaryTableRows
   for disease, tableRows of summaryTableRowsSortable

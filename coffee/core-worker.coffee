@@ -499,7 +499,7 @@ downloadCSVFile = (data, options) ->
     try
       jsonObject = JSON.parse data
     catch e
-      console.error "COuldn't parse json! #{e.message}" 
+      console.error "COuldn't parse json! #{e.message}"
       console.warn e.stack
       console.info data
       throw "error"

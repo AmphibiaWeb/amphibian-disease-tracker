@@ -185,7 +185,8 @@ $loginStatus = getLoginState();
           <div class="form form-horizontal row" id="global-records-search">
             <h3 class="col-xs-12">Search &amp; Visualize Records <span class="badge">BETA</span></h3>
             <div class="col-xs-12 col-md-6 col-lg-8">
-              <div class="alert alert-info">
+              <div class="alert alert-info alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <strong><span class="glyphicon glyphicon-info-sign"></span> Tip:</strong> Your search will be restricted to the parts of the world viewable in the map. Zoom and pan to restrict your search area, then click "search" to perform your search. <button class="btn btn-link alert-link" id="show-more-tips">More tips...</button>
                 <iron-collapse id="more-tips">
                   <ul>

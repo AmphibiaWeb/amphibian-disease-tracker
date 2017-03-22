@@ -1279,7 +1279,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap) ->
     $("#modal-sql-details-list")
     .on "iron-overlay-closed", ->
       $(".leaflet-control-attribution").removeAttr "hidden"
-      $(".leaflet-control").removeAttr "hidden" 
+      $(".leaflet-control").removeAttr "hidden"
     $(".show-result-list").remove()
     rlButton = """
     <paper-icon-button class="show-result-list" icon="editor:insert-chart" data-toggle="tooltip" title="Show Sample Details" raised></paper-icon-button>

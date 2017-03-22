@@ -2,3 +2,4 @@ admin/CONFIG.php
 admin/oauth/credentials.json
 admin/oauth/secrets.php
 DB_CONFIG.php
+dump.sql

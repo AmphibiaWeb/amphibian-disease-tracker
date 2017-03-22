@@ -168,7 +168,7 @@ getSampleSummaryDialog = (resultsList, tableToProjectMap, windowWidth) ->
         prevalence: "#{prevalence}%"
       summaryDataObj.push summaryRowData
       summaryTableRows[disease].push summaryRow
-      summaryTableRowsSortable[disease][species] = summaryRow 
+      summaryTableRowsSortable[disease][species] = summaryRow
   summaryTable = ""
   # for disease, tableRows of summaryTableRows
   for disease, tableRows of summaryTableRowsSortable
@@ -748,7 +748,7 @@ downloadCSVFile = (data, options) ->
     try
       jsonObject = JSON.parse data
     catch e
-      console.error "COuldn't parse json! #{e.message}" 
+      console.error "COuldn't parse json! #{e.message}"
       console.warn e.stack
       console.info data
       throw "error"

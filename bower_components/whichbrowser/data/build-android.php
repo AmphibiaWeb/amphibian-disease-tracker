@@ -1,8 +1,6 @@
 <?php
 
-		namespace WhichBrowser\Data;
-
-		BuildIds::$ANDROID_BUILDS = [
+		BuildIds::$ANDROID_BUILDS = array(
 			'CUPCAKE'		=> '1.5',
 			'DONUT'			=> '1.6',
 			'ECLAIR'		=> '2.0',
@@ -104,9 +102,9 @@
 			'KTU84M'		=> '4.4.3',
 			'KTU84P'		=> '4.4.4',
 			
-			'LPV79'			=> ['value' => '5.0', 'alias' => 'L'],
-			'LPV81C'		=> ['value' => '5.0', 'alias' => 'L'],
-			'LPX13D'		=> ['value' => '5.0', 'alias' => 'L'],
+			'LPV79'			=> array('value' => '5.0', 'alias' => 'L'),
+			'LPV81C'		=> array('value' => '5.0', 'alias' => 'L'),
+			'LPX13D'		=> array('value' => '5.0', 'alias' => 'L'),
 			
 			'LRX21L'		=> '5.0',
 			'LRX21M'		=> '5.0',
@@ -119,9 +117,6 @@
 			'LRX22C'		=> '5.0.1',
 			'LRX22G'		=> '5.0.2',
 			'LRX22L'		=> '5.0.2',
-			'LGZ23.S15'		=> '5.0.2',			// Sony Bravia Android TV
-			'LGZ23.S37'		=> '5.0.2',			// Sony Bravia Android TV
-			'LGZ23.S49'		=> '5.0.2',			// Sony Bravia Android TV
 			'LMY47D'		=> '5.1',
 			'LMY47E'		=> '5.1',
 			'LMY47I'		=> '5.1',
@@ -132,8 +127,8 @@
 			'LMY47Z'		=> '5.1.1',
 			'LMY48B'		=> '5.1.1',
 
-			'MPZ44Q'		=> ['value' => '5.2', 'alias' => 'M'],
-		];
+			'MPZ44Q'		=> array('value' => '5.2', 'alias' => 'M'),
+		);
 
 		// Source: http://source.android.com/source/build-numbers.html
 

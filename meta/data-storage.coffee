@@ -176,7 +176,7 @@ lng:
 radius:
   # The radius of a circle encompassing collection area/transect, in
   # meters
-  type: "long"
+  type: "mediumtext"
   logical: "natural number"
 bounding_box_n:
   # North coordinate of bounding box (for area searches)
@@ -200,7 +200,7 @@ bounding_polygon:
   logical: "array"
 transect_file:
   # relative path to KML file of transect coordinates
-  type: "varchar(255)"
+  type: "longtext"
   logical: "File path"
 author:
   # May be edited to another access_data member
@@ -239,7 +239,7 @@ public:
   logical: "boolean"
 carto_id:
   # CartoDB identifier for this dataset.
-  type: "varchar(255)"
+  type: "longtext"
   logical: "json"
   sample: "{'viz':'2b13c956-e7c1-11e2-806b-5404a6a683d5','table':'t62b61b0091e633029be9332b5f20bf74_6d6d454828c05e8ceea03c99cc5f5'}"
 more_analysis_funding_request:
@@ -264,3 +264,12 @@ project_dir_identifier:
   # identifies this project
   type: "varchar(255)"
   logical: "string"
+technical_contact:
+  type: "varchar(255)"
+  logical: "string"
+technical_contact_email:
+  type: "varchar(255)"
+  logical: "string"
+modified:
+  type: "float"
+  logical: "php microtime_float()"
