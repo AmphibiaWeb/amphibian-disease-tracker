@@ -278,6 +278,22 @@ getServerChart = function(chartType, chartParams) {
         data: chartDataJs,
         type: (ref1 = chartData.type) != null ? ref1 : "bar"
       };
+      if (!isNull(chartData.stacking)) {
+        chartObj.options = {
+          scales: {
+            xAxes: [
+              {
+                stacked: chartData.stacking.x
+              }
+            ],
+            yAxes: [
+              {
+                stacked: chartData.stacking.y
+              }
+            ]
+          }
+        };
+      }
       chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
       createChart(chartSelector, chartObj, function() {
         if (!isNull(result.full_description)) {

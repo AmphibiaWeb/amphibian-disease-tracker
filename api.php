@@ -1033,23 +1033,27 @@ function getChartData($chartDataParams) {
         }
         $chartData = array(
           "labels" => $labels,
+                   "stacking" => array("x"=>false, "y"=>true),
           "datasets" => array(
             array(
               "label" => "Total Samples",
               "data" => $chartDatasetData,
+                      "stack" => "totals",
             ),
                 array(
         "label" => "Positive Samples",
                 "data" => $chartPosDatasetData,
+                "stack" => "PosNeg",
                 ),
                 array(
         "label" => "Negative Samples",
                 "data" => $chartNegDatasetData,
+                "stack" => "PosNeg",
                 ),
-                array(
-        "label" => "Indeterminant Samples",
-                "data" => $chartIndDatasetData,
-                ),
+        //         array(
+        // "label" => "Indeterminant Samples",
+        //         "data" => $chartIndDatasetData,
+        //         ),
           ),
         );
         returnAjax(array(

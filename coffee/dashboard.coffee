@@ -263,6 +263,15 @@ getServerChart = (chartType = "infection", chartParams) ->
       chartObj =
         data: chartDataJs
         type: chartData.type ? "bar"
+      unless isNull chartData.stacking
+        chartObj.options =
+          scales:
+            xAxes: [
+              stacked: chartData.stacking.x
+              ]
+            yAxes: [
+              stacked: chartData.stacking.y
+              ]
       chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description
