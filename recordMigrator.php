@@ -628,6 +628,14 @@ $skipId = array();
 $synonymizeCountries = array(
     "Việt Nam" => "Vietnam",
     "United States of America" => "United States",
+    "Монгол улс" => "Mongolia",
+    "ශ්‍රී ලංකාව இலங்கை" => "Sri Lanka",
+    "ປະເທດລາວ" => "Laos",
+    "မြန်မာ" => "Myanmar"
+    "Burma (Myanmar)" => "Myanmar",
+    "Burma" => "Myanmar",
+    "ព្រះរាជាណាចក្រ​កម្ពុជា" => "Cambodia",
+    "中国" => "China",
 );
 foreach($newDbEntries as $projectId => $data) {
     try {
