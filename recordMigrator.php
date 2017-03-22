@@ -636,6 +636,7 @@ $synonymizeCountries = array(
     "Burma" => "Myanmar",
     "ព្រះរាជាណាចក្រ​កម្ពុជា" => "Cambodia",
     "中国" => "China",
+    "Svizzera" => "Switzerland",
 );
 foreach($newDbEntries as $projectId => $data) {
     try {
