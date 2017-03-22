@@ -398,6 +398,10 @@ while($projectRow = mysqli_fetch_row($result)) {
                                                 # Try an alternate geocoder
                                                 $useGeocoder = "OSM";
 
+                                            } else if($addressBase["status"] == "ZERO_RESULTS") {
+                                                $row["country"] = "NO_GEOCODE_AVAILABLE_ZERO_RESULTS";
+                                                $row["reverse_geocoded"] = true;
+                                                    
                                             } else {
                                                 $row["country"] = json_encode($address);
                                                 $row["reverse_geocoded"] = false;
