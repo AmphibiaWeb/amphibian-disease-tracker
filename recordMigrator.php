@@ -401,7 +401,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                                             } else if($addressBase["status"] == "ZERO_RESULTS") {
                                                 $row["country"] = "NO_GEOCODE_AVAILABLE_ZERO_RESULTS";
                                                 $row["reverse_geocoded"] = true;
-                                                    
+
                                             } else {
                                                 $row["country"] = json_encode($address);
                                                 $row["reverse_geocoded"] = false;
@@ -641,6 +641,9 @@ $synonymizeCountries = array(
     "ព្រះរាជាណាចក្រ​កម្ពុជា" => "Cambodia",
     "中国" => "China",
     "Svizzera" => "Switzerland",
+    "Schweiz, Suisse, Svizzera, Svizra" => "Switzerland",
+    "Қазақстан" => "Kazakhstan",
+    "Perú" => "Peru",
 );
 foreach($newDbEntries as $projectId => $data) {
     try {
@@ -659,7 +662,7 @@ foreach($newDbEntries as $projectId => $data) {
                 # Houston, we have duplicates
                 foreach($matches as $id) {
                     $id = $id["id"];
-                    if($id == $ref["id"]) continue;                    
+                    if($id == $ref["id"]) continue;
                     $skipId[] = $id;
                     $query = "DELETE FROM TABLE `".$flatTable->getTable()."` WHERE `id`=".$id;
                     $result = mysqli_query($flatTable->getLink(), $query);
@@ -669,7 +672,7 @@ foreach($newDbEntries as $projectId => $data) {
                             "message" => mysqli_error($flatTable->getLink()),
                             "duplicate_ids" => $matches,
                             "match_criteria" => $match,
-                            "query" => $query,                        
+                            "query" => $query,
                         );
                     }
                 }
