@@ -981,6 +981,7 @@ function getChartData($chartDataParams) {
         # Have to hit the Google API for each one to check the
         # country per coordinate
         # Look up the carto id fields
+        $labels = array();
         $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY country";
         $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY country";
         $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY country";
@@ -998,43 +999,57 @@ function getChartData($chartDataParams) {
         $returnedRows = mysqli_num_rows($result);
         $chartData = array();
         $chartDatasetData = array();
+        $chartPosDatasetData = array();
+        $chartNegDatasetData = array();
+        $posData = array();
+        while($posRow = mysqli_fetch_assoc($posResult)) {
+        $posData[$posRow["country"]] = $posRow["samples"];
+    }
+        $negData = array();
+        while($negRow = mysqli_fetch_assoc($negResult)) {
+        $negData[$negRow["country"]] = $negRow["samples"];
+    }
         while($row = mysqli_fetch_assoc($result)) {
         if(empty($row["country"])) continue;
+        $labels[] = $row["country"];
         $key = $row["country"] . " total";
-        $thisChartDatasetData = array(
-        $key => $row["samples"],
-        );
-        $usePos = false;
-        while($posRow = mysqli_fetch_assoc($posResult)) {
-        if($posRow["country"] == $row["country"]) {
-        $usePos = true;
-        break;
+
+        if(array_key_exists($row["country"], $posData)) {
+        $posSamples = intval($posData[$row["country"]]);
     }
+        if(array_key_exists($row["country"], $negData)) {
+        $negSamples = intval($negData[$row["country"]]);
     }
-        while($negRow = mysqli_fetch_assoc($negResult)) {
-        if($negRow["country"] == $row["country"]) {
-        $useNeg = true;
-        break;
-    }
-    }
-        if($usePos) {
-        $key = $row["country"] . " positive total";
-        $thisChartDatasetData[$key] = $posRow["samples"];
-    }
-        if($useNeg) {
-        $key = $row["country"] . " negative total";
-        $thisChartDatasetData[$key] = $negRow["samples"];
-    }
-        $chartDatasetData[] = $thisChartDatasetData;
+        if(empty($posSamples)) $posSamples = 0;
+        if(empty($negSamples)) $negSamples = 0;
+        #$chartDatasetData[] = $thisChartDatasetData;
+        $chartDatasetData[] = intval($row["samples"]);
+        $chartPosDatasetData[] = $posSamples;
+        $chartNegDatasetData[] = $negSamples;
+        $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
+        if ($indeterminant < 0) $indeterminant = 0;
+        $chartIndDatasetData[] = $indeterminant;
 
         }
         $chartData = array(
-          "labels" => array(),
+          "labels" => $labels,
           "datasets" => array(
             array(
-              "label" => "Project Count",
+              "label" => "Total Samples",
               "data" => $chartDatasetData,
             ),
+                array(
+        "label" => "Positive Samples",
+                "data" => $chartPosDatasetData,
+                ),
+                array(
+        "label" => "Negative Samples",
+                "data" => $chartNegDatasetData,
+                ),
+                array(
+        "label" => "Indeterminant Samples",
+                "data" => $chartIndDatasetData,
+                ),
           ),
         );
         returnAjax(array(
@@ -1044,7 +1059,7 @@ function getChartData($chartDataParams) {
           "rows" => $rowCount,
           "format" => "chart.js",
           "provided" => $chartDataParams,
-          "full_description" => "Project representation per country",
+          "full_description" => "Sample representation per country",
         ));
         break;
     case "infection":
