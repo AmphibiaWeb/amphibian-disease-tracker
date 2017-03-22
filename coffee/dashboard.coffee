@@ -147,6 +147,7 @@ getServerChart = (chartType = "infection", chartParams) ->
       console.warn result
       stopLoadError result.human_error
       return false
+    console.debug "Fetched chart", result
     chartData = result.data
     datasets = Object.toArray chartData.datasets
     i = 0
