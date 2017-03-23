@@ -17,6 +17,7 @@ if ($show_debug) {
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
 
+$_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 
 $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
@@ -80,12 +81,17 @@ $synonymizeCountries = array(
     "Schweiz, Suisse, Svizzera, Svizra" => "Switzerland",
     "Қазақстан" => "Kazakhstan",
     "Perú" => "Peru",
+    "پاکستان‎" => "Pakistan",
+    "Кыргызстан" => "Kyrgyzstan",
 );
 
 
 $recordsUpdated = 0;
 $projectsUpdated = 0;
 $badRows = array();
+$projectsInspected = array();
+$projectsAgeingList = array();
+$projectsNoData = 0;
 try {
     # Get DB columns
     $cols = $flatTable->getCols();
@@ -104,6 +110,7 @@ $newCols = array();
 
 # Look up distinct projects
 $query = "SELECT `project_id`, `carto_id`, `modified` FROM `".$db->getTable()."` WHERE `project_id`!='' AND `project_id` IS NOT NULL";
+$projectLookupQuery = $query;
 $db->invalidateLink();
 $result = mysqli_query($db->getLink(), $query);
 
@@ -118,8 +125,16 @@ $dupsRemoved = 0;
 # Loop over each project ...
 while($projectRow = mysqli_fetch_row($result)) {
     $project = $projectRow[0];
+    $projectsInspected[] = $project;
     $cartoid = $projectRow[1];
+    $carto = json_decode(deEscape($cartoid), true);
+
+    if(empty($carto["table"])) {
+        $projectsNoData++;
+        continue;
+    }
     $modified = floatval($projectRow[2]);
+    $ageingReason = "natural";
     # Check the modified time in the project....
     # ... compared to flat table modified time
     $resultData = $flatTable->getQueryResults(array("project"=>$project), array("project","modified","reverse_geocoded","country"));
@@ -131,6 +146,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         if(empty($geocodeTest) || empty($country) || $isArrayish) break;
     }
     if(empty($projectAgeing) || !is_numeric($projectAgeing)) {
+        $ageingReason = "bad age value";
         $badRows[] = array(
             "message" => "bad project ageing",
             "got" => $projectAgeing,
@@ -145,6 +161,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         $projectAgeing = 0;
     } else if(empty($geocodeTest) || empty($country) || $isArrayish){
         # No geocoded results
+        $ageingReason = "Bad geocode data";
         $badRows[] = array(
             "message" => "No reverse geocode data for project",
             "got" => array(
@@ -158,8 +175,14 @@ while($projectRow = mysqli_fetch_row($result)) {
     } else {
         $projectAgeing = floatval($projectAgeing);
     }
+    $projectsAgeingList[] = array(
+        "project" => $project,
+        "ageing-value" => $projectAgeing,
+        "needs-ageing-update" => $projectAgeing < $modified,
+        "ageing-reason" => $ageingReason,
+    );
     # If the flat table is older...
-    if($projectAgeing < $modified) {
+    if($projectAgeing < $modified && !toBool($_REQUEST["dedup"])) {
         $opts = array(
             'http' => array(
                 'method' => 'GET',
@@ -177,9 +200,6 @@ while($projectRow = mysqli_fetch_row($result)) {
             $newDbEntries[$project] = array();
         }
         $statements = array();
-        $carto = json_decode(deEscape($cartoid), true);
-
-        if(empty($carto["table"])) continue;
 
         $statements[] = "SELECT *, ST_asGeoJson(the_geom) FROM ".$carto["table"]."";
         $cartoPostUrl = 'https://'.$cartodb_username.'.cartodb.com/api/v2/sql';
@@ -593,7 +613,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                             $refCol = $colName;
                             break;
                         } else if ($refCol == "modified") {
-                            $colDataType = "float";
+                            $colDataType = "decimal(32))";
                             break;
                         }
                     }
@@ -615,40 +635,41 @@ while($projectRow = mysqli_fetch_row($result)) {
     } else {
         # The records are up to date -- just run a dedup
         $query = "SELECT count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project'";
-        $result = mysqli_query($flatTable->getLink(), $query);
-        $row = mysqli_fetch_row($result);
+        $countResult = mysqli_query($flatTable->getLink(), $query);
+        $row = mysqli_fetch_row($countResult);
         $projectTotal = $row[0];
         # Check mandatory col 1 of 2
         $col = "sampleid";
         $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
         #
-        $result = mysqli_query($flatTable->getLink(), $query);
-        $rowCount = mysqli_num_rows($result);
+        $countResult = mysqli_query($flatTable->getLink(), $query);
+        $rowCount = mysqli_num_rows($countResult);
         if($rowCount === 1) {
             # Check the other mandatory col
             $col = "fieldnumber";
             $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
-            $result = mysqli_query($flatTable->getLink(), $query);
-            $rowCount = mysqli_num_rows($result);
+            $countResult = mysqli_query($flatTable->getLink(), $query);
+            $rowCount = mysqli_num_rows($countResult);
             if ($rowCount === 0) {
                 # This project has no dups -- if the col was blank, the
                 # count would be the same as the project total
-                continue;
+                continue; # Next project
             }
         } else if ($rowCount === 0) {
             # This project has no dups -- if the col was blank, the
             # count would be the same as the project total
-            continue;
+            continue; # Next project
         }
-        while($row = mysqli_fetch_assoc($result)) {
+        while($row = mysqli_fetch_assoc($countResult)) {
             # Check the row for dups
             if ($row["count"] < $projectTotal) {
                 $i = 0;
                 $query = "SELECT id FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' AND `$col`='".$row[$col]."'";
                 $subResult = mysqli_query($flatTable->getLink(), $query);
+                $numDups = mysqli_num_rows($subResult);
                 while($subrow = mysqli_fetch_row($subResult)) {
                     $i++;
-                    if($i == 1) continue; # Don't remove the first copy
+                    if($i == $numDups) continue; # Don't remove the last copy
                     # Remove the dups
                     $removeId = $subrow[0];
                     $query = "DELETE FROM `".$flatTable->getTable()."` WHERE `id`=$removeId AND `project_id`='$project'";
@@ -660,9 +681,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                 # Be conservative.
             }
         }
-
     }
-
 }
 ## End project loop
 
@@ -693,39 +712,39 @@ foreach($newCols as $newColumn => $dataType) {
 
 $goodRows = 0;
 $skipId = array();
-
+$dedupProjects = array();
 foreach($newDbEntries as $projectId => $data) {
     try {
         foreach($data as $row) {
             $ref = array(
                 "id" => $row["id"],
             );
-            if(in_array($ref["id"], $skipId)) continue;
-            $match = array(
-                "project" => $row["project"],
-                "sampleid" => $row["sampleid"],
-                "fieldnumber" => $row["fieldnumber"],
-            );
-            $matches = $flatTable->getQueryResults($match, array("id"));
-            if(sizeof($matches) > 1) {
-                # Houston, we have duplicates
-                foreach($matches as $id) {
-                    $id = $id["id"];
-                    if($id == $ref["id"]) continue;
-                    $skipId[] = $id;
-                    $query = "DELETE FROM TABLE `".$flatTable->getTable()."` WHERE `id`=".$id;
-                    $result = mysqli_query($flatTable->getLink(), $query);
-                    if($result !== true) {
-                        $badRows[] = array(
-                            "error" => "Couldn't delete duplicate rows",
-                            "message" => mysqli_error($flatTable->getLink()),
-                            "duplicate_ids" => $matches,
-                            "match_criteria" => $match,
-                            "query" => $query,
-                        );
-                    }
-                }
-            }
+            // if(in_array($ref["id"], $skipId)) continue;
+            // $match = array(
+            //     "project" => $row["project"],
+            //     "sampleid" => $row["sampleid"],
+            //     "fieldnumber" => $row["fieldnumber"],
+            // );
+            // $matches = $flatTable->getQueryResults($match, array("id"));
+            // if(sizeof($matches) > 1) {
+            //     # Houston, we have duplicates
+            //     foreach($matches as $id) {
+            //         $id = $id["id"];
+            //         if($id == $ref["id"]) continue;
+            //         $skipId[] = $id;
+            //         $query = "DELETE FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' `id`=".$id;
+            //         $result = mysqli_query($flatTable->getLink(), $query);
+            //         if($result !== true) {
+            //             $badRows[] = array(
+            //                 "error" => "Couldn't delete duplicate rows",
+            //                 "message" => mysqli_error($flatTable->getLink()),
+            //                 "duplicate_ids" => $matches,
+            //                 "match_criteria" => $match,
+            //                 "query" => $query,
+            //             );
+            //         }
+            //     }
+            // }
             unset($row["id"]);
             if(array_key_exists($row["country"], $synonymizeCountries)) {
                 $row["country"] = $synonymizeCountries[$row["country"]];
@@ -733,6 +752,7 @@ foreach($newDbEntries as $projectId => $data) {
             if($flagUpdate !== true) {
                 # Add a new row to the flat table
                 # Carto has already handled santization
+                if(!in_array($row["project"], $dedupProjects)) $dedupProjects[] = $row["project"];
                 $result = $flatTable->addItem($row, null, false, true);
                 if($result !== true) {
                     $badRow = array(
@@ -778,6 +798,56 @@ foreach($newDbEntries as $projectId => $data) {
     }
 }
 
+foreach($dedupProjects as $project) {
+    $query = "SELECT count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project'";
+    $countResult = mysqli_query($flatTable->getLink(), $query);
+    $row = mysqli_fetch_row($countResult);
+    $projectTotal = $row[0];
+    # Check mandatory col 1 of 2
+    $col = "sampleid";
+    $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
+    #
+    $countResult = mysqli_query($flatTable->getLink(), $query);
+    $rowCount = mysqli_num_rows($countResult);
+    if($rowCount === 1) {
+        # Check the other mandatory col
+        $col = "fieldnumber";
+        $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
+        $countResult = mysqli_query($flatTable->getLink(), $query);
+        $rowCount = mysqli_num_rows($countResult);
+        if ($rowCount === 0) {
+            # This project has no dups -- if the col was blank, the
+            # count would be the same as the project total
+            continue; # Next project
+        }
+    } else if ($rowCount === 0) {
+        # This project has no dups -- if the col was blank, the
+        # count would be the same as the project total
+        continue; # Next project
+    }
+    while($row = mysqli_fetch_assoc($countResult)) {
+        # Check the row for dups
+        if ($row["count"] < $projectTotal) {
+            $i = 0;
+            $query = "SELECT id FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' AND `$col`='".$row[$col]."'";
+            $subResult = mysqli_query($flatTable->getLink(), $query);
+            $numDups = mysqli_num_rows($subResult);
+            while($subrow = mysqli_fetch_row($subResult)) {
+                $i++;
+                if($i == $numDups) continue; # Don't remove the last copy
+                # Remove the dups
+                $removeId = $subrow[0];
+                $query = "DELETE FROM `".$flatTable->getTable()."` WHERE `id`=$removeId AND `project_id`='$project'";
+                $removalResult = mysqli_query($flatTable->getLink(), $query);
+                $dupsRemoved++;
+            }
+        } else {
+            # The unique cols aren't actually unique.
+            # Be conservative.
+        }
+    }
+}
+
 $response = array(
     "rows-marked-modified" => $rowsProcessed,
     "records-updated" => $recordsUpdated,
@@ -788,7 +858,12 @@ $response = array(
         "geocode-inspected" => $geocodeInspected,
     ),
     "columns-added" => $newCols,
-    "projects-updated" => $projectsUpdated,
+    "projects" => array(
+        "projects-updated" => $projectsUpdated,
+        "projects-inspected" => $projectsInspected,
+        "projects-no-data" => $projectsNoData,
+        "projects-ageing-list" => $projectsAgeingList,
+    ),
     "rows" => array(
         "good-count" => $goodRows,
         "good-detail" => $goodDetail,
