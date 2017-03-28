@@ -390,7 +390,12 @@ loadCreateNewProject = function() {
       bsGrid: ""
     };
     console.log("Location fetched, setting up map ...");
-    return createMap2(null, mapOptions);
+    createMap2(null, mapOptions);
+    try {
+      return delay(500, function() {
+        return setupDebugContext();
+      });
+    } catch (undefined) {}
   });
   bindClicks();
   return false;

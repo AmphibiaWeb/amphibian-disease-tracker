@@ -553,6 +553,9 @@ loadCreateNewProject = ->
       bsGrid: ""
     console.log "Location fetched, setting up map ..."
     createMap2 null, mapOptions
+    try
+      delay 500, ->
+        setupDebugContext()
   bindClicks()
   false
 
