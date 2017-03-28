@@ -5926,10 +5926,12 @@ $(function() {
       });
     };
   })(0);
-  return window.setupDebugContext = function() {
+  window.setupDebugContext = function() {
     bootstrapDebugSetup();
-    return setupContext();
+    setupContext();
+    return true;
   };
+  return setupDebugContext();
 });
 
 //# sourceMappingURL=maps/c.js.map

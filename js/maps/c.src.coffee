@@ -5043,3 +5043,5 @@ $ ->
   window.setupDebugContext = ->
     bootstrapDebugSetup()
     setupContext()
+    true
+  setupDebugContext()
