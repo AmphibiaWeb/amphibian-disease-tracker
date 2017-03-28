@@ -116,6 +116,11 @@ populateAdminActions = function() {
       console.info("NOTICE: This is an SUPERUSER Admin");
       html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:add\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>\n<paper-button id=\"su-manage-users\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Manage All Users\n</paper-button>";
       $("#admin-actions-block").append(html);
+      try {
+        delay(500, function() {
+          return setupDebugContext();
+        });
+      } catch (undefined) {}
       $("#su-view-projects").click(function() {
         return loadSUProjectBrowser();
       });

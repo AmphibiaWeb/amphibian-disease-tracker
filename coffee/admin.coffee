@@ -126,6 +126,9 @@ populateAdminActions = ->
       </paper-button>
       """
       $("#admin-actions-block").append html
+      try
+        delay 500, ->
+          setupDebugContext()
       $("#su-view-projects").click ->
         loadSUProjectBrowser()
       $("#su-manage-users").click ->
