@@ -2050,3 +2050,6 @@ $ ->
   loadJS "#{uri.urlString}js/prism.js"
   try
     makePageCitationOverflow()
+  try
+    delay 500, ->
+      setupDebugContext()

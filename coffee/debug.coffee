@@ -591,7 +591,9 @@ $ ->
       delay 5000, ->
         $(".bug-report-context-wrapper").remove()
   window.setupDebugContext = ->
+    console.log "**** Debug Context Events Enabled ***"
     bootstrapDebugSetup()
     setupContext()
     true
-  setupDebugContext()
+  try
+    setupDebugContext()

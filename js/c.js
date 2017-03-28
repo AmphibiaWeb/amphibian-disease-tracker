@@ -2524,7 +2524,12 @@ $(function() {
   } catch (undefined) {}
   loadJS(uri.urlString + "js/prism.js");
   try {
-    return makePageCitationOverflow();
+    makePageCitationOverflow();
+  } catch (undefined) {}
+  try {
+    return delay(500, function() {
+      return setupDebugContext();
+    });
   } catch (undefined) {}
 });
 
@@ -5927,11 +5932,14 @@ $(function() {
     };
   })(0);
   window.setupDebugContext = function() {
+    console.log("**** Debug Context Events Enabled ***");
     bootstrapDebugSetup();
     setupContext();
     return true;
   };
-  return setupDebugContext();
+  try {
+    return setupDebugContext();
+  } catch (undefined) {}
 });
 
 //# sourceMappingURL=maps/c.js.map
