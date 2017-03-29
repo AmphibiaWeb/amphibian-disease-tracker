@@ -747,6 +747,7 @@ finalizeData = (skipFields = false, callback) ->
             bounding_polygon_geojson: geo?.geoJsonBoundingBox
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
+          postData.modified = Date.now()
           try
             postData.project_obj_id = _adp.fims.expedition.ark
           catch
@@ -782,6 +783,8 @@ finalizeData = (skipFields = false, callback) ->
             try
               if result.status is true
                 bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+                # Ping the record migrator
+                $.get "#{uri.urlString}recordMigrator.php"
                 stopLoad()
                 delay 1000, ->
                   loadEditor _adp.projectId
@@ -4746,6 +4749,7 @@ saveEditorData = (force = false, callback) ->
   catch e
     console.error "Couldn't check path count -- #{e.message}. Faking it."
     pointCount = maxPathCount + 1
+  postData.modified = Date.now()
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   debugInfoDelay = delay 10000, ->
@@ -4764,6 +4768,8 @@ saveEditorData = (force = false, callback) ->
       return false
     stopLoad()
     toastStatusMessage "Save successful"
+    # Ping the record migrator
+    $.get "#{uri.urlString}recordMigrator.php"
     # Update the project data
     _adp.projectData = result.project.project
     delete localStorage._adp

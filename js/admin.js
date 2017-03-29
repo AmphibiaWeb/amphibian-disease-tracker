@@ -626,6 +626,7 @@ finalizeData = function(skipFields, callback) {
           };
           postData.carto_id = JSON.stringify(cartoData);
           postData.project_id = _adp.projectId;
+          postData.modified = Date.now();
           try {
             postData.project_obj_id = _adp.fims.expedition.ark;
           } catch (error3) {
@@ -670,6 +671,7 @@ finalizeData = function(skipFields, callback) {
             try {
               if (result.status === true) {
                 bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+                $.get(uri.urlString + "recordMigrator.php");
                 stopLoad();
                 delay(1000, function() {
                   return loadEditor(_adp.projectId);
@@ -4760,6 +4762,7 @@ saveEditorData = function(force, callback) {
     console.error("Couldn't check path count -- " + e.message + ". Faking it.");
     pointCount = maxPathCount + 1;
   }
+  postData.modified = Date.now();
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   debugInfoDelay = delay(10000, function() {
@@ -4780,6 +4783,7 @@ saveEditorData = function(force, callback) {
     }
     stopLoad();
     toastStatusMessage("Save successful");
+    $.get(uri.urlString + "recordMigrator.php");
     _adp.projectData = result.project.project;
     delete localStorage._adp;
     if (isChangingPublic) {

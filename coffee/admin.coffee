@@ -747,6 +747,7 @@ finalizeData = (skipFields = false, callback) ->
             bounding_polygon_geojson: geo?.geoJsonBoundingBox
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
+          postData.modified = Date.now()
           try
             postData.project_obj_id = _adp.fims.expedition.ark
           catch
@@ -782,6 +783,8 @@ finalizeData = (skipFields = false, callback) ->
             try
               if result.status is true
                 bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+                # Ping the record migrator
+                $.get "#{uri.urlString}recordMigrator.php"
                 stopLoad()
                 delay 1000, ->
                   loadEditor _adp.projectId
