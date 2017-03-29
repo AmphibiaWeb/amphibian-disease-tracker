@@ -1419,6 +1419,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
       prettyHtml = JsonHuman.format cartoResults
       # $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
     bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
+    $("#cancel-new-upload").remove()
     toastStatusMessage("Data parse and upload successful")
     geo.dataTable = dataTable
     # resultRows = cartoResults.rows

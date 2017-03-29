@@ -4108,6 +4108,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       prettyHtml = JsonHuman.format(cartoResults);
     } catch (undefined) {}
     bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
+    $("#cancel-new-upload").remove();
     toastStatusMessage("Data parse and upload successful");
     geo.dataTable = dataTable;
     dataBlobUrl = "";
