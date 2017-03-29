@@ -5278,8 +5278,21 @@ mintExpedition = function(projectId, title, callback) {
   }
   args = "perform=create_expedition&link=" + projectId + "&title=" + (post64(title)) + "&public=" + publicProject;
   _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    var alertError, error2, errorJson, errorJsonEscaped, errorParsed, lastError, message, wholeError;
     console.log("Expedition got", result);
     if (!result.status) {
+      errorJsonEscaped = result.error.replace(/^.*\[(.*)\]$/img, "$1");
+      errorJson = errorJsonEscaped.unescape();
+      try {
+        errorParsed = JSON.parse(errorJson);
+        message = errorParsed.message.trim();
+        lastError = message.replace(/^([a-z_]+\(.*\):\s*)?((.*?(?::|!)\s*)*(.*))/img, "$4");
+        wholeError = message.replace(/^([a-z_]+\(.*\):\s*)?((.*?(?::|!)\s*)*(.*))/img, "$2");
+        alertError = isNull(lastError) ? wholeError : lastError;
+      } catch (error2) {
+        alertError = "UNREADABLE_FIMS_ERROR";
+      }
+      result.human_error += "\" Server said: <code>" + alertError + "</code> ";
       stopLoadBarsError(null, result.human_error);
       console.error(result.error, adminParams.apiTarget + "?" + args);
       return false;

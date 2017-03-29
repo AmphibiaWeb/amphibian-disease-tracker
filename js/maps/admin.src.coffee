@@ -5220,6 +5220,17 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
   .done (result) ->
     console.log "Expedition got", result
     unless result.status
+      errorJsonEscaped = result.error.replace /^.*\[(.*)\]$/img, "$1"
+      errorJson = errorJsonEscaped.unescape()
+      try
+        errorParsed = JSON.parse errorJson
+        message = errorParsed.message.trim()
+        lastError = message.replace /^([a-z_]+\(.*\):\s*)?((.*?(?::|!)\s*)*(.*))/img, "$4"
+        wholeError = message.replace /^([a-z_]+\(.*\):\s*)?((.*?(?::|!)\s*)*(.*))/img, "$2"
+        alertError = if isNull(lastError) then wholeError else lastError
+      catch
+        alertError = "UNREADABLE_FIMS_ERROR"
+      result.human_error += """" Server said: <code>#{alertError}</code> """
       stopLoadBarsError null, result.human_error
       console.error result.error, "#{adminParams.apiTarget}?#{args}"
       return false
