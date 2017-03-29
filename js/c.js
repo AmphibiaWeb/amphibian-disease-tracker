@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -1907,7 +1907,7 @@ downloadCSVFile = function(data, options, callback) {
       postCallback = function() {
         var selector;
         selector = options.selector;
-        if (options.create === true) {
+        if (options.create === true && !$(selector).exists()) {
           $(selector).append(html);
         } else {
           $(selector).attr("download", options.downloadFile).attr("href", file).removeClass("disabled").removeAttr("disabled");
@@ -2338,20 +2338,32 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   if (selector == null) {
     selector = "#modal-sql-details-list";
   }
+
+  /*
+   * Main CSV record generator. Generally the one called, and may
+   * instance the web worker copy.
+   */
   startTime = Date.now();
   console.info("Source CSV data:", resultArray);
   options = {
     objectAsValues: true,
-    downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
-    acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "sampleid", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
+    downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv"
   };
   try {
-    downloadCSVFile(resultArray, options, function() {
-      var elapsed, html;
+    downloadCSVFile(resultArray, options, function(postCallback) {
+      var elapsed, error2, html;
       $("#download-file").remove();
       html = "<a tabindex=\"-1\" id=\"download-file\" class=\"paper-button-link\">\n  <paper-button disabled>\n    <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n    Download File\n  </paper-button>\n</a>";
       $(caller).replaceWith(html);
       $(selector + " #download-file paper-button").removeAttr("disabled");
+      if (typeof postCallback === "function") {
+        try {
+          postCallback();
+        } catch (error2) {
+          e = error2;
+          console.warn("Couldn't run postCallbacak after downloadCSV file -- " + e.message);
+        }
+      }
       elapsed = Date.now() - startTime;
       console.debug("GenerateCSVFromResults completed in " + elapsed + "ms");
       return stopLoad();
@@ -2512,7 +2524,12 @@ $(function() {
   } catch (undefined) {}
   loadJS(uri.urlString + "js/prism.js");
   try {
-    return makePageCitationOverflow();
+    makePageCitationOverflow();
+  } catch (undefined) {}
+  try {
+    return delay(500, function() {
+      return setupDebugContext();
+    });
   } catch (undefined) {}
 });
 
@@ -3982,6 +3999,10 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
   args = "action=upload&sql_query=" + apiPostSqlQuery;
   console.info("Querying:");
   console.info(sqlQuery);
+  try {
+    _adp.postedSqlQuery = sqlQuery;
+    _adp.postedSqlQueryStatements = sqlQuery.split(");");
+  } catch (undefined) {}
   console.info("POSTing to server");
   $("#data-sync").removeAttr("indeterminate");
   postTimeStart = Date.now();
@@ -4055,6 +4076,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       console.error("Got an error from the server!");
       console.warn(result);
       stopLoadError("There was a problem uploading your data. Please try again.");
+      bsAlert("<strong>There was a problem uploading your data</strong>: the server said <code>" + result.error + "</code>", "danger");
       return false;
     }
     cartoResults = result.post_response;
@@ -4086,6 +4108,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       prettyHtml = JsonHuman.format(cartoResults);
     } catch (undefined) {}
     bsAlert("Upload to CartoDB of table <code>" + dataTable + "</code> was successful", "success");
+    $("#cancel-new-upload").remove();
     toastStatusMessage("Data parse and upload successful");
     geo.dataTable = dataTable;
     dataBlobUrl = "";
@@ -4504,16 +4527,58 @@ geo.getBoundingRectangle = function(coordinateSet) {
   return boundingBox;
 };
 
+window.lastRanGeocoder = 0;
+
+wait = function(ms) {
+  var end, start;
+  start = new Date().getTime();
+  console.log("Will wait " + ms + "ms after " + start);
+  end = start;
+  while (end < start + ms) {
+    end = new Date().getTime();
+    if (window.endWait === true) {
+      end = start + ms + 1;
+    }
+  }
+  console.log("Waited " + ms + "ms");
+  return end;
+};
+
 localityFromMapBuilder = function(builder, callback) {
-  var center;
+  var MAX_QUERIES_PER_SECOND, center, maxQueryRate, maxQueryRateEff, sinceLastGeocoder;
   if (builder == null) {
     builder = window.mapBuilder;
   }
+
+  /*
+   *
+   *
+   * @param builder -> an object with an array of (canonicalized) points under
+   *   mapBuilder.points, and a selector under mapBuilder.selector
+   */
+  MAX_QUERIES_PER_SECOND = 50;
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 20;
+  maxQueryRate = 1000 / maxQueryRateEff;
+  sinceLastGeocoder = Date.now() - window.lastRanGeocoder - randomInt(1, 25);
+  if (sinceLastGeocoder < maxQueryRate) {
+    console.debug("It's been " + sinceLastGeocoder + "ms since last attempt to geocode (min: " + maxQueryRate + "ms), delaying");
+    delay(maxQueryRate, function() {
+      return localityFromMapBuilder(builder, callback);
+    });
+    return false;
+  }
+  window.lastRanGeocoder = Date.now();
   center = getMapCenter(builder.points);
-  geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality) {
-    console.info("Got locality '" + locality + "'");
+  geo.reverseGeocode(center.lat, center.lng, builder.points, function(locality, googleResult) {
+    var error2;
+    console.info("Got locality '" + locality + "'", googleResult);
+    builder.views = googleResult;
     if (typeof callback === "function") {
-      return callback(locality);
+      try {
+        return callback(locality, builder);
+      } catch (error2) {
+        return callback(locality);
+      }
     }
   });
   return false;
@@ -4693,10 +4758,12 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
   request = {
     location: ll
   };
+  console.debug("Starting reverse geocoder");
   return geocoder.geocode(request, function(result, status) {
-    var east, googleBounds, len, locality, mustContain, ne, north, south, sw, t, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
+    var east, error3, googleBounds, len, locality, mustContain, ne, north, south, sw, t, tooEast, tooNorth, tooSouth, tooWest, validView, view, west;
     if (status === google.maps.GeocoderStatus.OK) {
       console.info("Google said:", result);
+      geo.geocoderViews = result;
       mustContain = geo.getBoundingRectangle(boundingBox);
       validView = null;
       for (t = 0, len = result.length; t < len; t++) {
@@ -4739,8 +4806,13 @@ geo.reverseGeocode = function(lat, lng, boundingBox, callback) {
       }
       console.info("Computed locality: '" + locality + "'");
       geo.computedLocality = locality;
+      window.lastRanGeocoder = Date.now();
       if (typeof callback === "function") {
-        return callback(locality);
+        try {
+          return callback(locality, result);
+        } catch (error3) {
+          return callback(locality);
+        }
       } else {
         return console.warn("No callback provided to geo.reverseGeocode()!");
       }
@@ -5865,10 +5937,15 @@ $(function() {
       });
     };
   })(0);
-  return window.setupDebugContext = function() {
+  window.setupDebugContext = function() {
+    console.log("**** Debug Context Events Enabled ***");
     bootstrapDebugSetup();
-    return setupContext();
+    setupContext();
+    return true;
   };
+  try {
+    return setupDebugContext();
+  } catch (undefined) {}
 });
 
 //# sourceMappingURL=maps/c.js.map

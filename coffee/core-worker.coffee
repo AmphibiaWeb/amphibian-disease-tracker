@@ -523,7 +523,7 @@ downloadCSVFile = (data, options) ->
   options.selector ?= "#download-file"
   options.splitValues ?= false
   options.cascadeObjects ?= false
-  options.objectAsValues ?= false
+  options.objectAsValues ?= true
   # Parse it
   headerPlaceholder = new Array()
   do parser = (jsonObj = jsonObject, cascadeObjects = options.cascadeObjects) ->
@@ -647,31 +647,31 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
-    acceptableCols: [
-      "collectionid"
-      "catalognumber"
-      "fieldnumber"
-      "sampleid"
-      "diseasetested"
-      "diseasestrain"
-      "samplemethod"
-      "sampledisposition"
-      "diseasedetected"
-      "fatal"
-      "cladesampled"
-      "genus"
-      "specificepithet"
-      "infraspecificepithet"
-      "lifestage"
-      "dateidentified"
-      "decimallatitude"
-      "decimallongitude"
-      "alt"
-      "coordinateuncertaintyinmeters"
-      "collector"
-      "fimsextra"
-      "originaltaxa"
-      ]
+    # acceptableCols: [
+    #   "collectionid"
+    #   "catalognumber"
+    #   "fieldnumber"
+    #   "sampleid"
+    #   "diseasetested"
+    #   "diseasestrain"
+    #   "samplemethod"
+    #   "sampledisposition"
+    #   "diseasedetected"
+    #   "fatal"
+    #   "cladesampled"
+    #   "genus"
+    #   "specificepithet"
+    #   "infraspecificepithet"
+    #   "lifestage"
+    #   "dateidentified"
+    #   "decimallatitude"
+    #   "decimallongitude"
+    #   "alt"
+    #   "coordinateuncertaintyinmeters"
+    #   "collector"
+    #   "fimsextra"
+    #   "originaltaxa"
+    #   ]
   try
     response = downloadCSVFile(resultArray, options)
   catch
@@ -731,5 +731,5 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
     prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
     bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
-    console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb"
+    console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb with owrker"
   false

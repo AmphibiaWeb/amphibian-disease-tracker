@@ -56,7 +56,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
    *   in "rows" field
    * @param object tableToProjectMap -> Map the table name onto project id
    */
-  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, e, elapsed, error1, error2, error3, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectResults, projectTableRows, ref, ref1, ref2, row, rowSet, sortRows, species, startTime, summaryRow, summaryTable, summaryTableRows, summaryTableRowsSortable, table, tableRows, tableRowsSimple, unhelpfulCols;
+  var altRows, col, d, data, dataSummary, dataWidthMax, dataWidthMin, disease, diseases, e, elapsed, error1, error2, error3, html, i, j, l, len, len1, message, n, outputData, prevalence, project, projectRawData, projectResults, projectTableRows, rawDataHtml, ref, ref1, ref2, row, rowSet, sortRows, species, startTime, summaryDataObj, summaryRow, summaryRowData, summaryTable, summaryTableRows, summaryTableRowsSortable, table, tableRows, tableRowsSimple, unhelpfulCols;
   startTime = Date.now();
   if (!isArray(resultsList)) {
     resultsList = Object.toArray(resultsList);
@@ -67,6 +67,7 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
   }
   console.log("Generating dialog from list of length " + resultsList.length, resultsList);
   projectTableRows = new Array();
+  projectRawData = new Array();
   outputData = new Array();
   i = 0;
   unhelpfulCols = ["cartodb_id", "the_geom", "the_geom_webmercator", "id"];
@@ -154,9 +155,11 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
     table = project = tableToProjectMap[projectResults.table];
     row = "<tr>\n  <td colspan=\"4\" class=\"code-box-container\"><pre readonly class=\"code-box language-json\" style=\"max-width:" + dataWidthMax + "px;min-width:" + dataWidthMin + "px\">" + data + "</pre></td>\n  <td class=\"text-center\"><paper-icon-button data-toggle=\"tooltip\" raised class=\"click\" data-href=\"https://amphibiandisease.org/project.php?id=" + project.id + "\" icon=\"icons:arrow-forward\" title=\"" + project.name + "\"></paper-icon-button></td>\n</tr>";
     projectTableRows.push(row);
+    projectRawData.push(data);
   }
   summaryTableRows = new Object();
   summaryTableRowsSortable = new Object();
+  summaryDataObj = new Array();
   ref2 = dataSummary.data;
   for (species in ref2) {
     diseases = ref2[species];
@@ -169,6 +172,17 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
       prevalence = data.prevalence * 100;
       prevalence = roundNumberSigfig(prevalence, 2);
       summaryRow = "<tr>\n  <td>" + species + "</td>\n  <td>" + data.samples + "</td>\n  <td>" + data.positive + "</td>\n  <td>" + data.negative + "</td>\n  <td>" + prevalence + "%</td>\n</tr>";
+      summaryRowData = {
+        genus: species.split(" ")[0],
+        species: species.split(" ")[1],
+        fullScientificName: species,
+        disease: disease,
+        samples: data.samples,
+        positive: data.positive,
+        negative: data.negative,
+        prevalence: prevalence + "%"
+      };
+      summaryDataObj.push(summaryRowData);
       summaryTableRows[disease].push(summaryRow);
       summaryTableRowsSortable[disease][species] = summaryRow;
     }
@@ -197,15 +211,19 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap, windowWidth) {
   if (isNull(summaryTable)) {
     summaryTable = "<h3><em>Sorry, we were unable to generate a summary table</em></h3>";
   }
-  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n    <div class=\"row\">\n      <div class=\"col-xs-12\">\n        <h3>Raw Data</h3>\n        <table class=\"table table-striped\">\n          <tr>\n            <th colspan=\"4\">Query Data</th>\n            <th>Visit Project</th>\n          </tr>\n          " + (projectTableRows.join("\n")) + "\n        </table>\n      </div>\n    </div>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  rawDataHtml = "<div class=\"row\">\n  <div class=\"col-xs-12\">\n    <h3>Raw Data</h3>\n    <table class=\"table table-striped\">\n      <tr>\n        <th colspan=\"4\">Query Data</th>\n        <th>Visit Project</th>\n      </tr>\n      " + (projectTableRows.join("\n")) + "\n    </table>\n  </div>\n</div>";
+  html = "<paper-dialog id=\"modal-sql-details-list\" modal always-on-top auto-fit-on-attach>\n  <h2>Project Result List</h2>\n  <paper-dialog-scrollable>\n    " + summaryTable + "\n\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button id=\"generate-download\">Create Download</paper-button>\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   message = {
     html: html,
     outputData: outputData,
     data: dataSummary,
+    summaryRowData: summaryDataObj,
     summaryRows: summaryTableRows,
     providedList: resultsList,
     providedMap: tableToProjectMap,
-    providedWidth: windowWidth
+    providedWidth: windowWidth,
+    rawProjectData: projectRawData,
+    rawDataHtml: rawDataHtml
   };
   elapsed = Date.now() - startTime;
   console.info("Worker saved " + elapsed + "ms from the main thread");
@@ -856,7 +874,7 @@ downloadCSVFile = function(data, options) {
     options.cascadeObjects = false;
   }
   if (options.objectAsValues == null) {
-    options.objectAsValues = false;
+    options.objectAsValues = true;
   }
   headerPlaceholder = new Array();
   (parser = function(jsonObj, cascadeObjects) {
@@ -1005,8 +1023,7 @@ generateCSVFromResults = function(resultArray, caller, selector) {
   console.info("Worker CSV: Given", resultArray);
   options = {
     objectAsValues: true,
-    downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv",
-    acceptableCols: ["collectionid", "catalognumber", "fieldnumber", "sampleid", "diseasetested", "diseasestrain", "samplemethod", "sampledisposition", "diseasedetected", "fatal", "cladesampled", "genus", "specificepithet", "infraspecificepithet", "lifestage", "dateidentified", "decimallatitude", "decimallongitude", "alt", "coordinateuncertaintyinmeters", "collector", "fimsextra", "originaltaxa"]
+    downloadFile: "adp-global-search-result-data_" + (Date.now()) + ".csv"
   };
   try {
     response = downloadCSVFile(resultArray, options);
@@ -1075,7 +1092,7 @@ validateAWebTaxon = function(taxonObj, callback) {
     prettyTaxon = taxonObj.genus + " " + taxonObj.species;
     prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
     bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
-    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
+    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb with owrker");
   });
   return false;
 };

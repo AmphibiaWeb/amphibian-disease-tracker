@@ -116,6 +116,11 @@ populateAdminActions = function() {
       console.info("NOTICE: This is an SUPERUSER Admin");
       html = "<paper-button id=\"su-view-projects\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:add\"></iron-icon>\n  (SU) Administrate All Projects\n</paper-button>\n<paper-button id=\"su-manage-users\" class=\"admin-action su-action col-md-3 col-sm-4 col-xs-12\">\n  <iron-icon icon=\"icons:supervisor-account\"></iron-icon>\n   <iron-icon icon=\"icons:create\"></iron-icon>\n  (SU) Manage All Users\n</paper-button>";
       $("#admin-actions-block").append(html);
+      try {
+        delay(500, function() {
+          return setupDebugContext();
+        });
+      } catch (undefined) {}
       $("#su-view-projects").click(function() {
         return loadSUProjectBrowser();
       });
@@ -302,7 +307,7 @@ loadCreateNewProject = function() {
   };
   history.pushState(state, "Create New Project", url);
   startAdminActionHelper();
-  html = "<h2 class=\"new-title col-xs-12\">Project Title</h2>\n<paper-input label=\"Descriptive, unique project title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-11\" required auto-validate data-field=\"project_title\"></paper-input>\n" + (getInfoTooltip("A descriptive title is most useful. Tell us the main focus of the project and whether a monitoring effort or project that just occurred in the Spring of 2015.")) + "\n<h2 class=\"new-title col-xs-12\">Project Parameters</h2>\n<section class=\"project-inputs clearfix col-xs-12\">\n  <div class=\"row\">\n    <paper-input label=\"Primary Pathogen\" id=\"project-disease\" class=\"project-field col-xs-6\" required auto-validate data-field=\"disease\"></paper-input>\n      " + (getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")) + "\n      <button class=\"btn btn-default fill-pathogen col-xs-2\" data-pathogen=\"Batrachochytrium dendrobatidis\">Bd</button>\n      <button class=\"btn btn-default fill-pathogen col-xs-2\" data-pathogen=\"Batrachochytrium salamandrivorans\">Bsal</button>\n    <paper-input label=\"Pathogen Strain\" id=\"project-disease-strain\" class=\"project-field col-md-6 col-xs-11\" data-field=\"disease_strain\"></paper-input>" + (getInfoTooltip("For example, specific Bd strains which have been sequenced JEL423, JAM81, if known")) + "\n    <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-11\" data-field=\"reference_id\"></paper-input>\n    " + (getInfoTooltip("E.g.  a DOI or other reference")) + "\n    <paper-input label=\"Publication DOI\" id=\"pub-doi\" class=\"project-field col-md-6 col-xs-11\" data-field=\"publication\"></paper-input>\n    " + (getInfoTooltip("Publication DOI citing these datasets may be added here.")) + "\n    <h2 class=\"new-title col-xs-12\">Lab Parameters</h2>\n    <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required auto-validate data-field=\"pi_lab\"></paper-input>\n    <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userFullname + "\"  required auto-validate></paper-input>\n    " + (getInfoTooltip("This will be the identity used for the project citation")) + "\n    <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userEmail + "\"  required auto-validate></gold-email-input>\n    <paper-input label=\"Technical/Data Contact\" id=\"project-technical-contact\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userFullname + "\"  required auto-validate></paper-input>\n    " + (getInfoTooltip("This will be the identity suggested for technical communications about the project")) + "\n    <gold-email-input label=\"Technical/Data Contact Email\" id=\"technical-contact-email\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userEmail + "\"  required auto-validate></gold-email-input>\n    <paper-input label=\"Diagnostic Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-11\"  required auto-validate></paper-input>\n    " + (getInfoTooltip("Name or PI responsible for lab results")) + "\n    <paper-input label=\"Affiliation\" id=\"project-affiliation\" class=\"project-field col-md-6 col-xs-11\"  required auto-validate></paper-input> " + (getInfoTooltip("Of project PI. e.g., UC Berkeley")) + "\n    <h2 class=\"new-title col-xs-12\">Project Notes</h2>\n    <iron-autogrow-textarea id=\"project-notes\" class=\"project-field col-md-6 col-xs-11 language-markdown\" rows=\"3\" data-field=\"sample_notes\"></iron-autogrow-textarea>" + (getInfoTooltip("Project notes or brief abstract; accepts Markdown ")) + "\n    <marked-element class=\"project-param col-md-6 col-xs-12\" id=\"note-preview\">\n      <div class=\"markdown-html\"></div>\n    </marked-element>\n    <h2 class=\"new-title col-xs-12\">Data Permissions</h2>\n    <div class=\"col-xs-12\">\n      <span class=\"toggle-off-label iron-label\">Private Dataset</span>\n      <paper-toggle-button id=\"data-encumbrance-toggle\" class=\"red\">Public Dataset</paper-toggle-button>\n      " + (getInfoTooltip("this will be the setting for all data uploaded to this Project")) + "\n    </div>\n\n    <h2 class=\"new-title col-xs-12\">Project Area of Interest</h2>\n    <div class=\"col-xs-12\">\n      <p>\n        This represents the approximate collection region for your samples.\n        <br/>\n        <strong>\n          The last thing you do (search, build a locality, or upload data) will be your dataset's canonical locality.\n        </strong>.\n      </p>\n      <span class=\"toggle-off-label iron-label\">Locality Name</span>\n      <paper-toggle-button id=\"transect-input-toggle\">Coordinate List</paper-toggle-button>\n    </div>\n    <p id=\"transect-instructions\" class=\"col-xs-12\"></p>\n    <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n      <div id=\"transect-input-container\" class=\"clearfix\">\n      </div>\n      <p class=\"computed-locality\" id=\"computed-locality\">\n        You may also click on the map to outline a region of interest, then click \"Build Map\" below to calculate a locality.\n      </p>\n      <br/><br/>\n      <button class=\"btn btn-primary\" disabled id=\"init-map-build\">\n        <iron-icon icon=\"maps:map\"></iron-icon>\n        Build Map\n        <small>\n          (<span class=\"points-count\">0</span> points)\n        </small>\n      </button>\n      <paper-icon-button icon=\"icons:restore\" id=\"reset-map-builder\" data-toggle=\"tooltip\" title=\"Reset Points\"></paper-icon-button>\n    </div>\n    <div id=\"carto-rendered-map\" class=\"col-md-6 col-xs-12\">\n      <div id=\"carto-map-container\" class=\"carto-map map\">\n      </div>\n    </div>\n    <div class=\"col-xs-12\">\n      <br/>\n      <paper-checkbox checked id=\"has-data\">My project already has data</paper-checkbox>\n      <br/>\n    </div>\n  </div>\n</section>\n<section id=\"uploader-container-section\" class=\"data-section col-xs-12 clearfix\">\n  <h2 class=\"new-title\">Uploading your project data</h2>\n  <p>Drag and drop as many files as you need below. </p>\n  <p>\n    Please note that the data <strong>must</strong> have a header row,\n    and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.\n  </p>\n  <div class=\"alert alert-info\" role=\"alert\">\n    We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href=\"http://biscicol.org/biocode-fims/templates.jsp\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org <span class=\"glyphicon glyphicon-new-window\"></span></a>. Check out the documentation for <a href=\"https://amphibian-disease-tracker.readthedocs.org/en/latest/Creating%20a%20New%20Project/#with-data\" class=\"newwindow alert-link\" data-newtab=\"true\">more instructions <span class=\"glyphicon glyphicon-new-window\"></span></a>\n  </div>\n  <div class=\"alert alert-warning\" role=\"alert\">\n    <strong>If the data are in Excel</strong>, ensure that they are in the first sheet in the workbook, or in a worksheet titled <code>Samples</code>, as per FIMS.\n  </div>\n</section>\n<section class=\"project-inputs clearfix data-section col-xs-12\">\n  <div class=\"row\">\n    <h2 class=\"new-title col-xs-12\">Project Data Summary</h2>\n    <h3 class=\"new-title col-xs-12\">Calculated Data Parameters</h3>\n    <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\" data-field=\"disease_samples\"></paper-input>\n    <paper-input label=\"Positive Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"positive-samples\" readonly type=\"number\" data-field=\"disease_positive\"></paper-input>\n    <paper-input label=\"Negative Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"negative-samples\" readonly type=\"number\" data-field=\"disease_negative\"></paper-input>\n    <paper-input label=\"No Confidence Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"no_confidence-samples\" readonly type=\"number\" data-field=\"disease_no_confidence\"></paper-input>\n    <paper-input label=\"Disease Morbidity\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"morbidity-count\" readonly type=\"number\" data-field=\"disease_morbidity\"></paper-input>\n    <paper-input label=\"Disease Mortality\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"mortality-count\" readonly type=\"number\" data-field=\"disease_mortality\"></paper-input>\n    <h4 class=\"new-title col-xs-12\">Species in dataset</h4>\n    <iron-autogrow-textarea id=\"species-list\" class=\"project-field col-md-6 col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    <p class=\"col-xs-12\"><a id=\"download-server-parsed-data\" class=\"btn btn-primary disabled\">Download Parsed Data</a></p>\n  </div>\n</section>\n<section id=\"submission-section\" class=\"col-xs-12\">\n  <div class=\"pull-right\">\n    <button id=\"upload-data\" class=\"btn btn-success click\" data-function=\"finalizeData\"><iron-icon icon=\"icons:lock\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Private Project</button>\n    <button id=\"reset-data\" class=\"btn btn-danger click\" data-function=\"resetForm\">Reset Form</button>\n  </div>\n</section>";
+  html = "<h2 class=\"new-title col-xs-12\">Project Title</h2>\n<paper-input label=\"Descriptive, unique project title\" id=\"project-title\" class=\"project-field col-md-6 col-xs-11\" required auto-validate data-field=\"project_title\"></paper-input>\n" + (getInfoTooltip("A descriptive title is most useful. Tell us the main focus of the project and whether a monitoring effort or project that just occurred in the Spring of 2015.")) + "\n<h2 class=\"new-title col-xs-12\">Project Parameters</h2>\n<section class=\"project-inputs clearfix col-xs-12\">\n  <div class=\"row\">\n    <paper-input label=\"Primary Pathogen\" id=\"project-disease\" class=\"project-field col-xs-6\" required auto-validate data-field=\"disease\"></paper-input>\n      " + (getInfoTooltip("Bd, Bsal, or other. If empty, we'll take it from your data.")) + "\n      <button class=\"btn btn-default fill-pathogen col-xs-2\" data-pathogen=\"Batrachochytrium dendrobatidis\">Bd</button>\n      <button class=\"btn btn-default fill-pathogen col-xs-2\" data-pathogen=\"Batrachochytrium salamandrivorans\">Bsal</button>\n    <paper-input label=\"Pathogen Strain\" id=\"project-disease-strain\" class=\"project-field col-md-6 col-xs-11\" data-field=\"disease_strain\"></paper-input>" + (getInfoTooltip("For example, specific Bd strains which have been sequenced JEL423, JAM81, if known")) + "\n    <paper-input label=\"Project Reference\" id=\"reference-id\" class=\"project-field col-md-6 col-xs-11\" data-field=\"reference_id\"></paper-input>\n    " + (getInfoTooltip("E.g.  a DOI or other reference")) + "\n    <paper-input label=\"Publication DOI\" id=\"pub-doi\" class=\"project-field col-md-6 col-xs-11\" data-field=\"publication\"></paper-input>\n    " + (getInfoTooltip("Publication DOI citing these datasets may be added here.")) + "\n    <h2 class=\"new-title col-xs-12\">Lab Parameters</h2>\n    <paper-input label=\"Project PI\" id=\"project-pi\" class=\"project-field col-md-6 col-xs-12\"  required auto-validate data-field=\"pi_lab\"></paper-input>\n    <paper-input label=\"Project Contact\" id=\"project-author\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userFullname + "\"  required auto-validate></paper-input>\n    " + (getInfoTooltip("This will be the identity used for the project citation")) + "\n    <gold-email-input label=\"Contact Email\" id=\"author-email\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userEmail + "\"  required auto-validate></gold-email-input>\n    <paper-input label=\"Technical/Data Contact\" id=\"project-technical-contact\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userFullname + "\"  required auto-validate></paper-input>\n    " + (getInfoTooltip("This will be the identity suggested for technical communications about the project")) + "\n    <gold-email-input label=\"Technical/Data Contact Email\" id=\"technical-contact-email\" class=\"project-field col-md-6 col-xs-12\" value=\"" + userEmail + "\"  required auto-validate></gold-email-input>\n    <paper-input label=\"Diagnostic Lab\" id=\"project-lab\" class=\"project-field col-md-6 col-xs-11\"  required auto-validate></paper-input>\n    " + (getInfoTooltip("Name or PI responsible for lab results")) + "\n    <paper-input label=\"Affiliation\" id=\"project-affiliation\" class=\"project-field col-md-6 col-xs-11\"  required auto-validate></paper-input> " + (getInfoTooltip("Of project PI. e.g., UC Berkeley")) + "\n    <h2 class=\"new-title col-xs-12\">Project Notes</h2>\n    <iron-autogrow-textarea id=\"project-notes\" class=\"project-field col-md-6 col-xs-11 language-markdown\" rows=\"3\" data-field=\"sample_notes\"></iron-autogrow-textarea>" + (getInfoTooltip("Project notes or brief abstract; accepts Markdown ")) + "\n    <marked-element class=\"project-param col-md-6 col-xs-12\" id=\"note-preview\">\n      <div class=\"markdown-html\"></div>\n    </marked-element>\n    <h2 class=\"new-title col-xs-12\">Data Permissions</h2>\n    <div class=\"col-xs-12\">\n      <span class=\"toggle-off-label iron-label\">Private Dataset</span>\n      <paper-toggle-button id=\"data-encumbrance-toggle\" class=\"red\">Public Dataset</paper-toggle-button>\n      " + (getInfoTooltip("this will be the setting for all data uploaded to this Project")) + "\n    </div>\n\n    <h2 class=\"new-title col-xs-12\">Project Area of Interest</h2>\n    <div class=\"col-xs-12\">\n      <p>\n        This represents the approximate collection region for your samples.\n        <br/>\n        <strong>\n          The last thing you do (search, build a locality, or upload data) will be your dataset's canonical locality.\n        </strong>.\n      </p>\n      <span class=\"toggle-off-label iron-label\">Locality Name</span>\n      <paper-toggle-button id=\"transect-input-toggle\">Coordinate List</paper-toggle-button>\n    </div>\n    <p id=\"transect-instructions\" class=\"col-xs-12\"></p>\n    <div id=\"transect-input\" class=\"col-md-6 col-xs-12\">\n      <div id=\"transect-input-container\" class=\"clearfix\">\n      </div>\n      <p class=\"computed-locality\" id=\"computed-locality\">\n        You may also click on the map to outline a region of interest, then click \"Build Map\" below to calculate a locality.\n      </p>\n      <br/><br/>\n      <button class=\"btn btn-primary\" disabled id=\"init-map-build\">\n        <iron-icon icon=\"maps:map\"></iron-icon>\n        Build Map\n        <small>\n          (<span class=\"points-count\">0</span> points)\n        </small>\n      </button>\n      <paper-icon-button icon=\"icons:restore\" id=\"reset-map-builder\" data-toggle=\"tooltip\" title=\"Reset Points\"></paper-icon-button>\n    </div>\n    <div id=\"carto-rendered-map\" class=\"col-md-6 col-xs-12\">\n      <div id=\"carto-map-container\" class=\"carto-map map\">\n      </div>\n    </div>\n    <div class=\"col-xs-12\">\n      <br/>\n      <paper-checkbox checked id=\"has-data\">My project already has data</paper-checkbox>\n      <br/>\n    </div>\n  </div>\n</section>\n<section id=\"uploader-container-section\" class=\"data-section col-xs-12 clearfix\">\n  <h2 class=\"new-title\">Uploading your project data</h2>\n  <p>Drag and drop as many files as you need below. </p>\n  <p>\n    Please note that the data <strong>must</strong> have a header row,\n    and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.\n  </p>\n  <div class=\"alert alert-info\" role=\"alert\">\n    We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href=\"http://www.biscicol.org/template\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org <span class=\"glyphicon glyphicon-new-window\"></span></a> <small>(Alternate link: <a href=\"https://berkeley.box.com/v/AmphibianDisease-template\" class=\"newwindow alert-link\" data-newtab=\"true\">Berkeley Box <span class=\"glyphicon glyphicon-new-window\"></span></a>)</small>. Check out the documentation for <a href=\"https://amphibian-disease-tracker.readthedocs.org/en/latest/Creating%20a%20New%20Project/#with-data\" class=\"newwindow alert-link\" data-newtab=\"true\">more instructions <span class=\"glyphicon glyphicon-new-window\"></span></a>\n  </div>\n  <div class=\"alert alert-warning\" role=\"alert\">\n    <strong>If the data are in Excel</strong>, ensure that they are in the first sheet in the workbook, or in a worksheet titled <code>Samples</code>, as per FIMS.\n  </div>\n</section>\n<section class=\"project-inputs clearfix data-section col-xs-12\">\n  <div class=\"row\">\n    <h2 class=\"new-title col-xs-12\">Project Data Summary</h2>\n    <h3 class=\"new-title col-xs-12\">Calculated Data Parameters</h3>\n    <paper-input label=\"Samples Counted\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"samplecount\" readonly type=\"number\" data-field=\"disease_samples\"></paper-input>\n    <paper-input label=\"Positive Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"positive-samples\" readonly type=\"number\" data-field=\"disease_positive\"></paper-input>\n    <paper-input label=\"Negative Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"negative-samples\" readonly type=\"number\" data-field=\"disease_negative\"></paper-input>\n    <paper-input label=\"No Confidence Samples\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"no_confidence-samples\" readonly type=\"number\" data-field=\"disease_no_confidence\"></paper-input>\n    <paper-input label=\"Disease Morbidity\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"morbidity-count\" readonly type=\"number\" data-field=\"disease_morbidity\"></paper-input>\n    <paper-input label=\"Disease Mortality\" placeholder=\"Please upload a data file to see sample count\" class=\"project-field col-md-6 col-xs-12\" id=\"mortality-count\" readonly type=\"number\" data-field=\"disease_mortality\"></paper-input>\n    <h4 class=\"new-title col-xs-12\">Species in dataset</h4>\n    <iron-autogrow-textarea id=\"species-list\" class=\"project-field col-md-6 col-xs-12\" rows=\"3\" placeholder=\"Taxon List\" readonly></iron-autogrow-textarea>\n    <p class=\"col-xs-12\"><a id=\"download-server-parsed-data\" class=\"btn btn-primary disabled\">Download Parsed Data</a></p>\n  </div>\n</section>\n<section id=\"submission-section\" class=\"col-xs-12\">\n  <div class=\"pull-right\">\n    <button id=\"upload-data\" class=\"btn btn-success click\" data-function=\"finalizeData\"><iron-icon icon=\"icons:lock\"></iron-icon> <span class=\"label-with-data\">Save Data &amp;</span> Create Private Project</button>\n    <button id=\"reset-data\" class=\"btn btn-danger click\" data-function=\"resetForm\">Reset Form</button>\n  </div>\n</section>";
   $("main #main-body").append(html);
   try {
     $("#project-title").blur(function() {
@@ -385,7 +390,12 @@ loadCreateNewProject = function() {
       bsGrid: ""
     };
     console.log("Location fetched, setting up map ...");
-    return createMap2(null, mapOptions);
+    createMap2(null, mapOptions);
+    try {
+      return delay(500, function() {
+        return setupDebugContext();
+      });
+    } catch (undefined) {}
   });
   bindClicks();
   return false;
@@ -430,7 +440,7 @@ finalizeData = function(skipFields, callback) {
     }
     file = (ref = dataFileParams != null ? dataFileParams.filePath : void 0) != null ? ref : null;
     return mintBcid(_adp.projectId, file, title, function(result) {
-      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, s, sampleIds, sampleMethods, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, error4, excursion, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, rowNumber, s, sampleIds, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -476,9 +486,11 @@ finalizeData = function(skipFields, callback) {
           sampleIds = new Array();
           dispositions = new Array();
           sampleMethods = new Array();
+          rowNumber = 0;
           ref2 = Object.toArray(uploadedData);
           for (m = 0, len1 = ref2.length; m < len1; m++) {
             row = ref2[m];
+            ++rowNumber;
             date = (ref3 = row.dateCollected) != null ? ref3 : row.dateIdentified;
             uTime = excelDateToUnixTime(date);
             dates.push(uTime);
@@ -494,9 +506,16 @@ finalizeData = function(skipFields, callback) {
               catalogNumbers.push(row.catalogNumber);
             }
             sampleIds.push(row.sampleId);
-            rowLat = row.decimalLatitude;
-            rowLng = row.decimalLongitude;
-            distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
+            rowLat = toFloat(row.decimalLatitude);
+            rowLng = toFloat(row.decimalLongitude);
+            try {
+              distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
+            } catch (error1) {
+              e = error1;
+              console.error("Couldn't calculate distanceFromCenter", rowLat, rowLng, center);
+              console.warn("Row: #" + rowNumber, row);
+              throw e;
+            }
             if (distanceFromCenter > excursion) {
               excursion = distanceFromCenter;
             }
@@ -559,7 +578,7 @@ finalizeData = function(skipFields, callback) {
           postData.disease_samples = toInt(s.positive) + toInt(s.negative) + toInt(s.no_confidence);
         }
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, e, error1, error2, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error2, error3, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -577,8 +596,8 @@ finalizeData = function(skipFields, callback) {
             if (typeof kmlInfo === "object") {
               try {
                 postData.transect_file = JSON.stringify(kmlInfo);
-              } catch (error1) {
-                e = error1;
+              } catch (error2) {
+                e = error2;
                 console.warn("Couldn't stringify data - " + e.message, kmlInfo);
                 if (kmlInfo.path != null) {
                   postData.transect_file = kmlInfo.path;
@@ -607,9 +626,10 @@ finalizeData = function(skipFields, callback) {
           };
           postData.carto_id = JSON.stringify(cartoData);
           postData.project_id = _adp.projectId;
+          postData.modified = Date.now();
           try {
             postData.project_obj_id = _adp.fims.expedition.ark;
-          } catch (error2) {
+          } catch (error3) {
             mintExpedition(_adp.projectId, null, function() {
               return postBBLocality();
             });
@@ -647,10 +667,11 @@ finalizeData = function(skipFields, callback) {
             return postData;
           }
           return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            var error3, error4, jsonResponse;
+            var error4, error5, jsonResponse;
             try {
               if (result.status === true) {
                 bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+                $.get(uri.urlString + "recordMigrator.php");
                 stopLoad();
                 delay(1000, function() {
                   return loadEditor(_adp.projectId);
@@ -662,12 +683,12 @@ finalizeData = function(skipFields, callback) {
                 stopLoadError(result.human_error);
                 bsAlert(result.human_error, "error");
               }
-            } catch (error3) {
-              e = error3;
+            } catch (error4) {
+              e = error4;
               stopLoadError("There was a verifying your save data");
               try {
                 jsonResponse = JSON.stringify(result);
-              } catch (error4) {
+              } catch (error5) {
                 jsonResponse = "BAD_OBJECT";
               }
               try {
@@ -691,7 +712,7 @@ finalizeData = function(skipFields, callback) {
             try {
               console.info("Took written locality");
               _adp.locality = p$("#locality-input").value;
-            } catch (error1) {
+            } catch (error2) {
               console.info("Can't figure out locality");
               _adp.locality = "";
             }
@@ -716,14 +737,14 @@ finalizeData = function(skipFields, callback) {
         } else {
           try {
             _adp.locality = p$("#locality-input").value;
-          } catch (error2) {
+          } catch (error3) {
             _adp.locality = "";
           }
           console.warn("How did we get to this state? No locality precomputed, no data file");
           return postBBLocality();
         }
-      } catch (error3) {
-        e = error3;
+      } catch (error4) {
+        e = error4;
         stopLoadError("There was a problem with the application. Please try again later. (E-003)");
         console.error("JavaScript error in saving data (E-003)! FinalizeData said: " + e.message);
         return console.warn(e.stack);
@@ -1503,6 +1524,9 @@ singleDataFileHelper = function(newFile, callback) {
     return false;
   }
   if (dataFileParams.hasDataFile === true && newFile !== dataFileParams.filePath) {
+    try {
+      $("#bs-alert").remove();
+    } catch (undefined) {}
     if ($("#single-data-file-modal").exists()) {
       $("#single-data-file-modal").remove();
     }
@@ -2185,6 +2209,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
         selector: "#download-server-parsed-data"
       };
       downloadCSVFile(parsedData, csvOptions);
+      window.parsedData = parsedData;
+      _adp.cleanedAndParsedData = parsedData;
     } catch (undefined) {}
     getCoordsFromData = function() {
 
@@ -4736,6 +4762,7 @@ saveEditorData = function(force, callback) {
     console.error("Couldn't check path count -- " + e.message + ". Faking it.");
     pointCount = maxPathCount + 1;
   }
+  postData.modified = Date.now();
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   debugInfoDelay = delay(10000, function() {
@@ -4756,6 +4783,7 @@ saveEditorData = function(force, callback) {
     }
     stopLoad();
     toastStatusMessage("Save successful");
+    $.get(uri.urlString + "recordMigrator.php");
     _adp.projectData = result.project.project;
     delete localStorage._adp;
     if (isChangingPublic) {
@@ -5254,8 +5282,21 @@ mintExpedition = function(projectId, title, callback) {
   }
   args = "perform=create_expedition&link=" + projectId + "&title=" + (post64(title)) + "&public=" + publicProject;
   _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
+    var alertError, error2, errorJson, errorJsonEscaped, errorParsed, lastError, message, wholeError;
     console.log("Expedition got", result);
     if (!result.status) {
+      errorJsonEscaped = result.error.replace(/^.*\[(.*)\]$/img, "$1");
+      errorJson = errorJsonEscaped.unescape();
+      try {
+        errorParsed = JSON.parse(errorJson);
+        message = errorParsed.message.trim();
+        lastError = message.replace(/^([a-z_]+\(.*\):\s*)?((.*?(?::|!)\s*)*(.*))/img, "$4");
+        wholeError = message.replace(/^([a-z_]+\(.*\):\s*)?((.*?(?::|!)\s*)*(.*))/img, "$2");
+        alertError = isNull(lastError) ? wholeError : lastError;
+      } catch (error2) {
+        alertError = "UNREADABLE_FIMS_ERROR";
+      }
+      result.human_error += "\" Server said: <code>" + alertError + "</code> ";
       stopLoadBarsError(null, result.human_error);
       console.error(result.error, adminParams.apiTarget + "?" + args);
       return false;

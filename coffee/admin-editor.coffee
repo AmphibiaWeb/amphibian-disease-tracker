@@ -2294,6 +2294,7 @@ saveEditorData = (force = false, callback) ->
   catch e
     console.error "Couldn't check path count -- #{e.message}. Faking it."
     pointCount = maxPathCount + 1
+  postData.modified = Date.now()
   console.log "Sending to server", postData
   args = "perform=save&data=#{jsonTo64 postData}"
   debugInfoDelay = delay 10000, ->
@@ -2312,6 +2313,8 @@ saveEditorData = (force = false, callback) ->
       return false
     stopLoad()
     toastStatusMessage "Save successful"
+    # Ping the record migrator
+    $.get "#{uri.urlString}recordMigrator.php"
     # Update the project data
     _adp.projectData = result.project.project
     delete localStorage._adp

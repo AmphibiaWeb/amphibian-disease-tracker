@@ -1328,6 +1328,9 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
   # console.info "Would query with args", args
   console.info "Querying:"
   console.info sqlQuery
+  try
+    _adp.postedSqlQuery = sqlQuery
+    _adp.postedSqlQueryStatements = sqlQuery.split ");"
   # $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
   # console.info "GeoJSON:", geoJson
   # console.info "GeoJSON String:", dataGeometry
@@ -1392,6 +1395,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
       console.error "Got an error from the server!"
       console.warn result
       stopLoadError "There was a problem uploading your data. Please try again."
+      bsAlert "<strong>There was a problem uploading your data</strong>: the server said <code>#{result.error}</code>", "danger"
       return false
     cartoResults = result.post_response
     cartoHasError = false
@@ -1415,6 +1419,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
       prettyHtml = JsonHuman.format cartoResults
       # $("#main-body").append "<div class='alert alert-success'><strong>Success! Carto said</strong>#{$(prettyHtml).html()}</div>"
     bsAlert("Upload to CartoDB of table <code>#{dataTable}</code> was successful", "success")
+    $("#cancel-new-upload").remove()
     toastStatusMessage("Data parse and upload successful")
     geo.dataTable = dataTable
     # resultRows = cartoResults.rows
@@ -1764,13 +1769,45 @@ geo.getBoundingRectangle = (coordinateSet = geo.boundingBox) ->
   geo.computedBoundingRectangle = boundingBox
   boundingBox
 
+window.lastRanGeocoder = 0
+
+wait = (ms) ->
+  start = new Date().getTime()
+  console.log "Will wait #{ms}ms after #{start}"
+  end = start
+  while end < start + ms
+    end = new Date().getTime()
+    if window.endWait is true
+      end = start + ms + 1
+  console.log "Waited #{ms}ms"
+  end
 
 localityFromMapBuilder = (builder = window.mapBuilder, callback) ->
+  ###
+  #
+  #
+  # @param builder -> an object with an array of (canonicalized) points under
+  #   mapBuilder.points, and a selector under mapBuilder.selector
+  ###
+  MAX_QUERIES_PER_SECOND = 50
+  maxQueryRateEff = MAX_QUERIES_PER_SECOND / 20
+  maxQueryRate = 1000 / maxQueryRateEff
+  sinceLastGeocoder = Date.now() - window.lastRanGeocoder - randomInt(1,25)
+  if sinceLastGeocoder < maxQueryRate
+    console.debug "It's been #{sinceLastGeocoder}ms since last attempt to geocode (min: #{maxQueryRate}ms), delaying"
+    delay maxQueryRate, ->
+      localityFromMapBuilder builder, callback
+    return false
+  window.lastRanGeocoder = Date.now()
   center = getMapCenter builder.points
-  geo.reverseGeocode center.lat, center.lng, builder.points, (locality) ->
-    console.info "Got locality '#{locality}'"
+  geo.reverseGeocode center.lat, center.lng, builder.points, (locality, googleResult) ->
+    console.info "Got locality '#{locality}'", googleResult
+    builder.views = googleResult
     if typeof callback is "function"
-      callback locality
+      try
+        callback locality, builder
+      catch
+        callback locality
   false
 
 
@@ -1907,9 +1944,11 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
     lng: toFloat lng
   request =
     location: ll
+  console.debug "Starting reverse geocoder"
   geocoder.geocode request, (result, status) ->
     if status is google.maps.GeocoderStatus.OK
       console.info "Google said:", result
+      geo.geocoderViews = result
       mustContain = geo.getBoundingRectangle(boundingBox)
       validView = null
       for view in result
@@ -1946,8 +1985,12 @@ geo.reverseGeocode = (lat, lng, boundingBox = geo.boundingBox, callback) ->
 
       console.info "Computed locality: '#{locality}'"
       geo.computedLocality = locality
+      window.lastRanGeocoder = Date.now()
       if typeof callback is "function"
-        callback(locality)
+        try
+          callback locality, result
+        catch
+          callback(locality)
       else
         console.warn "No callback provided to geo.reverseGeocode()!"
     else

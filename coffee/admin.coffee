@@ -126,6 +126,9 @@ populateAdminActions = ->
       </paper-button>
       """
       $("#admin-actions-block").append html
+      try
+        delay 500, ->
+          setupDebugContext()
       $("#su-view-projects").click ->
         loadSUProjectBrowser()
       $("#su-manage-users").click ->
@@ -453,7 +456,7 @@ loadCreateNewProject = ->
       and the data <strong>must</strong> have the columns <code>decimalLatitude</code>, <code>decimalLongitude</code>, and <code>coordinateUncertaintyInMeters</code>. Your project must also be titled before uploading data.
     </p>
     <div class="alert alert-info" role="alert">
-      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a>. Check out the documentation for <a href="https://amphibian-disease-tracker.readthedocs.org/en/latest/Creating%20a%20New%20Project/#with-data" class="newwindow alert-link" data-newtab="true">more instructions <span class="glyphicon glyphicon-new-window"></span></a>
+      We've partnered with the Biocode FIMS project and you can get a template with definitions at <a href="http://www.biscicol.org/template" class="newwindow alert-link" data-newtab="true">biscicol.org <span class="glyphicon glyphicon-new-window"></span></a> <small>(Alternate link: <a href="https://berkeley.box.com/v/AmphibianDisease-template" class="newwindow alert-link" data-newtab="true">Berkeley Box <span class="glyphicon glyphicon-new-window"></span></a>)</small>. Check out the documentation for <a href="https://amphibian-disease-tracker.readthedocs.org/en/latest/Creating%20a%20New%20Project/#with-data" class="newwindow alert-link" data-newtab="true">more instructions <span class="glyphicon glyphicon-new-window"></span></a>
     </div>
     <div class="alert alert-warning" role="alert">
       <strong>If the data are in Excel</strong>, ensure that they are in the first sheet in the workbook, or in a worksheet titled <code>Samples</code>, as per FIMS.
@@ -550,6 +553,9 @@ loadCreateNewProject = ->
       bsGrid: ""
     console.log "Location fetched, setting up map ..."
     createMap2 null, mapOptions
+    try
+      delay 500, ->
+        setupDebugContext()
   bindClicks()
   false
 
@@ -629,7 +635,9 @@ finalizeData = (skipFields = false, callback) ->
           sampleIds = new Array()
           dispositions = new Array()
           sampleMethods = new Array()
+          rowNumber = 0
           for row in Object.toArray uploadedData
+            ++rowNumber
             # sanify the dates
             date = row.dateCollected ? row.dateIdentified
             uTime = excelDateToUnixTime date
@@ -645,9 +653,14 @@ finalizeData = (skipFields = false, callback) ->
               catalogNumbers.push row.catalogNumber
             sampleIds.push row.sampleId
             # Prepare to calculate the radius
-            rowLat = row.decimalLatitude
-            rowLng = row.decimalLongitude
-            distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
+            rowLat = toFloat row.decimalLatitude
+            rowLng = toFloat row.decimalLongitude
+            try
+              distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
+            catch e
+              console.error "Couldn't calculate distanceFromCenter", rowLat, rowLng, center
+              console.warn "Row: ##{rowNumber}", row
+              throw e
             if distanceFromCenter > excursion then excursion = distanceFromCenter
             # Samples
             if row.sampleType?
@@ -734,6 +747,7 @@ finalizeData = (skipFields = false, callback) ->
             bounding_polygon_geojson: geo?.geoJsonBoundingBox
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
+          postData.modified = Date.now()
           try
             postData.project_obj_id = _adp.fims.expedition.ark
           catch
@@ -769,6 +783,8 @@ finalizeData = (skipFields = false, callback) ->
             try
               if result.status is true
                 bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+                # Ping the record migrator
+                $.get "#{uri.urlString}recordMigrator.php"
                 stopLoad()
                 delay 1000, ->
                   loadEditor _adp.projectId
@@ -1551,6 +1567,9 @@ singleDataFileHelper = (newFile, callback) ->
     console.error "Second argument must be a function"
     return false
   if dataFileParams.hasDataFile is true and newFile isnt dataFileParams.filePath
+    # Clear out the bsAlert
+    try
+      $("#bs-alert").remove()
     # Show a popup that conditionally calls callback
     if $("#single-data-file-modal").exists()
       $("#single-data-file-modal").remove()
@@ -2140,6 +2159,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
         downloadFile: "cleaned-dataset-#{Date.now()}.csv"
         selector: "#download-server-parsed-data"
       downloadCSVFile parsedData, csvOptions
+      window.parsedData = parsedData
+      _adp.cleanedAndParsedData = parsedData
     # Define the transect ring
     # If it's not already picked, let's get it from the dataset
     getCoordsFromData = ->

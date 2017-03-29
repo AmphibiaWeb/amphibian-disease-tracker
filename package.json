@@ -1,6 +1,6 @@
 {
   "name": "amphibian-disease-tracker",
-  "version": "0.9.5",
+  "version": "0.12.1",
   "description": "Amphibian Disease Tracker Portal",
   "main": "",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://amphibiandisease.org/",
   "devDependencies": {
-    "autoprefixer": "^6.5.4",
+    "autoprefixer": "^6.7.2",
     "autoprefixer-core": "^6.0.1",
     "bootlint": "^0.14.2",
     "bower": "^1.7.9",
@@ -35,8 +35,8 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-html": "^8.0.2",
     "grunt-line-remover": "0.0.2",
-    "grunt-php-cs-fixer": "0.0.9",
-    "grunt-phplint": "0.0.8",
+    "grunt-php-cs-fixer": "^1.0.0",
+    "grunt-phplint": "^0.1.0",
     "grunt-postcss": "^0.8.0",
     "grunt-regex-extract": "github:tigerhawkvok/grunt-regex-extract#3d88618c5ae5ffc5f497661c09b79614d20a0a81",
     "grunt-shell": "^2.0.0",

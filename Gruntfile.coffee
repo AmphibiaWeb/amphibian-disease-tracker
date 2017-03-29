@@ -37,7 +37,7 @@ module.exports = (grunt) ->
       npm:
         command: ["npm install", "npm update"].join("&&")
       movesrc:
-        command: ["mv js/c.src.coffee js/maps/c.src.coffee","mv js/admin.src.coffee js/maps/admin.src.coffee", "mv js/project.src.coffee js/maps/project.src.coffee","mv js/profile.src.coffee js/maps/profile.src.coffee","mv js/kml.src.coffee js/maps/kml.src.coffee","mv js/global-searach.src.coffee js/maps/global-search.src.coffee","mv js/global-search-worker.src.coffee js/maps/global-search-worker.src.coffee"].join("; ")
+        command: ["mv js/c.src.coffee js/maps/c.src.coffee","mv js/admin.src.coffee js/maps/admin.src.coffee", "mv js/project.src.coffee js/maps/project.src.coffee", "mv js/dashboard.src.coffee js/maps/dashboard.src.coffee","mv js/profile.src.coffee js/maps/profile.src.coffee","mv js/kml.src.coffee js/maps/kml.src.coffee","mv js/global-searach.src.coffee js/maps/global-search.src.coffee","mv js/global-search-worker.src.coffee js/maps/global-search-worker.src.coffee"].join("; ")
       updateglobals:
         command: ["npm install -g coffee-script npm-check-updates bower grunt-cli npm autoprefixer-core less"].join("&&")
       vulcanize:
@@ -100,8 +100,8 @@ module.exports = (grunt) ->
           sourceMapIncludeSources:true
           sourceMapIn:"js/maps/c.js.map"
         files:
-          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js", "js/profile.js", "js/global-search.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
-          "js/app.min.js":["js/c.js","js/admin.js","js/project.js","js/global-search.js","js/global-search-worker.js"]
+          "js/combined.min.js":["js/c.js","js/admin.js","js/project.js", "js/dashboard.js", "js/profile.js", "js/global-search.js","bower_components/purl/purl.js","bower_components/xmlToJSON/lib/xmlToJSON.js","bower_components/jquery-cookie/jquery.cookie.js"]
+          "js/app.min.js":["js/c.js","js/admin.js","js/project.js", "js/dashboard.js", "js/global-search.js","js/global-search-worker.js"]
       dist:
         options:
           sourceMap:true
@@ -130,6 +130,7 @@ module.exports = (grunt) ->
           "js/c.min.js":["js/c.js"]
           "js/admin.min.js":["js/admin.js"]
           "js/project.min.js":["js/project.js"]
+          "js/dashboard.min.js":["js/dashboard.js"]
           "js/kml.min.js":["js/kml.js"]
           "js/profile.min.js":["js/profile.js"]
           "js/global-search.min.js":["js/global-search.js"]
@@ -193,13 +194,14 @@ module.exports = (grunt) ->
           "js/c.js":["coffee/core.coffee", "coffee/geo.coffee", "coffee/debug.coffee"]
           "js/admin.js":["coffee/admin.coffee", "coffee/admin-editor.coffee", "coffee/admin-viewer.coffee", "coffee/admin-validation.coffee", "coffee/admin-su.coffee"]
           "js/project.js":["coffee/project.coffee"]
+          "js/dashboard.js":["coffee/dashboard.coffee"]
           "js/profile.js":["coffee/profile.coffee"]
           "js/kml.js":["coffee/kml.coffee"]
           "js/global-search.js":["coffee/global-search.coffee"]
           "js/global-search-worker.js":["coffee/global-search-worker.coffee", "coffee/core-worker.coffee"]
     phpcsfixer:
       app:
-        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "home.php", "helpers/excelHelper.php", "profile.php"]
+        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "dashboard.php", "home.php", "helpers/excelHelper.php", "profile.php"]
       options:
         ignoreExitCode: true
         verbose: true
@@ -222,6 +224,7 @@ module.exports = (grunt) ->
         files: ["*.php", "helpers/*.php", "admin/*.php", "admin/handlers/*.php", "core/*/*.php", "core/*.php"]
         tasks: ["phplint"]
     phplint:
+      api: ["api.php"]
       root: ["*.php", "helpers/*.php", "core/*/*.php", "core/*.php"]
       admin: ["admin/*.php", "admin/handlers/*.php", "admin/core/*.php", "admin/core/*/*.php"]
     bootlint:

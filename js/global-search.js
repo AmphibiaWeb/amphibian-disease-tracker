@@ -1237,8 +1237,9 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
     worker.addEventListener("message", function(e) {
       var html, outputData;
       html = e.data.html;
-      outputData = e.data.outputData;
+      outputData = e.data.summaryRowData;
       console.info("Web worker returned", e.data);
+      console.log("Sending to setupDisplay", outputData);
       return setupDisplay(html, outputData);
     });
     worker.postMessage(postMessageContent);
@@ -1376,14 +1377,19 @@ getSampleSummaryDialog = function(resultsList, tableToProjectMap) {
    * Both the web worker callback and the "classic" run need this
    */
   setupDisplay = function(html, outputData) {
-    var el, elapsed, l, len2, ref3, rlButton;
+    var csvOptions, downloadSelector, el, elapsed, l, len2, ref3, rlButton;
+    downloadSelector = "#generate-download";
+    csvOptions = {
+      objectAsValues: true
+    };
     $("#modal-sql-details-list").remove();
     $("body").append(html);
-    $("#generate-download").click(function() {
+    console.log("SetupDisplay about to generate using", outputData);
+    $(downloadSelector).click(function() {
       return generateCSVFromResults(outputData, this);
     });
     try {
-      generateCSVFromResults(outputData, document.getElementById("generate-download"));
+      generateCSVFromResults(outputData, document.getElementById(downloadSelector.slice(1)));
     } catch (undefined) {}
     ref3 = $(".code-box");
     for (l = 0, len2 = ref3.length; l < len2; l++) {

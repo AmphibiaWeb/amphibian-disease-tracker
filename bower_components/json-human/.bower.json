@@ -1,18 +1,19 @@
 {
   "name": "json-human",
+  "version": "0.1.1",
   "main": [
     "./css/json.human.css",
     "./src/json.human.js"
   ],
   "dependencies": {},
   "homepage": "https://github.com/marianoguerra/json.human.js",
-  "_release": "bf427232f5",
+  "_release": "0.1.1",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
+    "type": "version",
+    "tag": "0.1.1",
     "commit": "bf427232f543642bbe4df4b041f59e40a3208c0c"
   },
-  "_source": "git://github.com/marianoguerra/json.human.js.git",
+  "_source": "https://github.com/marianoguerra/json.human.js.git",
   "_target": "*",
   "_originalSource": "json-human"
 }

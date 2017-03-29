@@ -1466,7 +1466,7 @@ downloadCSVFile = (data, options, callback) ->
       postCallback = ->
         # Insert it into the DOM
         selector = options.selector
-        if options.create is true
+        if options.create is true and not $(selector).exists()
           $(selector).append html
         else
           $(selector)
@@ -1827,41 +1827,44 @@ cancelAsyncOperation = (caller, asyncOperation = _adp.currentAsyncJqxhr) ->
 
 
 generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-list") ->
+  ###
+  # Main CSV record generator. Generally the one called, and may
+  # instance the web worker copy.
+  ###
   # toastStatusMessage "This may take a few seconds, please wait"
   startTime = Date.now()
   console.info "Source CSV data:", resultArray
   options =
     objectAsValues: true
     downloadFile: "adp-global-search-result-data_#{Date.now()}.csv"
-    acceptableCols: [
-      "collectionid"
-      "catalognumber"
-      "fieldnumber"
-      "sampleid"
-      "diseasetested"
-      "diseasestrain"
-      "samplemethod"
-      "sampledisposition"
-      "diseasedetected"
-      "fatal"
-      "cladesampled"
-      "genus"
-      "specificepithet"
-      "infraspecificepithet"
-      "lifestage"
-      "dateidentified"
-      "decimallatitude"
-      "decimallongitude"
-      "alt"
-      "coordinateuncertaintyinmeters"
-      "collector"
-      "fimsextra"
-      "originaltaxa"
-      ]
-  # TODO migrate this to a Web Worker
-  # http://www.html5rocks.com/en/tutorials/workers/basics/
+    # acceptableCols: [
+    #   "collectionid"
+    #   "catalognumber"
+    #   "fieldnumber"
+    #   "sampleid"
+    #   "diseasetested"
+    #   "diseasestrain"
+    #   "samplemethod"
+    #   "sampledisposition"
+    #   "diseasedetected"
+    #   "fatal"
+    #   "cladesampled"
+    #   "genus"
+    #   "specificepithet"
+    #   "infraspecificepithet"
+    #   "lifestage"
+    #   "dateidentified"
+    #   "decimallatitude"
+    #   "decimallongitude"
+    #   "alt"
+    #   "coordinateuncertaintyinmeters"
+    #   "collector"
+    #   "fimsextra"
+    #   "originaltaxa"
+    #   ]
+  # Fire up the web worker
   try
-    downloadCSVFile resultArray, options, ->
+    downloadCSVFile resultArray, options, (postCallback) ->
       $("#download-file").remove()
       html = """
           <a tabindex="-1" id="download-file" class="paper-button-link">
@@ -1873,6 +1876,11 @@ generateCSVFromResults = (resultArray, caller, selector = "#modal-sql-details-li
       """
       $(caller).replaceWith html
       $("#{selector} #download-file paper-button").removeAttr "disabled"
+      if typeof postCallback is "function"
+        try
+          postCallback()
+        catch e
+          console.warn "Couldn't run postCallbacak after downloadCSV file -- #{e.message}"
       elapsed = Date.now() - startTime
       console.debug "GenerateCSVFromResults completed in #{elapsed}ms"
       stopLoad()
@@ -2042,3 +2050,6 @@ $ ->
   loadJS "#{uri.urlString}js/prism.js"
   try
     makePageCitationOverflow()
+  try
+    delay 500, ->
+      setupDebugContext()

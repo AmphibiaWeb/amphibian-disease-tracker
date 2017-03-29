@@ -139,7 +139,17 @@ class DBHelper
     public function getCols()
     {
         if (!is_array($this->cols)) {
-            throw(new Exception('Invalid columns'));
+            try {
+                $cols = array();
+                $query = "SHOW COLUMNS FROM `".$this->getTable()."`";
+                $result = mysqli_query($this->getLink(), $query);
+                while($row = mysqli_fetch_row($result)) {
+                    $cols[$row[0]] = $row[1];
+                }
+                $this->cols = $cols;
+            } catch (Exception $e) {
+                throw(new Exception('Invalid columns'));
+            }
         }
 
         return $this->cols;
@@ -398,16 +408,19 @@ class DBHelper
         return $rows[0];
     }
 
-    public function deleteRow($value, $field_name, $throw = false)
-    {
+    public function deleteRow($value, $field_name, $throw = false) {
         /***
-     * Deletes a row
-     *
-     * @param string $value match for $field_name = $value
-     * @param string $field_name column name
-     * @return array with result in "status"; if true, rows affected in "rows"; if false, error in "error"
-     ***/
-    $value = $this->sanitize($value);
+         * Deletes a row
+         *
+         * @param string $value match for $field_name = $value
+         * @param string $field_name column name
+         * @return array with result in "status"; if true, rows affected in "rows"; if false, error in "error"
+         ***/
+        if(is_array($value)) {
+            $field_name = key($value);
+            $value = current($value);
+        }
+        $value = $this->sanitize($value);
         $field_name = $this->sanitize($field_name);
 
         mysqli_query($this->getLink(), 'BEGIN');
@@ -417,23 +430,23 @@ class DBHelper
 
             return array('status' => true,'rows' => mysqli_affected_rows($this->getLink()));
         } else {
+            $error = mysqli_error($this->getLink());
             $r = mysqli_query($this->getLink(), 'ROLLBACK');
             if ($throw === true) {
                 throw(new Exception('Failed to delete row.'));
             }
 
-            return array('status' => false,'rollback_status' => $r,'error' => mysqli_error($this->getLink()));
+            return array('status' => false,'rollback_status' => $r,'error' => $error);
         }
     }
 
-    public function addItem($value_arr, $field_arr = null, $test = false, $precleaned = false)
-    {
+    public function addItem($value_arr, $field_arr = null, $test = false, $precleaned = false) {
         /***
-     *
-     * @param array $value_arr
-     * @param array $field_arr
-     ***/
-    $querystring = 'INSERT INTO `'.$this->getTable().'` VALUES (';
+         *
+         * @param array $value_arr
+         * @param array $field_arr
+         ***/
+        $querystring = 'INSERT INTO `'.$this->getTable().'` VALUES (';
         if (empty($field_arr)) {
             $temp = array();
             foreach ($value_arr as $k => $v) {
@@ -455,14 +468,14 @@ class DBHelper
             if ($item !== false) {
                 $source = mysqli_fetch_assoc($item);
             }
-        // Create blank, correctly sized entry
-        while ($i < sizeof($source)) {
-            $valstring .= "''";
-            if ($i < sizeof($source) - 1) {
-                $valstring .= ',';
+            // Create blank, correctly sized entry
+            while ($i < sizeof($source)) {
+                $valstring .= "''";
+                if ($i < sizeof($source) - 1) {
+                    $valstring .= ',';
+                }
+                ++$i;
             }
-            ++$i;
-        }
             $querystring .= "$valstring)";
             if ($test) {
                 $retval = $querystring;
@@ -488,7 +501,7 @@ class DBHelper
                 }
             }
             $equatestring = substr($equatestring, 0, -1); // remove trailing comma
-        $querystring .= "$equatestring WHERE id='";
+            $querystring .= "$equatestring WHERE id='";
             if ($test) {
                 $row = $this->getLastRowNumber() + 1;
                 $querystring .= "$row'";
@@ -523,13 +536,21 @@ class DBHelper
         $this->invalidateLink();
         $result = $this->doQuery($search, $cols, $boolean_type, $loose, $precleaned, $order_by);
         $response = array();
-        while($row = mysqli_fetch_assoc($result)) {
-            $response[] = $row;
-        }
-        if(empty($response) && $debug_query) {
-            $debug = $this->doQuery($search, $cols, $boolean_type, $loose, $precleaned, $order_by, true);
-            $debug["result"] = $result;
-            return $debug;
+        try {
+            while($row = mysqli_fetch_assoc($result)) {
+                $response[] = $row;
+            }
+            if(empty($response) && $debug_query) {
+                $debug = $this->doQuery($search, $cols, $boolean_type, $loose, $precleaned, $order_by, true);
+                $debug["result"] = $result;
+                return $debug;
+            }
+        } catch (Exception $e) {
+            $response = array(
+                "status" => false,
+                "result_provided" => $result,
+                "error" => $e->getMessage(),
+            );
         }
         return $response;
     }
@@ -737,7 +758,7 @@ class DBHelper
         return (mysqli_num_rows($result)) ? TRUE : FALSE;
     }
 
-    protected function addColumn($columnName, $columnType = null) {
+    public function addColumn($columnName, $columnType = null) {
         /***
          * Add a new column. DATA MUST BE SANITIZED BEFORE CALLING!
          *
@@ -775,4 +796,7 @@ class DBHelper
             "status" => true,
         );
     }
+    
+    
+    
 }

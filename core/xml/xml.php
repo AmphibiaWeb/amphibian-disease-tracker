@@ -533,7 +533,6 @@ class Xml {
     /***
      * Get the contents of the first instance of a given tag
      *
-     * @param string $string the blob to search through
      * @param string $tag the tag to look for
      * @return false|string the contents of <tag>
      ***/
@@ -551,6 +550,47 @@ class Xml {
     }
     else return false;
   }
+
+
+public function getAllTagContents($tag, $limit = true) {
+    /***
+     * Get the contents of the first instance of a given tag
+     *
+     * @param string $tag the tag to look for
+     * @return false|string the contents of <tag>
+     ***/
+    $string = $this->getXml();
+    if($limit !== true && !is_numeric($limit)) {
+        $limit = true;
+    }
+    if($limit === true) {
+        $limit = strlen($string);
+    }
+    if(strpos($tag,"<")===false) $tag = "<".$tag;
+    if(strpos($tag,">")===false) $tag .= ">";
+    $rawTag = str_replace(array("<",">"),"",$tag);
+    $values = array();
+    $re = '%.*?(<('.$rawTag.').*?>)(.*?)</\g{2}>.*%im';
+    $tagOpen = preg_replace($re, '$1', $string);
+    $pos = strpos($string, $tagOpen );
+    while( $pos !== false && sizeof($values) <= $limit) {
+        $valStart = substr($string, $pos + strlen($tagOpen) );
+        $valContains = substr($valStart, 0, strpos($valStart, "</".$rawTag.">"));
+        $values[] = trim($valContains);
+        //           array(
+        //     "tag"=> displayDebug($tagOpen),
+        //     "ref"=> displayDebug($string),
+        //     "value"=> trim($valContains),
+        // );
+
+        $pos = strpos($string, $tagOpen.$valContains) + strlen($valContains);
+        $string = substr($string, $pos);
+        $tagOpen = preg_replace($re, '$1', $string);
+        if(strlen($tagOpen) < strlen($tag) || !preg_match($re, $string)) $tagOpen = $tag;
+        $pos = strpos($string, $tagOpen);
+    }
+    return $values;
+}
 
   public static function staticGetTagContents($string,$tag)
   {

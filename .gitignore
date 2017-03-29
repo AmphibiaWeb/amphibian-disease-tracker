@@ -5,6 +5,7 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
+desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
@@ -92,3 +93,4 @@ testQuery.sql
 *.bak
 aweb_list.txt
 npm-debug.log
+amphibiandisease-*error_log

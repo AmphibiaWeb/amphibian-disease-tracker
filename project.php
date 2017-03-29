@@ -129,7 +129,7 @@ $loginStatus = getLoginState();
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
     <script type="text/javascript" src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="js/c.min.js"></script>
-    <script type="text/javascript" src="js/project.js"></script>
+    <script type="text/javascript" src="js/project.min.js"></script>
     <script type="text/javascript">
       // Initial script
     </script>

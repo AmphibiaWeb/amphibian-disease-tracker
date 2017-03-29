@@ -1,8 +1,6 @@
 <?php
 
-		namespace WhichBrowser\Data;
-
-		DeviceModels::$S30_MODELS = [
-			'215'										=> [ 'Nokia', '215' ],
-			'220'										=> [ 'Nokia', '220' ]
-		];
+		DeviceModels::$S30_MODELS = array(
+			'215'										=> array( 'Nokia', '215' ),
+			'220'										=> array( 'Nokia', '220' )
+		);
