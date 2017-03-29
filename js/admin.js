@@ -440,7 +440,7 @@ finalizeData = function(skipFields, callback) {
     }
     file = (ref = dataFileParams != null ? dataFileParams.filePath : void 0) != null ? ref : null;
     return mintBcid(_adp.projectId, file, title, function(result) {
-      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, excursion, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, s, sampleIds, sampleMethods, uDate, uTime, years;
+      var catalogNumbers, center, date, dates, dispositions, distanceFromCenter, e, el, error1, error2, error3, error4, excursion, hull, input, key, l, len, len1, len2, m, mString, methods, months, o, point, postBBLocality, postData, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, row, rowLat, rowLng, rowNumber, s, sampleIds, sampleMethods, uDate, uTime, years;
       try {
         if (!result.status) {
           console.error(result.error);
@@ -486,9 +486,11 @@ finalizeData = function(skipFields, callback) {
           sampleIds = new Array();
           dispositions = new Array();
           sampleMethods = new Array();
+          rowNumber = 0;
           ref2 = Object.toArray(uploadedData);
           for (m = 0, len1 = ref2.length; m < len1; m++) {
             row = ref2[m];
+            ++rowNumber;
             date = (ref3 = row.dateCollected) != null ? ref3 : row.dateIdentified;
             uTime = excelDateToUnixTime(date);
             dates.push(uTime);
@@ -504,9 +506,16 @@ finalizeData = function(skipFields, callback) {
               catalogNumbers.push(row.catalogNumber);
             }
             sampleIds.push(row.sampleId);
-            rowLat = row.decimalLatitude;
-            rowLng = row.decimalLongitude;
-            distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
+            rowLat = toFloat(row.decimalLatitude);
+            rowLng = toFloat(row.decimalLongitude);
+            try {
+              distanceFromCenter = geo.distance(rowLat, rowLng, center.lat, center.lng);
+            } catch (error1) {
+              e = error1;
+              console.error("Couldn't calculate distanceFromCenter", rowLat, rowLng, center);
+              console.warn("Row: #" + rowNumber, row);
+              throw e;
+            }
             if (distanceFromCenter > excursion) {
               excursion = distanceFromCenter;
             }
@@ -569,7 +578,7 @@ finalizeData = function(skipFields, callback) {
           postData.disease_samples = toInt(s.positive) + toInt(s.negative) + toInt(s.no_confidence);
         }
         postBBLocality = function() {
-          var args, authorData, aweb, cartoData, clade, e, error1, error2, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
+          var args, authorData, aweb, cartoData, clade, error2, error3, len3, q, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref9, taxonData, taxonObject;
           console.info("Computed locality " + _adp.locality);
           postData.locality = _adp.locality;
           if (geo.computedBoundingRectangle != null) {
@@ -587,8 +596,8 @@ finalizeData = function(skipFields, callback) {
             if (typeof kmlInfo === "object") {
               try {
                 postData.transect_file = JSON.stringify(kmlInfo);
-              } catch (error1) {
-                e = error1;
+              } catch (error2) {
+                e = error2;
                 console.warn("Couldn't stringify data - " + e.message, kmlInfo);
                 if (kmlInfo.path != null) {
                   postData.transect_file = kmlInfo.path;
@@ -619,7 +628,7 @@ finalizeData = function(skipFields, callback) {
           postData.project_id = _adp.projectId;
           try {
             postData.project_obj_id = _adp.fims.expedition.ark;
-          } catch (error2) {
+          } catch (error3) {
             mintExpedition(_adp.projectId, null, function() {
               return postBBLocality();
             });
@@ -657,7 +666,7 @@ finalizeData = function(skipFields, callback) {
             return postData;
           }
           return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            var error3, error4, jsonResponse;
+            var error4, error5, jsonResponse;
             try {
               if (result.status === true) {
                 bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
@@ -672,12 +681,12 @@ finalizeData = function(skipFields, callback) {
                 stopLoadError(result.human_error);
                 bsAlert(result.human_error, "error");
               }
-            } catch (error3) {
-              e = error3;
+            } catch (error4) {
+              e = error4;
               stopLoadError("There was a verifying your save data");
               try {
                 jsonResponse = JSON.stringify(result);
-              } catch (error4) {
+              } catch (error5) {
                 jsonResponse = "BAD_OBJECT";
               }
               try {
@@ -701,7 +710,7 @@ finalizeData = function(skipFields, callback) {
             try {
               console.info("Took written locality");
               _adp.locality = p$("#locality-input").value;
-            } catch (error1) {
+            } catch (error2) {
               console.info("Can't figure out locality");
               _adp.locality = "";
             }
@@ -726,14 +735,14 @@ finalizeData = function(skipFields, callback) {
         } else {
           try {
             _adp.locality = p$("#locality-input").value;
-          } catch (error2) {
+          } catch (error3) {
             _adp.locality = "";
           }
           console.warn("How did we get to this state? No locality precomputed, no data file");
           return postBBLocality();
         }
-      } catch (error3) {
-        e = error3;
+      } catch (error4) {
+        e = error4;
         stopLoadError("There was a problem with the application. Please try again later. (E-003)");
         console.error("JavaScript error in saving data (E-003)! FinalizeData said: " + e.message);
         return console.warn(e.stack);
@@ -2195,6 +2204,8 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
         selector: "#download-server-parsed-data"
       };
       downloadCSVFile(parsedData, csvOptions);
+      window.parsedData = parsedData;
+      _adp.cleanedAndParsedData = parsedData;
     } catch (undefined) {}
     getCoordsFromData = function() {
 

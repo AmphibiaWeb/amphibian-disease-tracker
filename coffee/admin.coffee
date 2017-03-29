@@ -635,7 +635,9 @@ finalizeData = (skipFields = false, callback) ->
           sampleIds = new Array()
           dispositions = new Array()
           sampleMethods = new Array()
+          rowNumber = 0
           for row in Object.toArray uploadedData
+            ++rowNumber
             # sanify the dates
             date = row.dateCollected ? row.dateIdentified
             uTime = excelDateToUnixTime date
@@ -651,9 +653,14 @@ finalizeData = (skipFields = false, callback) ->
               catalogNumbers.push row.catalogNumber
             sampleIds.push row.sampleId
             # Prepare to calculate the radius
-            rowLat = row.decimalLatitude
-            rowLng = row.decimalLongitude
-            distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
+            rowLat = toFloat row.decimalLatitude
+            rowLng = toFloat row.decimalLongitude
+            try
+              distanceFromCenter = geo.distance rowLat, rowLng, center.lat, center.lng
+            catch e
+              console.error "Couldn't calculate distanceFromCenter", rowLat, rowLng, center
+              console.warn "Row: ##{rowNumber}", row
+              throw e
             if distanceFromCenter > excursion then excursion = distanceFromCenter
             # Samples
             if row.sampleType?
@@ -2146,6 +2153,8 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
         downloadFile: "cleaned-dataset-#{Date.now()}.csv"
         selector: "#download-server-parsed-data"
       downloadCSVFile parsedData, csvOptions
+      window.parsedData = parsedData
+      _adp.cleanedAndParsedData = parsedData
     # Define the transect ring
     # If it's not already picked, let's get it from the dataset
     getCoordsFromData = ->
