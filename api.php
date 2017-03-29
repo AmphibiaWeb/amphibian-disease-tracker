@@ -5,12 +5,12 @@
  * Setup
  *****************/
 
-# $show_debug = true;
+#$show_debug = true;
 
 if ($show_debug) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
-    error_log('Login is running in debug mode!');
+    error_log('API is running in debug mode!');
 }
 
 require_once 'DB_CONFIG.php';
@@ -292,13 +292,12 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
     }
 }
 
-function doCartoSqlApiPush($get)
-{
+function doCartoSqlApiPush($get) {
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
 
     // error_reporting(E_ALL);
     // ini_set('display_errors', 1);
-    // error_log('Login is running in debug mode!');
+    // error_log('doCartoSqlApiPush is running in debug mode!');
 
     $sqlQuery = decode64($get['sql_query'], true);
     if(empty($sqlQuery)) {
@@ -312,11 +311,15 @@ function doCartoSqlApiPush($get)
     $statements = explode(');', $sqlQuery);
     $checkedTablePermissions = array();
     $pidList = array();
+    $effectiveKey = 0;
+    $statementsSize = sizeof($statements);
     foreach($statements as $k=>$statement) {
+        $statement = trim($statement);
         if(empty($statement)) {
             unset($statements[$k]);
             continue;
         }
+        $effectiveKey++;
         $sqlAction = preg_replace($queryPattern, '$1', $statement);
         $sqlAction = strtolower(str_replace(" ","", $sqlAction));
         $restrictedActions = array(
@@ -409,18 +412,40 @@ function doCartoSqlApiPush($get)
             } # End project existence check
         } else if (!isset($unrestrictedActions[$sqlAction])) {
             # Unrecognized query type
+            $allPermissionsMajor = array_merge($restrictedActions, $unrestrictedActions);
+            $allPermissions = array();
+            foreach($allPermissionsMajor as $permission=>$requiredPermission) {
+                $allPermissions[] = $permission;
+            }
+            $actionExists = in_array($sqlAction, $allPermissions);
+            $simpleStatements = json_decode(json_encode($statements), true);
+            $simpleStatement = $simpleStatements[$effectiveKey];
+            $hasWeirdEdgeCase = empty($simpleStatement) || !$actionExists;
+            # If we hit this edge case and we're the last statement
+            # anyway, we can skip it
+            $okToSkip = $hasWeirdEdgeCase && $effectiveKey == $statementsSize;
+            if($okToSkip) continue;
             returnAjax(array(
                 "status" => false,
                 "error" => "UNAUTHORIZED_QUERY_TYPE",
                 "query_type" => $sqlAction,
                 "args_provided" => $get,
-                "statement_parsed" => $statement,
+                "statement_context" => array(
+                    "statements_count" => $statementsSize,
+                    "statement_parsed" => $statement,
+                    "effective_key" => $effectiveKey,
+                    "action_exists" => $actionExists,
+                    "allowed_actions" => $allPermissions,
+                    "statement_number" => $k,
+                    "statements" => $statements,
+                ),
+                "read_query" => $sqlQuery,
             ));
         }
         if (empty($statement)) {
             returnAjax(array(
                 'status' => false,
-                'error' => 'Invalid Query',
+                'error' => 'INVALID_QUERY',
                 'args_provided' => $get,
             ));
         }
@@ -1014,6 +1039,8 @@ function getChartData($chartDataParams) {
         $labels[] = $row["country"];
         $key = $row["country"] . " total";
 
+        $negSamples = null;
+        $posSamples = null;
         if(array_key_exists($row["country"], $posData)) {
         $posSamples = intval($posData[$row["country"]]);
     }

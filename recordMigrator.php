@@ -134,7 +134,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         continue;
     }
     $modified = floatval($projectRow[2]);
-    $ageingReason = "natural";
+    $ageingReason = "NATURAL";
     # Check the modified time in the project....
     # ... compared to flat table modified time
     $resultData = $flatTable->getQueryResults(array("project"=>$project), array("project","modified","reverse_geocoded","country"));
@@ -146,7 +146,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         if(empty($geocodeTest) || empty($country) || $isArrayish) break;
     }
     if(empty($projectAgeing) || !is_numeric($projectAgeing)) {
-        $ageingReason = "bad age value";
+        $ageingReason = "INVALID_AGE_VALUE";
         $badRows[] = array(
             "message" => "bad project ageing",
             "got" => $projectAgeing,
@@ -161,7 +161,14 @@ while($projectRow = mysqli_fetch_row($result)) {
         $projectAgeing = 0;
     } else if(empty($geocodeTest) || empty($country) || $isArrayish){
         # No geocoded results
-        $ageingReason = "Bad geocode data";
+        $ageingReason = "BAD_REVERSE_GEOCODE";
+        if(empty($geocodeTest)) {
+            $ageingReason .= "_FLAGGED_FAILED";
+        } else if (empty($country)) {
+            $ageingReason .= "_NULL_COUNTRY";
+        } else if ($isArrayish) {
+            $ageingReason .= "_BAD_DECODE";
+        }
         $badRows[] = array(
             "message" => "No reverse geocode data for project",
             "got" => array(
@@ -537,7 +544,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                                         }
                                         $row["reverse_geocoded"] = true;
                                         if(empty($row["country"])) {
-                                            $row["country"] = null;
+                                            $row["country"] = "FLAG_MANUAL";
                                             $badRows[] = array(
                                                 "message" => "Unable to reverse geocode (all services failed)",
                                                 "xml" => $xmlResponse,

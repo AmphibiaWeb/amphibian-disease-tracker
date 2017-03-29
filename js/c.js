@@ -3999,6 +3999,10 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
   args = "action=upload&sql_query=" + apiPostSqlQuery;
   console.info("Querying:");
   console.info(sqlQuery);
+  try {
+    _adp.postedSqlQuery = sqlQuery;
+    _adp.postedSqlQueryStatements = sqlQuery.split(");");
+  } catch (undefined) {}
   console.info("POSTing to server");
   $("#data-sync").removeAttr("indeterminate");
   postTimeStart = Date.now();
@@ -4072,6 +4076,7 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       console.error("Got an error from the server!");
       console.warn(result);
       stopLoadError("There was a problem uploading your data. Please try again.");
+      bsAlert("<strong>There was a problem uploading your data</strong>: the server said <code>" + result.error + "</code>", "danger");
       return false;
     }
     cartoResults = result.post_response;

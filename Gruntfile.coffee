@@ -224,6 +224,7 @@ module.exports = (grunt) ->
         files: ["*.php", "helpers/*.php", "admin/*.php", "admin/handlers/*.php", "core/*/*.php", "core/*.php"]
         tasks: ["phplint"]
     phplint:
+      api: ["api.php"]
       root: ["*.php", "helpers/*.php", "core/*/*.php", "core/*.php"]
       admin: ["admin/*.php", "admin/handlers/*.php", "admin/core/*.php", "admin/core/*/*.php"]
     bootlint:

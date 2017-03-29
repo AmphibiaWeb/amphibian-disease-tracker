@@ -3384,6 +3384,9 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
   # console.info "Would query with args", args
   console.info "Querying:"
   console.info sqlQuery
+  try
+    _adp.postedSqlQuery = sqlQuery
+    _adp.postedSqlQueryStatements = sqlQuery.split ");"
   # $("#main-body").append "<pre>Would send Carto:\n\n #{sqlQuery}</pre>"
   # console.info "GeoJSON:", geoJson
   # console.info "GeoJSON String:", dataGeometry
@@ -3448,6 +3451,7 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
       console.error "Got an error from the server!"
       console.warn result
       stopLoadError "There was a problem uploading your data. Please try again."
+      bsAlert "<strong>There was a problem uploading your data</strong>: the server said <code>#{result.error}</code>", "danger"
       return false
     cartoResults = result.post_response
     cartoHasError = false

@@ -1522,6 +1522,9 @@ singleDataFileHelper = function(newFile, callback) {
     return false;
   }
   if (dataFileParams.hasDataFile === true && newFile !== dataFileParams.filePath) {
+    try {
+      $("#bs-alert").remove();
+    } catch (undefined) {}
     if ($("#single-data-file-modal").exists()) {
       $("#single-data-file-modal").remove();
     }

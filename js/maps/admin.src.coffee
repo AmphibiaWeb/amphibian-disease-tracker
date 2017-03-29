@@ -1564,6 +1564,9 @@ singleDataFileHelper = (newFile, callback) ->
     console.error "Second argument must be a function"
     return false
   if dataFileParams.hasDataFile is true and newFile isnt dataFileParams.filePath
+    # Clear out the bsAlert
+    try
+      $("#bs-alert").remove()
     # Show a popup that conditionally calls callback
     if $("#single-data-file-modal").exists()
       $("#single-data-file-modal").remove()
