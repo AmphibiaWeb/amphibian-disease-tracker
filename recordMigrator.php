@@ -204,6 +204,7 @@ while($projectRow = mysqli_fetch_row($result)) {
     $projectsAgeingList[] = array(
         "project" => $project,
         "ageing-value" => $projectAgeing,
+        "data-last-modified" => $modified,
         "needs-ageing-update" => $projectAgeing < $modified,
         "ageing-reason" => $ageingReason,
     );
