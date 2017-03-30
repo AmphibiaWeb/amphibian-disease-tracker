@@ -318,7 +318,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       _adp.fims = new Object()
     _adp.fims.expedition =
       permalink: result.project_permalink
-      ark: result.ark
+      ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
       expeditionId: result.fims_expedition_id
       fimsRawResponse: result.responses.expedition_response
   .fail (result, status) ->

@@ -5318,7 +5318,7 @@ mintExpedition = function(projectId, title, callback) {
     }
     return _adp.fims.expedition = {
       permalink: result.project_permalink,
-      ark: result.ark,
+      ark: typeof result.ark !== "object" ? result.ark : result.ark.identifier,
       expeditionId: result.fims_expedition_id,
       fimsRawResponse: result.responses.expedition_response
     };
