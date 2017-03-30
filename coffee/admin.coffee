@@ -2065,18 +2065,18 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
           when "decimalLatitude", "decimalLongitude", "alt", "coordinateUncertaintyInMeters"
             # Sanity -- do the coordinates exist on earth?
             if not isNumber value
-              stopLoadBarsError null, "Detected an invalid number for #{column} at row #{n} ('#{value}')"
+              stopLoadBarsError null, "Detected an invalid number for #{column} at row #{n+1} ('#{value}')"
               return false
             if column is "decimalLatitude"
               if value < -90 or value > 90
-                stopLoadBarsError null, "Detected an invalid latitude #{value} at row #{n}"
+                stopLoadBarsError null, "Detected an invalid latitude #{value} at row #{n+1}<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>"
                 return false
             if column is "decimalLongitude"
               if value < -180 or value > 180
-                stopLoadBarsError null, "Detected an invalid longitude #{value} at row #{n}"
+                stopLoadBarsError null, "Detected an invalid longitude #{value} at row #{n+1}<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>"
                 return false
             if column is "coordinateUncertaintyInMeters" and value <= 0
-              stopLoadBarsError null, "Coordinate uncertainty must be >= 0 at row #{n}"
+              stopLoadBarsError null, "Coordinate uncertainty must be >= 0 at row #{n+1}"
               return false
             cleanValue = toFloat value
           when "diseaseDetected"

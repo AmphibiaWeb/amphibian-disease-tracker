@@ -2089,23 +2089,23 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "alt":
           case "coordinateUncertaintyInMeters":
             if (!isNumber(value)) {
-              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + n + " ('" + value + "')");
+              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + (n + 1) + " ('" + value + "')");
               return false;
             }
             if (column === "decimalLatitude") {
               if (value < -90 || value > 90) {
-                stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + n);
+                stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + (n + 1) + "<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>");
                 return false;
               }
             }
             if (column === "decimalLongitude") {
               if (value < -180 || value > 180) {
-                stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + n);
+                stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + (n + 1) + "<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>");
                 return false;
               }
             }
             if (column === "coordinateUncertaintyInMeters" && value <= 0) {
-              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + n);
+              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + (n + 1));
               return false;
             }
             cleanValue = toFloat(value);
