@@ -626,7 +626,7 @@ finalizeData = function(skipFields, callback) {
           };
           postData.carto_id = JSON.stringify(cartoData);
           postData.project_id = _adp.projectId;
-          postData.modified = Date.now();
+          postData.modified = Date.now() / 1000;
           try {
             postData.project_obj_id = _adp.fims.expedition.ark;
           } catch (error3) {
@@ -4762,7 +4762,7 @@ saveEditorData = function(force, callback) {
     console.error("Couldn't check path count -- " + e.message + ". Faking it.");
     pointCount = maxPathCount + 1;
   }
-  postData.modified = Date.now();
+  postData.modified = Date.now() / 1000;
   console.log("Sending to server", postData);
   args = "perform=save&data=" + (jsonTo64(postData));
   debugInfoDelay = delay(10000, function() {
