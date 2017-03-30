@@ -143,6 +143,7 @@ getServerChart = function(chartType, chartParams) {
     for (l = 0, len = datasets.length; l < len; l++) {
       data = datasets[l];
       data.data = Object.toArray(data.data);
+      console.log("examine data", data);
       if (data.borderWidth == null) {
         data.borderWidth = 1;
       }
@@ -152,7 +153,23 @@ getServerChart = function(chartType, chartParams) {
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          colors = getRandomDataColor();
+          console.log("examine dataitem", dataItem);
+          if (data.stack === "PosNeg") {
+            if (data.label.toLowerCase().search("positive") !== -1) {
+              colors = {
+                border: "rgba(220,30,25,1)",
+                background: "rgba(220,30,25,0.2)"
+              };
+            }
+            if (data.label.toLowerCase().search("negative") !== -1) {
+              colors = {
+                border: "rgba(25,70,220,1)",
+                background: "rgba(25,70,220,0.2)"
+              };
+            }
+          } else {
+            colors = getRandomDataColor();
+          }
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
         }

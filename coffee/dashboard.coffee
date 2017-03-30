@@ -123,6 +123,7 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
 
 getRandomDataColor = ->
   colorString = "rgba(#{randomInt(0,255)},#{randomInt(0,255)},#{randomInt(0,255)}"
+  # Translucent
   colors =
     border: "#{colorString},1)"
     background: "#{colorString},0.2)"
@@ -153,12 +154,24 @@ getServerChart = (chartType = "infection", chartParams) ->
     i = 0
     for data in datasets
       data.data = Object.toArray data.data
+      console.log "examine data", data
       data.borderWidth ?= 1
       unless data.backgroundColor?
         data.borderColor = new Array()
         data.backgroundColor = new Array()
         for dataItem in data.data
-          colors = getRandomDataColor()
+          console.log "examine dataitem", dataItem
+          if data.stack is "PosNeg"
+            if data.label.toLowerCase().search("positive") isnt -1
+              colors =
+                border: "rgba(220,30,25,1)"
+                background: "rgba(220,30,25,0.2)"
+            if data.label.toLowerCase().search("negative") isnt -1
+              colors =
+                border: "rgba(25,70,220,1)"
+                background: "rgba(25,70,220,0.2)"
+          else
+            colors = getRandomDataColor()
           data.borderColor.push colors.border
           data.backgroundColor.push colors.background
       datasets[i] = data
