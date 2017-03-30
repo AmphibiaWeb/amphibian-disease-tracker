@@ -170,6 +170,11 @@ getServerChart = (chartType = "infection", chartParams) ->
               colors =
                 border: "rgba(25,70,220,1)"
                 background: "rgba(25,70,220,0.2)"
+          else if data.stack is "totals"
+            if data.label.toLowerCase().search("total") isnt -1
+              colors =
+                border: "rgba(25,200,90,1)"
+                background: "rgba(25,200,90,0.2)"              
           else
             colors = getRandomDataColor()
           data.borderColor.push colors.border

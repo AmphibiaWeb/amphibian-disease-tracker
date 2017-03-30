@@ -167,6 +167,13 @@ getServerChart = function(chartType, chartParams) {
                 background: "rgba(25,70,220,0.2)"
               };
             }
+          } else if (data.stack === "totals") {
+            if (data.label.toLowerCase().search("total") !== -1) {
+              colors = {
+                border: "rgba(25,200,90,1)",
+                background: "rgba(25,200,90,0.2)"
+              };
+            }
           } else {
             colors = getRandomDataColor();
           }
