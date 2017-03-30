@@ -133,7 +133,7 @@ getRandomDataColor = ->
 getServerChart = (chartType = "infection", chartParams) ->
   # Get the chart
   startLoad()
-  args = "action=chart&sort=#{chartType}"
+  args = "action=chart&bin=#{chartType}"
   if typeof chartParams is "object"
     cp = new Array()
     for requestKey, requestValue of chartParams

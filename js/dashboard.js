@@ -118,7 +118,7 @@ getServerChart = function(chartType, chartParams) {
     chartType = "infection";
   }
   startLoad();
-  args = "action=chart&sort=" + chartType;
+  args = "action=chart&bin=" + chartType;
   if (typeof chartParams === "object") {
     cp = new Array();
     for (requestKey in chartParams) {
