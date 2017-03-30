@@ -1981,7 +1981,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
     uniqueFieldIds = new Array()
     duplicatedFieldIds = new Array()
     for n, row of dataObject
-      prettyHumanRow = n + 1
+      prettyHumanRow = toInt(n) + 1
       tRow = new Object()
       uniqueColumn = new Array()
       for column, value of row

@@ -1998,7 +1998,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     duplicatedFieldIds = new Array();
     for (n in dataObject) {
       row = dataObject[n];
-      prettyHumanRow = n + 1;
+      prettyHumanRow = toInt(n) + 1;
       tRow = new Object();
       uniqueColumn = new Array();
       for (column in row) {
