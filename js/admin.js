@@ -2092,13 +2092,17 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
               stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + n + " ('" + value + "')");
               return false;
             }
-            if (column === "decimalLatitude" && (-90 > value && value > 90)) {
-              stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + n);
-              return false;
+            if (column === "decimalLatitude") {
+              if (value < -90 || value > 90) {
+                stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + n);
+                return false;
+              }
             }
-            if (column === "decimalLongitude" && (-180 > value && value > 180)) {
-              stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + n);
-              return false;
+            if (column === "decimalLongitude") {
+              if (value < -180 || value > 180) {
+                stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + n);
+                return false;
+              }
             }
             if (column === "coordinateUncertaintyInMeters" && value <= 0) {
               stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + n);

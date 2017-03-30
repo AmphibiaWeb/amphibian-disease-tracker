@@ -2067,12 +2067,14 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             if not isNumber value
               stopLoadBarsError null, "Detected an invalid number for #{column} at row #{n} ('#{value}')"
               return false
-            if column is "decimalLatitude" and -90 > value > 90
-              stopLoadBarsError null, "Detected an invalid latitude #{value} at row #{n}"
-              return false
-            if column is "decimalLongitude" and -180 > value > 180
-              stopLoadBarsError null, "Detected an invalid longitude #{value} at row #{n}"
-              return false
+            if column is "decimalLatitude"
+              if value < -90 or value > 90
+                stopLoadBarsError null, "Detected an invalid latitude #{value} at row #{n}"
+                return false
+            if column is "decimalLongitude"
+              if value < -180 or value > 180
+                stopLoadBarsError null, "Detected an invalid longitude #{value} at row #{n}"
+                return false
             if column is "coordinateUncertaintyInMeters" and value <= 0
               stopLoadBarsError null, "Coordinate uncertainty must be >= 0 at row #{n}"
               return false
