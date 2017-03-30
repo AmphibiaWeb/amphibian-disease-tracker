@@ -994,7 +994,7 @@ function getChartData($chartDataParams) {
      * - positive species
      *
      ***/
-    switch($chartDataParams["sort"]) {
+    switch($chartDataParams["bin"]) {
     case "time":
         # Sort by time
         break;
@@ -1007,9 +1007,15 @@ function getChartData($chartDataParams) {
         # country per coordinate
         # Look up the carto id fields
         $labels = array();
-        $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY country";
-        $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY country";
-        $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY country";
+        $orderBy = $chartDataParams["sort"];
+        if(empty($orderBy)) {
+            $orderBy = "country";
+        } else {
+            $orderBy = $db->sanitize($orderBy);
+        }
+        $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
+        $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
+        $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY $orderBy";
         $result = mysqli_query($flatTable->getLink(), $allQuery);
         if($result === false) {
           returnAjax(array(

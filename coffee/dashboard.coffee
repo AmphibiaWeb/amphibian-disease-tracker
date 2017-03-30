@@ -301,8 +301,8 @@ renderNewChart = ->
   $(".chart.dynamic-chart").remove()
   $(".chart-title").remove()
   # Get the new one
-  chartType = chartOptions.sort ? "infection"
-  delete chartOptions.sort
+  chartType = chartOptions.bin ? "location"
+  delete chartOptions.bin
   console.info "Going to generate a new chart with the following options", chartOptions
   getServerChart chartType, chartOptions
   chartOptions

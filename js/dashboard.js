@@ -330,8 +330,8 @@ renderNewChart = function() {
   }
   $(".chart.dynamic-chart").remove();
   $(".chart-title").remove();
-  chartType = (ref1 = chartOptions.sort) != null ? ref1 : "infection";
-  delete chartOptions.sort;
+  chartType = (ref1 = chartOptions.bin) != null ? ref1 : "location";
+  delete chartOptions.bin;
   console.info("Going to generate a new chart with the following options", chartOptions);
   getServerChart(chartType, chartOptions);
   return chartOptions;
