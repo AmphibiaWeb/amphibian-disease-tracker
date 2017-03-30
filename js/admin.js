@@ -2090,18 +2090,18 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "alt":
           case "coordinateUncertaintyInMeters":
             if (!isNumber(value)) {
-              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + prettyHumanRow + " ('" + value + "')");
+              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + prettyHumanRow + " (<code>" + value + "</code>)");
               return false;
             }
             if (column === "decimalLatitude") {
               if (value < -90 || value > 90) {
-                stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>.");
+                stopLoadBarsError(null, "Detected an invalid latitude <code>" + value + "</code> at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>.");
                 return false;
               }
             }
             if (column === "decimalLongitude") {
               if (value < -180 || value > 180) {
-                stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>.");
+                stopLoadBarsError(null, "Detected an invalid longitude <code>" + value + "</code> at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>.");
                 return false;
               }
             }
