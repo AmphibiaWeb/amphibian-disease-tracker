@@ -1916,7 +1916,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, csvOptions, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
+  var author, center, cleanValue, column, coords, coordsPoint, csvOptions, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, prettyHumanRow, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1998,6 +1998,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     duplicatedFieldIds = new Array();
     for (n in dataObject) {
       row = dataObject[n];
+      prettyHumanRow = n + 1;
       tRow = new Object();
       uniqueColumn = new Array();
       for (column in row) {
@@ -2055,20 +2056,20 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
             column = "dateIdentified";
             t = excelDateToUnixTime(value, true);
             if (!isNumber(t)) {
-              console.error("This row (#" + n + ") has a non-date value ! (" + value + " = " + t + ")");
-              stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + n + ". Check your dates!");
+              console.error("This row (#" + prettyHumanRow + ") has a non-date value ! (" + value + " = " + t + ")");
+              stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + prettyHumanRow + ". Check your dates!");
               return false;
             }
             d = new Date(t);
             ucBerkeleyFounded = new Date("1868-03-23");
             if (t < ucBerkeleyFounded.getTime()) {
-              console.error("This row (#" + n + ") has a date (" + value + " = " + t + ") too far in the past!");
-              stopLoadBarsError(null, "Detected an implausibly old date '" + value + "' = <code>" + (d.toDateString()) + "</code> at row #" + n + ". Check your dates!");
+              console.error("This row (#" + prettyHumanRow + ") has a date (" + value + " = " + t + ") too far in the past!");
+              stopLoadBarsError(null, "Detected an implausibly old date '" + value + "' = <code>" + (d.toDateString()) + "</code> at row #" + prettyHumanRow + ". Check your dates!");
               return false;
             }
             if (t > Date.now()) {
-              console.error("This row (#" + n + ") has a date (" + value + " = " + t + ") after today!");
-              stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + n + ". Check your dates!");
+              console.error("This row (#" + prettyHumanRow + ") has a date (" + value + " = " + t + ") after today!");
+              stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + prettyHumanRow + ". Check your dates!");
               return false;
             }
             date = d.getUTCDate();
@@ -2089,23 +2090,23 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "alt":
           case "coordinateUncertaintyInMeters":
             if (!isNumber(value)) {
-              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + (n + 1) + " ('" + value + "')");
+              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + prettyHumanRow + " ('" + value + "')");
               return false;
             }
             if (column === "decimalLatitude") {
               if (value < -90 || value > 90) {
-                stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + (n + 1) + "<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>");
+                stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>.");
                 return false;
               }
             }
             if (column === "decimalLongitude") {
               if (value < -180 || value > 180) {
-                stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + (n + 1) + "<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>");
+                stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>.");
                 return false;
               }
             }
             if (column === "coordinateUncertaintyInMeters" && value <= 0) {
-              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + (n + 1));
+              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + prettyHumanRow);
               return false;
             }
             cleanValue = toFloat(value);
@@ -5034,6 +5035,9 @@ stopLoadBarsError = function(currentTimeout, message) {
     bsAlert("<strong>Data Validation Error</strong>: " + message, "danger");
     stopLoadError(null, "There was a problem validating your data");
   }
+  try {
+    $("#cancel-new-upload").remove();
+  } catch (undefined) {}
   return false;
 };
 

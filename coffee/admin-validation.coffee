@@ -61,6 +61,8 @@ stopLoadBarsError = (currentTimeout, message) ->
   if message?
     bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
     stopLoadError null, "There was a problem validating your data"
+  try
+    $("#cancel-new-upload").remove()
   false
 
 
