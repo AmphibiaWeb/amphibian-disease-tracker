@@ -614,6 +614,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                 # Add columns not in $cols to $newCols, and append to $cols
                 foreach($row as $refCol => $colData) {
                     # Lookup col type
+                    $colDataType = null;
                     foreach($db->getCols() as $colName => $colType) {
                         if(strtolower($colName) == strtolower($refCol)) {
                             $colDataType = $colType;
@@ -622,7 +623,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                         } else if ($refCol == "modified") {
                             $colDataType = "decimal(32))";
                             break;
-                        }
+                        } else $colDataType = "text";
                     }
                     if(empty($colDataType)) $colDataType = "text";
                     # Put col in cols

@@ -758,7 +758,7 @@ class DBHelper
         return (mysqli_num_rows($result)) ? TRUE : FALSE;
     }
 
-    public function addColumn($columnName, $columnType = null) {
+    public function addColumn($columnName, $columnType = "TEXT") {
         /***
          * Add a new column. DATA MUST BE SANITIZED BEFORE CALLING!
          *
@@ -790,6 +790,8 @@ class DBHelper
             return array(
                 "status" => $r,
                 "error" => mysqli_error($this->getLink(), $r),
+                "column" => $columnName,
+                "type" => $columnType,
             );
         }
         return array(

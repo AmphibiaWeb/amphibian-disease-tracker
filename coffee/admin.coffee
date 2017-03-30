@@ -747,7 +747,7 @@ finalizeData = (skipFields = false, callback) ->
             bounding_polygon_geojson: geo?.geoJsonBoundingBox
           postData.carto_id = JSON.stringify cartoData
           postData.project_id = _adp.projectId
-          postData.modified = Date.now()
+          postData.modified = Date.now() / 1000
           try
             postData.project_obj_id = _adp.fims.expedition.ark
           catch
