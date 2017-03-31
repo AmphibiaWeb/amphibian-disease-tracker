@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, disableMapViewFilter, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -1342,10 +1342,16 @@ showCitation = function() {
 
 window.showCitation = showCitation;
 
+disableMapViewFilter = function() {
+  $("google-map#community-map").unbind("google-map-idle");
+  _adp.hasBoundMapEvent = false;
+  return true;
+};
+
 restrictProjectsToMapView = function(edges) {
-  var button, corners, includeProject, j, l, len, len1, len2, m, map, mapBounds, point, poly, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, test, validProjects;
+  var button, corners, includeProject, j, l, len, len1, len2, m, map, mapBounds, point, poly, projectId, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, validProjects;
   if (edges == null) {
-    edges = true;
+    edges = false;
   }
 
   /*
@@ -1377,6 +1383,10 @@ restrictProjectsToMapView = function(edges) {
   ref = $("google-map#community-map").find("google-map-poly");
   for (j = 0, len = ref.length; j < len; j++) {
     poly = ref[j];
+    projectId = $(poly).attr("data-project");
+    if (indexOf.call(validProjects, projectId) >= 0) {
+      continue;
+    }
     test = {
       north: -90,
       south: 90,
@@ -1400,7 +1410,8 @@ restrictProjectsToMapView = function(edges) {
       }
     }
     includeProject = false;
-    if (edges) {
+    if (edges === true) {
+      console.log("Checking edges of", projectId);
       if ((corners.south < (ref2 = test.north) && ref2 < corners.north)) {
         includeProject = true;
       }
@@ -1414,25 +1425,56 @@ restrictProjectsToMapView = function(edges) {
         includeProject = true;
       }
     } else {
+      console.log("Checking containement of", projectId);
       if (test.south > corners.south && test.north < corners.north) {
-        includeProject = true;
+        if ((corners.west < (ref6 = test.east) && ref6 < corners.east) || (corners.west < (ref7 = test.west) && ref7 < corners.east)) {
+          console.log("Project is wholly NS contained");
+          includeProject = true;
+        }
       }
       if (test.west > corners.west && test.east < corners.east) {
-        includeProject = true;
+        if ((corners.south < (ref8 = test.north) && ref8 < corners.north) || (corners.south < (ref9 = test.south) && ref9 < corners.north)) {
+          console.log("Project is wholly EW contained");
+          includeProject = true;
+        }
       }
     }
     if (includeProject) {
-      validProjects.push($(poly).attr("data-project"));
+      validProjects.push(projectId);
     }
   }
   $("#project-list li").attr("hidden", "hidden");
-  ref6 = $("#project-list button");
-  for (m = 0, len2 = ref6.length; m < len2; m++) {
-    button = ref6[m];
-    if (ref7 = $(button).attr("data-project"), indexOf.call(validProjects, ref7) >= 0) {
+  ref10 = $("#project-list button");
+  for (m = 0, len2 = ref10.length; m < len2; m++) {
+    button = ref10[m];
+    if (ref11 = $(button).attr("data-project"), indexOf.call(validProjects, ref11) >= 0) {
       $(button).parent("li").removeAttr("hidden");
     }
   }
+  $.get(uri.urlString + "admin-api.php", "action=list", "json").done(function(result) {
+    var html, project, ref12, results, title;
+    console.log("Got project list", result);
+    $("button.js-lazy-project").remove();
+    ref12 = result.projects;
+    results = [];
+    for (project in ref12) {
+      title = ref12[project];
+      if (indexOf.call(validProjects, project) >= 0) {
+        if (!$("button[data-project='" + project + "']").exists()) {
+          console.log("Should add visible project '" + title + "'", project);
+          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\">\n  <iron-icon icon=\"social:public\"></iron-icon>\n  " + title + "\n</button>\n</li>";
+          results.push($("#project-list").append(html));
+        } else {
+          results.push(console.log("Not re-adding button for", project));
+        }
+      } else {
+        results.push(console.log("Not adding invalid project", project));
+      }
+    }
+    return results;
+  }).fail(function(result, status) {
+    return console.warn("Failed to get project list", result, status);
+  });
   console.log("Showing projects", validProjects, "within", corners);
   return validProjects;
 };

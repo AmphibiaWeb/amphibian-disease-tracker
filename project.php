@@ -455,7 +455,7 @@ $loginStatus = getLoginState();
                 # creation
                 $arrayKey = $orderData . $projectCreatedOn;
             }
-            $hasData = $project["sampled_collection_end"] > 0;
+            $hasData = strbool(intval($project["sampled_collection_end"]) > 0);
             $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey' data-has-datafile='$hasData'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
             $htmlList[$arrayKey] = '<li data-has-datafile="'.$hasData.'">'.$projectHtml."</li>\n";
         }

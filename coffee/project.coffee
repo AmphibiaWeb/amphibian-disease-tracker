@@ -1251,8 +1251,13 @@ showCitation = ->
 window.showCitation = showCitation
 
 
+disableMapViewFilter = ->
+  $("google-map#community-map").unbind("google-map-idle")
+  _adp.hasBoundMapEvent = false
+  true
 
-restrictProjectsToMapView = (edges = true) ->
+
+restrictProjectsToMapView = (edges = false) ->
   ###
   # When we're on the top-level project page, we should only see
   # projects in the list that are visible in the map.
@@ -1284,6 +1289,9 @@ restrictProjectsToMapView = (edges = true) ->
     west: mapBounds.getSouthWest().lng()
   validProjects = new Array()
   for poly in $("google-map#community-map").find("google-map-poly")
+    projectId = $(poly).attr "data-project"
+    if projectId in validProjects
+      continue
     test =
       north: -90
       south: 90
@@ -1295,8 +1303,9 @@ restrictProjectsToMapView = (edges = true) ->
       if p$(point).longitude < test.west then test.west = p$(point).longitude
       if p$(point).latitude < test.south then test.south = p$(point).latitude
     includeProject = false
-    if edges
+    if edges is true
       # Check if any edges of the project are visible
+      console.log "Checking edges of", projectId
       if corners.south < test.north < corners.north
         includeProject = true
       if corners.south < test.south < corners.north
@@ -1306,18 +1315,48 @@ restrictProjectsToMapView = (edges = true) ->
       if corners.west < test.west < corners.east
         includeProject = true
     else
+      console.log "Checking containement of", projectId
       if test.south > corners.south and test.north < corners.north
-        includeProject = true
+        # At least one edge needs to be visible
+        if corners.west < test.east < corners.east or corners.west < test.west < corners.east
+          console.log "Project is wholly NS contained"
+          includeProject = true
       if test.west > corners.west and test.east < corners.east
-        includeProject = true
+        # at least one edge should be visible
+        if corners.south < test.north < corners.north or corners.south < test.south < corners.north
+          console.log "Project is wholly EW contained"
+          includeProject = true
     if includeProject
-      validProjects.push $(poly).attr "data-project"
+      validProjects.push projectId
   # We have a list of projects that are OK to show
   $("#project-list li").attr "hidden", "hidden"
   for button in $("#project-list button")
     if $(button).attr("data-project") in validProjects
       $(button).parent("li").removeAttr "hidden"
   # Query all projects, render all that match
+  $.get "#{uri.urlString}admin-api.php", "action=list", "json"
+  .done (result) ->
+    console.log "Got project list", result
+    $("button.js-lazy-project").remove()
+    for project, title of result.projects
+      if project in validProjects
+        unless $("button[data-project='#{project}']").exists()
+          # Add a button
+          console.log "Should add visible project '#{title}'", project
+          html = """
+          <li>
+          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip">
+            <iron-icon icon="social:public"></iron-icon>
+            #{title}
+          </button>
+          </li>
+          """
+          $("#project-list").append html
+        else console.log "Not re-adding button for", project
+      else console.log "Not adding invalid project", project
+
+  .fail (result, status) ->
+    console.warn "Failed to get project list", result, status
   console.log "Showing projects", validProjects, "within", corners
   validProjects
 
