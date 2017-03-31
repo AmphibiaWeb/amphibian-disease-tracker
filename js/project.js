@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -841,7 +841,8 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
 searchProjects = function() {
 
   /*
-   * Handler to search projects
+   * Handler to search projects on the top-level project page
+   *
    */
   var args, cols, item, search;
   search = $("#project-search").val();
@@ -1340,6 +1341,101 @@ showCitation = function() {
 };
 
 window.showCitation = showCitation;
+
+restrictProjectsToMapView = function(edges) {
+  var button, corners, includeProject, j, l, len, len1, len2, m, map, mapBounds, point, poly, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, test, validProjects;
+  if (edges == null) {
+    edges = true;
+  }
+
+  /*
+   * When we're on the top-level project page, we should only see
+   * projects in the list that are visible in the map.
+   *
+   * See:
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/208
+   */
+  if (!$("google-map#community-map").exists()) {
+    return false;
+  }
+  if (!_adp.hasBoundMapEvent) {
+    _adp.hasBoundMapEvent = true;
+    $("google-map#community-map").on("google-map-idle", function() {
+      restrictProjectsToMapView.debounce(50, null, null, edges);
+      return false;
+    });
+  }
+  map = p$("google-map#community-map").map;
+  mapBounds = map.getBounds();
+  corners = {
+    north: mapBounds.getNorthEast().lat(),
+    east: mapBounds.getNorthEast().lng(),
+    south: mapBounds.getSouthWest().lat(),
+    west: mapBounds.getSouthWest().lng()
+  };
+  validProjects = new Array();
+  ref = $("google-map#community-map").find("google-map-poly");
+  for (j = 0, len = ref.length; j < len; j++) {
+    poly = ref[j];
+    test = {
+      north: -90,
+      south: 90,
+      east: -180,
+      west: 180
+    };
+    ref1 = $(poly).find("google-map-point");
+    for (l = 0, len1 = ref1.length; l < len1; l++) {
+      point = ref1[l];
+      if (p$(point).latitude > test.north) {
+        test.north = p$(point).latitude;
+      }
+      if (p$(point).longitude > test.east) {
+        test.east = p$(point).longitude;
+      }
+      if (p$(point).longitude < test.west) {
+        test.west = p$(point).longitude;
+      }
+      if (p$(point).latitude < test.south) {
+        test.south = p$(point).latitude;
+      }
+    }
+    includeProject = false;
+    if (edges) {
+      if ((corners.south < (ref2 = test.north) && ref2 < corners.north)) {
+        includeProject = true;
+      }
+      if ((corners.south < (ref3 = test.south) && ref3 < corners.north)) {
+        includeProject = true;
+      }
+      if ((corners.west < (ref4 = test.east) && ref4 < corners.east)) {
+        includeProject = true;
+      }
+      if ((corners.west < (ref5 = test.west) && ref5 < corners.east)) {
+        includeProject = true;
+      }
+    } else {
+      if (test.south > corners.south && test.north < corners.north) {
+        includeProject = true;
+      }
+      if (test.west > corners.west && test.east < corners.east) {
+        includeProject = true;
+      }
+    }
+    if (includeProject) {
+      validProjects.push($(poly).attr("data-project"));
+    }
+  }
+  $("#project-list li").attr("hidden", "hidden");
+  ref6 = $("#project-list button");
+  for (m = 0, len2 = ref6.length; m < len2; m++) {
+    button = ref6[m];
+    if (ref7 = $(button).attr("data-project"), indexOf.call(validProjects, ref7) >= 0) {
+      $(button).parent("li").removeAttr("hidden");
+    }
+  }
+  console.log("Showing projects", validProjects, "within", corners);
+  return validProjects;
+};
 
 $(function() {
   var zcConfig;

@@ -784,7 +784,8 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
 
 searchProjects = ->
   ###
-  # Handler to search projects
+  # Handler to search projects on the top-level project page
+  #
   ###
   search = $("#project-search").val()
   if isNull search
@@ -1248,6 +1249,81 @@ showCitation = ->
   false
 
 window.showCitation = showCitation
+
+
+
+restrictProjectsToMapView = (edges = true) ->
+  ###
+  # When we're on the top-level project page, we should only see
+  # projects in the list that are visible in the map.
+  #
+  # See:
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/208
+  ###
+  unless $("google-map#community-map").exists()
+    return false
+  unless _adp.hasBoundMapEvent
+    # When zooming/panning in map, fire this
+    _adp.hasBoundMapEvent = true
+    # Events:
+    # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#events
+    # p$("google-map").dragEvents = true
+    $("google-map#community-map").on "google-map-idle", ->
+      # Fires after pans and zooms
+      # See:
+      # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#event-google-map-idle
+      restrictProjectsToMapView.debounce 50, null, null, edges
+      false
+  # Find the bounds
+  map = p$("google-map#community-map").map
+  mapBounds = map.getBounds()
+  corners =
+    north: mapBounds.getNorthEast().lat()
+    east: mapBounds.getNorthEast().lng()
+    south: mapBounds.getSouthWest().lat()
+    west: mapBounds.getSouthWest().lng()
+  validProjects = new Array()
+  for poly in $("google-map#community-map").find("google-map-poly")
+    test =
+      north: -90
+      south: 90
+      east: -180
+      west: 180
+    for point in $(poly).find "google-map-point"
+      if p$(point).latitude > test.north then test.north = p$(point).latitude
+      if p$(point).longitude > test.east then test.east = p$(point).longitude
+      if p$(point).longitude < test.west then test.west = p$(point).longitude
+      if p$(point).latitude < test.south then test.south = p$(point).latitude
+    includeProject = false
+    if edges
+      # Check if any edges of the project are visible
+      if corners.south < test.north < corners.north
+        includeProject = true
+      if corners.south < test.south < corners.north
+        includeProject = true
+      if corners.west < test.east < corners.east
+        includeProject = true
+      if corners.west < test.west < corners.east
+        includeProject = true
+    else
+      if test.south > corners.south and test.north < corners.north
+        includeProject = true
+      if test.west > corners.west and test.east < corners.east
+        includeProject = true
+    if includeProject
+      validProjects.push $(poly).attr "data-project"
+  # We have a list of projects that are OK to show
+  $("#project-list li").attr "hidden", "hidden"
+  for button in $("#project-list button")
+    if $(button).attr("data-project") in validProjects
+      $(button).parent("li").removeAttr "hidden"
+  # Query all projects, render all that match
+  console.log "Showing projects", validProjects, "within", corners
+  validProjects
+
+
+
+
 
 $ ->
   _adp.projectId = uri.o.param "id"
