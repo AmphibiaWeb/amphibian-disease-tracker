@@ -194,7 +194,7 @@ $loginStatus = getLoginState();
 
       ?>
     <h2 class="col-xs-12">
-      Disease Summary Dashboard
+      Disease Summary Dashboard <span class="badge">ALPHA</span>
     </h2>
     <section class="col-xs-12">
       <div class="form form-horizontal row">

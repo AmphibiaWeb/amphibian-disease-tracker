@@ -9,11 +9,11 @@ try
     # Create the overflow menu lazily
     ###
     checkLoggedIn (result) ->
-      accountSettings = if result.status then """    <paper-item data-href="https://amphibiandisease.org/admin" class="click">
+      accountSettings = if result.status then """    <paper-item data-href="#{uri.urlString}admin" class="click">
         <iron-icon icon="icons:settings-applications"></iron-icon>
         Account Settings
       </paper-item>
-      <paper-item data-href="https://amphibiandisease.org/admin-login.php?q=logout" class="click">
+      <paper-item data-href="#{uri.urlString}admin-login.php?q=logout" class="click">
         <span class="glyphicon glyphicon-log-out"></span>
         Log Out
       </paper-item>
@@ -23,7 +23,7 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
+        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
           Summary Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
@@ -34,7 +34,7 @@ try
           <iron-icon icon="glyphicon-social:github"></iron-icon>
           Github
         </paper-item>
-        <paper-item data-href="https://amphibiandisease.org/about.php" class="click">
+        <paper-item data-href="#{uri.urlString}about.php" class="click">
           About / Legal
         </paper-item>
       </paper-menu>
