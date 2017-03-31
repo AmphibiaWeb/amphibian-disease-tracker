@@ -1008,10 +1008,19 @@ function getChartData($chartDataParams) {
         # Look up the carto id fields
         $labels = array();
         $orderBy = $chartDataParams["sort"];
+        $doInfectionSort = false;
         if(empty($orderBy)) {
-            $orderBy = "country";
+            $orderBy = "samples";
         } else {
-            $orderBy = $db->sanitize($orderBy);
+            if($orderBy == "infection") {
+                # We're going to do some magic
+                $doInfectionSort = true;
+                $orderBy = "samples";
+            } else {
+                $orderBy = $db->sanitize($orderBy);
+                if(!$flatTable->columnExists($orderBy, false)) $orderBy = "samples";
+
+            }
         }
         $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
         $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
@@ -1032,62 +1041,92 @@ function getChartData($chartDataParams) {
         $chartDatasetData = array();
         $chartPosDatasetData = array();
         $chartNegDatasetData = array();
+
         $posData = array();
         while($posRow = mysqli_fetch_assoc($posResult)) {
-        $posData[$posRow["country"]] = $posRow["samples"];
-    }
+            $posData[$posRow["country"]] = $posRow["samples"];
+        }
+
         $negData = array();
         while($negRow = mysqli_fetch_assoc($negResult)) {
-        $negData[$negRow["country"]] = $negRow["samples"];
-    }
+            $negData[$negRow["country"]] = $negRow["samples"];
+        }
+        
+        if($doInfectionSort) {
+            $baseData = array();
+            $posData = array();
+            $negData = array();
+        }
+        
         while($row = mysqli_fetch_assoc($result)) {
-        if(empty($row["country"])) continue;
-        $labels[] = $row["country"];
-        $key = $row["country"] . " total";
+            if(empty($row["country"])) continue;
+            $labels[] = $row["country"];
+            $key = $row["country"] . " total";
 
-        $negSamples = null;
-        $posSamples = null;
-        if(array_key_exists($row["country"], $posData)) {
-        $posSamples = intval($posData[$row["country"]]);
-    }
-        if(array_key_exists($row["country"], $negData)) {
-        $negSamples = intval($negData[$row["country"]]);
-    }
-        if(empty($posSamples)) $posSamples = 0;
-        if(empty($negSamples)) $negSamples = 0;
-        #$chartDatasetData[] = $thisChartDatasetData;
-        $chartDatasetData[] = intval($row["samples"]);
-        $chartPosDatasetData[] = $posSamples;
-        $chartNegDatasetData[] = $negSamples;
-        $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
-        if ($indeterminant < 0) $indeterminant = 0;
-        $chartIndDatasetData[] = $indeterminant;
+            $negSamples = null;
+            $posSamples = null;
+            if(array_key_exists($row["country"], $posData)) {
+                $posSamples = intval($posData[$row["country"]]);
+            }
+            if(array_key_exists($row["country"], $negData)) {
+                $negSamples = intval($negData[$row["country"]]);
+            }
+            if(empty($posSamples)) $posSamples = 0;
+            if(empty($negSamples)) $negSamples = 0;
 
+            if(!$doInfectionSort) {
+                $chartDatasetData[] = intval($row["samples"]);
+                $chartPosDatasetData[] = $posSamples;
+                $chartNegDatasetData[] = $negSamples;
+                $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
+                if ($indeterminant < 0) $indeterminant = 0;
+                $chartIndDatasetData[] = $indeterminant;
+            } else {
+                # Percent to three decimals
+                $percent = $posSamples * 100000 / intval($row["samples"]);
+                $smartKey = $percent."-".$row["country"];
+                $baseData[$smartKey] = intval($row["samples"]);
+                $posData[$smartKey] = $posSamples;
+                $negData[$smartKey] = $negSamples;
+            }
+        }
+        if($doInfectionSort) {
+            ksort($baseData);
+            ksort($posData);
+            ksort($negData);
+            foreach($baseData as $k=>$v) {
+                $chartDatasetData[] = $v;
+                $chartPosDatasetData[] = $posData[$k];
+                $chartNegDatasetData[] = $negData[$k];
+                $indeterminant = $v - $posData[$k] - $negData[$k];
+                if ($indeterminant < 0) $indeterminant = 0;
+                $chartIndDatasetData[] = $indeterminant;                
+            }
         }
         $chartData = array(
-          "labels" => $labels,
-                   "stacking" => array("x"=>false, "y"=>true),
-          "datasets" => array(
-            array(
-              "label" => "Total Samples",
-              "data" => $chartDatasetData,
-                      "stack" => "totals",
+            "labels" => $labels,
+            "stacking" => array("x"=>false, "y"=>true),
+            "datasets" => array(
+                array(
+                    "label" => "Total Samples",
+                    "data" => $chartDatasetData,
+                    "stack" => "totals",
+                ),
+                array(
+                    "label" => "Positive Samples",
+                    "data" => $chartPosDatasetData,
+                    "stack" => "PosNeg",
+                ),
+                array(
+                    "label" => "Negative Samples",
+                    "data" => $chartNegDatasetData,
+                    "stack" => "PosNeg",
+                ),
+                //         array(
+                // "label" => "Indeterminant Samples",
+                //         "data" => $chartIndDatasetData,
+                //         ),
             ),
-                array(
-        "label" => "Positive Samples",
-                "data" => $chartPosDatasetData,
-                "stack" => "PosNeg",
-                ),
-                array(
-        "label" => "Negative Samples",
-                "data" => $chartNegDatasetData,
-                "stack" => "PosNeg",
-                ),
-        //         array(
-        // "label" => "Indeterminant Samples",
-        //         "data" => $chartIndDatasetData,
-        //         ),
-          ),
         );
         returnAjax(array(
           "status" => true,

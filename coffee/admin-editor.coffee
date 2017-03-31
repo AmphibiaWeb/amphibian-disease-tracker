@@ -2198,6 +2198,10 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
   cartoData
 
 
+remintArk = ->
+  title = _adp.projectData.project_title.trim()
+  mintExpedition _adp.projectData.project_id, title, (arkResult) ->
+    _adp.projectData.project_obj_id = arkResult.ark.identifier
 
 
 saveEditorData = (force = false, callback) ->

@@ -225,8 +225,9 @@ $loginStatus = getLoginState();
               <paper-item>
                 Samples
               </paper-item>
-              <paper-item disabled>Species</paper-item>
+              <paper-item>Infection</paper-item>
               <paper-item>Country</paper-item>
+              <paper-item disabled>Species</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>

@@ -4656,6 +4656,10 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
   cartoData
 
 
+remintArk = ->
+  title = _adp.projectData.project_title.trim()
+  mintExpedition _adp.projectData.project_id, title, (arkResult) ->
+    _adp.projectData.project_obj_id = arkResult.ark.identifier
 
 
 saveEditorData = (force = false, callback) ->
@@ -5242,7 +5246,10 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       catch
         alertError = "UNREADABLE_FIMS_ERROR"
       result.human_error += """" Server said: <code>#{alertError}</code> """
-      stopLoadBarsError null, result.human_error
+      try
+        stopLoadBarsError null, result.human_error
+      catch
+        stopLoadError result.human_error
       console.error result.error, "#{adminParams.apiTarget}?#{args}"
       return false
     resultObj = result

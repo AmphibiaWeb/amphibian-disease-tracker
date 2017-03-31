@@ -115,7 +115,7 @@ getRandomDataColor = function() {
 getServerChart = function(chartType, chartParams) {
   var args, cp, requestKey, requestValue;
   if (chartType == null) {
-    chartType = "infection";
+    chartType = "location";
   }
   startLoad();
   args = "action=chart&bin=" + chartType;

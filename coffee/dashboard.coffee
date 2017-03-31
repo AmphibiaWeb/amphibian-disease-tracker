@@ -131,7 +131,7 @@ getRandomDataColor = ->
 
 
 
-getServerChart = (chartType = "infection", chartParams) ->
+getServerChart = (chartType = "location", chartParams) ->
   # Get the chart
   startLoad()
   args = "action=chart&bin=#{chartType}"

@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, createOverflowMenu, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, kmlHandler, kmlLoader, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, createOverflowMenu, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, kmlHandler, kmlLoader, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, remintArk, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -4624,6 +4624,14 @@ recalculateAndUpdateHull = function(points) {
   return cartoData;
 };
 
+remintArk = function() {
+  var title;
+  title = _adp.projectData.project_title.trim();
+  return mintExpedition(_adp.projectData.project_id, title, function(arkResult) {
+    return _adp.projectData.project_obj_id = arkResult.ark.identifier;
+  });
+};
+
 saveEditorData = function(force, callback) {
   var args, authorObj, bpPathCount, cd, data, debugInfoDelay, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
   if (force == null) {
@@ -5290,7 +5298,7 @@ mintExpedition = function(projectId, title, callback) {
   }
   args = "perform=create_expedition&link=" + projectId + "&title=" + (post64(title)) + "&public=" + publicProject;
   _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alertError, error2, errorJson, errorJsonEscaped, errorParsed, lastError, message, wholeError;
+    var alertError, error2, error3, errorJson, errorJsonEscaped, errorParsed, lastError, message, wholeError;
     console.log("Expedition got", result);
     if (!result.status) {
       errorJsonEscaped = result.error.replace(/^.*\[(.*)\]$/img, "$1");
@@ -5305,7 +5313,11 @@ mintExpedition = function(projectId, title, callback) {
         alertError = "UNREADABLE_FIMS_ERROR";
       }
       result.human_error += "\" Server said: <code>" + alertError + "</code> ";
-      stopLoadBarsError(null, result.human_error);
+      try {
+        stopLoadBarsError(null, result.human_error);
+      } catch (error3) {
+        stopLoadError(result.human_error);
+      }
       console.error(result.error, adminParams.apiTarget + "?" + args);
       return false;
     }
