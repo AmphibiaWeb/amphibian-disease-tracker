@@ -367,6 +367,9 @@ $(function() {
   $("#generate-chart").click(function() {
     return renderNewChart.debounce(50);
   });
+  $(".chart-param").on("change", function() {
+    return renderNewChart.debounce(50);
+  });
   return false;
 });
 
