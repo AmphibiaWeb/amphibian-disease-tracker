@@ -332,6 +332,6 @@ $ ->
   getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
-  $(".chart-param").on "change", ->
+  $(".chart-param paper-listbox").on "iron-select", ->
     renderNewChart.debounce 50
   false
