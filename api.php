@@ -1051,13 +1051,13 @@ function getChartData($chartDataParams) {
         while($negRow = mysqli_fetch_assoc($negResult)) {
             $negData[$negRow["country"]] = $negRow["samples"];
         }
-        
+
         if($doInfectionSort) {
             $baseData = array();
-            $posData = array();
-            $negData = array();
+            $posBaseData = array();
+            $negBaseData = array();
         }
-        
+
         while($row = mysqli_fetch_assoc($result)) {
             if(empty($row["country"])) continue;
             $labels[] = $row["country"];
@@ -1083,25 +1083,34 @@ function getChartData($chartDataParams) {
                 $chartIndDatasetData[] = $indeterminant;
             } else {
                 # Percent to three decimals
-                $percent = $posSamples * 100000 / intval($row["samples"]);
-                $smartKey = $percent."-".$row["country"];
-                $baseData[$smartKey] = intval($row["samples"]);
-                $posData[$smartKey] = $posSamples;
-                $negData[$smartKey] = $negSamples;
+                $percent = intval($posSamples) * 10000 / intval($row["samples"]);
+                $smartKey = "$percent";
+                while(array_key_exists($smartKey, $baseData)) {
+                    $smartKey = $smartKey . "0";
+                }
+                $baseData[$smartKey] = array(
+                    "count" => intval($row["samples"]),
+                    "country" => $row["country"],
+                );
+                $posBaseData[$smartKey] = $posSamples;
+                $negBaseData[$smartKey] = $negSamples;
             }
         }
         if($doInfectionSort) {
-            ksort($baseData);
-            ksort($posData);
-            ksort($negData);
+            $labels = array();
+            ksort($baseData, SORT_NUMERIC);
             foreach($baseData as $k=>$v) {
-                $chartDatasetData[] = $v;
-                $chartPosDatasetData[] = $posData[$k];
-                $chartNegDatasetData[] = $negData[$k];
-                $indeterminant = $v - $posData[$k] - $negData[$k];
+                $labels[] = $v["country"];
+                $chartDatasetData[] = $v["count"];
+                $chartPosDatasetData[] = $posBaseData[$k];
+                $chartNegDatasetData[] = $negBaseData[$k];
+                $indeterminant = $v["count"] - $posBaseData[$k] - $negBaseData[$k];
                 if ($indeterminant < 0) $indeterminant = 0;
-                $chartIndDatasetData[] = $indeterminant;                
+                $chartIndDatasetData[] = $indeterminant;
+                $by = "by infection percent";
             }
+        } else {
+            $by = "by ".$orderBy;
         }
         $chartData = array(
             "labels" => $labels,
@@ -1135,7 +1144,8 @@ function getChartData($chartDataParams) {
           "rows" => $rowCount,
           "format" => "chart.js",
           "provided" => $chartDataParams,
-          "full_description" => "Sample representation per country",
+          "full_description" => "Sample representation per country, $by",
+          "basedata" => $baseData,
         ));
         break;
     case "infection":
