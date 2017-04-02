@@ -4628,7 +4628,8 @@ remintArk = function() {
   var title;
   title = _adp.projectData.project_title.trim();
   return mintExpedition(_adp.projectData.project_id, title, function(arkResult) {
-    return _adp.projectData.project_obj_id = arkResult.ark.identifier;
+    _adp.projectData.project_obj_id = arkResult.ark.identifier;
+    return saveEditorData(true);
   });
 };
 
