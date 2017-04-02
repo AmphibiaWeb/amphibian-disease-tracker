@@ -4628,8 +4628,12 @@ remintArk = function() {
   var title;
   title = _adp.projectData.project_title.trim();
   return mintExpedition(_adp.projectData.project_id, title, function(arkResult) {
-    _adp.projectData.project_obj_id = arkResult.ark.identifier;
-    return saveEditorData(true);
+    if (arkResult.status === true) {
+      _adp.projectData.project_obj_id = arkResult.ark.identifier;
+      console.log("New ARK:", _adp.projectData.project_obj_id);
+      console.warn("The save may not update the ARK -- it may have to be manually changed in the database");
+      return saveEditorData(true);
+    }
   });
 };
 

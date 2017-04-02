@@ -2201,8 +2201,11 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
 remintArk = ->
   title = _adp.projectData.project_title.trim()
   mintExpedition _adp.projectData.project_id, title, (arkResult) ->
-    _adp.projectData.project_obj_id = arkResult.ark.identifier
-    saveEditorData(true)
+    if arkResult.status is true
+      _adp.projectData.project_obj_id = arkResult.ark.identifier
+      console.log "New ARK:", _adp.projectData.project_obj_id
+      console.warn "The save may not update the ARK -- it may have to be manually changed in the database"
+      saveEditorData(true)
 
 
 saveEditorData = (force = false, callback) ->
