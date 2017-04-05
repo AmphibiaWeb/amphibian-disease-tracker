@@ -1348,9 +1348,6 @@ restrictProjectsToMapView = (edges = false) ->
     try
       if $("button[data-project='#{projectId}']").attr("data-has-locale").toBool() isnt true
         continue
-    catch e
-      if e.name is "TypeError"
-        continue
     test =
       north: -90
       south: 90
