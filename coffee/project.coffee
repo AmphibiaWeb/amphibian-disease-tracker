@@ -1273,11 +1273,25 @@ restrictProjectsToMapView = (edges = false) ->
     # Events:
     # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#events
     # p$("google-map").dragEvents = true
+    do updateWidthAttr = (callback) ->
+      $("google-map#community-map").removeAttr "width"
+      delay 25, ->
+        try
+          width = $("google-map#community-map").width()
+          $("google-map#community-map").attr("width","#{width}px")
+        if typeof callback is "function"
+          callback()
+      false
+    $("window").on "resize", ->
+      updateWidthAttr ->
+        restrictProjectsToMapView.debounce 50, null, null, edges
+      false
     $("google-map#community-map").on "google-map-idle", ->
       # Fires after pans and zooms
       # See:
       # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#event-google-map-idle
-      restrictProjectsToMapView.debounce 50, null, null, edges
+      updateWidthAttr ->
+        restrictProjectsToMapView.debounce 50, null, null, edges
       false
     $("#projects-by-map-view").on "iron-change", ->
       # Fires for all change events
@@ -1307,11 +1321,11 @@ restrictProjectsToMapView = (edges = false) ->
     west: mapBounds.getSouthWest().lng()
   # Fix potential wraparound
   if corners.west > corners.east
+    # We only have to check East-West
+    # See:
+    # https://developers.google.com/maps/documentation/javascript/reference#LatLngBoundsLiteral
     corners.west = -180
     corners.east = 180
-  if corners.north < corners.south
-    corners.north = 90
-    corners.south = -90
   validProjects = new Array()
   if p$("#show-dataless-projects").checked
     # Add those projects to the valid projects list

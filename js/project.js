@@ -1349,7 +1349,7 @@ disableMapViewFilter = function() {
 };
 
 restrictProjectsToMapView = function(edges) {
-  var button, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, validProjects;
+  var button, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, updateWidthAttr, validProjects;
   if (edges == null) {
     edges = false;
   }
@@ -1366,8 +1366,30 @@ restrictProjectsToMapView = function(edges) {
   }
   if (!_adp.hasBoundMapEvent) {
     _adp.hasBoundMapEvent = true;
+    (updateWidthAttr = function(callback) {
+      $("google-map#community-map").removeAttr("width");
+      delay(25, function() {
+        var width;
+        try {
+          width = $("google-map#community-map").width();
+          $("google-map#community-map").attr("width", width + "px");
+        } catch (undefined) {}
+        if (typeof callback === "function") {
+          return callback();
+        }
+      });
+      return false;
+    })(callback);
+    $("window").on("resize", function() {
+      updateWidthAttr(function() {
+        return restrictProjectsToMapView.debounce(50, null, null, edges);
+      });
+      return false;
+    });
     $("google-map#community-map").on("google-map-idle", function() {
-      restrictProjectsToMapView.debounce(50, null, null, edges);
+      updateWidthAttr(function() {
+        return restrictProjectsToMapView.debounce(50, null, null, edges);
+      });
       return false;
     });
     $("#projects-by-map-view").on("iron-change", function() {
@@ -1404,10 +1426,6 @@ restrictProjectsToMapView = function(edges) {
   if (corners.west > corners.east) {
     corners.west = -180;
     corners.east = 180;
-  }
-  if (corners.north < corners.south) {
-    corners.north = 90;
-    corners.south = -90;
   }
   validProjects = new Array();
   if (p$("#show-dataless-projects").checked) {
