@@ -230,9 +230,8 @@ $loginStatus = getLoginState();
               continuance, we reserve the right to make these data
               public.</li>
           </ol>
-          <p>Send us feedback and any
-          suggestions. <a href="mailto:mkoo@berkeley.edu">Email
-          Michelle Koo</a></p>
+          <p> <a href="mailto:amphibiaweb+data@berkeley.edu">Email us feedback and any
+          suggestions or questions.</a></p>
           <h2> Project License </h2>
           <p>
             This project is <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/LICENSE">licensed under the GNU General Public License</a>. The full source code is available at <a href="https://github.com/AmphibiaWeb/amphibian-disease-tracker">https://github.com/AmphibiaWeb/amphibian-disease-tracker</a>.
