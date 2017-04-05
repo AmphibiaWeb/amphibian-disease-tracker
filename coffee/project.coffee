@@ -1343,8 +1343,14 @@ restrictProjectsToMapView = (edges = false) ->
         console.warn e.stack
   for poly in $("google-map#community-map").find("google-map-poly")
     projectId = $(poly).attr "data-project"
-    if projectId in validProjects
+    if projectId in validProjects or isNull projectId
       continue
+    try
+      if $("button[data-project='#{projectId}']").attr("data-has-locale").toBool() isnt true
+        continue
+    catch e
+      if e.name is "TypeError"
+        continue
     test =
       north: -90
       south: 90

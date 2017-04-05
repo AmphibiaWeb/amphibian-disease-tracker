@@ -328,7 +328,7 @@ $loginStatus = getLoginState();
             </div>
             <div class="col-xs-12 col-md-4">
               <paper-toggle-button id="show-dataless-projects" class="map-view-control" disabled>
-                Show projects without data
+                Show projects without data and locales
               </paper-toggle-button>
             </div>
           </div>

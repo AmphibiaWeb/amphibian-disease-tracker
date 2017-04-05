@@ -1349,7 +1349,7 @@ disableMapViewFilter = function() {
 };
 
 restrictProjectsToMapView = function(edges) {
-  var button, callback, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, updateWidthAttr, validProjects;
+  var button, callback, corners, e, error1, error2, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, updateWidthAttr, validProjects;
   if (edges == null) {
     edges = false;
   }
@@ -1453,8 +1453,18 @@ restrictProjectsToMapView = function(edges) {
   for (l = 0, len1 = ref1.length; l < len1; l++) {
     poly = ref1[l];
     projectId = $(poly).attr("data-project");
-    if (indexOf.call(validProjects, projectId) >= 0) {
+    if (indexOf.call(validProjects, projectId) >= 0 || isNull(projectId)) {
       continue;
+    }
+    try {
+      if ($("button[data-project='" + projectId + "']").attr("data-has-locale").toBool() !== true) {
+        continue;
+      }
+    } catch (error2) {
+      e = error2;
+      if (e.name === "TypeError") {
+        continue;
+      }
     }
     test = {
       north: -90,
