@@ -1346,8 +1346,10 @@ restrictProjectsToMapView = (edges = false) ->
     if projectId in validProjects or isNull projectId
       continue
     try
-      if $("button[data-project='#{projectId}']").attr("data-has-locale").toBool() isnt true
-        continue
+      if $("button[data-project='#{projectId}']").exists()
+        # Only check present buttons
+        if $("button[data-project='#{projectId}']").attr("data-has-locale").toBool() isnt true
+          continue
     test =
       north: -90
       south: 90
@@ -1406,7 +1408,7 @@ restrictProjectsToMapView = (edges = false) ->
           icon = if project in publicProjects then "social:public" else "icons:lock"
           html = """
           <li>
-          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip">
+          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip" title="#{title}">
             <iron-icon icon="#{icon}"></iron-icon>
             #{shortTitle}
           </button>

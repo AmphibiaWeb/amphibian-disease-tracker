@@ -1457,8 +1457,10 @@ restrictProjectsToMapView = function(edges) {
       continue;
     }
     try {
-      if ($("button[data-project='" + projectId + "']").attr("data-has-locale").toBool() !== true) {
-        continue;
+      if ($("button[data-project='" + projectId + "']").exists()) {
+        if ($("button[data-project='" + projectId + "']").attr("data-has-locale").toBool() !== true) {
+          continue;
+        }
       }
     } catch (undefined) {}
     test = {
@@ -1542,7 +1544,7 @@ restrictProjectsToMapView = function(edges) {
             shortTitle += "...";
           }
           icon = indexOf.call(publicProjects, project) >= 0 ? "social:public" : "icons:lock";
-          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
+          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\" title=\"" + title + "\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
           results.push($("#project-list").append(html));
         } else {
           results.push(console.log("Not re-adding button for", project));
