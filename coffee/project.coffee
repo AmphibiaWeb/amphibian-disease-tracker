@@ -1273,14 +1273,16 @@ restrictProjectsToMapView = (edges = false) ->
     # Events:
     # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#events
     # p$("google-map").dragEvents = true
+    callback = null
     do updateWidthAttr = (callback) ->
       $("google-map#community-map").removeAttr "width"
       delay 25, ->
         try
           width = $("google-map#community-map").width()
           $("google-map#community-map").attr("width","#{width}px")
-        if typeof callback is "function"
-          callback()
+        try
+          if typeof callback is "function"
+            callback()
       false
     $("window").on "resize", ->
       updateWidthAttr ->
@@ -1498,3 +1500,4 @@ $ ->
     $(".self-citation").click ->
       $(this).selectText()
       false
+  restrictProjectsToMapView()

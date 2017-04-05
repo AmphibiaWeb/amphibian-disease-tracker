@@ -1349,7 +1349,7 @@ disableMapViewFilter = function() {
 };
 
 restrictProjectsToMapView = function(edges) {
-  var button, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, updateWidthAttr, validProjects;
+  var button, callback, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, updateWidthAttr, validProjects;
   if (edges == null) {
     edges = false;
   }
@@ -1366,6 +1366,7 @@ restrictProjectsToMapView = function(edges) {
   }
   if (!_adp.hasBoundMapEvent) {
     _adp.hasBoundMapEvent = true;
+    callback = null;
     (updateWidthAttr = function(callback) {
       $("google-map#community-map").removeAttr("width");
       delay(25, function() {
@@ -1374,9 +1375,11 @@ restrictProjectsToMapView = function(edges) {
           width = $("google-map#community-map").width();
           $("google-map#community-map").attr("width", width + "px");
         } catch (undefined) {}
-        if (typeof callback === "function") {
-          return callback();
-        }
+        try {
+          if (typeof callback === "function") {
+            return callback();
+          }
+        } catch (undefined) {}
       });
       return false;
     })(callback);
@@ -1637,11 +1640,12 @@ $(function() {
     return false;
   });
   try {
-    return $(".self-citation").click(function() {
+    $(".self-citation").click(function() {
       $(this).selectText();
       return false;
     });
   } catch (undefined) {}
+  return restrictProjectsToMapView();
 });
 
 //# sourceMappingURL=maps/project.js.map
