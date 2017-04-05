@@ -1406,6 +1406,7 @@ restrictProjectsToMapView = (edges = false) ->
       Showing #{count} projects in view
     </h2>
     """
+    $("#map-view-title").remove()
     $("h2.status-notice.project-list").before html
   console.log "Showing projects", validProjects, "within", corners
   validProjects

@@ -1532,6 +1532,7 @@ restrictProjectsToMapView = function(edges) {
     var count, html;
     count = $("#project-list button:visible").length;
     html = "<h2 class=\"col-xs-12 status-notice hidden-xs project-list project-list-page map-view-title\" id=\"map-view-title\">\n  Showing " + count + " projects in view\n</h2>";
+    $("#map-view-title").remove();
     return $("h2.status-notice.project-list").before(html);
   });
   console.log("Showing projects", validProjects, "within", corners);
