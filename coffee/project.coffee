@@ -1288,6 +1288,7 @@ restrictProjectsToMapView = (edges = false) ->
     $(".map-view-control").on "iron-change", ->
       restrictProjectsToMapView.debounce 50, null, null, edges
       false
+    console.log "Bound events for RPTMV"
   # Stop the script unless the option is enabled
   unless p$("#projects-by-map-view").checked
     $("#project-list li").removeAttr "hidden"
@@ -1306,9 +1307,14 @@ restrictProjectsToMapView = (edges = false) ->
     # Add those projects to the valid projects list
     for button in $("#project-list button")
       try
-        if $(button).attr("data-has-datafile").toBool()
-          projectId = $(button).attr "data-project"
+        projectId = $(button).attr "data-project"
+        unless $(button).attr("data-has-locale").toBool()
           validProjects.push projectId
+        else
+          console.debug "#{projectId} has a locale, handling normally"
+      catch e
+        console.warn "Error checking button -- #{e.message}"
+        console.warn e.stack
   for poly in $("google-map#community-map").find("google-map-poly")
     projectId = $(poly).attr "data-project"
     if projectId in validProjects
@@ -1359,16 +1365,19 @@ restrictProjectsToMapView = (edges = false) ->
   .done (result) ->
     console.log "Got project list", result
     $("button.js-lazy-project").remove()
+    publicProjects = Object.toArray result.public_projects
     for project, title of result.projects
       if project in validProjects
         unless $("button[data-project='#{project}']").exists()
           # Add a button
           console.log "Should add visible project '#{title}'", project
+          shortTitle = title.slice(0,40) + "..."
+          icon = if project in publicProjects then "social:public" else "icons:lock"
           html = """
           <li>
           <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip">
-            <iron-icon icon="social:public"></iron-icon>
-            #{title}
+            <iron-icon icon="#{icon}"></iron-icon>
+            #{shortTitle}
           </button>
           </li>
           """

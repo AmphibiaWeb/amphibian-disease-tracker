@@ -1349,7 +1349,7 @@ disableMapViewFilter = function() {
 };
 
 restrictProjectsToMapView = function(edges) {
-  var button, corners, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, validProjects;
+  var button, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, validProjects;
   if (edges == null) {
     edges = false;
   }
@@ -1383,6 +1383,7 @@ restrictProjectsToMapView = function(edges) {
       restrictProjectsToMapView.debounce(50, null, null, edges);
       return false;
     });
+    console.log("Bound events for RPTMV");
   }
   if (!p$("#projects-by-map-view").checked) {
     $("#project-list li").removeAttr("hidden");
@@ -1403,11 +1404,17 @@ restrictProjectsToMapView = function(edges) {
     for (j = 0, len = ref.length; j < len; j++) {
       button = ref[j];
       try {
-        if ($(button).attr("data-has-datafile").toBool()) {
-          projectId = $(button).attr("data-project");
+        projectId = $(button).attr("data-project");
+        if (!$(button).attr("data-has-locale").toBool()) {
           validProjects.push(projectId);
+        } else {
+          console.debug(projectId + " has a locale, handling normally");
         }
-      } catch (undefined) {}
+      } catch (error1) {
+        e = error1;
+        console.warn("Error checking button -- " + e.message);
+        console.warn(e.stack);
+      }
     }
   }
   ref1 = $("google-map#community-map").find("google-map-poly");
@@ -1482,9 +1489,10 @@ restrictProjectsToMapView = function(edges) {
     }
   }
   $.get(uri.urlString + "admin-api.php", "action=list", "json").done(function(result) {
-    var html, project, ref13, results, title;
+    var html, icon, project, publicProjects, ref13, results, shortTitle, title;
     console.log("Got project list", result);
     $("button.js-lazy-project").remove();
+    publicProjects = Object.toArray(result.public_projects);
     ref13 = result.projects;
     results = [];
     for (project in ref13) {
@@ -1492,7 +1500,9 @@ restrictProjectsToMapView = function(edges) {
       if (indexOf.call(validProjects, project) >= 0) {
         if (!$("button[data-project='" + project + "']").exists()) {
           console.log("Should add visible project '" + title + "'", project);
-          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\">\n  <iron-icon icon=\"social:public\"></iron-icon>\n  " + title + "\n</button>\n</li>";
+          shortTitle = title.slice(0, 40) + "...";
+          icon = indexOf.call(publicProjects, project) >= 0 ? "social:public" : "icons:lock";
+          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
           results.push($("#project-list").append(html));
         } else {
           results.push(console.log("Not re-adding button for", project));
