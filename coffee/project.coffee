@@ -1292,9 +1292,12 @@ restrictProjectsToMapView = (edges = false) ->
   # Stop the script unless the option is enabled
   unless p$("#projects-by-map-view").checked
     $("#project-list li").removeAttr "hidden"
+    $("h2.status-notice.project-list").removeAttr "hidden"
     $("button.js-lazy-project").remove()
+    $("#map-view-title").remove()
     return false
   # Find the bounds
+  $("h2.status-notice.project-list").attr "hidden", "hidden"
   map = p$("google-map#community-map").map
   mapBounds = map.getBounds()
   corners =
@@ -1302,6 +1305,13 @@ restrictProjectsToMapView = (edges = false) ->
     east: mapBounds.getNorthEast().lng()
     south: mapBounds.getSouthWest().lat()
     west: mapBounds.getSouthWest().lng()
+  # Fix potential wraparound
+  if corners.west > corners.east
+    corners.west = -180
+    corners.east = 180
+  if corners.north < corners.south
+    corners.north = 90
+    corners.south = -90
   validProjects = new Array()
   if p$("#show-dataless-projects").checked
     # Add those projects to the valid projects list
@@ -1371,7 +1381,9 @@ restrictProjectsToMapView = (edges = false) ->
         unless $("button[data-project='#{project}']").exists()
           # Add a button
           console.log "Should add visible project '#{title}'", project
-          shortTitle = title.slice(0,40) + "..."
+          shortTitle = title.slice(0,40)
+          if shortTitle isnt title
+            shortTitle +=  "..."
           icon = if project in publicProjects then "social:public" else "icons:lock"
           html = """
           <li>
@@ -1387,6 +1399,14 @@ restrictProjectsToMapView = (edges = false) ->
 
   .fail (result, status) ->
     console.warn "Failed to get project list", result, status
+  .always ->
+    count = $("#project-list button:visible").length
+    html = """
+    <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page map-view-title" id="map-view-title">
+      Showing #{count} projects in view
+    </h2>
+    """
+    $("h2.status-notice.project-list").before html
   console.log "Showing projects", validProjects, "within", corners
   validProjects
 

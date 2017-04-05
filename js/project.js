@@ -1387,9 +1387,12 @@ restrictProjectsToMapView = function(edges) {
   }
   if (!p$("#projects-by-map-view").checked) {
     $("#project-list li").removeAttr("hidden");
+    $("h2.status-notice.project-list").removeAttr("hidden");
     $("button.js-lazy-project").remove();
+    $("#map-view-title").remove();
     return false;
   }
+  $("h2.status-notice.project-list").attr("hidden", "hidden");
   map = p$("google-map#community-map").map;
   mapBounds = map.getBounds();
   corners = {
@@ -1398,6 +1401,14 @@ restrictProjectsToMapView = function(edges) {
     south: mapBounds.getSouthWest().lat(),
     west: mapBounds.getSouthWest().lng()
   };
+  if (corners.west > corners.east) {
+    corners.west = -180;
+    corners.east = 180;
+  }
+  if (corners.north < corners.south) {
+    corners.north = 90;
+    corners.south = -90;
+  }
   validProjects = new Array();
   if (p$("#show-dataless-projects").checked) {
     ref = $("#project-list button");
@@ -1500,7 +1511,10 @@ restrictProjectsToMapView = function(edges) {
       if (indexOf.call(validProjects, project) >= 0) {
         if (!$("button[data-project='" + project + "']").exists()) {
           console.log("Should add visible project '" + title + "'", project);
-          shortTitle = title.slice(0, 40) + "...";
+          shortTitle = title.slice(0, 40);
+          if (shortTitle !== title) {
+            shortTitle += "...";
+          }
           icon = indexOf.call(publicProjects, project) >= 0 ? "social:public" : "icons:lock";
           html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
           results.push($("#project-list").append(html));
@@ -1514,6 +1528,11 @@ restrictProjectsToMapView = function(edges) {
     return results;
   }).fail(function(result, status) {
     return console.warn("Failed to get project list", result, status);
+  }).always(function() {
+    var count, html;
+    count = $("#project-list button:visible").length;
+    html = "<h2 class=\"col-xs-12 status-notice hidden-xs project-list project-list-page map-view-title\" id=\"map-view-title\">\n  Showing " + count + " projects in view\n</h2>";
+    return $("h2.status-notice.project-list").before(html);
   });
   console.log("Showing projects", validProjects, "within", corners);
   return validProjects;
