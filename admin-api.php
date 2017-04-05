@@ -641,7 +641,7 @@ function listProjects($unauthenticated = true)
      * to the user if false. Default true.
      ***/
     global $db, $login_status;
-    $query = 'SELECT `project_id`,`project_title`, `carto_id`, `author_data` FROM '.$db->getTable().' WHERE `public` IS TRUE';
+    $query = 'SELECT `project_id`,`project_title`, `carto_id`, `author_data`, `sample_raw_data` FROM '.$db->getTable().' WHERE `public` IS TRUE';
     $l = $db->openDB();
     $r = mysqli_query($l, $query);
     $authorizedProjects = array();
@@ -663,6 +663,7 @@ function listProjects($unauthenticated = true)
             $cartoTableList[$row[0]] = array(
                 "table" => $cartoTable,
                 "creation" => $creation,
+                "has_data" => !empty($row[4]),
             );
         } catch (Exception $e) {
 
@@ -675,6 +676,7 @@ function listProjects($unauthenticated = true)
             $queries[] = 'UNAUTHORIZED';
         }
         if (!empty($uid)) {
+            $searchedAuthorized = true;
             $query = 'SELECT `project_id`,`project_title`,`author`, `carto_id`, `author_data` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
             $queries[] = $query;
             $r = mysqli_query($l, $query);
@@ -711,6 +713,8 @@ function listProjects($unauthenticated = true)
                     }
                 }
             }
+        } else {
+            $searchedAuthorized = false;
         }
     }
 
@@ -722,6 +726,7 @@ function listProjects($unauthenticated = true)
         'editable_projects' => $editableProjects,
         'check_authentication' => !$unauthenticated,
         "carto_table_map" => $cartoTableList,
+        "checked_authorized_projects" => $searchAuthorized,
         #"permissions" => $checkedPermissions,
     );
 

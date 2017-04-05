@@ -1349,7 +1349,7 @@ disableMapViewFilter = function() {
 };
 
 restrictProjectsToMapView = function(edges) {
-  var button, corners, includeProject, j, l, len, len1, len2, m, map, mapBounds, point, poly, projectId, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, validProjects;
+  var button, corners, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, validProjects;
   if (edges == null) {
     edges = false;
   }
@@ -1370,6 +1370,24 @@ restrictProjectsToMapView = function(edges) {
       restrictProjectsToMapView.debounce(50, null, null, edges);
       return false;
     });
+    $("#projects-by-map-view").on("iron-change", function() {
+      var control, j, len, ref;
+      ref = $(".map-view-control:not(.map-view-master)");
+      for (j = 0, len = ref.length; j < len; j++) {
+        control = ref[j];
+        p$(control).disabled = !p$(this).checked;
+      }
+      return false;
+    });
+    $(".map-view-control").on("iron-change", function() {
+      restrictProjectsToMapView.debounce(50, null, null, edges);
+      return false;
+    });
+  }
+  if (!p$("#projects-by-map-view").checked) {
+    $("#project-list li").removeAttr("hidden");
+    $("button.js-lazy-project").remove();
+    return false;
   }
   map = p$("google-map#community-map").map;
   mapBounds = map.getBounds();
@@ -1380,9 +1398,21 @@ restrictProjectsToMapView = function(edges) {
     west: mapBounds.getSouthWest().lng()
   };
   validProjects = new Array();
-  ref = $("google-map#community-map").find("google-map-poly");
-  for (j = 0, len = ref.length; j < len; j++) {
-    poly = ref[j];
+  if (p$("#show-dataless-projects").checked) {
+    ref = $("#project-list button");
+    for (j = 0, len = ref.length; j < len; j++) {
+      button = ref[j];
+      try {
+        if ($(button).attr("data-has-datafile").toBool()) {
+          projectId = $(button).attr("data-project");
+          validProjects.push(projectId);
+        }
+      } catch (undefined) {}
+    }
+  }
+  ref1 = $("google-map#community-map").find("google-map-poly");
+  for (l = 0, len1 = ref1.length; l < len1; l++) {
+    poly = ref1[l];
     projectId = $(poly).attr("data-project");
     if (indexOf.call(validProjects, projectId) >= 0) {
       continue;
@@ -1393,9 +1423,9 @@ restrictProjectsToMapView = function(edges) {
       east: -180,
       west: 180
     };
-    ref1 = $(poly).find("google-map-point");
-    for (l = 0, len1 = ref1.length; l < len1; l++) {
-      point = ref1[l];
+    ref2 = $(poly).find("google-map-point");
+    for (m = 0, len2 = ref2.length; m < len2; m++) {
+      point = ref2[m];
       if (p$(point).latitude > test.north) {
         test.north = p$(point).latitude;
       }
@@ -1412,28 +1442,28 @@ restrictProjectsToMapView = function(edges) {
     includeProject = false;
     if (edges === true) {
       console.log("Checking edges of", projectId);
-      if ((corners.south < (ref2 = test.north) && ref2 < corners.north)) {
+      if ((corners.south < (ref3 = test.north) && ref3 < corners.north)) {
         includeProject = true;
       }
-      if ((corners.south < (ref3 = test.south) && ref3 < corners.north)) {
+      if ((corners.south < (ref4 = test.south) && ref4 < corners.north)) {
         includeProject = true;
       }
-      if ((corners.west < (ref4 = test.east) && ref4 < corners.east)) {
+      if ((corners.west < (ref5 = test.east) && ref5 < corners.east)) {
         includeProject = true;
       }
-      if ((corners.west < (ref5 = test.west) && ref5 < corners.east)) {
+      if ((corners.west < (ref6 = test.west) && ref6 < corners.east)) {
         includeProject = true;
       }
     } else {
       console.log("Checking containement of", projectId);
       if (test.south > corners.south && test.north < corners.north) {
-        if ((corners.west < (ref6 = test.east) && ref6 < corners.east) || (corners.west < (ref7 = test.west) && ref7 < corners.east)) {
+        if ((corners.west < (ref7 = test.east) && ref7 < corners.east) || (corners.west < (ref8 = test.west) && ref8 < corners.east)) {
           console.log("Project is wholly NS contained");
           includeProject = true;
         }
       }
       if (test.west > corners.west && test.east < corners.east) {
-        if ((corners.south < (ref8 = test.north) && ref8 < corners.north) || (corners.south < (ref9 = test.south) && ref9 < corners.north)) {
+        if ((corners.south < (ref9 = test.north) && ref9 < corners.north) || (corners.south < (ref10 = test.south) && ref10 < corners.north)) {
           console.log("Project is wholly EW contained");
           includeProject = true;
         }
@@ -1444,21 +1474,21 @@ restrictProjectsToMapView = function(edges) {
     }
   }
   $("#project-list li").attr("hidden", "hidden");
-  ref10 = $("#project-list button");
-  for (m = 0, len2 = ref10.length; m < len2; m++) {
-    button = ref10[m];
-    if (ref11 = $(button).attr("data-project"), indexOf.call(validProjects, ref11) >= 0) {
+  ref11 = $("#project-list button");
+  for (o = 0, len3 = ref11.length; o < len3; o++) {
+    button = ref11[o];
+    if (ref12 = $(button).attr("data-project"), indexOf.call(validProjects, ref12) >= 0) {
       $(button).parent("li").removeAttr("hidden");
     }
   }
   $.get(uri.urlString + "admin-api.php", "action=list", "json").done(function(result) {
-    var html, project, ref12, results, title;
+    var html, project, ref13, results, title;
     console.log("Got project list", result);
     $("button.js-lazy-project").remove();
-    ref12 = result.projects;
+    ref13 = result.projects;
     results = [];
-    for (project in ref12) {
-      title = ref12[project];
+    for (project in ref13) {
+      title = ref13[project];
       if (indexOf.call(validProjects, project) >= 0) {
         if (!$("button[data-project='" + project + "']").exists()) {
           console.log("Should add visible project '" + title + "'", project);

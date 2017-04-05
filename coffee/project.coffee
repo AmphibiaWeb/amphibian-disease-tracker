@@ -1279,6 +1279,20 @@ restrictProjectsToMapView = (edges = false) ->
       # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#event-google-map-idle
       restrictProjectsToMapView.debounce 50, null, null, edges
       false
+    $("#projects-by-map-view").on "iron-change", ->
+      # Fires for all change events
+      # https://www.webcomponents.org/element/PolymerElements/paper-toggle-button/paper-toggle-button
+      for control in $(".map-view-control:not(.map-view-master)")
+        p$(control).disabled = not p$(this).checked
+      false
+    $(".map-view-control").on "iron-change", ->
+      restrictProjectsToMapView.debounce 50, null, null, edges
+      false
+  # Stop the script unless the option is enabled
+  unless p$("#projects-by-map-view").checked
+    $("#project-list li").removeAttr "hidden"
+    $("button.js-lazy-project").remove()
+    return false
   # Find the bounds
   map = p$("google-map#community-map").map
   mapBounds = map.getBounds()
@@ -1288,6 +1302,13 @@ restrictProjectsToMapView = (edges = false) ->
     south: mapBounds.getSouthWest().lat()
     west: mapBounds.getSouthWest().lng()
   validProjects = new Array()
+  if p$("#show-dataless-projects").checked
+    # Add those projects to the valid projects list
+    for button in $("#project-list button")
+      try
+        if $(button).attr("data-has-datafile").toBool()
+          projectId = $(button).attr "data-project"
+          validProjects.push projectId
   for poly in $("google-map#community-map").find("google-map-poly")
     projectId = $(poly).attr "data-project"
     if projectId in validProjects

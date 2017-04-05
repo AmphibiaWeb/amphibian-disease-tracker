@@ -317,7 +317,22 @@ $loginStatus = getLoginState();
           <?php echo $polyHtml;
              ?>
         </google-map>
-        <p class="text-center text-muted">Community Project Map</p>
+        <p class="text-center text-muted col-xs-12">Community Project Map</p>
+        <div class="col-xs-12">
+          <div class="row">
+            <!-- Controls for the map view -->
+            <div class="col-xs-12 col-md-4">
+              <paper-toggle-button id="projects-by-map-view" class="map-view-control map-view-master">
+                Only show projects in map view
+              </paper-toggle-button>
+            </div>
+            <div class="col-xs-12 col-md-4">
+              <paper-toggle-button id="show-dataless-projects" class="map-view-control">
+                Show projects without data
+              </paper-toggle-button>
+            </div>
+          </div>
+        </div>
         <script type="text/javascript">
           _adp.aggregateHulls = <?php echo json_encode($superCoords);
              ?>;
