@@ -571,7 +571,7 @@ $loginStatus = getLoginState();
             <?php
           $k = 1;
     while ($k <= $pages) {
-        echo "<li><a href='?page=".$k."'>".$k."</a></li>\n";
+        echo "<li><a href='?page=".$k."&pagination=".$max."'>".$k."</a></li>\n";
         ++$k;
     }
     ?>
