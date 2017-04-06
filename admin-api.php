@@ -16,7 +16,7 @@ try {
     ini_set('post_max_size', '500M');
     ini_set('upload_max_filesize', '500M');
 } catch (Exception $e) {
-    
+
 }
 
 $print_login_state = false;
@@ -641,7 +641,7 @@ function listProjects($unauthenticated = true)
      * to the user if false. Default true.
      ***/
     global $db, $login_status;
-    $query = 'SELECT `project_id`,`project_title`, `carto_id`, `author_data` FROM '.$db->getTable().' WHERE `public` IS TRUE';
+    $query = 'SELECT `project_id`,`project_title`, `carto_id`, `author_data`, `sample_raw_data` FROM '.$db->getTable().' WHERE `public` IS TRUE';
     $l = $db->openDB();
     $r = mysqli_query($l, $query);
     $authorizedProjects = array();
@@ -663,6 +663,7 @@ function listProjects($unauthenticated = true)
             $cartoTableList[$row[0]] = array(
                 "table" => $cartoTable,
                 "creation" => $creation,
+                "has_data" => !empty($row[4]),
             );
         } catch (Exception $e) {
 
@@ -675,7 +676,8 @@ function listProjects($unauthenticated = true)
             $queries[] = 'UNAUTHORIZED';
         }
         if (!empty($uid)) {
-            $query = 'SELECT `project_id`,`project_title`,`author`, `carto_id`, `author_data` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
+            $searchedAuthorized = true;
+            $query = 'SELECT `project_id`,`project_title`,`author`, `carto_id`, `author_data`, `sample_raw_data` FROM `'.$db->getTable()."` WHERE (`access_data` LIKE '%".$uid."%' OR `author`='$uid')";
             $queries[] = $query;
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
@@ -691,6 +693,7 @@ function listProjects($unauthenticated = true)
                     $cartoTableList[$row[0]] = array(
                         "table" => $cartoTable,
                         "creation" => $creation,
+                        "has_data" => !empty($row[5]),
                     );
                 } catch (Exception $e) {
 
@@ -711,6 +714,8 @@ function listProjects($unauthenticated = true)
                     }
                 }
             }
+        } else {
+            $searchedAuthorized = false;
         }
     }
 
@@ -722,6 +727,7 @@ function listProjects($unauthenticated = true)
         'editable_projects' => $editableProjects,
         'check_authentication' => !$unauthenticated,
         "carto_table_map" => $cartoTableList,
+        "checked_authorized_projects" => $searchedAuthorized,
         #"permissions" => $checkedPermissions,
     );
 
@@ -1446,7 +1452,10 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
+        $resp = null;
         if($rawResponse === false) {
+            $errorOut = true;
+            $error = error_get_last();
             try {
                 $errorMessageRaw = print_r(error_get_last(),true);
                 $errorMessage = json_encode(error_get_last());
@@ -1454,9 +1463,117 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             } catch(Exception $e) {
                 $errorMessage = $errorMessageRaw;
             }
-            throw(new Exception("Fatal FIMS communication error 006 (No Response) [".$errorMessage."]"));
+            if(strpos($error["message"],"400 Bad Request") !== false) {
+                # Try looking it up -- might already exist
+                global $fimsPassword;
+                $fimsPassCredential = $fimsPassword;
+                $fimsUserCredential = 'amphibiaweb'; # AmphibianDisease
+                $fimsAuthUrl = 'http://www.biscicol.org/biocode-fims/rest/authenticationService/login';
+                $fimsAuthData = array(
+                    'username' => $fimsUserCredential,
+                    'password' => $fimsPassCredential,
+                );
+                # Post the login
+                $postData = http_build_query($fimsAuthData);
+                $params = array('http' => array(
+                    'method' => 'POST',
+                    'content' => $postData,
+                    'header' => implode("\r\n", $fimsDefaultHeaders)."\r\n",
+                ));
+                $ctx = stream_context_create($params);
+                $rawReauthResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+                if($rawReauthResponse === false) {
+                    throw(new Exception("Fatal FIMS communication error 009 (No Response)"));
+                }
+                $loginHeaders = $http_response_header;
+                $cookies = array();
+                $cookiesString = '';
+                foreach ($http_response_header as $hdr) {
+                    if (preg_match('/^Set-Cookie:\s*([^;]+)/', $hdr, $matches)) {
+                        $cookiesString .= $matches[1].';';
+                        parse_str($matches[1], $tmp);
+                        $cookies += $tmp;
+                    }
+                }
+                $loginResponse = json_decode($rawReauthResponse, true);
+                if (empty($loginResponse['url'])) {
+                    throw(new Exception('Invalid Login Response E093'));
+                }
+                # Try to fetch the expedition
+                # http://www.biscicol.org/apidocs/?url=http://www.biscicol.org/apidocs/current/service.json#!/Expeditions/getExpedition
+                $target = "http://www.biscicol.org/biocode-fims/rest/projects/".$fimsMintData["projectId"]."/expeditions/".$projectLink;
+                $headers = array(
+                    "Accept: application/json",
+                );
+                $ch = curl_init($target);
+                curl_setopt($ch, CURLOPT_HTTPGET, 1);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false); // required as of PHP 5.6.0
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($ch, CURLOPT_COOKIE, $cookiesString);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_HEADER, 1);
+                $rawResponse2 = curl_exec($ch);
+                $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+                $http_response_header = substr($rawResponse2, 0, $header_size);
+                $body = substr($rawResponse2, $header_size);
+                curl_close($ch);
+                if($body !== false) {
+                    $resp = json_decode($body, true);
+                    $rawResponse = array(
+                        "original_mint_response" => $rawResponse,
+                        "detail_response" => $body,
+                        "detail_decoded" => $resp,
+                        "target" => $target,
+                    );
+                    if(!empty($resp)) {
+                        $errorOut = false;
+                        if($resp["usrMessage"] == "You are not a member of this private project") $includeHeaderDetails = true;
+                        else $includeHeaderDetails = false;
+                    } else {
+                        $includeHeaderDetails = true;
+                    }
+                    if ($includeHeaderDetails) {
+                        $rawResponse["response_header"] = $http_response_header;
+                        $rawResponse["response_header_login"] = $loginHeaders;
+                        $rawResponse["response_login"] = $loginResponse;
+                        $rawResponse["cookies_sent_with_lookup"] = $cookiesString;
+                    }
+                } else {
+                    $rawResponse = array(
+                        "did_lookup" => true,
+                        "target" => $target,
+                        "original_response" => $rawResponse,
+                        "detail_response" => $rawResponse2,
+                        "header" => $params,
+                        "error" => error_get_last(),
+                    );
+                }
+            }
+            if($errorOut) {
+                # Try getting a list
+                $target = "http://www.biscicol.org/biocode-fims/rest/expeditions/admin/list/".$fimsMintData["projectId"];
+                $headers = $fimsDefaultHeaders;
+                $headers[] = 'Cookie: '.$cookiesString;
+                $header = implode("\r\n", $headers)."\r\n";
+                $params['http']['header'] = $header;
+                $params["http"]["method"] = "GET";
+                unset($params["http"]["content"]);
+                $ctx = stream_context_create($params);
+                $rawResponse2 = file_get_contents($target, false, $ctx);
+                $resp = json_decode($rawResponse2, true);
+                $rawResponse = array(
+                    "original_response" => $rawResponse,
+                    "list_response" => $rawResponse2,
+                    "list_decoded" => $resp,
+                );
+                if($rawResponse2 === false) {
+                    $rawResponse["error"] = error_get_last();
+                }
+                throw(new Exception("Fatal FIMS communication error 006 (No Response) [".$errorMessage."]"));
+            }
         }
-        $resp = json_decode($rawResponse, true);
+        if(empty($resp)) $resp = json_decode($rawResponse, true);
         # Get the ID in the result
         /***
          * Example result:

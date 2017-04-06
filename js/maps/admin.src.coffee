@@ -1981,6 +1981,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
     uniqueFieldIds = new Array()
     duplicatedFieldIds = new Array()
     for n, row of dataObject
+      prettyHumanRow = toInt(n) + 1
       tRow = new Object()
       uniqueColumn = new Array()
       for column, value of row
@@ -2040,18 +2041,18 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
             # Coerce to ISO8601
             t = excelDateToUnixTime(value, true)
             if not isNumber t
-              console.error "This row (##{n}) has a non-date value ! (#{value} = #{t})"
-              stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{n}. Check your dates!"
+              console.error "This row (##{prettyHumanRow}) has a non-date value ! (#{value} = #{t})"
+              stopLoadBarsError null, "Detected an invalid date '#{value}' at row ##{prettyHumanRow}. Check your dates!"
               return false
             d = new Date(t)
             ucBerkeleyFounded = new Date("1868-03-23")
             if t < ucBerkeleyFounded.getTime()
-              console.error "This row (##{n}) has a date (#{value} = #{t}) too far in the past!"
-              stopLoadBarsError null, "Detected an implausibly old date '#{value}' = <code>#{d.toDateString()}</code> at row ##{n}. Check your dates!"
+              console.error "This row (##{prettyHumanRow}) has a date (#{value} = #{t}) too far in the past!"
+              stopLoadBarsError null, "Detected an implausibly old date '#{value}' = <code>#{d.toDateString()}</code> at row ##{prettyHumanRow}. Check your dates!"
               return false
             if t > Date.now()
-              console.error "This row (##{n}) has a date (#{value} = #{t}) after today!"
-              stopLoadBarsError null, "Detected a future date '#{value}' at row ##{n}. Check your dates!"
+              console.error "This row (##{prettyHumanRow}) has a date (#{value} = #{t}) after today!"
+              stopLoadBarsError null, "Detected a future date '#{value}' at row ##{prettyHumanRow}. Check your dates!"
               return false
             date = d.getUTCDate()
             if date < 10
@@ -2065,16 +2066,18 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
           when "decimalLatitude", "decimalLongitude", "alt", "coordinateUncertaintyInMeters"
             # Sanity -- do the coordinates exist on earth?
             if not isNumber value
-              stopLoadBarsError null, "Detected an invalid number for #{column} at row #{n} ('#{value}')"
+              stopLoadBarsError null, "Detected an invalid number for #{column} at row #{prettyHumanRow} (<code>#{value}</code>)"
               return false
-            if column is "decimalLatitude" and -90 > value > 90
-              stopLoadBarsError null, "Detected an invalid latitude #{value} at row #{n}"
-              return false
-            if column is "decimalLongitude" and -180 > value > 180
-              stopLoadBarsError null, "Detected an invalid longitude #{value} at row #{n}"
-              return false
+            if column is "decimalLatitude"
+              if value < -90 or value > 90
+                stopLoadBarsError null, "Detected an invalid latitude <code>#{value}</code> at row #{prettyHumanRow}<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>."
+                return false
+            if column is "decimalLongitude"
+              if value < -180 or value > 180
+                stopLoadBarsError null, "Detected an invalid longitude <code>#{value}</code> at row #{prettyHumanRow}<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>."
+                return false
             if column is "coordinateUncertaintyInMeters" and value <= 0
-              stopLoadBarsError null, "Coordinate uncertainty must be >= 0 at row #{n}"
+              stopLoadBarsError null, "Coordinate uncertainty must be >= 0 at row #{prettyHumanRow}"
               return false
             cleanValue = toFloat value
           when "diseaseDetected"
@@ -4653,6 +4656,14 @@ recalculateAndUpdateHull = (points = _adp.workingProjectPoints) ->
   cartoData
 
 
+remintArk = ->
+  title = _adp.projectData.project_title.trim()
+  mintExpedition _adp.projectData.project_id, title, (arkResult) ->
+    if arkResult.status is true
+      _adp.projectData.project_obj_id = arkResult.ark.identifier
+      console.log "New ARK:", _adp.projectData.project_obj_id
+      console.warn "The save may not update the ARK -- it may have to be manually changed in the database"
+      saveEditorData(true)
 
 
 saveEditorData = (force = false, callback) ->
@@ -4992,6 +5003,8 @@ stopLoadBarsError = (currentTimeout, message) ->
   if message?
     bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
     stopLoadError null, "There was a problem validating your data"
+  try
+    $("#cancel-new-upload").remove()
   false
 
 
@@ -5237,7 +5250,10 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       catch
         alertError = "UNREADABLE_FIMS_ERROR"
       result.human_error += """" Server said: <code>#{alertError}</code> """
-      stopLoadBarsError null, result.human_error
+      try
+        stopLoadBarsError null, result.human_error
+      catch
+        stopLoadError result.human_error
       console.error result.error, "#{adminParams.apiTarget}?#{args}"
       return false
     resultObj = result
@@ -5247,7 +5263,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       _adp.fims = new Object()
     _adp.fims.expedition =
       permalink: result.project_permalink
-      ark: result.ark
+      ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
       expeditionId: result.fims_expedition_id
       fimsRawResponse: result.responses.expedition_response
   .fail (result, status) ->

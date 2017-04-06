@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, disableMapViewFilter, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -20,7 +20,7 @@ try {
     checkLoggedIn(function(result) {
       var accountSettings, menu;
       accountSettings = result.status ? "    <paper-item data-href=\"https://amphibiandisease.org/admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"https://amphibiandisease.org/admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
-      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item disabled data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"https://amphibiandisease.org/about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
+      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "/dashboard.php\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"https://amphibiandisease.org/about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
       $("#header-overflow-menu").remove();
       $("header#header-bar .logo-container + p").append(menu);
       if (!isNull(accountSettings)) {
@@ -841,7 +841,8 @@ copyLink = function(zeroClipObj, zeroClipEvent, html5) {
 searchProjects = function() {
 
   /*
-   * Handler to search projects
+   * Handler to search projects on the top-level project page
+   *
    */
   var args, cols, item, search;
   search = $("#project-search").val();
@@ -1341,6 +1342,231 @@ showCitation = function() {
 
 window.showCitation = showCitation;
 
+disableMapViewFilter = function() {
+  $("google-map#community-map").unbind("google-map-idle");
+  _adp.hasBoundMapEvent = false;
+  return true;
+};
+
+restrictProjectsToMapView = function(edges) {
+  var button, callback, corners, e, error1, includeProject, j, l, len, len1, len2, len3, m, map, mapBounds, o, point, poly, projectId, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, test, updateWidthAttr, validProjects;
+  if (edges == null) {
+    edges = false;
+  }
+
+  /*
+   * When we're on the top-level project page, we should only see
+   * projects in the list that are visible in the map.
+   *
+   * See:
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/208
+   */
+  if (!$("google-map#community-map").exists()) {
+    return false;
+  }
+  if (!_adp.hasBoundMapEvent) {
+    _adp.hasBoundMapEvent = true;
+    callback = null;
+    (updateWidthAttr = function(callback) {
+      $("google-map#community-map").removeAttr("width");
+      delay(25, function() {
+        var width;
+        try {
+          width = $("google-map#community-map").width();
+          $("google-map#community-map").attr("width", width + "px");
+        } catch (undefined) {}
+        try {
+          if (typeof callback === "function") {
+            return callback();
+          }
+        } catch (undefined) {}
+      });
+      return false;
+    })(callback);
+    $("window").on("resize", function() {
+      updateWidthAttr(function() {
+        return restrictProjectsToMapView.debounce(50, null, null, edges);
+      });
+      return false;
+    });
+    $("google-map#community-map").on("google-map-idle", function() {
+      updateWidthAttr(function() {
+        return restrictProjectsToMapView.debounce(50, null, null, edges);
+      });
+      return false;
+    });
+    $("#projects-by-map-view").on("iron-change", function() {
+      var control, j, len, ref;
+      ref = $(".map-view-control:not(.map-view-master)");
+      for (j = 0, len = ref.length; j < len; j++) {
+        control = ref[j];
+        p$(control).disabled = !p$(this).checked;
+      }
+      return false;
+    });
+    $(".map-view-control").on("iron-change", function() {
+      restrictProjectsToMapView.debounce(50, null, null, edges);
+      return false;
+    });
+    console.log("Bound events for RPTMV");
+  }
+  if (!p$("#projects-by-map-view").checked) {
+    $("#project-list li").removeAttr("hidden");
+    $("h2.status-notice.project-list").removeAttr("hidden");
+    $("button.js-lazy-project").remove();
+    $("#map-view-title").remove();
+    return false;
+  }
+  $("h2.status-notice.project-list").attr("hidden", "hidden");
+  map = p$("google-map#community-map").map;
+  mapBounds = map.getBounds();
+  corners = {
+    north: mapBounds.getNorthEast().lat(),
+    east: mapBounds.getNorthEast().lng(),
+    south: mapBounds.getSouthWest().lat(),
+    west: mapBounds.getSouthWest().lng()
+  };
+  if (corners.west > corners.east) {
+    corners.west = -180;
+    corners.east = 180;
+  }
+  validProjects = new Array();
+  if (p$("#show-dataless-projects").checked) {
+    ref = $("#project-list button");
+    for (j = 0, len = ref.length; j < len; j++) {
+      button = ref[j];
+      try {
+        projectId = $(button).attr("data-project");
+        if (!$(button).attr("data-has-locale").toBool()) {
+          validProjects.push(projectId);
+        } else {
+          console.debug(projectId + " has a locale, handling normally");
+        }
+      } catch (error1) {
+        e = error1;
+        console.warn("Error checking button -- " + e.message);
+        console.warn(e.stack);
+      }
+    }
+  }
+  ref1 = $("google-map#community-map").find("google-map-poly");
+  for (l = 0, len1 = ref1.length; l < len1; l++) {
+    poly = ref1[l];
+    projectId = $(poly).attr("data-project");
+    if (indexOf.call(validProjects, projectId) >= 0 || isNull(projectId)) {
+      continue;
+    }
+    try {
+      if ($("button[data-project='" + projectId + "']").exists()) {
+        if ($("button[data-project='" + projectId + "']").attr("data-has-locale").toBool() !== true) {
+          continue;
+        }
+      }
+    } catch (undefined) {}
+    test = {
+      north: -90,
+      south: 90,
+      east: -180,
+      west: 180
+    };
+    ref2 = $(poly).find("google-map-point");
+    for (m = 0, len2 = ref2.length; m < len2; m++) {
+      point = ref2[m];
+      if (p$(point).latitude > test.north) {
+        test.north = p$(point).latitude;
+      }
+      if (p$(point).longitude > test.east) {
+        test.east = p$(point).longitude;
+      }
+      if (p$(point).longitude < test.west) {
+        test.west = p$(point).longitude;
+      }
+      if (p$(point).latitude < test.south) {
+        test.south = p$(point).latitude;
+      }
+    }
+    includeProject = false;
+    if (edges === true) {
+      console.log("Checking edges of", projectId);
+      if ((corners.south < (ref3 = test.north) && ref3 < corners.north)) {
+        includeProject = true;
+      }
+      if ((corners.south < (ref4 = test.south) && ref4 < corners.north)) {
+        includeProject = true;
+      }
+      if ((corners.west < (ref5 = test.east) && ref5 < corners.east)) {
+        includeProject = true;
+      }
+      if ((corners.west < (ref6 = test.west) && ref6 < corners.east)) {
+        includeProject = true;
+      }
+    } else {
+      console.log("Checking containement of", projectId);
+      if (test.south > corners.south && test.north < corners.north) {
+        if ((corners.west < (ref7 = test.east) && ref7 < corners.east) || (corners.west < (ref8 = test.west) && ref8 < corners.east)) {
+          console.log("Project is wholly NS contained");
+          includeProject = true;
+        }
+      }
+      if (test.west > corners.west && test.east < corners.east) {
+        if ((corners.south < (ref9 = test.north) && ref9 < corners.north) || (corners.south < (ref10 = test.south) && ref10 < corners.north)) {
+          console.log("Project is wholly EW contained");
+          includeProject = true;
+        }
+      }
+    }
+    if (includeProject) {
+      validProjects.push(projectId);
+    }
+  }
+  $("#project-list li").attr("hidden", "hidden");
+  ref11 = $("#project-list button");
+  for (o = 0, len3 = ref11.length; o < len3; o++) {
+    button = ref11[o];
+    if (ref12 = $(button).attr("data-project"), indexOf.call(validProjects, ref12) >= 0) {
+      $(button).parent("li").removeAttr("hidden");
+    }
+  }
+  $.get(uri.urlString + "admin-api.php", "action=list", "json").done(function(result) {
+    var html, icon, project, publicProjects, ref13, results, shortTitle, title;
+    console.log("Got project list", result);
+    $("button.js-lazy-project").remove();
+    publicProjects = Object.toArray(result.public_projects);
+    ref13 = result.projects;
+    results = [];
+    for (project in ref13) {
+      title = ref13[project];
+      if (indexOf.call(validProjects, project) >= 0) {
+        if (!$("button[data-project='" + project + "']").exists()) {
+          console.log("Should add visible project '" + title + "'", project);
+          shortTitle = title.slice(0, 40);
+          if (shortTitle !== title) {
+            shortTitle += "...";
+          }
+          icon = indexOf.call(publicProjects, project) >= 0 ? "social:public" : "icons:lock";
+          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\" title=\"" + title + "\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
+          results.push($("#project-list").append(html));
+        } else {
+          results.push(console.log("Not re-adding button for", project));
+        }
+      } else {
+        results.push(console.log("Not adding invalid project", project));
+      }
+    }
+    return results;
+  }).fail(function(result, status) {
+    return console.warn("Failed to get project list", result, status);
+  }).always(function() {
+    var count, html;
+    count = $("#project-list button:visible").length;
+    html = "<h2 class=\"col-xs-12 status-notice hidden-xs project-list project-list-page map-view-title\" id=\"map-view-title\">\n  Showing " + count + " projects in view\n</h2>";
+    $("#map-view-title").remove();
+    return $("h2.status-notice.project-list").before(html);
+  });
+  console.log("Showing projects", validProjects, "within", corners);
+  return validProjects;
+};
+
 $(function() {
   var zcConfig;
   _adp.projectId = uri.o.param("id");
@@ -1421,11 +1647,12 @@ $(function() {
     return false;
   });
   try {
-    return $(".self-citation").click(function() {
+    $(".self-citation").click(function() {
       $(this).selectText();
       return false;
     });
   } catch (undefined) {}
+  return restrictProjectsToMapView();
 });
 
 //# sourceMappingURL=maps/project.js.map

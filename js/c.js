@@ -864,9 +864,8 @@ Function.prototype.debounce = function() {
       delete core.debouncers[key];
     }
     if (!execAsap) {
-      func.apply(func, args);
+      return func.apply(func, args);
     }
-    return console.info("Debounce applied");
   };
   if (timeout != null) {
     try {
@@ -881,7 +880,6 @@ Function.prototype.debounce = function() {
     return false;
   }
   if (key != null) {
-    console.log("Debouncing '" + key + "' for " + threshold + " ms");
     return core.debouncers[key] = delay(threshold, function() {
       return delayed();
     });

@@ -114,6 +114,16 @@ $projectLookupQuery = $query;
 $db->invalidateLink();
 $result = mysqli_query($db->getLink(), $query);
 
+$flatProjects = "SELECT DISTINCT project_id FROM `".$flatTable->getTable()."`";
+
+$fpResult = mysqli_query($flatTable->getLink(), $flatProjects);
+$flatRecordsProjects = array();
+while($flatRow = mysqli_fetch_row($fpResult)) {
+    $flatRecordsProjects[] = $flatRow[0];
+}
+
+
+
 $rowsProcessed = 0;
 $rowsProcessedWithGeocode = 0;
 $geocodeInspected = 0;
@@ -133,6 +143,15 @@ while($projectRow = mysqli_fetch_row($result)) {
         $projectsNoData++;
         continue;
     }
+
+    # Only projects with data can be in the flat table, so it's fine
+    # to check here
+    $flatKey = array_find($project, $flatRecordsProjects);
+    if($flatKey !== false) {
+        unset($flatRecordsProjects[$flatKey]);
+    }
+
+
     $modified = floatval($projectRow[2]);
     $ageingReason = "NATURAL";
     # Check the modified time in the project....
@@ -185,6 +204,7 @@ while($projectRow = mysqli_fetch_row($result)) {
     $projectsAgeingList[] = array(
         "project" => $project,
         "ageing-value" => $projectAgeing,
+        "data-last-modified" => $modified,
         "needs-ageing-update" => $projectAgeing < $modified,
         "ageing-reason" => $ageingReason,
     );
@@ -693,6 +713,23 @@ while($projectRow = mysqli_fetch_row($result)) {
 }
 ## End project loop
 
+# Remove any flat record projects that don't have a corresponding main
+# project anymore
+$removedProjects = array();
+$removedProjectsFailed = array();
+foreach($flatRecordsProjects as $removeProject) {
+    # Test
+    if(empty($removeProject)) continue;
+    $removeQuery = "DELETE FROM `".$flatTable->getTable()."` WHERE `project_id`='".$removeProject."'";
+    $r = mysqli_query($flatTable->getLink(), $removeQuery);
+    if($r !== false) {
+        $removedProjects[] = $removeProject;
+    } else {
+        $removedProjectsFailed[] = $removeProject;
+    }
+}
+
+
 unset($newCols["id"]);
 
 foreach($newCols as $newColumn => $dataType) {
@@ -867,6 +904,11 @@ $response = array(
     ),
     "columns-added" => $newCols,
     "projects" => array(
+        "projects-removed" => array(
+            "attempted" => sizeof($removedProjects) + sizeof($removedProjectsFailed),
+            "succeeded" => $removedProjects,
+            "failed" => $removedProjectsFailed,
+        ),
         "projects-updated" => $projectsUpdated,
         "projects-inspected" => $projectsInspected,
         "projects-no-data" => $projectsNoData,

@@ -15,8 +15,8 @@ try {
      */
     checkLoggedIn(function(result) {
       var accountSettings, menu;
-      accountSettings = result.status ? "    <paper-item data-href=\"https://amphibiandisease.org/admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"https://amphibiandisease.org/admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
-      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item disabled data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"https://amphibiandisease.org/about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
+      accountSettings = result.status ? "    <paper-item data-href=\"" + uri.urlString + "admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"" + uri.urlString + "admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
+      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "/dashboard.php\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"" + uri.urlString + "about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
       $("#header-overflow-menu").remove();
       $("header#header-bar .logo-container + p").append(menu);
       if (!isNull(accountSettings)) {
@@ -115,10 +115,10 @@ getRandomDataColor = function() {
 getServerChart = function(chartType, chartParams) {
   var args, cp, requestKey, requestValue;
   if (chartType == null) {
-    chartType = "infection";
+    chartType = "location";
   }
   startLoad();
-  args = "action=chart&sort=" + chartType;
+  args = "action=chart&bin=" + chartType;
   if (typeof chartParams === "object") {
     cp = new Array();
     for (requestKey in chartParams) {
@@ -143,6 +143,7 @@ getServerChart = function(chartType, chartParams) {
     for (l = 0, len = datasets.length; l < len; l++) {
       data = datasets[l];
       data.data = Object.toArray(data.data);
+      console.log("examine data", data);
       if (data.borderWidth == null) {
         data.borderWidth = 1;
       }
@@ -152,7 +153,30 @@ getServerChart = function(chartType, chartParams) {
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          colors = getRandomDataColor();
+          console.log("examine dataitem", dataItem);
+          if (data.stack === "PosNeg") {
+            if (data.label.toLowerCase().search("positive") !== -1) {
+              colors = {
+                border: "rgba(220,30,25,1)",
+                background: "rgba(220,30,25,0.2)"
+              };
+            }
+            if (data.label.toLowerCase().search("negative") !== -1) {
+              colors = {
+                border: "rgba(25,70,220,1)",
+                background: "rgba(25,70,220,0.2)"
+              };
+            }
+          } else if (data.stack === "totals") {
+            if (data.label.toLowerCase().search("total") !== -1) {
+              colors = {
+                border: "rgba(25,200,90,1)",
+                background: "rgba(25,200,90,0.2)"
+              };
+            }
+          } else {
+            colors = getRandomDataColor();
+          }
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
         }
@@ -330,8 +354,8 @@ renderNewChart = function() {
   }
   $(".chart.dynamic-chart").remove();
   $(".chart-title").remove();
-  chartType = (ref1 = chartOptions.sort) != null ? ref1 : "infection";
-  delete chartOptions.sort;
+  chartType = (ref1 = chartOptions.bin) != null ? ref1 : "location";
+  delete chartOptions.bin;
   console.info("Going to generate a new chart with the following options", chartOptions);
   getServerChart(chartType, chartOptions);
   return chartOptions;
@@ -341,6 +365,9 @@ $(function() {
   console.log("Loaded dashboard");
   getServerChart();
   $("#generate-chart").click(function() {
+    return renderNewChart.debounce(50);
+  });
+  $(".chart-param paper-listbox").on("iron-select", function() {
     return renderNewChart.debounce(50);
   });
   return false;

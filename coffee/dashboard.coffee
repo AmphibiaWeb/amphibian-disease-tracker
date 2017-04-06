@@ -9,11 +9,11 @@ try
     # Create the overflow menu lazily
     ###
     checkLoggedIn (result) ->
-      accountSettings = if result.status then """    <paper-item data-href="https://amphibiandisease.org/admin" class="click">
+      accountSettings = if result.status then """    <paper-item data-href="#{uri.urlString}admin" class="click">
         <iron-icon icon="icons:settings-applications"></iron-icon>
         Account Settings
       </paper-item>
-      <paper-item data-href="https://amphibiandisease.org/admin-login.php?q=logout" class="click">
+      <paper-item data-href="#{uri.urlString}admin-login.php?q=logout" class="click">
         <span class="glyphicon glyphicon-log-out"></span>
         Log Out
       </paper-item>
@@ -23,7 +23,7 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
+        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
           Summary Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
@@ -34,7 +34,7 @@ try
           <iron-icon icon="glyphicon-social:github"></iron-icon>
           Github
         </paper-item>
-        <paper-item data-href="https://amphibiandisease.org/about.php" class="click">
+        <paper-item data-href="#{uri.urlString}about.php" class="click">
           About / Legal
         </paper-item>
       </paper-menu>
@@ -123,6 +123,7 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
 
 getRandomDataColor = ->
   colorString = "rgba(#{randomInt(0,255)},#{randomInt(0,255)},#{randomInt(0,255)}"
+  # Translucent
   colors =
     border: "#{colorString},1)"
     background: "#{colorString},0.2)"
@@ -130,10 +131,10 @@ getRandomDataColor = ->
 
 
 
-getServerChart = (chartType = "infection", chartParams) ->
+getServerChart = (chartType = "location", chartParams) ->
   # Get the chart
   startLoad()
-  args = "action=chart&sort=#{chartType}"
+  args = "action=chart&bin=#{chartType}"
   if typeof chartParams is "object"
     cp = new Array()
     for requestKey, requestValue of chartParams
@@ -153,12 +154,29 @@ getServerChart = (chartType = "infection", chartParams) ->
     i = 0
     for data in datasets
       data.data = Object.toArray data.data
+      console.log "examine data", data
       data.borderWidth ?= 1
       unless data.backgroundColor?
         data.borderColor = new Array()
         data.backgroundColor = new Array()
         for dataItem in data.data
-          colors = getRandomDataColor()
+          console.log "examine dataitem", dataItem
+          if data.stack is "PosNeg"
+            if data.label.toLowerCase().search("positive") isnt -1
+              colors =
+                border: "rgba(220,30,25,1)"
+                background: "rgba(220,30,25,0.2)"
+            if data.label.toLowerCase().search("negative") isnt -1
+              colors =
+                border: "rgba(25,70,220,1)"
+                background: "rgba(25,70,220,0.2)"
+          else if data.stack is "totals"
+            if data.label.toLowerCase().search("total") isnt -1
+              colors =
+                border: "rgba(25,200,90,1)"
+                background: "rgba(25,200,90,0.2)"              
+          else
+            colors = getRandomDataColor()
           data.borderColor.push colors.border
           data.backgroundColor.push colors.background
       datasets[i] = data
@@ -301,8 +319,8 @@ renderNewChart = ->
   $(".chart.dynamic-chart").remove()
   $(".chart-title").remove()
   # Get the new one
-  chartType = chartOptions.sort ? "infection"
-  delete chartOptions.sort
+  chartType = chartOptions.bin ? "location"
+  delete chartOptions.bin
   console.info "Going to generate a new chart with the following options", chartOptions
   getServerChart chartType, chartOptions
   chartOptions
@@ -313,5 +331,7 @@ $ ->
   console.log "Loaded dashboard"
   getServerChart()
   $("#generate-chart").click ->
+    renderNewChart.debounce 50
+  $(".chart-param paper-listbox").on "iron-select", ->
     renderNewChart.debounce 50
   false

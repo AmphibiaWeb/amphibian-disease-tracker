@@ -61,6 +61,8 @@ stopLoadBarsError = (currentTimeout, message) ->
   if message?
     bsAlert "<strong>Data Validation Error</strong>: #{message}", "danger"
     stopLoadError null, "There was a problem validating your data"
+  try
+    $("#cancel-new-upload").remove()
   false
 
 
@@ -306,7 +308,10 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       catch
         alertError = "UNREADABLE_FIMS_ERROR"
       result.human_error += """" Server said: <code>#{alertError}</code> """
-      stopLoadBarsError null, result.human_error
+      try
+        stopLoadBarsError null, result.human_error
+      catch
+        stopLoadError result.human_error
       console.error result.error, "#{adminParams.apiTarget}?#{args}"
       return false
     resultObj = result
@@ -316,7 +321,7 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       _adp.fims = new Object()
     _adp.fims.expedition =
       permalink: result.project_permalink
-      ark: result.ark
+      ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
       expeditionId: result.fims_expedition_id
       fimsRawResponse: result.responses.expedition_response
   .fail (result, status) ->

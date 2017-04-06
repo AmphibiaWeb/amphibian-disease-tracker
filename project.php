@@ -317,7 +317,22 @@ $loginStatus = getLoginState();
           <?php echo $polyHtml;
              ?>
         </google-map>
-        <p class="text-center text-muted">Community Project Map</p>
+        <p class="text-center text-muted col-xs-12">Community Project Map</p>
+        <div class="col-xs-12">
+          <div class="row">
+            <!-- Controls for the map view -->
+            <div class="col-xs-12 col-md-4">
+              <paper-toggle-button id="projects-by-map-view" class="map-view-control map-view-master">
+                Only show projects in map view
+              </paper-toggle-button>
+            </div>
+            <div class="col-xs-12 col-md-4">
+              <paper-toggle-button id="show-dataless-projects" class="map-view-control" disabled>
+                Show projects without data and locales
+              </paper-toggle-button>
+            </div>
+          </div>
+        </div>
         <script type="text/javascript">
           _adp.aggregateHulls = <?php echo json_encode($superCoords);
              ?>;
@@ -455,8 +470,10 @@ $loginStatus = getLoginState();
                 # creation
                 $arrayKey = $orderData . $projectCreatedOn;
             }
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
-            $htmlList[$arrayKey] = '<li>'.$projectHtml."</li>\n";
+            $hasData = strbool(intval($project["sampled_collection_end"]) > 0);
+            $hasLocale = strbool($project["lat"] != 0 && $project["lng"] != 0);
+            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey' data-has-datafile='$hasData' data-has-locale='$hasLocale'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
+            $htmlList[$arrayKey] = '<li data-has-datafile="'.$hasData.'"  data-has-locale="'.$hasLocale.'">'.$projectHtml."</li>\n";
         }
         if ($i < $max) {
             $count = $i;

@@ -27,7 +27,7 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
+        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
           Summary Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
@@ -784,7 +784,8 @@ copyLink = (zeroClipObj = _adp.zcClient, zeroClipEvent, html5 = true) ->
 
 searchProjects = ->
   ###
-  # Handler to search projects
+  # Handler to search projects on the top-level project page
+  #
   ###
   search = $("#project-search").val()
   if isNull search
@@ -1249,6 +1250,192 @@ showCitation = ->
 
 window.showCitation = showCitation
 
+
+disableMapViewFilter = ->
+  $("google-map#community-map").unbind("google-map-idle")
+  _adp.hasBoundMapEvent = false
+  true
+
+
+restrictProjectsToMapView = (edges = false) ->
+  ###
+  # When we're on the top-level project page, we should only see
+  # projects in the list that are visible in the map.
+  #
+  # See:
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/208
+  ###
+  unless $("google-map#community-map").exists()
+    return false
+  unless _adp.hasBoundMapEvent
+    # When zooming/panning in map, fire this
+    _adp.hasBoundMapEvent = true
+    # Events:
+    # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#events
+    # p$("google-map").dragEvents = true
+    callback = null
+    do updateWidthAttr = (callback) ->
+      $("google-map#community-map").removeAttr "width"
+      delay 25, ->
+        try
+          width = $("google-map#community-map").width()
+          $("google-map#community-map").attr("width","#{width}px")
+        try
+          if typeof callback is "function"
+            callback()
+      false
+    $("window").on "resize", ->
+      updateWidthAttr ->
+        restrictProjectsToMapView.debounce 50, null, null, edges
+      false
+    $("google-map#community-map").on "google-map-idle", ->
+      # Fires after pans and zooms
+      # See:
+      # https://www.webcomponents.org/element/GoogleWebComponents/google-map/google-map#event-google-map-idle
+      updateWidthAttr ->
+        restrictProjectsToMapView.debounce 50, null, null, edges
+      false
+    $("#projects-by-map-view").on "iron-change", ->
+      # Fires for all change events
+      # https://www.webcomponents.org/element/PolymerElements/paper-toggle-button/paper-toggle-button
+      for control in $(".map-view-control:not(.map-view-master)")
+        p$(control).disabled = not p$(this).checked
+      false
+    $(".map-view-control").on "iron-change", ->
+      restrictProjectsToMapView.debounce 50, null, null, edges
+      false
+    console.log "Bound events for RPTMV"
+  # Stop the script unless the option is enabled
+  unless p$("#projects-by-map-view").checked
+    $("#project-list li").removeAttr "hidden"
+    $("h2.status-notice.project-list").removeAttr "hidden"
+    $("button.js-lazy-project").remove()
+    $("#map-view-title").remove()
+    return false
+  # Find the bounds
+  $("h2.status-notice.project-list").attr "hidden", "hidden"
+  map = p$("google-map#community-map").map
+  mapBounds = map.getBounds()
+  corners =
+    north: mapBounds.getNorthEast().lat()
+    east: mapBounds.getNorthEast().lng()
+    south: mapBounds.getSouthWest().lat()
+    west: mapBounds.getSouthWest().lng()
+  # Fix potential wraparound
+  if corners.west > corners.east
+    # We only have to check East-West
+    # See:
+    # https://developers.google.com/maps/documentation/javascript/reference#LatLngBoundsLiteral
+    corners.west = -180
+    corners.east = 180
+  validProjects = new Array()
+  if p$("#show-dataless-projects").checked
+    # Add those projects to the valid projects list
+    for button in $("#project-list button")
+      try
+        projectId = $(button).attr "data-project"
+        unless $(button).attr("data-has-locale").toBool()
+          validProjects.push projectId
+        else
+          console.debug "#{projectId} has a locale, handling normally"
+      catch e
+        console.warn "Error checking button -- #{e.message}"
+        console.warn e.stack
+  for poly in $("google-map#community-map").find("google-map-poly")
+    projectId = $(poly).attr "data-project"
+    if projectId in validProjects or isNull projectId
+      continue
+    try
+      if $("button[data-project='#{projectId}']").exists()
+        # Only check present buttons
+        if $("button[data-project='#{projectId}']").attr("data-has-locale").toBool() isnt true
+          continue
+    test =
+      north: -90
+      south: 90
+      east: -180
+      west: 180
+    for point in $(poly).find "google-map-point"
+      if p$(point).latitude > test.north then test.north = p$(point).latitude
+      if p$(point).longitude > test.east then test.east = p$(point).longitude
+      if p$(point).longitude < test.west then test.west = p$(point).longitude
+      if p$(point).latitude < test.south then test.south = p$(point).latitude
+    includeProject = false
+    if edges is true
+      # Check if any edges of the project are visible
+      console.log "Checking edges of", projectId
+      if corners.south < test.north < corners.north
+        includeProject = true
+      if corners.south < test.south < corners.north
+        includeProject = true
+      if corners.west < test.east < corners.east
+        includeProject = true
+      if corners.west < test.west < corners.east
+        includeProject = true
+    else
+      console.log "Checking containement of", projectId
+      if test.south > corners.south and test.north < corners.north
+        # At least one edge needs to be visible
+        if corners.west < test.east < corners.east or corners.west < test.west < corners.east
+          console.log "Project is wholly NS contained"
+          includeProject = true
+      if test.west > corners.west and test.east < corners.east
+        # at least one edge should be visible
+        if corners.south < test.north < corners.north or corners.south < test.south < corners.north
+          console.log "Project is wholly EW contained"
+          includeProject = true
+    if includeProject
+      validProjects.push projectId
+  # We have a list of projects that are OK to show
+  $("#project-list li").attr "hidden", "hidden"
+  for button in $("#project-list button")
+    if $(button).attr("data-project") in validProjects
+      $(button).parent("li").removeAttr "hidden"
+  # Query all projects, render all that match
+  $.get "#{uri.urlString}admin-api.php", "action=list", "json"
+  .done (result) ->
+    console.log "Got project list", result
+    $("button.js-lazy-project").remove()
+    publicProjects = Object.toArray result.public_projects
+    for project, title of result.projects
+      if project in validProjects
+        unless $("button[data-project='#{project}']").exists()
+          # Add a button
+          console.log "Should add visible project '#{title}'", project
+          shortTitle = title.slice(0,40)
+          if shortTitle isnt title
+            shortTitle +=  "..."
+          icon = if project in publicProjects then "social:public" else "icons:lock"
+          html = """
+          <li>
+          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip" title="#{title}">
+            <iron-icon icon="#{icon}"></iron-icon>
+            #{shortTitle}
+          </button>
+          </li>
+          """
+          $("#project-list").append html
+        else console.log "Not re-adding button for", project
+      else console.log "Not adding invalid project", project
+
+  .fail (result, status) ->
+    console.warn "Failed to get project list", result, status
+  .always ->
+    count = $("#project-list button:visible").length
+    html = """
+    <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page map-view-title" id="map-view-title">
+      Showing #{count} projects in view
+    </h2>
+    """
+    $("#map-view-title").remove()
+    $("h2.status-notice.project-list").before html
+  console.log "Showing projects", validProjects, "within", corners
+  validProjects
+
+
+
+
+
 $ ->
   _adp.projectId = uri.o.param "id"
   checkProjectAuthorization()
@@ -1318,3 +1505,4 @@ $ ->
     $(".self-citation").click ->
       $(this).selectText()
       false
+  restrictProjectsToMapView()

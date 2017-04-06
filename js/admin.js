@@ -14,7 +14,7 @@
  * @path ./coffee/admin.coffee
  * @author Philip Kahn
  */
-var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, createOverflowMenu, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, kmlHandler, kmlLoader, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
+var _7zHandler, alertBadProject, bootstrapTransect, bootstrapUploader, checkInitLoad, copyMarkdown, createOverflowMenu, csvHandler, dataAttrs, dataFileParams, delayFimsRecheck, excelDateToUnixTime, excelHandler, excelHandler2, finalizeData, getCanonicalDataCoords, getInfoTooltip, getProjectCartoData, getTableCoordinates, getUploadIdentifier, helperDir, imageHandler, kmlHandler, kmlLoader, loadCreateNewProject, loadEditor, loadProject, loadProjectBrowser, loadSUProfileBrowser, loadSUProjectBrowser, mapAddPoints, mapOverlayPolygon, mintBcid, mintExpedition, newGeoDataHandler, pointStringToLatLng, pointStringToPoint, popManageUserAccess, populateAdminActions, recalculateAndUpdateHull, remintArk, removeDataFile, renderValidateProgress, resetForm, revalidateAndUpdateData, saveEditorData, showAddUserDialog, showUnrestrictionCriteria, singleDataFileHelper, startAdminActionHelper, startEditorUploader, stopLoadBarsError, uploadedData, user, userEmail, userFullname, validateData, validateFimsData, validateTaxonData, verifyLoginCredentials, zipHandler,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
 
@@ -1916,7 +1916,7 @@ removeDataFile = function(removeFile, unsetHDF) {
 };
 
 newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
-  var author, center, cleanValue, column, coords, coordsPoint, csvOptions, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
+  var author, center, cleanValue, column, coords, coordsPoint, csvOptions, d, data, date, duplicatedFieldIds, e, error1, error2, error3, error4, error5, error6, error7, error8, fimsExtra, getCoordsFromData, k, message, missingHtml, missingRequired, missingStatement, month, n, now, parsedData, prettyHumanRow, projectIdentifier, row, rows, sampleRow, samplesMeta, skipCol, t, tRow, totalData, trimmed, ucBerkeleyFounded, uniqueColumn, uniqueFieldIds, value;
   if (dataObject == null) {
     dataObject = new Object();
   }
@@ -1998,6 +1998,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     duplicatedFieldIds = new Array();
     for (n in dataObject) {
       row = dataObject[n];
+      prettyHumanRow = toInt(n) + 1;
       tRow = new Object();
       uniqueColumn = new Array();
       for (column in row) {
@@ -2055,20 +2056,20 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
             column = "dateIdentified";
             t = excelDateToUnixTime(value, true);
             if (!isNumber(t)) {
-              console.error("This row (#" + n + ") has a non-date value ! (" + value + " = " + t + ")");
-              stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + n + ". Check your dates!");
+              console.error("This row (#" + prettyHumanRow + ") has a non-date value ! (" + value + " = " + t + ")");
+              stopLoadBarsError(null, "Detected an invalid date '" + value + "' at row #" + prettyHumanRow + ". Check your dates!");
               return false;
             }
             d = new Date(t);
             ucBerkeleyFounded = new Date("1868-03-23");
             if (t < ucBerkeleyFounded.getTime()) {
-              console.error("This row (#" + n + ") has a date (" + value + " = " + t + ") too far in the past!");
-              stopLoadBarsError(null, "Detected an implausibly old date '" + value + "' = <code>" + (d.toDateString()) + "</code> at row #" + n + ". Check your dates!");
+              console.error("This row (#" + prettyHumanRow + ") has a date (" + value + " = " + t + ") too far in the past!");
+              stopLoadBarsError(null, "Detected an implausibly old date '" + value + "' = <code>" + (d.toDateString()) + "</code> at row #" + prettyHumanRow + ". Check your dates!");
               return false;
             }
             if (t > Date.now()) {
-              console.error("This row (#" + n + ") has a date (" + value + " = " + t + ") after today!");
-              stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + n + ". Check your dates!");
+              console.error("This row (#" + prettyHumanRow + ") has a date (" + value + " = " + t + ") after today!");
+              stopLoadBarsError(null, "Detected a future date '" + value + "' at row #" + prettyHumanRow + ". Check your dates!");
               return false;
             }
             date = d.getUTCDate();
@@ -2089,19 +2090,23 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
           case "alt":
           case "coordinateUncertaintyInMeters":
             if (!isNumber(value)) {
-              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + n + " ('" + value + "')");
+              stopLoadBarsError(null, "Detected an invalid number for " + column + " at row " + prettyHumanRow + " (<code>" + value + "</code>)");
               return false;
             }
-            if (column === "decimalLatitude" && (-90 > value && value > 90)) {
-              stopLoadBarsError(null, "Detected an invalid latitude " + value + " at row " + n);
-              return false;
+            if (column === "decimalLatitude") {
+              if (value < -90 || value > 90) {
+                stopLoadBarsError(null, "Detected an invalid latitude <code>" + value + "</code> at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>90</code> and <code>-90</code>.");
+                return false;
+              }
             }
-            if (column === "decimalLongitude" && (-180 > value && value > 180)) {
-              stopLoadBarsError(null, "Detected an invalid longitude " + value + " at row " + n);
-              return false;
+            if (column === "decimalLongitude") {
+              if (value < -180 || value > 180) {
+                stopLoadBarsError(null, "Detected an invalid longitude <code>" + value + "</code> at row " + prettyHumanRow + "<br/><br/>Valid latitudes are between <code>180</code> and <code>-180</code>.");
+                return false;
+              }
             }
             if (column === "coordinateUncertaintyInMeters" && value <= 0) {
-              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + n);
+              stopLoadBarsError(null, "Coordinate uncertainty must be >= 0 at row " + prettyHumanRow);
               return false;
             }
             cleanValue = toFloat(value);
@@ -4619,6 +4624,19 @@ recalculateAndUpdateHull = function(points) {
   return cartoData;
 };
 
+remintArk = function() {
+  var title;
+  title = _adp.projectData.project_title.trim();
+  return mintExpedition(_adp.projectData.project_id, title, function(arkResult) {
+    if (arkResult.status === true) {
+      _adp.projectData.project_obj_id = arkResult.ark.identifier;
+      console.log("New ARK:", _adp.projectData.project_obj_id);
+      console.warn("The save may not update the ARK -- it may have to be manually changed in the database");
+      return saveEditorData(true);
+    }
+  });
+};
+
 saveEditorData = function(force, callback) {
   var args, authorObj, bpPathCount, cd, data, debugInfoDelay, e, el, error1, error2, error3, i, isChangingPublic, key, l, len, len1, len2, len3, len4, len5, len6, m, maxPathCount, multi, o, pathSet, paths, pointCount, postData, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, tf, tfPathCount, tfPaths, u, w, x;
   if (force == null) {
@@ -5030,6 +5048,9 @@ stopLoadBarsError = function(currentTimeout, message) {
     bsAlert("<strong>Data Validation Error</strong>: " + message, "danger");
     stopLoadError(null, "There was a problem validating your data");
   }
+  try {
+    $("#cancel-new-upload").remove();
+  } catch (undefined) {}
   return false;
 };
 
@@ -5282,7 +5303,7 @@ mintExpedition = function(projectId, title, callback) {
   }
   args = "perform=create_expedition&link=" + projectId + "&title=" + (post64(title)) + "&public=" + publicProject;
   _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alertError, error2, errorJson, errorJsonEscaped, errorParsed, lastError, message, wholeError;
+    var alertError, error2, error3, errorJson, errorJsonEscaped, errorParsed, lastError, message, wholeError;
     console.log("Expedition got", result);
     if (!result.status) {
       errorJsonEscaped = result.error.replace(/^.*\[(.*)\]$/img, "$1");
@@ -5297,7 +5318,11 @@ mintExpedition = function(projectId, title, callback) {
         alertError = "UNREADABLE_FIMS_ERROR";
       }
       result.human_error += "\" Server said: <code>" + alertError + "</code> ";
-      stopLoadBarsError(null, result.human_error);
+      try {
+        stopLoadBarsError(null, result.human_error);
+      } catch (error3) {
+        stopLoadError(result.human_error);
+      }
       console.error(result.error, adminParams.apiTarget + "?" + args);
       return false;
     }
@@ -5310,7 +5335,7 @@ mintExpedition = function(projectId, title, callback) {
     }
     return _adp.fims.expedition = {
       permalink: result.project_permalink,
-      ark: result.ark,
+      ark: typeof result.ark !== "object" ? result.ark : result.ark.identifier,
       expeditionId: result.fims_expedition_id,
       fimsRawResponse: result.responses.expedition_response
     };

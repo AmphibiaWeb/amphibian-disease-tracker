@@ -1346,9 +1346,9 @@ createOverflowMenu = ->
         <iron-icon icon="glyphicon-social:github"></iron-icon>
         Github
       </paper-item>
-      <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
-        Summary Dashboard
-      </paper-item>
+        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
+          Summary Dashboard
+        </paper-item>
       <paper-item data-function="firstLoadInstructionPrompt" data-args="true" class="click">
         Show Welcome
       </paper-item>

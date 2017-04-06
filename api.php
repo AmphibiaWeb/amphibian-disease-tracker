@@ -994,7 +994,7 @@ function getChartData($chartDataParams) {
      * - positive species
      *
      ***/
-    switch($chartDataParams["sort"]) {
+    switch($chartDataParams["bin"]) {
     case "time":
         # Sort by time
         break;
@@ -1007,9 +1007,24 @@ function getChartData($chartDataParams) {
         # country per coordinate
         # Look up the carto id fields
         $labels = array();
-        $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY country";
-        $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY country";
-        $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY country";
+        $orderBy = $chartDataParams["sort"];
+        $doInfectionSort = false;
+        if(empty($orderBy)) {
+            $orderBy = "samples";
+        } else {
+            if($orderBy == "infection") {
+                # We're going to do some magic
+                $doInfectionSort = true;
+                $orderBy = "samples";
+            } else {
+                $orderBy = $db->sanitize($orderBy);
+                if(!$flatTable->columnExists($orderBy, false)) $orderBy = "samples";
+
+            }
+        }
+        $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
+        $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
+        $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY $orderBy";
         $result = mysqli_query($flatTable->getLink(), $allQuery);
         if($result === false) {
           returnAjax(array(
@@ -1026,62 +1041,101 @@ function getChartData($chartDataParams) {
         $chartDatasetData = array();
         $chartPosDatasetData = array();
         $chartNegDatasetData = array();
+
         $posData = array();
         while($posRow = mysqli_fetch_assoc($posResult)) {
-        $posData[$posRow["country"]] = $posRow["samples"];
-    }
+            $posData[$posRow["country"]] = $posRow["samples"];
+        }
+
         $negData = array();
         while($negRow = mysqli_fetch_assoc($negResult)) {
-        $negData[$negRow["country"]] = $negRow["samples"];
-    }
+            $negData[$negRow["country"]] = $negRow["samples"];
+        }
+
+        if($doInfectionSort) {
+            $baseData = array();
+            $posBaseData = array();
+            $negBaseData = array();
+        }
+
         while($row = mysqli_fetch_assoc($result)) {
-        if(empty($row["country"])) continue;
-        $labels[] = $row["country"];
-        $key = $row["country"] . " total";
+            if(empty($row["country"])) continue;
+            $labels[] = $row["country"];
+            $key = $row["country"] . " total";
 
-        $negSamples = null;
-        $posSamples = null;
-        if(array_key_exists($row["country"], $posData)) {
-        $posSamples = intval($posData[$row["country"]]);
-    }
-        if(array_key_exists($row["country"], $negData)) {
-        $negSamples = intval($negData[$row["country"]]);
-    }
-        if(empty($posSamples)) $posSamples = 0;
-        if(empty($negSamples)) $negSamples = 0;
-        #$chartDatasetData[] = $thisChartDatasetData;
-        $chartDatasetData[] = intval($row["samples"]);
-        $chartPosDatasetData[] = $posSamples;
-        $chartNegDatasetData[] = $negSamples;
-        $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
-        if ($indeterminant < 0) $indeterminant = 0;
-        $chartIndDatasetData[] = $indeterminant;
+            $negSamples = null;
+            $posSamples = null;
+            if(array_key_exists($row["country"], $posData)) {
+                $posSamples = intval($posData[$row["country"]]);
+            }
+            if(array_key_exists($row["country"], $negData)) {
+                $negSamples = intval($negData[$row["country"]]);
+            }
+            if(empty($posSamples)) $posSamples = 0;
+            if(empty($negSamples)) $negSamples = 0;
 
+            if(!$doInfectionSort) {
+                $chartDatasetData[] = intval($row["samples"]);
+                $chartPosDatasetData[] = $posSamples;
+                $chartNegDatasetData[] = $negSamples;
+                $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
+                if ($indeterminant < 0) $indeterminant = 0;
+                $chartIndDatasetData[] = $indeterminant;
+            } else {
+                # Percent to three decimals
+                $percent = intval($posSamples) * 10000 / intval($row["samples"]);
+                $smartKey = "$percent";
+                while(array_key_exists($smartKey, $baseData)) {
+                    $smartKey = $smartKey . "0";
+                }
+                $baseData[$smartKey] = array(
+                    "count" => intval($row["samples"]),
+                    "country" => $row["country"],
+                );
+                $posBaseData[$smartKey] = $posSamples;
+                $negBaseData[$smartKey] = $negSamples;
+            }
+        }
+        if($doInfectionSort) {
+            $labels = array();
+            ksort($baseData, SORT_NUMERIC);
+            foreach($baseData as $k=>$v) {
+                $labels[] = $v["country"];
+                $chartDatasetData[] = $v["count"];
+                $chartPosDatasetData[] = $posBaseData[$k];
+                $chartNegDatasetData[] = $negBaseData[$k];
+                $indeterminant = $v["count"] - $posBaseData[$k] - $negBaseData[$k];
+                if ($indeterminant < 0) $indeterminant = 0;
+                $chartIndDatasetData[] = $indeterminant;
+                $by = "by infection percent";
+            }
+        } else {
+            $by = "by ".$orderBy;
         }
         $chartData = array(
-          "labels" => $labels,
-                   "stacking" => array("x"=>false, "y"=>true),
-          "datasets" => array(
-            array(
-              "label" => "Total Samples",
-              "data" => $chartDatasetData,
-                      "stack" => "totals",
+            "labels" => $labels,
+            "stacking" => array("x"=>false, "y"=>true),
+            "datasets" => array(
+                array(
+                    "label" => "Total Samples",
+                    "data" => $chartDatasetData,
+                    "stack" => "totals",
+                ),
+                array(
+                    "label" => "Positive Samples",
+                    "data" => $chartPosDatasetData,
+                    "stack" => "PosNeg",
+                ),
+                array(
+                    "label" => "Negative Samples",
+                    "data" => $chartNegDatasetData,
+                    "stack" => "PosNeg",
+                ),
+                //         array(
+                // "label" => "Indeterminant Samples",
+                //         "data" => $chartIndDatasetData,
+                //         ),
             ),
-                array(
-        "label" => "Positive Samples",
-                "data" => $chartPosDatasetData,
-                "stack" => "PosNeg",
-                ),
-                array(
-        "label" => "Negative Samples",
-                "data" => $chartNegDatasetData,
-                "stack" => "PosNeg",
-                ),
-        //         array(
-        // "label" => "Indeterminant Samples",
-        //         "data" => $chartIndDatasetData,
-        //         ),
-          ),
         );
         returnAjax(array(
           "status" => true,
@@ -1090,7 +1144,8 @@ function getChartData($chartDataParams) {
           "rows" => $rowCount,
           "format" => "chart.js",
           "provided" => $chartDataParams,
-          "full_description" => "Sample representation per country",
+          "full_description" => "Sample representation per country, $by",
+          "basedata" => $baseData,
         ));
         break;
     case "infection":
