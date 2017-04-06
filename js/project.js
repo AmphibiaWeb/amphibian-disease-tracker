@@ -855,11 +855,17 @@ searchProjects = function() {
   console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var button, html, icon, j, l, len, len1, maxTitleLength, project, projectId, projects, publicState, ref, results, s, shortTitle, showList, tooltipTitle;
+    var bootstrapSmallBreakpoint, button, html, icon, j, l, len, len1, maxTitleLength, project, projectId, projects, publicState, ref, ref1, results, s, shortTitle, showList, tooltipTitle;
     console.info(result);
     html = "";
     showList = new Array();
-    maxTitleLength = $(window).width() < 1280 ? 20 : 40;
+    maxTitleLength = 40;
+    bootstrapSmallBreakpoint = 768;
+    if ((bootstrapSmallBreakpoint < (ref = $(window).width()) && ref < 1050)) {
+      maxTitleLength = 20;
+    } else if ($(window).width() < 1280) {
+      maxTitleLength = 30;
+    }
     projects = Object.toArray(result.result);
     if (projects.length > 0) {
       for (j = 0, len = projects.length; j < len; j++) {
@@ -878,7 +884,7 @@ searchProjects = function() {
         html += "<li class='project-search-result'>" + button + "</li>";
       }
     } else {
-      s = (ref = result.search) != null ? ref : search;
+      s = (ref1 = result.search) != null ? ref1 : search;
       html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
     }
     $("#project-result-container").html(html);

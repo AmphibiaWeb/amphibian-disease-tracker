@@ -801,7 +801,13 @@ searchProjects = ->
     console.info result
     html = ""
     showList = new Array()
-    maxTitleLength = if $(window).width() < 1280 then 20 else 40
+    maxTitleLength = 40
+    # Smaller than bootstrap "small" it's full width
+    bootstrapSmallBreakpoint = 768
+    if bootstrapSmallBreakpoint < $(window).width() < 1050
+      maxTitleLength = 20
+    else if $(window).width() < 1280
+      maxTitleLength = 30
     projects = Object.toArray result.result
     if projects.length > 0
       for project in projects
@@ -1414,7 +1420,7 @@ restrictProjectsToMapView = (edges = false) ->
             tooltipTitle = title
             shortTitle +=  "..."
           else
-            tooltipTitle = "Project ##{project.slice(0,8)}..."            
+            tooltipTitle = "Project ##{project.slice(0,8)}..."
           icon = if project in publicProjects then "social:public" else "icons:lock"
           html = """
           <li>

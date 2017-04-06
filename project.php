@@ -516,7 +516,7 @@ $loginStatus = getLoginState();
     ?>
 
         <div class="col-xs-12 col-md-4 col-lg-6 project-search project-list-page">
-          <paper-card heading="Search Projects">
+          <paper-card heading="Search Projects" elevation="2">
             <div class="card-content form-horizontal">
               <div class="search-project form-group">
                 <label for="project-search" class="col-xs-12 col-md-4 col-lg-3 control-label">Search Projects</label>
