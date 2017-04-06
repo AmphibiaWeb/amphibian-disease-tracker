@@ -1461,6 +1461,26 @@ paginationBinder = ->
   defaultPaginationNumber = 10
   # Delay setup until bind is ready
   delayPolymerBind dropdownSelector, ->
+    if p$(dropdownSelector).disabled
+      # do the base selection
+      currentCount = uri.o.param("pagination") ? $("#project-list li button:not(.js-lazy-project)").length
+      currentCount = toInt currentCount
+      selectedItem = false
+      selected = 0
+      for paginationNumberItem in $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item")
+        try
+          paginationNumber = toInt $(paginationNumberItem).text().trim()
+        catch e
+          paginationNumber = defaultPaginationNumber
+        if paginationNumber is currentCount
+          selectedItem = true
+          break
+        selected++
+      unless selectedItem
+        selected = 0
+      p$("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").selected = selected
+      console.log "Pre-selected item", selected
+    # Setup
     p$(dropdownSelector).disabled = false
     $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content")
     .unbind("iron-select")
@@ -1482,6 +1502,7 @@ paginationBinder = ->
       console.log "Dropdown selected paginator", paginationNumber
       page = uri.o.param("page") ? 1
       currentCount = uri.o.param("pagination") ? $("#project-list li button:not(.js-lazy-project)").length
+      currentCount = toInt currentCount
       if currentCount < defaultPaginationNumber
         currentCount = defaultPaginationNumber
       if currentCount is paginationNumber

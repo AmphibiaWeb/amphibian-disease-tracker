@@ -1597,7 +1597,33 @@ paginationBinder = function() {
   }
   defaultPaginationNumber = 10;
   delayPolymerBind(dropdownSelector, function() {
-    var getPaginationNumber;
+    var currentCount, e, error1, getPaginationNumber, j, len, paginationNumber, paginationNumberItem, ref, ref1, selected, selectedItem;
+    if (p$(dropdownSelector).disabled) {
+      currentCount = (ref = uri.o.param("pagination")) != null ? ref : $("#project-list li button:not(.js-lazy-project)").length;
+      currentCount = toInt(currentCount);
+      selectedItem = false;
+      selected = 0;
+      ref1 = $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item");
+      for (j = 0, len = ref1.length; j < len; j++) {
+        paginationNumberItem = ref1[j];
+        try {
+          paginationNumber = toInt($(paginationNumberItem).text().trim());
+        } catch (error1) {
+          e = error1;
+          paginationNumber = defaultPaginationNumber;
+        }
+        if (paginationNumber === currentCount) {
+          selectedItem = true;
+          break;
+        }
+        selected++;
+      }
+      if (!selectedItem) {
+        selected = 0;
+      }
+      p$("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").selected = selected;
+      console.log("Pre-selected item", selected);
+    }
     p$(dropdownSelector).disabled = false;
     $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").unbind("iron-select").on("iron-select", function() {
       console.log("iron-select fired");
@@ -1608,18 +1634,19 @@ paginationBinder = function() {
       return getPaginationNumber.debounce(50, null, null, $(this).parent("paper-listbox"));
     });
     getPaginationNumber = function(el) {
-      var args, currentCount, destinationUrl, e, error1, newPage, page, paginationNumber, paginationNumberItem, projectCountStart, ref, ref1;
+      var args, destinationUrl, error2, newPage, page, projectCountStart, ref2, ref3;
       paginationNumberItem = p$(el).selectedItem;
       try {
         paginationNumber = toInt($(paginationNumberItem).text().trim());
-      } catch (error1) {
-        e = error1;
+      } catch (error2) {
+        e = error2;
         console.warn("Unable to read pagination number -- " + e.message);
         paginationNumber = defaultPaginationNumber;
       }
       console.log("Dropdown selected paginator", paginationNumber);
-      page = (ref = uri.o.param("page")) != null ? ref : 1;
-      currentCount = (ref1 = uri.o.param("pagination")) != null ? ref1 : $("#project-list li button:not(.js-lazy-project)").length;
+      page = (ref2 = uri.o.param("page")) != null ? ref2 : 1;
+      currentCount = (ref3 = uri.o.param("pagination")) != null ? ref3 : $("#project-list li button:not(.js-lazy-project)").length;
+      currentCount = toInt(currentCount);
       if (currentCount < defaultPaginationNumber) {
         currentCount = defaultPaginationNumber;
       }
