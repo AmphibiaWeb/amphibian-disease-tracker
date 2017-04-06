@@ -403,7 +403,7 @@ $loginStatus = getLoginState();
     $html = '';
     $i = 0;
     $count = sizeof($list);
-    $max = 25;
+    $max = 15;
     $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
     if ($page > 1) {
         $multiplier = $page - 1;
