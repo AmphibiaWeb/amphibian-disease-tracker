@@ -438,7 +438,7 @@ $loginStatus = getLoginState();
                 #echo "<!-- Starting list from item $i after skipping $skip (total: $count) -->";
                 $announcedStartSpot = true;
             }
-            if ($i >= $max + $skip) {
+            if ($i > $max + $skip) {
                 break;
             }
             $authorData = json_decode($project['author_data'], true);
@@ -513,7 +513,7 @@ $loginStatus = getLoginState();
         <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max;
     ?> newest projects <small class="text-muted">of <?php echo $sortText;
     ?></small></h2>
-        <div class="col-xs-12">
+        <div class="col-xs-12 pagination-selection-container">
           <!-- <div class="row"> -->
             <h3 class="small display-inline">
               Showing
@@ -528,7 +528,7 @@ $loginStatus = getLoginState();
               </paper-listbox>
             </paper-dropdown-menu>
             <h3 class="small display-inline">
-              per page
+              projects per page
             </h3>
           <!-- </div> -->
         </div>

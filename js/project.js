@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, disableMapViewFilter, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, disableMapViewFilter, fillSorterWithDropdown, kmlLoader, paginationBinder, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -1584,8 +1584,59 @@ restrictProjectsToMapView = function(edges) {
   return validProjects;
 };
 
+paginationBinder = function() {
+
+  /*
+   * Set up events for the pagination binder
+   */
+  var defaultPaginationNumber, dropdownSelector;
+  dropdownSelector = "paper-dropdown-menu#pagination-selector-dropdown";
+  if (!$(dropdownSelector).exists()) {
+    console.error("Selector does not exist:", dropdownSelector);
+    return false;
+  }
+  defaultPaginationNumber = 10;
+  delayPolymerBind(dropdownSelector, function() {
+    var getPaginationNumber;
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").unbind("iron-select").on("iron-select", function() {
+      console.log("iron-select fired");
+      return getPaginationNumber.debounce(50, null, null, this);
+    });
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item").unbind("click").click(function() {
+      console.log("paper-item click event fired");
+      return getPaginationNumber.debounce(50, null, null, $(this).parent("paper-listbox"));
+    });
+    getPaginationNumber = function(el) {
+      var args, currentCount, destinationUrl, e, error1, newPage, page, paginationNumber, paginationNumberItem, projectCountStart, ref, ref1;
+      paginationNumberItem = p$(el).selectedItem;
+      try {
+        paginationNumber = toInt($(paginationNumberItem).text().trim());
+      } catch (error1) {
+        e = error1;
+        console.warn("Unable to read pagination number -- " + e.message);
+        paginationNumber = defaultPaginationNumber;
+      }
+      console.log("Dropdown selected paginator", paginationNumber);
+      page = (ref = uri.o.param("page")) != null ? ref : 1;
+      currentCount = (ref1 = uri.o.param("pagination")) != null ? ref1 : $("#project-list li button:not(.js-lazy-project)").length;
+      if (currentCount < defaultPaginationNumber) {
+        currentCount = defaultPaginationNumber;
+      }
+      projectCountStart = ((page - 1) * currentCount) + 1;
+      newPage = (Math.floor(projectCountStart / paginationNumber)) + 1;
+      args = "page=" + newPage + "&pagination=" + paginationNumber;
+      destinationUrl = uri.urlString + "project.php?" + args;
+      console.log(destinationUrl, args);
+      goTo(destionationUrl);
+      return false;
+    };
+    return false;
+  });
+  return false;
+};
+
 $(function() {
-  var zcConfig;
+  var e, error1, zcConfig;
   _adp.projectId = uri.o.param("id");
   checkProjectAuthorization();
   $("#project-list button").unbind().click(function() {
@@ -1669,7 +1720,14 @@ $(function() {
       return false;
     });
   } catch (undefined) {}
-  return restrictProjectsToMapView();
+  restrictProjectsToMapView();
+  try {
+    return paginationBinder();
+  } catch (error1) {
+    e = error1;
+    console.error("Unable to bind events to pagination");
+    return $(".pagination-selection-container").attr("hidden", "hidden");
+  }
 });
 
 //# sourceMappingURL=maps/project.js.map

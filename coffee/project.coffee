@@ -1450,6 +1450,49 @@ restrictProjectsToMapView = (edges = false) ->
 
 
 
+paginationBinder = ->
+  ###
+  # Set up events for the pagination binder
+  ###
+  dropdownSelector = "paper-dropdown-menu#pagination-selector-dropdown"
+  unless $(dropdownSelector).exists()
+    console.error "Selector does not exist:", dropdownSelector
+    return false
+  defaultPaginationNumber = 10
+  # Delay setup until bind is ready
+  delayPolymerBind dropdownSelector, ->
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content")
+    .unbind("iron-select")
+    .on "iron-select", ->
+      console.log "iron-select fired"
+      getPaginationNumber.debounce 50, null, null, this
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item")
+    .unbind("click")
+    .click ->
+      console.log "paper-item click event fired"
+      getPaginationNumber.debounce 50, null, null, $(this).parent("paper-listbox")
+    getPaginationNumber = (el) ->
+      paginationNumberItem = p$(el).selectedItem
+      try
+        paginationNumber = toInt $(paginationNumberItem).text().trim()
+      catch e
+        console.warn "Unable to read pagination number -- #{e.message}"
+        paginationNumber = defaultPaginationNumber
+      console.log "Dropdown selected paginator", paginationNumber
+      page = uri.o.param("page") ? 1
+      currentCount = uri.o.param("pagination") ? $("#project-list li button:not(.js-lazy-project)").length
+      if currentCount < defaultPaginationNumber
+        currentCount = defaultPaginationNumber
+      projectCountStart = ((page - 1) * currentCount) + 1
+      newPage = (projectCountStart // paginationNumber) + 1
+      args = "page=#{newPage}&pagination=#{paginationNumber}"
+      destinationUrl = "#{uri.urlString}project.php?#{args}"
+      console.log destinationUrl, args
+      goTo destionationUrl
+      false
+    false
+  false
+
 
 
 $ ->
@@ -1522,3 +1565,8 @@ $ ->
       $(this).selectText()
       false
   restrictProjectsToMapView()
+  try
+    paginationBinder()
+  catch e
+    console.error "Unable to bind events to pagination"
+    $(".pagination-selection-container").attr "hidden", "hidden"
