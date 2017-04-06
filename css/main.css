@@ -9672,6 +9672,9 @@ paper-dialog-scrollable {
   padding: 1rem !important;
   min-height: 15rem;
 }
+.display-inline {
+  display: inline-block;
+}
 .tooltip-container {
   float: left;
   display: inline-block;

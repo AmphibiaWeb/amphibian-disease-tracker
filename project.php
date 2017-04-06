@@ -403,7 +403,9 @@ $loginStatus = getLoginState();
     $html = '';
     $i = 0;
     $count = sizeof($list);
-    $max = 15;
+    $userMax = intval($_REQUEST["pagination"]);
+    if($userMax < 10) $userMax = 10;
+    $max = $userMax;
     $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
     if ($page > 1) {
         $multiplier = $page - 1;
@@ -511,8 +513,27 @@ $loginStatus = getLoginState();
         <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max;
     ?> newest projects <small class="text-muted">of <?php echo $sortText;
     ?></small></h2>
-
-          <?php echo $html;
+        <div class="col-xs-12">
+          <!-- <div class="row"> -->
+            <h3 class="small display-inline">
+              Showing
+            </h3>
+            <paper-dropdown-menu label="Results per page" class="pagination" id="pagination-selector-dropdown">
+              <paper-listbox class="dropdown-content" selected="0">
+                <paper-item>10</paper-item>
+                <paper-item>15</paper-item>
+                <paper-item>25</paper-item>
+                <paper-item>50</paper-item>
+                <paper-item>100</paper-item>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <h3 class="small display-inline">
+              per page
+            </h3>
+          <!-- </div> -->
+        </div>
+    <?php
+        echo $html;
     ?>
 
         <div class="col-xs-12 col-md-4 col-lg-6 project-search project-list-page">
