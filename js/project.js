@@ -855,10 +855,11 @@ searchProjects = function() {
   console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var button, html, icon, j, l, len, len1, project, projectId, projects, publicState, ref, results, s, shortTitle, showList, tooltipTitle;
+    var button, html, icon, j, l, len, len1, maxTitleLength, project, projectId, projects, publicState, ref, results, s, shortTitle, showList, tooltipTitle;
     console.info(result);
     html = "";
     showList = new Array();
+    maxTitleLength = $(window).width() < 1280 ? 30 : 40;
     projects = Object.toArray(result.result);
     if (projects.length > 0) {
       for (j = 0, len = projects.length; j < len; j++) {
@@ -866,14 +867,14 @@ searchProjects = function() {
         showList.push(project.project_id);
         publicState = project["public"].toBool();
         icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-        shortTitle = project.project_title.slice(0, 40);
+        shortTitle = project.project_title.slice(0, maxTitleLength);
         if (project.project_title !== shortTitle) {
           tooltipTitle = project.project_title;
           shortTitle += "...";
         } else {
           tooltipTitle = "Project #" + (project.project_id.slice(0, 8)) + "...";
         }
-        button = "<button class=\"btn btn-info search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"" + tooltipTitle + "\">\n  " + icon + " " + shortTitle + "\n</button>";
+        button = "<button class=\"btn btn-info search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + tooltipTitle + "\">\n  " + icon + " " + shortTitle + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
     } else {

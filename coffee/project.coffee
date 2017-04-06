@@ -801,20 +801,21 @@ searchProjects = ->
     console.info result
     html = ""
     showList = new Array()
+    maxTitleLength = if $(window).width() < 1280 then 30 else 40
     projects = Object.toArray result.result
     if projects.length > 0
       for project in projects
         showList.push project.project_id
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
-        shortTitle = project.project_title.slice(0,40)
+        shortTitle = project.project_title.slice(0, maxTitleLength)
         if project.project_title isnt shortTitle
           tooltipTitle = project.project_title
           shortTitle += "..."
         else
           tooltipTitle = "Project ##{project.project_id.slice(0,8)}..."
         button = """
-        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="#{tooltipTitle}">
+        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="top" title="#{tooltipTitle}">
           #{icon} #{shortTitle}
         </button>
         """
