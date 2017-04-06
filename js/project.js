@@ -1725,7 +1725,8 @@ $(function() {
     return paginationBinder();
   } catch (error1) {
     e = error1;
-    console.error("Unable to bind events to pagination");
+    console.error("Unable to bind events to pagination - " + e.message);
+    console.warn(e.stack);
     return $(".pagination-selection-container").attr("hidden", "hidden");
   }
 });

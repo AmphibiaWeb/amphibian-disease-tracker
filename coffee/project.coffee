@@ -1568,5 +1568,6 @@ $ ->
   try
     paginationBinder()
   catch e
-    console.error "Unable to bind events to pagination"
+    console.error "Unable to bind events to pagination - #{e.message}"
+    console.warn e.stack
     $(".pagination-selection-container").attr "hidden", "hidden"
