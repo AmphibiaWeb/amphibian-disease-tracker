@@ -855,7 +855,7 @@ searchProjects = function() {
   console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var button, html, icon, j, l, len, len1, project, projectId, projects, publicState, ref, results, s, showList;
+    var button, html, icon, j, l, len, len1, project, projectId, projects, publicState, ref, results, s, shortTitle, showList, tooltipTitle;
     console.info(result);
     html = "";
     showList = new Array();
@@ -866,7 +866,14 @@ searchProjects = function() {
         showList.push(project.project_id);
         publicState = project["public"].toBool();
         icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-        button = "<button class=\"btn btn-info search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+        shortTitle = project.project_title.slice(0, 40);
+        if (project.project_title !== shortTitle) {
+          tooltipTitle = project.project_title;
+          shortTitle += "...";
+        } else {
+          tooltipTitle = "Project #" + (project.project_id.slice(0, 8)) + "...";
+        }
+        button = "<button class=\"btn btn-info search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"" + tooltipTitle + "\">\n  " + icon + " " + shortTitle + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
     } else {
@@ -1528,7 +1535,7 @@ restrictProjectsToMapView = function(edges) {
     }
   }
   $.get(uri.urlString + "admin-api.php", "action=list", "json").done(function(result) {
-    var html, icon, project, publicProjects, ref13, results, shortTitle, title;
+    var html, icon, project, publicProjects, ref13, results, shortTitle, title, tooltipTitle;
     console.log("Got project list", result);
     $("button.js-lazy-project").remove();
     publicProjects = Object.toArray(result.public_projects);
@@ -1541,10 +1548,13 @@ restrictProjectsToMapView = function(edges) {
           console.log("Should add visible project '" + title + "'", project);
           shortTitle = title.slice(0, 40);
           if (shortTitle !== title) {
+            tooltipTitle = title;
             shortTitle += "...";
+          } else {
+            tooltipTitle = "Project #" + (project.slice(0, 8)) + "...";
           }
           icon = indexOf.call(publicProjects, project) >= 0 ? "social:public" : "icons:lock";
-          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\" title=\"" + title + "\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
+          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltipTitle + "\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
           results.push($("#project-list").append(html));
         } else {
           results.push(console.log("Not re-adding button for", project));

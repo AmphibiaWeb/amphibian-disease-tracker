@@ -807,9 +807,15 @@ searchProjects = ->
         showList.push project.project_id
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
+        shortTitle = project.project_title.slice(0,40)
+        if project.project_title isnt shortTitle
+          tooltipTitle = project.project_title
+          shortTitle += "..."
+        else
+          tooltipTitle = "Project ##{project.project_id.slice(0,8)}..."
         button = """
-        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
-          #{icon} #{project.project_title}
+        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="#{tooltipTitle}">
+          #{icon} #{shortTitle}
         </button>
         """
         html += "<li class='project-search-result'>#{button}</li>"
@@ -1404,11 +1410,14 @@ restrictProjectsToMapView = (edges = false) ->
           console.log "Should add visible project '#{title}'", project
           shortTitle = title.slice(0,40)
           if shortTitle isnt title
+            tooltipTitle = title
             shortTitle +=  "..."
+          else
+            tooltipTitle = "Project ##{project.slice(0,8)}..."            
           icon = if project in publicProjects then "social:public" else "icons:lock"
           html = """
           <li>
-          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip" title="#{title}">
+          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip" title="#{tooltipTitle}">
             <iron-icon icon="#{icon}"></iron-icon>
             #{shortTitle}
           </button>

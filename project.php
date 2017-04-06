@@ -516,29 +516,30 @@ $loginStatus = getLoginState();
     ?>
 
         <div class="col-xs-12 col-md-4 col-lg-6 project-search project-list-page">
-          <h3>Search Projects</h3>
-          <div class="form-horizontal">
-            <div class="search-project form-group">
-              <label for="project-search" class="col-xs-12 col-md-5 col-lg-3 control-label">Search Projects</label>
-              <div class="col-xs-12 col-md-7 col-lg-9">
-                <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+          <paper-card heading="Search Projects">
+            <div class="card-content form-horizontal">
+              <div class="search-project form-group">
+                <label for="project-search" class="col-xs-12 col-md-4 col-lg-3 control-label">Search Projects</label>
+                <div class="col-xs-12 col-md-7 col-lg-9">
+                  <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+                </div>
               </div>
             </div>
-          </div>
-          <paper-radio-group selected="names" id="search-filter">
-            <paper-radio-button name="names" data-cols="project_id,project_title" data-cue="Project ID or name...">
-              Project Names &amp; IDs
-            </paper-radio-button>
-            <paper-radio-button name="users" data-cols="author_data,pi_lab" data-cue="Name or email...">
-              PIs, Labs, Creators, Affiliation
-            </paper-radio-button>
-            <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
-              Project Taxa
-            </paper-radio-button>
-          </paper-radio-group>
-          <ul id="project-result-container">
+            <paper-radio-group selected="names" id="search-filter">
+              <paper-radio-button name="names" data-cols="project_id,project_title" data-cue="Project ID or name...">
+                Project Names &amp; IDs
+              </paper-radio-button>
+              <paper-radio-button name="users" data-cols="author_data,pi_lab" data-cue="Name or email...">
+                PIs, Labs, Creators, Affiliation
+              </paper-radio-button>
+              <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
+                Project Taxa
+              </paper-radio-button>
+            </paper-radio-group>
+            <ul id="project-result-container">
 
-          </ul>
+            </ul>
+          </paper-card>
         </div>
         <nav class="col-xs-12 project-pagination center-block text-center" id="project-pagination">
           <ul class="pagination">
