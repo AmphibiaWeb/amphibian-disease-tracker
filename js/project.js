@@ -1359,6 +1359,7 @@ window.showCitation = showCitation;
 disableMapViewFilter = function() {
   $("google-map#community-map").unbind("google-map-idle");
   _adp.hasBoundMapEvent = false;
+  $("nav#project-pagination").removeAttr("hidden");
   return true;
 };
 
@@ -1427,10 +1428,12 @@ restrictProjectsToMapView = function(edges) {
   if (!p$("#projects-by-map-view").checked) {
     $("#project-list li").removeAttr("hidden");
     $("h2.status-notice.project-list").removeAttr("hidden");
+    $("nav#project-pagination").removeAttr("hidden");
     $("button.js-lazy-project").remove();
     $("#map-view-title").remove();
     return false;
   }
+  $("nav#project-pagination").attr("hidden", "hidden");
   $("h2.status-notice.project-list").attr("hidden", "hidden");
   map = p$("google-map#community-map").map;
   mapBounds = map.getBounds();
