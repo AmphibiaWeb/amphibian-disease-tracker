@@ -1488,7 +1488,7 @@ paginationBinder = ->
       args = "page=#{newPage}&pagination=#{paginationNumber}"
       destinationUrl = "#{uri.urlString}project.php?#{args}"
       console.log destinationUrl, args
-      goTo destionationUrl
+      goTo destinationUrl
       false
     false
   false
