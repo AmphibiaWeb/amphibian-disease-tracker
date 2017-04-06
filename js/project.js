@@ -1598,6 +1598,7 @@ paginationBinder = function() {
   defaultPaginationNumber = 10;
   delayPolymerBind(dropdownSelector, function() {
     var getPaginationNumber;
+    p$(dropdownSelector).disabled = false;
     $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").unbind("iron-select").on("iron-select", function() {
       console.log("iron-select fired");
       return getPaginationNumber.debounce(50, null, null, this);
@@ -1622,6 +1623,9 @@ paginationBinder = function() {
       if (currentCount < defaultPaginationNumber) {
         currentCount = defaultPaginationNumber;
       }
+      if (currentCount === paginationNumber) {
+        return false;
+      }
       projectCountStart = ((page - 1) * currentCount) + 1;
       newPage = (Math.floor(projectCountStart / paginationNumber)) + 1;
       args = "page=" + newPage + "&pagination=" + paginationNumber;
@@ -1636,7 +1640,7 @@ paginationBinder = function() {
 };
 
 $(function() {
-  var e, error1, zcConfig;
+  var zcConfig;
   _adp.projectId = uri.o.param("id");
   checkProjectAuthorization();
   $("#project-list button").unbind().click(function() {
@@ -1721,14 +1725,17 @@ $(function() {
     });
   } catch (undefined) {}
   restrictProjectsToMapView();
-  try {
-    return paginationBinder();
-  } catch (error1) {
-    e = error1;
-    console.error("Unable to bind events to pagination - " + e.message);
-    console.warn(e.stack);
-    return $(".pagination-selection-container").attr("hidden", "hidden");
-  }
+  return delay(500, function() {
+    var e, error1;
+    try {
+      return paginationBinder();
+    } catch (error1) {
+      e = error1;
+      console.error("Unable to bind events to pagination - " + e.message);
+      console.warn(e.stack);
+      return $(".pagination-selection-container").attr("hidden", "hidden");
+    }
+  });
 });
 
 //# sourceMappingURL=maps/project.js.map

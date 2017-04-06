@@ -518,7 +518,7 @@ $loginStatus = getLoginState();
             <h3 class="small display-inline">
               Showing
             </h3>
-            <paper-dropdown-menu label="Results per page" class="pagination" id="pagination-selector-dropdown">
+            <paper-dropdown-menu label="Results per page" class="pagination" id="pagination-selector-dropdown" disabled>
               <paper-listbox class="dropdown-content" selected="0">
                 <paper-item>10</paper-item>
                 <paper-item>15</paper-item>

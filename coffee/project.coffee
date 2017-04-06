@@ -1461,6 +1461,7 @@ paginationBinder = ->
   defaultPaginationNumber = 10
   # Delay setup until bind is ready
   delayPolymerBind dropdownSelector, ->
+    p$(dropdownSelector).disabled = false
     $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content")
     .unbind("iron-select")
     .on "iron-select", ->
@@ -1483,6 +1484,8 @@ paginationBinder = ->
       currentCount = uri.o.param("pagination") ? $("#project-list li button:not(.js-lazy-project)").length
       if currentCount < defaultPaginationNumber
         currentCount = defaultPaginationNumber
+      if currentCount is paginationNumber
+        return false
       projectCountStart = ((page - 1) * currentCount) + 1
       newPage = (projectCountStart // paginationNumber) + 1
       args = "page=#{newPage}&pagination=#{paginationNumber}"
@@ -1565,9 +1568,10 @@ $ ->
       $(this).selectText()
       false
   restrictProjectsToMapView()
-  try
-    paginationBinder()
-  catch e
-    console.error "Unable to bind events to pagination - #{e.message}"
-    console.warn e.stack
-    $(".pagination-selection-container").attr "hidden", "hidden"
+  delay 500, ->
+    try
+      paginationBinder()
+    catch e
+      console.error "Unable to bind events to pagination - #{e.message}"
+      console.warn e.stack
+      $(".pagination-selection-container").attr "hidden", "hidden"
