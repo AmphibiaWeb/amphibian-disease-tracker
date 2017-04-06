@@ -801,7 +801,7 @@ searchProjects = ->
     console.info result
     html = ""
     showList = new Array()
-    maxTitleLength = if $(window).width() < 1280 then 30 else 40
+    maxTitleLength = if $(window).width() < 1280 then 20 else 40
     projects = Object.toArray result.result
     if projects.length > 0
       for project in projects

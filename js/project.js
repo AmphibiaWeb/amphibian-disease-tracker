@@ -859,7 +859,7 @@ searchProjects = function() {
     console.info(result);
     html = "";
     showList = new Array();
-    maxTitleLength = $(window).width() < 1280 ? 30 : 40;
+    maxTitleLength = $(window).width() < 1280 ? 20 : 40;
     projects = Object.toArray(result.result);
     if (projects.length > 0) {
       for (j = 0, len = projects.length; j < len; j++) {
