@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, delayPolymerBind, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -2480,6 +2480,67 @@ makePageCitationOverflow = function() {
     });
   });
   return citationString;
+};
+
+delayPolymerBind = function(selector, callback, iter) {
+  var element, error2, ref, superSlowBackup, uid;
+  if (iter == null) {
+    iter = 0;
+  }
+  if (typeof window._dpb !== "object") {
+    window._dpb = new Object();
+  }
+  uid = md5(selector) + md5(callback);
+  if (isNull(window._dpb[uid])) {
+    window._dpb[uid] = false;
+  }
+  superSlowBackup = 1000;
+  if ((typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.Base) != null ? ref.$$ : void 0 : void 0) != null) {
+    if (window._dpb[uid] === false) {
+      iter = 0;
+      window._dpb[uid] = true;
+    }
+    try {
+      element = Polymer.Base.$$(selector);
+      callback(element);
+      delay(superSlowBackup, function() {
+        console.info("Doing " + superSlowBackup + "ms delay callback for " + selector);
+        return callback(element);
+      });
+    } catch (error2) {
+      e = error2;
+      console.warn("Error trying to do the delayed polymer bind - " + e.message);
+      if (iter < 10) {
+        ++iter;
+        delay(75, function() {
+          return delayPolymerBind(selector, callback, iter);
+        });
+      } else {
+        console.error("Persistent error in polymer binding (" + e.message + ")");
+        console.error(e.stack);
+        element = $(selector).get(0);
+        callback(element);
+        delay(superSlowBackup, function() {
+          element = document.querySelector(selector);
+          console.info("Doing " + superSlowBackup + "ms delay callback for " + selector);
+          console.info("Using element", element);
+          return callback(element);
+        });
+      }
+    }
+  } else {
+    if (iter < 50) {
+      delay(100, function() {
+        ++iter;
+        return delayPolymerBind(selector, callback, iter);
+      });
+    } else {
+      console.error("Failed to verify Polymer was set up, attempting manual");
+      element = document.querySelector(selector);
+      callback(element);
+    }
+  }
+  return false;
 };
 
 $(function() {

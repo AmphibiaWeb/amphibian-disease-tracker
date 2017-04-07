@@ -214,7 +214,7 @@ $loginStatus = getLoginState();
               <paper-item>
                 Infection
               </paper-item>
-              <paper-item disabled>Species</paper-item>
+              <paper-item>Species</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
@@ -225,9 +225,10 @@ $loginStatus = getLoginState();
               <paper-item>
                 Samples
               </paper-item>
-              <paper-item>Infection</paper-item>
-              <paper-item>Country</paper-item>
-              <paper-item disabled>Species</paper-item>
+              <paper-item data-bins="infection,location">Infection</paper-item>
+              <paper-item data-bins="location">Country</paper-item>
+              <paper-item data-bins="species">Species</paper-item>
+              <paper-item data-bins="species">Genus</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>

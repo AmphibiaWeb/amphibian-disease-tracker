@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, getRandomDataColor, getServerChart, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -361,6 +361,33 @@ renderNewChart = function() {
   return chartOptions;
 };
 
+dropdownSortEvents = function() {
+  $("paper-dropdown-menu#binned-by paper-listbox").on("iron-select", function() {
+    var allowedBins, allowedSortKey, item, l, len, ref;
+    item = $(this).selectedItem;
+    allowedSortKey = $(item).trim().text().toLowerCase();
+    ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
+    for (l = 0, len = ref.length; l < len; l++) {
+      item = ref[l];
+      allowedBins = $(item).attr("data-bins").split(",");
+      if (indexOf.call(allowedBins, allowedSortKey) >= 0) {
+        try {
+          p$(item).disabled = false;
+        } catch (undefined) {}
+        $(item).removeAttr("disabled");
+      } else {
+        try {
+          p$(item).disabled = true;
+        } catch (undefined) {}
+        $(item).attr("hidden", "hidden");
+      }
+    }
+    return false;
+  });
+  console.log("Dropdown sort events bound");
+  return false;
+};
+
 $(function() {
   console.log("Loaded dashboard");
   getServerChart();
@@ -369,6 +396,9 @@ $(function() {
   });
   $(".chart-param paper-listbox").on("iron-select", function() {
     return renderNewChart.debounce(50);
+  });
+  delayPolymerBind("paper-dropdown-menu#binned-by", function() {
+    return dropdownSortEvents();
   });
   return false;
 });

@@ -327,6 +327,29 @@ renderNewChart = ->
 
 
 
+dropdownSortEvents = ->
+  $("paper-dropdown-menu#binned-by paper-listbox").on "iron-select", ->
+    item = $(this).selectedItem
+    allowedSortKey = $(item).trim().text().toLowerCase()
+    for item in $("paper-dropdown-menu#sort-by paper-listbox paper-item")
+      # Check each item in the li st
+      allowedBins = $(item).attr("data-bins").split ","
+      if allowedSortKey in allowedBins
+        # They're allowed to be selected
+        try
+          p$(item).disabled = false
+        $(item).removeAttr "disabled"
+      else
+        # Disallowed
+        try
+          p$(item).disabled = true
+        $(item).attr "hidden", "hidden"
+    false
+  console.log "Dropdown sort events bound"
+  false
+
+
+
 $ ->
   console.log "Loaded dashboard"
   getServerChart()
@@ -334,4 +357,6 @@ $ ->
     renderNewChart.debounce 50
   $(".chart-param paper-listbox").on "iron-select", ->
     renderNewChart.debounce 50
+  delayPolymerBind "paper-dropdown-menu#binned-by", ->
+    dropdownSortEvents()
   false
