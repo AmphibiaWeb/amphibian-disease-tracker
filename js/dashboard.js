@@ -132,7 +132,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref, s;
+    var chartData, colors, data, dataItem, datasets, error, i, l, len, len1, m, preprocessorFn, ref, s;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -157,7 +157,11 @@ getServerChart = function(chartType, chartParams) {
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          console.log("Dataset " + i + ": examine dataitem", result.labels[s], dataItem);
+          try {
+            console.log("Dataset " + i + ": examine dataitem", chartData.labels[s], dataItem);
+          } catch (error) {
+            console.log("Dataset " + i + "-e: examine dataitem", dataItem);
+          }
           if (data.stack === "PosNeg") {
             if (data.label.toLowerCase().search("positive") !== -1) {
               colors = {
@@ -243,7 +247,7 @@ getServerChart = function(chartType, chartParams) {
                 k++;
                 waitTime = 1000 / 12.5;
                 localityFromMapBuilder(builder, function(locality, cbBuilder) {
-                  var binKey, country, error, len5, q, ref2, view, views;
+                  var binKey, country, error1, len5, q, ref2, view, views;
                   kprime++;
                   try {
                     views = (ref2 = cbBuilder.views) != null ? ref2 : geo.geocoderViews;
@@ -254,7 +258,7 @@ getServerChart = function(chartType, chartParams) {
                       }
                       country = view.formatted_address;
                     }
-                  } catch (error) {
+                  } catch (error1) {
                     country = "Multiple Countries";
                   }
                   if (isNull(country)) {
@@ -298,7 +302,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, error, error1, ref1, uString, uid;
+      var chartDataJs, chartObj, chartSelector, error1, error2, ref1, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -325,10 +329,10 @@ getServerChart = function(chartType, chartParams) {
       }
       try {
         uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
-      } catch (error) {
+      } catch (error1) {
         try {
           uString = chartDataJs.labels.join(",");
-        } catch (error1) {
+        } catch (error2) {
           uString = "BAD_STRINGIFY";
         }
       }

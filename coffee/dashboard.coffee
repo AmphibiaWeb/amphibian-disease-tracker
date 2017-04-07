@@ -164,7 +164,10 @@ getServerChart = (chartType = "location", chartParams) ->
         data.backgroundColor = new Array()
         s = 0
         for dataItem in data.data
-          console.log "Dataset #{i}: examine dataitem", result.labels[s], dataItem
+          try
+            console.log "Dataset #{i}: examine dataitem", chartData.labels[s], dataItem
+          catch
+            console.log "Dataset #{i}-e: examine dataitem", dataItem
           if data.stack is "PosNeg"
             if data.label.toLowerCase().search("positive") isnt -1
               colors =
