@@ -311,7 +311,7 @@ getServerChart = (chartType = "location", chartParams) ->
         catch
           uString = "BAD_STRINGIFY"
       uid = md5 uString
-      chartSelector = "#dataChart-#{datasets[0].label.replace(" ","-")}-#{uid}"
+      chartSelector = "#dataChart-#{datasets[0].label.replace(/ /g,"-")}-#{uid}"
       console.log "Creating chart with", chartSelector, chartObj
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description

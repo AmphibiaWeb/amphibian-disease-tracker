@@ -348,7 +348,7 @@ getServerChart = function(chartType, chartParams) {
         }
       }
       uid = md5(uString);
-      chartSelector = "#dataChart-" + (datasets[0].label.replace(" ", "-")) + "-" + uid;
+      chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
         if (!isNull(result.full_description)) {
