@@ -227,8 +227,8 @@ $loginStatus = getLoginState();
               </paper-item>
               <paper-item data-bins="infection,location">Infection</paper-item>
               <paper-item data-bins="location">Country</paper-item>
-              <paper-item data-bins="species">Species</paper-item>
               <paper-item data-bins="species">Genus</paper-item>
+              <paper-item data-bins="species">Species</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>

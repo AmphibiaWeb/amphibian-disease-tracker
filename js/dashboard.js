@@ -143,7 +143,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, colors, data, dataItem, datasets, error, i, l, len, len1, m, preprocessorFn, ref, s;
+    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref, s;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -168,11 +168,6 @@ getServerChart = function(chartType, chartParams) {
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          try {
-            console.log("Dataset " + i + ": examine dataitem", chartData.labels[s], dataItem);
-          } catch (error) {
-            console.log("Dataset " + i + "-e: examine dataitem", dataItem);
-          }
           if (data.stack === "PosNeg") {
             if (data.label.toLowerCase().search("positive") !== -1) {
               colors = {
@@ -258,7 +253,7 @@ getServerChart = function(chartType, chartParams) {
                 k++;
                 waitTime = 1000 / 12.5;
                 localityFromMapBuilder(builder, function(locality, cbBuilder) {
-                  var binKey, country, error1, len5, q, ref2, view, views;
+                  var binKey, country, error, len5, q, ref2, view, views;
                   kprime++;
                   try {
                     views = (ref2 = cbBuilder.views) != null ? ref2 : geo.geocoderViews;
@@ -269,7 +264,7 @@ getServerChart = function(chartType, chartParams) {
                       }
                       country = view.formatted_address;
                     }
-                  } catch (error1) {
+                  } catch (error) {
                     country = "Multiple Countries";
                   }
                   if (isNull(country)) {
@@ -313,7 +308,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, error1, error2, ref1, uString, uid;
+      var chartDataJs, chartObj, chartSelector, error, error1, ref1, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -340,10 +335,10 @@ getServerChart = function(chartType, chartParams) {
       }
       try {
         uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
-      } catch (error1) {
+      } catch (error) {
         try {
           uString = chartDataJs.labels.join(",");
-        } catch (error2) {
+        } catch (error1) {
           uString = "BAD_STRINGIFY";
         }
       }
@@ -394,33 +389,42 @@ renderNewChart = function() {
 
 dropdownSortEvents = function() {
   var doSortDisables;
-  $("paper-dropdown-menu#binned-by paper-listbox").on("iron-select", function() {
+  $("paper-dropdown-menu#binned-by paper-listbox").unbind("iron-select").on("iron-select", function() {
     return doSortDisables.debounce(50, null, null, this);
   });
-  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").click(function() {
-    return doSortDisables.debounce(50, null, null, $(this).parent());
+  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").unbind("click").click(function() {
+    return doSortDisables.debounce(50, null, null, $(this).parents("paper-listbox"));
   });
   doSortDisables = function(el) {
-    var allowedBins, allowedSortKey, item, l, len, ref;
-    item = $(el).selectedItem;
-    allowedSortKey = $(item).trim().text().toLowerCase();
+    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, l, len, ref, ref1;
+    binItem = p$(el).selectedItem;
+    console.log("Firing doSortDisables", binItem, el);
+    allowedSortKey = $(binItem).text().trim().toLowerCase();
+    keyToSelect = 0;
+    hasFoundKey = false;
     ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
     for (l = 0, len = ref.length; l < len; l++) {
       item = ref[l];
-      console.log("Searching allowed bins for " + allowedSortKey, allowedBins, item);
-      allowedBins = $(item).attr("data-bins").split(",");
+      allowedBinsText = (ref1 = $(item).attr("data-bins")) != null ? ref1 : "";
+      allowedBins = allowedBinsText.split(",");
+      console.log("Searching allowed bins for '" + allowedSortKey + "'", allowedBins, item);
       if (indexOf.call(allowedBins, allowedSortKey) >= 0) {
         try {
           p$(item).disabled = false;
         } catch (undefined) {}
         $(item).removeAttr("disabled");
+        hasFoundKey = true;
       } else {
         try {
           p$(item).disabled = true;
         } catch (undefined) {}
         $(item).attr("disabled", "disabled");
       }
+      if (!hasFoundKey) {
+        keyToSelect++;
+      }
     }
+    p$("paper-dropdown-menu#sort-by paper-listbox").selected = keyToSelect;
     return false;
   };
   console.log("Dropdown sort events bound");

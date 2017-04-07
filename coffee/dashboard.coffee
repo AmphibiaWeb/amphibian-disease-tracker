@@ -169,10 +169,10 @@ getServerChart = (chartType = "location", chartParams) ->
         data.backgroundColor = new Array()
         s = 0
         for dataItem in data.data
-          try
-            console.log "Dataset #{i}: examine dataitem", chartData.labels[s], dataItem
-          catch
-            console.log "Dataset #{i}-e: examine dataitem", dataItem
+          # try
+          #   console.log "Dataset #{i}: examine dataitem", chartData.labels[s], dataItem
+          # catch
+          #   console.log "Dataset #{i}-e: examine dataitem", dataItem
           if data.stack is "PosNeg"
             if data.label.toLowerCase().search("positive") isnt -1
               colors =
@@ -350,27 +350,39 @@ renderNewChart = ->
 
 
 dropdownSortEvents = ->
-  $("paper-dropdown-menu#binned-by paper-listbox").on "iron-select", ->
+  $("paper-dropdown-menu#binned-by paper-listbox")
+  .unbind "iron-select"
+  .on "iron-select", ->
     doSortDisables.debounce 50, null, null, this
-  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").click ->
-    doSortDisables.debounce 50, null, null, $(this).parent()
+  $("paper-dropdown-menu#binned-by paper-listbox > paper-item")
+  .unbind "click"
+  .click ->
+    doSortDisables.debounce 50, null, null, $(this).parents("paper-listbox")
   doSortDisables = (el) ->
-    item = $(el).selectedItem
-    allowedSortKey = $(item).trim().text().toLowerCase()
+    binItem = p$(el).selectedItem
+    console.log "Firing doSortDisables", binItem, el
+    allowedSortKey = $(binItem).text().trim().toLowerCase()
+    keyToSelect = 0
+    hasFoundKey = false
     for item in $("paper-dropdown-menu#sort-by paper-listbox paper-item")
       # Check each item in the li st
-      console.log "Searching allowed bins for #{allowedSortKey}", allowedBins, item
-      allowedBins = $(item).attr("data-bins").split ","
+      allowedBinsText = $(item).attr("data-bins") ? ""
+      allowedBins = allowedBinsText.split ","
+      console.log "Searching allowed bins for '#{allowedSortKey}'", allowedBins, item
       if allowedSortKey in allowedBins
         # They're allowed to be selected
         try
           p$(item).disabled = false
         $(item).removeAttr "disabled"
+        hasFoundKey = true
       else
         # Disallowed
         try
           p$(item).disabled = true
         $(item).attr "disabled", "disabled"
+      unless hasFoundKey
+        keyToSelect++
+    p$("paper-dropdown-menu#sort-by paper-listbox").selected = keyToSelect
     false
   console.log "Dropdown sort events bound"
   false
