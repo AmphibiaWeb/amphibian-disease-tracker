@@ -89,9 +89,12 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     };
   }
   if (!$(chartSelector).exists()) {
+    console.log("Creating new canvas");
     newId = chartSelector.slice(0, 1) === "#" ? chartSelector.slice(1) : "dataChart-" + ($("canvas").length);
     html = "<canvas id=\"" + newId + "\" class=\"chart dynamic-chart col-xs-12\">\n</canvas>";
     $(appendTo).append(html);
+  } else {
+    console.log("Canvas already exists:", chartSelector);
   }
   chartCtx = $(chartSelector);
   chart = new Chart(chartCtx, chartData);
@@ -129,7 +132,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref;
+    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref, s;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -150,10 +153,11 @@ getServerChart = function(chartType, chartParams) {
       if (data.backgroundColor == null) {
         data.borderColor = new Array();
         data.backgroundColor = new Array();
+        s = 0;
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          console.log("examine dataitem", dataItem);
+          console.log("Dataset " + i + ": examine dataitem", result.labels[s], dataItem);
           if (data.stack === "PosNeg") {
             if (data.label.toLowerCase().search("positive") !== -1) {
               colors = {
@@ -179,6 +183,7 @@ getServerChart = function(chartType, chartParams) {
           }
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
+          ++s;
         }
       }
       datasets[i] = data;
@@ -319,6 +324,7 @@ getServerChart = function(chartType, chartParams) {
         };
       }
       chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
+      console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
         if (!isNull(result.full_description)) {
           return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");

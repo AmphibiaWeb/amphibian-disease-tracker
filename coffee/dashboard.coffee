@@ -105,12 +105,15 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
           }]
 
   unless $(chartSelector).exists()
+    console.log "Creating new canvas"
     newId = if chartSelector.slice(0,1) is "#" then chartSelector.slice(1) else "dataChart-#{$("canvas").length}"
     html = """
     <canvas id="#{newId}" class="chart dynamic-chart col-xs-12">
     </canvas>
     """
     $(appendTo).append html
+  else
+    console.log "Canvas already exists:", chartSelector
   ## Handle the chart
   # http://www.chartjs.org/docs/
   chartCtx = $(chartSelector)
@@ -159,8 +162,9 @@ getServerChart = (chartType = "location", chartParams) ->
       unless data.backgroundColor?
         data.borderColor = new Array()
         data.backgroundColor = new Array()
+        s = 0
         for dataItem in data.data
-          console.log "examine dataitem", dataItem
+          console.log "Dataset #{i}: examine dataitem", result.labels[s], dataItem
           if data.stack is "PosNeg"
             if data.label.toLowerCase().search("positive") isnt -1
               colors =
@@ -179,6 +183,7 @@ getServerChart = (chartType = "location", chartParams) ->
             colors = getRandomDataColor()
           data.borderColor.push colors.border
           data.backgroundColor.push colors.background
+          ++s
       datasets[i] = data
       ++i
     switch result.use_preprocessor
@@ -291,6 +296,7 @@ getServerChart = (chartType = "location", chartParams) ->
               stacked: chartData.stacking.y
               ]
       chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
+      console.log "Creating chart with", chartSelector, chartObj
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"

@@ -199,7 +199,7 @@ $loginStatus = getLoginState();
     <section class="col-xs-12">
       <div class="form form-horizontal row">
         <h3 class="col-xs-12">Create a chart</h3>
-        <div class="col-xs-12 col-lg-4">
+        <div class="col-xs-12 col-md-4 col-sm-6">
           <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Project Count</paper-item>
@@ -207,7 +207,7 @@ $loginStatus = getLoginState();
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="col-xs-12 col-lg-4">
+        <div class="col-xs-12 col-md-4 col-sm-6">
           <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Location</paper-item>
@@ -219,7 +219,7 @@ $loginStatus = getLoginState();
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="col-xs-12 col-lg-4">
+        <div class="col-xs-12 col-md-4">
           <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>
@@ -233,10 +233,10 @@ $loginStatus = getLoginState();
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="col-xs-12 col-lg-6">
+        <div class="col-xs-12 col-sm-6">
           <paper-toggle-button id="group-values" data-key="group" class="chart-param">Group Values</paper-toggle-button>
         </div>
-        <div class="col-xs-12 col-lg-6">
+        <div class="col-xs-12 col-sm-6">
           <paper-toggle-button id="percent-values" data-key="percent" class="chart-param" checked>Show Percents</paper-toggle-button>
         </div>
         <div class="col-xs-12">
