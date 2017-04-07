@@ -316,6 +316,18 @@ getServerChart = (chartType = "location", chartParams) ->
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
+        if chartType is "species"
+          # Put a descriptor
+          if chartParams.sort is "species"
+            measurement = "species"
+          else
+            measurement = "genera"
+          html = """
+          <p class="col-xs-12">
+            These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.
+          </p>
+          """
+          $(chartSelector).after html
       stopLoad()
     false
   .fail (result, status) ->

@@ -346,8 +346,18 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
+        var html, measurement;
         if (!isNull(result.full_description)) {
-          return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
+          $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
+        }
+        if (chartType === "species") {
+          if (chartParams.sort === "species") {
+            measurement = "species";
+          } else {
+            measurement = "genera";
+          }
+          html = "<p class=\"col-xs-12\">\n  These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.\n</p>";
+          return $(chartSelector).after(html);
         }
       });
       return stopLoad();
