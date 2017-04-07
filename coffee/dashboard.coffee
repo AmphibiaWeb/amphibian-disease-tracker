@@ -105,15 +105,23 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
           }]
 
   unless $(chartSelector).exists()
+    console.log "Creating new canvas"
     newId = if chartSelector.slice(0,1) is "#" then chartSelector.slice(1) else "dataChart-#{$("canvas").length}"
-    html = """
-    <canvas id="#{newId}" class="chart dynamic-chart col-xs-12">
-    </canvas>
-    """
-    $(appendTo).append html
+    canvas = document.createElement "canvas"
+    canvas.setAttribute "class","chart dynamic-chart col-xs-12"
+    canvas.setAttribute "id", newId
+    try
+      _adp.newCanvas = canvas
+    document.querySelector(appendTo).appendChild canvas
+  else
+    console.log "Canvas already exists:", chartSelector
   ## Handle the chart
   # http://www.chartjs.org/docs/
   chartCtx = $(chartSelector)
+  if isNull chartCtx
+    try
+      console.log "trying again to make context"
+      chartCtx = $(canvas)
   chart = new Chart chartCtx, chartData
   console.info "Chart created with", chartData
   if typeof callback is "function"
@@ -159,8 +167,12 @@ getServerChart = (chartType = "location", chartParams) ->
       unless data.backgroundColor?
         data.borderColor = new Array()
         data.backgroundColor = new Array()
+        s = 0
         for dataItem in data.data
-          console.log "examine dataitem", dataItem
+          # try
+          #   console.log "Dataset #{i}: examine dataitem", chartData.labels[s], dataItem
+          # catch
+          #   console.log "Dataset #{i}-e: examine dataitem", dataItem
           if data.stack is "PosNeg"
             if data.label.toLowerCase().search("positive") isnt -1
               colors =
@@ -174,11 +186,12 @@ getServerChart = (chartType = "location", chartParams) ->
             if data.label.toLowerCase().search("total") isnt -1
               colors =
                 border: "rgba(25,200,90,1)"
-                background: "rgba(25,200,90,0.2)"              
+                background: "rgba(25,200,90,0.2)"
           else
             colors = getRandomDataColor()
           data.borderColor.push colors.border
           data.backgroundColor.push colors.background
+          ++s
       datasets[i] = data
       ++i
     switch result.use_preprocessor
@@ -290,7 +303,16 @@ getServerChart = (chartType = "location", chartParams) ->
             yAxes: [
               stacked: chartData.stacking.y
               ]
-      chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
+      try
+        uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
+      catch
+        try
+          uString = chartDataJs.labels.join ","
+        catch
+          uString = "BAD_STRINGIFY"
+      uid = md5 uString
+      chartSelector = "#dataChart-#{datasets[0].label.replace(/ /g,"-")}-#{uid}"
+      console.log "Creating chart with", chartSelector, chartObj
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
@@ -327,6 +349,46 @@ renderNewChart = ->
 
 
 
+dropdownSortEvents = ->
+  $("paper-dropdown-menu#binned-by paper-listbox")
+  .unbind "iron-select"
+  .on "iron-select", ->
+    doSortDisables.debounce 50, null, null, this
+  $("paper-dropdown-menu#binned-by paper-listbox > paper-item")
+  .unbind "click"
+  .click ->
+    doSortDisables.debounce 50, null, null, $(this).parents("paper-listbox")
+  doSortDisables = (el) ->
+    binItem = p$(el).selectedItem
+    console.log "Firing doSortDisables", binItem, el
+    allowedSortKey = $(binItem).text().trim().toLowerCase()
+    keyToSelect = 0
+    hasFoundKey = false
+    for item in $("paper-dropdown-menu#sort-by paper-listbox paper-item")
+      # Check each item in the li st
+      allowedBinsText = $(item).attr("data-bins") ? ""
+      allowedBins = allowedBinsText.split ","
+      console.log "Searching allowed bins for '#{allowedSortKey}'", allowedBins, item
+      if allowedSortKey in allowedBins
+        # They're allowed to be selected
+        try
+          p$(item).disabled = false
+        $(item).removeAttr "disabled"
+        hasFoundKey = true
+      else
+        # Disallowed
+        try
+          p$(item).disabled = true
+        $(item).attr "disabled", "disabled"
+      unless hasFoundKey
+        keyToSelect++
+    p$("paper-dropdown-menu#sort-by paper-listbox").selected = keyToSelect
+    false
+  console.log "Dropdown sort events bound"
+  false
+
+
+
 $ ->
   console.log "Loaded dashboard"
   getServerChart()
@@ -334,4 +396,6 @@ $ ->
     renderNewChart.debounce 50
   $(".chart-param paper-listbox").on "iron-select", ->
     renderNewChart.debounce 50
+  delayPolymerBind "paper-dropdown-menu#binned-by", ->
+    dropdownSortEvents()
   false

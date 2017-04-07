@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, getRandomDataColor, getServerChart, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -29,7 +29,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
-  var chart, chartCtx, html, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
+  var canvas, chart, chartCtx, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -89,11 +89,25 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     };
   }
   if (!$(chartSelector).exists()) {
+    console.log("Creating new canvas");
     newId = chartSelector.slice(0, 1) === "#" ? chartSelector.slice(1) : "dataChart-" + ($("canvas").length);
-    html = "<canvas id=\"" + newId + "\" class=\"chart dynamic-chart col-xs-12\">\n</canvas>";
-    $(appendTo).append(html);
+    canvas = document.createElement("canvas");
+    canvas.setAttribute("class", "chart dynamic-chart col-xs-12");
+    canvas.setAttribute("id", newId);
+    try {
+      _adp.newCanvas = canvas;
+    } catch (undefined) {}
+    document.querySelector(appendTo).appendChild(canvas);
+  } else {
+    console.log("Canvas already exists:", chartSelector);
   }
   chartCtx = $(chartSelector);
+  if (isNull(chartCtx)) {
+    try {
+      console.log("trying again to make context");
+      chartCtx = $(canvas);
+    } catch (undefined) {}
+  }
   chart = new Chart(chartCtx, chartData);
   console.info("Chart created with", chartData);
   if (typeof callback === "function") {
@@ -129,7 +143,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref;
+    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref, s;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -150,10 +164,10 @@ getServerChart = function(chartType, chartParams) {
       if (data.backgroundColor == null) {
         data.borderColor = new Array();
         data.backgroundColor = new Array();
+        s = 0;
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          console.log("examine dataitem", dataItem);
           if (data.stack === "PosNeg") {
             if (data.label.toLowerCase().search("positive") !== -1) {
               colors = {
@@ -179,6 +193,7 @@ getServerChart = function(chartType, chartParams) {
           }
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
+          ++s;
         }
       }
       datasets[i] = data;
@@ -293,7 +308,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, ref1;
+      var chartDataJs, chartObj, chartSelector, error, error1, ref1, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -318,7 +333,18 @@ getServerChart = function(chartType, chartParams) {
           }
         };
       }
-      chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
+      try {
+        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+      } catch (error) {
+        try {
+          uString = chartDataJs.labels.join(",");
+        } catch (error1) {
+          uString = "BAD_STRINGIFY";
+        }
+      }
+      uid = md5(uString);
+      chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
+      console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
         if (!isNull(result.full_description)) {
           return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
@@ -361,6 +387,50 @@ renderNewChart = function() {
   return chartOptions;
 };
 
+dropdownSortEvents = function() {
+  var doSortDisables;
+  $("paper-dropdown-menu#binned-by paper-listbox").unbind("iron-select").on("iron-select", function() {
+    return doSortDisables.debounce(50, null, null, this);
+  });
+  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").unbind("click").click(function() {
+    return doSortDisables.debounce(50, null, null, $(this).parents("paper-listbox"));
+  });
+  doSortDisables = function(el) {
+    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, l, len, ref, ref1;
+    binItem = p$(el).selectedItem;
+    console.log("Firing doSortDisables", binItem, el);
+    allowedSortKey = $(binItem).text().trim().toLowerCase();
+    keyToSelect = 0;
+    hasFoundKey = false;
+    ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
+    for (l = 0, len = ref.length; l < len; l++) {
+      item = ref[l];
+      allowedBinsText = (ref1 = $(item).attr("data-bins")) != null ? ref1 : "";
+      allowedBins = allowedBinsText.split(",");
+      console.log("Searching allowed bins for '" + allowedSortKey + "'", allowedBins, item);
+      if (indexOf.call(allowedBins, allowedSortKey) >= 0) {
+        try {
+          p$(item).disabled = false;
+        } catch (undefined) {}
+        $(item).removeAttr("disabled");
+        hasFoundKey = true;
+      } else {
+        try {
+          p$(item).disabled = true;
+        } catch (undefined) {}
+        $(item).attr("disabled", "disabled");
+      }
+      if (!hasFoundKey) {
+        keyToSelect++;
+      }
+    }
+    p$("paper-dropdown-menu#sort-by paper-listbox").selected = keyToSelect;
+    return false;
+  };
+  console.log("Dropdown sort events bound");
+  return false;
+};
+
 $(function() {
   console.log("Loaded dashboard");
   getServerChart();
@@ -369,6 +439,9 @@ $(function() {
   });
   $(".chart-param paper-listbox").on("iron-select", function() {
     return renderNewChart.debounce(50);
+  });
+  delayPolymerBind("paper-dropdown-menu#binned-by", function() {
+    return dropdownSortEvents();
   });
   return false;
 });

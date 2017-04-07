@@ -1000,6 +1000,89 @@ function getChartData($chartDataParams) {
         break;
     case "species":
         # Sort by species alphabetically
+        if(!isset($chartDataParams["include_sp"])) $chartDataParams["include_sp"] = false;
+        $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
+        switch($chartDataParams["sort"]) {
+        case "species":
+            $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
+            $result = mysqli_query($flatTable->getLink(), $query);
+            if($result === false) {
+                returnAjax(array(
+                    "status" => false,
+                    "error" => mysqli_error($flatTable->getLink()),
+                    "human_error" => "We were unable to retrieve the records at this time",
+                ));
+            }
+            $labels = array();
+            $data = array();
+            $rowCount = 0;
+            while($row = mysqli_fetch_assoc($result)) {
+                # Make Chart.js data
+                $species = $row["genus"]." ".$row["specificepithet"];
+                $labels[] = $species;
+                $data[] = $row["count"];
+                $rowCount++;
+            }
+            $chartData = array(
+                "labels" => $labels,
+                "datasets" => array(
+                    array(
+                        "label" => "Species Sample Count",
+                        "data" => $data,
+                    ),
+                ),
+            );
+            returnAjax(array(
+                "status" => true,
+                "data" => $chartData,
+                "use_preprocessor" => false,
+                "rows" => $rowCount,
+                "format" => "chart.js",
+                "provided" => $chartDataParams,
+                "full_description" => "Samples taken per species",
+            ));
+            break;
+        case "genus":
+        default:
+            $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by `genus`";
+            $result = mysqli_query($flatTable->getLink(), $query);
+            if($result === false) {
+                returnAjax(array(
+                    "status" => false,
+                    "error" => mysqli_error($flatTable->getLink()),
+                    "human_error" => "We were unable to retrieve the records at this time",
+                ));
+            }
+            $labels = array();
+            $data = array();
+            $rowCount = 0;
+            while($row = mysqli_fetch_assoc($result)) {
+                # Make Chart.js data
+                $species = $row["genus"];
+                $labels[] = $species;
+                $data[] = $row["count"];
+                $rowCount++;
+            }
+            $chartData = array(
+                "labels" => $labels,
+                "datasets" => array(
+                    array(
+                        "label" => "Genus Sample Count",
+                        "data" => $data,
+                    ),
+                ),
+            );
+            returnAjax(array(
+                "status" => true,
+                "data" => $chartData,
+                "use_preprocessor" => false,
+                "rows" => $rowCount,
+                "format" => "chart.js",
+                "provided" => $chartDataParams,
+                "full_description" => "Samples taken per genus",
+                "include_new_species" => boolstr($chartDataParams["include_sp"]),
+            ));
+        }
         break;
     case "location":
         # Location bin
@@ -1140,7 +1223,7 @@ function getChartData($chartDataParams) {
         returnAjax(array(
           "status" => true,
           "data" => $chartData,
-                   "use_preprocessor" => false,
+          "use_preprocessor" => false,
           "rows" => $rowCount,
           "format" => "chart.js",
           "provided" => $chartDataParams,
