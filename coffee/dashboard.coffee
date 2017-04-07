@@ -295,7 +295,15 @@ getServerChart = (chartType = "location", chartParams) ->
             yAxes: [
               stacked: chartData.stacking.y
               ]
-      chartSelector = "#chart-#{datasets[0].label.replace(" ","-")}"
+      try
+        uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
+      catch
+        try
+          uString = chartDataJs.labels.join ","
+        catch
+          uString = "BAD_STRINGIFY"
+      uid = md5 uString
+      chartSelector = "#dataChart-#{datasets[0].label.replace(" ","-")}-#{uid}"
       console.log "Creating chart with", chartSelector, chartObj
       createChart chartSelector, chartObj, ->
         unless isNull result.full_description

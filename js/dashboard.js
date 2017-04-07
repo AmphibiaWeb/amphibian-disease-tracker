@@ -298,7 +298,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, ref1;
+      var chartDataJs, chartObj, chartSelector, error, error1, ref1, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -323,7 +323,17 @@ getServerChart = function(chartType, chartParams) {
           }
         };
       }
-      chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
+      try {
+        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+      } catch (error) {
+        try {
+          uString = chartDataJs.labels.join(",");
+        } catch (error1) {
+          uString = "BAD_STRINGIFY";
+        }
+      }
+      uid = md5(uString);
+      chartSelector = "#dataChart-" + (datasets[0].label.replace(" ", "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
         if (!isNull(result.full_description)) {
