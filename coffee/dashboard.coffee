@@ -323,10 +323,14 @@ getServerChart = (chartType = "location", chartParams) ->
           else
             measurement = "genera"
           html = """
-          <p class="col-xs-12">
-            These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.
-          </p>
+          <section id="post-species-summary" class="col-xs-12">
+            <p>
+              These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.
+            </p>
+          </section>
           """
+          try
+            $("#post-species-summary").remove()
           $(chartSelector).after html
       stopLoad()
     false

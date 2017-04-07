@@ -356,7 +356,10 @@ getServerChart = function(chartType, chartParams) {
           } else {
             measurement = "genera";
           }
-          html = "<p class=\"col-xs-12\">\n  These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.\n</p>";
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\">\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.\n  </p>\n</section>";
+          try {
+            $("#post-species-summary").remove();
+          } catch (undefined) {}
           return $(chartSelector).after(html);
         }
       });
