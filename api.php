@@ -1043,8 +1043,14 @@ function getChartData($chartDataParams) {
             ));
             break;
         case "genus":
+        case "samples":
         default:
-            $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by `genus`";
+            if($chartDataParams["sort"] == "samples") {
+                $orderBy = "count, `genus`";
+            } else {
+                $orderBy = "`genus`";
+            }
+            $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by $orderBy";
             $result = mysqli_query($flatTable->getLink(), $query);
             if($result === false) {
                 returnAjax(array(

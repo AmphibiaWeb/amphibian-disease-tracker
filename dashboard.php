@@ -222,7 +222,7 @@ $loginStatus = getLoginState();
         <div class="col-xs-12 col-md-4">
           <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
-              <paper-item data-bins="location">Samples</paper-item>
+              <paper-item data-bins="location,species">Samples</paper-item>
               <paper-item data-bins="infection,location">Infection</paper-item>
               <paper-item data-bins="location">Country</paper-item>
               <paper-item data-bins="species">Genus</paper-item>
