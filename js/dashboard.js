@@ -393,13 +393,21 @@ renderNewChart = function() {
 };
 
 dropdownSortEvents = function() {
+  var doSortDisables;
   $("paper-dropdown-menu#binned-by paper-listbox").on("iron-select", function() {
+    return doSortDisables.debounce(50, null, null, this);
+  });
+  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").click(function() {
+    return doSortDisables.debounce(50, null, null, $(this).parent());
+  });
+  doSortDisables = function(el) {
     var allowedBins, allowedSortKey, item, l, len, ref;
-    item = $(this).selectedItem;
+    item = $(el).selectedItem;
     allowedSortKey = $(item).trim().text().toLowerCase();
     ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
     for (l = 0, len = ref.length; l < len; l++) {
       item = ref[l];
+      console.log("Searching allowed bins for " + allowedSortKey, allowedBins, item);
       allowedBins = $(item).attr("data-bins").split(",");
       if (indexOf.call(allowedBins, allowedSortKey) >= 0) {
         try {
@@ -410,11 +418,11 @@ dropdownSortEvents = function() {
         try {
           p$(item).disabled = true;
         } catch (undefined) {}
-        $(item).attr("hidden", "hidden");
+        $(item).attr("disabled", "disabled");
       }
     }
     return false;
-  });
+  };
   console.log("Dropdown sort events bound");
   return false;
 };

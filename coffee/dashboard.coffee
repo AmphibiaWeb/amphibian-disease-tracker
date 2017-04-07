@@ -186,7 +186,7 @@ getServerChart = (chartType = "location", chartParams) ->
             if data.label.toLowerCase().search("total") isnt -1
               colors =
                 border: "rgba(25,200,90,1)"
-                background: "rgba(25,200,90,0.2)"              
+                background: "rgba(25,200,90,0.2)"
           else
             colors = getRandomDataColor()
           data.borderColor.push colors.border
@@ -351,10 +351,15 @@ renderNewChart = ->
 
 dropdownSortEvents = ->
   $("paper-dropdown-menu#binned-by paper-listbox").on "iron-select", ->
-    item = $(this).selectedItem
+    doSortDisables.debounce 50, null, null, this
+  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").click ->
+    doSortDisables.debounce 50, null, null, $(this).parent()
+  doSortDisables = (el) ->
+    item = $(el).selectedItem
     allowedSortKey = $(item).trim().text().toLowerCase()
     for item in $("paper-dropdown-menu#sort-by paper-listbox paper-item")
       # Check each item in the li st
+      console.log "Searching allowed bins for #{allowedSortKey}", allowedBins, item
       allowedBins = $(item).attr("data-bins").split ","
       if allowedSortKey in allowedBins
         # They're allowed to be selected
@@ -365,7 +370,7 @@ dropdownSortEvents = ->
         # Disallowed
         try
           p$(item).disabled = true
-        $(item).attr "hidden", "hidden"
+        $(item).attr "disabled", "disabled"
     false
   console.log "Dropdown sort events bound"
   false
