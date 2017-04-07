@@ -110,12 +110,18 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     canvas = document.createElement "canvas"
     canvas.setAttribute "class","chart dynamic-chart col-xs-12"
     canvas.setAttribute "id", newId
+    try
+      _adp.newCanvas = canvas
     document.querySelector(appendTo).appendChild canvas
   else
     console.log "Canvas already exists:", chartSelector
   ## Handle the chart
   # http://www.chartjs.org/docs/
   chartCtx = $(chartSelector)
+  if isNull chartCtx
+    try
+      console.log "trying again to make context"
+      chartCtx = $(canvas)
   chart = new Chart chartCtx, chartData
   console.info "Chart created with", chartData
   if typeof callback is "function"

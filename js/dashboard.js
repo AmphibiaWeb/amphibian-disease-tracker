@@ -94,11 +94,20 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     canvas = document.createElement("canvas");
     canvas.setAttribute("class", "chart dynamic-chart col-xs-12");
     canvas.setAttribute("id", newId);
+    try {
+      _adp.newCanvas = canvas;
+    } catch (undefined) {}
     document.querySelector(appendTo).appendChild(canvas);
   } else {
     console.log("Canvas already exists:", chartSelector);
   }
   chartCtx = $(chartSelector);
+  if (isNull(chartCtx)) {
+    try {
+      console.log("trying again to make context");
+      chartCtx = $(canvas);
+    } catch (undefined) {}
+  }
   chart = new Chart(chartCtx, chartData);
   console.info("Chart created with", chartData);
   if (typeof callback === "function") {
