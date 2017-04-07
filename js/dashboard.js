@@ -29,7 +29,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
-  var chart, chartCtx, html, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
+  var canvas, chart, chartCtx, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -91,8 +91,10 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
   if (!$(chartSelector).exists()) {
     console.log("Creating new canvas");
     newId = chartSelector.slice(0, 1) === "#" ? chartSelector.slice(1) : "dataChart-" + ($("canvas").length);
-    html = "<canvas id=\"" + newId + "\" class=\"chart dynamic-chart col-xs-12\">\n</canvas>";
-    $(appendTo).append(html);
+    canvas = document.createElement("canvas");
+    canvas.setAttribute("class", "chart dynamic-chart col-xs-12");
+    canvas.setAttribute("id", newId);
+    document.querySelector(appendTo).appendChild(canvas);
   } else {
     console.log("Canvas already exists:", chartSelector);
   }

@@ -107,11 +107,10 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
   unless $(chartSelector).exists()
     console.log "Creating new canvas"
     newId = if chartSelector.slice(0,1) is "#" then chartSelector.slice(1) else "dataChart-#{$("canvas").length}"
-    html = """
-    <canvas id="#{newId}" class="chart dynamic-chart col-xs-12">
-    </canvas>
-    """
-    $(appendTo).append html
+    canvas = document.createElement "canvas"
+    canvas.setAttribute "class","chart dynamic-chart col-xs-12"
+    canvas.setAttribute "id", newId
+    document.querySelector(appendTo).appendChild canvas
   else
     console.log "Canvas already exists:", chartSelector
   ## Handle the chart
