@@ -346,17 +346,19 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var html, measurement;
+        var html, measurement, measurementSingle;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
         if (chartType === "species") {
           if (chartParams.sort === "species") {
             measurement = "species";
+            measurementSingle = measurement;
           } else {
             measurement = "genera";
+            measurementSingle = "genus";
           }
-          html = "<section id=\"post-species-summary\" class=\"col-xs-12\">\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.\n  </p>\n</section>";
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\">\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3>" + measurementSingle + " Summaries</h3>\n    collapsors here? or async pulls?\n  </div>\n</section>";
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
@@ -450,10 +452,13 @@ $(function() {
   $("#generate-chart").click(function() {
     return renderNewChart.debounce(50);
   });
-  $(".chart-param paper-listbox").on("iron-select", function() {
-    return renderNewChart.debounce(50);
-  });
   delayPolymerBind("paper-dropdown-menu#binned-by", function() {
+    $(".chart-param paper-listbox").on("iron-select", function() {
+      return renderNewChart.debounce(50);
+    });
+    $(".chart-param paper-listbox paper-item").on("click", function() {
+      return renderNewChart.debounce(50);
+    });
     return dropdownSortEvents();
   });
   return false;

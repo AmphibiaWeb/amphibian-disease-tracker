@@ -320,13 +320,19 @@ getServerChart = (chartType = "location", chartParams) ->
           # Put a descriptor
           if chartParams.sort is "species"
             measurement = "species"
+            measurementSingle = measurement
           else
             measurement = "genera"
+            measurementSingle = "genus"
           html = """
           <section id="post-species-summary" class="col-xs-12">
             <p>
-              These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per species summary links, etc.
+              These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
+            <div class="row">
+              <h3>#{measurementSingle} Summaries</h3>
+              collapsors here? or async pulls?
+            </div>
           </section>
           """
           try
@@ -410,8 +416,12 @@ $ ->
   getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
-  $(".chart-param paper-listbox").on "iron-select", ->
-    renderNewChart.debounce 50
   delayPolymerBind "paper-dropdown-menu#binned-by", ->
+    $(".chart-param paper-listbox")
+    .on "iron-select", ->
+      renderNewChart.debounce 50
+    $(".chart-param paper-listbox paper-item")
+    .on "click", ->
+      renderNewChart.debounce 50
     dropdownSortEvents()
   false

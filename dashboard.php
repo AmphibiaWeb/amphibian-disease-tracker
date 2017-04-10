@@ -202,8 +202,8 @@ $loginStatus = getLoginState();
         <div class="col-xs-12 col-md-4 col-sm-6">
           <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
             <paper-listbox class="dropdown-content" selected="0">
-              <paper-item>Project Count</paper-item>
-              <paper-item disabled>Sample Counts</paper-item>
+              <paper-item>Sample Counts</paper-item>
+              <paper-item disabled>Project Count</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -211,10 +211,8 @@ $loginStatus = getLoginState();
           <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Location</paper-item>
-              <paper-item>
-                Infection
-              </paper-item>
               <paper-item>Species</paper-item>
+              <paper-item> Infection </paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
