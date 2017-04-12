@@ -318,6 +318,19 @@ getServerChart = (chartType = "location", chartParams) ->
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
         if chartType is "species"
           # Put a descriptor
+          collapseHtml = ""
+          for bin in chartDataJs.labels
+            targetId = md5 "#{bin}-#{Date.now()}"
+            collapseHtml += """
+            <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
+            #{bin}
+            </button>
+            <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
+              <div class="collapse-content">
+                Binned data for #{bin}. Should populate this asynchronously ....
+              </div>
+            </iron-collapse>
+            """
           if chartParams.sort is "species"
             measurement = "species"
             measurementSingle = measurement
@@ -330,8 +343,8 @@ getServerChart = (chartType = "location", chartParams) ->
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
             <div class="row">
-              <h3>#{measurementSingle} Summaries</h3>
-              collapsors here? or async pulls?
+              <h3 class="capitalize">#{measurementSingle} Summaries</h3>
+              #{collapseHtml}
             </div>
           </section>
           """

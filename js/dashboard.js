@@ -346,11 +346,18 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var html, measurement, measurementSingle;
+        var bin, collapseHtml, html, len2, measurement, measurementSingle, n, ref2, targetId;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
         if (chartType === "species") {
+          collapseHtml = "";
+          ref2 = chartDataJs.labels;
+          for (n = 0, len2 = ref2.length; n < len2; n++) {
+            bin = ref2[n];
+            targetId = md5(bin + "-" + (Date.now()));
+            collapseHtml += "<button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n" + bin + "\n</button>\n<iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n  <div class=\"collapse-content\">\n    Binned data for " + bin + ". Should populate this asynchronously ....\n  </div>\n</iron-collapse>";
+          }
           if (chartParams.sort === "species") {
             measurement = "species";
             measurementSingle = measurement;
@@ -358,7 +365,7 @@ getServerChart = function(chartType, chartParams) {
             measurement = "genera";
             measurementSingle = "genus";
           }
-          html = "<section id=\"post-species-summary\" class=\"col-xs-12\">\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3>" + measurementSingle + " Summaries</h3>\n    collapsors here? or async pulls?\n  </div>\n</section>";
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\">\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize\">" + measurementSingle + " Summaries</h3>\n    " + collapseHtml + "\n  </div>\n</section>";
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
