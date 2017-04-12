@@ -404,12 +404,15 @@ renderNewChart = function() {
 
 dropdownSortEvents = function() {
   var doSortDisables;
-  $("paper-dropdown-menu#binned-by paper-listbox").unbind("iron-select").on("iron-select", function() {
-    return doSortDisables.debounce(50, null, null, this);
-  });
-  $("paper-dropdown-menu#binned-by paper-listbox > paper-item").unbind("click").click(function() {
-    return doSortDisables.debounce(50, null, null, $(this).parents("paper-listbox"));
-  });
+  if ((typeof _adp !== "undefined" && _adp !== null ? _adp.hasBoundSortDisables : void 0) !== true) {
+    $("paper-dropdown-menu#binned-by paper-listbox").on("iron-select", function() {
+      return doSortDisables.debounce(50, null, null, this);
+    });
+    $("paper-dropdown-menu#binned-by paper-listbox > paper-item").click(function() {
+      return doSortDisables.debounce(50, null, null, $(this).parents("paper-listbox"));
+    });
+    _adp.hasBoundSortDisabled = true;
+  }
   doSortDisables = function(el) {
     var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, l, len, ref, ref1;
     binItem = p$(el).selectedItem;

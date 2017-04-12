@@ -372,14 +372,14 @@ renderNewChart = ->
 
 
 dropdownSortEvents = ->
-  $("paper-dropdown-menu#binned-by paper-listbox")
-  .unbind "iron-select"
-  .on "iron-select", ->
-    doSortDisables.debounce 50, null, null, this
-  $("paper-dropdown-menu#binned-by paper-listbox > paper-item")
-  .unbind "click"
-  .click ->
-    doSortDisables.debounce 50, null, null, $(this).parents("paper-listbox")
+  unless _adp?.hasBoundSortDisables is true
+    $("paper-dropdown-menu#binned-by paper-listbox")
+    .on "iron-select", ->
+      doSortDisables.debounce 50, null, null, this
+    $("paper-dropdown-menu#binned-by paper-listbox > paper-item")
+    .click ->
+      doSortDisables.debounce 50, null, null, $(this).parents("paper-listbox")
+    _adp.hasBoundSortDisabled = true
   doSortDisables = (el) ->
     binItem = p$(el).selectedItem
     console.log "Firing doSortDisables", binItem, el
