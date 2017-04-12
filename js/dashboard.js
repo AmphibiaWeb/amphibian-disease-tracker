@@ -454,9 +454,11 @@ $(function() {
   });
   delayPolymerBind("paper-dropdown-menu#binned-by", function() {
     $(".chart-param paper-listbox").on("iron-select", function() {
+      console.log("Firing iron-select event", this);
       return renderNewChart.debounce(50);
     });
     $(".chart-param paper-listbox paper-item").on("click", function() {
+      console.log("Firing click event on paper-item", this);
       return renderNewChart.debounce(50);
     });
     return dropdownSortEvents();

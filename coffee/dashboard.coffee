@@ -419,9 +419,11 @@ $ ->
   delayPolymerBind "paper-dropdown-menu#binned-by", ->
     $(".chart-param paper-listbox")
     .on "iron-select", ->
+      console.log "Firing iron-select event", this
       renderNewChart.debounce 50
     $(".chart-param paper-listbox paper-item")
     .on "click", ->
+      console.log "Firing click event on paper-item", this
       renderNewChart.debounce 50
     dropdownSortEvents()
   false
