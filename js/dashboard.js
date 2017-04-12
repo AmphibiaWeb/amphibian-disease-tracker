@@ -356,7 +356,7 @@ getServerChart = function(chartType, chartParams) {
           for (n = 0, len2 = ref2.length; n < len2; n++) {
             bin = ref2[n];
             targetId = md5(bin + "-" + (Date.now()));
-            collapseHtml += "<button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n" + bin + "\n</button>\n<iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n  <div class=\"collapse-content\">\n    Binned data for " + bin + ". Should populate this asynchronously ....\n  </div>\n</iron-collapse>";
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
           }
           if (chartParams.sort === "species") {
             measurement = "species";

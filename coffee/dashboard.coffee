@@ -322,14 +322,16 @@ getServerChart = (chartType = "location", chartParams) ->
           for bin in chartDataJs.labels
             targetId = md5 "#{bin}-#{Date.now()}"
             collapseHtml += """
-            <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
-            #{bin}
-            </button>
-            <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
-              <div class="collapse-content">
-                Binned data for #{bin}. Should populate this asynchronously ....
-              </div>
-            </iron-collapse>
+            <div class="col-xs-12 col-md-6 col-lg-4">
+              <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
+              #{bin}
+              </button>
+              <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
+                <div class="collapse-content">
+                  Binned data for #{bin}. Should populate this asynchronously ....
+                </div>
+              </iron-collapse>
+            </div>
             """
           if chartParams.sort is "species"
             measurement = "species"
