@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -346,17 +346,19 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var bin, collapseHtml, html, len2, measurement, measurementSingle, n, ref2, targetId;
+        var bin, collapseHtml, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref2, targetId;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
         if (chartType === "species") {
+          fetchUpdatesFor = new Object();
           collapseHtml = "";
           ref2 = chartDataJs.labels;
           for (n = 0, len2 = ref2.length; n < len2; n++) {
             bin = ref2[n];
             targetId = md5(bin + "-" + (Date.now()));
-            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            fetchUpdatesFor[targetId] = bin;
           }
           if (chartParams.sort === "species") {
             measurement = "species";
@@ -369,7 +371,12 @@ getServerChart = function(chartType, chartParams) {
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
-          return $(chartSelector).after(html);
+          $(chartSelector).after(html);
+          try {
+            bindCollapsors();
+            _adp.fetchUpdatesFor = fetchUpdatesFor;
+            return fetchMiniTaxonBlurbs();
+          } catch (undefined) {}
         }
       });
       return stopLoad();
@@ -380,6 +387,18 @@ getServerChart = function(chartType, chartParams) {
     stopLoadError("There was a problem communicating with the server");
     return false;
   });
+  return false;
+};
+
+fetchMiniTaxonBlurbs = function(reference) {
+  if (reference == null) {
+    reference = _adp.fetchUpdatesFor;
+  }
+  console.debug("Fetching taxa updates for", reference);
+  return false;
+};
+
+fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
   return false;
 };
 

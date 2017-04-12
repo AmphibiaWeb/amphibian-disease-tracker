@@ -317,6 +317,7 @@ getServerChart = (chartType = "location", chartParams) ->
         unless isNull result.full_description
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
         if chartType is "species"
+          fetchUpdatesFor = new Object()
           # Put a descriptor
           collapseHtml = ""
           for bin in chartDataJs.labels
@@ -327,12 +328,14 @@ getServerChart = (chartType = "location", chartParams) ->
               #{bin}
               </button>
               <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
-                <div class="collapse-content">
+                <div class="collapse-content alert">
                   Binned data for #{bin}. Should populate this asynchronously ....
                 </div>
               </iron-collapse>
             </div>
             """
+            # Store what needs the update fetched
+            fetchUpdatesFor[targetId] = bin
           if chartParams.sort is "species"
             measurement = "species"
             measurementSingle = measurement
@@ -353,6 +356,10 @@ getServerChart = (chartType = "location", chartParams) ->
           try
             $("#post-species-summary").remove()
           $(chartSelector).after html
+          try
+            bindCollapsors()
+            _adp.fetchUpdatesFor = fetchUpdatesFor
+            fetchMiniTaxonBlurbs()
       stopLoad()
     false
   .fail (result, status) ->
@@ -360,6 +367,20 @@ getServerChart = (chartType = "location", chartParams) ->
     stopLoadError "There was a problem communicating with the server"
     false
   false
+
+
+
+fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
+  console.debug "Fetching taxa updates for", reference
+  false
+
+
+fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
+  false
+
+
+
+
 
 
 renderNewChart = ->
