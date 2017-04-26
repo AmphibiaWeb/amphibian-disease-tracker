@@ -2,30 +2,30 @@
 <html>
   <head>
     <?php
-      $debug = false;
-      if ($debug) {
-          error_reporting(E_ALL);
-          ini_set('display_errors', 1);
-          error_log('Project Browser is running in debug mode!');
-      }
+    $debug = false;
+    if ($debug) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        error_log('Project Browser is running in debug mode!');
+    }
 
-  $print_login_state = false;
-  require_once 'DB_CONFIG.php';
-  require_once dirname(__FILE__).'/core/core.php';
-  require_once dirname(__FILE__).'/admin/async_login_handler.php';
-  $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
+    $print_login_state = false;
+    require_once 'DB_CONFIG.php';
+    require_once dirname(__FILE__).'/core/core.php';
+    require_once dirname(__FILE__).'/admin/async_login_handler.php';
+    $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
-  $as_include = true;
-  # The next include includes core, and DB_CONFIG, and sets up $db
-  # require_once(dirname(__FILE__)."/admin-api.php");
+    $as_include = true;
+    # The next include includes core, and DB_CONFIG, and sets up $db
+    # require_once(dirname(__FILE__)."/admin-api.php");
 
-  $pid = $db->sanitize($_GET['id']);
+    $pid = $db->sanitize($_GET['id']);
 
 
 
-  $loginStatus = getLoginState();
+    $loginStatus = getLoginState();
 
-        ?>
+    ?>
     <title>Disease Dashboard</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
@@ -158,7 +158,7 @@
       </div>
     </div>
     <p class="col-xs-12 login-status-bar text-right">
-      <?php
+        <?php
         $user = $_COOKIE['amphibiandisease_fullname'];
         $test = $loginStatus['status'];
         if ($test) {
@@ -166,19 +166,16 @@
       Logged in as <span class='header-bar-user-name'><?php echo $user; ?></span>
       <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
-      <?php
-
+        <?php
         } else {
             ?>
       <paper-icon-button icon="icons:exit-to-app" class="click" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom"></paper-icon-button>
-      <?php
-
+        <?php
         }
         if (!empty($pid)) {
             ?>
       <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
-      <?php
-
+        <?php
         } ?>
       <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
@@ -192,7 +189,7 @@
 
             # Fetch aggregate stats
 
-      ?>
+        ?>
     <h2 class="col-xs-12">
       Disease Summary Dashboard <span class="badge">ALPHA</span>
     </h2>
@@ -241,7 +238,7 @@
       </div>
     </section>
   </main>
-  <?php
+    <?php
     require_once("./footer.php");
     ?>
 </body>
