@@ -16,7 +16,6 @@ try {
     ini_set('post_max_size', '500M');
     ini_set('upload_max_filesize', '500M');
 } catch (Exception $e) {
-
 }
 
 $print_login_state = false;
@@ -61,8 +60,8 @@ if (!function_exists('elapsed')) {
 
 $admin_req = isset($_REQUEST['perform']) ? strtolower($_REQUEST['perform']) : null;
 
-if($admin_req == null && isset($_REQUEST["action"])) {
-  $admin_req = strtolower($_REQUEST["action"]);
+if ($admin_req == null && isset($_REQUEST["action"])) {
+    $admin_req = strtolower($_REQUEST["action"]);
 }
 
 $login_status = getLoginState($get);
@@ -79,7 +78,6 @@ if ($as_include !== true) {
         $login_status['error'] = 'Invalid user';
         $login_status['human_error'] = "You're not logged in as a valid user to do this. Please log in and try again.";
         returnAjax($login_status);
-
     }
 
     switch ($admin_req) {
@@ -173,11 +171,12 @@ if ($as_include !== true) {
     }
 }
 
-function inviteUser($get) {
+function inviteUser($get)
+{
     # Is the invite target valid?
     $destination = deEscape($get["invitee"]);
     if (!preg_match('/^(?:[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/im', $destination)) {
-      return array(
+        return array(
             "status" => false,
             "action" => "INVITE_USER",
             "error" => "INVALID_EMAIL",
@@ -188,8 +187,8 @@ function inviteUser($get) {
     $u = new UserFunctions($login_status["detail"]["dblink"], 'dblink');
     # Does the invite target exist as a user?
     $userExists = $u->isEntry($destination, $u->userColumn);
-    if($userExists !== false) {
-      return array(
+    if ($userExists !== false) {
+        return array(
           "status" => false,
               "error" => "ALREADY_REGISTERED",
               "target" => $destination,
@@ -220,7 +219,7 @@ function inviteUser($get) {
     $body = "<h1>You've been invited to join a research project!</h1><p>You've been invited to join ".$u->getShortUrl()." by ".$u->getName()." (".$u->getUsername().").</p><p>Visit <a href='https://amphibiandisease.org/admin-login.php?q=create'>https://amphibiandisease.org/admin-login.php?q=create</a> to create a new user and get going!</p>";
     $mail->Body = $body;
     $success = $mail->send();
-    if($success) {
+    if ($success) {
         return array(
             "status" => $success,
             "action" => "INVITE_USER",
@@ -307,7 +306,7 @@ function saveEntry($get)
       # Check formatting
       unset($data['dataset_arks']);
   }
-  unset($data['id']); # Obvious
+    unset($data['id']); # Obvious
   unset($data['access_data']); # Handled seperately
 
   try {
@@ -348,7 +347,7 @@ function newEntry($get)
    ***/
     global $login_status;
     $isUnrestricted = toBool($login_status["unrestricted"]);
-    if(!$isUnrestricted) {
+    if (!$isUnrestricted) {
         return array(
             "status" => false,
             "error" => "RESTRICTED_USER_UNAUTHORIZED",
@@ -574,7 +573,7 @@ function editAccess($link, $deltas)
                     }
                     $operations[] = "Changed project author to ".$user['uid'];
                 }
-            }  else {
+            } else {
                 $notices[] = 'Invalid role assignment for user '.$user['uid'];
             }
         }
@@ -583,12 +582,16 @@ function editAccess($link, $deltas)
         $editListTracker =array();
         $readListTracker = array();
         foreach ($editList as $user) {
-            if(array_key_exists($user, $editListTracker)) continue;
+            if (array_key_exists($user, $editListTracker)) {
+                continue;
+            }
             $newList[] = $user.':EDIT';
             $editListTracker[$user] = true;
         }
         foreach ($viewList as $user) {
-            if(array_key_exists($user, $readListTracker)) continue;
+            if (array_key_exists($user, $readListTracker)) {
+                continue;
+            }
             $newList[] = $user.':READ';
             $readListTracker[$user] = true;
         }
@@ -666,7 +669,6 @@ function listProjects($unauthenticated = true)
                 "has_data" => !empty($row[4]),
             );
         } catch (Exception $e) {
-
         }
     }
     if (!$unauthenticated) {
@@ -682,7 +684,9 @@ function listProjects($unauthenticated = true)
             $r = mysqli_query($l, $query);
             while ($row = mysqli_fetch_row($r)) {
                 $pid = $row[0];
-                if(empty($pid)) continue;
+                if (empty($pid)) {
+                    continue;
+                }
                 # All results here are authorized projects
                 $authorizedProjects[$pid] = $row[1];
                 try {
@@ -696,7 +700,6 @@ function listProjects($unauthenticated = true)
                         "has_data" => !empty($row[5]),
                     );
                 } catch (Exception $e) {
-
                 }
                 if ($row[2] == $uid) {
                     $authoredProjects[] = $pid;
@@ -709,7 +712,7 @@ function listProjects($unauthenticated = true)
                     $checkedPermissions[$pid] = $accessCopy;
                     $isEditor = $access["detailed_authorization"]["can_edit"];
                     $isViewer = $access["detailed_authorization"]["can_view"];
-                    if($isEditor === true) {
+                    if ($isEditor === true) {
                         $editableProjects[] = $pid;
                     }
                 }
@@ -774,7 +777,8 @@ function suListProjects()
 }
 
 
-function checkProjectIdAuthorized($projectId, $simple = false) {
+function checkProjectIdAuthorized($projectId, $simple = false)
+{
     /***
      *
      *
@@ -1051,7 +1055,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
      * @return array
      ***/
      global $db;
-       $fimsDefaultHeaders = array(
+    $fimsDefaultHeaders = array(
           'Content-type: application/x-www-form-urlencoded',
           'Accept: application/json',
           'User-Agent: amphibian disease portal',
@@ -1112,7 +1116,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
-            if($rawResponse === false) {
+            if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 001 (No Response)"));
             }
             $loginHeaders = $http_response_header;
@@ -1149,7 +1153,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
-        if($rawResponse === false) {
+        if ($rawResponse === false) {
             throw(new Exception("Fatal FIMS communication error 002 (No Response)"));
         }
         $resp = json_decode($rawResponse, true);
@@ -1263,7 +1267,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
-            if($rawResponse === false) {
+            if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 003 (No Response)"));
             }
             $loginHeaders = $http_response_header;
@@ -1306,7 +1310,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $params['http']['content'] = http_build_query($tempAssociationData);
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
-            if($rawResponse === false) {
+            if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 004 (No Response)"));
             }
             $resp = json_decode($rawResponse, true);
@@ -1418,7 +1422,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
-            if($rawResponse === false) {
+            if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 005 (No Response)"));
             }
             $loginHeaders = $http_response_header;
@@ -1453,17 +1457,19 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         $ctx = stream_context_create($params);
         $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
         $resp = null;
-        if($rawResponse === false) {
+        if ($rawResponse === false) {
             $errorOut = true;
             $error = error_get_last();
             try {
-                $errorMessageRaw = print_r(error_get_last(),true);
+                $errorMessageRaw = print_r(error_get_last(), true);
                 $errorMessage = json_encode(error_get_last());
-                if(empty($errorMessage)) throw(new Exception("BadEncode"));
-            } catch(Exception $e) {
+                if (empty($errorMessage)) {
+                    throw(new Exception("BadEncode"));
+                }
+            } catch (Exception $e) {
                 $errorMessage = $errorMessageRaw;
             }
-            if(strpos($error["message"],"400 Bad Request") !== false) {
+            if (strpos($error["message"], "400 Bad Request") !== false) {
                 # Try looking it up -- might already exist
                 global $fimsPassword;
                 $fimsPassCredential = $fimsPassword;
@@ -1482,7 +1488,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 ));
                 $ctx = stream_context_create($params);
                 $rawReauthResponse = file_get_contents($fimsAuthUrl, false, $ctx);
-                if($rawReauthResponse === false) {
+                if ($rawReauthResponse === false) {
                     throw(new Exception("Fatal FIMS communication error 009 (No Response)"));
                 }
                 $loginHeaders = $http_response_header;
@@ -1518,7 +1524,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 $http_response_header = substr($rawResponse2, 0, $header_size);
                 $body = substr($rawResponse2, $header_size);
                 curl_close($ch);
-                if($body !== false) {
+                if ($body !== false) {
                     $resp = json_decode($body, true);
                     $rawResponse = array(
                         "original_mint_response" => $rawResponse,
@@ -1526,10 +1532,13 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                         "detail_decoded" => $resp,
                         "target" => $target,
                     );
-                    if(!empty($resp)) {
+                    if (!empty($resp)) {
                         $errorOut = false;
-                        if($resp["usrMessage"] == "You are not a member of this private project") $includeHeaderDetails = true;
-                        else $includeHeaderDetails = false;
+                        if ($resp["usrMessage"] == "You are not a member of this private project") {
+                            $includeHeaderDetails = true;
+                        } else {
+                            $includeHeaderDetails = false;
+                        }
                     } else {
                         $includeHeaderDetails = true;
                     }
@@ -1550,7 +1559,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                     );
                 }
             }
-            if($errorOut) {
+            if ($errorOut) {
                 # Try getting a list
                 $target = "http://www.biscicol.org/biocode-fims/rest/expeditions/admin/list/".$fimsMintData["projectId"];
                 $headers = $fimsDefaultHeaders;
@@ -1567,13 +1576,15 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                     "list_response" => $rawResponse2,
                     "list_decoded" => $resp,
                 );
-                if($rawResponse2 === false) {
+                if ($rawResponse2 === false) {
                     $rawResponse["error"] = error_get_last();
                 }
                 throw(new Exception("Fatal FIMS communication error 006 (No Response) [".$errorMessage."]"));
             }
         }
-        if(empty($resp)) $resp = json_decode($rawResponse, true);
+        if (empty($resp)) {
+            $resp = json_decode($rawResponse, true);
+        }
         # Get the ID in the result
         /***
          * Example result:
@@ -1638,7 +1649,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             $params['http']['header'] .= "Cookie: ".$cookiesString."\r\n";
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsStatusUrl, false, $ctx);
-            if($rawResponse === false) {
+            if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 007 (No Response)"));
             }
             $rawResponse2 = file_get_contents($fimsContinueUrl, false, $ctx);
@@ -1719,7 +1730,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             ));
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
-            if($rawResponse === false) {
+            if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 008 (No Response)"));
             }
             $loginHeaders = $http_response_header;
@@ -1777,14 +1788,13 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
         $validateStatus = true;
         # Check the response for errors
         try {
-          if(isset($resp['done']['worksheets'][0]['Samples'])) {
-              $hasError = !empty($resp['done']['worksheets'][0]['Samples']['errors']);
-              $hasWarning = !empty($resp['done']['worksheets'][0]['Samples']['warnings']);
-          }
-          else {
-              $hasError = false;
-              $hasWarning = false;
-          }
+            if (isset($resp['done']['worksheets'][0]['Samples'])) {
+                $hasError = !empty($resp['done']['worksheets'][0]['Samples']['errors']);
+                $hasWarning = !empty($resp['done']['worksheets'][0]['Samples']['warnings']);
+            } else {
+                $hasError = false;
+                $hasWarning = false;
+            }
         } catch (Exception $e) {
             $hasError = false;
             $hasWarning = false;
@@ -1846,7 +1856,8 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
 }
 
 
-function superuserEditUser($get) {
+function superuserEditUser($get)
+{
     /***
      *
      * $get is the $_REQUEST superglobal.
@@ -1865,7 +1876,7 @@ function superuserEditUser($get) {
     $isSu = boolstr($suFlag);
     $adminFlag = $login_status['detail']['userdata']['admin_flag'];
     $isAdmin = boolstr($adminFlag);
-    if(!($isSu || $isAdmin)) {
+    if (!($isSu || $isAdmin)) {
         return array(
             "status" => false,
             "error" => "INVALID_USER_PERMISSIONS",
@@ -1874,7 +1885,7 @@ function superuserEditUser($get) {
     }
     # Check the target
     $target = $get["user"];
-    if(empty($target)) {
+    if (empty($target)) {
         return array(
             "status" => false,
             "error" => "INVALID_TARGET_NO_USER_PROVIDED",
@@ -1895,7 +1906,7 @@ function superuserEditUser($get) {
         # Is the target an SU or admin?
         $suFlag = $userData['userdata']['su_flag'];
         $targetIsSu = boolstr($suFlag);
-        if($targetIsSu) {
+        if ($targetIsSu) {
             return array(
                 "status" => false,
                 "error" => "INVALID_TARGET_IS_SU",
@@ -1904,7 +1915,7 @@ function superuserEditUser($get) {
         }
         $adminFlag = $userData['userdata']['admin_flag'];
         $targetIsAdmin = boolstr($adminFlag);
-        if($targetIsAdmin && !$isSu) {
+        if ($targetIsAdmin && !$isSu) {
             return array(
                 "status" => false,
                 "error" => "INVALID_TARGET_ADMIN_VS_ADMIN",
@@ -1913,18 +1924,18 @@ function superuserEditUser($get) {
         }
         # Permission check complete.
         $editAction = strtolower($get["change_type"]);
-        if(empty($editAction)) {
+        if (empty($editAction)) {
             return array(
                 "status" => false,
                 "error" => "INVALID_CHANGE_TYPE_EMPTY",
                 "human_error" => "You must provide an argument 'change_type'"
             );
         }
-        switch($editAction) {
+        switch ($editAction) {
         case "delete":
             $dryRun = $uf->forceDeleteCurrentUser();
             $targetUid = $dryRun["target_user"];
-            if($targetUid != $target) {
+            if ($targetUid != $target) {
                 # Should never happen
                 return array(
                     "status" => false,
@@ -1958,13 +1969,13 @@ function superuserEditUser($get) {
             "args" => $get,
         );
     }
-
 }
 
 
 
 
-function updateOwnProfile($get, $col = "public_profile") {
+function updateOwnProfile($get, $col = "public_profile")
+{
     /***
      * Update the self-profile of a user
      *
@@ -1973,12 +1984,12 @@ function updateOwnProfile($get, $col = "public_profile") {
      ***/
     # Verify the JSON integrity of the file
     $structuredData = smart_decode64($get["data"]);
-    if(!is_array($structuredData)) {
+    if (!is_array($structuredData)) {
         $raw = base64_decode($get["data"]);
         $structuredData = json_decode($raw, true);
     }
     //check nullness objectness etc
-    if(!is_array($structuredData)) {
+    if (!is_array($structuredData)) {
         return array(
             "status" => false,
             "error" => "BAD_DATA",
@@ -1993,8 +2004,8 @@ function updateOwnProfile($get, $col = "public_profile") {
         "privacy",
         "profile",
     );
-    foreach($requiredKeys as $key) {
-        if(!array_key_exists($key, $structuredData)) {
+    foreach ($requiredKeys as $key) {
+        if (!array_key_exists($key, $structuredData)) {
             return array(
                 "status" => false,
                 "error" => "MISSING_REQUIRED_KEY",
@@ -2025,7 +2036,8 @@ function updateOwnProfile($get, $col = "public_profile") {
 }
 
 
-function saveProfileImage($get) {
+function saveProfileImage($get)
+{
     /***
      * For a given image, set it as the profile picture for a user.
      ***/
@@ -2033,7 +2045,7 @@ function saveProfileImage($get) {
     $data = smart_decode64($get["data"], false);
     $imagePath = $data["profile_image_path"];
     # Verify file exists
-    if(!file_exists($imagePath)) {
+    if (!file_exists($imagePath)) {
         return array(
             "status" => false,
             "error" => "Invalid path",
@@ -2046,15 +2058,18 @@ function saveProfileImage($get) {
     return $u->setImageAsUserPicture($imagePath);
 }
 
-function sendUserMessage($get) {
+function sendUserMessage($get)
+{
     return false;
 }
 
-function getConversationWithUser($get) {
+function getConversationWithUser($get)
+{
     return false;
 }
 
-function getTotalConversationsSummary($get) {
+function getTotalConversationsSummary($get)
+{
     return false;
 }
 
@@ -2074,9 +2089,9 @@ function advancedSearchProject($get)
     $response = array(
         "notices" => array(),
     );
-    foreach($searchParams as $col=>$searchQuery) {
-        if(checkColumnExists($col, false)) {
-            if($searchQuery["data"] != "*") {
+    foreach ($searchParams as $col=>$searchQuery) {
+        if (checkColumnExists($col, false)) {
+            if ($searchQuery["data"] != "*") {
                 $searchQuery["data"] = $db->sanitize($searchQuery["data"]);
                 $search[$col] = $searchQuery;
             }
@@ -2120,13 +2135,13 @@ function advancedSearchProject($get)
     foreach ($search as $col => $searchQuery) {
         $crit = $searchQuery["data"];
         $validSearchType = empty($searchQuery["search_type"]) ? true : in_array($searchQuery["search_type"], $allowedSearchTypes);
-        if(!empty($searchQuery["search_type"]) && !$validSearchType) {
+        if (!empty($searchQuery["search_type"]) && !$validSearchType) {
             $response["notices"][] = "'".$searchQuery["search_type"]."' isn't a valid search type";
         }
-        if($validSearchType && !is_numeric($crit)) {
+        if ($validSearchType && !is_numeric($crit)) {
             $response["notices"][] = "Search types may only be specified for numeric data ('".$searchQuery["search_type"]."' tried to be specified for '$crit')";
         }
-        if(!$validSearchType || !is_numeric($crit)) {
+        if (!$validSearchType || !is_numeric($crit)) {
             $where_arr[] = $loose ? 'LOWER(`'.$col."`) LIKE '%".$crit."%'" : '`'.$col."`='".$crit."'";
         } else {
             # The query is numeric AND we have a search type specified
@@ -2153,24 +2168,24 @@ function advancedSearchProject($get)
         "includes_gymnophiona",
     );
 
-    while($row = mysqli_fetch_assoc($r)) {
+    while ($row = mysqli_fetch_assoc($r)) {
         # Authenticate the project against the user
-        if(checkProjectIdAuthorized($row["project_id"], true)) {
+        if (checkProjectIdAuthorized($row["project_id"], true)) {
             # Clean up data types
-            foreach($row as $col=>$val) {
-                if(is_numeric($val)) {
-                    if(in_array($col, $boolCols)) {
+            foreach ($row as $col=>$val) {
+                if (is_numeric($val)) {
+                    if (in_array($col, $boolCols)) {
                         $row[$col] = toBool($val);
                     } else {
                         $row[$col] = floatval($val);
                     }
                 }
-                if($col == "carto_id") {
+                if ($col == "carto_id") {
                     $cartoObj = json_decode($val);
-                    if(!is_array($cartoObj)) {
+                    if (!is_array($cartoObj)) {
                         $cartoObj = $val;
                     } else {
-                        foreach($cartoObj as $k=>$v) {
+                        foreach ($cartoObj as $k=>$v) {
                             $nk = str_replace("&#95;", "_", $k);
                             try {
                                 unset($cartoObj[$k]);
@@ -2183,7 +2198,7 @@ function advancedSearchProject($get)
                     $row[$col] = $cartoObj;
                 }
             }
-            if(!empty($row["project_id"])) {
+            if (!empty($row["project_id"])) {
                 $queryResult[] = $row;
             }
         }
@@ -2208,9 +2223,9 @@ function advancedSearchProjectContains($get)
     $response = array(
         "notices" => array(),
     );
-    foreach($searchParams as $col=>$searchQuery) {
-        if(checkColumnExists($col, false)) {
-            if($searchQuery["data"] != "*") {
+    foreach ($searchParams as $col=>$searchQuery) {
+        if (checkColumnExists($col, false)) {
+            if ($searchQuery["data"] != "*") {
                 $searchQuery["data"] = $db->sanitize($searchQuery["data"]);
                 $search[$col] = $searchQuery;
             }
@@ -2254,13 +2269,13 @@ function advancedSearchProjectContains($get)
     foreach ($search as $col => $searchQuery) {
         $crit = $searchQuery["data"];
         $validSearchType = empty($searchQuery["search_type"]) ? true : in_array($searchQuery["search_type"], $allowedSearchTypes);
-        if(!empty($searchQuery["search_type"]) && !$validSearchType) {
+        if (!empty($searchQuery["search_type"]) && !$validSearchType) {
             $response["notices"][] = "'".$searchQuery["search_type"]."' isn't a valid search type";
         }
-        if($validSearchType && !is_numeric($crit)) {
+        if ($validSearchType && !is_numeric($crit)) {
             $response["notices"][] = "Search types may only be specified for numeric data ('".$searchQuery["search_type"]."' tried to be specified for '$crit')";
         }
-        if(!$validSearchType || !is_numeric($crit)) {
+        if (!$validSearchType || !is_numeric($crit)) {
             $where_arr[] = $loose ? 'LOWER(`'.$col."`) LIKE '%".$crit."%'" : '`'.$col."`='".$crit."'";
         } else {
             # The query is numeric AND we have a search type specified
@@ -2287,24 +2302,24 @@ function advancedSearchProjectContains($get)
         "includes_gymnophiona",
     );
 
-    while($row = mysqli_fetch_assoc($r)) {
+    while ($row = mysqli_fetch_assoc($r)) {
         # Authenticate the project against the user
-        if(checkProjectIdAuthorized($row["project_id"], true)) {
+        if (checkProjectIdAuthorized($row["project_id"], true)) {
             # Clean up data types
-            foreach($row as $col=>$val) {
-                if(is_numeric($val)) {
-                    if(in_array($col, $boolCols)) {
+            foreach ($row as $col=>$val) {
+                if (is_numeric($val)) {
+                    if (in_array($col, $boolCols)) {
                         $row[$col] = toBool($val);
                     } else {
                         $row[$col] = floatval($val);
                     }
                 }
-                if($col == "carto_id") {
+                if ($col == "carto_id") {
                     $cartoObj = json_decode($val);
-                    if(!is_array($cartoObj)) {
+                    if (!is_array($cartoObj)) {
                         $cartoObj = $val;
                     } else {
-                        foreach($cartoObj as $k=>$v) {
+                        foreach ($cartoObj as $k=>$v) {
                             $nk = str_replace("&#95;", "_", $k);
                             try {
                                 unset($cartoObj[$k]);
@@ -2344,7 +2359,9 @@ function checkColumnExists($column_list, $userReturn = true, $detailReturn = fal
         if (!array_key_exists($column, $cols)) {
             if ($userReturn || $detailReturn) {
                 $response = array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column);
-                if ($userReturn) returnAjax($response);
+                if ($userReturn) {
+                    returnAjax($response);
+                }
                 return $response;
             } else {
                 return false;
