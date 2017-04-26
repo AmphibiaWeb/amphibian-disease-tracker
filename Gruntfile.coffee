@@ -203,8 +203,7 @@ module.exports = (grunt) ->
       app:
         dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "dashboard.php", "home.php", "helpers/excelHelper.php", "profile.php"]
       options:
-        ignoreExitCode: true
-        verbose: true
+        rules: "@PSR2"
         #diff: true
         #dryRun: true
     watch:

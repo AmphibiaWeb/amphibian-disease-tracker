@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <?php
-$debug = false;
+      $debug = false;
+      if ($debug) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        error_log('Project Browser is running in debug mode!');
+      }
 
-if ($debug) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    error_log('Project Browser is running in debug mode!');
-}
+  $print_login_state = false;
+  require_once 'DB_CONFIG.php';
+  require_once dirname(__FILE__).'/core/core.php';
+  require_once dirname(__FILE__).'/admin/async_login_handler.php';
+  $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
-$print_login_state = false;
-require_once 'DB_CONFIG.php';
-require_once dirname(__FILE__).'/core/core.php';
-require_once dirname(__FILE__).'/admin/async_login_handler.php';
-$db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
+  $as_include = true;
+  # The next include includes core, and DB_CONFIG, and sets up $db
+  # require_once(dirname(__FILE__)."/admin-api.php");
 
-$as_include = true;
-# The next include includes core, and DB_CONFIG, and sets up $db
-# require_once(dirname(__FILE__)."/admin-api.php");
-
-$pid = $db->sanitize($_GET['id']);
-
+  $pid = $db->sanitize($_GET['id']);
 
 
-$loginStatus = getLoginState();
 
-       ?>
+  $loginStatus = getLoginState();
+
+        ?>
     <title>Disease Dashboard</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
