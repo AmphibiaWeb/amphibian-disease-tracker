@@ -1594,43 +1594,74 @@ function getTaxonIucnData($taxonBase)
      ***/
     global $iucnToken, $db;
     $apiTarget = "http://apiv3.iucnredlist.org/api/v3/species/";
-    $args = "token=" . $iucnToken;
+    $args = array("token" => $iucnToken);
     if (empty($taxonBase["genus"]) || empty($taxonBase["species"])) {
         return array(
             "status" => false,
             "error" => "REQUIRED_COLS_MISSING",
         );
     }
-    $params = array(
-        "genus" => $taxonBase["genus"],
-        "species" => $taxonBase["species"],
+    // $params = array(
+    //     "genus" => $taxonBase["genus"],
+    //     "species" => $taxonBase["species"],
+    // );
+    // $r = $db->doQuery($params, "*");
+    // if ($r === false) {
+    //     return array(
+    //         "status" => false,
+    //         "error" => "SPECIES_NOT_FOUND",
+    //         "params" => $params,
+    //     );
+    // }
+    // $taxon = mysqli_fetch_assoc($r);    
+    $response = array(
+        "provided" => array(
+            "taxon" => array($taxonBase),
+        ),
     );
-    $r = $db->doQuery($params, "*");
-    if ($r === false) {
-        return array(
-            "status" => false,
-            "error" => "SPECIES_NOT_FOUND",
-            "params" => $params,
-        );
-    }
-    $taxon = mysqli_fetch_assoc($r);
+    # http://www.iucnredlist.org/static/categories_criteria_2_3#critical
+    $iucnCategoryMap = array(
+        "CR" => "Critically Endangered",
+        "EN" => "Endangered",
+        "VU" => "Vulnerable",
+        "LC" => "Least Concern",
+        "LR" => "Lower Risk",
+        "CD" => "Conservation Dependant",
+        "NT" => "Near Threatened",
+        "EW" => "Extinct in the Wild",
+        "EX" => "Extinct",
+        "DD" => "Data Deficient",
+        "NE" => "Not Evaluated",
+    );
     # Set up so that we can skip this step if need be
     $doIucn = true;
     if ($doIucn === true) {
         # IUCN returns an empty result unless "%20" is used to separate the
         # genus and species
-        $nameTarget = $taxon["genus"] . "%20" . $taxon["species"];
+        $nameTarget = $taxonBase["genus"] . "%20" . $taxonBase["species"];
         try {
             $iucnRawResponse = do_post_request($apiTarget.$nameTarget, $args);
-            $iucnResponse = json_decode($iucnRawResponse["response"], true);
+            $iucnResponse = json_decode($iucnRawResponse, true);
+            $response["iucn_category"] = $iucnCategoryMap[$iucnResponse["category"]];
         } catch (Exception $e) {
             // skip it?
         }
-        $iucnTaxon = isset($iucnResponse) ? $iucnResponse["result"][0] : "INVALID_IUCN_RESPONSE";
+        if (isset($iucnResponse)) {
+            $response["iucn"] =  $iucnResponse["result"][0];
+        } else {
+            $response["error"] = "INVALID_IUCN_RESPONSE";
+            $response["target"] = array(
+                "uri" => $apiTarget.$nameTarget,
+                "raw_response" => $iucnRawResponse,
+                "parsed_response" => $iucnResponse,
+            );
+
+        }
     } else {
         // What are we even doing here
     }
-    return $iucnTaxon;
+
+    return $response;
 }
 
 function getTaxonAWebData($taxonBase)
