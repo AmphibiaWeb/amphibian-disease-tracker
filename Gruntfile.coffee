@@ -202,6 +202,8 @@ module.exports = (grunt) ->
     phpcsfixer:
       app:
         dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "dashboard.php", "index.php", "helpers/excelHelper.php", "profile.php"]
+      core:
+        dir: ["core/*.php"]
       options:
         rules: "@PSR2"
         #diff: true
