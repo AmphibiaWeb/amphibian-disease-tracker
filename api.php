@@ -1097,8 +1097,8 @@ function getChartData($chartDataParams)
                         if ($chartDataParams["sort"] == "samples") {
                             $orderBy = "count, `genus`";
                         } else {
-                $orderBy = "`genus`";
-            }
+                            $orderBy = "`genus`";
+                        }
             $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by $orderBy";
             $result = mysqli_query($flatTable->getLink(), $query);
             if ($result === false) {
@@ -1626,7 +1626,7 @@ function getTaxonIucnData($taxonBase)
         } catch (Exception $e) {
             // skip it?
         }
-        $iucnTaxon = $iucnResponse["result"][0];
+        $iucnTaxon = isset($iucnResponse) ? $iucnResponse["result"][0] : "INVALID_IUCN_RESPONSE";
     } else {
         // What are we even doing here
     }
