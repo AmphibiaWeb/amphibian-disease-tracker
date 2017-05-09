@@ -29,7 +29,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
-  var canvas, chart, chartCtx, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
+  var canvas, chart, chartCtx, newId, origChartData, ref, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -101,6 +101,9 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
   } else {
     console.log("Canvas already exists:", chartSelector);
   }
+  if (((ref = _adp.chart) != null ? ref.chart : void 0) != null) {
+    _adp.chart.chart.destroy();
+  }
   chartCtx = $(chartSelector);
   if (isNull(chartCtx)) {
     try {
@@ -109,6 +112,10 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     } catch (undefined) {}
   }
   chart = new Chart(chartCtx, chartData);
+  _adp.chart = {
+    chart: chart,
+    ctx: chartCtx
+  };
   console.info("Chart created with", chartData);
   if (typeof callback === "function") {
     callback();
@@ -308,7 +315,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, error, error1, ref1, uString, uid;
+      var chartDataJs, chartObj, chartSelector, error, error1, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -322,16 +329,51 @@ getServerChart = function(chartType, chartParams) {
           scales: {
             xAxes: [
               {
+                scaleLabel: {
+                  label: result.axes.x,
+                  display: true
+                },
                 stacked: chartData.stacking.x
               }
             ],
             yAxes: [
               {
+                scaleLabel: {
+                  label: result.axes.y,
+                  display: true
+                },
                 stacked: chartData.stacking.y
               }
             ]
           }
         };
+      } else {
+        try {
+          if ((ref2 = chartObj.options) != null) {
+            if ((ref3 = ref2.scales) != null) {
+              if ((ref4 = ref3.xAxes) != null) {
+                if ((ref5 = ref4[0]) != null) {
+                  ref5.scaleLabel = {
+                    label: result.axes.x,
+                    display: true
+                  };
+                }
+              }
+            }
+          }
+          if ((ref6 = chartObj.options) != null) {
+            if ((ref7 = ref6.scales) != null) {
+              if ((ref8 = ref7.yAxes) != null) {
+                if ((ref9 = ref8[0]) != null) {
+                  ref9.scaleLabel = {
+                    label: result.axes.y,
+                    display: true
+                  };
+                }
+              }
+            }
+          }
+        } catch (undefined) {}
       }
       try {
         uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
@@ -346,16 +388,16 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var bin, collapseHtml, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref2, targetId;
+        var bin, collapseHtml, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, targetId;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
         if (chartType === "species") {
           fetchUpdatesFor = new Object();
           collapseHtml = "";
-          ref2 = chartDataJs.labels;
-          for (n = 0, len2 = ref2.length; n < len2; n++) {
-            bin = ref2[n];
+          ref10 = chartDataJs.labels;
+          for (n = 0, len2 = ref10.length; n < len2; n++) {
+            bin = ref10[n];
             targetId = md5(bin + "-" + (Date.now()));
             collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
             fetchUpdatesFor[targetId] = bin;
@@ -375,8 +417,26 @@ getServerChart = function(chartType, chartParams) {
           try {
             bindCollapsors();
             _adp.fetchUpdatesFor = fetchUpdatesFor;
-            return fetchMiniTaxonBlurbs();
+            fetchMiniTaxonBlurbs();
           } catch (undefined) {}
+          return _adp.chart.ctx.click(function(e) {
+            var buttonSelector, color, dataset, elIndex, element, taxon, taxonData;
+            dataset = _asm.chart.getDatasetAtEvent(e);
+            element = _asm.chart.getElementAtEvent(e);
+            console.debug("Dataset", dataset);
+            console.debug("Element", element);
+            elIndex = element[0]._index;
+            data = dataset[elIndex];
+            console.debug("Specific data:", data);
+            taxon = data._model.label;
+            console.debug("Taxon clicked:", taxon);
+            taxonData = window.genusData[taxon];
+            console.debug("Using data", taxonData);
+            color = getRandomDataColor();
+            buttonSelector = "button[data-target='" + taxon + "']";
+            console.debug("Selector", buttonSelector, $(buttonSelector).exists());
+            return $(buttonSelector).get(0).scrollIntoView();
+          });
         }
       });
       return stopLoad();

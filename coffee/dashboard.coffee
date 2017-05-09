@@ -117,12 +117,18 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     console.log "Canvas already exists:", chartSelector
   ## Handle the chart
   # http://www.chartjs.org/docs/
+  if _adp.chart?.chart?
+    # Get rid of any current ones
+    _adp.chart.chart.destroy()
   chartCtx = $(chartSelector)
   if isNull chartCtx
     try
       console.log "trying again to make context"
       chartCtx = $(canvas)
   chart = new Chart chartCtx, chartData
+  _adp.chart =
+    chart: chart
+    ctx: chartCtx
   console.info "Chart created with", chartData
   if typeof callback is "function"
     callback()
@@ -298,11 +304,25 @@ getServerChart = (chartType = "location", chartParams) ->
         chartObj.options =
           scales:
             xAxes: [
+              scaleLabel:
+                label: result.axes.x
+                display: true
               stacked: chartData.stacking.x
               ]
             yAxes: [
+              scaleLabel:
+                label: result.axes.y
+                display: true
               stacked: chartData.stacking.y
               ]
+      else
+        try
+          chartObj.options?.scales?.xAxes?[0]?.scaleLabel =
+            label: result.axes.x
+            display: true
+          chartObj.options?.scales?.yAxes?[0]?.scaleLabel =
+            label: result.axes.y
+            display: true
       try
         uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
       catch
@@ -360,6 +380,23 @@ getServerChart = (chartType = "location", chartParams) ->
             bindCollapsors()
             _adp.fetchUpdatesFor = fetchUpdatesFor
             fetchMiniTaxonBlurbs()
+          # Click events on the chart
+          _adp.chart.ctx.click (e) ->
+            dataset = _asm.chart.getDatasetAtEvent e
+            element = _asm.chart.getElementAtEvent e
+            console.debug "Dataset", dataset
+            console.debug "Element", element
+            elIndex = element[0]._index
+            data = dataset[elIndex]
+            console.debug "Specific data:", data
+            taxon = data._model.label
+            console.debug "Taxon clicked:", taxon
+            taxonData = window.genusData[taxon]
+            console.debug "Using data", taxonData
+            color = getRandomDataColor()
+            buttonSelector = "button[data-target='#{taxon}']"
+            console.debug "Selector", buttonSelector, $(buttonSelector).exists()
+            $(buttonSelector).get(0).scrollIntoView()
       stopLoad()
     false
   .fail (result, status) ->
