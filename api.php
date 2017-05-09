@@ -1046,6 +1046,10 @@ function getChartData($chartDataParams)
             returnAjax(array(
                 "status" => true,
                 "data" => $chartData,
+                "axes" => array(
+                  "x" => "Taxon",
+                  "y" => "Samples"
+                ),
                 "use_preprocessor" => false,
                 "rows" => $rowCount,
                 "format" => "chart.js",
@@ -1092,6 +1096,10 @@ function getChartData($chartDataParams)
             returnAjax(array(
                 "status" => true,
                 "data" => $chartData,
+                "axes" => array(
+                  "x" => "Genus",
+                  "y" => "Samples"
+                ),
                 "use_preprocessor" => false,
                 "rows" => $rowCount,
                 "format" => "chart.js",
@@ -1251,6 +1259,10 @@ function getChartData($chartDataParams)
         returnAjax(array(
           "status" => true,
           "data" => $chartData,
+          "axes" => array(
+                  "x" => "Country",
+                  "y" => "Samples"
+                ),
           "use_preprocessor" => false,
           "rows" => $rowCount,
           "format" => "chart.js",
@@ -1516,6 +1528,10 @@ function getChartData($chartDataParams)
             returnAjax(array(
             "status" => true,
             "data" => $chartData,
+            "axes" => array(
+                  "x" => "Taxon",
+                  "y" => "Samples"
+                ),
             "data_details" => $binningProjectResults,
             "rows" => $rowCount,
             "format" => "chart.js",
