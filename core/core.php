@@ -324,7 +324,7 @@ if (!function_exists('do_post_request')) {
         $url = urlencode($url);
         $params = array('http' => array(
             'method' => $method,
-            'content' => http_build_query($data),
+            'content' => is_array($data) ? http_build_query($data) : $data,
             'header'  => 'Content-type: application/x-www-form-urlencoded',
         ));
         if ($optional_headers !== null) {
