@@ -393,7 +393,7 @@ getServerChart = (chartType = "location", chartParams) ->
             taxon = data._model.label
             console.debug "Taxon clicked:", taxon
             color = getRandomDataColor()
-            buttonSelector = "button[data-target='#{taxon}']"
+            buttonSelector = "button[data-taxon='#{taxon}']"
             console.debug "Selector", buttonSelector, $(buttonSelector).exists()
             $(buttonSelector).get(0).scrollIntoView()
       stopLoad()
@@ -416,7 +416,6 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
       species: taxonArr[1]
     $("button##{collapseSelector}-button-trigger")
     .attr "data-taxon", taxon
-    .attr "data-target", taxon
     .click ->
       taxon = $(this).attr "data-taxon"
       taxonArr = taxon.split " "
