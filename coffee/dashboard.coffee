@@ -517,7 +517,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       #{nameHtml}
       <p>Sampled in the following countries:</p>
       #{countryHtml}
-      #{linkHtml}      
+      #{linkHtml}
       <p>
         pie chart: pos|neg
       </p>
@@ -556,11 +556,17 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
           data: testingData
         # Create a canvas for this
         canvas = document.createElement "canvas"
-        canvas.setAttribute "class","chart dynamic-pie-chart col-xs-6"
+        canvas.setAttribute "class","chart dynamic-pie-chart"
         canvasId = "#{idTaxon}-#{disease}-testdata"
         canvas.setAttribute "id", canvasId
+        canvasContainerId = "#{canvasId}-container"
         chartContainer = $(targetSelector).find(".charts-container").get(0)
-        chartContainer.appendChild canvas
+        containerHtml = """
+        <div id="#{canvasContainerId}" class="col-xs-6">
+        </div>
+        """
+        $(chartContainer).append containerHtml
+        $("##{canvasContainerId}").get(0).appendChild canvas
         chartCtx = $("##{canvasId}")
         pieChart = new Chart chartCtx, chartCfg
       # Fatality!
@@ -572,7 +578,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
             "#{disease} unknown fatality"
             ]
           datasets: [
-            data: [data.fatal.true, data.fatal.false, data.fatal.uknown]
+            data: [data.fatal.true, data.fatal.false, data.fatal.unknown]
             backgroundColor: [
               "#FF6384"
               "#36A2EB"
@@ -589,11 +595,17 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
           data: fatalData
         # Create a canvas for this
         canvas = document.createElement "canvas"
-        canvas.setAttribute "class","chart dynamic-pie-chart col-xs-6"
+        canvas.setAttribute "class","chart dynamic-pie-chart"
         canvasId = "#{idTaxon}-#{disease}-fataldata"
         canvas.setAttribute "id", canvasId
+        canvasContainerId = "#{canvasId}-container"
         chartContainer = $(targetSelector).find(".charts-container").get(0)
-        chartContainer.appendChild canvas
+        containerHtml = """
+        <div id="#{canvasContainerId}" class="col-xs-6">
+        </div>
+        """
+        $(chartContainer).append containerHtml
+        $("##{canvasContainerId}").get(0).appendChild canvas
         chartCtx = $("##{canvasId}")
         pieChart = new Chart chartCtx, chartCfg
     false

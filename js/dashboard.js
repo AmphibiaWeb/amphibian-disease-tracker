@@ -511,7 +511,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasId, chartCfg, chartContainer, chartCtx, countries, countryHtml, data, disease, diseaseData, e, error, fatalData, i, idTaxon, l, len, linkHtml, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, fatalData, i, idTaxon, l, len, linkHtml, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, testingData, title, tooltip;
     console.log("Got result", result);
     try {
       if (typeof result.amphibiaweb.data.common_name !== "object") {
@@ -562,7 +562,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
-    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "  \n  <p>\n    pie chart: pos|neg\n  </p>\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <p>\n    pie chart: pos|neg\n  </p>\n  <div class=\"charts-container row\">\n  </div>\n</div>";
     $(targetSelector).html(blurb);
     idTaxon = encode64(JSON.stringify(taxonResult));
     idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
@@ -571,7 +571,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       data = diseaseData[disease];
       if (data.detected.no_confidence !== result.adp.samples) {
         testingData = {
-          labels: [disease + " detected", disease + " not detected", disease + " unknown"],
+          labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
           datasets: [
             {
               data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
@@ -585,20 +585,23 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
           data: testingData
         };
         canvas = document.createElement("canvas");
-        canvas.setAttribute("class", "chart dynamic-pie-chart col-xs-6");
+        canvas.setAttribute("class", "chart dynamic-pie-chart");
         canvasId = idTaxon + "-" + disease + "-testdata";
         canvas.setAttribute("id", canvasId);
+        canvasContainerId = canvasId + "-container";
         chartContainer = $(targetSelector).find(".charts-container").get(0);
-        chartContainer.appendChild(canvas);
+        containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+        $(chartContainer).append(containerHtml);
+        $("#" + canvasContainerId).get(0).appendChild(canvas);
         chartCtx = $("#" + canvasId);
         pieChart = new Chart(chartCtx, chartCfg);
       }
       if (data.fatal.unknown !== result.adp.samples) {
         fatalData = {
-          labels: [disease + " fatal", disease + " not fatal", disease + " unknown"],
+          labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
           datasets: [
             {
-              data: [data.fatal["true"], data.fatal["false"], data.fatal.uknown],
+              data: [data.fatal["true"], data.fatal["false"], data.fatal.unknown],
               backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
               hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
             }
@@ -609,11 +612,14 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
           data: fatalData
         };
         canvas = document.createElement("canvas");
-        canvas.setAttribute("class", "chart dynamic-pie-chart col-xs-6");
+        canvas.setAttribute("class", "chart dynamic-pie-chart");
         canvasId = idTaxon + "-" + disease + "-fataldata";
         canvas.setAttribute("id", canvasId);
+        canvasContainerId = canvasId + "-container";
         chartContainer = $(targetSelector).find(".charts-container").get(0);
-        chartContainer.appendChild(canvas);
+        containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+        $(chartContainer).append(containerHtml);
+        $("#" + canvasContainerId).get(0).appendChild(canvas);
         chartCtx = $("#" + canvasId);
         pieChart = new Chart(chartCtx, chartCfg);
       }
