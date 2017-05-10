@@ -517,10 +517,12 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       #{nameHtml}
       <p>Sampled in the following countries:</p>
       #{countryHtml}
-      #{linkHtml}
+      #{linkHtml}      
       <p>
         pie chart: pos|neg
       </p>
+      <div class="charts-container">
+      </div>
     </div>
     """
     $(targetSelector).html blurb

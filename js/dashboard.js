@@ -562,7 +562,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
-    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <p>\n    pie chart: pos|neg\n  </p>\n</div>";
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "  \n  <p>\n    pie chart: pos|neg\n  </p>\n  <div class=\"charts-container\">\n  </div>\n</div>";
     $(targetSelector).html(blurb);
     diseaseData = result.adp.disease_data;
     for (disease in diseaseData) {
