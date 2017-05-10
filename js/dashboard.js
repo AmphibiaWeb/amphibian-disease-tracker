@@ -422,7 +422,7 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var bin, collapseHtml, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, targetId;
+        var bin, collapseHtml, dataUri, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, targetId;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
@@ -443,7 +443,8 @@ getServerChart = function(chartType, chartParams) {
             measurement = "genera";
             measurementSingle = "genus";
           }
-          html = "<section id=\"post-species-summary\" class=\"col-xs-12\">\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize\">" + measurementSingle + " Summaries</h3>\n    " + collapseHtml + "\n  </div>\n</section>";
+          dataUri = _adp.chart.chart.toBase64Image();
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </button>\n  </div>\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize\">" + measurementSingle + " Summaries</h3>\n    " + collapseHtml + "\n  </div>\n</section>";
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
