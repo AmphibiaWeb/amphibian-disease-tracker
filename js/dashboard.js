@@ -569,7 +569,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     diseaseData = result.adp.disease_data;
     for (disease in diseaseData) {
       data = diseaseData[disease];
-      if (data.detected.no_confidence !== result.adp.samples) {
+      if (data.detected.no_confidence !== data.detected.total) {
         testingData = {
           labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
           datasets: [
@@ -596,7 +596,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
         chartCtx = $("#" + canvasId);
         pieChart = new Chart(chartCtx, chartCfg);
       }
-      if (data.fatal.unknown !== result.adp.samples) {
+      if (data.fatal.unknown !== data.fatal.total) {
         fatalData = {
           labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
           datasets: [

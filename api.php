@@ -1604,7 +1604,7 @@ function getTaxonData($taxonBase)
     }
     if (empty($taxonBase["species"])) {
         # TODO Recursively call this across all the species
-        
+
     }
     $iucn = getTaxonIucnData($taxonBase);
     $aweb = getTaxonAwebData($taxonBase);
@@ -1639,14 +1639,18 @@ function getTaxonData($taxonBase)
                         "true" => 0,
                         "false" => 0,
                         "no_confidence" => 0,
+                        "total" => 0,
                     ),
                     "fatal" => array(
                         "true" => 0,
                         "false" => 0,
                         "unknown" => 0,
+                        "total" => 0,
                     ),
                 );
             }
+            $taxonBreakdown[$disease]["detected"]["total"]++;
+            $taxonBreakdown[$disease]["fatal"]["total"]++;
             switch (strtolower(strbool($row["diseasedetected"]))) {
             case "true":
                 $taxonBreakdown[$disease]["detected"]["true"]++;

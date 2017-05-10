@@ -528,7 +528,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
     idTaxon = idTaxon.replace /[^\w0-9]/img, ""
     diseaseData = result.adp.disease_data
     for disease, data of diseaseData
-      unless data.detected.no_confidence is result.adp.samples
+      unless data.detected.no_confidence is data.detected.total
         testingData =
           labels: [
             "#{disease} detected"
@@ -567,7 +567,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
         chartCtx = $("##{canvasId}")
         pieChart = new Chart chartCtx, chartCfg
       # Fatality!
-      unless data.fatal.unknown is result.adp.samples
+      unless data.fatal.unknown is data.fatal.total
         fatalData =
           labels: [
             "#{disease} fatal"
