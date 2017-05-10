@@ -408,6 +408,13 @@ getServerChart = (chartType = "location", chartParams) ->
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
   console.debug "Fetching taxa updates for", reference
+  _adp.collapseOpener = (collapse) ->
+    if collapse.opened
+      collapse.hide()
+    else
+      collapse.show()
+    #collapse.toggle.debounce(50)
+    false
   for collapseSelector, taxon of reference
     selector = "##{collapseSelector} .collapse-content"
     taxonArr = taxon.split " "
@@ -434,7 +441,8 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
       else
         console.debug "Already has data"
       collapse = $(this).parent().find("iron-collapse").get(0)
-      collapse.toggle()
+      console.debug "is opened?", collapse.opened
+      _adp.collapseOpener.debounce 50, null, null, collapse
   false
 
 
