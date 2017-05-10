@@ -465,7 +465,7 @@ fetchMiniTaxonBlurbs = function(reference) {
       species: taxonArr[1]
     };
     $("button#" + collapseSelector + "-button-trigger").attr("data-taxon", taxon).click(function() {
-      var hasData, html, ref;
+      var collapse, hasData, html, ref;
       taxon = $(this).attr("data-taxon");
       taxonArr = taxon.split(" ");
       taxonObj = {
@@ -478,11 +478,12 @@ fetchMiniTaxonBlurbs = function(reference) {
         $(this).attr("data-has-data", "true");
         html = "<paper-spinner active></paper-spinner> Fetching Data...";
         $(selector).html(html);
-        return fetchMiniTaxonBlurb(taxonObj, selector);
+        fetchMiniTaxonBlurb(taxonObj, selector);
       } else {
         console.debug("Already has data");
-        return false;
       }
+      collapse = $(this).parent().find("iron-collapse").get(0);
+      return collapse.toggle();
     });
   }
   return false;

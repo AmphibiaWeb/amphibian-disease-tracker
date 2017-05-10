@@ -433,7 +433,8 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
         fetchMiniTaxonBlurb taxonObj, selector
       else
         console.debug "Already has data"
-        return false
+      collapse = $(this).parent().find("iron-collapse").get(0)
+      collapse.toggle()
   false
 
 
