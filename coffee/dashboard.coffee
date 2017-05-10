@@ -494,10 +494,11 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       <p>Represented in <strong>#{result.adp.project_count}</strong> projects</p>
     """
     for project, title of result.adp.projects
+      tooltip = title
       if title.length > 30
         title = title.slice(0,27) + "..."
       linkHtml += """
-      <a class="btn btn-primary newwindow" href="#{uri.urlString}/project.php?id=#{project}">
+      <a class="btn btn-primary newwindow" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
         #{title}
       </a>
       """

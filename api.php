@@ -1592,6 +1592,7 @@ function getTaxonData($taxonBase)
     /***
      *
      ***/
+    global $db;
     foreach ($taxonBase as $key => $value) {
         $taxonBase[$key] = strtolower($value);
     }

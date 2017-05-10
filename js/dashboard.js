@@ -511,7 +511,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, e, error, i, l, len, linkHtml, name, nameHtml, nameString, names, project, ref, ref1, ref2, ref3, title;
+    var blurb, e, error, i, l, len, linkHtml, name, nameHtml, nameString, names, project, ref, ref1, ref2, ref3, title, tooltip;
     console.log("Got result", result);
     try {
       if (typeof result.amphibiaweb.data.common_name !== "object") {
@@ -553,10 +553,11 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     ref3 = result.adp.projects;
     for (project in ref3) {
       title = ref3[project];
+      tooltip = title;
       if (title.length > 30) {
         title = title.slice(0, 27) + "...";
       }
-      linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\">\n  " + title + "\n</a>";
+      linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
     blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>\n    Project count (+ links) / Sample count / pie chart: pos|neg / countries or locales with taxon with samples\n  </p>\n  " + linkHtml + "\n</div>";
