@@ -1084,9 +1084,10 @@ function getChartData($chartDataParams)
                             "status" => true,
                             "data" => $chartData,
                             "axes" => array(
-                              "x" => "Taxon",
+                              "x" => "Species",
                               "y" => "Samples"
                             ),
+                            "title" => "Samples Per Taxon",
                             "use_preprocessor" => false,
                             "rows" => $rowCount,
                             "format" => "chart.js",
@@ -1137,6 +1138,7 @@ function getChartData($chartDataParams)
                               "x" => "Genus",
                               "y" => "Samples"
                             ),
+                            "title" => "Samples Per Genus",
                             "use_preprocessor" => false,
                             "rows" => $rowCount,
                             "format" => "chart.js",
@@ -1294,6 +1296,7 @@ function getChartData($chartDataParams)
                   "x" => "Country",
                   "y" => "Samples"
                 ),
+          "title" => "Samples Per Country",
           "use_preprocessor" => false,
           "rows" => $rowCount,
           "format" => "chart.js",
@@ -1561,6 +1564,7 @@ function getChartData($chartDataParams)
                   "x" => "Taxon",
                   "y" => "Samples"
                 ),
+            "title" => "Infection Rate Per Project",
             "data_details" => $binningProjectResults,
             "rows" => $rowCount,
             "format" => "chart.js",

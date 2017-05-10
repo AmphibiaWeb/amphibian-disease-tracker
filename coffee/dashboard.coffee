@@ -1,7 +1,8 @@
 apiTarget = "#{uri.urlString}api.php"
 adminApiTarget = "#{uri.urlString}admin-api.php"
 
-window._adp = new Object()
+window._adp =
+  taxonCharts: new Object()
 
 try
   do createOverflowMenu = ->
@@ -315,6 +316,10 @@ getServerChart = (chartType = "location", chartParams) ->
                 display: true
               stacked: chartData.stacking.y
               ]
+        if result.title?
+          chartObj.options.title =
+            display: true
+            text: result.title
       else
         try
           unless chartObj.options?
@@ -326,6 +331,10 @@ getServerChart = (chartType = "location", chartParams) ->
                 yAxes: [
                   scaleLabel: {}
                   ]
+          if result.title?
+            chartObj.options.title =
+              display: true
+              text: result.title
           chartObj.options?.scales?.xAxes?[0]?.scaleLabel =
             labelString: result.axes.x
             display: true
@@ -583,6 +592,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         $("##{canvasContainerId}").get(0).appendChild canvas
         chartCtx = $("##{canvasId}")
         pieChart = new Chart chartCtx, chartCfg
+        _adp.taxonCharts[canvasId] = pieChart
       # Fatality!
       unless data.fatal.unknown is data.fatal.total
         fatalData =
@@ -622,7 +632,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         $("##{canvasContainerId}").get(0).appendChild canvas
         chartCtx = $("##{canvasId}")
         pieChart = new Chart chartCtx, chartCfg
-        console.debug "fatal data", canvasId, chartCfg
+        _adp.taxonCharts[canvasId] = pieChart
     false
   false
 

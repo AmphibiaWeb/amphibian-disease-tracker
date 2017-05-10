@@ -5,7 +5,9 @@ apiTarget = uri.urlString + "api.php";
 
 adminApiTarget = uri.urlString + "admin-api.php";
 
-window._adp = new Object();
+window._adp = {
+  taxonCharts: new Object()
+};
 
 try {
   (createOverflowMenu = function() {
@@ -347,6 +349,12 @@ getServerChart = function(chartType, chartParams) {
             ]
           }
         };
+        if (result.title != null) {
+          chartObj.options.title = {
+            display: true,
+            text: result.title
+          };
+        }
       } else {
         try {
           if (chartObj.options == null) {
@@ -363,6 +371,12 @@ getServerChart = function(chartType, chartParams) {
                   }
                 ]
               }
+            };
+          }
+          if (result.title != null) {
+            chartObj.options.title = {
+              display: true,
+              text: result.title
             };
           }
           if ((ref2 = chartObj.options) != null) {
@@ -619,6 +633,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $("#" + canvasContainerId).get(0).appendChild(canvas);
         chartCtx = $("#" + canvasId);
         pieChart = new Chart(chartCtx, chartCfg);
+        _adp.taxonCharts[canvasId] = pieChart;
       }
       if (data.fatal.unknown !== data.fatal.total) {
         fatalData = {
@@ -646,7 +661,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $("#" + canvasContainerId).get(0).appendChild(canvas);
         chartCtx = $("#" + canvasId);
         pieChart = new Chart(chartCtx, chartCfg);
-        console.debug("fatal data", canvasId, chartCfg);
+        _adp.taxonCharts[canvasId] = pieChart;
       }
     }
     return false;
