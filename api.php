@@ -98,6 +98,9 @@ switch ($do) {
   case 'chart':
       getChartData($_REQUEST);
       break;
+  case "taxon":
+    returnAjax(getTaxonData($_REQUEST));
+    break;
   case "iucn":
       returnAjax(getTaxonIucnData($_REQUEST));
       break;
@@ -1584,6 +1587,32 @@ function getChartData($chartDataParams)
 }
 
 
+function getTaxonData($taxonBase)
+{
+    /***
+     *
+     ***/
+    foreach ($taxonBase as $key => $value) {
+        $taxonBase[$key] = strtolower($value);
+    }
+    $iucn = getTaxonIucnData($taxonBase);
+    $aweb = getTaxonAwebData($taxonBase);
+    $response = array(
+        "taxon" => array(
+            "genus" => $taxonBase["genus"],
+            "species" => $taxonBase["species"],
+        ),
+        "iucn" => array(
+            "data" => $iucn["iucn"],
+            "category" => $iucn["iucn_category"],
+        ),
+        "amphibiaweb" => array(
+            "data" => $aweb["data"],
+        ),
+    );
+    return $response;
+}
+
 
 function getTaxonIucnData($taxonBase)
 {
@@ -1673,6 +1702,9 @@ function getTaxonAWebData($taxonBase)
      * http://amphibiaweb.org/ws.html
      ***/
     $apiTarget = "http://amphibiaweb.org/cgi/amphib_ws";
+    foreach ($taxonBase as $key => $value) {
+        $taxonBase[$key] = strtolower($value);
+    }
     $args = array(
         "where-genus" => $taxonBase["genus"],
         "where-species" => $taxonBase["species"],
@@ -1687,7 +1719,14 @@ function getTaxonAWebData($taxonBase)
         "\n",
     );
     $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
-    $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebReplacedResponse);
+    $iter = 1;
+    $awebEscapeTags = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebReplacedResponse, -1, $tagCount);
+    while($tagCount > 0) {
+        $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, -1, $tagCount);
+        if(!empty($replaced)) $awebEscapeTags = $replaced;
+        ++$iter;
+    }
+    $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebEscapeTags);
 
     # https://secure.php.net/manual/en/book.simplexml.php
     $awebXml = simplexml_load_string($awebNoCdata);
@@ -1695,12 +1734,28 @@ function getTaxonAWebData($taxonBase)
     #$awebXml = simplexml_load_string($awebRawResponse);
     $awebJson = json_encode($awebXml);
     $awebData = json_decode($awebJson, true);
+    # Pretty up potential arrays
+    $formattedAwebData = array();
+    foreach ($awebData["species"] as $key => $value) {
+        # Test the value -- see if it's arrayish
+        if (preg_match('/^( *([A-Z][\w \-\x{0080}-\x{017F}]+),)+( *[A-Z][\w \-\x{0080}-\x{017F}]+)$/usm', $value)) {
+            # OK, explode it
+            $formattedValue = explode(",", $value);
+        } else {
+            $formattedValue = $value;
+        }
+        $formattedAwebData[$key] = $formattedValue;
+    }
     $response = array(
-        "data" => $awebData,
-        "aweb_raw" => $awebRawResponse,
-        "aweb_replaced" => $awebReplacedResponse,
-        "aweb_cdata_replaced" => $awebNoCdata,
-        "aweb_json" => $awebJson
+        "taxon" => array(
+            "genus" => $taxonBase["genus"],
+            "species" => $taxonBase["species"],
+        ),
+        "data" => $formattedAwebData,
+        // "aweb_notags" => $awebEscapeTags,
+        // "aweb_notags_iter" => $iter,
+        // "aweb_cdata_replaced" => $awebNoCdata,
+        // "aweb_json" => $awebJson
     );
     return $response;
 }

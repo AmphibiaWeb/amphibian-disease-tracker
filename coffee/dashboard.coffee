@@ -409,10 +409,45 @@ getServerChart = (chartType = "location", chartParams) ->
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
   console.debug "Fetching taxa updates for", reference
+  for selector, taxon of reference
+    taxonArr = taxon.split " "
+    taxonObj =
+      genus: taxonArr[0]
+      species: taxonArr[1]
+    fetchMiniTaxonBlurb taxonObj, selector
   false
 
 
 fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
+  args = [
+    "action=taxon"
+    ]
+  for k, v of taxonResult
+    args.push "#{k}=#{encodeURIComponent v}"
+  $.get "api.php", args.join("&"), "json"
+  .done (result) ->
+    names = Object.toArray result.aweb.common_name
+    nameString = ""
+    i = 0
+    for name in names
+      ++i
+      if name is result.iucn.data.main_common_name
+        name = "<strong>#{name.trim()}</strong>"
+      nameString += name.trim()
+      if names.length isnt i
+        nameString += ", "
+    blurb = """
+    <div class='blurb-info'>
+      <p>
+        <strong>IUCN Status:</strong> #{result.iucn.category}
+      </p>
+      <p>
+        <strong>Names:</strong>
+      </p>
+    </div>
+    """
+    $(targetSelector).append blurb
+    false
   false
 
 

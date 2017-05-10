@@ -451,14 +451,50 @@ getServerChart = function(chartType, chartParams) {
 };
 
 fetchMiniTaxonBlurbs = function(reference) {
+  var selector, taxon, taxonArr, taxonObj;
   if (reference == null) {
     reference = _adp.fetchUpdatesFor;
   }
   console.debug("Fetching taxa updates for", reference);
+  for (selector in reference) {
+    taxon = reference[selector];
+    taxonArr = taxon.split(" ");
+    taxonObj = {
+      genus: taxonArr[0],
+      species: taxonArr[1]
+    };
+    fetchMiniTaxonBlurb(taxonObj, selector);
+  }
   return false;
 };
 
 fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
+  var args, k, v;
+  args = ["action=taxon"];
+  for (k in taxonResult) {
+    v = taxonResult[k];
+    args.push(k + "=" + (encodeURIComponent(v)));
+  }
+  $.get("api.php", args.join("&"), "json").done(function(result) {
+    var blurb, i, l, len, name, nameString, names;
+    names = Object.toArray(result.aweb.common_name);
+    nameString = "";
+    i = 0;
+    for (l = 0, len = names.length; l < len; l++) {
+      name = names[l];
+      ++i;
+      if (name === result.iucn.data.main_common_name) {
+        name = "<strong>" + (name.trim()) + "</strong>";
+      }
+      nameString += name.trim();
+      if (names.length !== i) {
+        nameString += ", ";
+      }
+    }
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  <p>\n    <strong>Names:</strong>\n  </p>\n</div>";
+    $(targetSelector).append(blurb);
+    return false;
+  });
   return false;
 };
 
