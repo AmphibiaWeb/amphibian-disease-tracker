@@ -510,7 +510,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                                                         "latlng" => $decimalLatLng,
                                                         "url" => $oMapsFullUrl,
                                                     );
-                                                    $row["reverse_gecoded"] = false;
+                                                    $row["reverse_geocoded"] = false;
                                                 }
                                         }
 
