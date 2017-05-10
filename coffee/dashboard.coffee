@@ -390,7 +390,7 @@ getServerChart = (chartType = "location", chartParams) ->
               <a href="#{dataUri}" class="btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2" id="download-main-chart" download>
                 <iron-icon icon="icons:cloud-download"></iron-icon>
                 Download Chart
-              </button>
+              </a>
             </div>
             <p>
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
