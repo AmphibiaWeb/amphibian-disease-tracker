@@ -492,7 +492,7 @@ fetchMiniTaxonBlurbs = function(reference) {
       }
       collapse = $(this).parent().find("iron-collapse").get(0);
       console.debug("is opened?", collapse.opened);
-      return _adp.collapseOpener.debounce(50, null, null, collapse);
+      return _adp.collapseOpener.debounce(300, null, null, collapse);
     });
   }
   return false;

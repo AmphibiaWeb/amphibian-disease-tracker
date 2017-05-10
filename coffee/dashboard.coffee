@@ -413,6 +413,7 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
       collapse.hide()
     else
       collapse.show()
+    #collapse.show()
     #collapse.toggle.debounce(50)
     false
   for collapseSelector, taxon of reference
@@ -442,7 +443,7 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
         console.debug "Already has data"
       collapse = $(this).parent().find("iron-collapse").get(0)
       console.debug "is opened?", collapse.opened
-      _adp.collapseOpener.debounce 50, null, null, collapse
+      _adp.collapseOpener.debounce 300, null, null, collapse
   false
 
 
