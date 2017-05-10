@@ -283,12 +283,6 @@
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="col-xs-12 col-sm-6">
-          <paper-toggle-button id="group-values" data-key="group" class="chart-param">Group Values</paper-toggle-button>
-        </div>
-        <div class="col-xs-12 col-sm-6">
-          <paper-toggle-button id="percent-values" data-key="percent" class="chart-param" checked>Show Percents</paper-toggle-button>
-        </div>
         <div class="col-xs-12">
           <button class="btn btn-success" id="generate-chart">Generate Chart</button>
         </div>
