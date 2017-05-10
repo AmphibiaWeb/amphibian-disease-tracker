@@ -395,7 +395,10 @@ getServerChart = (chartType = "location", chartParams) ->
             color = getRandomDataColor()
             buttonSelector = "button[data-taxon='#{taxon}']"
             console.debug "Selector", buttonSelector, $(buttonSelector).exists()
-            $(buttonSelector).get(0).scrollIntoView(false)
+            $(".success-glow").removeClass "success-glow"
+            $(buttonSelector)
+            .addClass "success-glow"
+            .get(0).scrollIntoView(false)
       stopLoad()
     false
   .fail (result, status) ->
@@ -451,7 +454,9 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
   false
 
 
-fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
+
+
+fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
   args = [
     "action=taxon"
     ]
@@ -504,7 +509,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       if title.length > 30
         title = title.slice(0,27) + "..."
       linkHtml += """
-      <a class="btn btn-primary newwindow" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
+      <a class="btn btn-primary newwindow project-button-link" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
         #{title}
       </a>
       """

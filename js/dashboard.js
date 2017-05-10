@@ -435,7 +435,8 @@ getServerChart = function(chartType, chartParams) {
             color = getRandomDataColor();
             buttonSelector = "button[data-taxon='" + taxon + "']";
             console.debug("Selector", buttonSelector, $(buttonSelector).exists());
-            return $(buttonSelector).get(0).scrollIntoView(false);
+            $(".success-glow").removeClass("success-glow");
+            return $(buttonSelector).addClass("success-glow").get(0).scrollIntoView(false);
           });
         }
       });
@@ -503,8 +504,11 @@ fetchMiniTaxonBlurbs = function(reference) {
   return false;
 };
 
-fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
+fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
   var args, k, v;
+  if (isGenus == null) {
+    isGenus = false;
+  }
   args = ["action=taxon"];
   for (k in taxonResult) {
     v = taxonResult[k];
@@ -559,7 +563,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       if (title.length > 30) {
         title = title.slice(0, 27) + "...";
       }
-      linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
+      linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
     blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
