@@ -99,12 +99,12 @@ switch ($do) {
       getChartData($_REQUEST);
       break;
   case "iucn":
-    returnAjax(getTaxonIucnData($_REQUEST));
-    break;
+      returnAjax(getTaxonIucnData($_REQUEST));
+      break;
   case "aweb":
   case "amphibiaweb":
-    returnAjax(null);
-    break;
+      returnAjax(getTaxonAWebData($_REQUEST));
+      break;
   default:
     returnAjax(array(
         'status' => false,
@@ -1613,7 +1613,7 @@ function getTaxonIucnData($taxonBase)
     //         "params" => $params,
     //     );
     // }
-    // $taxon = mysqli_fetch_assoc($r);    
+    // $taxon = mysqli_fetch_assoc($r);
     $response = array(
         "provided" => array(
             "taxon" => array($taxonBase),
@@ -1668,6 +1668,39 @@ function getTaxonAWebData($taxonBase)
 {
     /***
      *
+     *
+     * See:
+     * http://amphibiaweb.org/ws.html
      ***/
-    return null;
+    $apiTarget = "http://amphibiaweb.org/cgi/amphib_ws";
+    $args = array(
+        "where-genus" => $taxonBase["genus"],
+        "where-species" => $taxonBase["species"],
+        "src" => "eol",
+    );
+    $awebRawResponse = do_post_request($apiTarget, $args);
+    # There's a bunch of cdata bull that messes this up
+    $replaceSearch = array(
+        // "<![CDATA[",
+        // "]]>",
+        "\r\n",
+        "\n",
+    );
+    $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
+    $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebReplacedResponse);
+
+    # https://secure.php.net/manual/en/book.simplexml.php
+    $awebXml = simplexml_load_string($awebNoCdata);
+    #$awebXml = simplexml_load_string($awebReplacedResponse);
+    #$awebXml = simplexml_load_string($awebRawResponse);
+    $awebJson = json_encode($awebXml);
+    $awebData = json_decode($awebJson, true);
+    $response = array(
+        "data" => $awebData,
+        "aweb_raw" => $awebRawResponse,
+        "aweb_replaced" => $awebReplacedResponse,
+        "aweb_cdata_replaced" => $awebNoCdata,
+        "aweb_json" => $awebJson
+    );
+    return $response;
 }
