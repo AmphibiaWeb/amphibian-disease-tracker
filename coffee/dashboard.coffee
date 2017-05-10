@@ -489,12 +489,29 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       """
     else
       nameHtml = ""
+    linkHtml = """
+    <div class='clade-project-summary'>
+      <p>Represented in <strong>#{result.adp.project_count}</strong> projects</p>
+    """
+    for project, title of result.adp.projects
+      if title.length > 30
+        title = title.slice(0,27) + "..."
+      linkHtml += """
+      <a class="btn btn-primary newwindow" href="#{uri.urlString}/project.php?id=#{project}">
+        #{title}
+      </a>
+      """
+    linkHtml += "</div>"
     blurb = """
     <div class='blurb-info'>
       <p>
         <strong>IUCN Status:</strong> #{result.iucn.category}
       </p>
       #{nameHtml}
+      <p>
+        Project count (+ links) / Sample count / pie chart: pos|neg / countries or locales with taxon with samples
+      </p>
+      #{linkHtml}
     </div>
     """
     $(targetSelector).html blurb
