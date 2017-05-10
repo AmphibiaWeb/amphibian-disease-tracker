@@ -404,6 +404,9 @@ getServerChart = (chartType = "location", chartParams) ->
           try
             $("#post-species-summary").remove()
           $(chartSelector).after html
+          delay 300, ->
+            dataUri = _adp.chart.chart.toBase64Image()
+            $("#download-main-chart").attr("href",dataUri)
           try
             bindCollapsors()
             _adp.fetchUpdatesFor = fetchUpdatesFor

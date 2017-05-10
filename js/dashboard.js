@@ -449,6 +449,10 @@ getServerChart = function(chartType, chartParams) {
             $("#post-species-summary").remove();
           } catch (undefined) {}
           $(chartSelector).after(html);
+          delay(300, function() {
+            dataUri = _adp.chart.chart.toBase64Image();
+            return $("#download-main-chart").attr("href", dataUri);
+          });
           try {
             bindCollapsors();
             _adp.fetchUpdatesFor = fetchUpdatesFor;
