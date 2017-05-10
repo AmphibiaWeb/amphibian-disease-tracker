@@ -527,6 +527,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
     """
     $(targetSelector).html blurb
     # Create the pie charts
+    idTaxon = encode64 JSON.stringify taxonResult
     diseaseData = result.adp.disease_data
     for disease, data of diseaseData
       testingData =
@@ -554,7 +555,6 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       # Create a canvas for this
       canvas = document.createElement "canvas"
       canvas.setAttribute "class","chart dynamic-pie-chart"
-      idTaxon = jsonTo64 taxonResult
       canvasId = "#{idTaxon}-#{disease}-testdata"
       canvas.setAttribute "id", canvasId
       chartContainer = $(targetSelector).find(".charts-container").get(0)
@@ -587,7 +587,6 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       # Create a canvas for this
       canvas = document.createElement "canvas"
       canvas.setAttribute "class","chart dynamic-pie-chart"
-      idTaxon = jsonTo64 taxonResult
       canvasId = "#{idTaxon}-#{disease}-fataldata"
       canvas.setAttribute "id", canvasId
       chartContainer = $(targetSelector).find(".charts-container").get(0)
