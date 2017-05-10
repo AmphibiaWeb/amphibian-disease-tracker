@@ -422,7 +422,7 @@ getServerChart = function(chartType, chartParams) {
             });
           } catch (undefined) {}
           return _adp.chart.ctx.click(function(e) {
-            var buttonSelector, color, dataset, elIndex, element, taxon, taxonData;
+            var buttonSelector, color, dataset, elIndex, element, taxon;
             dataset = _adp.chart.chart.getDatasetAtEvent(e);
             element = _adp.chart.chart.getElementAtEvent(e);
             console.debug("Dataset", dataset);
@@ -432,8 +432,6 @@ getServerChart = function(chartType, chartParams) {
             console.debug("Specific data:", data);
             taxon = data._model.label;
             console.debug("Taxon clicked:", taxon);
-            taxonData = window.genusData[taxon];
-            console.debug("Using data", taxonData);
             color = getRandomDataColor();
             buttonSelector = "button[data-target='" + taxon + "']";
             console.debug("Selector", buttonSelector, $(buttonSelector).exists());
@@ -466,8 +464,15 @@ fetchMiniTaxonBlurbs = function(reference) {
       genus: taxonArr[0],
       species: taxonArr[1]
     };
-    $("button#" + collapseSelector + "-button-trigger").click(function() {
+    $("button#" + collapseSelector + "-button-trigger").attr("data-taxon", taxon).attr("data-target", taxon).click(function() {
       var hasData, html, ref;
+      taxon = $(this).attr("data-taxon");
+      taxonArr = taxon.split(" ");
+      taxonObj = {
+        genus: taxonArr[0],
+        species: taxonArr[1]
+      };
+      selector = $(this).parent().find(".collapse-content");
       hasData = (ref = $(this).attr("data-has-data")) != null ? ref : false;
       if (!hasData.toBool()) {
         $(this).attr("data-has-data", "true");

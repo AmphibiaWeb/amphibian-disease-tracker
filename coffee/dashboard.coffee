@@ -392,8 +392,6 @@ getServerChart = (chartType = "location", chartParams) ->
             console.debug "Specific data:", data
             taxon = data._model.label
             console.debug "Taxon clicked:", taxon
-            taxonData = window.genusData[taxon]
-            console.debug "Using data", taxonData
             color = getRandomDataColor()
             buttonSelector = "button[data-target='#{taxon}']"
             console.debug "Selector", buttonSelector, $(buttonSelector).exists()
@@ -416,7 +414,16 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
     taxonObj =
       genus: taxonArr[0]
       species: taxonArr[1]
-    $("button##{collapseSelector}-button-trigger").click ->
+    $("button##{collapseSelector}-button-trigger")
+    .attr "data-taxon", taxon
+    .attr "data-target", taxon
+    .click ->
+      taxon = $(this).attr "data-taxon"
+      taxonArr = taxon.split " "
+      taxonObj =
+        genus: taxonArr[0]
+        species: taxonArr[1]
+      selector = $(this).parent().find ".collapse-content"
       hasData = $(this).attr("data-has-data") ? false
       unless hasData.toBool()
         $(this).attr "data-has-data", "true"
