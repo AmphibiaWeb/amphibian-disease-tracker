@@ -379,11 +379,12 @@ getServerChart = (chartType = "location", chartParams) ->
           try
             bindCollapsors()
             _adp.fetchUpdatesFor = fetchUpdatesFor
-            fetchMiniTaxonBlurbs()
+            delay 250, ->
+              fetchMiniTaxonBlurbs()
           # Click events on the chart
           _adp.chart.ctx.click (e) ->
-            dataset = _asm.chart.getDatasetAtEvent e
-            element = _asm.chart.getElementAtEvent e
+            dataset = _adp.chart.getDatasetAtEvent e
+            element = _adp.chart.getElementAtEvent e
             console.debug "Dataset", dataset
             console.debug "Element", element
             elIndex = element[0]._index
@@ -414,7 +415,7 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
     taxonObj =
       genus: taxonArr[0]
       species: taxonArr[1]
-    fetchMiniTaxonBlurb taxonObj, selector
+    fetchMiniTaxonBlurb taxonObj, "##{selector} .collapse-content"
   false
 
 
@@ -426,27 +427,45 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
     args.push "#{k}=#{encodeURIComponent v}"
   $.get "api.php", args.join("&"), "json"
   .done (result) ->
-    names = Object.toArray result.aweb.common_name
-    nameString = ""
-    i = 0
-    for name in names
-      ++i
-      if name is result.iucn.data.main_common_name
-        name = "<strong>#{name.trim()}</strong>"
-      nameString += name.trim()
-      if names.length isnt i
-        nameString += ", "
+    console.log "Got result", result
+    try
+      if typeof result.amphibiaweb.data.common_name isnt "object"
+        throw {message:"NOT_OBJECT"}
+      names = Object.toArray result.amphibiaweb.data.common_name
+      nameString = ""
+      i = 0
+      for name in names
+        ++i
+        if name is result.iucn.data.main_common_name
+          name = "<strong>#{name.trim()}</strong>"
+        nameString += name.trim()
+        if names.length isnt i
+          nameString += ", "
+    catch e
+      if typeof result.amphibiaweb.data.common_name is "string"
+        nameString = result.amphibiaweb.data.common_name
+      else
+        nameString = result.iucn?.data?.main_common_name ? ""
+        console.warn "Couldn't create common name string! #{e.message}"
+        console.warn e.stack
+        console.debug result.amphibiaweb.data
+    unless isNull nameString
+      nameHtml = """
+      <p>
+        <strong>Names:</strong> #{nameString}
+      </p>
+      """
+    else
+      nameHtml = ""
     blurb = """
     <div class='blurb-info'>
       <p>
         <strong>IUCN Status:</strong> #{result.iucn.category}
       </p>
-      <p>
-        <strong>Names:</strong>
-      </p>
+      #{nameHtml}
     </div>
     """
-    $(targetSelector).append blurb
+    $(targetSelector).html blurb
     false
   false
 

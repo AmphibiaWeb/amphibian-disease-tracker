@@ -417,12 +417,14 @@ getServerChart = function(chartType, chartParams) {
           try {
             bindCollapsors();
             _adp.fetchUpdatesFor = fetchUpdatesFor;
-            fetchMiniTaxonBlurbs();
+            delay(250, function() {
+              return fetchMiniTaxonBlurbs();
+            });
           } catch (undefined) {}
           return _adp.chart.ctx.click(function(e) {
             var buttonSelector, color, dataset, elIndex, element, taxon, taxonData;
-            dataset = _asm.chart.getDatasetAtEvent(e);
-            element = _asm.chart.getElementAtEvent(e);
+            dataset = _adp.chart.getDatasetAtEvent(e);
+            element = _adp.chart.getElementAtEvent(e);
             console.debug("Dataset", dataset);
             console.debug("Element", element);
             elIndex = element[0]._index;
@@ -463,7 +465,7 @@ fetchMiniTaxonBlurbs = function(reference) {
       genus: taxonArr[0],
       species: taxonArr[1]
     };
-    fetchMiniTaxonBlurb(taxonObj, selector);
+    fetchMiniTaxonBlurb(taxonObj, "#" + selector + " .collapse-content");
   }
   return false;
 };
@@ -476,23 +478,46 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, i, l, len, name, nameString, names;
-    names = Object.toArray(result.aweb.common_name);
-    nameString = "";
-    i = 0;
-    for (l = 0, len = names.length; l < len; l++) {
-      name = names[l];
-      ++i;
-      if (name === result.iucn.data.main_common_name) {
-        name = "<strong>" + (name.trim()) + "</strong>";
+    var blurb, e, error, i, l, len, name, nameHtml, nameString, names, ref, ref1, ref2;
+    console.log("Got result", result);
+    try {
+      if (typeof result.amphibiaweb.data.common_name !== "object") {
+        throw {
+          message: "NOT_OBJECT"
+        };
       }
-      nameString += name.trim();
-      if (names.length !== i) {
-        nameString += ", ";
+      names = Object.toArray(result.amphibiaweb.data.common_name);
+      nameString = "";
+      i = 0;
+      for (l = 0, len = names.length; l < len; l++) {
+        name = names[l];
+        ++i;
+        if (name === result.iucn.data.main_common_name) {
+          name = "<strong>" + (name.trim()) + "</strong>";
+        }
+        nameString += name.trim();
+        if (names.length !== i) {
+          nameString += ", ";
+        }
+      }
+    } catch (error) {
+      e = error;
+      if (typeof result.amphibiaweb.data.common_name === "string") {
+        nameString = result.amphibiaweb.data.common_name;
+      } else {
+        nameString = (ref = (ref1 = result.iucn) != null ? (ref2 = ref1.data) != null ? ref2.main_common_name : void 0 : void 0) != null ? ref : "";
+        console.warn("Couldn't create common name string! " + e.message);
+        console.warn(e.stack);
+        console.debug(result.amphibiaweb.data);
       }
     }
-    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  <p>\n    <strong>Names:</strong>\n  </p>\n</div>";
-    $(targetSelector).append(blurb);
+    if (!isNull(nameString)) {
+      nameHtml = "<p>\n  <strong>Names:</strong> " + nameString + "\n</p>";
+    } else {
+      nameHtml = "";
+    }
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n</div>";
+    $(targetSelector).html(blurb);
     return false;
   });
   return false;
