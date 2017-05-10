@@ -408,7 +408,7 @@ getServerChart = (chartType = "location", chartParams) ->
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
   console.debug "Fetching taxa updates for", reference
-  _adp.collapseOpener = (collapse) ->    
+  _adp.collapseOpener = (collapse) ->
     if collapse.opened
       elapsed = Date.now() - _adp.lastOpened
       if elapsed < 1000
@@ -489,9 +489,15 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       """
     else
       nameHtml = ""
+    countries = Object.toArray result.adp.countries
+    countryHtml = """
+    <ul class="country-list">
+      <li>#{countries.join("</li><li>")}</li>
+    </ul>
+    """    
     linkHtml = """
     <div class='clade-project-summary'>
-      <p>Represented in <strong>#{result.adp.project_count}</strong> projects</p>
+      <p>Represented in <strong>#{result.adp.project_count}</strong> projects with <strong>#{result.adp.samples}</strong> samples</p>
     """
     for project, title of result.adp.projects
       tooltip = title
@@ -509,10 +515,12 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
         <strong>IUCN Status:</strong> #{result.iucn.category}
       </p>
       #{nameHtml}
-      <p>
-        Project count (+ links) / Sample count / pie chart: pos|neg / countries or locales with taxon with samples
-      </p>
+      <p>Sampled in the following countries:</p>
+      #{countryHtml}
       #{linkHtml}
+      <p>
+        pie chart: pos|neg 
+      </p>
     </div>
     """
     $(targetSelector).html blurb

@@ -1594,13 +1594,12 @@ function getTaxonData($taxonBase)
      ***/
     global $db;
     foreach ($taxonBase as $key => $value) {
-        $taxonBase[$key] = strtolower($value);
+        $taxonBase[$key] = $db->sanitize(strtolower($value));
     }
     $iucn = getTaxonIucnData($taxonBase);
     $aweb = getTaxonAwebData($taxonBase);
     # Check ours
     $taxonString = $taxonBase["genus"]." ".$taxonBase["species"];
-    $taxonString = $db->sanitize($taxonString);
     $countQuery = "select `project_id`, `project_title` from `".$db->getTable()."` where sampled_species like '%$taxonString%'";
     $r = mysqli_query($db->getLink(), $countQuery);
     $adpData = array();
@@ -1613,6 +1612,62 @@ function getTaxonData($taxonBase)
         $adpData["project_count"] = $count;
         $adpData["projects"] = $projects;
     }
+    $adpData["samples"] = 0;
+    $adpData["countries"] = array();
+    $samplesQuery = "select `country`,`diseasetested`, `diseasedetected`, `fatal` from `records_list` where `genus`='".$taxonBase["genus"]."' and `specificepithet`='".$taxonBase["species"]."' order by `diseasetested`";
+    $r = mysqli_query($db->getLink(), $samplesQuery);
+    $taxonBreakdown = array();
+    if ($r !== false) {
+        while ($row = mysqli_fetch_assoc($r)) {
+            if (!in_array($row["country"], $adpData["countries"])) {
+                $adpData["countries"][] = $row["country"];
+            }
+            $disease = $row["diseasetested"];
+            if (!isset($taxonBreakdown[$disease])) {
+                $taxonBreakdown[$disease] = array(
+                    "detected" => array(
+                        "true" => 0,
+                        "false" => 0,
+                        "no_confidence" => 0,
+                    ),
+                    "fatal" => array(
+                        "true" => 0,
+                        "false" => 0,
+                        "unknown" => 0,
+                    ),
+                );
+            }
+            switch (strtolower(strbool($row["diseasedetected"]))) {
+            case "true":
+                $taxonBreakdown[$disease]["detected"]["true"]++;
+                break;
+            case "false":
+                if (!empty($row["diseasedetected"]) && strtolower($row["diseasedetected"]) != "null") {
+                    $taxonBreakdown[$disease]["detected"]["false"]++;
+                    break;
+                }
+            default:
+                $taxonBreakdown[$disease]["detected"]["no_confidence"]++;
+
+            }
+            switch (strtolower(strbool($row["fatal"]))) {
+            case "true":
+                $taxonBreakdown[$disease]["fatal"]["true"]++;
+                break;
+            case "false":
+                if (!empty($row["fatal"]) && strtolower($row["fatal"]) != "null") {
+                    $taxonBreakdown[$disease]["fatal"]["false"]++;
+                    break;
+                }
+            default:
+                $taxonBreakdown[$disease]["fatal"]["no_confidence"]++;
+
+            }
+
+        }
+        $adpData["samples"] = mysqli_num_rows($r);
+    }
+    $adpData["disease_data"] = $taxonBreakdown;
     $response = array(
         "taxon" => array(
             "genus" => $taxonBase["genus"],
