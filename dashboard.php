@@ -207,16 +207,16 @@
             # Species count
             $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` where genus is not null group by genus, specificepithet";
             $r = mysqli_query($db->getLink(), $query);
-$speciesCount = mysqli_num_rows($r);
-# Total samples
-$query = "select count(*) as count from `records_list` where genus is not null";
-$r = mysqli_query($db->getLink(), $query);
-$count = mysqli_num_rows($r);
-# Country count
-$query = "select country, count(*) as count from `records_list` where genus is not null group by country";
-$r = mysqli_query($db->getLink(), $query);
-$countryCount = mysqli_num_rows($r);
-
+            $speciesCount = mysqli_num_rows($r);
+            # Total samples
+            $query = "select count(*) as count from `records_list` where genus is not null";
+            $r = mysqli_query($db->getLink(), $query);
+            $row = mysqli_fetch_row($r);
+            $count = $row[0];
+            # Country count
+            $query = "select country, count(*) as count from `records_list` where genus is not null group by country";
+            $r = mysqli_query($db->getLink(), $query);
+            $countryCount = mysqli_num_rows($r);
             ?>
         <div class="col-xs-12 col-md-6 table-responsive">
           <table class="table table-striped table-bordered table-condensed">
