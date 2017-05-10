@@ -1597,11 +1597,27 @@ function getTaxonData($taxonBase)
     }
     $iucn = getTaxonIucnData($taxonBase);
     $aweb = getTaxonAwebData($taxonBase);
+    # Check ours
+    $taxonString = $taxonBase["genus"]." ".$taxonBase["species"];
+    $taxonString = $db->sanitize($taxonString);
+    $countQuery = "select `project_id`, `project_title` from `".$db->getTable()."` where sampled_species like '%$taxonString%'";
+    $r = mysqli_query($db->getLink(), $countQuery);
+    $adpData = array();
+    if ($r !== false) {
+        $count = mysqli_num_rows($r);
+        $projects = array();
+        while ($row = mysqli_fetch_row($r)) {
+            $projects[$row[0]] = $row[1];
+        }
+        $adpData["project_count"] = $count;
+        $adpData["projects"] = $projects;
+    }
     $response = array(
         "taxon" => array(
             "genus" => $taxonBase["genus"],
             "species" => $taxonBase["species"],
         ),
+        "adp" => $adpData,
         "iucn" => array(
             "data" => $iucn["iucn"],
             "category" => $iucn["iucn_category"],
@@ -1684,7 +1700,6 @@ function getTaxonIucnData($taxonBase)
                 "raw_response" => $iucnRawResponse,
                 "parsed_response" => $iucnResponse,
             );
-
         }
     } else {
         // What are we even doing here
@@ -1721,9 +1736,11 @@ function getTaxonAWebData($taxonBase)
     $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
     $iter = 1;
     $awebEscapeTags = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebReplacedResponse, -1, $tagCount);
-    while($tagCount > 0) {
+    while ($tagCount > 0) {
         $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, -1, $tagCount);
-        if(!empty($replaced)) $awebEscapeTags = $replaced;
+        if (!empty($replaced)) {
+            $awebEscapeTags = $replaced;
+        }
         ++$iter;
     }
     $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebEscapeTags);
