@@ -197,6 +197,60 @@
       Disease Summary Dashboard <span class="badge">ALPHA</span>
     </h2>
     <section class="col-xs-12">
+      <div class="row db-summary-region">
+        <?php
+            /***
+             * Get some summary stats
+             * See:
+             * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
+             ***/
+            # Species count
+            $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` where genus is not null group by genus, specificepithet";
+            $r = mysqli_query($db->getLink(), $query);
+$speciesCount = mysqli_num_rows($r);
+# Total samples
+$query = "select count(*) as count from `records_list` where genus is not null";
+$r = mysqli_query($db->getLink(), $query);
+$count = mysqli_num_rows($r);
+# Country count
+$query = "select country, count(*) as count from `records_list` where genus is not null group by country";
+$r = mysqli_query($db->getLink(), $query);
+$countryCount = mysqli_num_rows($r);
+
+            ?>
+        <div class="col-xs-12 col-md-6 table-responsive">
+          <table class="table table-striped table-bordered table-condensed">
+            <thead>
+              <tr>
+                <td>
+                  Total Samples
+                </td>
+                <td>
+                  Number of Species
+                </td>
+                <td>
+                  Number of Countries
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <?php echo $count; ?>
+                </td>
+                <td>
+                  <?php echo $speciesCount; ?>
+                </td>
+                <td>
+                  <?php echo $countryCount; ?>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="col-xs-12">
       <div class="form form-horizontal row">
         <h3 class="col-xs-12">Create a chart</h3>
         <div class="col-xs-12 col-md-4 col-sm-6">
