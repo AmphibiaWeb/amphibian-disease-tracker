@@ -518,9 +518,6 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       <p>Sampled in the following countries:</p>
       #{countryHtml}
       #{linkHtml}
-      <p>
-        pie chart: pos|neg
-      </p>
       <div class="charts-container row">
       </div>
     </div>
@@ -608,6 +605,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
         $("##{canvasContainerId}").get(0).appendChild canvas
         chartCtx = $("##{canvasId}")
         pieChart = new Chart chartCtx, chartCfg
+        console.debug "fatal data", canvasId, chartCfg
     false
   false
 

@@ -562,7 +562,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
-    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <p>\n    pie chart: pos|neg\n  </p>\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
     $(targetSelector).html(blurb);
     idTaxon = encode64(JSON.stringify(taxonResult));
     idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
@@ -622,6 +622,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
         $("#" + canvasContainerId).get(0).appendChild(canvas);
         chartCtx = $("#" + canvasId);
         pieChart = new Chart(chartCtx, chartCfg);
+        console.debug("fatal data", canvasId, chartCfg);
       }
     }
     return false;

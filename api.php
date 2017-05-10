@@ -1670,7 +1670,7 @@ function getTaxonData($taxonBase)
                     break;
                 }
             default:
-                $taxonBreakdown[$disease]["fatal"]["no_confidence"]++;
+                $taxonBreakdown[$disease]["fatal"]["unknown"]++;
 
             }
 
