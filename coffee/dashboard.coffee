@@ -395,7 +395,7 @@ getServerChart = (chartType = "location", chartParams) ->
             color = getRandomDataColor()
             buttonSelector = "button[data-taxon='#{taxon}']"
             console.debug "Selector", buttonSelector, $(buttonSelector).exists()
-            $(buttonSelector).get(0).scrollIntoView()
+            $(buttonSelector).get(0).scrollIntoView(false)
       stopLoad()
     false
   .fail (result, status) ->
@@ -521,78 +521,81 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
       <p>
         pie chart: pos|neg
       </p>
-      <div class="charts-container">
+      <div class="charts-container row">
       </div>
     </div>
     """
     $(targetSelector).html blurb
     # Create the pie charts
     idTaxon = encode64 JSON.stringify taxonResult
+    idTaxon = idTaxon.replace /[^\w0-9]/img, ""
     diseaseData = result.adp.disease_data
     for disease, data of diseaseData
-      testingData =
-        labels: [
-          "#{disease} detected"
-          "#{disease} not detected"
-          "#{disease} unknown"
-          ]
-        datasets: [
-          data: [data.detected.true, data.detected.false, data.detected.no_confidence]
-          backgroundColor: [
-            "#FF6384"
-            "#36A2EB"
-            "#FFCE56"
+      unless data.detected.no_confidence is result.adp.samples
+        testingData =
+          labels: [
+            "#{disease} detected"
+            "#{disease} not detected"
+            "#{disease} inconclusive data"
             ]
-          hoverBackgroundColor: [
-            "#FF6384"
-            "#36A2EB"
-            "#FFCE56"
+          datasets: [
+            data: [data.detected.true, data.detected.false, data.detected.no_confidence]
+            backgroundColor: [
+              "#FF6384"
+              "#36A2EB"
+              "#FFCE56"
+              ]
+            hoverBackgroundColor: [
+              "#FF6384"
+              "#36A2EB"
+              "#FFCE56"
+              ]
             ]
-          ]
-      chartCfg =
-        type: "pie"
-        data: testingData
-      # Create a canvas for this
-      canvas = document.createElement "canvas"
-      canvas.setAttribute "class","chart dynamic-pie-chart"
-      canvasId = "#{idTaxon}-#{disease}-testdata"
-      canvas.setAttribute "id", canvasId
-      chartContainer = $(targetSelector).find(".charts-container").get(0)
-      chartContainer.appendChild canvas
-      chartCtx = $("##{canvasId}")
-      pieChart = new Chart chartCtx, chartCfg
+        chartCfg =
+          type: "pie"
+          data: testingData
+        # Create a canvas for this
+        canvas = document.createElement "canvas"
+        canvas.setAttribute "class","chart dynamic-pie-chart col-xs-6"
+        canvasId = "#{idTaxon}-#{disease}-testdata"
+        canvas.setAttribute "id", canvasId
+        chartContainer = $(targetSelector).find(".charts-container").get(0)
+        chartContainer.appendChild canvas
+        chartCtx = $("##{canvasId}")
+        pieChart = new Chart chartCtx, chartCfg
       # Fatality!
-      fatalData =
-        labels: [
-          "#{disease} fatal"
-          "#{disease} not fatal"
-          "#{disease} unknown"
-          ]
-        datasets: [
-          data: [data.fatal.true, data.fatal.false, data.fatal.no_confidence]
-          backgroundColor: [
-            "#FF6384"
-            "#36A2EB"
-            "#FFCE56"
+      unless data.fatal.unknown is result.adp.samples
+        fatalData =
+          labels: [
+            "#{disease} fatal"
+            "#{disease} not fatal"
+            "#{disease} unknown fatality"
             ]
-          hoverBackgroundColor: [
-            "#FF6384"
-            "#36A2EB"
-            "#FFCE56"
+          datasets: [
+            data: [data.fatal.true, data.fatal.false, data.fatal.uknown]
+            backgroundColor: [
+              "#FF6384"
+              "#36A2EB"
+              "#FFCE56"
+              ]
+            hoverBackgroundColor: [
+              "#FF6384"
+              "#36A2EB"
+              "#FFCE56"
+              ]
             ]
-          ]
-      chartCfg =
-        type: "pie"
-        data: fatalData
-      # Create a canvas for this
-      canvas = document.createElement "canvas"
-      canvas.setAttribute "class","chart dynamic-pie-chart"
-      canvasId = "#{idTaxon}-#{disease}-fataldata"
-      canvas.setAttribute "id", canvasId
-      chartContainer = $(targetSelector).find(".charts-container").get(0)
-      chartContainer.appendChild canvas
-      chartCtx = $("##{canvasId}")
-      pieChart = new Chart chartCtx, chartCfg
+        chartCfg =
+          type: "pie"
+          data: fatalData
+        # Create a canvas for this
+        canvas = document.createElement "canvas"
+        canvas.setAttribute "class","chart dynamic-pie-chart col-xs-6"
+        canvasId = "#{idTaxon}-#{disease}-fataldata"
+        canvas.setAttribute "id", canvasId
+        chartContainer = $(targetSelector).find(".charts-container").get(0)
+        chartContainer.appendChild canvas
+        chartCtx = $("##{canvasId}")
+        pieChart = new Chart chartCtx, chartCfg
     false
   false
 

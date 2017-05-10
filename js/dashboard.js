@@ -435,7 +435,7 @@ getServerChart = function(chartType, chartParams) {
             color = getRandomDataColor();
             buttonSelector = "button[data-taxon='" + taxon + "']";
             console.debug("Selector", buttonSelector, $(buttonSelector).exists());
-            return $(buttonSelector).get(0).scrollIntoView();
+            return $(buttonSelector).get(0).scrollIntoView(false);
           });
         }
       });
@@ -562,56 +562,61 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
-    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "  \n  <p>\n    pie chart: pos|neg\n  </p>\n  <div class=\"charts-container\">\n  </div>\n</div>";
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "  \n  <p>\n    pie chart: pos|neg\n  </p>\n  <div class=\"charts-container row\">\n  </div>\n</div>";
     $(targetSelector).html(blurb);
     idTaxon = encode64(JSON.stringify(taxonResult));
+    idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
     diseaseData = result.adp.disease_data;
     for (disease in diseaseData) {
       data = diseaseData[disease];
-      testingData = {
-        labels: [disease + " detected", disease + " not detected", disease + " unknown"],
-        datasets: [
-          {
-            data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
-            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-            hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-          }
-        ]
-      };
-      chartCfg = {
-        type: "pie",
-        data: testingData
-      };
-      canvas = document.createElement("canvas");
-      canvas.setAttribute("class", "chart dynamic-pie-chart");
-      canvasId = idTaxon + "-" + disease + "-testdata";
-      canvas.setAttribute("id", canvasId);
-      chartContainer = $(targetSelector).find(".charts-container").get(0);
-      chartContainer.appendChild(canvas);
-      chartCtx = $("#" + canvasId);
-      pieChart = new Chart(chartCtx, chartCfg);
-      fatalData = {
-        labels: [disease + " fatal", disease + " not fatal", disease + " unknown"],
-        datasets: [
-          {
-            data: [data.fatal["true"], data.fatal["false"], data.fatal.no_confidence],
-            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-            hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-          }
-        ]
-      };
-      chartCfg = {
-        type: "pie",
-        data: fatalData
-      };
-      canvas = document.createElement("canvas");
-      canvas.setAttribute("class", "chart dynamic-pie-chart");
-      canvasId = idTaxon + "-" + disease + "-fataldata";
-      canvas.setAttribute("id", canvasId);
-      chartContainer = $(targetSelector).find(".charts-container").get(0);
-      chartContainer.appendChild(canvas);
-      chartCtx = $("#" + canvasId);
-      pieChart = new Chart(chartCtx, chartCfg);
+      if (data.detected.no_confidence !== result.adp.samples) {
+        testingData = {
+          labels: [disease + " detected", disease + " not detected", disease + " unknown"],
+          datasets: [
+            {
+              data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
+              backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+              hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+            }
+          ]
+        };
+        chartCfg = {
+          type: "pie",
+          data: testingData
+        };
+        canvas = document.createElement("canvas");
+        canvas.setAttribute("class", "chart dynamic-pie-chart col-xs-6");
+        canvasId = idTaxon + "-" + disease + "-testdata";
+        canvas.setAttribute("id", canvasId);
+        chartContainer = $(targetSelector).find(".charts-container").get(0);
+        chartContainer.appendChild(canvas);
+        chartCtx = $("#" + canvasId);
+        pieChart = new Chart(chartCtx, chartCfg);
+      }
+      if (data.fatal.unknown !== result.adp.samples) {
+        fatalData = {
+          labels: [disease + " fatal", disease + " not fatal", disease + " unknown"],
+          datasets: [
+            {
+              data: [data.fatal["true"], data.fatal["false"], data.fatal.uknown],
+              backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+              hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+            }
+          ]
+        };
+        chartCfg = {
+          type: "pie",
+          data: fatalData
+        };
+        canvas = document.createElement("canvas");
+        canvas.setAttribute("class", "chart dynamic-pie-chart col-xs-6");
+        canvasId = idTaxon + "-" + disease + "-fataldata";
+        canvas.setAttribute("id", canvasId);
+        chartContainer = $(targetSelector).find(".charts-container").get(0);
+        chartContainer.appendChild(canvas);
+        chartCtx = $("#" + canvasId);
+        pieChart = new Chart(chartCtx, chartCfg);
+      }
     }
     return false;
   });
