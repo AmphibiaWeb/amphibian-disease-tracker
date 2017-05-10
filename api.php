@@ -1596,6 +1596,16 @@ function getTaxonData($taxonBase)
     foreach ($taxonBase as $key => $value) {
         $taxonBase[$key] = $db->sanitize(strtolower($value));
     }
+    if (empty($taxonBase["genus"])) {
+        return array(
+            "status" => false,
+            "error" => "REQUIRED_COLS_MISSING",
+        );
+    }
+    if (empty($taxonBase["species"])) {
+        # TODO Recursively call this across all the species
+        
+    }
     $iucn = getTaxonIucnData($taxonBase);
     $aweb = getTaxonAwebData($taxonBase);
     # Check ours
@@ -1749,6 +1759,9 @@ function getTaxonIucnData($taxonBase)
         if (isset($iucnResponse)) {
             $response["iucn"] =  $iucnResponse["result"][0];
             $response["iucn_category"] = $iucnCategoryMap[$response["iucn"]["category"]];
+            if (empty($response["iucn_category"])) {
+                $response["iucn_category"] = "No Data";
+            }
         } else {
             $response["error"] = "INVALID_IUCN_RESPONSE";
             $response["target"] = array(

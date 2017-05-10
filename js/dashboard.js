@@ -511,7 +511,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, countries, countryHtml, e, error, i, l, len, linkHtml, name, nameHtml, nameString, names, project, ref, ref1, ref2, ref3, title, tooltip;
+    var blurb, canvas, canvasId, chartCfg, chartContainer, chartCtx, countries, countryHtml, data, dieaseData, disease, e, error, fatalData, i, idTaxon, l, len, linkHtml, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, testingData, title, tooltip;
     console.log("Got result", result);
     try {
       if (typeof result.amphibiaweb.data.common_name !== "object") {
@@ -562,8 +562,58 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
       linkHtml += "<a class=\"btn btn-primary newwindow\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
     }
     linkHtml += "</div>";
-    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <p>\n    pie chart: pos|neg \n  </p>\n</div>";
+    blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <p>\n    pie chart: pos|neg\n  </p>\n</div>";
     $(targetSelector).html(blurb);
+    dieaseData = result.adp.disease_data;
+    for (disease in diseaseData) {
+      data = diseaseData[disease];
+      testingData = {
+        labels: [disease + " detected", disease + " not detected", disease + " unknown"],
+        datasets: [
+          {
+            data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
+            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+            hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+          }
+        ]
+      };
+      chartCfg = {
+        type: "pie",
+        data: testingData
+      };
+      canvas = document.createElement("canvas");
+      canvas.setAttribute("class", "chart dynamic-pie-chart");
+      idTaxon = jsonTo64(taxonResult);
+      canvasId = idTaxon + "-" + disease + "-testdata";
+      canvas.setAttribute("id", canvasId);
+      chartContainer = $(targetSelector).find(".charts-container").get(0);
+      chartContainer.appendChild(canvas);
+      chartCtx = $("#" + canvasId);
+      pieChart = new Chart(chartCtx, chartCfg);
+      fatalData = {
+        labels: [disease + " fatal", disease + " not fatal", disease + " unknown"],
+        datasets: [
+          {
+            data: [data.fatal["true"], data.fatal["false"], data.fatal.no_confidence],
+            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+            hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+          }
+        ]
+      };
+      chartCfg = {
+        type: "pie",
+        data: fatalData
+      };
+      canvas = document.createElement("canvas");
+      canvas.setAttribute("class", "chart dynamic-pie-chart");
+      idTaxon = jsonTo64(taxonResult);
+      canvasId = idTaxon + "-" + disease + "-fataldata";
+      canvas.setAttribute("id", canvasId);
+      chartContainer = $(targetSelector).find(".charts-container").get(0);
+      chartContainer.appendChild(canvas);
+      chartCtx = $("#" + canvasId);
+      pieChart = new Chart(chartCtx, chartCfg);
+    }
     return false;
   });
   return false;
