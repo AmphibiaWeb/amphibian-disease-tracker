@@ -457,9 +457,15 @@ fetchMiniTaxonBlurbs = function(reference) {
   }
   console.debug("Fetching taxa updates for", reference);
   _adp.collapseOpener = function(collapse) {
+    var elapsed;
     if (collapse.opened) {
+      elapsed = Date.now() - _adp.lastOpened;
+      if (elapsed < 1000) {
+        return false;
+      }
       collapse.hide();
     } else {
+      _adp.lastOpened = Date.now();
       collapse.show();
     }
     return false;
@@ -491,8 +497,7 @@ fetchMiniTaxonBlurbs = function(reference) {
         console.debug("Already has data");
       }
       collapse = $(this).parent().find("iron-collapse").get(0);
-      console.debug("is opened?", collapse.opened);
-      return _adp.collapseOpener.debounce(300, null, null, collapse);
+      return console.debug("is opened?", collapse.opened);
     });
   }
   return false;
