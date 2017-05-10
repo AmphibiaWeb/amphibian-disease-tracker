@@ -330,7 +330,7 @@ getServerChart = function(chartType, chartParams) {
             xAxes: [
               {
                 scaleLabel: {
-                  label: result.axes.x,
+                  labelString: result.axes.x,
                   display: true
                 },
                 stacked: chartData.stacking.x
@@ -339,7 +339,7 @@ getServerChart = function(chartType, chartParams) {
             yAxes: [
               {
                 scaleLabel: {
-                  label: result.axes.y,
+                  labelString: result.axes.y,
                   display: true
                 },
                 stacked: chartData.stacking.y
@@ -370,7 +370,7 @@ getServerChart = function(chartType, chartParams) {
               if ((ref4 = ref3.xAxes) != null) {
                 if ((ref5 = ref4[0]) != null) {
                   ref5.scaleLabel = {
-                    label: result.axes.x,
+                    labelString: result.axes.x,
                     display: true
                   };
                 }
@@ -382,7 +382,7 @@ getServerChart = function(chartType, chartParams) {
               if ((ref8 = ref7.yAxes) != null) {
                 if ((ref9 = ref8[0]) != null) {
                   ref9.scaleLabel = {
-                    label: result.axes.y,
+                    labelString: result.axes.y,
                     display: true
                   };
                 }

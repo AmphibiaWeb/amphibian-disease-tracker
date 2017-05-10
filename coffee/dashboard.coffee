@@ -305,13 +305,13 @@ getServerChart = (chartType = "location", chartParams) ->
           scales:
             xAxes: [
               scaleLabel:
-                label: result.axes.x
+                labelString: result.axes.x
                 display: true
               stacked: chartData.stacking.x
               ]
             yAxes: [
               scaleLabel:
-                label: result.axes.y
+                labelString: result.axes.y
                 display: true
               stacked: chartData.stacking.y
               ]
@@ -327,10 +327,10 @@ getServerChart = (chartType = "location", chartParams) ->
                   scaleLabel: {}
                   ]
           chartObj.options?.scales?.xAxes?[0]?.scaleLabel =
-            label: result.axes.x
+            labelString: result.axes.x
             display: true
           chartObj.options?.scales?.yAxes?[0]?.scaleLabel =
-            label: result.axes.y
+            labelString: result.axes.y
             display: true
         catch e
           console.warn "Couldn't set up redundant options - #{e.message}"
