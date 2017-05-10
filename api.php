@@ -1642,12 +1642,12 @@ function getTaxonIucnData($taxonBase)
         try {
             $iucnRawResponse = do_post_request($apiTarget.$nameTarget, $args);
             $iucnResponse = json_decode($iucnRawResponse, true);
-            $response["iucn_category"] = $iucnCategoryMap[$iucnResponse["category"]];
         } catch (Exception $e) {
             // skip it?
         }
         if (isset($iucnResponse)) {
             $response["iucn"] =  $iucnResponse["result"][0];
+            $response["iucn_category"] = $iucnCategoryMap[$response["iucn"]["category"]];
         } else {
             $response["error"] = "INVALID_IUCN_RESPONSE";
             $response["target"] = array(
