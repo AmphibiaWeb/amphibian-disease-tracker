@@ -317,12 +317,24 @@ getServerChart = (chartType = "location", chartParams) ->
               ]
       else
         try
+          unless chartObj.options?
+            chartObj.options =
+              scales:
+                xAxes: [
+                  scaleLabel: {}
+                  ]
+                yAxes: [
+                  scaleLabel: {}
+                  ]
           chartObj.options?.scales?.xAxes?[0]?.scaleLabel =
             label: result.axes.x
             display: true
           chartObj.options?.scales?.yAxes?[0]?.scaleLabel =
             label: result.axes.y
             display: true
+        catch e
+          console.warn "Couldn't set up redundant options - #{e.message}"
+          console.warn e.stack
       try
         uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
       catch

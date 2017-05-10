@@ -315,7 +315,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, error, error1, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
+      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -349,6 +349,22 @@ getServerChart = function(chartType, chartParams) {
         };
       } else {
         try {
+          if (chartObj.options == null) {
+            chartObj.options = {
+              scales: {
+                xAxes: [
+                  {
+                    scaleLabel: {}
+                  }
+                ],
+                yAxes: [
+                  {
+                    scaleLabel: {}
+                  }
+                ]
+              }
+            };
+          }
           if ((ref2 = chartObj.options) != null) {
             if ((ref3 = ref2.scales) != null) {
               if ((ref4 = ref3.xAxes) != null) {
@@ -373,14 +389,18 @@ getServerChart = function(chartType, chartParams) {
               }
             }
           }
-        } catch (undefined) {}
+        } catch (error) {
+          e = error;
+          console.warn("Couldn't set up redundant options - " + e.message);
+          console.warn(e.stack);
+        }
       }
       try {
         uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
-      } catch (error) {
+      } catch (error1) {
         try {
           uString = chartDataJs.labels.join(",");
-        } catch (error1) {
+        } catch (error2) {
           uString = "BAD_STRINGIFY";
         }
       }
