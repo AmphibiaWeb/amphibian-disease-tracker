@@ -511,7 +511,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasId, chartCfg, chartContainer, chartCtx, countries, countryHtml, data, dieaseData, disease, e, error, fatalData, i, idTaxon, l, len, linkHtml, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, testingData, title, tooltip;
+    var blurb, canvas, canvasId, chartCfg, chartContainer, chartCtx, countries, countryHtml, data, disease, diseaseData, e, error, fatalData, i, idTaxon, l, len, linkHtml, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, testingData, title, tooltip;
     console.log("Got result", result);
     try {
       if (typeof result.amphibiaweb.data.common_name !== "object") {
@@ -564,7 +564,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector) {
     linkHtml += "</div>";
     blurb = "<div class='blurb-info'>\n  <p>\n    <strong>IUCN Status:</strong> " + result.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <p>\n    pie chart: pos|neg\n  </p>\n</div>";
     $(targetSelector).html(blurb);
-    dieaseData = result.adp.disease_data;
+    diseaseData = result.adp.disease_data;
     for (disease in diseaseData) {
       data = diseaseData[disease];
       testingData = {

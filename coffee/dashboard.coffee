@@ -525,7 +525,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector) ->
     """
     $(targetSelector).html blurb
     # Create the pie charts
-    dieaseData = result.adp.disease_data
+    diseaseData = result.adp.disease_data
     for disease, data of diseaseData
       testingData =
         labels: [
