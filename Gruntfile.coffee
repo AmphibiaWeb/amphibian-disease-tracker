@@ -201,7 +201,7 @@ module.exports = (grunt) ->
           "js/global-search-worker.js":["coffee/global-search-worker.coffee", "coffee/core-worker.coffee"]
     phpcsfixer:
       app:
-        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "dashboard.php", "index.php", "helpers/excelHelper.php", "profile.php"]
+        dir: ["api.php", "meta.php", "admin-login.php", "admin-api.php", "project.php", "dashboard.php", "index.php", "helpers/excelHelper.php", "profile.php", "recordMigrator.php"]
       core:
         dir: ["core/*.php"]
       options:
