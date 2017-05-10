@@ -9812,7 +9812,8 @@ html >>> .capitalize {
 .species {
   font-style: italic;
 }
-.genus {
+.genus,
+.capitalize {
   text-transform: capitalize !important;
 }
 .species {
@@ -13179,4 +13180,7 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 }
 .self-citation {
   font-style: none;
+}
+.project-button-link {
+  margin-right: .5rem;
 }
