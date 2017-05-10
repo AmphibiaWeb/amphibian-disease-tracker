@@ -26,7 +26,7 @@
     $loginStatus = getLoginState();
 
     ?>
-    <title>Disease Dashboard</title>
+    <title>Data Dashboard</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
     <meta name="theme-color" content="#5677fc"/>
@@ -194,7 +194,7 @@
 
         ?>
     <h2 class="col-xs-12">
-      Disease Summary Dashboard <span class="badge">ALPHA</span>
+      Data Dashboard <span class="badge">ALPHA</span>
     </h2>
     <section class="col-xs-12">
       <div class="row db-summary-region">

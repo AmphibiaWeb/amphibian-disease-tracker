@@ -28,7 +28,7 @@ try
       <paper-menu class="dropdown-content">
         #{accountSettings}
         <paper-item data-href="#{uri.urlString}dashboard.php" class="click">
-          Summary Dashboard
+          Data Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
           <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
