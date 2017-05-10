@@ -423,8 +423,8 @@ getServerChart = function(chartType, chartParams) {
           } catch (undefined) {}
           return _adp.chart.ctx.click(function(e) {
             var buttonSelector, color, dataset, elIndex, element, taxon, taxonData;
-            dataset = _adp.chart.getDatasetAtEvent(e);
-            element = _adp.chart.getElementAtEvent(e);
+            dataset = _adp.chart.chart.getDatasetAtEvent(e);
+            element = _adp.chart.chart.getElementAtEvent(e);
             console.debug("Dataset", dataset);
             console.debug("Element", element);
             elIndex = element[0]._index;
@@ -453,19 +453,32 @@ getServerChart = function(chartType, chartParams) {
 };
 
 fetchMiniTaxonBlurbs = function(reference) {
-  var selector, taxon, taxonArr, taxonObj;
+  var collapseSelector, selector, taxon, taxonArr, taxonObj;
   if (reference == null) {
     reference = _adp.fetchUpdatesFor;
   }
   console.debug("Fetching taxa updates for", reference);
-  for (selector in reference) {
-    taxon = reference[selector];
+  for (collapseSelector in reference) {
+    taxon = reference[collapseSelector];
+    selector = "#" + collapseSelector + " .collapse-content";
     taxonArr = taxon.split(" ");
     taxonObj = {
       genus: taxonArr[0],
       species: taxonArr[1]
     };
-    fetchMiniTaxonBlurb(taxonObj, "#" + selector + " .collapse-content");
+    $("button#" + collapseSelector + "-button-trigger").click(function() {
+      var hasData, html, ref;
+      hasData = (ref = $(this).attr("data-has-data")) != null ? ref : false;
+      if (!hasData.toBool()) {
+        $(this).attr("data-has-data", "true");
+        html = "<paper-spinner active></paper-spinner> Fetching Data...";
+        $(selector).html(html);
+        return fetchMiniTaxonBlurb(taxonObj, selector);
+      } else {
+        console.debug("Already has data");
+        return false;
+      }
+    });
   }
   return false;
 };

@@ -383,8 +383,8 @@ getServerChart = (chartType = "location", chartParams) ->
               fetchMiniTaxonBlurbs()
           # Click events on the chart
           _adp.chart.ctx.click (e) ->
-            dataset = _adp.chart.getDatasetAtEvent e
-            element = _adp.chart.getElementAtEvent e
+            dataset = _adp.chart.chart.getDatasetAtEvent e
+            element = _adp.chart.chart.getElementAtEvent e
             console.debug "Dataset", dataset
             console.debug "Element", element
             elIndex = element[0]._index
@@ -410,12 +410,24 @@ getServerChart = (chartType = "location", chartParams) ->
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
   console.debug "Fetching taxa updates for", reference
-  for selector, taxon of reference
+  for collapseSelector, taxon of reference
+    selector = "##{collapseSelector} .collapse-content"
     taxonArr = taxon.split " "
     taxonObj =
       genus: taxonArr[0]
       species: taxonArr[1]
-    fetchMiniTaxonBlurb taxonObj, "##{selector} .collapse-content"
+    $("button##{collapseSelector}-button-trigger").click ->
+      hasData = $(this).attr("data-has-data") ? false
+      unless hasData.toBool()
+        $(this).attr "data-has-data", "true"
+        html = """
+        <paper-spinner active></paper-spinner> Fetching Data...
+        """
+        $(selector).html html
+        fetchMiniTaxonBlurb taxonObj, selector
+      else
+        console.debug "Already has data"
+        return false
   false
 
 
