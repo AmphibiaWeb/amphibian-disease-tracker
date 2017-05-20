@@ -516,6 +516,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
     # Check each taxon
     for taxonData in iterator
       try
+        console.log "Doing blurb for", JSON.stringify taxonData.taxon
         try
           if typeof taxonData.amphibiaweb.data.common_name isnt "object"
             throw {message:"NOT_OBJECT"}
@@ -597,6 +598,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         # Create the pie charts
         idTaxon = encode64 JSON.stringify taxonData.taxon
         idTaxon = idTaxon.replace /[^\w0-9]/img, ""
+        console.log "Appended blurb for idTaxon", idTaxon
         diseaseData = taxonData.adp.disease_data
         for disease, data of diseaseData
           unless data.detected.no_confidence is data.detected.total

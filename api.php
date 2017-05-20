@@ -1630,6 +1630,7 @@ function getTaxonData($taxonBase)
           "taxa" => array(),
         );
         $r = mysqli_query($db->getLink(), $query);
+        $i = 0;
         while ($row = mysqli_fetch_row($r)) {
           $newTaxonBase = $taxonBase;
           $newTaxonBase["species"] = $row[0];
@@ -1638,7 +1639,9 @@ function getTaxonData($taxonBase)
             "data" => getTaxonData($newTaxonBase),
           );
           $response["taxa"][] = $taxonResponse;
+          $i++;
         }
+        $response["count"] = $i;
         return $response;
     }
     $iucn = getTaxonIucnData($taxonBase);

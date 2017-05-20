@@ -575,6 +575,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     for (m = 0, len1 = iterator.length; m < len1; m++) {
       taxonData = iterator[m];
       try {
+        console.log("Doing blurb for", JSON.stringify(taxonData.taxon));
         try {
           if (typeof taxonData.amphibiaweb.data.common_name !== "object") {
             throw {
@@ -634,6 +635,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $(targetSelector).append(blurb);
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
+        console.log("Appended blurb for idTaxon", idTaxon);
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {
           data = diseaseData[disease];
