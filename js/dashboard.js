@@ -659,7 +659,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             canvasId = idTaxon + "-" + disease + "-testdata";
             canvas.setAttribute("id", canvasId);
             canvasContainerId = canvasId + "-container";
-            chartContainer = $(targetSelector).find("#taxon-blurb-" + taxonId).find(".charts-container").get(0);
+            chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
             containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
             $(chartContainer).append(containerHtml);
             $("#" + canvasContainerId).get(0).appendChild(canvas);
