@@ -1114,7 +1114,7 @@ function getChartData($chartDataParams)
                     case "samples":
                     default:
                         if ($chartDataParams["sort"] == "samples") {
-                            $orderBy = "count, `genus`";
+                            $orderBy = "count DESC, `genus`";
                         } else {
                             $orderBy = "`genus`";
                         }
@@ -1172,16 +1172,16 @@ function getChartData($chartDataParams)
         $orderBy = $chartDataParams["sort"];
         $doInfectionSort = false;
         if (empty($orderBy)) {
-            $orderBy = "samples";
+            $orderBy = "samples DESC";
         } else {
             if ($orderBy == "infection") {
                 # We're going to do some magic
                 $doInfectionSort = true;
-                $orderBy = "samples";
+                $orderBy = "samples DESC";
             } else {
                 $orderBy = $db->sanitize($orderBy);
                 if (!$flatTable->columnExists($orderBy, false)) {
-                    $orderBy = "samples";
+                    $orderBy = "samples DESC";
                 }
             }
         }
@@ -1283,11 +1283,11 @@ function getChartData($chartDataParams)
             "labels" => $labels,
             "stacking" => array("x"=>false, "y"=>true),
             "datasets" => array(
-                array(
-                    "label" => "Total Samples",
-                    "data" => $chartDatasetData,
-                    "stack" => "totals",
-                ),
+                // array(
+                //     "label" => "Total Samples",
+                //     "data" => $chartDatasetData,
+                //     "stack" => "totals",
+                // ),
                 array(
                     "label" => "Positive Samples",
                     "data" => $chartPosDatasetData,
@@ -1530,7 +1530,7 @@ function getChartData($chartDataParams)
               }
               break;
               case 3:
-              foreach ($checkRange as $range) {
+                foreach ($checkRange as $range) {
                   $key = $range["key"];
                   if (!$hasConstructedLabels) {
                       $labels[] = $key;
