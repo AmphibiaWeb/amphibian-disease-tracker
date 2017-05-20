@@ -387,12 +387,12 @@ getServerChart = (chartType = "location", chartParams) ->
           html = """
           <section id="post-species-summary" class="col-xs-12" style="margin-top:2rem;">
             <div class="row">
-              <a href="#{dataUri}" class="btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2" id="download-main-chart" download>
+              <a href="#{dataUri}" class="btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2" id="download-main-chart" download disabled>
                 <iron-icon icon="icons:cloud-download"></iron-icon>
                 Download Chart
               </a>
             </div>
-            <p>
+            <p hidden>
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
             <div class="row">
@@ -404,9 +404,11 @@ getServerChart = (chartType = "location", chartParams) ->
           try
             $("#post-species-summary").remove()
           $(chartSelector).after html
-          delay 300, ->
+          delay 750, ->
             dataUri = _adp.chart.chart.toBase64Image()
-            $("#download-main-chart").attr("href",dataUri)
+            $("#download-main-chart")
+            .attr "href", dataUri
+            .removeAttr "disabled"
           try
             bindCollapsors()
             _adp.fetchUpdatesFor = fetchUpdatesFor

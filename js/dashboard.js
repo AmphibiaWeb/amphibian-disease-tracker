@@ -444,14 +444,14 @@ getServerChart = function(chartType, chartParams) {
             measurementSingle = "genus";
           }
           dataUri = _adp.chart.chart.toBase64Image();
-          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize\">" + measurementSingle + " Summaries</h3>\n    " + collapseHtml + "\n  </div>\n</section>";
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download disabled>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p hidden>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize\">" + measurementSingle + " Summaries</h3>\n    " + collapseHtml + "\n  </div>\n</section>";
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
           $(chartSelector).after(html);
-          delay(300, function() {
+          delay(750, function() {
             dataUri = _adp.chart.chart.toBase64Image();
-            return $("#download-main-chart").attr("href", dataUri);
+            return $("#download-main-chart").attr("href", dataUri).removeAttr("disabled");
           });
           try {
             bindCollapsors();
