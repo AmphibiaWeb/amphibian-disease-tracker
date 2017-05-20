@@ -554,16 +554,25 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, fatalData, i, idTaxon, iterator, l, len, len1, linkHtml, m, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, taxonData, taxonId, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonId, testingData, title, tooltip;
     console.log("Got result", result);
+    if (result.status !== true) {
+      html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
+      $(targetSelector).html(html);
+    }
     $(targetSelector).html("");
     if (result.isGenusLookup) {
-      iterator = Object.toArray(result.taxa);
+      iterator = new Array();
+      ref = Object.toArray(result.taxa);
+      for (l = 0, len = ref.length; l < len; l++) {
+        retResult = ref[l];
+        iterator.push(retResult.data);
+      }
     } else {
       iterator = [result];
     }
-    for (l = 0, len = iterator.length; l < len; l++) {
-      taxonData = iterator[l];
+    for (m = 0, len1 = iterator.length; m < len1; m++) {
+      taxonData = iterator[m];
       try {
         if (typeof taxonData.amphibiaweb.data.common_name !== "object") {
           throw {
@@ -573,8 +582,8 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         names = Object.toArray(taxonData.amphibiaweb.data.common_name);
         nameString = "";
         i = 0;
-        for (m = 0, len1 = names.length; m < len1; m++) {
-          name = names[m];
+        for (n = 0, len2 = names.length; n < len2; n++) {
+          name = names[n];
           ++i;
           if (name === taxonData.iucn.data.main_common_name) {
             name = "<strong>" + (name.trim()) + "</strong>";
@@ -589,7 +598,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         if (typeof taxonData.amphibiaweb.data.common_name === "string") {
           nameString = taxonData.amphibiaweb.data.common_name;
         } else {
-          nameString = (ref = (ref1 = taxonData.iucn) != null ? (ref2 = ref1.data) != null ? ref2.main_common_name : void 0 : void 0) != null ? ref : "";
+          nameString = (ref1 = (ref2 = taxonData.iucn) != null ? (ref3 = ref2.data) != null ? ref3.main_common_name : void 0 : void 0) != null ? ref1 : "";
           console.warn("Couldn't create common name string! " + e.message);
           console.warn(e.stack);
           console.debug(taxonData.amphibiaweb.data);
@@ -603,9 +612,9 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
       countries = Object.toArray(taxonData.adp.countries);
       countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
       linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples</p>";
-      ref3 = taxonData.adp.projects;
-      for (project in ref3) {
-        title = ref3[project];
+      ref4 = taxonData.adp.projects;
+      for (project in ref4) {
+        title = ref4[project];
         tooltip = title;
         if (title.length > 30) {
           title = title.slice(0, 27) + "...";

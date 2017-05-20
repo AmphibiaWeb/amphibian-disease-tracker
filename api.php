@@ -1718,6 +1718,7 @@ function getTaxonData($taxonBase)
     }
     $adpData["disease_data"] = $taxonBreakdown;
     $response = array(
+        "status" => true,
         "taxon" => array(
             "genus" => $taxonBase["genus"],
             "species" => $taxonBase["species"],

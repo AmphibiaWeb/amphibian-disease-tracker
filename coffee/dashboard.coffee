@@ -496,9 +496,20 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
   $.get "api.php", args.join("&"), "json"
   .done (result) ->
     console.log "Got result", result
+    if result.status isnt true
+      html = """
+      <div class="alert alert-danger">
+        <p>
+          <strong>Error:</strong> Couldn't fetch taxon data
+        </p>
+      </div>
+      """
+      $(targetSelector).html html
     $(targetSelector).html ""
     if result.isGenusLookup
-      iterator = Object.toArray result.taxa
+      iterator = new Array()
+      for retResult in Object.toArray result.taxa
+        iterator.push retResult.data
     else
       iterator = [result]
     # Check each taxon
