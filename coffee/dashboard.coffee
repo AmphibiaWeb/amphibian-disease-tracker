@@ -580,8 +580,12 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           """
         else
           taxonId = ""
+        # Create taxon blurb
+        idTaxon = encode64 JSON.stringify taxonData.taxon
+        idTaxon = idTaxon.replace /[^\w0-9]/img, ""
+        console.log "Appended blurb for idTaxon", idTaxon
         blurb = """
-        <div class='blurb-info'>
+        <div class='blurb-info' id="taxon-blurb-#{idTaxon}">
           #{taxonId}
           <p>
             <strong>IUCN Status:</strong> #{taxonData.iucn.category}
@@ -596,9 +600,6 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         """
         $(targetSelector).append blurb
         # Create the pie charts
-        idTaxon = encode64 JSON.stringify taxonData.taxon
-        idTaxon = idTaxon.replace /[^\w0-9]/img, ""
-        console.log "Appended blurb for idTaxon", idTaxon
         diseaseData = taxonData.adp.disease_data
         for disease, data of diseaseData
           unless data.detected.no_confidence is data.detected.total
@@ -630,7 +631,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             canvasId = "#{idTaxon}-#{disease}-testdata"
             canvas.setAttribute "id", canvasId
             canvasContainerId = "#{canvasId}-container"
-            chartContainer = $(targetSelector).find(".charts-container").get(0)
+            chartContainer = $(targetSelector).find("#taxon-blurb-#{taxonId}").find(".charts-container").get(0)
             containerHtml = """
             <div id="#{canvasContainerId}" class="col-xs-6">
             </div>
@@ -701,6 +702,18 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         console.error "Couldn't get taxon data -- #{e.message}", taxonData
         console.warn e.stack
       # End iterator for taxa
+    false
+  .error (result, status) ->
+    html = """
+      <div class="alert alert-danger">
+        <p>
+          <strong>Error:</strong> Server error fetching taxon data ()
+        </p>
+      </div>
+    """
+    $(targetSelector).html html
+    console.error "Couldn't fetch taxon data from server"
+    console.warn result, status
     false
   false
 

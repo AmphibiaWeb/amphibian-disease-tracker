@@ -631,11 +631,11 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         } else {
           taxonId = "";
         }
-        blurb = "<div class='blurb-info'>\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
-        $(targetSelector).append(blurb);
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+        $(targetSelector).append(blurb);
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {
           data = diseaseData[disease];
@@ -659,7 +659,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             canvasId = idTaxon + "-" + disease + "-testdata";
             canvas.setAttribute("id", canvasId);
             canvasContainerId = canvasId + "-container";
-            chartContainer = $(targetSelector).find(".charts-container").get(0);
+            chartContainer = $(targetSelector).find("#taxon-blurb-" + taxonId).find(".charts-container").get(0);
             containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
             $(chartContainer).append(containerHtml);
             $("#" + canvasContainerId).get(0).appendChild(canvas);
@@ -708,6 +708,13 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         console.warn(e.stack);
       }
     }
+    return false;
+  }).error(function(result, status) {
+    var html;
+    html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Server error fetching taxon data ()\n  </p>\n</div>";
+    $(targetSelector).html(html);
+    console.error("Couldn't fetch taxon data from server");
+    console.warn(result, status);
     return false;
   });
   return false;

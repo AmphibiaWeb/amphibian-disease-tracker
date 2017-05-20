@@ -16,6 +16,7 @@ if ($show_debug) {
 
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
+$start_script_timer = microtime_float();
 # This is a public API
 header('Access-Control-Allow-Origin: *');
 
@@ -1605,7 +1606,7 @@ function getChartData($chartDataParams)
 }
 
 
-function getTaxonData($taxonBase)
+function getTaxonData($taxonBase, $skipFetch = false)
 {
     /***
      *
@@ -1620,8 +1621,9 @@ function getTaxonData($taxonBase)
             "error" => "REQUIRED_COLS_MISSING",
         );
     }
-    if (empty($taxonBase["species"])) { 
-        # TODO Recursively call this across all the species
+    if (empty($taxonBase["species"])) {
+        # Recursively call this across all the species
+        #set_time_limit(0); # This can be very slow
         $query = "SELECT DISTINCT `specificepithet` FROM `records_list` WHERE `genus`='".$taxonBase["genus"]."'";
         $response = array(
           "status" => true,
@@ -1636,7 +1638,7 @@ function getTaxonData($taxonBase)
           $newTaxonBase["species"] = $row[0];
           $taxonResponse = array(
             "species" => $row[0],
-            "data" => getTaxonData($newTaxonBase),
+            "data" => getTaxonData($newTaxonBase, true),
           );
           $response["taxa"][] = $taxonResponse;
           $i++;
@@ -1644,8 +1646,17 @@ function getTaxonData($taxonBase)
         $response["count"] = $i;
         return $response;
     }
-    $iucn = getTaxonIucnData($taxonBase);
-    $aweb = getTaxonAwebData($taxonBase);
+    if (!$skipFetch) {
+      $iucn = getTaxonIucnData($taxonBase);
+      $aweb = getTaxonAwebData($taxonBase);
+    } else {
+      $iucn = getTaxonIucnData($taxonBase);
+      $aweb = array(
+        "data" => array(
+          "common_name" => array(),
+        ),        
+      );
+    }
     # Check ours
     $taxonString = $taxonBase["genus"]." ".$taxonBase["species"];
     $countQuery = "select `project_id`, `project_title` from `".$db->getTable()."` where sampled_species like '%$taxonString%'";
