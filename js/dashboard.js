@@ -554,7 +554,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonId, taxonString, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
@@ -625,13 +625,14 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         }
         linkHtml += "</div>";
         if (result.isGenusLookup) {
-          taxonId = "<p>\n  <strong>Taxon:</strong> <span class=\"sciname\">" + taxonData.taxon.genus + " " + taxonData.taxon.species + "</span>\n</p>";
+          taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.genus + "</span>\n</span>";
+          taxonId = "<p>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
         } else {
           taxonId = "";
         }
         blurb = "<div class='blurb-info'>\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
         $(targetSelector).append(blurb);
-        idTaxon = encode64(JSON.stringify(taxonTaxonData));
+        idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {

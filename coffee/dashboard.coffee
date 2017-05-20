@@ -566,9 +566,15 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           """
         linkHtml += "</div>"
         if result.isGenusLookup
+          taxonFormatted = """
+            <span class="sciname">
+              <span class="genus">#{taxonData.taxon.genus}</span>
+              <span class="species">#{taxonData.taxon.genus}</span>
+            </span>
+          """
           taxonId = """
           <p>
-            <strong>Taxon:</strong> <span class="sciname">#{taxonData.taxon.genus} #{taxonData.taxon.species}</span>
+            <strong>Taxon:</strong> #{taxonFormatted}
           </p>
           """
         else
@@ -589,7 +595,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         """
         $(targetSelector).append blurb
         # Create the pie charts
-        idTaxon = encode64 JSON.stringify taxonTaxonData
+        idTaxon = encode64 JSON.stringify taxonData.taxon
         idTaxon = idTaxon.replace /[^\w0-9]/img, ""
         diseaseData = taxonData.adp.disease_data
         for disease, data of diseaseData
