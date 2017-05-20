@@ -626,7 +626,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         }
         linkHtml += "</div>";
         if (result.isGenusLookup) {
-          taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.genus + "</span>\n</span>";
+          taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
           taxonId = "<p>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
         } else {
           taxonId = "";
@@ -700,7 +700,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         e = error1;
         try {
           taxonString = "";
-          taxonString = "for\n  <span class=\"sciname\">\n    <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n    <span class=\"species\">" + taxonData.taxon.genus + "</span>\n  </span>";
+          taxonString = "for\n  <span class=\"sciname\">\n    <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n    <span class=\"species\">" + taxonData.taxon.species + "</span>\n  </span>";
         } catch (undefined) {}
         html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data " + taxonString + "\n  </p>\n</div>";
         $(targetSelector).append(html);

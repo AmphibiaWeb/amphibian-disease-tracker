@@ -570,7 +570,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           taxonFormatted = """
             <span class="sciname">
               <span class="genus">#{taxonData.taxon.genus}</span>
-              <span class="species">#{taxonData.taxon.genus}</span>
+              <span class="species">#{taxonData.taxon.species}</span>
             </span>
           """
           taxonId = """
@@ -687,7 +687,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           for
             <span class="sciname">
               <span class="genus">#{taxonData.taxon.genus}</span>
-              <span class="species">#{taxonData.taxon.genus}</span>
+              <span class="species">#{taxonData.taxon.species}</span>
             </span>
           """
         html = """
