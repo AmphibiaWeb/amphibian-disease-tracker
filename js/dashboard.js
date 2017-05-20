@@ -554,11 +554,12 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonId, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
       $(targetSelector).html(html);
+      return false;
     }
     $(targetSelector).html("");
     if (result.isGenusLookup) {
@@ -574,122 +575,134 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     for (m = 0, len1 = iterator.length; m < len1; m++) {
       taxonData = iterator[m];
       try {
-        if (typeof taxonData.amphibiaweb.data.common_name !== "object") {
-          throw {
-            message: "NOT_OBJECT"
-          };
-        }
-        names = Object.toArray(taxonData.amphibiaweb.data.common_name);
-        nameString = "";
-        i = 0;
-        for (n = 0, len2 = names.length; n < len2; n++) {
-          name = names[n];
-          ++i;
-          if (name === taxonData.iucn.data.main_common_name) {
-            name = "<strong>" + (name.trim()) + "</strong>";
+        try {
+          if (typeof taxonData.amphibiaweb.data.common_name !== "object") {
+            throw {
+              message: "NOT_OBJECT"
+            };
           }
-          nameString += name.trim();
-          if (names.length !== i) {
-            nameString += ", ";
+          names = Object.toArray(taxonData.amphibiaweb.data.common_name);
+          nameString = "";
+          i = 0;
+          for (n = 0, len2 = names.length; n < len2; n++) {
+            name = names[n];
+            ++i;
+            if (name === taxonData.iucn.data.main_common_name) {
+              name = "<strong>" + (name.trim()) + "</strong>";
+            }
+            nameString += name.trim();
+            if (names.length !== i) {
+              nameString += ", ";
+            }
+          }
+        } catch (error) {
+          e = error;
+          if (typeof taxonData.amphibiaweb.data.common_name === "string") {
+            nameString = taxonData.amphibiaweb.data.common_name;
+          } else {
+            nameString = (ref1 = (ref2 = taxonData.iucn) != null ? (ref3 = ref2.data) != null ? ref3.main_common_name : void 0 : void 0) != null ? ref1 : "";
+            console.warn("Couldn't create common name string! " + e.message);
+            console.warn(e.stack);
+            console.debug(taxonData.amphibiaweb.data);
           }
         }
-      } catch (error) {
-        e = error;
-        if (typeof taxonData.amphibiaweb.data.common_name === "string") {
-          nameString = taxonData.amphibiaweb.data.common_name;
+        if (!isNull(nameString)) {
+          nameHtml = "<p>\n  <strong>Names:</strong> " + nameString + "\n</p>";
         } else {
-          nameString = (ref1 = (ref2 = taxonData.iucn) != null ? (ref3 = ref2.data) != null ? ref3.main_common_name : void 0 : void 0) != null ? ref1 : "";
-          console.warn("Couldn't create common name string! " + e.message);
-          console.warn(e.stack);
-          console.debug(taxonData.amphibiaweb.data);
+          nameHtml = "";
         }
-      }
-      if (!isNull(nameString)) {
-        nameHtml = "<p>\n  <strong>Names:</strong> " + nameString + "\n</p>";
-      } else {
-        nameHtml = "";
-      }
-      countries = Object.toArray(taxonData.adp.countries);
-      countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
-      linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples</p>";
-      ref4 = taxonData.adp.projects;
-      for (project in ref4) {
-        title = ref4[project];
-        tooltip = title;
-        if (title.length > 30) {
-          title = title.slice(0, 27) + "...";
+        countries = Object.toArray(taxonData.adp.countries);
+        countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
+        linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples</p>";
+        ref4 = taxonData.adp.projects;
+        for (project in ref4) {
+          title = ref4[project];
+          tooltip = title;
+          if (title.length > 30) {
+            title = title.slice(0, 27) + "...";
+          }
+          linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
         }
-        linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
-      }
-      linkHtml += "</div>";
-      if (result.isGenusLookup) {
-        taxonId = "<p>\n  <strong>Taxon:</strong> <span class=\"sciname\">" + taxonData.taxon.genus + " " + taxonData.taxon.species + "</span>\n</p>";
-      } else {
-        taxonId = "";
-      }
-      blurb = "<div class='blurb-info'>\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
-      $(targetSelector).append(blurb);
-      idTaxon = encode64(JSON.stringify(taxonTaxonData));
-      idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
-      diseaseData = taxonData.adp.disease_data;
-      for (disease in diseaseData) {
-        data = diseaseData[disease];
-        if (data.detected.no_confidence !== data.detected.total) {
-          testingData = {
-            labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
-            datasets: [
-              {
-                data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
-                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-                hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-              }
-            ]
-          };
-          chartCfg = {
-            type: "pie",
-            data: testingData
-          };
-          canvas = document.createElement("canvas");
-          canvas.setAttribute("class", "chart dynamic-pie-chart");
-          canvasId = idTaxon + "-" + disease + "-testdata";
-          canvas.setAttribute("id", canvasId);
-          canvasContainerId = canvasId + "-container";
-          chartContainer = $(targetSelector).find(".charts-container").get(0);
-          containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
-          $(chartContainer).append(containerHtml);
-          $("#" + canvasContainerId).get(0).appendChild(canvas);
-          chartCtx = $("#" + canvasId);
-          pieChart = new Chart(chartCtx, chartCfg);
-          _adp.taxonCharts[canvasId] = pieChart;
+        linkHtml += "</div>";
+        if (result.isGenusLookup) {
+          taxonId = "<p>\n  <strong>Taxon:</strong> <span class=\"sciname\">" + taxonData.taxon.genus + " " + taxonData.taxon.species + "</span>\n</p>";
+        } else {
+          taxonId = "";
         }
-        if (data.fatal.unknown !== data.fatal.total) {
-          fatalData = {
-            labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
-            datasets: [
-              {
-                data: [data.fatal["true"], data.fatal["false"], data.fatal.unknown],
-                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-                hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-              }
-            ]
-          };
-          chartCfg = {
-            type: "pie",
-            data: fatalData
-          };
-          canvas = document.createElement("canvas");
-          canvas.setAttribute("class", "chart dynamic-pie-chart");
-          canvasId = idTaxon + "-" + disease + "-fataldata";
-          canvas.setAttribute("id", canvasId);
-          canvasContainerId = canvasId + "-container";
-          chartContainer = $(targetSelector).find(".charts-container").get(0);
-          containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
-          $(chartContainer).append(containerHtml);
-          $("#" + canvasContainerId).get(0).appendChild(canvas);
-          chartCtx = $("#" + canvasId);
-          pieChart = new Chart(chartCtx, chartCfg);
-          _adp.taxonCharts[canvasId] = pieChart;
+        blurb = "<div class='blurb-info'>\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+        $(targetSelector).append(blurb);
+        idTaxon = encode64(JSON.stringify(taxonTaxonData));
+        idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
+        diseaseData = taxonData.adp.disease_data;
+        for (disease in diseaseData) {
+          data = diseaseData[disease];
+          if (data.detected.no_confidence !== data.detected.total) {
+            testingData = {
+              labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
+              datasets: [
+                {
+                  data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
+                  backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                  hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                }
+              ]
+            };
+            chartCfg = {
+              type: "pie",
+              data: testingData
+            };
+            canvas = document.createElement("canvas");
+            canvas.setAttribute("class", "chart dynamic-pie-chart");
+            canvasId = idTaxon + "-" + disease + "-testdata";
+            canvas.setAttribute("id", canvasId);
+            canvasContainerId = canvasId + "-container";
+            chartContainer = $(targetSelector).find(".charts-container").get(0);
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+            $(chartContainer).append(containerHtml);
+            $("#" + canvasContainerId).get(0).appendChild(canvas);
+            chartCtx = $("#" + canvasId);
+            pieChart = new Chart(chartCtx, chartCfg);
+            _adp.taxonCharts[canvasId] = pieChart;
+          }
+          if (data.fatal.unknown !== data.fatal.total) {
+            fatalData = {
+              labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
+              datasets: [
+                {
+                  data: [data.fatal["true"], data.fatal["false"], data.fatal.unknown],
+                  backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                  hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                }
+              ]
+            };
+            chartCfg = {
+              type: "pie",
+              data: fatalData
+            };
+            canvas = document.createElement("canvas");
+            canvas.setAttribute("class", "chart dynamic-pie-chart");
+            canvasId = idTaxon + "-" + disease + "-fataldata";
+            canvas.setAttribute("id", canvasId);
+            canvasContainerId = canvasId + "-container";
+            chartContainer = $(targetSelector).find(".charts-container").get(0);
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+            $(chartContainer).append(containerHtml);
+            $("#" + canvasContainerId).get(0).appendChild(canvas);
+            chartCtx = $("#" + canvasId);
+            pieChart = new Chart(chartCtx, chartCfg);
+            _adp.taxonCharts[canvasId] = pieChart;
+          }
         }
+      } catch (error1) {
+        e = error1;
+        try {
+          taxonString = "";
+          taxonString = "for\n  <span class=\"sciname\">\n    <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n    <span class=\"species\">" + taxonData.taxon.genus + "</span>\n  </span>";
+        } catch (undefined) {}
+        html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data " + taxonString + "\n  </p>\n</div>";
+        $(targetSelector).append(html);
+        console.error("Couldn't get taxon data -- " + e.message, taxonData);
+        console.warn(e.stack);
       }
     }
     return false;

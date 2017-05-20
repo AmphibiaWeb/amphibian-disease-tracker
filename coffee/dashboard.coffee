@@ -505,6 +505,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
       </div>
       """
       $(targetSelector).html html
+      return false
     $(targetSelector).html ""
     if result.isGenusLookup
       iterator = new Array()
@@ -515,161 +516,183 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
     # Check each taxon
     for taxonData in iterator
       try
-        if typeof taxonData.amphibiaweb.data.common_name isnt "object"
-          throw {message:"NOT_OBJECT"}
-        names = Object.toArray taxonData.amphibiaweb.data.common_name
-        nameString = ""
-        i = 0
-        for name in names
-          ++i
-          if name is taxonData.iucn.data.main_common_name
-            name = "<strong>#{name.trim()}</strong>"
-          nameString += name.trim()
-          if names.length isnt i
-            nameString += ", "
-      catch e
-        if typeof taxonData.amphibiaweb.data.common_name is "string"
-          nameString = taxonData.amphibiaweb.data.common_name
+        try
+          if typeof taxonData.amphibiaweb.data.common_name isnt "object"
+            throw {message:"NOT_OBJECT"}
+          names = Object.toArray taxonData.amphibiaweb.data.common_name
+          nameString = ""
+          i = 0
+          for name in names
+            ++i
+            if name is taxonData.iucn.data.main_common_name
+              name = "<strong>#{name.trim()}</strong>"
+            nameString += name.trim()
+            if names.length isnt i
+              nameString += ", "
+        catch e
+          if typeof taxonData.amphibiaweb.data.common_name is "string"
+            nameString = taxonData.amphibiaweb.data.common_name
+          else
+            nameString = taxonData.iucn?.data?.main_common_name ? ""
+            console.warn "Couldn't create common name string! #{e.message}"
+            console.warn e.stack
+            console.debug taxonData.amphibiaweb.data
+        unless isNull nameString
+          nameHtml = """
+          <p>
+            <strong>Names:</strong> #{nameString}
+          </p>
+          """
         else
-          nameString = taxonData.iucn?.data?.main_common_name ? ""
-          console.warn "Couldn't create common name string! #{e.message}"
-          console.warn e.stack
-          console.debug taxonData.amphibiaweb.data
-      unless isNull nameString
-        nameHtml = """
-        <p>
-          <strong>Names:</strong> #{nameString}
-        </p>
+          nameHtml = ""
+        countries = Object.toArray taxonData.adp.countries
+        countryHtml = """
+        <ul class="country-list">
+          <li>#{countries.join("</li><li>")}</li>
+        </ul>
         """
-      else
-        nameHtml = ""
-      countries = Object.toArray taxonData.adp.countries
-      countryHtml = """
-      <ul class="country-list">
-        <li>#{countries.join("</li><li>")}</li>
-      </ul>
-      """
-      linkHtml = """
-      <div class='clade-project-summary'>
-        <p>Represented in <strong>#{taxonData.adp.project_count}</strong> projects with <strong>#{taxonData.adp.samples}</strong> samples</p>
-      """
-      for project, title of taxonData.adp.projects
-        tooltip = title
-        if title.length > 30
-          title = title.slice(0,27) + "..."
-        linkHtml += """
-        <a class="btn btn-primary newwindow project-button-link" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
-          #{title}
-        </a>
+        linkHtml = """
+        <div class='clade-project-summary'>
+          <p>Represented in <strong>#{taxonData.adp.project_count}</strong> projects with <strong>#{taxonData.adp.samples}</strong> samples</p>
         """
-      linkHtml += "</div>"
-      if result.isGenusLookup
-        taxonId = """
-        <p>
-          <strong>Taxon:</strong> <span class="sciname">#{taxonData.taxon.genus} #{taxonData.taxon.species}</span>
-        </p>
-        """
-      else
-        taxonId = ""
-      blurb = """
-      <div class='blurb-info'>
-        #{taxonId}
-        <p>
-          <strong>IUCN Status:</strong> #{taxonData.iucn.category}
-        </p>
-        #{nameHtml}
-        <p>Sampled in the following countries:</p>
-        #{countryHtml}
-        #{linkHtml}
-        <div class="charts-container row">
+        for project, title of taxonData.adp.projects
+          tooltip = title
+          if title.length > 30
+            title = title.slice(0,27) + "..."
+          linkHtml += """
+          <a class="btn btn-primary newwindow project-button-link" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
+            #{title}
+          </a>
+          """
+        linkHtml += "</div>"
+        if result.isGenusLookup
+          taxonId = """
+          <p>
+            <strong>Taxon:</strong> <span class="sciname">#{taxonData.taxon.genus} #{taxonData.taxon.species}</span>
+          </p>
+          """
+        else
+          taxonId = ""
+        blurb = """
+        <div class='blurb-info'>
+          #{taxonId}
+          <p>
+            <strong>IUCN Status:</strong> #{taxonData.iucn.category}
+          </p>
+          #{nameHtml}
+          <p>Sampled in the following countries:</p>
+          #{countryHtml}
+          #{linkHtml}
+          <div class="charts-container row">
+          </div>
         </div>
-      </div>
-      """
-      $(targetSelector).append blurb
-      # Create the pie charts
-      idTaxon = encode64 JSON.stringify taxonTaxonData
-      idTaxon = idTaxon.replace /[^\w0-9]/img, ""
-      diseaseData = taxonData.adp.disease_data
-      for disease, data of diseaseData
-        unless data.detected.no_confidence is data.detected.total
-          testingData =
-            labels: [
-              "#{disease} detected"
-              "#{disease} not detected"
-              "#{disease} inconclusive data"
-              ]
-            datasets: [
-              data: [data.detected.true, data.detected.false, data.detected.no_confidence]
-              backgroundColor: [
-                "#FF6384"
-                "#36A2EB"
-                "#FFCE56"
+        """
+        $(targetSelector).append blurb
+        # Create the pie charts
+        idTaxon = encode64 JSON.stringify taxonTaxonData
+        idTaxon = idTaxon.replace /[^\w0-9]/img, ""
+        diseaseData = taxonData.adp.disease_data
+        for disease, data of diseaseData
+          unless data.detected.no_confidence is data.detected.total
+            testingData =
+              labels: [
+                "#{disease} detected"
+                "#{disease} not detected"
+                "#{disease} inconclusive data"
                 ]
-              hoverBackgroundColor: [
-                "#FF6384"
-                "#36A2EB"
-                "#FFCE56"
+              datasets: [
+                data: [data.detected.true, data.detected.false, data.detected.no_confidence]
+                backgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                hoverBackgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
                 ]
-              ]
-          chartCfg =
-            type: "pie"
-            data: testingData
-          # Create a canvas for this
-          canvas = document.createElement "canvas"
-          canvas.setAttribute "class","chart dynamic-pie-chart"
-          canvasId = "#{idTaxon}-#{disease}-testdata"
-          canvas.setAttribute "id", canvasId
-          canvasContainerId = "#{canvasId}-container"
-          chartContainer = $(targetSelector).find(".charts-container").get(0)
-          containerHtml = """
-          <div id="#{canvasContainerId}" class="col-xs-6">
-          </div>
+            chartCfg =
+              type: "pie"
+              data: testingData
+            # Create a canvas for this
+            canvas = document.createElement "canvas"
+            canvas.setAttribute "class","chart dynamic-pie-chart"
+            canvasId = "#{idTaxon}-#{disease}-testdata"
+            canvas.setAttribute "id", canvasId
+            canvasContainerId = "#{canvasId}-container"
+            chartContainer = $(targetSelector).find(".charts-container").get(0)
+            containerHtml = """
+            <div id="#{canvasContainerId}" class="col-xs-6">
+            </div>
+            """
+            $(chartContainer).append containerHtml
+            $("##{canvasContainerId}").get(0).appendChild canvas
+            chartCtx = $("##{canvasId}")
+            pieChart = new Chart chartCtx, chartCfg
+            _adp.taxonCharts[canvasId] = pieChart
+          # Fatality!
+          unless data.fatal.unknown is data.fatal.total
+            fatalData =
+              labels: [
+                "#{disease} fatal"
+                "#{disease} not fatal"
+                "#{disease} unknown fatality"
+                ]
+              datasets: [
+                data: [data.fatal.true, data.fatal.false, data.fatal.unknown]
+                backgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                hoverBackgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                ]
+            chartCfg =
+              type: "pie"
+              data: fatalData
+            # Create a canvas for this
+            canvas = document.createElement "canvas"
+            canvas.setAttribute "class","chart dynamic-pie-chart"
+            canvasId = "#{idTaxon}-#{disease}-fataldata"
+            canvas.setAttribute "id", canvasId
+            canvasContainerId = "#{canvasId}-container"
+            chartContainer = $(targetSelector).find(".charts-container").get(0)
+            containerHtml = """
+            <div id="#{canvasContainerId}" class="col-xs-6">
+            </div>
+            """
+            $(chartContainer).append containerHtml
+            $("##{canvasContainerId}").get(0).appendChild canvas
+            chartCtx = $("##{canvasId}")
+            pieChart = new Chart chartCtx, chartCfg
+            _adp.taxonCharts[canvasId] = pieChart
+      catch e
+        try
+          taxonString = ""
+          taxonString = """
+          for
+            <span class="sciname">
+              <span class="genus">#{taxonData.taxon.genus}</span>
+              <span class="species">#{taxonData.taxon.genus}</span>
+            </span>
           """
-          $(chartContainer).append containerHtml
-          $("##{canvasContainerId}").get(0).appendChild canvas
-          chartCtx = $("##{canvasId}")
-          pieChart = new Chart chartCtx, chartCfg
-          _adp.taxonCharts[canvasId] = pieChart
-        # Fatality!
-        unless data.fatal.unknown is data.fatal.total
-          fatalData =
-            labels: [
-              "#{disease} fatal"
-              "#{disease} not fatal"
-              "#{disease} unknown fatality"
-              ]
-            datasets: [
-              data: [data.fatal.true, data.fatal.false, data.fatal.unknown]
-              backgroundColor: [
-                "#FF6384"
-                "#36A2EB"
-                "#FFCE56"
-                ]
-              hoverBackgroundColor: [
-                "#FF6384"
-                "#36A2EB"
-                "#FFCE56"
-                ]
-              ]
-          chartCfg =
-            type: "pie"
-            data: fatalData
-          # Create a canvas for this
-          canvas = document.createElement "canvas"
-          canvas.setAttribute "class","chart dynamic-pie-chart"
-          canvasId = "#{idTaxon}-#{disease}-fataldata"
-          canvas.setAttribute "id", canvasId
-          canvasContainerId = "#{canvasId}-container"
-          chartContainer = $(targetSelector).find(".charts-container").get(0)
-          containerHtml = """
-          <div id="#{canvasContainerId}" class="col-xs-6">
-          </div>
-          """
-          $(chartContainer).append containerHtml
-          $("##{canvasContainerId}").get(0).appendChild canvas
-          chartCtx = $("##{canvasId}")
-          pieChart = new Chart chartCtx, chartCfg
-          _adp.taxonCharts[canvasId] = pieChart
+        html = """
+        <div class="alert alert-danger">
+          <p>
+            <strong>Error:</strong> Couldn't fetch taxon data #{taxonString}
+          </p>
+        </div>
+        """
+        $(targetSelector).append html
+        console.error "Couldn't get taxon data -- #{e.message}", taxonData
+        console.warn e.stack
+      # End iterator for taxa
     false
   false
 
