@@ -120,6 +120,8 @@ switch ($do) {
         #"debug" => $testArr,
     ));
 }
+
+
 function searchProject($get)
 {
     /***
@@ -161,6 +163,8 @@ function searchProject($get)
     $response['count'] = sizeof($response['result']);
     returnAjax($response);
 }
+
+
 function searchUsers($get)
 {
     /***
@@ -225,6 +229,9 @@ function searchUsers($get)
     $response['count'] = sizeof($result);
     returnAjax($response);
 }
+
+
+
 function checkColumnExists($column_list, $userReturn = true, $detailReturn = false)
 {
     /***
@@ -289,6 +296,9 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
         return true;
     }
 }
+
+
+
 function doCartoSqlApiPush($get)
 {
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
@@ -554,10 +564,14 @@ function doCartoSqlApiPush($get)
         ));
     }
 }
+
+
 function tsvHelper($tsv)
 {
     return str_getcsv($tsv, "\t");
 }
+
+
 function doAWebValidate($get)
 {
     /***
@@ -1606,9 +1620,26 @@ function getTaxonData($taxonBase)
             "error" => "REQUIRED_COLS_MISSING",
         );
     }
-    if (empty($taxonBase["species"])) {
+    if (empty($taxonBase["species"])) { 
         # TODO Recursively call this across all the species
-
+        $query = "SELECT DISTINCT `specificepithet` FROM `records_list` WHERE `genus`='".$taxonBase["genus"]."'";
+        $response = array(
+          "status" => true,
+          "genus" => $taxonBase["genus"],
+          "isGenusLookup" => true,
+          "taxa" => array(),
+        );
+        $r = mysqli_query($db->getLink(), $query);
+        while ($row = mysqli_fetch_row($r)) {
+          $newTaxonBase = $taxonBase;
+          $newTaxonBase["species"] = $row[0];
+          $taxonResponse = array(
+            "species" => $row[0],
+            "data" => getTaxonData($newTaxonBase),
+          );
+          $response["taxa"][] = $taxonResponse;
+        }
+        return $response;
     }
     $iucn = getTaxonIucnData($taxonBase);
     $aweb = getTaxonAwebData($taxonBase);
@@ -1699,6 +1730,7 @@ function getTaxonData($taxonBase)
         "amphibiaweb" => array(
             "data" => $aweb["data"],
         ),
+        "isGenusLookup" => false,
     );
     return $response;
 }
