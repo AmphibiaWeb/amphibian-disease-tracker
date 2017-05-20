@@ -95,3 +95,4 @@ aweb_list.txt
 npm-debug.log
 amphibiandisease-*error_log
 .php_cs.cache
+.gitignore
