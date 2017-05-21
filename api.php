@@ -1047,15 +1047,15 @@ function getChartData($chartDataParams)
 
     /***
     * Create opportunities for several bins
-         *
-         * Bin by:
-         * - location
-         * - time
-         * - species
-         * - positive species
-         *
-         ***/
-        switch ($chartDataParams["bin"]) {
+    *
+    * Bin by:
+    * - location
+    * - time
+    * - species
+    * - positive species
+    *
+    ***/
+    switch ($chartDataParams["bin"]) {
         case "time":
                 # Sort by time
                 break;
@@ -1071,10 +1071,10 @@ function getChartData($chartDataParams)
             $result = mysqli_query($flatTable->getLink(), $query);
             if ($result === false) {
                 returnAjax(array(
-                                    "status" => false,
-                                    "error" => mysqli_error($flatTable->getLink()),
-                                    "human_error" => "We were unable to retrieve the records at this time",
-                                ));
+                    "status" => false,
+                    "error" => mysqli_error($flatTable->getLink()),
+                    "human_error" => "We were unable to retrieve the records at this time",
+                ));
             }
             $labels = array();
             $data = array();
