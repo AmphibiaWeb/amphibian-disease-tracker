@@ -238,7 +238,17 @@
               $i++;
             }
             $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
-
+            $i = 0;
+            while ($row = mysqli_fetch_assoc($rS)) {
+              if ($i == 0) {
+                $max = intval($row["count"]);
+              }
+              $progress = 100 * intval($row["count"]) / $max;
+              $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+              $top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+              $i++;
+            }
+            $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
             ?>
         <div class="col-xs-12 col-md-6 table-responsive">
           <table class="table table-striped table-bordered table-condensed">
@@ -287,6 +297,26 @@
             </thead>
             <tbody>
               <?php echo $top10CountryCont; ?>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-xs-12 col-md-6 table-responsive">
+          <table class="table table-striped table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th>
+                  Taxon
+                </th>
+                <th>
+                  Relative
+                </th>
+                <th>
+                  Count
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php echo $top10SpeciesCont; ?>
             </tbody>
           </table>
         </div>
