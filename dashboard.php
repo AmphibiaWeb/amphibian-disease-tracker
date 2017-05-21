@@ -217,20 +217,42 @@
             $query = "select country, count(*) as count from `records_list` where genus is not null group by country";
             $r = mysqli_query($db->getLink(), $query);
             $countryCount = mysqli_num_rows($r);
+            ## Top 10
+            ## See
+            ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
+
+            $queryCountryTop10 = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
+            $querySpeciesTop10 = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
+            $top10CountryTBody = array();
+            $top10SpeciesTBody = array();
+            $rC = mysqli_query($db->getLink(), $queryCountryTop10);
+            $rS = mysqli_query($db->getLink(), $querySpeciesTop10);
+            $i = 0;
+            while ($row = mysqli_fetch_assoc($rC)) {
+              if ($i == 0) {
+                $max = intval($row["count"]);
+              }
+              $progress = 100 * intval($row["count"]) / $max;
+              $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+              $top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+              $i++;
+            }
+            $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
+
             ?>
         <div class="col-xs-12 col-md-6 table-responsive">
           <table class="table table-striped table-bordered table-condensed">
             <thead>
               <tr>
-                <td>
+                <th>
                   Total Samples
-                </td>
-                <td>
+                </th>
+                <th>
                   Number of Species
-                </td>
-                <td>
+                </th>
+                <th>
                   Number of Countries
-                </td>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -245,6 +267,26 @@
                   <?php echo $countryCount; ?>
                 </td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-xs-12 col-md-6 table-responsive">
+          <table class="table table-striped table-bordered table-condensed">
+            <thead>
+              <tr>
+                <th>
+                  Country
+                </th>
+                <th>
+                  Relative
+                </th>
+                <th>
+                  Count
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php echo $top10CountryCont; ?>
             </tbody>
           </table>
         </div>
