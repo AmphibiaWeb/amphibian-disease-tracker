@@ -280,45 +280,54 @@
             </tbody>
           </table>
         </div>
-        <div class="col-xs-12 col-md-6 table-responsive">
-          <table class="table table-striped table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>
-                  Country
-                </th>
-                <th>
-                  Relative
-                </th>
-                <th>
-                  Count
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php echo $top10CountryCont; ?>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-xs-12 col-md-6 table-responsive">
-          <table class="table table-striped table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>
-                  Taxon
-                </th>
-                <th>
-                  Relative
-                </th>
-                <th>
-                  Count
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php echo $top10SpeciesCont; ?>
-            </tbody>
-          </table>
+        <div class="col-xs-12">
+          <button type="button" class="btn btn-info collapse-trigger" data-target="#top-ten-collapse" id="top-ten-collapse-button-trigger">
+            View Top Ten Countries &amp; Taxa
+          </button>
+          <iron-collapse id="top-ten-collapse">
+            <div class="collapse-content row">
+              <div class="col-xs-12 col-md-6 table-responsive">
+                <table class="table table-striped table-bordered table-condensed">
+                  <thead>
+                    <tr>
+                      <th>
+                        Country
+                      </th>
+                      <th>
+                        Relative
+                      </th>
+                      <th>
+                        Count
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php echo $top10CountryCont; ?>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-xs-12 col-md-6 table-responsive">
+                <table class="table table-striped table-bordered table-condensed">
+                  <thead>
+                    <tr>
+                      <th>
+                        Taxon
+                      </th>
+                      <th>
+                        Relative
+                      </th>
+                      <th>
+                        Count
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php echo $top10SpeciesCont; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </iron-collapse>
         </div>
       </div>
     </section>
