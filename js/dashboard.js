@@ -477,6 +477,20 @@ getServerChart = function(chartType, chartParams) {
             $(".success-glow").removeClass("success-glow");
             return $(buttonSelector).addClass("success-glow").get(0).scrollIntoView(false);
           });
+        } else if (chartType === "location") {
+          return _adp.chart.ctx.click(function(e) {
+            var country, dataset, elIndex, element;
+            dataset = _adp.chart.chart.getDatasetAtEvent(e);
+            element = _adp.chart.chart.getElementAtEvent(e);
+            console.debug("Dataset", dataset);
+            console.debug("Element", element);
+            elIndex = element[0]._index;
+            data = dataset[elIndex];
+            console.debug("Specific data:", data);
+            country = data._model.label;
+            console.debug("country clicked:", country);
+            return false;
+          });
         }
       });
       return stopLoad();
