@@ -44,7 +44,7 @@ ob_start();
                 $localeTaxonData = array();
                 $taxa = 0;
                 while ($row = mysqli_fetch_assoc($r)) {
-                    $taxon = $row["genus"] . " " . $row["species"];
+                    $taxon = $row["genus"] . " " . $row["specificepithet"];
                     if (!isset($localeTaxonData[$taxon])) {
                         $localeTaxonData[$taxon] = array(
                             "true" => 0,
