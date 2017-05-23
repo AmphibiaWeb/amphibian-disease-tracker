@@ -37,7 +37,7 @@ $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 		  # Get the taxa in a given country
 		  $db->setTable("records_list");
 		# select genus, specificepithet, count(*) as count from records_list where lower(country)='united states' group by genus, specificepithet order by genus, specificepithet
-    $searchCountry = $db->sanitize($_REQUEST["country"])
+    $searchCountry = $db->sanitize($_REQUEST["country"]);
     # Get the list
 		$query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
     $r = mysqli_query($db->getLink(), $query);
