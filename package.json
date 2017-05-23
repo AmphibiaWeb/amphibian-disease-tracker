@@ -46,5 +46,8 @@
     "npm": "^4.0.3",
     "npm-check-updates": "^2.8.6",
     "vulcanize": "^1.15.4"
+  },
+  "dependencies": {
+    "minimatch": "^3.0.4"
   }
 }
