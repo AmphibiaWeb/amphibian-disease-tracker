@@ -432,6 +432,23 @@ getServerChart = (chartType = "location", chartParams) ->
             $(buttonSelector)
             .addClass "success-glow"
             .get(0).scrollIntoView(false)
+        else if chartType is "location"
+          # See events from
+          # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
+          # Click events on the chart
+          _adp.chart.ctx.click (e) ->
+            dataset = _adp.chart.chart.getDatasetAtEvent e
+            element = _adp.chart.chart.getElementAtEvent e
+            console.debug "Dataset", dataset
+            console.debug "Element", element
+            elIndex = element[0]._index
+            data = dataset[elIndex]
+            console.debug "Specific data:", data
+            country = data._model.label
+            console.debug "country clicked:", country
+            # Now we'd like to get a copy of of the country's taxon results
+
+            return false
       stopLoad()
     false
   .fail (result, status) ->

@@ -1,42 +1,68 @@
+<?php
+ob_start();
+?>
 <!DOCTYPE html>
 <html>
   <head>
     <?php
     $debug = false;
-    if ($debug) {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-        error_log('Project Browser is running in debug mode!');
-    }
+if ($debug) {
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+	error_log('Project Browser is running in debug mode!');
+}
 
-    $print_login_state = false;
-    require_once 'DB_CONFIG.php';
-    require_once dirname(__FILE__).'/core/core.php';
-    require_once dirname(__FILE__).'/admin/async_login_handler.php';
-    $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
+$print_login_state = false;
+require_once 'DB_CONFIG.php';
+require_once dirname(__FILE__).'/core/core.php';
+require_once dirname(__FILE__).'/admin/async_login_handler.php';
+$db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
-    $as_include = true;
-    # The next include includes core, and DB_CONFIG, and sets up $db
+$as_include = true;
+# The next include includes core, and DB_CONFIG, and sets up $db
     # require_once(dirname(__FILE__)."/admin-api.php");
 
-    $pid = $db->sanitize($_GET['id']);
+$pid = $db->sanitize($_GET['id']);
 
+$loginStatus = getLoginState();
 
+# Prep for possible async
+    $start_script_timer = microtime_float();
+$_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
+# Check the status for any async flags we may want
+    if (toBool($_REQUEST["async"]) === true) {
+	# Now we can do any feedbacks needed
+	      switch ($_REQUEST["action"]) {
+		case "country_taxon":
+		  # Get the taxa in a given country
+		  $db->setTable("records_list");
+		# select genus, specificepithet, count(*) as count from records_list where lower(country)='united states' group by genus, specificepithet order by genus, specificepithet
+    $searchCountry = $db->sanitize($_REQUEST["country"])
+    # Get the list
+		$query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
+    $r = mysqli_query($db->getLink(), $query);
 
-    $loginStatus = getLoginState();
+		break;
+		case "locale_taxon":
+		        default:
+		          returnAjax(array(
+		            "status" => false,
+		            "error" => "INVALID_ACTION",
+		            "action" => $_REQUEST["action"]
+		          ));
+	}
+}
 
-    ?>
+?>
     <title>Data Dashboard</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
     <meta name="theme-color" content="#5677fc"/>
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=1.0, user-scalable=0" />
-
     <link rel="stylesheet" type="text/css" media="screen" href="css/main.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/json-human/css/json.human.css" />
     <link rel="prerender" href="https://amphibiandisease.org/index.php" />
     <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Sans+Mono|Roboto:400,100,300,500,700,100italic,300italic,400italic,500italic,700italic" rel='stylesheet' type='text/css'/>
-
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon32.png" />
     <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon64.png" />
@@ -44,12 +70,8 @@
     <link rel="icon" type="image/png" sizes="256x254" href="assets/favicon256.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon512.png" />
     <link rel="icon" type="image/png" sizes="1024x1024" href="assets/favicon1024.png" />
-
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-
     <link rel="import" href="bower_components/polymer/polymer.html"/>
-
-
     <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html"/>
     <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html"/>
     <link rel="import" href="bower_components/paper-toast/paper-toast.html"/>
@@ -60,15 +82,11 @@
     <link rel="import" href="bower_components/paper-menu/paper-menu.html"/>
     <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html"/>
     <link rel="import" href="bower_components/paper-card/paper-card.html"/>
-
     <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html"/>
     <link rel="import" href="bower_components/paper-listbox/paper-listbox.html"/>
-
-
     <link rel="import" href="bower_components/paper-dialog/paper-dialog.html"/>
     <link rel="import" href="bower_components/paper-radio-group/paper-radio-group.html"/>
     <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html"/>
-
     <link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"/>
     <link rel="import" href="bower_components/paper-button/paper-button.html"/>
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html"/>
@@ -76,13 +94,10 @@
     <link rel="import" href="bower_components/paper-item/paper-item.html"/>
     <link rel="import" href="bower_components/paper-listbox/paper-listbox.html"/>
     <link rel="import" href="bower_components/paper-material/paper-material.html"/>
-
     <link rel="import" href="bower_components/gold-email-input/gold-email-input.html"/>
     <link rel="import" href="bower_components/gold-phone-input/gold-phone-input.html"/>
-
     <link rel="import" href="bower_components/iron-form/iron-form.html"/>
     <link rel="import" href="bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"/>
-
     <link rel="import" href="bower_components/font-roboto/roboto.html"/>
     <link rel="import" href="bower_components/iron-icons/iron-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/image-icons.html"/>
@@ -90,19 +105,13 @@
     <link rel="import" href="bower_components/iron-icons/communication-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/editor-icons.html"/>
     <link rel="import" href="bower_components/iron-collapse/iron-collapse.html"/>
-
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
-
     <link rel="import" href="bower_components/marked-element/marked-element.html"/>
-
     <link rel="import" href="bower_components/google-map/google-map.html"/>
     <link rel="import" href="bower_components/google-map/google-map-marker.html"/>
     <link rel="import" href="bower_components/google-map/google-map-poly.html"/>
-
     <link rel="import" href="polymer-elements/copyright-statement.html"/>
     <link rel="import" href="polymer-elements/glyphicon-social-icons.html"/>
-
-
     <script type="text/javascript">
       (function(){var p=[],w=window,d=document,e=f=0;p.push('ua='+encodeURIComponent(navigator.userAgent));e|=w.ActiveXObject?1:0;e|=w.opera?2:0;e|=w.chrome?4:0;
       e|='getBoxObjectFor' in d || 'mozInnerScreenX' in w?8:0;e|=('WebKitCSSMatrix' in w||'WebKitPoint' in w||'webkitStorageInfo' in w||'webkitURL' in w)?16:0;
@@ -160,26 +169,29 @@
     <p class="col-xs-12 login-status-bar text-right">
         <?php
         $user = $_COOKIE['amphibiandisease_fullname'];
-        $test = $loginStatus['status'];
-        if ($test) {
-            ?>
-      Logged in as <span class='header-bar-user-name'><?php echo $user; ?></span>
+$test = $loginStatus['status'];
+if ($test) {
+	?>
+      Logged in as <span class='header-bar-user-name'><?php echo $user;
+?></span>
       <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
 
-        } else {
-            ?>
+}
+else {
+?>
       <paper-icon-button icon="icons:exit-to-app" class="click" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom"></paper-icon-button>
         <?php
 
-        }
-        if (!empty($pid)) {
-            ?>
+}
+if (!empty($pid)) {
+?>
       <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         <?php
 
-        } ?>
+}
+?>
       <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
     </p>
@@ -190,66 +202,67 @@
             # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176
             # for scope and features
 
-            # Fetch aggregate stats
+# Fetch aggregate stats
 
-        ?>
+?>
     <h2 class="col-xs-12">
       Data Dashboard <span class="badge">ALPHA</span>
     </h2>
     <section class="col-xs-12">
       <div class="row db-summary-region">
         <?php
-            /***
-             * Get some summary stats
+
+/***
+* Get some summary stats
              * See:
              * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
              ***/
             # Species count
             $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` where genus is not null group by genus, specificepithet";
-            $r = mysqli_query($db->getLink(), $query);
-            $speciesCount = mysqli_num_rows($r);
-            # Total samples
+$r = mysqli_query($db->getLink(), $query);
+$speciesCount = mysqli_num_rows($r);
+# Total samples
             $query = "select count(*) as count from `records_list` where genus is not null";
-            $r = mysqli_query($db->getLink(), $query);
-            $row = mysqli_fetch_row($r);
-            $count = $row[0];
-            # Country count
+$r = mysqli_query($db->getLink(), $query);
+$row = mysqli_fetch_row($r);
+$count = $row[0];
+# Country count
             $query = "select country, count(*) as count from `records_list` where genus is not null group by country";
-            $r = mysqli_query($db->getLink(), $query);
-            $countryCount = mysqli_num_rows($r);
-            ## Top 10
+$r = mysqli_query($db->getLink(), $query);
+$countryCount = mysqli_num_rows($r);
+## Top 10
             ## See
             ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
 
-            $queryCountryTop10 = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
-            $querySpeciesTop10 = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
-            $top10CountryTBody = array();
-            $top10SpeciesTBody = array();
-            $rC = mysqli_query($db->getLink(), $queryCountryTop10);
-            $rS = mysqli_query($db->getLink(), $querySpeciesTop10);
-            $i = 0;
-            while ($row = mysqli_fetch_assoc($rC)) {
-              if ($i == 0) {
-                $max = intval($row["count"]);
-              }
-              $progress = 100 * intval($row["count"]) / $max;
-              $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
-              $top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
-              $i++;
-            }
-            $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
-            $i = 0;
-            while ($row = mysqli_fetch_assoc($rS)) {
-              if ($i == 0) {
-                $max = intval($row["count"]);
-              }
-              $progress = 100 * intval($row["count"]) / $max;
-              $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
-              $top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
-              $i++;
-            }
-            $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
-            ?>
+$queryCountryTop10 = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
+$querySpeciesTop10 = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
+$top10CountryTBody = array();
+$top10SpeciesTBody = array();
+$rC = mysqli_query($db->getLink(), $queryCountryTop10);
+$rS = mysqli_query($db->getLink(), $querySpeciesTop10);
+$i = 0;
+while ($row = mysqli_fetch_assoc($rC)) {
+	if ($i == 0) {
+		$max = intval($row["count"]);
+	}
+	$progress = 100 * intval($row["count"]) / $max;
+	$progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+	$top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+	$i++;
+}
+$top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
+$i = 0;
+while ($row = mysqli_fetch_assoc($rS)) {
+	if ($i == 0) {
+		$max = intval($row["count"]);
+	}
+	$progress = 100 * intval($row["count"]) / $max;
+	$progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+	$top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+	$i++;
+}
+$top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
+?>
         <div class="col-xs-12 col-md-6 table-responsive">
           <table class="table table-striped table-bordered table-condensed">
             <thead>
@@ -268,13 +281,16 @@
             <tbody>
               <tr>
                 <td>
-                  <?php echo $count; ?>
+                  <?php echo $count;
+?>
                 </td>
                 <td>
-                  <?php echo $speciesCount; ?>
+                  <?php echo $speciesCount;
+?>
                 </td>
                 <td>
-                  <?php echo $countryCount; ?>
+                  <?php echo $countryCount;
+?>
                 </td>
               </tr>
             </tbody>
@@ -302,7 +318,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <?php echo $top10CountryCont; ?>
+                    <?php echo $top10CountryCont;
+?>
                   </tbody>
                 </table>
               </div>
@@ -322,7 +339,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <?php echo $top10SpeciesCont; ?>
+                    <?php echo $top10SpeciesCont;
+?>
                   </tbody>
                 </table>
               </div>
@@ -372,6 +390,9 @@
   </main>
     <?php
     require_once("./footer.php");
-    ?>
+?>
 </body>
 </html>
+<?php
+ob_end_flush();
+?>
