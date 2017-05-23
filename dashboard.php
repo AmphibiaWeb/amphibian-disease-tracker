@@ -6,52 +6,72 @@ ob_start();
   <head>
     <?php
     $debug = false;
-if ($debug) {
-	error_reporting(E_ALL);
-	ini_set('display_errors', 1);
-	error_log('Project Browser is running in debug mode!');
-}
+    if ($debug) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        error_log('Project Browser is running in debug mode!');
+    }
 
-$print_login_state = false;
-require_once 'DB_CONFIG.php';
-require_once dirname(__FILE__).'/core/core.php';
-require_once dirname(__FILE__).'/admin/async_login_handler.php';
-$db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
+    $print_login_state = false;
+    require_once 'DB_CONFIG.php';
+    require_once dirname(__FILE__).'/core/core.php';
+    require_once dirname(__FILE__).'/admin/async_login_handler.php';
+    $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
 
-$as_include = true;
-# The next include includes core, and DB_CONFIG, and sets up $db
-    # require_once(dirname(__FILE__)."/admin-api.php");
+    $as_include = true;
+    # The next include includes core, and DB_CONFIG, and sets up $db
+        # require_once(dirname(__FILE__)."/admin-api.php");
 
-$pid = $db->sanitize($_GET['id']);
+    $pid = $db->sanitize($_GET['id']);
 
-$loginStatus = getLoginState();
+    $loginStatus = getLoginState();
 
-# Prep for possible async
+    # Prep for possible async
     $start_script_timer = microtime_float();
-$_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
-# Check the status for any async flags we may want
+    $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
+    # Check the status for any async flags we may want
     if (toBool($_REQUEST["async"]) === true) {
-	# Now we can do any feedbacks needed
-	      switch ($_REQUEST["action"]) {
-		case "country_taxon":
-		  # Get the taxa in a given country
-		  $db->setTable("records_list");
-		# select genus, specificepithet, count(*) as count from records_list where lower(country)='united states' group by genus, specificepithet order by genus, specificepithet
-    $searchCountry = $db->sanitize($_REQUEST["country"]);
-    # Get the list
-		$query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
-    $r = mysqli_query($db->getLink(), $query);
-
-		break;
-		case "locale_taxon":
-		        default:
-		          returnAjax(array(
-		            "status" => false,
-		            "error" => "INVALID_ACTION",
-		            "action" => $_REQUEST["action"]
-		          ));
-	}
-}
+        # Now we can do any feedbacks needed
+        switch ($_REQUEST["action"]) {
+            case "country_taxon":
+                # Get the taxa in a given country
+                $db->setTable("records_list");
+                # select genus, specificepithet, count(*) as count from records_list where lower(country)='united states' group by genus, specificepithet order by genus, specificepithet
+                $searchCountry = $db->sanitize($_REQUEST["country"]);
+                # Get the list
+                $query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
+                $r = mysqli_query($db->getLink(), $query);
+                $localeTaxonData = array();
+                $taxa = 0;
+                while ($row = mysqli_fetch_assoc($r)) {
+                    $taxon = $row["genus"] . " " . $row["species"];
+                    if (!isset($localeTaxonData[$taxon])) {
+                        $localeTaxonData[$taxon] = array(
+                            "true" => 0,
+                            "false" => 0,
+                            "no_confidence" => 0,
+                        );
+                        $taxa++;
+                    }
+                    $key = is_bool($row["diseasedetected"]) ? strbool($row["diseasedetected"]) : $row["diseasedetected"];
+                    $localeTaxonData[$taxon][$key] = $row["count"];
+                }
+                returnAjax(array(
+                    "status" => true,
+                    "country" => $searchCountry,
+                    "taxa" => $taxa,
+                    "data" => $localeTaxonData,                    
+                ));
+                break;
+            case "locale_taxon":
+            default:
+                returnAjax(array(
+                    "status" => false,
+                    "error" => "INVALID_ACTION",
+                    "action" => $_REQUEST["action"]
+                ));
+        }
+    }
 
 ?>
     <title>Data Dashboard</title>
@@ -171,7 +191,7 @@ $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
         $user = $_COOKIE['amphibiandisease_fullname'];
 $test = $loginStatus['status'];
 if ($test) {
-	?>
+    ?>
       Logged in as <span class='header-bar-user-name'><?php echo $user;
 ?></span>
       <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
@@ -242,24 +262,24 @@ $rC = mysqli_query($db->getLink(), $queryCountryTop10);
 $rS = mysqli_query($db->getLink(), $querySpeciesTop10);
 $i = 0;
 while ($row = mysqli_fetch_assoc($rC)) {
-	if ($i == 0) {
-		$max = intval($row["count"]);
-	}
-	$progress = 100 * intval($row["count"]) / $max;
-	$progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
-	$top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
-	$i++;
+    if ($i == 0) {
+        $max = intval($row["count"]);
+    }
+    $progress = 100 * intval($row["count"]) / $max;
+    $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+    $top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+    $i++;
 }
 $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
 $i = 0;
 while ($row = mysqli_fetch_assoc($rS)) {
-	if ($i == 0) {
-		$max = intval($row["count"]);
-	}
-	$progress = 100 * intval($row["count"]) / $max;
-	$progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
-	$top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
-	$i++;
+    if ($i == 0) {
+        $max = intval($row["count"]);
+    }
+    $progress = 100 * intval($row["count"]) / $max;
+    $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+    $top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+    $i++;
 }
 $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
 ?>
