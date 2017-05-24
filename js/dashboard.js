@@ -495,7 +495,7 @@ getServerChart = function(chartType, chartParams) {
               country: country
             };
             $.get("dashboard.php", buildQuery(args, "json")).done(function(result) {
-              var chartCtx, negSamples, posSamples, ref11, taxon, taxonData;
+              var chartCtx, labels, negSamples, posSamples, ref11, taxon, taxonData;
               console.debug("Got country result", result);
               if (result.status) {
                 console.log("Should build out new chart here");
@@ -534,13 +534,18 @@ getServerChart = function(chartType, chartParams) {
                   data: [],
                   stack: "pnSamples"
                 };
+                labels = new Array();
                 ref11 = result.data;
                 for (taxon in ref11) {
                   taxonData = ref11[taxon];
                   negSamples.data.push(toInt(taxonData["false"]));
                   posSamples.data.push(toInt(taxonData["true"]));
+                  labels.push(taxon);
                 }
-                chartData = [posSamples, negSamples];
+                chartData = {
+                  labels: labels,
+                  datasets: [posSamples, negSamples]
+                };
                 chartObj.data = chartData;
                 console.log("USing chart data", chartObj);
                 uid = JSON.stringify(chartData);

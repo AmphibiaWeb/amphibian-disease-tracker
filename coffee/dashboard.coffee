@@ -483,14 +483,18 @@ getServerChart = (chartType = "location", chartParams) ->
                   data: []
                   stack: "pnSamples"
                 # Build the datasets
+                labels = new Array()
                 for taxon, taxonData of result.data
                   negSamples.data.push toInt taxonData.false
                   posSamples.data.push toInt taxonData.true
+                  labels.push taxon
                 # Finish the object
-                chartData = [
-                  posSamples
-                  negSamples
-                  ]
+                chartData =
+                  labels: labels
+                  datasets: [
+                    posSamples
+                    negSamples
+                    ]
                 chartObj.data = chartData
                 console.log "USing chart data", chartObj
                 uid = JSON.stringify chartData
