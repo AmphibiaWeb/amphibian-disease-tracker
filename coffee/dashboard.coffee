@@ -396,7 +396,8 @@ getServerChart = (chartType = "location", chartParams) ->
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
             <div class="row">
-              <h3 class="capitalize">#{measurementSingle} Summaries</h3>
+              <h3 class="capitalize col-xs-12">#{measurementSingle} Summaries <small class="text-muted">Ordered as the above chart</small></h3>
+              <p class="col-xs-12 text-muted">Click on a taxon to toggle charts and more data for that taxon</p>
               #{collapseHtml}
             </div>
           </section>
