@@ -149,6 +149,8 @@ getRandomDataColor = ->
 getServerChart = (chartType = "location", chartParams) ->
   # Get the chart
   startLoad()
+  try
+    $("#post-species-summary").remove()
   args = "action=chart&bin=#{chartType}"
   if typeof chartParams is "object"
     cp = new Array()

@@ -141,6 +141,9 @@ getServerChart = function(chartType, chartParams) {
     chartType = "location";
   }
   startLoad();
+  try {
+    $("#post-species-summary").remove();
+  } catch (undefined) {}
   args = "action=chart&bin=" + chartType;
   if (typeof chartParams === "object") {
     cp = new Array();
