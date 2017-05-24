@@ -816,6 +816,11 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
 
 renderNewChart = function() {
   var chartOptions, chartType, error, key, l, len, option, ref, ref1;
+  try {
+    if (_adp.zoomChart != null) {
+      _adp.zoomChart.destroy();
+    }
+  } catch (undefined) {}
   chartOptions = new Object();
   ref = $(".chart-param");
   for (l = 0, len = ref.length; l < len; l++) {

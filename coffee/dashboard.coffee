@@ -475,7 +475,7 @@ getServerChart = (chartType = "location", chartParams) ->
                           labelString: "Sample Count"
                           display: true
                         stacked: true
-                        ]                    
+                        ]
                 # Create placeholder objects all colorized etc
                 posSamples =
                   label: "Positive Samples"
@@ -810,6 +810,9 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
 
 renderNewChart = ->
   # Parse the request
+  try
+    if _adp.zoomChart?
+      _adp.zoomChart.destroy()
   chartOptions = new Object()
   for option in $(".chart-param")
     key = $(option).attr("data-key").replace(" ", "-")
