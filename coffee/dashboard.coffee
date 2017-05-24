@@ -460,6 +460,10 @@ getServerChart = (chartType = "location", chartParams) ->
                 chartObj =
                   type: "bar"
                   options:
+                    responsive: true
+                    title:
+                      display: true
+                      text: "Taxa in #{country}"
                     scales:
                       xAxes: [
                         scaleLabel:
@@ -471,21 +475,20 @@ getServerChart = (chartType = "location", chartParams) ->
                           labelString: "Sample Count"
                           display: true
                         stacked: true
-                        ]
-                    title: "Taxa in #{country}"
+                        ]                    
                 # Create placeholder objects all colorized etc
                 posSamples =
                   label: "Positive Samples"
                   data: []
                   borderColor: "rgba(220,30,25,1)"
-                  backgroundColor: "rgba(220,30,25,0.2)"
+                  backgroundColor: "rgba(220,30,25,0.3)"
                   borderWidth: 1
                   stack: "pnSamples"
                 negSamples =
                   label: "Negative Samples"
                   data: []
                   borderColor: "rgba(25,70,220,1)"
-                  backgroundColor: "rgba(25,70,220,0.2)"
+                  backgroundColor: "rgba(25,70,220,0.3)"
                   borderWidth: 1
                   stack: "pnSamples"
                 # Build the datasets
