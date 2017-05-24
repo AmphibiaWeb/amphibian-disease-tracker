@@ -199,11 +199,15 @@ paper-dialog-scrollable {
     min-height: 15rem;
 }
 
+.display-inline {
+    display: inline-block;
+}
 
 .tooltip-container {
     float:left;
-    display:inline-block;
+    .display-inline;
 }
+
 
 .italic {
     font-style:italic;
@@ -341,7 +345,7 @@ paper-dialog-scrollable {
     // Defaults
     .italic;
 }
-.genus {
+.genus, .capitalize {
     text-transform: capitalize !important;
 }
 
@@ -1617,4 +1621,9 @@ section.conversations {
 
 .self-citation {
     font-style: none;
+}
+
+.project-button-link {
+    margin-right: .5rem;
+    
 }

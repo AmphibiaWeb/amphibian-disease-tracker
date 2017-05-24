@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCollapsors, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, buildQuery, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, delayPolymerBind, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -530,6 +530,18 @@ bindCopyEvents = function(selector) {
     return results;
   });
   return false;
+};
+
+buildQuery = function(obj) {
+  var k, key, queryList, v, value;
+  queryList = new Array();
+  for (k in obj) {
+    v = obj[k];
+    key = k.replace(/[^A-Za-z\-_\[\]]/img, "");
+    value = encodeURIComponent(v).replace(/\%20/g, "+");
+    queryList.push(key + "=" + value);
+  }
+  return queryList.join("&");
 };
 
 jsonTo64 = function(obj, encode) {
@@ -1276,6 +1288,43 @@ bindClicks = function(selector) {
       return console.error("There was a problem binding to #" + ($(this).attr("id")) + " - " + e.message);
     }
   });
+  try {
+    bindCollapsors();
+  } catch (undefined) {}
+  return false;
+};
+
+bindCollapsors = function(selector) {
+  var len, ref, t, toggle, toggleEvent;
+  if (selector == null) {
+    selector = ".collapse-trigger";
+  }
+
+  /*
+   * Bind the events for collapse-triggers
+   */
+  toggleEvent = function(caller) {
+    var ref, target, validTargetElements;
+    target = $(caller).attr("data-target");
+    if (!$(target).exists()) {
+      console.error("Couldn't find target " + target);
+      return false;
+    }
+    validTargetElements = ["iron-collapse"];
+    if (ref = p$(target).tagName.toLowerCase(), indexOf.call(validTargetElements, ref) >= 0) {
+      p$(target).toggle();
+    } else {
+      console.error("Target type " + (p$(target).tagName.toLowerCase()) + " is an invalid target");
+    }
+    return false;
+  };
+  ref = $(selector);
+  for (t = 0, len = ref.length; t < len; t++) {
+    toggle = ref[t];
+    $(toggle).click(function() {
+      return toggleEvent.debounce(50, null, null, this);
+    });
+  }
   return false;
 };
 
@@ -2482,6 +2531,67 @@ makePageCitationOverflow = function() {
   return citationString;
 };
 
+delayPolymerBind = function(selector, callback, iter) {
+  var element, error2, ref, superSlowBackup, uid;
+  if (iter == null) {
+    iter = 0;
+  }
+  if (typeof window._dpb !== "object") {
+    window._dpb = new Object();
+  }
+  uid = md5(selector) + md5(callback);
+  if (isNull(window._dpb[uid])) {
+    window._dpb[uid] = false;
+  }
+  superSlowBackup = 1000;
+  if ((typeof Polymer !== "undefined" && Polymer !== null ? (ref = Polymer.Base) != null ? ref.$$ : void 0 : void 0) != null) {
+    if (window._dpb[uid] === false) {
+      iter = 0;
+      window._dpb[uid] = true;
+    }
+    try {
+      element = Polymer.Base.$$(selector);
+      callback(element);
+      delay(superSlowBackup, function() {
+        console.info("Doing " + superSlowBackup + "ms delay callback for " + selector);
+        return callback(element);
+      });
+    } catch (error2) {
+      e = error2;
+      console.warn("Error trying to do the delayed polymer bind - " + e.message);
+      if (iter < 10) {
+        ++iter;
+        delay(75, function() {
+          return delayPolymerBind(selector, callback, iter);
+        });
+      } else {
+        console.error("Persistent error in polymer binding (" + e.message + ")");
+        console.error(e.stack);
+        element = $(selector).get(0);
+        callback(element);
+        delay(superSlowBackup, function() {
+          element = document.querySelector(selector);
+          console.info("Doing " + superSlowBackup + "ms delay callback for " + selector);
+          console.info("Using element", element);
+          return callback(element);
+        });
+      }
+    }
+  } else {
+    if (iter < 50) {
+      delay(100, function() {
+        ++iter;
+        return delayPolymerBind(selector, callback, iter);
+      });
+    } else {
+      console.error("Failed to verify Polymer was set up, attempting manual");
+      element = document.querySelector(selector);
+      callback(element);
+    }
+  }
+  return false;
+};
+
 $(function() {
   var error2;
   bindClicks();
@@ -2731,7 +2841,7 @@ getCorners = function(coordSet) {
 };
 
 getPointsFromBoundingBox = function(obj, asObj) {
-  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordBounds, u, v, w;
+  var bbSet, boringMultiBounds, boundingPolygon, cartoData, cartoJson, cartoObj, coords, corners, direction, err1, error2, error3, failCase, key, len, len1, len2, len3, polygon, realCoords, ref, ref1, superPoints, t, tempBoundingBox, testCoordBounds, u, w, x;
   if (asObj == null) {
     asObj = false;
   }
@@ -2793,8 +2903,8 @@ getPointsFromBoundingBox = function(obj, asObj) {
           boringMultiBounds.push(tempBoundingBox);
         }
         superPoints = new Array();
-        for (v = 0, len2 = boringMultiBounds.length; v < len2; v++) {
-          bbSet = boringMultiBounds[v];
+        for (w = 0, len2 = boringMultiBounds.length; w < len2; w++) {
+          bbSet = boringMultiBounds[w];
           superPoints = superPoints.concat(bbSet);
         }
         corners = getCorners(superPoints);
@@ -2808,8 +2918,8 @@ getPointsFromBoundingBox = function(obj, asObj) {
     }
   }
   realCoords = new Array();
-  for (w = 0, len3 = corners.length; w < len3; w++) {
-    coords = corners[w];
+  for (x = 0, len3 = corners.length; x < len3; x++) {
+    coords = corners[x];
     console.log("Pushing corner", coords);
     realCoords.push(canonicalizePoint(coords));
   }
@@ -2955,7 +3065,7 @@ createMap2 = function(pointsObj, options, callback) {
    *  specified with FIMS data keys, eg, {"lat":37, "lng":-122, "data":{"genus":"Bufo"}}
    * @param object options -> {onClickCallback:function(), classes:[]}
    */
-  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, len, len1, len2, len3, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, r, ref, ref1, ref2, ref3, selector, species, ssp, t, testString, tested, u, v, w, zoom;
+  var a, cat, catalog, center, classes, data, detected, error2, error3, error4, genus, googleMap, hull, i, id, idSuffix, iw, len, len1, len2, len3, mapHtml, mapObjAttr, mapSelector, marker, markerHtml, markerTitle, note, point, pointData, pointList, points, poly, r, ref, ref1, ref2, ref3, selector, species, ssp, t, testString, tested, u, w, x, zoom;
   console.log("createMap2 was provided options:", options);
   if (options == null) {
     options = new Object();
@@ -3040,8 +3150,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipHull !== true) {
       mapHtml = "<google-map-poly closed fill-color=\"" + poly.fillColor + "\" fill-opacity=\"" + poly.fillOpacity + "\" stroke-weight=\"1\">";
-      for (v = 0, len2 = hull.length; v < len2; v++) {
-        point = hull[v];
+      for (w = 0, len2 = hull.length; w < len2; w++) {
+        point = hull[w];
         mapHtml += "<google-map-point latitude=\"" + point.lat + "\" longitude=\"" + point.lng + "\"> </google-map-point>";
       }
       mapHtml += "    </google-map-poly>";
@@ -3050,8 +3160,8 @@ createMap2 = function(pointsObj, options, callback) {
     }
     if (options.skipPoints !== true) {
       i = 0;
-      for (w = 0, len3 = points.length; w < len3; w++) {
-        point = points[w];
+      for (x = 0, len3 = points.length; x < len3; x++) {
+        point = points[x];
         markerHtml = "";
         markerTitle = "";
         try {
@@ -4273,7 +4383,7 @@ canonicalizePoint = function(point, swapConvention) {
 };
 
 createConvexHull = function(pointsArray, returnObj) {
-  var canonicalPoint, chConfig, cpHull, elapsed, error2, error3, len, len1, len2, obj, point, realPointArray, simplePointArray, startTime, swapConventions, t, u, v;
+  var canonicalPoint, chConfig, cpHull, elapsed, error2, error3, len, len1, len2, obj, point, realPointArray, simplePointArray, startTime, swapConventions, t, u, w;
   if (returnObj == null) {
     returnObj = false;
   }
@@ -4324,8 +4434,8 @@ createConvexHull = function(pointsArray, returnObj) {
     console.warn(e.stack);
   }
   geo.canonicalBoundingBox = new Array();
-  for (v = 0, len2 = cpHull.length; v < len2; v++) {
-    point = cpHull[v];
+  for (w = 0, len2 = cpHull.length; w < len2; w++) {
+    point = cpHull[w];
     geo.canonicalBoundingBox.push(point.getObj());
   }
   obj = {
@@ -4959,7 +5069,7 @@ getConvexHullPoints = function(points) {
    *
    * @return array
    */
-  var error2, hullPoints, len, len1, len2, len3, oldPoints, pObj, point, realHull, t, u, v, w;
+  var error2, hullPoints, len, len1, len2, len3, oldPoints, pObj, point, realHull, t, u, w, x;
   hullPoints = new Array();
   if (!isArray(points)) {
     console.error("Function requires an array");
@@ -5001,15 +5111,15 @@ getConvexHullPoints = function(points) {
     if (points[0] instanceof Point) {
       oldPoints = points.slice(0);
       points = new Array();
-      for (v = 0, len2 = oldPoints.length; v < len2; v++) {
-        point = oldPoints[v];
+      for (w = 0, len2 = oldPoints.length; w < len2; w++) {
+        point = oldPoints[w];
         points.push(point.toSimplePoint());
       }
       console.debug("Converted Point array to fPoint array", points.slice(0));
     }
     chainHull_2D(points, points.length, hullPoints);
-    for (w = 0, len3 = hullPoints.length; w < len3; w++) {
-      point = hullPoints[w];
+    for (x = 0, len3 = hullPoints.length; x < len3; x++) {
+      point = hullPoints[x];
       pObj = new Point(point.lat(), point.lng());
       realHull.push(pObj);
     }

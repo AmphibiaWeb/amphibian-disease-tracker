@@ -1,8 +1,9 @@
 <?php
 
 
+
 /*****************
- * Setup
+* Setup
  *****************/
 
 #$show_debug = true;
@@ -15,6 +16,7 @@ if ($show_debug) {
 
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
+$start_script_timer = microtime_float();
 # This is a public API
 header('Access-Control-Allow-Origin: *');
 
@@ -35,15 +37,15 @@ $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 if (!function_exists('elapsed')) {
     function elapsed($start_time = null)
     {
+
         /***
-         * Return the duration since the start time in
-         * milliseconds.
-         * If no start time is provided, it'll try to use the global
+        * Return the duration since the start time in
+                 * milliseconds.
+                 * If no start time is provided, it'll try to use the global
          * variable $start_script_timer
          *
          * @param float $start_time in unix epoch. See http://us1.php.net/microtime
          ***/
-
         if (!is_numeric($start_time)) {
             global $start_script_timer;
             if (is_numeric($start_script_timer)) {
@@ -52,16 +54,11 @@ if (!function_exists('elapsed')) {
                 return false;
             }
         }
-
         return 1000 * (microtime_float() - (float) $start_time);
     }
 }
-
-
-
 # parse_str($_SERVER['QUERY_STRING'],$_POST);
 $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
-
 // try {
 // $test = decode64($_REQUEST["test"]);
 // $test_sanitized = $db->sanitize($test);
@@ -75,7 +72,6 @@ $do = isset($_REQUEST['action']) ? strtolower($_REQUEST['action']) : null;
 // } catch (Exception $e) {
 //     $testArr = array();
 // }
-
 switch ($do) {
   case 'upload':
       # Set access-control header
@@ -103,6 +99,16 @@ switch ($do) {
   case 'chart':
       getChartData($_REQUEST);
       break;
+  case "taxon":
+    returnAjax(getTaxonData($_REQUEST));
+    break;
+  case "iucn":
+      returnAjax(getTaxonIucnData($_REQUEST));
+      break;
+  case "aweb":
+  case "amphibiaweb":
+      returnAjax(getTaxonAWebData($_REQUEST));
+      break;
   default:
     returnAjax(array(
         'status' => false,
@@ -114,8 +120,8 @@ switch ($do) {
         'get' => $_GET,
         #"debug" => $testArr,
     ));
-
 }
+
 
 function searchProject($get)
 {
@@ -160,8 +166,6 @@ function searchProject($get)
 }
 
 
-
-
 function searchUsers($get)
 {
     /***
@@ -172,7 +176,6 @@ function searchUsers($get)
     $response = array(
         'search' => $q,
     );
-
     $search = array(
         'username' => $q,
         'name' => $q,
@@ -196,7 +199,6 @@ function searchUsers($get)
             $response["detail"] = checkUserColumnExists($get["cols"], false, true);
         }
     }
-
     $response['status'] = true;
     $result = $udb->getQueryResults($search, $cols, 'OR', true, true);
     $suFlag = $login_status['detail']['userdata']['su_flag'];
@@ -209,7 +211,7 @@ function searchUsers($get)
             'uid' => $entry['dblink'],
             "has_verified_email" => boolstr($entry["email_verified"]) || boolstr($entry["alternate_email_verified"]),
         );
-        if($isAdmin) {
+        if ($isAdmin) {
             $clean["is_admin"] = boolstr($entry["admin_flag"]);
             $clean["alternate_email"] = $entry["alternate_email"];
             $tmpUser = new UserFunctions($clean["email"]);
@@ -229,6 +231,8 @@ function searchUsers($get)
     returnAjax($response);
 }
 
+
+
 function checkColumnExists($column_list, $userReturn = true, $detailReturn = false)
 {
     /***
@@ -246,7 +250,9 @@ function checkColumnExists($column_list, $userReturn = true, $detailReturn = fal
         if (!array_key_exists($column, $cols)) {
             if ($userReturn || $detailReturn) {
                 $response = array('status' => false, 'error' => 'Invalid column. If it exists, it may be an illegal lookup column.', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist. Please try again.", 'columns' => $column_list, 'bad_column' => $column);
-                if ($userReturn) returnAjax($response);
+                if ($userReturn) {
+                    returnAjax($response);
+                }
                 return $response;
             } else {
                 return false;
@@ -259,8 +265,6 @@ function checkColumnExists($column_list, $userReturn = true, $detailReturn = fal
         return true;
     }
 }
-
-
 function checkUserColumnExists($column_list, $userReturn = true, $detailReturn = false)
 {
     /***
@@ -278,7 +282,9 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
         if (!array_key_exists($column, $cols)) {
             if ($userReturn || $detailReturn) {
                 $response = array('status' => false, 'error' => 'INVALID_OR_PROTECTED_COLUMN', 'human_error' => "Sorry, you specified a lookup criterion that doesn't exist, or is protected. Please try again.", 'columns' => $column_list, 'bad_column' => $column, "available_columns" => $cols);
-                if ($userReturn) returnAjax($response);
+                if ($userReturn) {
+                    returnAjax($response);
+                }
                 return $response;
             } else {
                 return false;
@@ -292,15 +298,16 @@ function checkUserColumnExists($column_list, $userReturn = true, $detailReturn =
     }
 }
 
-function doCartoSqlApiPush($get) {
-    global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
 
+
+function doCartoSqlApiPush($get)
+{
+    global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
     // error_reporting(E_ALL);
     // ini_set('display_errors', 1);
     // error_log('doCartoSqlApiPush is running in debug mode!');
-
     $sqlQuery = decode64($get['sql_query'], true);
-    if(empty($sqlQuery)) {
+    if (empty($sqlQuery)) {
         $sqlQuery = base64_decode(urldecode($get["sql_query"]));
     }
     $originalQuery = $sqlQuery;
@@ -313,15 +320,15 @@ function doCartoSqlApiPush($get) {
     $pidList = array();
     $effectiveKey = 0;
     $statementsSize = sizeof($statements);
-    foreach($statements as $k=>$statement) {
+    foreach ($statements as $k=>$statement) {
         $statement = trim($statement);
-        if(empty($statement)) {
+        if (empty($statement)) {
             unset($statements[$k]);
             continue;
         }
         $effectiveKey++;
         $sqlAction = preg_replace($queryPattern, '$1', $statement);
-        $sqlAction = strtolower(str_replace(" ","", $sqlAction));
+        $sqlAction = strtolower(str_replace(" ", "", $sqlAction));
         $restrictedActions = array(
             "select" => "READ",
             "delete" => "EDIT",
@@ -351,11 +358,11 @@ function doCartoSqlApiPush($get) {
             $pid = $row["project_id"];
             $pidList[$cartoTable] = $pid;
             # Non-existant projects are fair game
-            if(!empty($pid)) {
+            if (!empty($pid)) {
                 $requestedPermission = $restrictedActions[$sqlAction];
                 $pArr = explode(",", $row["access_data"]);
                 $permissions = array();
-                foreach($pArr as $access) {
+                foreach ($pArr as $access) {
                     $up = explode(":", $access);
                     $permissions[$up[0]] = $up[1];
                 } # End loop
@@ -410,11 +417,11 @@ function doCartoSqlApiPush($get) {
                     } # End edit permission check
                 } # End edit permission case
             } # End project existence check
-        } else if (!isset($unrestrictedActions[$sqlAction])) {
+        } elseif (!isset($unrestrictedActions[$sqlAction])) {
             # Unrecognized query type
             $allPermissionsMajor = array_merge($restrictedActions, $unrestrictedActions);
             $allPermissions = array();
-            foreach($allPermissionsMajor as $permission=>$requiredPermission) {
+            foreach ($allPermissionsMajor as $permission=>$requiredPermission) {
                 $allPermissions[] = $permission;
             }
             $actionExists = in_array($sqlAction, $allPermissions);
@@ -424,7 +431,9 @@ function doCartoSqlApiPush($get) {
             # If we hit this edge case and we're the last statement
             # anyway, we can skip it
             $okToSkip = $hasWeirdEdgeCase && $effectiveKey == $statementsSize;
-            if($okToSkip) continue;
+            if ($okToSkip) {
+                continue;
+            }
             returnAjax(array(
                 "status" => false,
                 "error" => "UNAUTHORIZED_QUERY_TYPE",
@@ -454,9 +463,11 @@ function doCartoSqlApiPush($get) {
     $cartoArgSuffix = '&api_key='.$cartodb_api_key;
     $l = sizeof($statements);
     $lastIndex = $l - 1;
-    foreach($statements as $k=>$statement) {
+    foreach ($statements as $k=>$statement) {
         # Re-append the closing parens
-        if(substr_count($statement, "(") === substr_count($statement, ")") + 1) $statements[$k] = $statement . ")";
+        if (substr_count($statement, "(") === substr_count($statement, ")") + 1) {
+            $statements[$k] = $statement . ")";
+        }
     }
     $responses = array();
     $parsed_responses = array();
@@ -522,7 +533,6 @@ function doCartoSqlApiPush($get) {
         $decoded["query"] = $sqlQuery;
         $decoded["blobby"] = true;
         $parsed_responses[] = $decoded;
-
     }
     try {
         $response = array(
@@ -539,7 +549,7 @@ function doCartoSqlApiPush($get) {
             #"baz" => urldecode(base64_decode($get["sql_query"])),
             # "urls_posted" => $urls,
         );
-        if(boolstr($get['blobby'])) {
+        if (boolstr($get['blobby'])) {
             $response["project_id"] = $pid;
             $response["query_type"] = $sqlAction;
         }
@@ -556,10 +566,12 @@ function doCartoSqlApiPush($get) {
     }
 }
 
+
 function tsvHelper($tsv)
 {
     return str_getcsv($tsv, "\t");
 }
+
 
 function doAWebValidate($get)
 {
@@ -599,7 +611,6 @@ function doAWebValidate($get)
     $response['aweb_list_max_age'] = $dayOffset;
     //$aWebList = file_get_contents($localAWebTarget);
     $aWebListArray = array_map('tsvHelper', file($localAWebTarget));
-
     /*
      * For a given row, we have this numeric key to real id mapping:
      *
@@ -667,17 +678,32 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
-          # For 'nov. sp.', 'sp.' variants, and with following digits,
+            # For 'nov. sp.', 'sp.' variants, and with following digits,
           # check genus only
           # See
           # http://regexr.com/3d1kb
-          if (array_key_exists($providedGenus, $synonymGenusList) && preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies) ) {
-                # OK, they were just looking for a genus anyway
+          if (array_key_exists($providedGenus, $synonymGenusList) && preg_match('/^(nov[.]{
+			0,1
+		}
+		){
+			0,1
+		}
+		(sp[.]{
+			0,1
+		}
+		([ ]{
+			0,1
+		}
+		\d+){
+			0,1
+		}
+		)$/m', $providedSpecies)) {
+              # OK, they were just looking for a genus anyway
                 $row = $synonymGenusList[$providedGenus];
-                $aWebMatch = $aWebListArray[$row];
-                $aWebCols = $aWebListArray[0];
-                $aWebPretty = array();
-                $skipCols = array(
+              $aWebMatch = $aWebListArray[$row];
+              $aWebCols = $aWebListArray[0];
+              $aWebPretty = array();
+              $skipCols = array(
                     'species',
                     'gaa_name',
                     'common_name',
@@ -687,31 +713,64 @@ function doAWebValidate($get)
                     'isocc',
                     'intro_isocc',
                 );
-                foreach ($aWebMatch as $key => $val) {
-                    $prettyKey = $aWebCols[$key];
-                    if (!in_array($prettyKey, $skipCols)) {
-                        $prettyKey = str_replace('/', '_or_', $prettyKey);
-                        if (strpos($val, ',') !== false) {
-                            $val = explode(',', $val);
-                            foreach ($val as $k => $v) {
-                                $val[$k] = trim($v);
-                            }
-                        }
-                        $aWebPretty[$prettyKey] = $val;
-                    }
-                }
+              foreach ($aWebMatch as $key => $val) {
+                  $prettyKey = $aWebCols[$key];
+                  if (!in_array($prettyKey, $skipCols)) {
+                      $prettyKey = str_replace('/', '_or_', $prettyKey);
+                      if (strpos($val, ',') !== false) {
+                          $val = explode(',', $val);
+                          foreach ($val as $k => $v) {
+                              $val[$k] = trim($v);
+                          }
+                      }
+                      $aWebPretty[$prettyKey] = $val;
+                  }
+              }
                 # Pretty format the 'nov sp'/'sp'/etc
-                $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ?
-                                       trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) :
-                                       trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
-                $response['status'] = true;
-                $response['notices'][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical genus.";
-                $response['notices'][] = "You provided a generic species '".$aWebPretty['species']."'. Only the genus has been validated.";
-                $response['original_taxon'] = $providedGenus;
+                $aWebPretty['species'] = preg_match('/^nov[.]{
+			0,1
+		}
+		(sp[.]{
+			0,1
+		}
+		([ ]{
+			0,1
+		}
+		(\d+)){
+			0,1
+		}
+		)$/m', $providedSpecies) ?
+                                       trim(preg_replace('/^nov[.]{
+			0,1
+		}
+		(sp[.]{
+			0,1
+		}
+		([ ]{
+			0,1
+		}
+		(\d+)){
+			0,1
+		}
+		)$/m', 'nov. sp. $3', $providedSpecies)) :
+                                       trim(preg_replace('/^sp[.]{
+			0,1
+		}
+		([ ]{
+			0,1
+		}
+		(\d+)){
+			0,1
+		}
+		$/m', 'sp. $2', $providedSpecies));
+              $response['status'] = true;
+              $response['notices'][] = "Your genus '$providedGenus' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical genus.";
+              $response['notices'][] = "You provided a generic species '".$aWebPretty['species']."'. Only the genus has been validated.";
+              $response['original_taxon'] = $providedGenus;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response['validated_taxon'] = $aWebPretty;
-                returnAjax($response);
-            }
+              returnAjax($response);
+          }
             # Nope, just failed
             $response['error'] = 'INVALID_GENUS';
             $response['human_error'] = "'<span class='genus'>$providedGenus</span>' isn't a valid AmphibiaWeb genus (checked ".sizeof($genusList)." genera), nor is '<span class='sciname'>$testSpecies</span>' a recognized synonym.";
@@ -761,17 +820,17 @@ function doAWebValidate($get)
         # Are they using an old name?
         $testSpecies = $providedGenus.' '.$providedSpecies;
         if (!array_key_exists($testSpecies, $synonymList)) {
-          # For 'nov. sp.', 'sp.' variants, and with following digits,
+            # For 'nov. sp.', 'sp.' variants, and with following digits,
           # check genus only
           # See
           # http://regexr.com/3d1kb
           if (preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}\d+){0,1})$/m', $providedSpecies)) {
-                # OK, they were just looking for a genus anyway
+              # OK, they were just looking for a genus anyway
                 $row = $genusList[$providedGenus];
-                $aWebMatch = $aWebListArray[$row];
-                $aWebCols = $aWebListArray[0];
-                $aWebPretty = array();
-                $skipCols = array(
+              $aWebMatch = $aWebListArray[$row];
+              $aWebCols = $aWebListArray[0];
+              $aWebPretty = array();
+              $skipCols = array(
                     'species',
                     'gaa_name',
                     'common_name',
@@ -781,29 +840,29 @@ function doAWebValidate($get)
                     'isocc',
                     'intro_isocc',
                 );
-                foreach ($aWebMatch as $key => $val) {
-                    $prettyKey = $aWebCols[$key];
-                    if (!in_array($prettyKey, $skipCols)) {
-                        $prettyKey = str_replace('/', '_or_', $prettyKey);
-                        if (strpos($val, ',') !== false) {
-                            $val = explode(',', $val);
-                            foreach ($val as $k => $v) {
-                                $val[$k] = trim($v);
-                            }
-                        }
-                        $aWebPretty[$prettyKey] = $val;
-                    }
-                }
+              foreach ($aWebMatch as $key => $val) {
+                  $prettyKey = $aWebCols[$key];
+                  if (!in_array($prettyKey, $skipCols)) {
+                      $prettyKey = str_replace('/', '_or_', $prettyKey);
+                      if (strpos($val, ',') !== false) {
+                          $val = explode(',', $val);
+                          foreach ($val as $k => $v) {
+                              $val[$k] = trim($v);
+                          }
+                      }
+                      $aWebPretty[$prettyKey] = $val;
+                  }
+              }
                 # Pretty format the 'nov sp'/'sp'/etc
                 $aWebPretty['species'] = preg_match('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', $providedSpecies) ?
                                        trim(preg_replace('/^nov[.]{0,1} (sp[.]{0,1}([ ]{0,1}(\d+)){0,1})$/m', 'nov. sp. $3', $providedSpecies)) :
                                        trim(preg_replace('/^sp[.]{0,1}([ ]{0,1}(\d+)){0,1}$/m', 'sp. $2', $providedSpecies));
-                $response['notices'][] = "You provided a generic species '".$aWebPretty['species']."'. Only the genus has been validated.";
-                $response['status'] = true;
+              $response['notices'][] = "You provided a generic species '".$aWebPretty['species']."'. Only the genus has been validated.";
+              $response['status'] = true;
                 # Note that Unicode characters may return escaped! eg, \u00e9.
                 $response['validated_taxon'] = $aWebPretty;
-                returnAjax($response);
-            }
+              returnAjax($response);
+          }
             # Gender? Latin sucks.
             # See: sylvaticus vs sylvatica
             if (strlen($providedSpecies) > 3) {
@@ -846,7 +905,7 @@ function doAWebValidate($get)
             returnAjax($response);
         }
         # Let's play the synonym game again!
-        $row = $synonymList[$testSpecies];
+                $row = $synonymList[$testSpecies];
         $aWebMatch = $aWebListArray[$row];
         $aWebCols = $aWebListArray[0];
         $aWebPretty = array();
@@ -868,12 +927,12 @@ function doAWebValidate($get)
         $response['notices'][] = "Your entry '$testSpecies' was a synonym in the AmphibiaWeb database. It was automatically converted to the canonical taxon.";
         $response['original_taxon'] = $testSpecies;
         # Note that Unicode characters may return escaped! eg, \u00e9.
-        $response['validated_taxon'] = $aWebPretty;
+                $response['validated_taxon'] = $aWebPretty;
         returnAjax($response);
     }
     # The genus and species is valid.
-    # Prep for the user response
-    $aWebRow = $speciesList[$providedSpecies];
+        # Prep for the user response
+        $aWebRow = $speciesList[$providedSpecies];
     $aWebMatch = $aWebListArray[$aWebRow];
     $aWebCols = $aWebListArray[0];
     $aWebPretty = array();
@@ -893,7 +952,7 @@ function doAWebValidate($get)
     }
     $response['status'] = true;
     # Note that Unicode characters may return escaped! eg, \u00e9.
-    $response['validated_taxon'] = $aWebPretty;
+        $response['validated_taxon'] = $aWebPretty;
     returnAjax($response);
 }
 
@@ -901,78 +960,78 @@ function validateCaptcha($get)
 {
     global $recaptcha_private_key;
     $params = array(
-        'secret' => $recaptcha_private_key,
-        'response' => $get['recaptcha_response'],
-    );
+            'secret' => $recaptcha_private_key,
+            'response' => $get['recaptcha_response'],
+        );
     $raw_response = do_post_request('https://www.google.com/recaptcha/api/siteverify', $params);
     $response = json_decode($raw_response, true);
     if ($response['success'] === false) {
         switch ($response['error-codes'][0]) {
-        case 'invalid-input-response':
-            $parsed_error = 'Invalid CAPTCHA. Please retry it.';
-        case 'missing-input-response':
-            $parsed_error = 'Please be sure to solve the CAPTCHA.';
-        default:
-            $parsed_error = 'There was a problem with your CAPTCHA. Please try again.';
+            case 'invalid-input-response':
+                        $parsed_error = 'Invalid CAPTCHA. Please retry it.';
+            case 'missing-input-response':
+                        $parsed_error = 'Please be sure to solve the CAPTCHA.';
+            default:
+                        $parsed_error = 'There was a problem with your CAPTCHA. Please try again.';
         }
         $a = array(
-            'status' => false,
-            'error' => 'Bad CAPTCHA',
-            'human_error' => $parsed_error,
-            'recaptcha_response' => array(
-                'raw_response' => $raw_response,
-                'parsed_response' => $response,
-            ),
-        );
+                    'status' => false,
+                    'error' => 'Bad CAPTCHA',
+                    'human_error' => $parsed_error,
+                    'recaptcha_response' => array(
+                        'raw_response' => $raw_response,
+                        'parsed_response' => $response,
+                    ),
+                );
     } else {
-        if(!empty($get["project"])) {
+        if (!empty($get["project"])) {
             global $db;
             $project = $db->sanitize($get['project']);
             $query = array(
-                'project_id' => $project,
-            );
+                            'project_id' => $project,
+                        );
             $resultCols = array(
-                "author_data",
-                "technical_contact",
-                "technical_contact_email",
-            );
+                            "author_data",
+                            "technical_contact",
+                            "technical_contact_email",
+                        );
             $result = $db->getQueryResults($query, $resultCols, 'AND', false, true);
             $author_data = json_decode($result[0]['author_data'], true);
             $a = array(
-                'status' => true,
-                'author_data' => $author_data,
-                "technical" => array(
-                    "name" => $result[0]["technical_contact"],
-                    "email" => $result[0]["technical_contact_email"],
-                ),
-                'raw_result' => $result[0],
-            );
+                            'status' => true,
+                            'author_data' => $author_data,
+                            "technical" => array(
+                                "name" => $result[0]["technical_contact"],
+                                "email" => $result[0]["technical_contact_email"],
+                            ),
+                            'raw_result' => $result[0],
+                        );
         }
-        if(!empty($get["user"])) {
+        if (!empty($get["user"])) {
             global $udb;
             $viewUser = $udb->sanitize($get["user"]);
             $cols = array(
-                "username",
-                "phone",
-                "alternate_email",
-                "public_profile",
-            );
+                            "username",
+                            "phone",
+                            "alternate_email",
+                            "public_profile",
+                        );
             $query = array(
-                "dblink" => $viewUser,
-            );
+                            "dblink" => $viewUser,
+                        );
             $result = $udb->getQueryResults($query, $cols, "OR", false, true);
-            if(empty($result)) {
+            if (empty($result)) {
                 $response = $udb->getQueryResults($query, $cols, "OR", false, true, false, true);
             } else {
                 $response = $result[0];
                 $response["public_profile"] = json_decode($response["public_profile"], true);
             }
             $a = array(
-                "status" => true,
-                "response" => $response,
-                "raw_result" => $result,
-                "query" => $get,
-            );
+                            "status" => true,
+                            "response" => $response,
+                            "raw_result" => $result,
+                            "query" => $get,
+                        );
         }
     }
     returnAjax($a);
@@ -981,53 +1040,157 @@ function validateCaptcha($get)
 
 
 
-function getChartData($chartDataParams) {
+function getChartData($chartDataParams)
+{
     global $default_table, $db, $flatTable;
     $mapType = "";
+
     /***
-     * Create opportunities for several bins
-     *
-     * Bin by:
-     * - location
-     * - time
-     * - species
-     * - positive species
-     *
-     ***/
-    switch($chartDataParams["bin"]) {
-    case "time":
-        # Sort by time
+    * Create opportunities for several bins
+    *
+    * Bin by:
+    * - location
+    * - time
+    * - species
+    * - positive species
+    *
+    ***/
+    switch ($chartDataParams["bin"]) {
+        case "time":
+                # Sort by time
+                break;
+        case "species":
+                # Sort by species alphabetically
+                if (!isset($chartDataParams["include_sp"])) {
+                    $chartDataParams["include_sp"] = false;
+                }
+        $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
+        switch ($chartDataParams["sort"]) {
+            case "species":
+                        $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
+            $result = mysqli_query($flatTable->getLink(), $query);
+            if ($result === false) {
+                returnAjax(array(
+                    "status" => false,
+                    "error" => mysqli_error($flatTable->getLink()),
+                    "human_error" => "We were unable to retrieve the records at this time",
+                ));
+            }
+            $labels = array();
+            $data = array();
+            $rowCount = 0;
+            while ($row = mysqli_fetch_assoc($result)) {
+                # Make Chart.js data
+                                $species = $row["genus"]." ".$row["specificepithet"];
+                $labels[] = $species;
+                $data[] = $row["count"];
+                $rowCount++;
+            }
+            $chartData = array(
+                            "labels" => $labels,
+                            "datasets" => array(
+                                array(
+                                    "label" => "Species Sample Count",
+                                    "data" => $data,
+                                ),
+                            ),
+                        );
+            returnAjax(array(
+                            "status" => true,
+                            "data" => $chartData,
+                            "axes" => array(
+                              "x" => "Species",
+                              "y" => "Samples"
+                            ),
+                            "title" => "Samples Per Taxon",
+                            "use_preprocessor" => false,
+                            "rows" => $rowCount,
+                            "format" => "chart.js",
+                            "provided" => $chartDataParams,
+                            "full_description" => "Samples taken per species",
+                        ));
+            break;
+            case "genus":
+                    case "samples":
+                    default:
+                        if ($chartDataParams["sort"] == "samples") {
+                            $orderBy = "count DESC, `genus`";
+                        } else {
+                            $orderBy = "`genus`";
+                        }
+            $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by $orderBy";
+            $result = mysqli_query($flatTable->getLink(), $query);
+            if ($result === false) {
+                returnAjax(array(
+                                    "status" => false,
+                                    "error" => mysqli_error($flatTable->getLink()),
+                                    "human_error" => "We were unable to retrieve the records at this time",
+                                ));
+            }
+            $labels = array();
+            $data = array();
+            $rowCount = 0;
+            while ($row = mysqli_fetch_assoc($result)) {
+                # Make Chart.js data
+                                $species = $row["genus"];
+                $labels[] = $species;
+                $data[] = $row["count"];
+                $rowCount++;
+            }
+            $chartData = array(
+                            "labels" => $labels,
+                            "datasets" => array(
+                                array(
+                                    "label" => "Genus Sample Count",
+                                    "data" => $data,
+                                ),
+                            ),
+                        );
+            returnAjax(array(
+                            "status" => true,
+                            "data" => $chartData,
+                            "axes" => array(
+                              "x" => "Genus",
+                              "y" => "Samples"
+                            ),
+                            "title" => "Samples Per Genus",
+                            "use_preprocessor" => false,
+                            "rows" => $rowCount,
+                            "format" => "chart.js",
+                            "provided" => $chartDataParams,
+                            "full_description" => "Samples taken per genus",
+                            "include_new_species" => boolstr($chartDataParams["include_sp"]),
+                        ));
+        }
         break;
-    case "species":
-        # Sort by species alphabetically
-        break;
-    case "location":
-        # Location bin
-        # Have to hit the Google API for each one to check the
-        # country per coordinate
-        # Look up the carto id fields
-        $labels = array();
+        case "location":
+                # Location bin
+                # Have to hit the Google API for each one to check the
+                # country per coordinate
+                # Look up the carto id fields
+                $labels = array();
         $orderBy = $chartDataParams["sort"];
         $doInfectionSort = false;
-        if(empty($orderBy)) {
-            $orderBy = "samples";
+        if (empty($orderBy)) {
+            $orderBy = "samples DESC";
         } else {
-            if($orderBy == "infection") {
+            if ($orderBy == "infection") {
                 # We're going to do some magic
                 $doInfectionSort = true;
-                $orderBy = "samples";
+                $orderBy = "samples DESC";
             } else {
                 $orderBy = $db->sanitize($orderBy);
-                if(!$flatTable->columnExists($orderBy, false)) $orderBy = "samples";
-
+                if (!$flatTable->columnExists($orderBy, false)) {
+                    $orderBy = "samples DESC";
+                }
             }
         }
         $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
         $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
         $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY $orderBy";
         $result = mysqli_query($flatTable->getLink(), $allQuery);
-        if($result === false) {
-          returnAjax(array(
+        if ($result === false) {
+            returnAjax(array(
             "status" => false,
             "error" => mysqli_query($db->getLink()),
             "human_error" => "Error looking up bounding boxes",
@@ -1041,51 +1204,53 @@ function getChartData($chartDataParams) {
         $chartDatasetData = array();
         $chartPosDatasetData = array();
         $chartNegDatasetData = array();
-
         $posData = array();
-        while($posRow = mysqli_fetch_assoc($posResult)) {
+        while ($posRow = mysqli_fetch_assoc($posResult)) {
             $posData[$posRow["country"]] = $posRow["samples"];
         }
-
         $negData = array();
-        while($negRow = mysqli_fetch_assoc($negResult)) {
+        while ($negRow = mysqli_fetch_assoc($negResult)) {
             $negData[$negRow["country"]] = $negRow["samples"];
         }
-
-        if($doInfectionSort) {
+        if ($doInfectionSort) {
             $baseData = array();
             $posBaseData = array();
             $negBaseData = array();
         }
-
-        while($row = mysqli_fetch_assoc($result)) {
-            if(empty($row["country"])) continue;
+        while ($row = mysqli_fetch_assoc($result)) {
+            if (empty($row["country"])) {
+                continue;
+            }
             $labels[] = $row["country"];
             $key = $row["country"] . " total";
-
             $negSamples = null;
             $posSamples = null;
-            if(array_key_exists($row["country"], $posData)) {
+            if (array_key_exists($row["country"], $posData)) {
                 $posSamples = intval($posData[$row["country"]]);
             }
-            if(array_key_exists($row["country"], $negData)) {
+            if (array_key_exists($row["country"], $negData)) {
                 $negSamples = intval($negData[$row["country"]]);
             }
-            if(empty($posSamples)) $posSamples = 0;
-            if(empty($negSamples)) $negSamples = 0;
-
-            if(!$doInfectionSort) {
+            if (empty($posSamples)) {
+                $posSamples = 0;
+            }
+            if (empty($negSamples)) {
+                $negSamples = 0;
+            }
+            if (!$doInfectionSort) {
                 $chartDatasetData[] = intval($row["samples"]);
                 $chartPosDatasetData[] = $posSamples;
                 $chartNegDatasetData[] = $negSamples;
                 $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
-                if ($indeterminant < 0) $indeterminant = 0;
+                if ($indeterminant < 0) {
+                    $indeterminant = 0;
+                }
                 $chartIndDatasetData[] = $indeterminant;
             } else {
                 # Percent to three decimals
                 $percent = intval($posSamples) * 10000 / intval($row["samples"]);
                 $smartKey = "$percent";
-                while(array_key_exists($smartKey, $baseData)) {
+                while (array_key_exists($smartKey, $baseData)) {
                     $smartKey = $smartKey . "0";
                 }
                 $baseData[$smartKey] = array(
@@ -1096,16 +1261,18 @@ function getChartData($chartDataParams) {
                 $negBaseData[$smartKey] = $negSamples;
             }
         }
-        if($doInfectionSort) {
+        if ($doInfectionSort) {
             $labels = array();
             ksort($baseData, SORT_NUMERIC);
-            foreach($baseData as $k=>$v) {
+            foreach ($baseData as $k=>$v) {
                 $labels[] = $v["country"];
                 $chartDatasetData[] = $v["count"];
                 $chartPosDatasetData[] = $posBaseData[$k];
                 $chartNegDatasetData[] = $negBaseData[$k];
                 $indeterminant = $v["count"] - $posBaseData[$k] - $negBaseData[$k];
-                if ($indeterminant < 0) $indeterminant = 0;
+                if ($indeterminant < 0) {
+                    $indeterminant = 0;
+                }
                 $chartIndDatasetData[] = $indeterminant;
                 $by = "by infection percent";
             }
@@ -1116,11 +1283,11 @@ function getChartData($chartDataParams) {
             "labels" => $labels,
             "stacking" => array("x"=>false, "y"=>true),
             "datasets" => array(
-                array(
-                    "label" => "Total Samples",
-                    "data" => $chartDatasetData,
-                    "stack" => "totals",
-                ),
+                // array(
+                //     "label" => "Total Samples",
+                //     "data" => $chartDatasetData,
+                //     "stack" => "totals",
+                // ),
                 array(
                     "label" => "Positive Samples",
                     "data" => $chartPosDatasetData,
@@ -1140,7 +1307,12 @@ function getChartData($chartDataParams) {
         returnAjax(array(
           "status" => true,
           "data" => $chartData,
-                   "use_preprocessor" => false,
+          "axes" => array(
+                  "x" => "Country",
+                  "y" => "Samples"
+                ),
+          "title" => "Samples Per Country",
+          "use_preprocessor" => false,
           "rows" => $rowCount,
           "format" => "chart.js",
           "provided" => $chartDataParams,
@@ -1155,8 +1327,8 @@ function getChartData($chartDataParams) {
         # do the query
         $db->invalidateLink();
         $result = mysqli_query($db->getLink(), $query);
-        if($result === false) {
-          returnAjax(array(
+        if ($result === false) {
+            returnAjax(array(
             "status" => false,
             "error" => mysqli_error($db->getLink()),
             "human_error" => "There was an application error getting your chart data",
@@ -1164,12 +1336,16 @@ function getChartData($chartDataParams) {
         }
         $returnedRows = mysqli_num_rows($result);
         # Set up how we'll count this
-        $countedProjects = array();
-        # By default, we want to view a percentage distribution
-        if(empty($chartDataParams["percent"])) $chartDataParams["percent"] = true;
-        $percent = toBool($chartDataParams["percent"]);
-        # By default, we want it grouped, unless it's a percent.
-        if(empty($chartDataParams["group"])) $chartDataParams["group"] = $percent ? false:true;
+                        $countedProjects = array();
+                # By default, we want to view a percentage distribution
+                        if (empty($chartDataParams["percent"])) {
+                            $chartDataParams["percent"] = true;
+                        }
+                $percent = toBool($chartDataParams["percent"]);
+                # By default, we want it grouped, unless it's a percent.
+        if (empty($chartDataParams["group"])) {
+            $chartDataParams["group"] = $percent ? false:true;
+        }
         $group = toBool($chartDataParams["group"]);
         /***
         * We have a few potential counting methods.
@@ -1189,19 +1365,18 @@ function getChartData($chartDataParams) {
         $rowCount = 0;
         $binningProjectResults = array();
         if ($percent) {
-          if ($group) {
-            # Grouped percentages
+            if ($group) {
+                # Grouped percentages
             $countCase = 2;
-            $countedProjects = array(
+                $countedProjects = array(
               "0-10" => 0,
               "11-25" => 0,
               "26-50" => 0,
               "51-75" => 0,
               "76-89" => 0,
               "90+" => 0,
-
             );
-            $checkRange = array(
+                $checkRange = array(
               array(
                 "min" => 0,
                 "max" => 10,
@@ -1233,21 +1408,21 @@ function getChartData($chartDataParams) {
                 "key" => "90+",
               ),
             );
-          } else {
-            # Raw percentages
+            } else {
+                # Raw percentages
             $countCase = 1;
-            $i = 0;
-            while($i <= 100) {
-              $countedProjects[$i] = 0;
-              $labels[] = $i."%";
-              $i++;
+                $i = 0;
+                while ($i <= 100) {
+                    $countedProjects[$i] = 0;
+                    $labels[] = $i."%";
+                    $i++;
+                }
+                $hasConstructedLabels = true;
             }
-            $hasConstructedLabels = true;
-          }
         } else {
-          if ($group) {
-            $countCase = 3;
-            $countedProjects = array(
+            if ($group) {
+                $countCase = 3;
+                $countedProjects = array(
               "0-10" => 0,
               "11-25" => 0,
               "26-50" => 0,
@@ -1259,9 +1434,8 @@ function getChartData($chartDataParams) {
               "2001-5000" => 0,
               "5001-9999" => 0,
               "10000+" => 0,
-
             );
-            $checkRange = array(
+                $checkRange = array(
               array(
                 "min" => 0,
                 "max" => 10,
@@ -1318,67 +1492,75 @@ function getChartData($chartDataParams) {
                 "key" => "10000+",
               ),
             );
-          } else {
-            $countCase = 4;
-          }
+            } else {
+                $countCase = 4;
+            }
         }
         # We now have the parameters to build the chart data
         try {
-          # Iterate over each row of the data
+            # Iterate over each row of the data
           while ($row = mysqli_fetch_assoc($result)) {
-            # Skip entries with no data
-            if(intval($row["disease_samples"]) == 0) continue;
-            $rowCount++;
+              # Skip entries with no data
+            if (intval($row["disease_samples"]) == 0) {
+                continue;
+            }
+              $rowCount++;
             # Construct the counts based on the case above
-            switch($countCase) {
+            switch ($countCase) {
               case 1:
               $calcPercent = ceil(100 * intval($row["disease_positive"]) / intval($row["disease_samples"]));
               $countedProjects[$calcPercent]++;
               break;
               case 2:
               $calcPercent = ceil(100 * intval($row["disease_positive"]) / intval($row["disease_samples"]));
-              foreach($checkRange as $range)  {
-                $key = $range["key"];
-                if(!$hasConstructedLabels) {
-                    $labels[] = $key;
-                    $binningProjectResults[$key] = array();
-                }
-                if($calcPercent <= $range["max"] && $calcPercent >= $range["min"]) {
-                  # Array order is guaranteed, so this is fine
+              foreach ($checkRange as $range) {
+                  $key = $range["key"];
+                  if (!$hasConstructedLabels) {
+                      $labels[] = $key;
+                      $binningProjectResults[$key] = array();
+                  }
+                  if ($calcPercent <= $range["max"] && $calcPercent >= $range["min"]) {
+                      # Array order is guaranteed, so this is fine
                   $countedProjects[$key]++;
-                  $binningProjectResults[$key][] = array($row['project_id'] => $row['project_title']);
-                  if($hasConstructedLabels) break;
-
-                }
+                      $binningProjectResults[$key][] = array($row['project_id'] => $row['project_title']);
+                      if ($hasConstructedLabels) {
+                          break;
+                      }
+                  }
               }
               break;
               case 3:
-              foreach($checkRange as $range)  {
-                $key = $range["key"];
-                if(!$hasConstructedLabels) $labels[] = $key;
-                if($row["disease_positive"] <= $range["max"] && $row["disease_positive"] >= $range["min"]) {
-                  # Array order is guaranteed, so this is fine
+                foreach ($checkRange as $range) {
+                  $key = $range["key"];
+                  if (!$hasConstructedLabels) {
+                      $labels[] = $key;
+                  }
+                  if ($row["disease_positive"] <= $range["max"] && $row["disease_positive"] >= $range["min"]) {
+                      # Array order is guaranteed, so this is fine
                   $countedProjects[$key]++;
-                  if($hasConstructedLabels) break;
-
-                }
+                      if ($hasConstructedLabels) {
+                          break;
+                      }
+                  }
               }
               break;
               case 4:
               $count = $row["disease_positive"];
-              if(empty($countedProjects[$count])) $countedProjects[$count] = 0;
+              if (empty($countedProjects[$count])) {
+                  $countedProjects[$count] = 0;
+              }
               $countedProjects[$count]++;
               break;
             }
-            $hasConstructedLabels = true;
+              $hasConstructedLabels = true;
           }
-          if ($countCase == 4) {
-            ksort($countedProjects);
+            if ($countCase == 4) {
+                ksort($countedProjects);
             # Build the labels
-            foreach($countedProjects as $countSamples => $projectCount ) {
-              $labels[] = $countSamples;
+            foreach ($countedProjects as $countSamples => $projectCount) {
+                $labels[] = $countSamples;
             }
-          }
+            }
           # We now have a valid countedProjects value, and some labels
           $chartData = array(
             "labels" => $labels,
@@ -1389,10 +1571,15 @@ function getChartData($chartDataParams) {
               ),
             ),
           );
-          $adj = $countCase < 3 ? "percent":"number";
-          returnAjax(array(
+            $adj = $countCase < 3 ? "percent":"number";
+            returnAjax(array(
             "status" => true,
             "data" => $chartData,
+            "axes" => array(
+                  "x" => "Taxon",
+                  "y" => "Samples"
+                ),
+            "title" => "Infection Rate Per Project",
             "data_details" => $binningProjectResults,
             "rows" => $rowCount,
             "format" => "chart.js",
@@ -1403,7 +1590,7 @@ function getChartData($chartDataParams) {
                      // "returned_rows" => $returnedRows,
           ));
         } catch (Exception $e) {
-          returnAjax(array(
+            returnAjax(array(
             "status" => false,
             "error" => $e->getMessage(),
             "human_error" => "There was an error fetching your dataset",
@@ -1411,9 +1598,305 @@ function getChartData($chartDataParams) {
         }
         break;
       }
-      returnAjax(array(
+    returnAjax(array(
         "status" => false,
         "error" => "NO_CAUGHT_CASE",
         "human_error" => "There was an application error parsing your chart data request",
       ));
+}
+
+
+function getTaxonData($taxonBase, $skipFetch = false)
+{
+    /***
+     *
+     ***/
+    global $db;
+    foreach ($taxonBase as $key => $value) {
+        $taxonBase[$key] = $db->sanitize(strtolower($value));
     }
+    if (empty($taxonBase["genus"])) {
+        return array(
+            "status" => false,
+            "error" => "REQUIRED_COLS_MISSING",
+        );
+    }
+    if (empty($taxonBase["species"])) {
+        # Recursively call this across all the species
+        #set_time_limit(0); # This can be very slow
+        $query = "SELECT DISTINCT `specificepithet` FROM `records_list` WHERE `genus`='".$taxonBase["genus"]."'";
+        $response = array(
+          "status" => true,
+          "genus" => $taxonBase["genus"],
+          "isGenusLookup" => true,
+          "taxa" => array(),
+        );
+        $r = mysqli_query($db->getLink(), $query);
+        $i = 0;
+        while ($row = mysqli_fetch_row($r)) {
+          $newTaxonBase = $taxonBase;
+          $newTaxonBase["species"] = $row[0];
+          $taxonResponse = array(
+            "species" => $row[0],
+            "data" => getTaxonData($newTaxonBase, true),
+          );
+          $response["taxa"][] = $taxonResponse;
+          $i++;
+        }
+        $response["count"] = $i;
+        return $response;
+    }
+    if (!$skipFetch) {
+      $iucn = getTaxonIucnData($taxonBase);
+      $aweb = getTaxonAwebData($taxonBase);
+    } else {
+      $iucn = getTaxonIucnData($taxonBase);
+      $aweb = array(
+        "data" => array(
+          "common_name" => array(),
+        ),        
+      );
+    }
+    # Check ours
+    $taxonString = $taxonBase["genus"]." ".$taxonBase["species"];
+    $countQuery = "select `project_id`, `project_title` from `".$db->getTable()."` where sampled_species like '%$taxonString%'";
+    $r = mysqli_query($db->getLink(), $countQuery);
+    $adpData = array();
+    if ($r !== false) {
+        $count = mysqli_num_rows($r);
+        $projects = array();
+        while ($row = mysqli_fetch_row($r)) {
+            $projects[$row[0]] = $row[1];
+        }
+        $adpData["project_count"] = $count;
+        $adpData["projects"] = $projects;
+    }
+    $adpData["samples"] = 0;
+    $adpData["countries"] = array();
+    $samplesQuery = "select `country`,`diseasetested`, `diseasedetected`, `fatal` from `records_list` where `genus`='".$taxonBase["genus"]."' and `specificepithet`='".$taxonBase["species"]."' order by `diseasetested`";
+    $r = mysqli_query($db->getLink(), $samplesQuery);
+    $taxonBreakdown = array();
+    if ($r !== false) {
+        while ($row = mysqli_fetch_assoc($r)) {
+            if (!in_array($row["country"], $adpData["countries"])) {
+                $adpData["countries"][] = $row["country"];
+            }
+            $disease = $row["diseasetested"];
+            if (!isset($taxonBreakdown[$disease])) {
+                $taxonBreakdown[$disease] = array(
+                    "detected" => array(
+                        "true" => 0,
+                        "false" => 0,
+                        "no_confidence" => 0,
+                        "total" => 0,
+                    ),
+                    "fatal" => array(
+                        "true" => 0,
+                        "false" => 0,
+                        "unknown" => 0,
+                        "total" => 0,
+                    ),
+                );
+            }
+            $taxonBreakdown[$disease]["detected"]["total"]++;
+            $taxonBreakdown[$disease]["fatal"]["total"]++;
+            switch (strtolower(strbool($row["diseasedetected"]))) {
+            case "true":
+                $taxonBreakdown[$disease]["detected"]["true"]++;
+                break;
+            case "false":
+                if (!empty($row["diseasedetected"]) && strtolower($row["diseasedetected"]) != "null") {
+                    $taxonBreakdown[$disease]["detected"]["false"]++;
+                    break;
+                }
+            default:
+                $taxonBreakdown[$disease]["detected"]["no_confidence"]++;
+
+            }
+            switch (strtolower(strbool($row["fatal"]))) {
+            case "true":
+                $taxonBreakdown[$disease]["fatal"]["true"]++;
+                break;
+            case "false":
+                if (!empty($row["fatal"]) && strtolower($row["fatal"]) != "null") {
+                    $taxonBreakdown[$disease]["fatal"]["false"]++;
+                    break;
+                }
+            default:
+                $taxonBreakdown[$disease]["fatal"]["unknown"]++;
+
+            }
+
+        }
+        $adpData["samples"] = mysqli_num_rows($r);
+    }
+    $adpData["disease_data"] = $taxonBreakdown;
+    $response = array(
+        "status" => true,
+        "taxon" => array(
+            "genus" => $taxonBase["genus"],
+            "species" => $taxonBase["species"],
+        ),
+        "adp" => $adpData,
+        "iucn" => array(
+            "data" => $iucn["iucn"],
+            "category" => $iucn["iucn_category"],
+        ),
+        "amphibiaweb" => array(
+            "data" => $aweb["data"],
+        ),
+        "isGenusLookup" => false,
+    );
+    return $response;
+}
+
+
+function getTaxonIucnData($taxonBase)
+{
+    /***
+     * Get the IUCN result for a given taxon
+     *
+     * @param array taxonBase -> an array requring keys "genus" and "species"
+     ***/
+    global $iucnToken, $db;
+    $apiTarget = "http://apiv3.iucnredlist.org/api/v3/species/";
+    $args = array("token" => $iucnToken);
+    if (empty($taxonBase["genus"]) || empty($taxonBase["species"])) {
+        return array(
+            "status" => false,
+            "error" => "REQUIRED_COLS_MISSING",
+        );
+    }
+    // $params = array(
+    //     "genus" => $taxonBase["genus"],
+    //     "species" => $taxonBase["species"],
+    // );
+    // $r = $db->doQuery($params, "*");
+    // if ($r === false) {
+    //     return array(
+    //         "status" => false,
+    //         "error" => "SPECIES_NOT_FOUND",
+    //         "params" => $params,
+    //     );
+    // }
+    // $taxon = mysqli_fetch_assoc($r);
+    $response = array(
+        "provided" => array(
+            "taxon" => array($taxonBase),
+        ),
+    );
+    # http://www.iucnredlist.org/static/categories_criteria_2_3#critical
+    $iucnCategoryMap = array(
+        "CR" => "Critically Endangered",
+        "EN" => "Endangered",
+        "VU" => "Vulnerable",
+        "LC" => "Least Concern",
+        "LR" => "Lower Risk",
+        "CD" => "Conservation Dependant",
+        "NT" => "Near Threatened",
+        "EW" => "Extinct in the Wild",
+        "EX" => "Extinct",
+        "DD" => "Data Deficient",
+        "NE" => "Not Evaluated",
+    );
+    # Set up so that we can skip this step if need be
+    $doIucn = true;
+    if ($doIucn === true) {
+        # IUCN returns an empty result unless "%20" is used to separate the
+        # genus and species
+        $nameTarget = $taxonBase["genus"] . "%20" . $taxonBase["species"];
+        try {
+            $iucnRawResponse = do_post_request($apiTarget.$nameTarget, $args);
+            $iucnResponse = json_decode($iucnRawResponse, true);
+        } catch (Exception $e) {
+            // skip it?
+        }
+        if (isset($iucnResponse)) {
+            $response["iucn"] =  $iucnResponse["result"][0];
+            $response["iucn_category"] = $iucnCategoryMap[$response["iucn"]["category"]];
+            if (empty($response["iucn_category"])) {
+                $response["iucn_category"] = "No Data";
+            }
+        } else {
+            $response["error"] = "INVALID_IUCN_RESPONSE";
+            $response["target"] = array(
+                "uri" => $apiTarget.$nameTarget,
+                "raw_response" => $iucnRawResponse,
+                "parsed_response" => $iucnResponse,
+            );
+        }
+    } else {
+        // What are we even doing here
+    }
+
+    return $response;
+}
+
+function getTaxonAWebData($taxonBase)
+{
+    /***
+     *
+     *
+     * See:
+     * http://amphibiaweb.org/ws.html
+     ***/
+    $apiTarget = "http://amphibiaweb.org/cgi/amphib_ws";
+    foreach ($taxonBase as $key => $value) {
+        $taxonBase[$key] = strtolower($value);
+    }
+    $args = array(
+        "where-genus" => $taxonBase["genus"],
+        "where-species" => $taxonBase["species"],
+        "src" => "eol",
+    );
+    $awebRawResponse = do_post_request($apiTarget, $args);
+    # There's a bunch of cdata bull that messes this up
+    $replaceSearch = array(
+        // "<![CDATA[",
+        // "]]>",
+        "\r\n",
+        "\n",
+    );
+    $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
+    $iter = 1;
+    $awebEscapeTags = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebReplacedResponse, -1, $tagCount);
+    while ($tagCount > 0) {
+        $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, -1, $tagCount);
+        if (!empty($replaced)) {
+            $awebEscapeTags = $replaced;
+        }
+        ++$iter;
+    }
+    $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebEscapeTags);
+
+    # https://secure.php.net/manual/en/book.simplexml.php
+    $awebXml = simplexml_load_string($awebNoCdata);
+    #$awebXml = simplexml_load_string($awebReplacedResponse);
+    #$awebXml = simplexml_load_string($awebRawResponse);
+    $awebJson = json_encode($awebXml);
+    $awebData = json_decode($awebJson, true);
+    # Pretty up potential arrays
+    $formattedAwebData = array();
+    foreach ($awebData["species"] as $key => $value) {
+        # Test the value -- see if it's arrayish
+        if (preg_match('/^( *([A-Z][\w \-\x{0080}-\x{017F}]+),)+( *[A-Z][\w \-\x{0080}-\x{017F}]+)$/usm', $value)) {
+            # OK, explode it
+            $formattedValue = explode(",", $value);
+        } else {
+            $formattedValue = $value;
+        }
+        $formattedAwebData[$key] = $formattedValue;
+    }
+    $response = array(
+        "taxon" => array(
+            "genus" => $taxonBase["genus"],
+            "species" => $taxonBase["species"],
+        ),
+        "data" => $formattedAwebData,
+        // "aweb_notags" => $awebEscapeTags,
+        // "aweb_notags_iter" => $iter,
+        // "aweb_cdata_replaced" => $awebNoCdata,
+        // "aweb_json" => $awebJson
+    );
+    return $response;
+}

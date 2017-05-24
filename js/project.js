@@ -2,7 +2,7 @@
 /*
  * Project-specific code
  */
-var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, disableMapViewFilter, fillSorterWithDropdown, kmlLoader, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
+var checkArkDataset, checkProjectAuthorization, copyLink, createOverflowMenu, disableMapViewFilter, fillSorterWithDropdown, kmlLoader, paginationBinder, postAuthorizeRender, prepParsedDataDownload, publicData, renderEmail, renderMapWithData, renderPublicMap, restrictProjectsToMapView, searchProjects, setPublicData, showCitation, showEmailField, sqlQueryBox,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 _adp.mapRendered = false;
@@ -20,7 +20,7 @@ try {
     checkLoggedIn(function(result) {
       var accountSettings, menu;
       accountSettings = result.status ? "    <paper-item data-href=\"https://amphibiandisease.org/admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"https://amphibiandisease.org/admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
-      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "/dashboard.php\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"https://amphibiandisease.org/about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
+      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "dashboard.php\" class=\"click\">\n      Data Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"https://amphibiandisease.org/about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
       $("#header-overflow-menu").remove();
       $("header#header-bar .logo-container + p").append(menu);
       if (!isNull(accountSettings)) {
@@ -855,10 +855,17 @@ searchProjects = function() {
   console.info("Searching on " + search + " ... in " + cols);
   args = "action=search_project&q=" + search + "&cols=" + cols;
   $.post(uri.urlString + "api.php", args, "json").done(function(result) {
-    var button, html, icon, j, l, len, len1, project, projectId, projects, publicState, ref, results, s, showList;
+    var bootstrapSmallBreakpoint, button, html, icon, j, l, len, len1, maxTitleLength, project, projectId, projects, publicState, ref, ref1, results, s, shortTitle, showList, tooltipTitle;
     console.info(result);
     html = "";
     showList = new Array();
+    maxTitleLength = 40;
+    bootstrapSmallBreakpoint = 768;
+    if ((bootstrapSmallBreakpoint < (ref = $(window).width()) && ref < 1050)) {
+      maxTitleLength = 20;
+    } else if ($(window).width() < 1280) {
+      maxTitleLength = 30;
+    }
     projects = Object.toArray(result.result);
     if (projects.length > 0) {
       for (j = 0, len = projects.length; j < len; j++) {
@@ -866,11 +873,18 @@ searchProjects = function() {
         showList.push(project.project_id);
         publicState = project["public"].toBool();
         icon = publicState ? "<iron-icon icon=\"social:public\"></iron-icon>" : "<iron-icon icon=\"icons:lock\"></iron-icon>";
-        button = "<button class=\"btn btn-info search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"right\" title=\"Project #" + (project.project_id.slice(0, 8)) + "...\">\n  " + icon + " " + project.project_title + "\n</button>";
+        shortTitle = project.project_title.slice(0, maxTitleLength);
+        if (project.project_title !== shortTitle) {
+          tooltipTitle = project.project_title;
+          shortTitle += "...";
+        } else {
+          tooltipTitle = "Project #" + (project.project_id.slice(0, 8)) + "...";
+        }
+        button = "<button class=\"btn btn-info search-proj-link\" data-href=\"" + uri.urlString + "project.php?id=" + project.project_id + "\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"" + tooltipTitle + "\">\n  " + icon + " " + shortTitle + "\n</button>";
         html += "<li class='project-search-result'>" + button + "</li>";
       }
     } else {
-      s = (ref = result.search) != null ? ref : search;
+      s = (ref1 = result.search) != null ? ref1 : search;
       html = "<p><em>No results found for \"<strong>" + s + "</strong>\"";
     }
     $("#project-result-container").html(html);
@@ -1345,6 +1359,7 @@ window.showCitation = showCitation;
 disableMapViewFilter = function() {
   $("google-map#community-map").unbind("google-map-idle");
   _adp.hasBoundMapEvent = false;
+  $("nav#project-pagination").removeAttr("hidden");
   return true;
 };
 
@@ -1413,10 +1428,12 @@ restrictProjectsToMapView = function(edges) {
   if (!p$("#projects-by-map-view").checked) {
     $("#project-list li").removeAttr("hidden");
     $("h2.status-notice.project-list").removeAttr("hidden");
+    $("nav#project-pagination").removeAttr("hidden");
     $("button.js-lazy-project").remove();
     $("#map-view-title").remove();
     return false;
   }
+  $("nav#project-pagination").attr("hidden", "hidden");
   $("h2.status-notice.project-list").attr("hidden", "hidden");
   map = p$("google-map#community-map").map;
   mapBounds = map.getBounds();
@@ -1528,7 +1545,7 @@ restrictProjectsToMapView = function(edges) {
     }
   }
   $.get(uri.urlString + "admin-api.php", "action=list", "json").done(function(result) {
-    var html, icon, project, publicProjects, ref13, results, shortTitle, title;
+    var html, icon, project, publicProjects, ref13, results, shortTitle, title, tooltipTitle;
     console.log("Got project list", result);
     $("button.js-lazy-project").remove();
     publicProjects = Object.toArray(result.public_projects);
@@ -1541,10 +1558,13 @@ restrictProjectsToMapView = function(edges) {
           console.log("Should add visible project '" + title + "'", project);
           shortTitle = title.slice(0, 40);
           if (shortTitle !== title) {
+            tooltipTitle = title;
             shortTitle += "...";
+          } else {
+            tooltipTitle = "Project #" + (project.slice(0, 8)) + "...";
           }
           icon = indexOf.call(publicProjects, project) >= 0 ? "social:public" : "icons:lock";
-          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\" title=\"" + title + "\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
+          html = "<li>\n<button class=\"js-lazy-project btn btn-primary\" data-href=\"" + uri.urlString + "project.php?id=" + project + "\" data-project=\"" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltipTitle + "\">\n  <iron-icon icon=\"" + icon + "\"></iron-icon>\n  " + shortTitle + "\n</button>\n</li>";
           results.push($("#project-list").append(html));
         } else {
           results.push(console.log("Not re-adding button for", project));
@@ -1565,6 +1585,88 @@ restrictProjectsToMapView = function(edges) {
   });
   console.log("Showing projects", validProjects, "within", corners);
   return validProjects;
+};
+
+paginationBinder = function() {
+
+  /*
+   * Set up events for the pagination binder
+   */
+  var defaultPaginationNumber, dropdownSelector;
+  dropdownSelector = "paper-dropdown-menu#pagination-selector-dropdown";
+  if (!$(dropdownSelector).exists()) {
+    console.error("Selector does not exist:", dropdownSelector);
+    return false;
+  }
+  defaultPaginationNumber = 10;
+  delayPolymerBind(dropdownSelector, function() {
+    var currentCount, e, error1, getPaginationNumber, j, len, paginationNumber, paginationNumberItem, ref, ref1, selected, selectedItem;
+    if (p$(dropdownSelector).disabled) {
+      currentCount = (ref = uri.o.param("pagination")) != null ? ref : $("#project-list li button:not(.js-lazy-project)").length;
+      currentCount = toInt(currentCount);
+      selectedItem = false;
+      selected = 0;
+      ref1 = $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item");
+      for (j = 0, len = ref1.length; j < len; j++) {
+        paginationNumberItem = ref1[j];
+        try {
+          paginationNumber = toInt($(paginationNumberItem).text().trim());
+        } catch (error1) {
+          e = error1;
+          paginationNumber = defaultPaginationNumber;
+        }
+        if (paginationNumber === currentCount) {
+          selectedItem = true;
+          break;
+        }
+        selected++;
+      }
+      if (!selectedItem) {
+        selected = 0;
+      }
+      p$("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").selected = selected;
+      console.log("Pre-selected item", selected);
+    }
+    p$(dropdownSelector).disabled = false;
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").unbind("iron-select").on("iron-select", function() {
+      console.log("iron-select fired");
+      return getPaginationNumber.debounce(50, null, null, this);
+    });
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item").unbind("click").click(function() {
+      console.log("paper-item click event fired");
+      return getPaginationNumber.debounce(50, null, null, $(this).parent("paper-listbox"));
+    });
+    getPaginationNumber = function(el) {
+      var args, destinationUrl, error2, newPage, page, projectCountStart, ref2, ref3;
+      paginationNumberItem = p$(el).selectedItem;
+      try {
+        paginationNumber = toInt($(paginationNumberItem).text().trim());
+      } catch (error2) {
+        e = error2;
+        console.warn("Unable to read pagination number -- " + e.message);
+        paginationNumber = defaultPaginationNumber;
+      }
+      console.log("Dropdown selected paginator", paginationNumber);
+      page = (ref2 = uri.o.param("page")) != null ? ref2 : 1;
+      currentCount = (ref3 = uri.o.param("pagination")) != null ? ref3 : $("#project-list li button:not(.js-lazy-project)").length;
+      currentCount = toInt(currentCount);
+      if (currentCount < defaultPaginationNumber) {
+        currentCount = defaultPaginationNumber;
+      }
+      if (currentCount === paginationNumber) {
+        return false;
+      }
+      projectCountStart = ((page - 1) * currentCount) + 1;
+      newPage = (Math.floor(projectCountStart / paginationNumber)) + 1;
+      args = "page=" + newPage + "&pagination=" + paginationNumber;
+      destinationUrl = uri.urlString + "project.php?" + args;
+      console.log(destinationUrl, args);
+      goTo(destinationUrl);
+      return false;
+    };
+    return false;
+  });
+  return false;
 };
 
 $(function() {
@@ -1652,7 +1754,18 @@ $(function() {
       return false;
     });
   } catch (undefined) {}
-  return restrictProjectsToMapView();
+  restrictProjectsToMapView();
+  return delay(500, function() {
+    var e, error1;
+    try {
+      return paginationBinder();
+    } catch (error1) {
+      e = error1;
+      console.error("Unable to bind events to pagination - " + e.message);
+      console.warn(e.stack);
+      return $(".pagination-selection-container").attr("hidden", "hidden");
+    }
+  });
 });
 
 //# sourceMappingURL=maps/project.js.map

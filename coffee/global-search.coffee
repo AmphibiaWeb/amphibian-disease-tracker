@@ -1347,7 +1347,7 @@ createOverflowMenu = ->
         Github
       </paper-item>
         <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
-          Summary Dashboard
+          Data Dashboard
         </paper-item>
       <paper-item data-function="firstLoadInstructionPrompt" data-args="true" class="click">
         Show Welcome

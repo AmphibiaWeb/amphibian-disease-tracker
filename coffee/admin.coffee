@@ -175,7 +175,7 @@ try
       <paper-menu class="dropdown-content">
         #{accountSettings}
         <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
-          Summary Dashboard
+          Data Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
           <iron-icon icon="icons:chrome-reader-mode"></iron-icon>

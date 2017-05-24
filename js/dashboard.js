@@ -1,11 +1,13 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
 
 adminApiTarget = uri.urlString + "admin-api.php";
 
-window._adp = new Object();
+window._adp = {
+  taxonCharts: new Object()
+};
 
 try {
   (createOverflowMenu = function() {
@@ -16,7 +18,7 @@ try {
     checkLoggedIn(function(result) {
       var accountSettings, menu;
       accountSettings = result.status ? "    <paper-item data-href=\"" + uri.urlString + "admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"" + uri.urlString + "admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
-      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "/dashboard.php\" class=\"click\">\n      Summary Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"" + uri.urlString + "about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
+      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "/dashboard.php\" class=\"click\">\n      Data Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"" + uri.urlString + "about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
       $("#header-overflow-menu").remove();
       $("header#header-bar .logo-container + p").append(menu);
       if (!isNull(accountSettings)) {
@@ -29,7 +31,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
-  var chart, chartCtx, html, newId, origChartData, sampleBarData, sampleData, sampleDatasets;
+  var canvas, chart, chartCtx, newId, origChartData, ref, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -89,12 +91,33 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     };
   }
   if (!$(chartSelector).exists()) {
+    console.log("Creating new canvas");
     newId = chartSelector.slice(0, 1) === "#" ? chartSelector.slice(1) : "dataChart-" + ($("canvas").length);
-    html = "<canvas id=\"" + newId + "\" class=\"chart dynamic-chart col-xs-12\">\n</canvas>";
-    $(appendTo).append(html);
+    canvas = document.createElement("canvas");
+    canvas.setAttribute("class", "chart dynamic-chart col-xs-12");
+    canvas.setAttribute("id", newId);
+    try {
+      _adp.newCanvas = canvas;
+    } catch (undefined) {}
+    document.querySelector(appendTo).appendChild(canvas);
+  } else {
+    console.log("Canvas already exists:", chartSelector);
+  }
+  if (((ref = _adp.chart) != null ? ref.chart : void 0) != null) {
+    _adp.chart.chart.destroy();
   }
   chartCtx = $(chartSelector);
+  if (isNull(chartCtx)) {
+    try {
+      console.log("trying again to make context");
+      chartCtx = $(canvas);
+    } catch (undefined) {}
+  }
   chart = new Chart(chartCtx, chartData);
+  _adp.chart = {
+    chart: chart,
+    ctx: chartCtx
+  };
   console.info("Chart created with", chartData);
   if (typeof callback === "function") {
     callback();
@@ -129,7 +152,7 @@ getServerChart = function(chartType, chartParams) {
   }
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
-    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref;
+    var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref, s;
     if (result.status === false) {
       console.error("Server had a problem fetching chart data - " + result.human_error);
       console.warn(result);
@@ -150,10 +173,10 @@ getServerChart = function(chartType, chartParams) {
       if (data.backgroundColor == null) {
         data.borderColor = new Array();
         data.backgroundColor = new Array();
+        s = 0;
         ref = data.data;
         for (m = 0, len1 = ref.length; m < len1; m++) {
           dataItem = ref[m];
-          console.log("examine dataitem", dataItem);
           if (data.stack === "PosNeg") {
             if (data.label.toLowerCase().search("positive") !== -1) {
               colors = {
@@ -179,6 +202,7 @@ getServerChart = function(chartType, chartParams) {
           }
           data.borderColor.push(colors.border);
           data.backgroundColor.push(colors.background);
+          ++s;
         }
       }
       datasets[i] = data;
@@ -293,7 +317,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, ref1;
+      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -307,21 +331,246 @@ getServerChart = function(chartType, chartParams) {
           scales: {
             xAxes: [
               {
+                scaleLabel: {
+                  labelString: result.axes.x,
+                  display: true
+                },
                 stacked: chartData.stacking.x
               }
             ],
             yAxes: [
               {
+                scaleLabel: {
+                  labelString: result.axes.y,
+                  display: true
+                },
                 stacked: chartData.stacking.y
               }
             ]
           }
         };
+        if (result.title != null) {
+          chartObj.options.title = {
+            display: true,
+            text: result.title
+          };
+        }
+      } else {
+        try {
+          if (chartObj.options == null) {
+            chartObj.options = {
+              scales: {
+                xAxes: [
+                  {
+                    scaleLabel: {}
+                  }
+                ],
+                yAxes: [
+                  {
+                    scaleLabel: {}
+                  }
+                ]
+              }
+            };
+          }
+          if (result.title != null) {
+            chartObj.options.title = {
+              display: true,
+              text: result.title
+            };
+          }
+          if ((ref2 = chartObj.options) != null) {
+            if ((ref3 = ref2.scales) != null) {
+              if ((ref4 = ref3.xAxes) != null) {
+                if ((ref5 = ref4[0]) != null) {
+                  ref5.scaleLabel = {
+                    labelString: result.axes.x,
+                    display: true
+                  };
+                }
+              }
+            }
+          }
+          if ((ref6 = chartObj.options) != null) {
+            if ((ref7 = ref6.scales) != null) {
+              if ((ref8 = ref7.yAxes) != null) {
+                if ((ref9 = ref8[0]) != null) {
+                  ref9.scaleLabel = {
+                    labelString: result.axes.y,
+                    display: true
+                  };
+                }
+              }
+            }
+          }
+        } catch (error) {
+          e = error;
+          console.warn("Couldn't set up redundant options - " + e.message);
+          console.warn(e.stack);
+        }
       }
-      chartSelector = "#chart-" + (datasets[0].label.replace(" ", "-"));
+      try {
+        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+      } catch (error1) {
+        try {
+          uString = chartDataJs.labels.join(",");
+        } catch (error2) {
+          uString = "BAD_STRINGIFY";
+        }
+      }
+      uid = md5(uString);
+      chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
+      console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
+        var bin, collapseHtml, dataUri, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, targetId;
         if (!isNull(result.full_description)) {
-          return $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
+          $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
+        }
+        if (chartType === "species") {
+          fetchUpdatesFor = new Object();
+          collapseHtml = "";
+          ref10 = chartDataJs.labels;
+          for (n = 0, len2 = ref10.length; n < len2; n++) {
+            bin = ref10[n];
+            targetId = md5(bin + "-" + (Date.now()));
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            fetchUpdatesFor[targetId] = bin;
+          }
+          if (chartParams.sort === "species") {
+            measurement = "species";
+            measurementSingle = measurement;
+          } else {
+            measurement = "genera";
+            measurementSingle = "genus";
+          }
+          dataUri = _adp.chart.chart.toBase64Image();
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download disabled>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p hidden>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize col-xs-12\">" + measurementSingle + " Summaries <small class=\"text-muted\">Ordered as the above chart</small></h3>\n    <p class=\"col-xs-12 text-muted\">Click on a taxon to toggle charts and more data for that taxon</p>\n    " + collapseHtml + "\n  </div>\n</section>";
+          try {
+            $("#post-species-summary").remove();
+          } catch (undefined) {}
+          $(chartSelector).after(html);
+          delay(750, function() {
+            dataUri = _adp.chart.chart.toBase64Image();
+            return $("#download-main-chart").attr("href", dataUri).removeAttr("disabled");
+          });
+          try {
+            bindCollapsors();
+            _adp.fetchUpdatesFor = fetchUpdatesFor;
+            delay(250, function() {
+              return fetchMiniTaxonBlurbs();
+            });
+          } catch (undefined) {}
+          return _adp.chart.ctx.click(function(e) {
+            var buttonSelector, color, dataset, elIndex, element, taxon;
+            dataset = _adp.chart.chart.getDatasetAtEvent(e);
+            element = _adp.chart.chart.getElementAtEvent(e);
+            console.debug("Dataset", dataset);
+            console.debug("Element", element);
+            elIndex = element[0]._index;
+            data = dataset[elIndex];
+            console.debug("Specific data:", data);
+            taxon = data._model.label;
+            console.debug("Taxon clicked:", taxon);
+            color = getRandomDataColor();
+            buttonSelector = "button[data-taxon='" + taxon + "']";
+            console.debug("Selector", buttonSelector, $(buttonSelector).exists());
+            $(".success-glow").removeClass("success-glow");
+            return $(buttonSelector).addClass("success-glow").get(0).scrollIntoView(false);
+          });
+        } else if (chartType === "location") {
+          return _adp.chart.ctx.click(function(e) {
+            var country, dataset, elIndex, element;
+            dataset = _adp.chart.chart.getDatasetAtEvent(e);
+            element = _adp.chart.chart.getElementAtEvent(e);
+            console.debug("Dataset", dataset);
+            console.debug("Element", element);
+            elIndex = element[0]._index;
+            data = dataset[elIndex];
+            console.debug("Specific data:", data);
+            country = data._model.label;
+            console.debug("country clicked:", country);
+            args = {
+              async: true,
+              action: "country_taxon",
+              country: country
+            };
+            $.get("dashboard.php", buildQuery(args, "json")).done(function(result) {
+              var chartCtx, labels, negSamples, posSamples, ref11, taxon, taxonData;
+              console.debug("Got country result", result);
+              if (result.status) {
+                console.log("Should build out new chart here");
+                chartObj = {
+                  type: "bar",
+                  options: {
+                    responsive: true,
+                    title: {
+                      display: true,
+                      text: "Taxa in " + country
+                    },
+                    scales: {
+                      xAxes: [
+                        {
+                          scaleLabel: {
+                            labelString: "Taxa",
+                            display: true
+                          }
+                        }
+                      ],
+                      yAxes: [
+                        {
+                          scaleLabel: {
+                            labelString: "Sample Count",
+                            display: true
+                          },
+                          stacked: true
+                        }
+                      ]
+                    }
+                  }
+                };
+                posSamples = {
+                  label: "Positive Samples",
+                  data: [],
+                  borderColor: "rgba(220,30,25,1)",
+                  backgroundColor: "rgba(220,30,25,0.3)",
+                  borderWidth: 1,
+                  stack: "pnSamples"
+                };
+                negSamples = {
+                  label: "Negative Samples",
+                  data: [],
+                  borderColor: "rgba(25,70,220,1)",
+                  backgroundColor: "rgba(25,70,220,0.3)",
+                  borderWidth: 1,
+                  stack: "pnSamples"
+                };
+                labels = new Array();
+                ref11 = result.data;
+                for (taxon in ref11) {
+                  taxonData = ref11[taxon];
+                  negSamples.data.push(toInt(taxonData["false"]));
+                  posSamples.data.push(toInt(taxonData["true"]));
+                  labels.push(taxon);
+                }
+                chartData = {
+                  labels: labels,
+                  datasets: [posSamples, negSamples]
+                };
+                chartObj.data = chartData;
+                console.log("USing chart data", chartObj);
+                uid = JSON.stringify(chartData);
+                chartSelector = "#locale-zoom-chart";
+                chartCtx = $(chartSelector);
+                $(chartSelector).attr("data-uid", uid);
+                if (_adp.zoomChart != null) {
+                  _adp.zoomChart.destroy();
+                }
+                _adp.zoomChart = new Chart(chartCtx, chartObj);
+              }
+              return false;
+            });
+            return false;
+          });
         }
       });
       return stopLoad();
@@ -335,8 +584,243 @@ getServerChart = function(chartType, chartParams) {
   return false;
 };
 
+fetchMiniTaxonBlurbs = function(reference) {
+  var collapseSelector, ref, selector, taxon, taxonArr, taxonObj;
+  if (reference == null) {
+    reference = _adp.fetchUpdatesFor;
+  }
+  console.debug("Binding / setting up taxa updates for", reference);
+  _adp.collapseOpener = function(collapse) {
+    var elapsed;
+    if (collapse.opened) {
+      elapsed = Date.now() - _adp.lastOpened;
+      if (elapsed < 1000) {
+        return false;
+      }
+      collapse.hide();
+    } else {
+      _adp.lastOpened = Date.now();
+      collapse.show();
+    }
+    return false;
+  };
+  for (collapseSelector in reference) {
+    taxon = reference[collapseSelector];
+    selector = "#" + collapseSelector + " .collapse-content";
+    taxonArr = taxon.split(" ");
+    taxonObj = {
+      genus: taxonArr[0],
+      species: (ref = taxonArr[1]) != null ? ref : ""
+    };
+    $("button#" + collapseSelector + "-button-trigger").attr("data-taxon", taxon).click(function() {
+      var collapse, hasData, html, ref1, ref2;
+      taxon = $(this).attr("data-taxon");
+      taxonArr = taxon.split(" ");
+      taxonObj = {
+        genus: taxonArr[0],
+        species: (ref1 = taxonArr[1]) != null ? ref1 : ""
+      };
+      selector = $(this).parent().find(".collapse-content");
+      hasData = (ref2 = $(this).attr("data-has-data")) != null ? ref2 : false;
+      if (!hasData.toBool()) {
+        $(this).attr("data-has-data", "true");
+        html = "<paper-spinner active></paper-spinner> Fetching Data...";
+        $(selector).html(html);
+        fetchMiniTaxonBlurb(taxonObj, selector);
+      } else {
+        console.debug("Already has data");
+      }
+      collapse = $(this).parent().find("iron-collapse").get(0);
+      return console.debug("is opened?", collapse.opened);
+    });
+  }
+  return false;
+};
+
+fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
+  var args, k, v;
+  if (isGenus == null) {
+    isGenus = false;
+  }
+  args = ["action=taxon"];
+  for (k in taxonResult) {
+    v = taxonResult[k];
+    args.push(k + "=" + (encodeURIComponent(v)));
+  }
+  $.get("api.php", args.join("&"), "json").done(function(result) {
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
+    console.log("Got result", result);
+    if (result.status !== true) {
+      html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
+      $(targetSelector).html(html);
+      return false;
+    }
+    $(targetSelector).html("");
+    if (result.isGenusLookup) {
+      iterator = new Array();
+      ref = Object.toArray(result.taxa);
+      for (l = 0, len = ref.length; l < len; l++) {
+        retResult = ref[l];
+        iterator.push(retResult.data);
+      }
+    } else {
+      iterator = [result];
+    }
+    for (m = 0, len1 = iterator.length; m < len1; m++) {
+      taxonData = iterator[m];
+      try {
+        console.log("Doing blurb for", JSON.stringify(taxonData.taxon));
+        try {
+          if (typeof taxonData.amphibiaweb.data.common_name !== "object") {
+            throw {
+              message: "NOT_OBJECT"
+            };
+          }
+          names = Object.toArray(taxonData.amphibiaweb.data.common_name);
+          nameString = "";
+          i = 0;
+          for (n = 0, len2 = names.length; n < len2; n++) {
+            name = names[n];
+            ++i;
+            if (name === taxonData.iucn.data.main_common_name) {
+              name = "<strong>" + (name.trim()) + "</strong>";
+            }
+            nameString += name.trim();
+            if (names.length !== i) {
+              nameString += ", ";
+            }
+          }
+        } catch (error) {
+          e = error;
+          if (typeof taxonData.amphibiaweb.data.common_name === "string") {
+            nameString = taxonData.amphibiaweb.data.common_name;
+          } else {
+            nameString = (ref1 = (ref2 = taxonData.iucn) != null ? (ref3 = ref2.data) != null ? ref3.main_common_name : void 0 : void 0) != null ? ref1 : "";
+            console.warn("Couldn't create common name string! " + e.message);
+            console.warn(e.stack);
+            console.debug(taxonData.amphibiaweb.data);
+          }
+        }
+        if (!isNull(nameString)) {
+          nameHtml = "<p>\n  <strong>Names:</strong> " + nameString + "\n</p>";
+        } else {
+          nameHtml = "";
+        }
+        countries = Object.toArray(taxonData.adp.countries);
+        countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
+        linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples</p>";
+        ref4 = taxonData.adp.projects;
+        for (project in ref4) {
+          title = ref4[project];
+          tooltip = title;
+          if (title.length > 30) {
+            title = title.slice(0, 27) + "...";
+          }
+          linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
+        }
+        linkHtml += "</div>";
+        if (result.isGenusLookup) {
+          taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
+          taxonId = "<p>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
+        } else {
+          taxonId = "";
+        }
+        idTaxon = encode64(JSON.stringify(taxonData.taxon));
+        idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
+        console.log("Appended blurb for idTaxon", idTaxon);
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+        $(targetSelector).append(blurb);
+        diseaseData = taxonData.adp.disease_data;
+        for (disease in diseaseData) {
+          data = diseaseData[disease];
+          if (data.detected.no_confidence !== data.detected.total) {
+            testingData = {
+              labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
+              datasets: [
+                {
+                  data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
+                  backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                  hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                }
+              ]
+            };
+            chartCfg = {
+              type: "pie",
+              data: testingData
+            };
+            canvas = document.createElement("canvas");
+            canvas.setAttribute("class", "chart dynamic-pie-chart");
+            canvasId = idTaxon + "-" + disease + "-testdata";
+            canvas.setAttribute("id", canvasId);
+            canvasContainerId = canvasId + "-container";
+            chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+            $(chartContainer).append(containerHtml);
+            $("#" + canvasContainerId).get(0).appendChild(canvas);
+            chartCtx = $("#" + canvasId);
+            pieChart = new Chart(chartCtx, chartCfg);
+            _adp.taxonCharts[canvasId] = pieChart;
+          }
+          if (data.fatal.unknown !== data.fatal.total) {
+            fatalData = {
+              labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
+              datasets: [
+                {
+                  data: [data.fatal["true"], data.fatal["false"], data.fatal.unknown],
+                  backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                  hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                }
+              ]
+            };
+            chartCfg = {
+              type: "pie",
+              data: fatalData
+            };
+            canvas = document.createElement("canvas");
+            canvas.setAttribute("class", "chart dynamic-pie-chart");
+            canvasId = idTaxon + "-" + disease + "-fataldata";
+            canvas.setAttribute("id", canvasId);
+            canvasContainerId = canvasId + "-container";
+            chartContainer = $(targetSelector).find(".charts-container").get(0);
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+            $(chartContainer).append(containerHtml);
+            $("#" + canvasContainerId).get(0).appendChild(canvas);
+            chartCtx = $("#" + canvasId);
+            pieChart = new Chart(chartCtx, chartCfg);
+            _adp.taxonCharts[canvasId] = pieChart;
+          }
+        }
+      } catch (error1) {
+        e = error1;
+        try {
+          taxonString = "";
+          taxonString = "for\n  <span class=\"sciname\">\n    <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n    <span class=\"species\">" + taxonData.taxon.species + "</span>\n  </span>";
+        } catch (undefined) {}
+        html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data " + taxonString + "\n  </p>\n</div>";
+        $(targetSelector).append(html);
+        console.error("Couldn't get taxon data -- " + e.message, taxonData);
+        console.warn(e.stack);
+      }
+    }
+    return false;
+  }).error(function(result, status) {
+    var html;
+    html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Server error fetching taxon data ()\n  </p>\n</div>";
+    $(targetSelector).html(html);
+    console.error("Couldn't fetch taxon data from server");
+    console.warn(result, status);
+    return false;
+  });
+  return false;
+};
+
 renderNewChart = function() {
   var chartOptions, chartType, error, key, l, len, option, ref, ref1;
+  try {
+    if (_adp.zoomChart != null) {
+      _adp.zoomChart.destroy();
+    }
+  } catch (undefined) {}
   chartOptions = new Object();
   ref = $(".chart-param");
   for (l = 0, len = ref.length; l < len; l++) {
@@ -361,14 +845,69 @@ renderNewChart = function() {
   return chartOptions;
 };
 
+dropdownSortEvents = function() {
+  var doSortDisables;
+  if ((typeof _adp !== "undefined" && _adp !== null ? _adp.hasBoundSortDisables : void 0) !== true) {
+    $("paper-dropdown-menu#binned-by paper-listbox").on("iron-select", function() {
+      return doSortDisables.debounce(50, null, null, this);
+    });
+    $("paper-dropdown-menu#binned-by paper-listbox > paper-item").click(function() {
+      return doSortDisables.debounce(50, null, null, $(this).parents("paper-listbox"));
+    });
+    _adp.hasBoundSortDisabled = true;
+  }
+  doSortDisables = function(el) {
+    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, l, len, ref, ref1;
+    binItem = p$(el).selectedItem;
+    console.log("Firing doSortDisables", binItem, el);
+    allowedSortKey = $(binItem).text().trim().toLowerCase();
+    keyToSelect = 0;
+    hasFoundKey = false;
+    ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
+    for (l = 0, len = ref.length; l < len; l++) {
+      item = ref[l];
+      allowedBinsText = (ref1 = $(item).attr("data-bins")) != null ? ref1 : "";
+      allowedBins = allowedBinsText.split(",");
+      console.log("Searching allowed bins for '" + allowedSortKey + "'", allowedBins, item);
+      if (indexOf.call(allowedBins, allowedSortKey) >= 0) {
+        try {
+          p$(item).disabled = false;
+        } catch (undefined) {}
+        $(item).removeAttr("disabled");
+        hasFoundKey = true;
+      } else {
+        try {
+          p$(item).disabled = true;
+        } catch (undefined) {}
+        $(item).attr("disabled", "disabled");
+      }
+      if (!hasFoundKey) {
+        keyToSelect++;
+      }
+    }
+    p$("paper-dropdown-menu#sort-by paper-listbox").selected = keyToSelect;
+    return false;
+  };
+  console.log("Dropdown sort events bound");
+  return false;
+};
+
 $(function() {
   console.log("Loaded dashboard");
   getServerChart();
   $("#generate-chart").click(function() {
     return renderNewChart.debounce(50);
   });
-  $(".chart-param paper-listbox").on("iron-select", function() {
-    return renderNewChart.debounce(50);
+  delayPolymerBind("paper-dropdown-menu#binned-by", function() {
+    $(".chart-param paper-listbox").on("iron-select", function() {
+      console.log("Firing iron-select event", this);
+      return renderNewChart.debounce(50);
+    });
+    $(".chart-param paper-listbox paper-item").on("click", function() {
+      console.log("Firing click event on paper-item", this);
+      return renderNewChart.debounce(50);
+    });
+    return dropdownSortEvents();
   });
   return false;
 });

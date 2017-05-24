@@ -27,8 +27,8 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
-          Summary Dashboard
+        <paper-item data-href="#{uri.urlString}dashboard.php" class="click">
+          Data Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
           <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
@@ -801,15 +801,28 @@ searchProjects = ->
     console.info result
     html = ""
     showList = new Array()
+    maxTitleLength = 40
+    # Smaller than bootstrap "small" it's full width
+    bootstrapSmallBreakpoint = 768
+    if bootstrapSmallBreakpoint < $(window).width() < 1050
+      maxTitleLength = 20
+    else if $(window).width() < 1280
+      maxTitleLength = 30
     projects = Object.toArray result.result
     if projects.length > 0
       for project in projects
         showList.push project.project_id
         publicState = project.public.toBool()
         icon = if publicState then """<iron-icon icon="social:public"></iron-icon>""" else """<iron-icon icon="icons:lock"></iron-icon>"""
+        shortTitle = project.project_title.slice(0, maxTitleLength)
+        if project.project_title isnt shortTitle
+          tooltipTitle = project.project_title
+          shortTitle += "..."
+        else
+          tooltipTitle = "Project ##{project.project_id.slice(0,8)}..."
         button = """
-        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="right" title="Project ##{project.project_id.slice(0,8)}...">
-          #{icon} #{project.project_title}
+        <button class="btn btn-info search-proj-link" data-href="#{uri.urlString}project.php?id=#{project.project_id}" data-toggle="tooltip" data-placement="top" title="#{tooltipTitle}">
+          #{icon} #{shortTitle}
         </button>
         """
         html += "<li class='project-search-result'>#{button}</li>"
@@ -1254,6 +1267,7 @@ window.showCitation = showCitation
 disableMapViewFilter = ->
   $("google-map#community-map").unbind("google-map-idle")
   _adp.hasBoundMapEvent = false
+  $("nav#project-pagination").removeAttr "hidden"
   true
 
 
@@ -1309,10 +1323,12 @@ restrictProjectsToMapView = (edges = false) ->
   unless p$("#projects-by-map-view").checked
     $("#project-list li").removeAttr "hidden"
     $("h2.status-notice.project-list").removeAttr "hidden"
+    $("nav#project-pagination").removeAttr "hidden"
     $("button.js-lazy-project").remove()
     $("#map-view-title").remove()
     return false
   # Find the bounds
+  $("nav#project-pagination").attr "hidden", "hidden"
   $("h2.status-notice.project-list").attr "hidden", "hidden"
   map = p$("google-map#community-map").map
   mapBounds = map.getBounds()
@@ -1404,11 +1420,14 @@ restrictProjectsToMapView = (edges = false) ->
           console.log "Should add visible project '#{title}'", project
           shortTitle = title.slice(0,40)
           if shortTitle isnt title
+            tooltipTitle = title
             shortTitle +=  "..."
+          else
+            tooltipTitle = "Project ##{project.slice(0,8)}..."
           icon = if project in publicProjects then "social:public" else "icons:lock"
           html = """
           <li>
-          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip" title="#{title}">
+          <button class="js-lazy-project btn btn-primary" data-href="#{uri.urlString}project.php?id=#{project}" data-project="#{project}" data-toggle="tooltip" title="#{tooltipTitle}">
             <iron-icon icon="#{icon}"></iron-icon>
             #{shortTitle}
           </button>
@@ -1433,6 +1452,73 @@ restrictProjectsToMapView = (edges = false) ->
   validProjects
 
 
+
+paginationBinder = ->
+  ###
+  # Set up events for the pagination binder
+  ###
+  dropdownSelector = "paper-dropdown-menu#pagination-selector-dropdown"
+  unless $(dropdownSelector).exists()
+    console.error "Selector does not exist:", dropdownSelector
+    return false
+  defaultPaginationNumber = 10
+  # Delay setup until bind is ready
+  delayPolymerBind dropdownSelector, ->
+    if p$(dropdownSelector).disabled
+      # do the base selection
+      currentCount = uri.o.param("pagination") ? $("#project-list li button:not(.js-lazy-project)").length
+      currentCount = toInt currentCount
+      selectedItem = false
+      selected = 0
+      for paginationNumberItem in $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item")
+        try
+          paginationNumber = toInt $(paginationNumberItem).text().trim()
+        catch e
+          paginationNumber = defaultPaginationNumber
+        if paginationNumber is currentCount
+          selectedItem = true
+          break
+        selected++
+      unless selectedItem
+        selected = 0
+      p$("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content").selected = selected
+      console.log "Pre-selected item", selected
+    # Setup
+    p$(dropdownSelector).disabled = false
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content")
+    .unbind("iron-select")
+    .on "iron-select", ->
+      console.log "iron-select fired"
+      getPaginationNumber.debounce 50, null, null, this
+    $("paper-dropdown-menu#pagination-selector-dropdown paper-listbox.dropdown-content paper-item")
+    .unbind("click")
+    .click ->
+      console.log "paper-item click event fired"
+      getPaginationNumber.debounce 50, null, null, $(this).parent("paper-listbox")
+    getPaginationNumber = (el) ->
+      paginationNumberItem = p$(el).selectedItem
+      try
+        paginationNumber = toInt $(paginationNumberItem).text().trim()
+      catch e
+        console.warn "Unable to read pagination number -- #{e.message}"
+        paginationNumber = defaultPaginationNumber
+      console.log "Dropdown selected paginator", paginationNumber
+      page = uri.o.param("page") ? 1
+      currentCount = uri.o.param("pagination") ? $("#project-list li button:not(.js-lazy-project)").length
+      currentCount = toInt currentCount
+      if currentCount < defaultPaginationNumber
+        currentCount = defaultPaginationNumber
+      if currentCount is paginationNumber
+        return false
+      projectCountStart = ((page - 1) * currentCount) + 1
+      newPage = (projectCountStart // paginationNumber) + 1
+      args = "page=#{newPage}&pagination=#{paginationNumber}"
+      destinationUrl = "#{uri.urlString}project.php?#{args}"
+      console.log destinationUrl, args
+      goTo destinationUrl
+      false
+    false
+  false
 
 
 
@@ -1506,3 +1592,10 @@ $ ->
       $(this).selectText()
       false
   restrictProjectsToMapView()
+  delay 500, ->
+    try
+      paginationBinder()
+    catch e
+      console.error "Unable to bind events to pagination - #{e.message}"
+      console.warn e.stack
+      $(".pagination-selection-container").attr "hidden", "hidden"

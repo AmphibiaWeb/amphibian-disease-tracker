@@ -410,6 +410,16 @@ bindCopyEvents = (selector = ".click-copy") ->
   false
 
 
+buildQuery = (obj) ->
+  queryList = new Array()
+  for k, v of obj
+    key = k.replace /[^A-Za-z\-_\[\]]/img, ""
+    value = encodeURIComponent(v).replace /\%20/g, "+"
+    queryList.push """#{key}=#{value}"""
+  queryList.join "&"
+
+
+
 jsonTo64 = (obj, encode = true) ->
   ###
   #
@@ -973,6 +983,32 @@ bindClicks = (selector = ".click") ->
               console.error("'#{callable}()' is a bad function - #{e.message}")
     catch e
       console.error("There was a problem binding to ##{$(this).attr("id")} - #{e.message}")
+  try
+    bindCollapsors()
+  false
+
+
+
+bindCollapsors = (selector = ".collapse-trigger") ->
+  ###
+  # Bind the events for collapse-triggers
+  ###
+  toggleEvent = (caller) ->
+    target = $(caller).attr "data-target"
+    unless $(target).exists()
+      console.error "Couldn't find target #{target}"
+      return false
+    validTargetElements = [
+      "iron-collapse"
+      ]
+    if p$(target).tagName.toLowerCase() in validTargetElements
+      p$(target).toggle()
+    else
+      console.error "Target type #{p$(target).tagName.toLowerCase()} is an invalid target"
+    false
+  for toggle in $(selector)
+    $(toggle).click ->
+      toggleEvent.debounce 50, null, null, this
   false
 
 
@@ -2013,6 +2049,55 @@ makePageCitationOverflow = ->
       p$("#page-citation").open()
   citationString
 
+
+delayPolymerBind = (selector, callback, iter = 0) ->
+  unless typeof window._dpb is "object"
+    window._dpb = new Object()
+  uid = md5(selector) + md5(callback)
+  if isNull window._dpb[uid]
+    window._dpb[uid] = false
+  superSlowBackup = 1000
+  if Polymer?.Base?.$$?
+    if window._dpb[uid] is false
+      iter = 0
+      window._dpb[uid] = true
+    try
+      element = Polymer.Base.$$(selector)
+      callback(element)
+      # Some browsers are stupid slow, do it again
+      delay superSlowBackup, ->
+        console.info "Doing #{superSlowBackup}ms delay callback for #{selector}"
+        callback(element)
+    catch e
+      console.warn "Error trying to do the delayed polymer bind - #{e.message}"
+      if iter < 10
+        ++iter
+        # Do a very short wait and try again, in case it's transient
+        delay 75, ->
+          delayPolymerBind selector, callback, iter
+      else
+        # See
+        # https://github.com/Polymer/polymer/issues/2246
+        console.error "Persistent error in polymer binding (#{e.message})"
+        console.error e.stack
+        # Attempt the last-ditch
+        element = $(selector).get(0)
+        callback(element)
+        delay superSlowBackup, ->
+          element = document.querySelector(selector)
+          console.info "Doing #{superSlowBackup}ms delay callback for #{selector}"
+          console.info "Using element", element
+          callback(element)
+  else
+    if iter < 50
+      delay 100, ->
+        ++iter
+        delayPolymerBind selector, callback, iter
+    else
+      console.error "Failed to verify Polymer was set up, attempting manual"
+      element = document.querySelector(selector)
+      callback element
+  false
 
 
 

@@ -161,8 +161,7 @@ $loginStatus = getLoginState();
            $test = $loginStatus['status'];
            if ($test) {
                ?>
-        Logged in as <span class='header-bar-user-name'><?php echo $user;
-               ?></span>
+        Logged in as <span class='header-bar-user-name'><?php echo $user; ?></span>
         <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
@@ -177,6 +176,7 @@ $loginStatus = getLoginState();
                ?>
         <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         <?php
+
            } ?>
         <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
@@ -211,58 +211,67 @@ $loginStatus = getLoginState();
              $polys = 0;
              $polyHtml = '';
              foreach ($list as $project) {
-               try {
-                 $carto = json_decode(deEscape($project['carto_id']), true);
+                 try {
+                     $carto = json_decode(deEscape($project['carto_id']), true);
                  # Escaped or unescaped
                  $bpoly = empty($carto['bounding&#95;polygon']) ? $carto['bounding_polygon'] : $carto['bounding&#95;polygon'];
-               } catch(Exception $e) {
-
-               }
-               if (empty($project['project_id']) || empty($project['locality'])) {
-                  if(empty($bpoly["multibounds"])) continue;
-               }
+                 } catch (Exception $e) {
+                 }
+                 if (empty($project['project_id']) || empty($project['locality'])) {
+                     if (empty($bpoly["multibounds"])) {
+                         continue;
+                     }
+                 }
                  if (boolstr($project['public'])) {
-                   $polyColor = '#ff7800';
+                     $polyColor = '#ff7800';
                    # Depending on the type of data stored, it could be
                    # in paths or not
-                   if(toBool($bpoly['paths']) === false && !empty($bpoly["multibounds"])) {
-                     $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
+                   if (toBool($bpoly['paths']) === false && !empty($bpoly["multibounds"])) {
+                       $bpoly['paths'] = is_array($bpoly["multibounds"]) ? $bpoly["multibounds"][0] : $bpoly["multibounds"];
                    }
-                   $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
+                     $coords = empty($bpoly['paths']) ? $bpoly : $bpoly['paths'];
                  } else {
-                   # Private
+                     # Private
                      $polyColor = '#9C27B0'; # See https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/64
-                     if(!empty($bpoly["multibounds"])) {
-                       # Replace this with an approximation
+                     if (!empty($bpoly["multibounds"])) {
+                         # Replace this with an approximation
                        $boringMultiBounds = array();
-                       foreach($bpoly["multibounds"] as $polySet) {
-                         # We want to get the four corners of each polySet
+                         foreach ($bpoly["multibounds"] as $polySet) {
+                             # We want to get the four corners of each polySet
                          $polySetBoundingBox = array();
-                         $north = -90;
-                         $south = 90;
-                         $west = 180;
-                         $east = -180;
-                         foreach($polySet as $points) {
-                           if($points["lat"] > $north) $north = $points["lat"];
-                           if($points["lng"] > $east) $east = $points["lng"];
-                           if($points["lng"] < $west) $west = $points["lng"];
-                           if($points["lat"] < $south) $south = $points["lat"];
+                             $north = -90;
+                             $south = 90;
+                             $west = 180;
+                             $east = -180;
+                             foreach ($polySet as $points) {
+                                 if ($points["lat"] > $north) {
+                                     $north = $points["lat"];
+                                 }
+                                 if ($points["lng"] > $east) {
+                                     $east = $points["lng"];
+                                 }
+                                 if ($points["lng"] < $west) {
+                                     $west = $points["lng"];
+                                 }
+                                 if ($points["lat"] < $south) {
+                                     $south = $points["lat"];
+                                 }
+                             }
+                             $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
+                             $polySetBoundingBox[] = array("lat" => $north, "lng" => $east);
+                             $polySetBoundingBox[] = array("lat" => $south, "lng" => $east);
+                             $polySetBoundingBox[] = array("lat" => $south, "lng" => $west);
+                             $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
+                             $boringMultiBounds[] = $polySetBoundingBox;
                          }
-                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
-                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $east);
-                         $polySetBoundingBox[] = array("lat" => $south, "lng" => $east);
-                         $polySetBoundingBox[] = array("lat" => $south, "lng" => $west);
-                         $polySetBoundingBox[] = array("lat" => $north, "lng" => $west);
-                         $boringMultiBounds[] = $polySetBoundingBox;
-                       }
-                       $bpoly["multibounds"] = $boringMultiBounds;
+                         $bpoly["multibounds"] = $boringMultiBounds;
                      } else {
-                       $coords = array();
-                       $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
-                       $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_e']);
-                       $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_e']);
-                       $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_w']);
-                       $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
+                         $coords = array();
+                         $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
+                         $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_e']);
+                         $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_e']);
+                         $coords[] = array('lat' => $project['bounding_box_s'], 'lng' => $project['bounding_box_w']);
+                         $coords[] = array('lat' => $project['bounding_box_n'], 'lng' => $project['bounding_box_w']);
                      }
                  }
                  $superCoords[] = $coords;
@@ -274,8 +283,8 @@ $loginStatus = getLoginState();
                  $projAverageLat = 0;
                  $projAverageLng = 0;
              # Need to enable both click-events and clickable
-             if(empty($bpoly["multibounds"])) {
-             $html = "\n<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
+             if (empty($bpoly["multibounds"])) {
+                 $html = "\n<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>";
                  foreach ($coords as $point) {
                      ++$points;
                      $lat = $point['lat'];
@@ -286,36 +295,32 @@ $loginStatus = getLoginState();
                  }
                  $html .= "</google-map-poly>\n";
                  $polyHtml .= $html;
-               } else {
+             } else {
                  # We have a multibounds-type display
-                 foreach($bpoly["multibounds"] as $boundSet) {
-                   # We'll repeat this for each set of points in the multibounds object
+                 foreach ($bpoly["multibounds"] as $boundSet) {
+                     # We'll repeat this for each set of points in the multibounds object
                      $html = "\n<google-map-poly closed fill-color='$polyColor' fill-opacity='$polyOpacity' stroke-weight='1' click-events clickable geodesic data-project='".$project['project_id']."'>\n <!-- Points: ".print_r($boundSet, true)."\n -->\n";
-                       foreach ($boundSet as $point) {
-                           ++$points;
-                           $lat = $point['lat'];
-                           $lng = $point['lng'];
-                           $projAverageLat = $projAverageLat + $lat;
-                           $projAverageLng = $projAverageLng + $lng;
-                           $html .= "\n\t<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
-                       }
-                       $html .= "</google-map-poly>\n";
-                       $polyHtml .= $html;
+                     foreach ($boundSet as $point) {
+                         ++$points;
+                         $lat = $point['lat'];
+                         $lng = $point['lng'];
+                         $projAverageLat = $projAverageLat + $lat;
+                         $projAverageLng = $projAverageLng + $lng;
+                         $html .= "\n\t<google-map-point latitude='$lat' longitude='$lng'></google-map-point>";
+                     }
+                     $html .= "</google-map-poly>\n";
+                     $polyHtml .= $html;
                  }
-               }
+             }
                  $projAverageLat = $projAverageLat / $points;
                  $projAverageLng = $projAverageLng / $points;
                  $averageLat = $averageLat + $projAverageLat;
                  $averageLng = $averageLng + $projAverageLng;
              }
              $averageLat = $averageLat / $polys;
-             $averageLng = $averageLng / $polys;
-             ?>
-        <google-map class="col-xs-11 col-md-9 center-block" id="community-map" latitude="<?php echo $averageLat;
-             ?>" longitude="<?php echo $averageLng;
-             ?>" zoom="2" map-type="hybrid" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
-          <?php echo $polyHtml;
-             ?>
+             $averageLng = $averageLng / $polys; ?>
+        <google-map class="col-xs-11 col-md-9 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" map-type="hybrid" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
+          <?php echo $polyHtml; ?>
         </google-map>
         <p class="text-center text-muted col-xs-12">Community Project Map</p>
         <div class="col-xs-12">
@@ -334,38 +339,38 @@ $loginStatus = getLoginState();
           </div>
         </div>
         <script type="text/javascript">
-          _adp.aggregateHulls = <?php echo json_encode($superCoords);
-             ?>;
+          _adp.aggregateHulls = <?php echo json_encode($superCoords); ?>;
         </script>
       </section>
       <?php
+
          } elseif (!$validProject) {
              ?>
       <h1 id="title">Invalid Project</h1>
       <?php
+
          } else {
              $search = array('project_id' => $pid);
              $result = $db->getQueryResults($search, '*', 'AND', false, true);
              $project = $result[0];
-             foreach($project as $attr=>$data) {
+             foreach ($project as $attr=>$data) {
                  $decoded = htmlspecialchars_decode(html_entity_decode($data));
-                 if(!empty($decoded)) {
+                 if (!empty($decoded)) {
                      $project[$attr] = $decoded;
                  }
-             }
-             ?>
+             } ?>
       <h1 id="title">
-        <?php echo $project['project_title'];
-             ?>
+        <?php echo $project['project_title']; ?>
       </h1>
       <?php
+
          } ?>
       <section id="main-body" class="row">
         <?php if (empty($pid)) {
-    $search = array(
+             $search = array(
               'public' => '', # Loose query
           );
-    $cols = array(
+             $cols = array(
               'project_id',
               'project_title',
               'public',
@@ -383,43 +388,49 @@ $loginStatus = getLoginState();
         "lab" => "pi_lab",
         "contact" => "author_data", # in author_data
     );
-    $authorDataOrderBy = array(
+             $authorDataOrderBy = array(
         "affiliation" => "affiliation",
         "contact" => "name",
     );
-    if(isset($_REQUEST["sort"])) {
-        $orderKey = $_REQUEST["sort"];
-        if(!array_key_exists($orderKey, $orderBy)) {
-            # Invalid order key
+             if (isset($_REQUEST["sort"])) {
+                 $orderKey = $_REQUEST["sort"];
+                 if (!array_key_exists($orderKey, $orderBy)) {
+                     # Invalid order key
             $orderKey = null;
-        }
-    }
-    if(empty($orderKey)) $orderKey = "date";
-    $orderColumn = $orderBy[$orderKey];
-    if(!array_find($orderColumn, $cols, false, true)) {
-        $cols[] = $orderColumn;
-    }
-    $list = $db->getQueryResults($search, $cols, 'AND', true, true, $orderColumn);
-    $html = '';
-    $i = 0;
-    $count = sizeof($list);
-    $max = 25;
-    $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
-    if ($page > 1) {
-        $multiplier = $page - 1;
-        $skip = $multiplier * $max;
+                 }
+             }
+             if (empty($orderKey)) {
+                 $orderKey = "date";
+             }
+             $orderColumn = $orderBy[$orderKey];
+             if (!array_find($orderColumn, $cols, false, true)) {
+                 $cols[] = $orderColumn;
+             }
+             $list = $db->getQueryResults($search, $cols, 'AND', true, true, $orderColumn);
+             $html = '';
+             $i = 0;
+             $count = sizeof($list);
+             $userMax = intval($_REQUEST["pagination"]);
+             if ($userMax < 10) {
+                 $userMax = 10;
+             }
+             $max = $userMax;
+             $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
+             if ($page > 1) {
+                 $multiplier = $page - 1;
+                 $skip = $multiplier * $max;
         #echo "<!-- Skipping $skip on page $page with multiplier $multiplier for max $max for total results $count -->";
-    } else {
-        $skip = 0;
-    }
-    $originalMax = $max;
-    $announcedStartSpot = false;
-    if ($skip > $count) {
-        $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
-    } else {
-        $htmlList = array();
-        foreach ($list as $k => $project) {
-            # This check also used to check for empty localities:
+             } else {
+                 $skip = 0;
+             }
+             $originalMax = $max;
+             $announcedStartSpot = false;
+             if ($skip > $count) {
+                 $html = "<h4>Whoops! <small class='text-muted'>These aren't the droids you're looking for</small></h4><p>You requested a project count that doesn't exit yet. Check back in a few weeks ;-)</p>";
+             } else {
+                 $htmlList = array();
+                 foreach ($list as $k => $project) {
+                     # This check also used to check for empty localities:
             #  || empty($project['locality'])
             #
             # but removed to address #163
@@ -428,162 +439,175 @@ $loginStatus = getLoginState();
                 $count--;
                 continue;
             }
-            ++$i;
-            if ($i < $skip + 1) {
-                continue;
-            }
-            if(!$announcedStartSpot) {
-                #echo "<!-- Starting list from item $i after skipping $skip (total: $count) -->";
+                     ++$i;
+                     if ($i < $skip + 1) {
+                         continue;
+                     }
+                     if (!$announcedStartSpot) {
+                         #echo "<!-- Starting list from item $i after skipping $skip (total: $count) -->";
                 $announcedStartSpot = true;
-            }
-            if ($i >= $max + $skip) {
-                break;
-            }
-            $authorData = json_decode($project['author_data'], true);
-            $icon = boolstr($project['public']) ? '<iron-icon icon="social:public"></iron-icon>' : '<iron-icon icon="icons:lock"></iron-icon>';
-            $shortProjectTitle = htmlspecialchars_decode(html_entity_decode($project['project_title']));
-            $tooltipTitle = "Project #".substr($project['project_id'], 0, 8)."...";
-            if ( strlen($shortProjectTitle) > 43 ) {
-                $shortProjectTitle = substr($shortProjectTitle, 0, 40) . "...";
-                $tooltipTitle = DBHelper::staticSanitize($project['project_title']);
-            }
-            $affilEncode = htmlspecialchars($authorData["affiliation"]);
-            $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
-            $orderData = $project[$orderColumn];
-            $projectCreatedOn = floatval($authorData["entry_date"]);
-            if($orderKey == "date") {
-                if(empty($orderData)) {
-                    # No data for the project -- sort by project creation
+                     }
+                     if ($i > $max + $skip) {
+                         break;
+                     }
+                     $authorData = json_decode($project['author_data'], true);
+                     $icon = boolstr($project['public']) ? '<iron-icon icon="social:public"></iron-icon>' : '<iron-icon icon="icons:lock"></iron-icon>';
+                     $shortProjectTitle = htmlspecialchars_decode(html_entity_decode($project['project_title']));
+                     $tooltipTitle = "Project #".substr($project['project_id'], 0, 8)."...";
+                     if (strlen($shortProjectTitle) > 43) {
+                         $shortProjectTitle = substr($shortProjectTitle, 0, 40) . "...";
+                         $tooltipTitle = DBHelper::staticSanitize($project['project_title']);
+                     }
+                     $affilEncode = htmlspecialchars($authorData["affiliation"]);
+                     $affiliationIcon = "<iron-icon icon='social:school' data-toggle='tooltip' title='".$affilEncode."'></iron-icon>";
+                     $orderData = $project[$orderColumn];
+                     $projectCreatedOn = floatval($authorData["entry_date"]);
+                     if ($orderKey == "date") {
+                         if (empty($orderData)) {
+                             # No data for the project -- sort by project creation
                     $orderData = $projectCreatedOn;
-                } else {
-                    $orderData = floatval($orderData);
-                }
-                $arrayKey = $orderData;
-            } else {
-                # If we were searching by author_data, we were looking
+                         } else {
+                             $orderData = floatval($orderData);
+                         }
+                         $arrayKey = $orderData;
+                     } else {
+                         # If we were searching by author_data, we were looking
                 # inside a key
-                if($orderColumn == "author_data") {
+                if ($orderColumn == "author_data") {
                     $authorDataKey = $authorDataOrderBy[$orderKey];
                     $orderData = $authorData[$authorDataKey];
                 }
                 # All the other keys may be redundant -- add project
                 # creation
                 $arrayKey = $orderData . $projectCreatedOn;
-            }
-            $hasData = strbool(intval($project["sampled_collection_end"]) > 0);
-            $hasLocale = strbool($project["lat"] != 0 && $project["lng"] != 0);
-            $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey' data-has-datafile='$hasData' data-has-locale='$hasLocale'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
-            $htmlList[$arrayKey] = '<li data-has-datafile="'.$hasData.'"  data-has-locale="'.$hasLocale.'">'.$projectHtml."</li>\n";
-        }
-        if ($i < $max) {
-            $count = $i;
-            $max = $i;
-        }
-        if ($skip > 0) {
-            $upperBound = $max + $skip > $count ? $count : $max + $skip;
-            $lowerBound = $skip + 1;
-            $max = $lowerBound.' &#8212; '.$upperBound;
-        }
-        ksort($htmlList);
-        $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">'.implode("\n",$htmlList).'        </ul>';
-    }
+                     }
+                     $hasData = strbool(intval($project["sampled_collection_end"]) > 0);
+                     $hasLocale = strbool($project["lat"] != 0 && $project["lng"] != 0);
+                     $projectHtml = "<button class='btn btn-primary' data-href='https://amphibiandisease.org/project.php?id=".$project['project_id']."' data-project='".$project['project_id']."' data-toggle='tooltip' title='".$tooltipTitle."' data-order-ref='$orderData' data-order-canonical='$arrayKey' data-has-datafile='$hasData' data-has-locale='$hasLocale'>".$icon.' '.$shortProjectTitle.'</button> by <span class="is-user" data-email="'.$authorData['contact_email'].'">'.$authorData['name'] . '</span>' . $affiliationIcon;
+                     $htmlList[$arrayKey] = '<li data-has-datafile="'.$hasData.'"  data-has-locale="'.$hasLocale.'">'.$projectHtml."</li>\n";
+                 }
+                 if ($i < $max) {
+                     $count = $i;
+                     $max = $i;
+                 }
+                 if ($skip > 0) {
+                     $upperBound = $max + $skip > $count ? $count : $max + $skip;
+                     $lowerBound = $skip + 1;
+                     $max = $lowerBound.' &#8212; '.$upperBound;
+                 }
+                 ksort($htmlList);
+                 $html = '<ul id="project-list" class="col-xs-12 col-md-8 col-lg-6 hidden-xs project-list project-list-page">'.implode("\n", $htmlList).'        </ul>';
+             }
           # Build the paginator
           $pages = intval($count / $originalMax);
     #echo "<!-- pages breakdown: iv = $pages with $count items and orig $originalMax -->";
-    if(($count % $originalMax) > 0) {
+    if (($count % $originalMax) > 0) {
         $pages++;
     }
     #echo "<!-- revised pages = $pages / " . $count % $originalMax . " -->";
     # https://getbootstrap.com/components/#pagination
     $olderDisabled = $page > 1 ? '' : 'disabled';
-    $nextPage = $page + 1;
-    $previousPage = $page - 1;
-    $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
-    $oByText = $orderKey == "date" ? "sampling date" : $orderKey;
-    $sortText = "$count, ordered by <span class='sort-by-placeholder-text' data-order-key='$orderKey'>".$oByText."</span>";
-    if($upperBound != $count) {
-        $sortText = "about ".$sortText;
-    }
-    ?>
+             $nextPage = $page + 1;
+             $previousPage = $page - 1;
+             $newerDisabled = $page * $originalMax <= $count ? '' : 'disabled';
+             $oByText = $orderKey == "date" ? "sampling date" : $orderKey;
+             $sortText = "$count, ordered by <span class='sort-by-placeholder-text' data-order-key='$orderKey'>".$oByText."</span>";
+             if ($upperBound != $count) {
+                 $sortText = "about ".$sortText;
+             } ?>
         <div class="col-xs-12 visible-xs-block text-right">
           <button id="toggle-project-viewport" class="btn btn-primary">Show Project List</button>
         </div>
-        <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max;
-    ?> newest projects <small class="text-muted">of <?php echo $sortText;
-    ?></small></h2>
-
-          <?php echo $html;
-    ?>
+        <h2 class="col-xs-12 status-notice hidden-xs project-list project-list-page">Showing <?php echo $max; ?> newest projects <small class="text-muted">of <?php echo $sortText; ?></small></h2>
+        <div class="col-xs-12 pagination-selection-container">
+          <!-- <div class="row"> -->
+            <h3 class="small display-inline">
+              Showing
+            </h3>
+            <paper-dropdown-menu label="Results per page" class="pagination" id="pagination-selector-dropdown" disabled>
+              <paper-listbox class="dropdown-content" selected="0">
+                <paper-item>10</paper-item>
+                <paper-item>15</paper-item>
+                <paper-item>25</paper-item>
+                <paper-item>50</paper-item>
+                <paper-item>100</paper-item>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <h3 class="small display-inline">
+              projects per page
+            </h3>
+          <!-- </div> -->
+        </div>
+    <?php
+        echo $html; ?>
 
         <div class="col-xs-12 col-md-4 col-lg-6 project-search project-list-page">
-          <h3>Search Projects</h3>
-          <div class="form-horizontal">
-            <div class="search-project form-group">
-              <label for="project-search" class="col-xs-12 col-md-5 col-lg-3 control-label">Search Projects</label>
-              <div class="col-xs-12 col-md-7 col-lg-9">
-                <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+          <paper-card heading="Search Projects" elevation="2">
+            <div class="card-content form-horizontal">
+              <div class="search-project form-group">
+                <label for="project-search" class="col-xs-12 col-md-4 col-lg-3 control-label">Search Projects</label>
+                <div class="col-xs-12 col-md-7 col-lg-9">
+                  <input type="text" class="form-control" placeholder="Project ID or name..." name="project-search" id="project-search"/>
+                </div>
               </div>
             </div>
-          </div>
-          <paper-radio-group selected="names" id="search-filter">
-            <paper-radio-button name="names" data-cols="project_id,project_title" data-cue="Project ID or name...">
-              Project Names &amp; IDs
-            </paper-radio-button>
-            <paper-radio-button name="users" data-cols="author_data,pi_lab" data-cue="Name or email...">
-              PIs, Labs, Creators, Affiliation
-            </paper-radio-button>
-            <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
-              Project Taxa
-            </paper-radio-button>
-          </paper-radio-group>
-          <ul id="project-result-container">
+            <paper-radio-group selected="names" id="search-filter">
+              <paper-radio-button name="names" data-cols="project_id,project_title" data-cue="Project ID or name...">
+                Project Names &amp; IDs
+              </paper-radio-button>
+              <paper-radio-button name="users" data-cols="author_data,pi_lab" data-cue="Name or email...">
+                PIs, Labs, Creators, Affiliation
+              </paper-radio-button>
+              <paper-radio-button name="taxa" data-cols="sampled_species,sampled_clades" data-cue="Scientific name...">
+                Project Taxa
+              </paper-radio-button>
+            </paper-radio-group>
+            <ul id="project-result-container">
 
-          </ul>
+            </ul>
+          </paper-card>
         </div>
         <nav class="col-xs-12 project-pagination center-block text-center" id="project-pagination">
           <ul class="pagination">
-            <li class="<?php echo $olderDisabled;
-    ?>">
+            <li class="<?php echo $olderDisabled; ?>">
               <a href="?page=<?php echo $previousPage; ?>"><span aria-hidden="true">&larr;</span> Previous</a>
             </li>
             <?php
           $k = 1;
-    while ($k <= $pages) {
-        echo "<li><a href='?page=".$k."'>".$k."</a></li>\n";
-        ++$k;
-    }
-    ?>
-            <li class="<?php echo $newerDisabled;
-    ?>">
+             while ($k <= $pages) {
+                 echo "<li><a href='?page=".$k."&pagination=".$originalMax."'>".$k."</a></li>\n";
+                 ++$k;
+             } ?>
+            <li class="<?php echo $newerDisabled; ?>">
               <a href="?page=<?php echo $nextPage; ?>">Next <span aria-hidden="true">&rarr;</span></a>
             </li>
           </ul>
         </nav>
         <?php
-} elseif (!$validProject) {
-    ?>
+
+         } elseif (!$validProject) {
+             ?>
         <h2 class="col-xs-12">Project <code><?php echo $pid ?></code> doesn&#39;t exist.</h2>
         <p>Did you want to <a href="project.php">browse our projects instead?</a></p>
         <?php
-} else {
-            $projectCitation = "";
-    ?>
+
+         } else {
+             $projectCitation = ""; ?>
         <?php
           $authorData = json_decode($project['author_data'], true);
-          $authorName = preg_replace('!\s+!', ' ', $authorData["name"]);
-          $authorParts = explode(" ", $authorName);
-          $authorNameFormal = $authorParts[1] . ", " . substr($authorParts[0], 0, 1);
-          $creationTime = $authorData["entry_date"];
-          $today = date("d M Y");
-          $phpTime = intval($creationTime) / 1000;
-          $creationYear = date("Y", $phpTime);
-          ?>
+             $authorName = preg_replace('!\s+!', ' ', $authorData["name"]);
+             $authorParts = explode(" ", $authorName);
+             $authorNameFormal = $authorParts[1] . ", " . substr($authorParts[0], 0, 1);
+             $creationTime = $authorData["entry_date"];
+             $today = date("d M Y");
+             $phpTime = intval($creationTime) / 1000;
+             $creationYear = date("Y", $phpTime); ?>
         <div class="citation-block col-xs-12">
           <p class="text-muted">
             Recommended citation:
           </p>
           <cite class="self-citation" data-project="Project #<?php echo $pid; ?>">
-            <span class="author-name"><?php echo $authorNameFormal; ?></span>. <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal. &lt;https://n2t.net/<?php echo $project['project_obj_id'];?>&gt;  Accessed <?php echo $today; ?>.
+            <span class="author-name"><?php echo $authorNameFormal; ?></span>. <span class="creation-year"><?php echo $creationYear; ?> "<?php echo $project['project_title']; ?>" AmphibiaWeb: Amphibian Disease Portal. &lt;https://n2t.net/<?php echo $project['project_obj_id']; ?>&gt;  Accessed <?php echo $today; ?>.
           </cite>
         </div>
         <h2 class="col-xs-12">
@@ -591,22 +615,17 @@ $loginStatus = getLoginState();
         </h2>
         <marked-element class="project-abstract col-xs-12 indent">
           <div class="markdown-html"></div>
-          <script type="text/markdown"><?php echo deEscape($project['sample_notes']);
-    ?></script>
+          <script type="text/markdown"><?php echo deEscape($project['sample_notes']); ?></script>
         </marked-element>
 
         <div class="col-xs-12 basics-list">
           <h2>Project Basics</h2>
 
           <div class="row">
-            <paper-input readonly label="ARK identifier" value="<?php echo $project['project_obj_id'];
-    ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
-            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project['project_obj_id'];
-    ?>" data-clipboard-text="https://n2t.net/<?php echo $project['project_obj_id'];
-    ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
+            <paper-input readonly label="ARK identifier" value="<?php echo $project['project_obj_id']; ?>" class="col-xs-9 col-md-11 ark-identifier"></paper-input>
+            <paper-fab icon="icons:content-copy" class="materialblue" id="copy-ark" data-ark="<?php echo $project['project_obj_id']; ?>" data-clipboard-text="https://n2t.net/<?php echo $project['project_obj_id']; ?>" data-toggle="tooltip" title="Copy Link"></paper-fab>
           </div>
-          <paper-input readonly label="Project pathogen" value="<?php echo $project['disease'];
-    ?>"></paper-input>
+          <paper-input readonly label="Project pathogen" value="<?php echo $project['disease']; ?>"></paper-input>
           <div class="row">
             <paper-input readonly label="Project PI" class="col-xs-9 col-md-11" value="<?php echo $project['pi_lab']; ?>"></paper-input>
             <paper-fab icon="social:person" class="materialblue is-user" data-name="<?php echo $project['pi_lab']; ?>"></paper-fab>
@@ -614,9 +633,8 @@ $loginStatus = getLoginState();
           <div class="row">
             <?php
                $class = empty($project['publication']) ? "col-xs-12" : "col-xs-9 col-md-11";
-               $hidden = empty($project['publication']) ? "hidden" : "";
-               $pub = preg_replace('%^(doi|ark|(https?://)?(dx\.)?doi\.org(/|:)|(https?://)?(www\.)?biscicol\.org/id(/|:)|(https?://)?(www\.)?n2t.net(/|:)):? *%im', '', $project['publication']);
-               ?>
+             $hidden = empty($project['publication']) ? "hidden" : "";
+             $pub = preg_replace('%^(doi|ark|(https?://)?(dx\.)?doi\.org(/|:)|(https?://)?(www\.)?biscicol\.org/id(/|:)|(https?://)?(www\.)?n2t.net(/|:)):? *%im', '', $project['publication']); ?>
             <paper-input readonly label="DOI" class="<?php echo $class; ?>" value="<?php echo $pub; ?>" id="doi-input"></paper-input>
             <paper-fab icon="icons:description" class="materialblue click" data-function="showCitation" data-toggle="tooltip" title="Show Citation" <?php echo $hidden; ?>></paper-fab>
           </div>
@@ -624,44 +642,48 @@ $loginStatus = getLoginState();
             <paper-input readonly label="Project Contact" value="<?php echo $authorData['name']; ?>" class="col-xs-9 col-md-11"></paper-input>
             <paper-fab icon="social:person" class="materialblue is-user" data-name="<?php echo $authorData['name']; ?>"></paper-fab>
           </div>
-          <paper-input readonly label="Diagnostic Lab" value="<?php echo $authorData['diagnostic_lab'];
-    ?>"></paper-input>
-          <paper-input readonly label="Affiliation" value="<?php echo $authorData['affiliation'];
-    ?>"></paper-input>
+          <paper-input readonly label="Diagnostic Lab" value="<?php echo $authorData['diagnostic_lab']; ?>"></paper-input>
+          <paper-input readonly label="Affiliation" value="<?php echo $authorData['affiliation']; ?>"></paper-input>
           <div class="row" id="email-fill">
             <?php
-               require_once 'admin/CONFIG.php';
-    ?>
+               require_once 'admin/CONFIG.php'; ?>
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             <p class="col-xs-12 col-md-3 col-lg-2 col-xl-1">
               Contact email:
               <br/>
               <span class="text-muted small">Please solve the CAPTCHA to see the contact email</span>
             </p>
-            <div class="g-recaptcha col-xs-12 col-md-9 col-lg-10 col-xl-11" data-sitekey="<?php echo $recaptcha_public_key;
-    ?>" data-callback="renderEmail"></div>
+            <div class="g-recaptcha col-xs-12 col-md-9 col-lg-10 col-xl-11" data-sitekey="<?php echo $recaptcha_public_key; ?>" data-callback="renderEmail"></div>
           </div>
         </div>
         <div class="needs-auth col-xs-12" id="auth-block">
 <?php
    $limitedProject = array();
-    $cleanCarto = deEscape($project['carto_id']);
-    $carto = json_decode($cleanCarto, true);
+             $cleanCarto = deEscape($project['carto_id']);
+             $carto = json_decode($cleanCarto, true);
     # TODO RECONSTRUCT LIMITED MULTIBOUNDS HERE
     $multiBounds = $carto["bounding_polygon"]["multibounds"];
-    $north = -90;
-    $south = 90;
-    $west = 180;
-    $east = -180;
-    foreach($multiBounds as $polygon) {
-        foreach($polygon as $point) {
-            if($point["lat"] > $north) $north = $point["lat"];
-            if($point["lng"] > $east) $east = $point["lng"];
-            if($point["lng"] < $west) $west = $point["lng"];
-            if($point["lat"] < $south) $south = $point["lat"];
-        }
-    }
-    $corners = array(
+             $north = -90;
+             $south = 90;
+             $west = 180;
+             $east = -180;
+             foreach ($multiBounds as $polygon) {
+                 foreach ($polygon as $point) {
+                     if ($point["lat"] > $north) {
+                         $north = $point["lat"];
+                     }
+                     if ($point["lng"] > $east) {
+                         $east = $point["lng"];
+                     }
+                     if ($point["lng"] < $west) {
+                         $west = $point["lng"];
+                     }
+                     if ($point["lat"] < $south) {
+                         $south = $point["lat"];
+                     }
+                 }
+             }
+             $corners = array(
         array(
             "lat" => $north,
             "lng" => $west,
@@ -683,14 +705,14 @@ $loginStatus = getLoginState();
             "lng" => $west,
         ),
     );
-    $cartoLimited = array(
+             $cartoLimited = array(
        'bounding_polygon' => array(
            'fillColor' => $carto['bounding_polygon']['fillColor'],
            'fillOpacity' => $carto['bounding_polygon']['fillOpacity'],
            "multibounds" => array($corners), # $carto["bounding_polygon"]["multibounds"], # TEMPORARY
        ),
    );
-    $limitedProjectCols = array(
+             $limitedProjectCols = array(
        'public',
        'bounding_box_n',
        'bounding_box_e',
@@ -699,36 +721,33 @@ $loginStatus = getLoginState();
        'lat',
        'lng',
    );
-    foreach ($limitedProjectCols as $col) {
-        $limitedProject[$col] = $project[$col];
-    }
-    $limitedProject['carto_id'] = $cartoLimited;
-    $jsonDataLimited = json_encode($limitedProject);
-    $jsonData = json_encode($project);
+             foreach ($limitedProjectCols as $col) {
+                 $limitedProject[$col] = $project[$col];
+             }
+             $limitedProject['carto_id'] = $cartoLimited;
+             $jsonDataLimited = json_encode($limitedProject);
+             $jsonData = json_encode($project);
 
-    if (boolstr($project['public']) === true) {
-        # Public project, base renders
+             if (boolstr($project['public']) === true) {
+                 # Public project, base renders
 ?>
           <script type="text/javascript">
-            renderMapWithData(<?php echo $jsonData;
-        ?>);
+            renderMapWithData(<?php echo $jsonData; ?>);
           </script>
 
 <?php
 
-    } else {
-        # Set the most limited public data possible. After correct user
+             } else {
+                 # Set the most limited public data possible. After correct user
     # validation, it'll render a simple map
 ?>
           <script type="text/javascript">
-            setPublicData(<?php echo $jsonDataLimited;
-        ?>);
+            setPublicData(<?php echo $jsonDataLimited; ?>);
           </script>
 
 <?php
 
-    }
-    ?>
+             } ?>
         </div>
         <div class="col-xs-12">
           <h2>Species List</h2>
@@ -736,41 +755,39 @@ $loginStatus = getLoginState();
           <ul class="species-list">
 <?php
           $aWebUri = 'http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&amp;rel-species=equals&amp;';
-    $args = array('where-genus' => '', 'where-species' => '');
-    $speciesList = explode(',', $project['sampled_species']);
-    sort($speciesList);
-    $i = 0;
-    $realSpecies = array();
-    foreach ($speciesList as $species) {
-        if (empty($species)) {
-            continue;
-        }
-        ++$i;
-        $realSpecies[] = $species;
-        $speciesParts = explode(' ', $species);
-        $args['where-genus'] = $speciesParts[0];
-        $args['where-species'] = $speciesParts[1];
-        $badSpecies = preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}[\w ]+){0,1})$/m', $speciesParts[1]) || empty($speciesParts[1]);
-        if($badSpecies) {
-            $linkUri = $aWebUri.'where-genus='.$speciesParts[0];
-        } else {
-            $linkUri = $aWebUri.'where-genus='.$speciesParts[0].'&amp;where-species='.$speciesParts[1];
-        }
+             $args = array('where-genus' => '', 'where-species' => '');
+             $speciesList = explode(',', $project['sampled_species']);
+             sort($speciesList);
+             $i = 0;
+             $realSpecies = array();
+             foreach ($speciesList as $species) {
+                 if (empty($species)) {
+                     continue;
+                 }
+                 ++$i;
+                 $realSpecies[] = $species;
+                 $speciesParts = explode(' ', $species);
+                 $args['where-genus'] = $speciesParts[0];
+                 $args['where-species'] = $speciesParts[1];
+                 $badSpecies = preg_match('/^(nov[.]{0,1} ){0,1}(sp[.]{0,1}([ ]{0,1}[\w ]+){0,1})$/m', $speciesParts[1]) || empty($speciesParts[1]);
+                 if ($badSpecies) {
+                     $linkUri = $aWebUri.'where-genus='.$speciesParts[0];
+                 } else {
+                     $linkUri = $aWebUri.'where-genus='.$speciesParts[0].'&amp;where-species='.$speciesParts[1];
+                 }
 
-        $html = '<li class="aweb-link-species" data-species="'.$species.'" data-positive="false" data-negative="false" data-inconclusive="false"> <span class="click sciname" data-href="'.$linkUri.'"data-newtab="true">'.$species.'</span> <paper-icon-button class="click" data-href="'.$linkUri.'" icon="icons:open-in-new" data-newtab="true"></paper-icon-button></li>';
-        echo $html;
-    }
-    if ($i === 0) {
-        echo '<h3>Sorry, there are no species associated with this project.</h3>';
-        $speciesJson = '{}';
-    } else {
-        $speciesJson = json_encode($realSpecies);
-    }
-    ?>
+                 $html = '<li class="aweb-link-species" data-species="'.$species.'" data-positive="false" data-negative="false" data-inconclusive="false"> <span class="click sciname" data-href="'.$linkUri.'"data-newtab="true">'.$species.'</span> <paper-icon-button class="click" data-href="'.$linkUri.'" icon="icons:open-in-new" data-newtab="true"></paper-icon-button></li>';
+                 echo $html;
+             }
+             if ($i === 0) {
+                 echo '<h3>Sorry, there are no species associated with this project.</h3>';
+                 $speciesJson = '{}';
+             } else {
+                 $speciesJson = json_encode($realSpecies);
+             } ?>
           </ul>
           <script type="text/javascript">
-            _adp.pageSpeciesList = <?php echo $speciesJson;
-    ?>;
+            _adp.pageSpeciesList = <?php echo $speciesJson; ?>;
           </script>
         </div>
         <h2 class="col-xs-12 project-identifier">
@@ -780,7 +797,8 @@ $loginStatus = getLoginState();
           </span>
         </h2>
         <?php
-} ?>
+
+         } ?>
       </section>
     </main>
 <?php

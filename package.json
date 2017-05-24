@@ -1,6 +1,6 @@
 {
   "name": "amphibian-disease-tracker",
-  "version": "0.12.3",
+  "version": "0.12.6",
   "description": "Amphibian Disease Tracker Portal",
   "main": "",
   "scripts": {
@@ -29,7 +29,7 @@
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-coffee": "^1.0.0",
-    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-cssmin": "^2.0.0",
     "grunt-contrib-less": "^1.4.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
@@ -38,13 +38,16 @@
     "grunt-php-cs-fixer": "^1.0.0",
     "grunt-phplint": "^0.1.0",
     "grunt-postcss": "^0.8.0",
-    "grunt-regex-extract": "github:tigerhawkvok/grunt-regex-extract#3d88618c5ae5ffc5f497661c09b79614d20a0a81",
+    "grunt-regex-extract": "^0.0.1",
     "grunt-shell": "^2.0.0",
     "grunt-string-replace": "^1.3.1",
     "less": "^2.7.1",
     "newline-remove": "^1.0.2",
     "npm": "^4.0.3",
     "npm-check-updates": "^2.8.6",
-    "vulcanize": "https://registry.npmjs.org/vulcanize/-/vulcanize-1.14.8.tgz"
+    "vulcanize": "^1.15.4"
+  },
+  "dependencies": {
+    "minimatch": "^3.0.4"
   }
 }
