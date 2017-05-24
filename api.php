@@ -1281,7 +1281,7 @@ function getChartData($chartDataParams)
         }
         $chartData = array(
             "labels" => $labels,
-            "stacking" => array("x"=>false, "y"=>true),
+            "stacking" => array("x" => false, "y" => true),
             "datasets" => array(
                 // array(
                 //     "label" => "Total Samples",
@@ -1298,10 +1298,6 @@ function getChartData($chartDataParams)
                     "data" => $chartNegDatasetData,
                     "stack" => "PosNeg",
                 ),
-                //         array(
-                // "label" => "Indeterminant Samples",
-                //         "data" => $chartIndDatasetData,
-                //         ),
             ),
         );
         returnAjax(array(
