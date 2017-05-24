@@ -430,6 +430,11 @@ if (!empty($pid)) {
           <button class="btn btn-success" id="generate-chart">Generate Chart</button>
         </div>
       </div>
+      <div class="col-xs-12 clearfix" id="locale-zoom-canvas-container">
+        <canvas id="locale-zoom-chart">
+
+        </canvas>
+      </div>
     </section>
   </main>
     <?php

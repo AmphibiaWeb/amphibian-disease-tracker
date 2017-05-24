@@ -495,9 +495,62 @@ getServerChart = function(chartType, chartParams) {
               country: country
             };
             $.get("dashboard.php", buildQuery(args, "json")).done(function(result) {
+              var chartCtx, negSamples, posSamples, ref11, taxon, taxonData;
               console.debug("Got country result", result);
               if (result.status) {
                 console.log("Should build out new chart here");
+                chartObj = {
+                  type: "bar",
+                  options: {
+                    scales: {
+                      xAxes: [
+                        {
+                          scaleLabel: {
+                            labelString: "Taxa",
+                            display: true
+                          }
+                        }
+                      ],
+                      yAxes: [
+                        {
+                          scaleLabel: {
+                            labelString: "Sample Count",
+                            display: true
+                          },
+                          stacked: true
+                        }
+                      ]
+                    },
+                    title: "Taxa in " + country
+                  }
+                };
+                posSamples = {
+                  label: "Positive Samples",
+                  data: [],
+                  stack: "pnSamples"
+                };
+                negSamples = {
+                  label: "Negative Samples",
+                  data: [],
+                  stack: "pnSamples"
+                };
+                ref11 = result.data;
+                for (taxon in ref11) {
+                  taxonData = ref11[taxon];
+                  negSamples.data.push(toInt(taxonData["false"]));
+                  posSamples.data.push(toInt(taxonData["true"]));
+                }
+                chartData = [posSamples, negSamples];
+                chartObj.data = chartData;
+                console.log("USing chart data", chartObj);
+                uid = JSON.stringify(chartData);
+                chartSelector = "#locale-zoom-chart";
+                chartCtx = $(chartSelector);
+                $(chartSelector).attr("data-uid", uid);
+                if (_adp.zoomChart != null) {
+                  _adp.zoomChart.destroy();
+                }
+                _adp.zoomChart = new Chart(chartCtx, chartObj);
               }
               return false;
             });

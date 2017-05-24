@@ -450,12 +450,57 @@ getServerChart = (chartType = "location", chartParams) ->
             args =
               async: true
               action: "country_taxon"
-              country: country              
+              country: country
             $.get "dashboard.php", buildQuery args, "json"
             .done (result) ->
               console.debug "Got country result", result
               if result.status
                 console.log "Should build out new chart here"
+                # Create main object frame
+                chartObj =
+                  type: "bar"
+                  options:
+                    scales:
+                      xAxes: [
+                        scaleLabel:
+                          labelString: "Taxa"
+                          display: true
+                        ]
+                      yAxes: [
+                        scaleLabel:
+                          labelString: "Sample Count"
+                          display: true
+                        stacked: true
+                        ]
+                    title: "Taxa in #{country}"
+                # Create placeholder objects all colorized etc
+                posSamples =
+                  label: "Positive Samples"
+                  data: []
+                  stack: "pnSamples"
+                negSamples =
+                  label: "Negative Samples"
+                  data: []
+                  stack: "pnSamples"
+                # Build the datasets
+                for taxon, taxonData of result.data
+                  negSamples.data.push toInt taxonData.false
+                  posSamples.data.push toInt taxonData.true
+                # Finish the object
+                chartData = [
+                  posSamples
+                  negSamples
+                  ]
+                chartObj.data = chartData
+                console.log "USing chart data", chartObj
+                uid = JSON.stringify chartData
+                chartSelector = "#locale-zoom-chart"
+                chartCtx = $(chartSelector)
+                $(chartSelector).attr "data-uid", uid
+                # Append a new chart
+                if _adp.zoomChart?
+                  _adp.zoomChart.destroy()
+                _adp.zoomChart = new Chart chartCtx, chartObj
               false
             return false
       stopLoad()
