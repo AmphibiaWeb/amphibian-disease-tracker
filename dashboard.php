@@ -342,7 +342,7 @@ if (!empty($pid)) {
         </div>
         <div class="col-xs-12">
           <button type="button" class="btn btn-info collapse-trigger" data-target="#top-ten-collapse" id="top-ten-collapse-button-trigger">
-            View Top Ten Countries &amp; Taxa
+            Toggle View of Top Ten Countries &amp; Taxa
           </button>
           <iron-collapse id="top-ten-collapse">
             <div class="collapse-content row">
