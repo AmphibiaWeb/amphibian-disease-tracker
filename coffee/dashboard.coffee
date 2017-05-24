@@ -477,10 +477,16 @@ getServerChart = (chartType = "location", chartParams) ->
                 posSamples =
                   label: "Positive Samples"
                   data: []
+                  borderColor: "rgba(220,30,25,1)"
+                  backgroundColor: "rgba(220,30,25,0.2)"
+                  borderWidth: 1
                   stack: "pnSamples"
                 negSamples =
                   label: "Negative Samples"
                   data: []
+                  borderColor: "rgba(25,70,220,1)"
+                  backgroundColor: "rgba(25,70,220,0.2)"
+                  borderWidth: 1
                   stack: "pnSamples"
                 # Build the datasets
                 labels = new Array()
