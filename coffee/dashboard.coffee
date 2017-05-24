@@ -447,7 +447,16 @@ getServerChart = (chartType = "location", chartParams) ->
             country = data._model.label
             console.debug "country clicked:", country
             # Now we'd like to get a copy of of the country's taxon results
-
+            args =
+              async: true
+              action: "country_taxon"
+              country: country              
+            $.get "dashboard.php", buildQuery args, "json"
+            .done (result) ->
+              console.debug "Got country result", result
+              if result.status
+                console.log "Should build out new chart here"
+              false
             return false
       stopLoad()
     false

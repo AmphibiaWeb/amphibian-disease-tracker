@@ -410,6 +410,16 @@ bindCopyEvents = (selector = ".click-copy") ->
   false
 
 
+buildQuery = (obj) ->
+  queryList = new Array()
+  for k, v of obj
+    key = k.replace /[^A-Za-z\-_\[\]]/img, ""
+    value = encodeURIComponent(v).replace /\%20/g, "+"
+    queryList.push """#{key}=#{value}"""
+  queryList.join "&"
+
+
+
 jsonTo64 = (obj, encode = true) ->
   ###
   #

@@ -489,6 +489,18 @@ getServerChart = function(chartType, chartParams) {
             console.debug("Specific data:", data);
             country = data._model.label;
             console.debug("country clicked:", country);
+            args = {
+              async: true,
+              action: "country_taxon",
+              country: country
+            };
+            $.get("dashboard.php", buildQuery(args, "json")).done(function(result) {
+              console.debug("Got country result", result);
+              if (result.status) {
+                console.log("Should build out new chart here");
+              }
+              return false;
+            });
             return false;
           });
         }
