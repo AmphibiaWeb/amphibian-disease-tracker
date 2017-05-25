@@ -1,7 +1,8 @@
 apiTarget = "#{uri.urlString}api.php"
 adminApiTarget = "#{uri.urlString}admin-api.php"
 
-window._adp = new Object()
+window._adp =
+  taxonCharts: new Object()
 
 try
   do createOverflowMenu = ->
@@ -24,7 +25,7 @@ try
       <paper-menu class="dropdown-content">
         #{accountSettings}
         <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
-          Summary Dashboard
+          Data Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
           <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
@@ -117,12 +118,18 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     console.log "Canvas already exists:", chartSelector
   ## Handle the chart
   # http://www.chartjs.org/docs/
+  if _adp.chart?.chart?
+    # Get rid of any current ones
+    _adp.chart.chart.destroy()
   chartCtx = $(chartSelector)
   if isNull chartCtx
     try
       console.log "trying again to make context"
       chartCtx = $(canvas)
   chart = new Chart chartCtx, chartData
+  _adp.chart =
+    chart: chart
+    ctx: chartCtx
   console.info "Chart created with", chartData
   if typeof callback is "function"
     callback()
@@ -298,11 +305,45 @@ getServerChart = (chartType = "location", chartParams) ->
         chartObj.options =
           scales:
             xAxes: [
+              scaleLabel:
+                labelString: result.axes.x
+                display: true
               stacked: chartData.stacking.x
               ]
             yAxes: [
+              scaleLabel:
+                labelString: result.axes.y
+                display: true
               stacked: chartData.stacking.y
               ]
+        if result.title?
+          chartObj.options.title =
+            display: true
+            text: result.title
+      else
+        try
+          unless chartObj.options?
+            chartObj.options =
+              scales:
+                xAxes: [
+                  scaleLabel: {}
+                  ]
+                yAxes: [
+                  scaleLabel: {}
+                  ]
+          if result.title?
+            chartObj.options.title =
+              display: true
+              text: result.title
+          chartObj.options?.scales?.xAxes?[0]?.scaleLabel =
+            labelString: result.axes.x
+            display: true
+          chartObj.options?.scales?.yAxes?[0]?.scaleLabel =
+            labelString: result.axes.y
+            display: true
+        catch e
+          console.warn "Couldn't set up redundant options - #{e.message}"
+          console.warn e.stack
       try
         uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
       catch
@@ -317,27 +358,165 @@ getServerChart = (chartType = "location", chartParams) ->
         unless isNull result.full_description
           $("#chart-#{datasets[0].label.replace(" ","-")}").before "<h3 class='col-xs-12 text-center chart-title'>#{result.full_description}</h3>"
         if chartType is "species"
+          fetchUpdatesFor = new Object()
           # Put a descriptor
+          collapseHtml = ""
+          for bin in chartDataJs.labels
+            targetId = md5 "#{bin}-#{Date.now()}"
+            collapseHtml += """
+            <div class="col-xs-12 col-md-6 col-lg-4">
+              <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
+              #{bin}
+              </button>
+              <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
+                <div class="collapse-content alert">
+                  Binned data for #{bin}. Should populate this asynchronously ....
+                </div>
+              </iron-collapse>
+            </div>
+            """
+            # Store what needs the update fetched
+            fetchUpdatesFor[targetId] = bin
           if chartParams.sort is "species"
             measurement = "species"
             measurementSingle = measurement
           else
             measurement = "genera"
             measurementSingle = "genus"
+          dataUri = _adp.chart.chart.toBase64Image()
           html = """
-          <section id="post-species-summary" class="col-xs-12">
-            <p>
+          <section id="post-species-summary" class="col-xs-12" style="margin-top:2rem;">
+            <div class="row">
+              <a href="#{dataUri}" class="btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2" id="download-main-chart" download disabled>
+                <iron-icon icon="icons:cloud-download"></iron-icon>
+                Download Chart
+              </a>
+            </div>
+            <p hidden>
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
             <div class="row">
-              <h3>#{measurementSingle} Summaries</h3>
-              collapsors here? or async pulls?
+              <h3 class="capitalize col-xs-12">#{measurementSingle} Summaries <small class="text-muted">Ordered as the above chart</small></h3>
+              <p class="col-xs-12 text-muted">Click on a taxon to toggle charts and more data for that taxon</p>
+              #{collapseHtml}
             </div>
           </section>
           """
           try
             $("#post-species-summary").remove()
           $(chartSelector).after html
+          delay 750, ->
+            dataUri = _adp.chart.chart.toBase64Image()
+            $("#download-main-chart")
+            .attr "href", dataUri
+            .removeAttr "disabled"
+          try
+            bindCollapsors()
+            _adp.fetchUpdatesFor = fetchUpdatesFor
+            delay 250, ->
+              fetchMiniTaxonBlurbs()
+          # Click events on the chart
+          _adp.chart.ctx.click (e) ->
+            dataset = _adp.chart.chart.getDatasetAtEvent e
+            element = _adp.chart.chart.getElementAtEvent e
+            console.debug "Dataset", dataset
+            console.debug "Element", element
+            elIndex = element[0]._index
+            data = dataset[elIndex]
+            console.debug "Specific data:", data
+            taxon = data._model.label
+            console.debug "Taxon clicked:", taxon
+            color = getRandomDataColor()
+            buttonSelector = "button[data-taxon='#{taxon}']"
+            console.debug "Selector", buttonSelector, $(buttonSelector).exists()
+            $(".success-glow").removeClass "success-glow"
+            $(buttonSelector)
+            .addClass "success-glow"
+            .get(0).scrollIntoView(false)
+        else if chartType is "location"
+          # See events from
+          # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
+          # Click events on the chart
+          _adp.chart.ctx.click (e) ->
+            dataset = _adp.chart.chart.getDatasetAtEvent e
+            element = _adp.chart.chart.getElementAtEvent e
+            console.debug "Dataset", dataset
+            console.debug "Element", element
+            elIndex = element[0]._index
+            data = dataset[elIndex]
+            console.debug "Specific data:", data
+            country = data._model.label
+            console.debug "country clicked:", country
+            # Now we'd like to get a copy of of the country's taxon results
+            args =
+              async: true
+              action: "country_taxon"
+              country: country
+            $.get "dashboard.php", buildQuery args, "json"
+            .done (result) ->
+              console.debug "Got country result", result
+              if result.status
+                console.log "Should build out new chart here"
+                # Create main object frame
+                chartObj =
+                  type: "bar"
+                  options:
+                    responsive: true
+                    title:
+                      display: true
+                      text: "Taxa in #{country}"
+                    scales:
+                      xAxes: [
+                        scaleLabel:
+                          labelString: "Taxa"
+                          display: true
+                        ]
+                      yAxes: [
+                        scaleLabel:
+                          labelString: "Sample Count"
+                          display: true
+                        stacked: true
+                        ]
+                # Create placeholder objects all colorized etc
+                posSamples =
+                  label: "Positive Samples"
+                  data: []
+                  borderColor: "rgba(220,30,25,1)"
+                  backgroundColor: "rgba(220,30,25,0.3)"
+                  borderWidth: 1
+                  stack: "pnSamples"
+                negSamples =
+                  label: "Negative Samples"
+                  data: []
+                  borderColor: "rgba(25,70,220,1)"
+                  backgroundColor: "rgba(25,70,220,0.3)"
+                  borderWidth: 1
+                  stack: "pnSamples"
+                # Build the datasets
+                labels = new Array()
+                for taxon, taxonData of result.data
+                  negSamples.data.push toInt taxonData.false
+                  posSamples.data.push toInt taxonData.true
+                  labels.push taxon
+                # Finish the object
+                chartData =
+                  labels: labels
+                  datasets: [
+                    posSamples
+                    negSamples
+                    ]
+                chartObj.data = chartData
+                console.log "USing chart data", chartObj
+                uid = JSON.stringify chartData
+                chartSelector = "#locale-zoom-chart"
+                chartCtx = $(chartSelector)
+                $(chartSelector).attr "data-uid", uid
+                # Append a new chart
+                if _adp.zoomChart?
+                  _adp.zoomChart.destroy()
+                _adp.zoomChart = new Chart chartCtx, chartObj
+              false
+            return false
       stopLoad()
     false
   .fail (result, status) ->
@@ -347,8 +526,294 @@ getServerChart = (chartType = "location", chartParams) ->
   false
 
 
+
+fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
+  console.debug "Binding / setting up taxa updates for", reference
+  _adp.collapseOpener = (collapse) ->
+    if collapse.opened
+      elapsed = Date.now() - _adp.lastOpened
+      if elapsed < 1000
+        return false
+      collapse.hide()
+    else
+      _adp.lastOpened = Date.now()
+      collapse.show()
+    #collapse.show()
+    #collapse.toggle.debounce(50)
+    false
+  for collapseSelector, taxon of reference
+    selector = "##{collapseSelector} .collapse-content"
+    taxonArr = taxon.split " "
+    taxonObj =
+      genus: taxonArr[0]
+      species: taxonArr[1] ? ""
+    $("button##{collapseSelector}-button-trigger")
+    .attr "data-taxon", taxon
+    .click ->
+      taxon = $(this).attr "data-taxon"
+      taxonArr = taxon.split " "
+      taxonObj =
+        genus: taxonArr[0]
+        species: taxonArr[1] ? ""
+      selector = $(this).parent().find ".collapse-content"
+      hasData = $(this).attr("data-has-data") ? false
+      unless hasData.toBool()
+        $(this).attr "data-has-data", "true"
+        html = """
+        <paper-spinner active></paper-spinner> Fetching Data...
+        """
+        $(selector).html html
+        fetchMiniTaxonBlurb taxonObj, selector
+      else
+        console.debug "Already has data"
+      collapse = $(this).parent().find("iron-collapse").get(0)
+      console.debug "is opened?", collapse.opened
+      #_adp.collapseOpener.debounce 300, null, null, collapse
+  false
+
+
+
+
+fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
+  args = [
+    "action=taxon"
+    ]
+  for k, v of taxonResult
+    args.push "#{k}=#{encodeURIComponent v}"
+  $.get "api.php", args.join("&"), "json"
+  .done (result) ->
+    console.log "Got result", result
+    if result.status isnt true
+      html = """
+      <div class="alert alert-danger">
+        <p>
+          <strong>Error:</strong> Couldn't fetch taxon data
+        </p>
+      </div>
+      """
+      $(targetSelector).html html
+      return false
+    $(targetSelector).html ""
+    if result.isGenusLookup
+      iterator = new Array()
+      for retResult in Object.toArray result.taxa
+        iterator.push retResult.data
+    else
+      iterator = [result]
+    # Check each taxon
+    for taxonData in iterator
+      try
+        console.log "Doing blurb for", JSON.stringify taxonData.taxon
+        try
+          if typeof taxonData.amphibiaweb.data.common_name isnt "object"
+            throw {message:"NOT_OBJECT"}
+          names = Object.toArray taxonData.amphibiaweb.data.common_name
+          nameString = ""
+          i = 0
+          for name in names
+            ++i
+            if name is taxonData.iucn.data.main_common_name
+              name = "<strong>#{name.trim()}</strong>"
+            nameString += name.trim()
+            if names.length isnt i
+              nameString += ", "
+        catch e
+          if typeof taxonData.amphibiaweb.data.common_name is "string"
+            nameString = taxonData.amphibiaweb.data.common_name
+          else
+            nameString = taxonData.iucn?.data?.main_common_name ? ""
+            console.warn "Couldn't create common name string! #{e.message}"
+            console.warn e.stack
+            console.debug taxonData.amphibiaweb.data
+        unless isNull nameString
+          nameHtml = """
+          <p>
+            <strong>Names:</strong> #{nameString}
+          </p>
+          """
+        else
+          nameHtml = ""
+        countries = Object.toArray taxonData.adp.countries
+        countryHtml = """
+        <ul class="country-list">
+          <li>#{countries.join("</li><li>")}</li>
+        </ul>
+        """
+        linkHtml = """
+        <div class='clade-project-summary'>
+          <p>Represented in <strong>#{taxonData.adp.project_count}</strong> projects with <strong>#{taxonData.adp.samples}</strong> samples</p>
+        """
+        for project, title of taxonData.adp.projects
+          tooltip = title
+          if title.length > 30
+            title = title.slice(0,27) + "..."
+          linkHtml += """
+          <a class="btn btn-primary newwindow project-button-link" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
+            #{title}
+          </a>
+          """
+        linkHtml += "</div>"
+        if result.isGenusLookup
+          taxonFormatted = """
+            <span class="sciname">
+              <span class="genus">#{taxonData.taxon.genus}</span>
+              <span class="species">#{taxonData.taxon.species}</span>
+            </span>
+          """
+          taxonId = """
+          <p>
+            <strong>Taxon:</strong> #{taxonFormatted}
+          </p>
+          """
+        else
+          taxonId = ""
+        # Create taxon blurb
+        idTaxon = encode64 JSON.stringify taxonData.taxon
+        idTaxon = idTaxon.replace /[^\w0-9]/img, ""
+        console.log "Appended blurb for idTaxon", idTaxon
+        blurb = """
+        <div class='blurb-info' id="taxon-blurb-#{idTaxon}">
+          #{taxonId}
+          <p>
+            <strong>IUCN Status:</strong> #{taxonData.iucn.category}
+          </p>
+          #{nameHtml}
+          <p>Sampled in the following countries:</p>
+          #{countryHtml}
+          #{linkHtml}
+          <div class="charts-container row">
+          </div>
+        </div>
+        """
+        $(targetSelector).append blurb
+        # Create the pie charts
+        diseaseData = taxonData.adp.disease_data
+        for disease, data of diseaseData
+          unless data.detected.no_confidence is data.detected.total
+            testingData =
+              labels: [
+                "#{disease} detected"
+                "#{disease} not detected"
+                "#{disease} inconclusive data"
+                ]
+              datasets: [
+                data: [data.detected.true, data.detected.false, data.detected.no_confidence]
+                backgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                hoverBackgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                ]
+            chartCfg =
+              type: "pie"
+              data: testingData
+            # Create a canvas for this
+            canvas = document.createElement "canvas"
+            canvas.setAttribute "class","chart dynamic-pie-chart"
+            canvasId = "#{idTaxon}-#{disease}-testdata"
+            canvas.setAttribute "id", canvasId
+            canvasContainerId = "#{canvasId}-container"
+            chartContainer = $(targetSelector).find("#taxon-blurb-#{idTaxon}").find(".charts-container").get(0)
+            containerHtml = """
+            <div id="#{canvasContainerId}" class="col-xs-6">
+            </div>
+            """
+            $(chartContainer).append containerHtml
+            $("##{canvasContainerId}").get(0).appendChild canvas
+            chartCtx = $("##{canvasId}")
+            pieChart = new Chart chartCtx, chartCfg
+            _adp.taxonCharts[canvasId] = pieChart
+          # Fatality!
+          unless data.fatal.unknown is data.fatal.total
+            fatalData =
+              labels: [
+                "#{disease} fatal"
+                "#{disease} not fatal"
+                "#{disease} unknown fatality"
+                ]
+              datasets: [
+                data: [data.fatal.true, data.fatal.false, data.fatal.unknown]
+                backgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                hoverBackgroundColor: [
+                  "#FF6384"
+                  "#36A2EB"
+                  "#FFCE56"
+                  ]
+                ]
+            chartCfg =
+              type: "pie"
+              data: fatalData
+            # Create a canvas for this
+            canvas = document.createElement "canvas"
+            canvas.setAttribute "class","chart dynamic-pie-chart"
+            canvasId = "#{idTaxon}-#{disease}-fataldata"
+            canvas.setAttribute "id", canvasId
+            canvasContainerId = "#{canvasId}-container"
+            chartContainer = $(targetSelector).find(".charts-container").get(0)
+            containerHtml = """
+            <div id="#{canvasContainerId}" class="col-xs-6">
+            </div>
+            """
+            $(chartContainer).append containerHtml
+            $("##{canvasContainerId}").get(0).appendChild canvas
+            chartCtx = $("##{canvasId}")
+            pieChart = new Chart chartCtx, chartCfg
+            _adp.taxonCharts[canvasId] = pieChart
+      catch e
+        try
+          taxonString = ""
+          taxonString = """
+          for
+            <span class="sciname">
+              <span class="genus">#{taxonData.taxon.genus}</span>
+              <span class="species">#{taxonData.taxon.species}</span>
+            </span>
+          """
+        html = """
+        <div class="alert alert-danger">
+          <p>
+            <strong>Error:</strong> Couldn't fetch taxon data #{taxonString}
+          </p>
+        </div>
+        """
+        $(targetSelector).append html
+        console.error "Couldn't get taxon data -- #{e.message}", taxonData
+        console.warn e.stack
+      # End iterator for taxa
+    false
+  .error (result, status) ->
+    html = """
+      <div class="alert alert-danger">
+        <p>
+          <strong>Error:</strong> Server error fetching taxon data ()
+        </p>
+      </div>
+    """
+    $(targetSelector).html html
+    console.error "Couldn't fetch taxon data from server"
+    console.warn result, status
+    false
+  false
+
+
+
+
+
+
 renderNewChart = ->
   # Parse the request
+  try
+    if _adp.zoomChart?
+      _adp.zoomChart.destroy()
   chartOptions = new Object()
   for option in $(".chart-param")
     key = $(option).attr("data-key").replace(" ", "-")

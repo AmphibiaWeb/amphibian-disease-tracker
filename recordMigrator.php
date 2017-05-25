@@ -118,7 +118,7 @@ $flatProjects = "SELECT DISTINCT project_id FROM `".$flatTable->getTable()."`";
 
 $fpResult = mysqli_query($flatTable->getLink(), $flatProjects);
 $flatRecordsProjects = array();
-while($flatRow = mysqli_fetch_row($fpResult)) {
+while ($flatRow = mysqli_fetch_row($fpResult)) {
     $flatRecordsProjects[] = $flatRow[0];
 }
 
@@ -133,13 +133,13 @@ $goodDetail = array();
 $useGeocoder = "GOOGLE";
 $dupsRemoved = 0;
 # Loop over each project ...
-while($projectRow = mysqli_fetch_row($result)) {
+while ($projectRow = mysqli_fetch_row($result)) {
     $project = $projectRow[0];
     $projectsInspected[] = $project;
     $cartoid = $projectRow[1];
     $carto = json_decode(deEscape($cartoid), true);
 
-    if(empty($carto["table"])) {
+    if (empty($carto["table"])) {
         $projectsNoData++;
         continue;
     }
@@ -147,7 +147,7 @@ while($projectRow = mysqli_fetch_row($result)) {
     # Only projects with data can be in the flat table, so it's fine
     # to check here
     $flatKey = array_find($project, $flatRecordsProjects);
-    if($flatKey !== false) {
+    if ($flatKey !== false) {
         unset($flatRecordsProjects[$flatKey]);
     }
 
@@ -158,13 +158,15 @@ while($projectRow = mysqli_fetch_row($result)) {
     # ... compared to flat table modified time
     $resultData = $flatTable->getQueryResults(array("project"=>$project), array("project","modified","reverse_geocoded","country"));
     $projectAgeing = $resultData[0]["modified"];
-    foreach($resultData as $testRow) {
+    foreach ($resultData as $testRow) {
         $geocodeTest = $testRow["reverse_geocoded"];
         $isArrayish = $testRow["country"] == "Array" || is_array($testRow["country"]) || is_array(json_decode($testRow["country"], true));
         $country = $testRow["country"];
-        if(empty($geocodeTest) || empty($country) || $isArrayish) break;
+        if (empty($geocodeTest) || empty($country) || $isArrayish) {
+            break;
+        }
     }
-    if(empty($projectAgeing) || !is_numeric($projectAgeing)) {
+    if (empty($projectAgeing) || !is_numeric($projectAgeing)) {
         $ageingReason = "INVALID_AGE_VALUE";
         $badRows[] = array(
             "message" => "bad project ageing",
@@ -178,14 +180,14 @@ while($projectRow = mysqli_fetch_row($result)) {
             ),
         );
         $projectAgeing = 0;
-    } else if(empty($geocodeTest) || empty($country) || $isArrayish){
+    } elseif (empty($geocodeTest) || empty($country) || $isArrayish) {
         # No geocoded results
         $ageingReason = "BAD_REVERSE_GEOCODE";
-        if(empty($geocodeTest)) {
+        if (empty($geocodeTest)) {
             $ageingReason .= "_FLAGGED_FAILED";
-        } else if (empty($country)) {
+        } elseif (empty($country)) {
             $ageingReason .= "_NULL_COUNTRY";
-        } else if ($isArrayish) {
+        } elseif ($isArrayish) {
             $ageingReason .= "_BAD_DECODE";
         }
         $badRows[] = array(
@@ -209,7 +211,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         "ageing-reason" => $ageingReason,
     );
     # If the flat table is older...
-    if($projectAgeing < $modified && !toBool($_REQUEST["dedup"])) {
+    if ($projectAgeing < $modified && !toBool($_REQUEST["dedup"])) {
         $opts = array(
             'http' => array(
                 'method' => 'GET',
@@ -223,7 +225,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         $context = stream_context_create($opts);
         $gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4";
         # ...pull the data from CartoDB
-        if(empty($newDbEntries[$project])) {
+        if (empty($newDbEntries[$project])) {
             $newDbEntries[$project] = array();
         }
         $statements = array();
@@ -253,7 +255,7 @@ while($projectRow = mysqli_fetch_row($result)) {
             $response = file_get_contents($cartoFullUrl, false, $context);
             $responses[] = $response;
             $decoded = json_decode($response, true);
-            if(!empty($decoded["error"])) {
+            if (!empty($decoded["error"])) {
                 $decoded["query"] = $statement;
                 $decoded["encoded_query"] = urlencode($statement);
                 $decoded["table"] = $carto["table"];
@@ -267,7 +269,7 @@ while($projectRow = mysqli_fetch_row($result)) {
             }
             $parsed_responses[] = $decoded;
         }
-        if(sizeof($parsed_responses) === 0) {
+        if (sizeof($parsed_responses) === 0) {
             continue;
         }
         $projectDataTime = microtime_float();
@@ -289,9 +291,9 @@ while($projectRow = mysqli_fetch_row($result)) {
         // }
         $rows = 0;
         $refRow = null;
-        foreach($parsed_responses as $projectResponse) {
-            foreach($projectResponse["rows"] as $row) {
-                if(!empty($row["error"])) {
+        foreach ($parsed_responses as $projectResponse) {
+            foreach ($projectResponse["rows"] as $row) {
+                if (!empty($row["error"])) {
                     $badRows[] = array(
                         "error" => "CartoDB error",
                         "project" => $project,
@@ -306,25 +308,25 @@ while($projectRow = mysqli_fetch_row($result)) {
                 $flagUpdate = false;
                 $testKey = empty($row["fieldnumber"]) ? "sampleid" : "fieldnumber";
                 $item = $flatTable->getQueryResults(array("project"=>$project, $testKey => $row[$testKey]), array("modified","reverse_geocoded","country","st_asgeojson","geocode_provider"));
-                if(sizeof($item) === 1) {
+                if (sizeof($item) === 1) {
                     # If the item is unique ...
                     $isArrayish = $item[0]["country"] == "Array" || is_array($item[0]["country"]) || is_array(json_decode($item[0]["country"], true));
-                    if($isArrayish) {
+                    if ($isArrayish) {
                         # Test it
                         try {
                             $testArray = json_decode($item[0]["country"], true);
-                            if(is_array($testArray)) {
+                            if (is_array($testArray)) {
                                 # Try to reconstruct it first
-                                foreach($testArray as $i => $component) {
-                                    if(is_array($component)) {
+                                foreach ($testArray as $i => $component) {
+                                    if (is_array($component)) {
                                         $types = $component["types"];
-                                        if(in_array("country", $types)) {
+                                        if (in_array("country", $types)) {
                                             $item[0]["country"] = $component["long_name"];
                                             $item[0]["reverse_geocoded"] = true;
                                             $isArrayish = false;
                                             break;
                                         }
-                                    }  else {
+                                    } else {
                                         try {
                                             $types = $component["types"];
                                         } catch (Exception $e) {
@@ -363,7 +365,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                                     );
                         }
                     }
-                    if( $item[0]["reverse_geocoded"] === true &&
+                    if ($item[0]["reverse_geocoded"] === true &&
                         !empty($item[0]["country"]) &&
                         !$isArrayish) {
                         # There is a well-formatted country. Skip the geocode.
@@ -384,13 +386,13 @@ while($projectRow = mysqli_fetch_row($result)) {
                     # Don't geocode again if we don't have to
                     # We don't just want to continue above, because we
                     # might have other updates that are needed to be done
-                    if($row["reverse_geocoded"] !== true) {
+                    if ($row["reverse_geocoded"] !== true) {
                         $address = null;
-                        if(empty($address)) {
+                        if (empty($address)) {
                             # Reverse geocode datapoints
                             # https://developers.google.com/maps/documentation/geocoding/intro#ReverseGeocoding
                             require_once "geophp/geoPHP.inc";
-                            if(empty($row["st_asgeojson"])) {
+                            if (empty($row["st_asgeojson"])) {
                                 $geom = geoPHP::load($row["the_geom"], "wkb");
                             } else {
                                 # We have the GeoJSON output
@@ -403,18 +405,16 @@ while($projectRow = mysqli_fetch_row($result)) {
                             # CartoDB swaps the order
                             $lat = $decimalLatLng[1];
                             $lng = $decimalLatLng[0];
-                            if(!empty($lat) && !empty($lng)) {
+                            if (!empty($lat) && !empty($lng)) {
                                 try {
-                                    if($useGeocoder == "GOOGLE") {
+                                    if ($useGeocoder == "GOOGLE") {
                                         try {
                                             # Use the API
                                             $reverseGeocoder = new GoogleGeocode();
                                             $address = $reverseGeocoder->write($geom, "array");
                                             $method = "geophp";
                                             #if(!is_array($address)) $address = json_decode($address, true);
-                                        } catch(Exception $e) {
-
-
+                                        } catch (Exception $e) {
                                             $method = "api_endpoint_google";
                                             $gMapsEndpoint = "https://maps.googleapis.com/maps/api/geocode/json";
                                             $args = array();
@@ -431,18 +431,18 @@ while($projectRow = mysqli_fetch_row($result)) {
 
 
                                         $row["reverse_geocoded"] = true;
-                                        if(is_array($address)) {
-                                            foreach($address as $partLevel => $part) {
-                                                if(!is_array($part)) {
+                                        if (is_array($address)) {
+                                            foreach ($address as $partLevel => $part) {
+                                                if (!is_array($part)) {
                                                     try {
                                                         $part = (array) $part;
                                                     } catch (Exception $e) {
                                                         # Leave it as is
                                                     }
                                                 }
-                                                if(is_array($part)) {
+                                                if (is_array($part)) {
                                                     $types = $part["types"];
-                                                    if(in_array("country", $types)) {
+                                                    if (in_array("country", $types)) {
                                                         $row["country"] = $part["long_name"];
                                                         break;
                                                     }
@@ -457,15 +457,13 @@ while($projectRow = mysqli_fetch_row($result)) {
                                                 }
                                             }
                                         }
-                                        if(empty($row["country"])) {
-                                            if($addressBase["status"] == "OVER_QUERY_LIMIT" || $addressBase["status"] == "REQUEST_DENIED") {
+                                        if (empty($row["country"])) {
+                                            if ($addressBase["status"] == "OVER_QUERY_LIMIT" || $addressBase["status"] == "REQUEST_DENIED") {
                                                 # Try an alternate geocoder
                                                 $useGeocoder = "OSM";
-
-                                            } else if($addressBase["status"] == "ZERO_RESULTS") {
+                                            } elseif ($addressBase["status"] == "ZERO_RESULTS") {
                                                 $row["country"] = "NO_GEOCODE_AVAILABLE_ZERO_RESULTS";
                                                 $row["reverse_geocoded"] = true;
-
                                             } else {
                                                 $row["country"] = json_encode($address);
                                                 $row["reverse_geocoded"] = false;
@@ -480,7 +478,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                                             }
                                         }
                                     }
-                                    if($useGeocoder == "OSM") {
+                                    if ($useGeocoder == "OSM") {
                                         # https://wiki.openstreetmap.org/wiki/Nominatim#Reverse_Geocoding
                                         $method = "api_endpoint_osm";
                                         $args = array();
@@ -495,13 +493,13 @@ while($projectRow = mysqli_fetch_row($result)) {
                                         $address = $address["address"];
                                         $row["country"] = $address["country"];
                                         $row["reverse_geocoded"] = true;
-                                        if(empty($row["country"])) {
+                                        if (empty($row["country"])) {
                                             $OVER_LIMIT_OSM = "<html>\n<head>\n<title>Bandwidth limit exceeded</title>\n</head>\n<body>\n<h1>Bandwidth limit exceeded</h1>\n\n<p>You have been temporarily blocked because you have been overusing OSM's geocoding service or because you have not provided sufficient identification of your application. This block will be automatically lifted after a while. Please take the time and adapt your scripts to reduce the number of requests and make sure that you send a valid UserAgent or Referer.</p>\n\n<p>For more information, consult the <a href=\"https://operations.osmfoundation.org/policies/nominatim/\">usage policy</a> for the OSM Nominatim server.\n</body>\n</head>\n";
-                                                if($geocodeResponse === false || $geocodeResponse == $OVER_LIMIT_OSM) {
-                                                    $useGeocoder = "HERE";
-                                                } else {
-                                                    $geocodeFailed++;
-                                                    $badRows[] = array(
+                                            if ($geocodeResponse === false || $geocodeResponse == $OVER_LIMIT_OSM) {
+                                                $useGeocoder = "HERE";
+                                            } else {
+                                                $geocodeFailed++;
+                                                $badRows[] = array(
                                                         "response" => $geocodeResponse,
                                                         "address" => $address,
                                                         "row" => $rowsProcessed,
@@ -510,12 +508,11 @@ while($projectRow = mysqli_fetch_row($result)) {
                                                         "latlng" => $decimalLatLng,
                                                         "url" => $oMapsFullUrl,
                                                     );
-                                                    $row["reverse_gecoded"] = false;
-                                                }
+                                                $row["reverse_geocoded"] = false;
+                                            }
                                         }
-
                                     }
-                                    if($useGeocoder == "HERE") {
+                                    if ($useGeocoder == "HERE") {
                                         # https://developer.here.com/signup/geocoding
                                         # https://developer.here.com/rest-apis/documentation/geocoder/topics/request-first-reverse-geocode.html
                                         $method = "api_endpoint_heremaps";
@@ -542,17 +539,19 @@ while($projectRow = mysqli_fetch_row($result)) {
                                             $additionalList = $xml->getAllTagContents("AdditionalData");
                                             $keys = $xml->getTagAttributes("AdditionalData", "key");
                                             $adKey = -1;
-                                            foreach($keys as $k=>$v) {
-                                                if($v["key"] == "CountryName") {
+                                            foreach ($keys as $k=>$v) {
+                                                if ($v["key"] == "CountryName") {
                                                     $adKey = $k;
                                                     break;
                                                 }
                                             }
-                                            if($adKey >= 0 && array_key_exists($adKey, $additionalList)) {
+                                            if ($adKey >= 0 && array_key_exists($adKey, $additionalList)) {
                                                 $country = $additionalList[$adKey];
                                             }
                                             $row["country"] = $country;
-                                            if(empty($row["country"])) throw new Exception("badcountry");
+                                            if (empty($row["country"])) {
+                                                throw new Exception("badcountry");
+                                            }
                                         } catch (Exception $e) {
                                             $xmlResponse = str_replace(array("\n", "\r", "\t"), '', $xmlResponse);
                                             $xmlResponse = trim(str_replace('"', "'", $xmlResponse));
@@ -563,7 +562,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                                             $row["country"] = $address["country"];
                                         }
                                         $row["reverse_geocoded"] = true;
-                                        if(empty($row["country"])) {
+                                        if (empty($row["country"])) {
                                             $row["country"] = "FLAG_MANUAL";
                                             $badRows[] = array(
                                                 "message" => "Unable to reverse geocode (all services failed)",
@@ -602,7 +601,7 @@ while($projectRow = mysqli_fetch_row($result)) {
                         "row" => $row,
                     );
                 }
-                if(!empty($row["country"])) {
+                if (!empty($row["country"])) {
                     $row["geocode_provider"] = $useGeocoder;
                     $row["reverse_geocoded"] = true;
                 }
@@ -612,9 +611,9 @@ while($projectRow = mysqli_fetch_row($result)) {
                 # Unpack fimsExtra
                 $fimsExtraEncoded = $row["fimsextra"];
                 $fimsExtra = json_decode($fimsExtraEncoded, true);
-                if(sizeof($fimsExtra) > 0) {
-                    foreach($fimsExtra as $bonusCol => $bonusData) {
-                        if(is_array($bonusData)) {
+                if (sizeof($fimsExtra) > 0) {
+                    foreach ($fimsExtra as $bonusCol => $bonusData) {
+                        if (is_array($bonusData)) {
                             $bonusData = json_encode($bonusData);
                         }
                         $row[$bonusCol] = $bonusData;
@@ -632,22 +631,26 @@ while($projectRow = mysqli_fetch_row($result)) {
                 # Add rows to $newDbEntries
                 $newDbEntries[$project][] = $row;
                 # Add columns not in $cols to $newCols, and append to $cols
-                foreach($row as $refCol => $colData) {
+                foreach ($row as $refCol => $colData) {
                     # Lookup col type
                     $colDataType = null;
-                    foreach($db->getCols() as $colName => $colType) {
-                        if(strtolower($colName) == strtolower($refCol)) {
+                    foreach ($db->getCols() as $colName => $colType) {
+                        if (strtolower($colName) == strtolower($refCol)) {
                             $colDataType = $colType;
                             $refCol = $colName;
                             break;
-                        } else if ($refCol == "modified") {
+                        } elseif ($refCol == "modified") {
                             $colDataType = "decimal(32))";
                             break;
-                        } else $colDataType = "text";
+                        } else {
+                            $colDataType = "text";
+                        }
                     }
-                    if(empty($colDataType)) $colDataType = "text";
+                    if (empty($colDataType)) {
+                        $colDataType = "text";
+                    }
                     # Put col in cols
-                    if(!array_key_exists($refCol, $cols)) {
+                    if (!array_key_exists($refCol, $cols)) {
                         $newCols[$refCol] = $colDataType;
                         $cols[$refCol] = $colDataType;
                     }
@@ -655,7 +658,9 @@ while($projectRow = mysqli_fetch_row($result)) {
 
                 $rows++;
                 $rowsProcessed++;
-                if($row["reverse_geocoded"]) $rowsProcessedWithGeocode++;
+                if ($row["reverse_geocoded"]) {
+                    $rowsProcessedWithGeocode++;
+                }
             }
         }
         $goodDetail[] = $goodInfo;
@@ -672,7 +677,7 @@ while($projectRow = mysqli_fetch_row($result)) {
         #
         $countResult = mysqli_query($flatTable->getLink(), $query);
         $rowCount = mysqli_num_rows($countResult);
-        if($rowCount === 1) {
+        if ($rowCount === 1) {
             # Check the other mandatory col
             $col = "fieldnumber";
             $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
@@ -683,21 +688,23 @@ while($projectRow = mysqli_fetch_row($result)) {
                 # count would be the same as the project total
                 continue; # Next project
             }
-        } else if ($rowCount === 0) {
+        } elseif ($rowCount === 0) {
             # This project has no dups -- if the col was blank, the
             # count would be the same as the project total
             continue; # Next project
         }
-        while($row = mysqli_fetch_assoc($countResult)) {
+        while ($row = mysqli_fetch_assoc($countResult)) {
             # Check the row for dups
             if ($row["count"] < $projectTotal) {
                 $i = 0;
                 $query = "SELECT id FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' AND `$col`='".$row[$col]."'";
                 $subResult = mysqli_query($flatTable->getLink(), $query);
                 $numDups = mysqli_num_rows($subResult);
-                while($subrow = mysqli_fetch_row($subResult)) {
+                while ($subrow = mysqli_fetch_row($subResult)) {
                     $i++;
-                    if($i == $numDups) continue; # Don't remove the last copy
+                    if ($i == $numDups) {
+                        continue;
+                    } # Don't remove the last copy
                     # Remove the dups
                     $removeId = $subrow[0];
                     $query = "DELETE FROM `".$flatTable->getTable()."` WHERE `id`=$removeId AND `project_id`='$project'";
@@ -717,12 +724,14 @@ while($projectRow = mysqli_fetch_row($result)) {
 # project anymore
 $removedProjects = array();
 $removedProjectsFailed = array();
-foreach($flatRecordsProjects as $removeProject) {
+foreach ($flatRecordsProjects as $removeProject) {
     # Test
-    if(empty($removeProject)) continue;
+    if (empty($removeProject)) {
+        continue;
+    }
     $removeQuery = "DELETE FROM `".$flatTable->getTable()."` WHERE `project_id`='".$removeProject."'";
     $r = mysqli_query($flatTable->getLink(), $removeQuery);
-    if($r !== false) {
+    if ($r !== false) {
         $removedProjects[] = $removeProject;
     } else {
         $removedProjectsFailed[] = $removeProject;
@@ -732,11 +741,11 @@ foreach($flatRecordsProjects as $removeProject) {
 
 unset($newCols["id"]);
 
-foreach($newCols as $newColumn => $dataType) {
+foreach ($newCols as $newColumn => $dataType) {
     # Add a column to the flat table
     $cleanColumn = $flatTable->sanitize($newColumn);
     $result = $flatTable->addColumn($cleanColumn, $dataType);
-    if($result["status"] !== true) {
+    if ($result["status"] !== true) {
         $badRows[] = array(
             "error" => $result,
             "message" => "Unable to add column",
@@ -758,9 +767,9 @@ foreach($newCols as $newColumn => $dataType) {
 $goodRows = 0;
 $skipId = array();
 $dedupProjects = array();
-foreach($newDbEntries as $projectId => $data) {
+foreach ($newDbEntries as $projectId => $data) {
     try {
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $ref = array(
                 "id" => $row["id"],
             );
@@ -791,15 +800,17 @@ foreach($newDbEntries as $projectId => $data) {
             //     }
             // }
             unset($row["id"]);
-            if(array_key_exists($row["country"], $synonymizeCountries)) {
+            if (array_key_exists($row["country"], $synonymizeCountries)) {
                 $row["country"] = $synonymizeCountries[$row["country"]];
             }
-            if($flagUpdate !== true) {
+            if ($flagUpdate !== true) {
                 # Add a new row to the flat table
                 # Carto has already handled santization
-                if(!in_array($row["project"], $dedupProjects)) $dedupProjects[] = $row["project"];
+                if (!in_array($row["project"], $dedupProjects)) {
+                    $dedupProjects[] = $row["project"];
+                }
                 $result = $flatTable->addItem($row, null, false, true);
-                if($result !== true) {
+                if ($result !== true) {
                     $badRow = array(
                         "error" => "Couldn't add row to database",
                         "project" => $projectId,
@@ -816,7 +827,7 @@ foreach($newDbEntries as $projectId => $data) {
                 # Do an update
                 # Carto has already handled santization
                 $result = $flatTable->updateEntry($row, $ref, null, true);
-                if($result !== true) {
+                if ($result !== true) {
                     $badRow = array(
                         "error" => "Couldn't update row in database",
                         "project" => $projectId,
@@ -832,7 +843,7 @@ foreach($newDbEntries as $projectId => $data) {
                 $recordsUpdated++;
             }
         }
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         $badRow = array(
             "message" => "Couldn't update records for project",
             "error" => $e->getMessage(),
@@ -843,7 +854,7 @@ foreach($newDbEntries as $projectId => $data) {
     }
 }
 
-foreach($dedupProjects as $project) {
+foreach ($dedupProjects as $project) {
     $query = "SELECT count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project'";
     $countResult = mysqli_query($flatTable->getLink(), $query);
     $row = mysqli_fetch_row($countResult);
@@ -854,7 +865,7 @@ foreach($dedupProjects as $project) {
     #
     $countResult = mysqli_query($flatTable->getLink(), $query);
     $rowCount = mysqli_num_rows($countResult);
-    if($rowCount === 1) {
+    if ($rowCount === 1) {
         # Check the other mandatory col
         $col = "fieldnumber";
         $query = "SELECT DISTINCT `$col`, count(*) as count FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' GROUP BY `$col` HAVING count > 1";
@@ -865,21 +876,23 @@ foreach($dedupProjects as $project) {
             # count would be the same as the project total
             continue; # Next project
         }
-    } else if ($rowCount === 0) {
+    } elseif ($rowCount === 0) {
         # This project has no dups -- if the col was blank, the
         # count would be the same as the project total
         continue; # Next project
     }
-    while($row = mysqli_fetch_assoc($countResult)) {
+    while ($row = mysqli_fetch_assoc($countResult)) {
         # Check the row for dups
         if ($row["count"] < $projectTotal) {
             $i = 0;
             $query = "SELECT id FROM `".$flatTable->getTable()."` WHERE `project_id`='$project' AND `$col`='".$row[$col]."'";
             $subResult = mysqli_query($flatTable->getLink(), $query);
             $numDups = mysqli_num_rows($subResult);
-            while($subrow = mysqli_fetch_row($subResult)) {
+            while ($subrow = mysqli_fetch_row($subResult)) {
                 $i++;
-                if($i == $numDups) continue; # Don't remove the last copy
+                if ($i == $numDups) {
+                    continue;
+                } # Don't remove the last copy
                 # Remove the dups
                 $removeId = $subrow[0];
                 $query = "DELETE FROM `".$flatTable->getTable()."` WHERE `id`=$removeId AND `project_id`='$project'";
@@ -925,5 +938,3 @@ $response = array(
 
 
 returnAjax($response);
-
-?>

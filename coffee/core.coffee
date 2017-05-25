@@ -410,6 +410,16 @@ bindCopyEvents = (selector = ".click-copy") ->
   false
 
 
+buildQuery = (obj) ->
+  queryList = new Array()
+  for k, v of obj
+    key = k.replace /[^A-Za-z\-_\[\]]/img, ""
+    value = encodeURIComponent(v).replace /\%20/g, "+"
+    queryList.push """#{key}=#{value}"""
+  queryList.join "&"
+
+
+
 jsonTo64 = (obj, encode = true) ->
   ###
   #
@@ -973,6 +983,32 @@ bindClicks = (selector = ".click") ->
               console.error("'#{callable}()' is a bad function - #{e.message}")
     catch e
       console.error("There was a problem binding to ##{$(this).attr("id")} - #{e.message}")
+  try
+    bindCollapsors()
+  false
+
+
+
+bindCollapsors = (selector = ".collapse-trigger") ->
+  ###
+  # Bind the events for collapse-triggers
+  ###
+  toggleEvent = (caller) ->
+    target = $(caller).attr "data-target"
+    unless $(target).exists()
+      console.error "Couldn't find target #{target}"
+      return false
+    validTargetElements = [
+      "iron-collapse"
+      ]
+    if p$(target).tagName.toLowerCase() in validTargetElements
+      p$(target).toggle()
+    else
+      console.error "Target type #{p$(target).tagName.toLowerCase()} is an invalid target"
+    false
+  for toggle in $(selector)
+    $(toggle).click ->
+      toggleEvent.debounce 50, null, null, this
   false
 
 

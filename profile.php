@@ -23,7 +23,7 @@ $as_include = true;
 $loginStatus = getLoginState();
 
 $viewUserId = $db->sanitize($_GET['id']);
-if(empty($viewUserId) && $loginStatus["status"]) {
+if (empty($viewUserId) && $loginStatus["status"]) {
     $viewUserId = $loginStatus["detail"]["userdata"]["dblink"];
     # echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
 }
@@ -39,14 +39,18 @@ $realProfileImagePathXS = "users/profiles/default.png";
 $realProfileImagePathSM = "users/profiles/default.png";
 try {
     $userdata = $viewUser->getUser($setUser);
-    if(!is_array($userdata)) $userdata = array();
-    if(empty($userdata["dblink"])) throw(new Exception("Bad User"));
+    if (!is_array($userdata)) {
+        $userdata = array();
+    }
+    if (empty($userdata["dblink"])) {
+        throw(new Exception("Bad User"));
+    }
     $profileImagePath = "users/profiles/" . $viewUserId;
     $extensions = array("bmp", "jpg", "jpeg", "png", "gif");
-    foreach($extensions as $ext) {
+    foreach ($extensions as $ext) {
         $testPath = realpath($profileImagePath . "." . $ext);
         echo "\n\n<!-- Testing path '" . $testPath . "' --> ";
-        if(file_exists($testPath)) {
+        if (file_exists($testPath)) {
             $realProfileImagePath = $profileImagePath . "." . $ext;
             $realProfileImagePathXS = $profileImagePath . "-xs." . $ext;
             $realProfileImagePathSM = $profileImagePath . "-sm." . $ext;
@@ -202,8 +206,7 @@ $isCollaborator = false;
 
            if ($isLoggedIn) {
                ?>
-        Logged in as <span class='header-bar-user-name'><?php echo $user;
-               ?></span>
+        Logged in as <span class='header-bar-user-name'><?php echo $user; ?></span>
         <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
         <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
@@ -223,7 +226,7 @@ $isCollaborator = false;
     </header>
     <main>
       <?php
-         if ($validUser && !( !empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" )) {
+         if ($validUser && !(!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search")) {
              $isViewingSelf = $viewUserId == $selfUserId;
              # Helper setup
              $baseStructuredData = array(
@@ -267,7 +270,7 @@ $isCollaborator = false;
              $structuredData = $baseStructuredData;
              # Fetch and overwrite keys
              $profile = $viewUser->getProfile();
-             if(is_array($profile)) {
+             if (is_array($profile)) {
                  $structuredData = array_merge($structuredData, $profile);
              }
              $place = $structuredData["place"];
@@ -277,22 +280,23 @@ $isCollaborator = false;
              # Helper captcha function
              $hasIncludedCaptcha = false;
              require_once 'admin/CONFIG.php';
-             function getCaptchaData($dataType = "email") {
+             function getCaptchaData($dataType = "email")
+             {
                  /***
                   *
                   ***/
                  global $hasIncludedCaptcha, $recaptcha_public_key;
-                 if(!$hasIncludedCaptcha) {
+                 if (!$hasIncludedCaptcha) {
                      echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
                      $hasIncludedCaptcha = true;
                  }
                  $html = '<div class="g-recaptcha col-xs-8" data-sitekey="'.$recaptcha_public_key.'" data-callback="renderCaptchas" data-type="'.$dataType.'"></div>';
                  return $html;
-
              }
 
              # Helper function
-             function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false) {
+             function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false)
+             {
                  /***
                   * Get a given public_profile element type and return
                   * it, based on context.
@@ -303,22 +307,28 @@ $isCollaborator = false;
                  $dataSource = str_replace(" ", "_", strtolower($fillType));
                  $addClass = " " . str_replace(" ", "-", strtolower($fillType));
                  $emptyFill = false;
-                 if(empty($fill)) {
+                 if (empty($fill)) {
                      $emptyFill = true;
-                     if(!$isViewingSelf) $fill = "Not Provided";
+                     if (!$isViewingSelf) {
+                         $fill = "Not Provided";
+                     }
                      $class .= " no-data-provided";
                  }
                  $class .= $addClass;
                  $requiredText = $required ? "required" : "";
-                 if($isViewingSelf && !$forceReadOnly) {
+                 if ($isViewingSelf && !$forceReadOnly) {
                      # Should be an editable field
                      $elType = "paper-input";
-                     if(strpos($class, "phone") !== false) $elType = "gold-phone-input";
-                     if(strpos($class, "zip") !== false) $elType = "gold-zip-input";
-                     if(strpos($class, "google_plus") !== false) {
+                     if (strpos($class, "phone") !== false) {
+                         $elType = "gold-phone-input";
+                     }
+                     if (strpos($class, "zip") !== false) {
+                         $elType = "gold-zip-input";
+                     }
+                     if (strpos($class, "google_plus") !== false) {
                          $fill = str_replace(" ", "+", $fill);
                      }
-                     if(strpos($class, "address") === false) {
+                     if (strpos($class, "address") === false) {
                          $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource' $requiredText></$elType></div>";
                      } else {
                          # Address input
@@ -355,17 +365,17 @@ value='".$place["zip"]."'
                      }
                  } else {
                      # Not viewing self
-                     if(strpos($class, "social") !== false) {
-                         if(!$emptyFill) {
+                     if (strpos($class, "social") !== false) {
+                         if (!$emptyFill) {
                              $link = $fill;
                              $link = str_replace(" ", "+", $link);
-                             if(strpos($class, "facebook") !== false) {
+                             if (strpos($class, "facebook") !== false) {
                                  $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } else if(strpos($class, "google-plus") !== false) {
+                             } elseif (strpos($class, "google-plus") !== false) {
                                  $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:google-plus" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } else if(strpos($class, "twitter") !== false) {
+                             } elseif (strpos($class, "twitter") !== false) {
                                  $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:twitter" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } else if(strpos($class, "linkedin") !== false) {
+                             } elseif (strpos($class, "linkedin") !== false) {
                                  $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:linkedin" data-href="'.$link.'" newtab="true"></paper-fab>';
                              } else {
                                  $icon = "";
@@ -375,41 +385,40 @@ value='".$place["zip"]."'
                      } else {
                          # Not social
                          # Some special cases
-                         if(strpos($class, "phone") !== false) {
+                         if (strpos($class, "phone") !== false) {
                              # Wrap in phone wrapper
                              $fill = "<span class='phone-number col-xs-8'>$fill</span>";
                          }
                          $fillKey = strtolower(str_replace(" ", "_", $fillType));
                          global $privacyConfig, $isCollaborator, $isMember, $isPublic;
-                         if(array_key_exists($fillKey, $privacyConfig)) {
+                         if (array_key_exists($fillKey, $privacyConfig)) {
                              # We need to respect privacy settings
                              $dataClass = strtolower($fillType) == "email" ? "col-xs-5":"col-xs-8";
                              $button = strtolower($fillType) == "email" ? "<paper-fab mini icon='communication:email' class='materialblue do-mailto col-xs-3' data-email='$fill'></paper-fab>":"";
                              if ($isCollaborator) {
                                  $willShare = $privacyConfig[$fillKey]["collaborator"];
-                                 if($willShare) {
+                                 if ($willShare) {
                                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
                                  }
-                             } else if ($isMember) {
+                             } elseif ($isMember) {
                                  $willShare = $privacyConfig[$fillKey]["member"];
-                                 if($willShare) {
+                                 if ($willShare) {
                                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
                                  }
                              } else {
                                  # Public
                                  $willShare = $privacyConfig[$fillKey]["public"];
-                                 if($willShare) {
+                                 if ($willShare) {
                                      # Hide behind a captcha
-                                     if(!$emptyFill) {
+                                     if (!$emptyFill) {
                                          $fill = getCaptchaData($fillKey);
                                      }
                                      $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label>$fill</div>";
                                  }
                              }
-                             if(!$willShare) {
+                             if (!$willShare) {
                                  $element = "";
                              }
-
                          } else {
                              # General case, not a special element
                              $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
@@ -420,32 +429,31 @@ value='".$place["zip"]."'
              }
 
              # Set up terms
-             if($isViewingSelf) {
-               $title = "You ($title)";
-               $titlePossessive = "Your";
+             if ($isViewingSelf) {
+                 $title = "You ($title)";
+                 $titlePossessive = "Your";
+             } else {
+                 $titlePossessive = $title . "'s";
              }
-             else {
-               $titlePossessive = $title . "'s";
-             }
-             function getPublishableData() {
+             function getPublishableData()
+             {
                  global $structuredData, $privacyConfig, $isCollaborator, $isMember, $isPublic;
                  $publishedStructuredData = $structuredData;
-                 foreach($privacyConfig as $category=>$config) {
+                 foreach ($privacyConfig as $category=>$config) {
                      # Check permissions
-                     if($isCollaborator) {
+                     if ($isCollaborator) {
                          $willShare = $config["collaborator"];
-                     } else if ($isMember) {
+                     } elseif ($isMember) {
                          $willShare = $config["member"];
                      } else {
                          $willShare = $config["public"];
                      }
-                     if(!$willShare) {
+                     if (!$willShare) {
                          unset($publishedStructuredData["place"][$category]);
                      }
                  }
                  return $publishedStructuredData;
-             }
-             ?>
+             } ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
         <paper-fab id="enter-search" icon="icons:search" class="click" data-href="?mode=search" data-toggle="tooltip" title="Search Profiles"></paper-fab>
@@ -454,15 +462,15 @@ value='".$place["zip"]."'
           window.isViewingSelf = <?php echo strbool($isViewingSelf); ?>;
           window.profileUid = "<?php echo $viewUserId; ?>";
         </script>
-        <?php if($isViewingSelf) { ?>
+        <?php if ($isViewingSelf) {
+                 ?>
         <div class="col-xs-12 self-link">
           <div class="form-group">
             <div class="col-xs-10 col-sm-8 col-md-6">
               <div class="input-group">
                 <iron-icon icon="icons:link"></iron-icon>
                 <?php
-                   $profileLink = "https://amphibiandisease.org/profile.php?id=" . $viewUser->getHardlink();
-                   ?>
+                   $profileLink = "https://amphibiandisease.org/profile.php?id=" . $viewUser->getHardlink(); ?>
                 <paper-input label="Profile Link" id="profile-link-field" readonly value="<?php echo $profileLink; ?>"/>
               </div>
             </div>
@@ -471,7 +479,8 @@ value='".$place["zip"]."'
             </div>
           </div>
         </div>
-        <?php } ?>
+        <?php 
+             } ?>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region" data-source="social">
           <h3>Basic Profile</h3>
           <style type="text/css">
@@ -488,11 +497,13 @@ value='".$place["zip"]."'
                  src="<?php echo $realProfileImagePathXS; ?>"
                  srcset="<?php echo $realProfileImagePath; ?> 1024w, <?php echo $realProfileImagePathSM; ?> 512w, <?php echo $realProfileImagePathXS; ?> 128w"
                  alt="Profile image" />
-            <?php if($isViewingSelf) { ?>
+            <?php if ($isViewingSelf) {
+                 ?>
             <button class="btn btn-default col-xs-12 col-md-6 col-lg-3" id="expose-uploader">
               Change Profile Image
             </button>
-            <?php } ?>
+            <?php 
+             } ?>
           </div>
 
           <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
@@ -527,29 +538,33 @@ value='".$place["zip"]."'
           <h3><?php echo $titlePossessive; ?> Bio</h3>
           <?php
              $bio = str_replace("\\n", "\n", $bio);
-             if(!$isViewingSelf) {
-                if(empty($bio)) $bio = "*No profile provided*";
-                ?>
+             if (!$isViewingSelf) {
+                 if (empty($bio)) {
+                     $bio = "*No profile provided*";
+                 } ?>
           <marked-element>
             <div class="markdown-html"></div>
             <script type="text/markdown"><?php echo $bio; ?></script>
           </marked-element>
-          <?php } else { ?>
+          <?php 
+             } else {
+                 ?>
           <iron-autogrow-textarea label="Profile Text" placeholder="Any profile bio text you'd like. Markdown accepted." value="<?php echo $bio; ?>" rows="5" class="user-input"></iron-autogrow-textarea>
-          <?php } ?>
+          <?php 
+             } ?>
         </div>
       </section>
         <?php
            # Section for self
-           function boolToChecked($group, $privacyKey) {
+           function boolToChecked($group, $privacyKey)
+           {
                global $privacyConfig;
                $boolValueStr = $privacyConfig[$group][$privacyKey];
                $bool = toBool($boolValueStr);
                return $bool ? "checked" : "";
-
            }
-             if($isViewingSelf) {
-           ?>
+             if ($isViewingSelf) {
+                 ?>
         <section class="row" data-source="privacy">
           <h3 class="col-xs-12">Privacy Settings</h3>
           <div class="privacy-group col-xs-12 col-md-4" data-group="email">
@@ -727,16 +742,18 @@ value='".$place["zip"]."'
           </div>
         </section>
         <?php
+
              } # End self section
              else {
-           ?>
+                 ?>
         <section class="row misc">
         </section>
            <?php
-             }
-           ?>
+
+             } ?>
       <?php
-         } elseif ( empty( $viewUserId ) || !empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search") {
+
+         } elseif (empty($viewUserId) || !empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search") {
              ?>
       <h1 id="title">User Search</h1>
       <section id="main-body" class="row">
@@ -763,7 +780,9 @@ value='".$place["zip"]."'
           <li>Enter a search <span class="hidden-xs hidden-sm">to the right</span><span class="visible-xs-inline visible-sm-inline">above</span> to find users</li>
         </ul>
       </section>
-      <?php } elseif (!$validUser) { ?>
+      <?php 
+         } elseif (!$validUser) {
+             ?>
 
 
       <h1 id="title">Invalid User</h1>
@@ -783,6 +802,7 @@ value='".$place["zip"]."'
         </p>
       </section>
       <?php
+
          } # / not valid user
          ?>
     </main>
