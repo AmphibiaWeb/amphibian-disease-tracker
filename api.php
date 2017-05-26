@@ -1060,262 +1060,282 @@ function getChartData($chartDataParams)
                 # Sort by time
                 break;
         case "species":
-                # Sort by species alphabetically
-                if (!isset($chartDataParams["include_sp"])) {
-                    $chartDataParams["include_sp"] = false;
-                }
-        $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
-        switch ($chartDataParams["sort"]) {
-            case "species":
-                        $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
-            $result = mysqli_query($flatTable->getLink(), $query);
-            if ($result === false) {
-                returnAjax(array(
-                    "status" => false,
-                    "error" => mysqli_error($flatTable->getLink()),
-                    "human_error" => "We were unable to retrieve the records at this time",
-                ));
+            # Sort by species alphabetically
+            if (!isset($chartDataParams["include_sp"])) {
+                $chartDataParams["include_sp"] = false;
             }
-            $labels = array();
-            $data = array();
-            $rowCount = 0;
-            while ($row = mysqli_fetch_assoc($result)) {
-                # Make Chart.js data
-                                $species = $row["genus"]." ".$row["specificepithet"];
-                $labels[] = $species;
-                $data[] = $row["count"];
-                $rowCount++;
+            $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
+            switch (strtolower($chartDataParams["disease"])) {
+                case "bd":
+                    $tested = "diseasetested = 'bd'";
+                    if (empty($ignoreSp)) {
+                        $where = $ignoreSp . " AND $tested";
+                    } else {
+                        $where = $tested;
+                    }
+                    break;
+                case "bsal":
+                    $tested = "diseasetested = 'bsal'";
+                    if (empty($ignoreSp)) {
+                        $where = $ignoreSp . " AND $tested";
+                    } else {
+                        $where = $tested;
+                    }
+                    break;
+                default:
+                    $where = $ignoreSp;
             }
-            $chartData = array(
-                            "labels" => $labels,
-                            "datasets" => array(
-                                array(
-                                    "label" => "Species Sample Count",
-                                    "data" => $data,
-                                ),
-                            ),
-                        );
-            returnAjax(array(
-                            "status" => true,
-                            "data" => $chartData,
-                            "axes" => array(
-                              "x" => "Species",
-                              "y" => "Samples"
-                            ),
-                            "title" => "Samples Per Taxon",
-                            "use_preprocessor" => false,
-                            "rows" => $rowCount,
-                            "format" => "chart.js",
-                            "provided" => $chartDataParams,
-                            "full_description" => "Samples taken per species",
+            switch ($chartDataParams["sort"]) {
+                case "species":
+                    $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` $where group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
+                    $result = mysqli_query($flatTable->getLink(), $query);
+                    if ($result === false) {
+                        returnAjax(array(
+                            "status" => false,
+                            "error" => mysqli_error($flatTable->getLink()),
+                            "human_error" => "We were unable to retrieve the records at this time",
                         ));
+                    }
+                    $labels = array();
+                    $data = array();
+                    $rowCount = 0;
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        # Make Chart.js data
+                        $species = $row["genus"]." ".$row["specificepithet"];
+                        $labels[] = $species;
+                        $data[] = $row["count"];
+                        $rowCount++;
+                    }
+                    $chartData = array(
+                        "labels" => $labels,
+                        "datasets" => array(
+                            array(
+                                "label" => "Species Sample Count",
+                                "data" => $data,
+                            ),
+                        ),
+                    );
+                    returnAjax(array(
+                        "status" => true,
+                        "data" => $chartData,
+                        "axes" => array(
+                            "x" => "Species",
+                            "y" => "Samples"
+                        ),
+                        "title" => "Samples Per Taxon",
+                        "use_preprocessor" => false,
+                        "rows" => $rowCount,
+                        "format" => "chart.js",
+                        "provided" => $chartDataParams,
+                        "full_description" => "Samples taken per species",
+                    ));
+                    break;
+                case "genus":
+                case "samples":
+                default:
+                    if ($chartDataParams["sort"] == "samples") {
+                        $orderBy = "count DESC, `genus`";
+                    } else {
+                        $orderBy = "`genus`";
+                    }
+                    $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by $orderBy";
+                    $result = mysqli_query($flatTable->getLink(), $query);
+                    if ($result === false) {
+                        returnAjax(array(
+                            "status" => false,
+                            "error" => mysqli_error($flatTable->getLink()),
+                            "human_error" => "We were unable to retrieve the records at this time",
+                        ));
+                    }
+                    $labels = array();
+                    $data = array();
+                    $rowCount = 0;
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        # Make Chart.js data
+                        $species = $row["genus"];
+                        $labels[] = $species;
+                        $data[] = $row["count"];
+                        $rowCount++;
+                    }
+                    $chartData = array(
+                        "labels" => $labels,
+                        "datasets" => array(
+                            array(
+                                "label" => "Genus Sample Count",
+                                "data" => $data,
+                            ),
+                        ),
+                    );
+                    returnAjax(array(
+                        "status" => true,
+                        "data" => $chartData,
+                        "axes" => array(
+                            "x" => "Genus",
+                            "y" => "Samples"
+                        ),
+                        "title" => "Samples Per Genus",
+                        "use_preprocessor" => false,
+                        "rows" => $rowCount,
+                        "format" => "chart.js",
+                        "provided" => $chartDataParams,
+                        "full_description" => "Samples taken per genus",
+                        "include_new_species" => boolstr($chartDataParams["include_sp"]),
+                    ));
+            }
             break;
-            case "genus":
-                    case "samples":
-                    default:
-                        if ($chartDataParams["sort"] == "samples") {
-                            $orderBy = "count DESC, `genus`";
-                        } else {
-                            $orderBy = "`genus`";
-                        }
-            $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by $orderBy";
-            $result = mysqli_query($flatTable->getLink(), $query);
-            if ($result === false) {
-                returnAjax(array(
-                                    "status" => false,
-                                    "error" => mysqli_error($flatTable->getLink()),
-                                    "human_error" => "We were unable to retrieve the records at this time",
-                                ));
-            }
-            $labels = array();
-            $data = array();
-            $rowCount = 0;
-            while ($row = mysqli_fetch_assoc($result)) {
-                # Make Chart.js data
-                                $species = $row["genus"];
-                $labels[] = $species;
-                $data[] = $row["count"];
-                $rowCount++;
-            }
-            $chartData = array(
-                            "labels" => $labels,
-                            "datasets" => array(
-                                array(
-                                    "label" => "Genus Sample Count",
-                                    "data" => $data,
-                                ),
-                            ),
-                        );
-            returnAjax(array(
-                            "status" => true,
-                            "data" => $chartData,
-                            "axes" => array(
-                              "x" => "Genus",
-                              "y" => "Samples"
-                            ),
-                            "title" => "Samples Per Genus",
-                            "use_preprocessor" => false,
-                            "rows" => $rowCount,
-                            "format" => "chart.js",
-                            "provided" => $chartDataParams,
-                            "full_description" => "Samples taken per genus",
-                            "include_new_species" => boolstr($chartDataParams["include_sp"]),
-                        ));
-        }
-        break;
         case "location":
                 # Location bin
                 # Have to hit the Google API for each one to check the
                 # country per coordinate
                 # Look up the carto id fields
                 $labels = array();
-        $orderBy = $chartDataParams["sort"];
-        $doInfectionSort = false;
-        if (empty($orderBy)) {
-            $orderBy = "samples DESC";
-        } else {
-            if ($orderBy == "infection") {
-                # We're going to do some magic
-                $doInfectionSort = true;
-                $orderBy = "samples DESC";
-            } else {
-                $orderBy = $db->sanitize($orderBy);
-                if (!$flatTable->columnExists($orderBy, false)) {
+                $orderBy = $chartDataParams["sort"];
+                $doInfectionSort = false;
+                if (empty($orderBy)) {
                     $orderBy = "samples DESC";
+                } else {
+                    if ($orderBy == "infection") {
+                        # We're going to do some magic
+                        $doInfectionSort = true;
+                        $orderBy = "samples DESC";
+                    } else {
+                        $orderBy = $db->sanitize($orderBy);
+                        if (!$flatTable->columnExists($orderBy, false)) {
+                            $orderBy = "samples DESC";
+                        }
+                    }
                 }
-            }
-        }
-        $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
-        $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
-        $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY $orderBy";
-        $result = mysqli_query($flatTable->getLink(), $allQuery);
-        if ($result === false) {
-            returnAjax(array(
-            "status" => false,
-            "error" => mysqli_query($db->getLink()),
-            "human_error" => "Error looking up bounding boxes",
-          ));
-        }
-        $posResult = mysqli_query($flatTable->getLink(), $posQuery);
-        $negResult = mysqli_query($flatTable->getLink(), $negQuery);
-        $rowCount = 0;
-        $returnedRows = mysqli_num_rows($result);
-        $chartData = array();
-        $chartDatasetData = array();
-        $chartPosDatasetData = array();
-        $chartNegDatasetData = array();
-        $posData = array();
-        while ($posRow = mysqli_fetch_assoc($posResult)) {
-            $posData[$posRow["country"]] = $posRow["samples"];
-        }
-        $negData = array();
-        while ($negRow = mysqli_fetch_assoc($negResult)) {
-            $negData[$negRow["country"]] = $negRow["samples"];
-        }
-        if ($doInfectionSort) {
-            $baseData = array();
-            $posBaseData = array();
-            $negBaseData = array();
-        }
-        while ($row = mysqli_fetch_assoc($result)) {
-            if (empty($row["country"])) {
-                continue;
-            }
-            $labels[] = $row["country"];
-            $key = $row["country"] . " total";
-            $negSamples = null;
-            $posSamples = null;
-            if (array_key_exists($row["country"], $posData)) {
-                $posSamples = intval($posData[$row["country"]]);
-            }
-            if (array_key_exists($row["country"], $negData)) {
-                $negSamples = intval($negData[$row["country"]]);
-            }
-            if (empty($posSamples)) {
-                $posSamples = 0;
-            }
-            if (empty($negSamples)) {
-                $negSamples = 0;
-            }
-            if (!$doInfectionSort) {
-                $chartDatasetData[] = intval($row["samples"]);
-                $chartPosDatasetData[] = $posSamples;
-                $chartNegDatasetData[] = $negSamples;
-                $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
-                if ($indeterminant < 0) {
-                    $indeterminant = 0;
+                $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
+                $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
+                $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY $orderBy";
+                $result = mysqli_query($flatTable->getLink(), $allQuery);
+                if ($result === false) {
+                    returnAjax(array(
+                        "status" => false,
+                        "error" => mysqli_query($db->getLink()),
+                        "human_error" => "Error looking up bounding boxes",
+                    ));
                 }
-                $chartIndDatasetData[] = $indeterminant;
-            } else {
-                # Percent to three decimals
-                $percent = intval($posSamples) * 10000 / intval($row["samples"]);
-                $smartKey = "$percent";
-                while (array_key_exists($smartKey, $baseData)) {
-                    $smartKey = $smartKey . "0";
+                $posResult = mysqli_query($flatTable->getLink(), $posQuery);
+                $negResult = mysqli_query($flatTable->getLink(), $negQuery);
+                $rowCount = 0;
+                $returnedRows = mysqli_num_rows($result);
+                $chartData = array();
+                $chartDatasetData = array();
+                $chartPosDatasetData = array();
+                $chartNegDatasetData = array();
+                $posData = array();
+                while ($posRow = mysqli_fetch_assoc($posResult)) {
+                    $posData[$posRow["country"]] = $posRow["samples"];
                 }
-                $baseData[$smartKey] = array(
-                    "count" => intval($row["samples"]),
-                    "country" => $row["country"],
+                $negData = array();
+                while ($negRow = mysqli_fetch_assoc($negResult)) {
+                    $negData[$negRow["country"]] = $negRow["samples"];
+                }
+                if ($doInfectionSort) {
+                    $baseData = array();
+                    $posBaseData = array();
+                    $negBaseData = array();
+                }
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if (empty($row["country"])) {
+                        continue;
+                    }
+                    $labels[] = $row["country"];
+                    $key = $row["country"] . " total";
+                    $negSamples = null;
+                    $posSamples = null;
+                    if (array_key_exists($row["country"], $posData)) {
+                        $posSamples = intval($posData[$row["country"]]);
+                    }
+                    if (array_key_exists($row["country"], $negData)) {
+                        $negSamples = intval($negData[$row["country"]]);
+                    }
+                    if (empty($posSamples)) {
+                        $posSamples = 0;
+                    }
+                    if (empty($negSamples)) {
+                        $negSamples = 0;
+                    }
+                    if (!$doInfectionSort) {
+                        $chartDatasetData[] = intval($row["samples"]);
+                        $chartPosDatasetData[] = $posSamples;
+                        $chartNegDatasetData[] = $negSamples;
+                        $indeterminant = intval($row["samples"]) - $posSamples - $negSamples;
+                        if ($indeterminant < 0) {
+                            $indeterminant = 0;
+                        }
+                        $chartIndDatasetData[] = $indeterminant;
+                    } else {
+                        # Percent to three decimals
+                        $percent = intval($posSamples) * 10000 / intval($row["samples"]);
+                        $smartKey = "$percent";
+                        while (array_key_exists($smartKey, $baseData)) {
+                            $smartKey = $smartKey . "0";
+                        }
+                        $baseData[$smartKey] = array(
+                            "count" => intval($row["samples"]),
+                            "country" => $row["country"],
+                        );
+                        $posBaseData[$smartKey] = $posSamples;
+                        $negBaseData[$smartKey] = $negSamples;
+                    }
+                }
+                if ($doInfectionSort) {
+                    $labels = array();
+                    ksort($baseData, SORT_NUMERIC);
+                    foreach ($baseData as $k=>$v) {
+                        $labels[] = $v["country"];
+                        $chartDatasetData[] = $v["count"];
+                        $chartPosDatasetData[] = $posBaseData[$k];
+                        $chartNegDatasetData[] = $negBaseData[$k];
+                        $indeterminant = $v["count"] - $posBaseData[$k] - $negBaseData[$k];
+                        if ($indeterminant < 0) {
+                            $indeterminant = 0;
+                        }
+                        $chartIndDatasetData[] = $indeterminant;
+                        $by = "by infection percent";
+                    }
+                } else {
+                    $by = "by ".$orderBy;
+                }
+                $chartData = array(
+                    "labels" => $labels,
+                    "stacking" => array("x" => false, "y" => true),
+                    "datasets" => array(
+                        // array(
+                        //     "label" => "Total Samples",
+                        //     "data" => $chartDatasetData,
+                        //     "stack" => "totals",
+                        // ),
+                        array(
+                            "label" => "Positive Samples",
+                            "data" => $chartPosDatasetData,
+                            "stack" => "PosNeg",
+                        ),
+                        array(
+                            "label" => "Negative Samples",
+                            "data" => $chartNegDatasetData,
+                            "stack" => "PosNeg",
+                        ),
+                    ),
                 );
-                $posBaseData[$smartKey] = $posSamples;
-                $negBaseData[$smartKey] = $negSamples;
-            }
-        }
-        if ($doInfectionSort) {
-            $labels = array();
-            ksort($baseData, SORT_NUMERIC);
-            foreach ($baseData as $k=>$v) {
-                $labels[] = $v["country"];
-                $chartDatasetData[] = $v["count"];
-                $chartPosDatasetData[] = $posBaseData[$k];
-                $chartNegDatasetData[] = $negBaseData[$k];
-                $indeterminant = $v["count"] - $posBaseData[$k] - $negBaseData[$k];
-                if ($indeterminant < 0) {
-                    $indeterminant = 0;
-                }
-                $chartIndDatasetData[] = $indeterminant;
-                $by = "by infection percent";
-            }
-        } else {
-            $by = "by ".$orderBy;
-        }
-        $chartData = array(
-            "labels" => $labels,
-            "stacking" => array("x" => false, "y" => true),
-            "datasets" => array(
-                // array(
-                //     "label" => "Total Samples",
-                //     "data" => $chartDatasetData,
-                //     "stack" => "totals",
-                // ),
-                array(
-                    "label" => "Positive Samples",
-                    "data" => $chartPosDatasetData,
-                    "stack" => "PosNeg",
-                ),
-                array(
-                    "label" => "Negative Samples",
-                    "data" => $chartNegDatasetData,
-                    "stack" => "PosNeg",
-                ),
-            ),
-        );
-        returnAjax(array(
-          "status" => true,
-          "data" => $chartData,
-          "axes" => array(
-                  "x" => "Country",
-                  "y" => "Samples"
-                ),
-          "title" => "Samples Per Country",
-          "use_preprocessor" => false,
-          "rows" => $rowCount,
-          "format" => "chart.js",
-          "provided" => $chartDataParams,
-          "full_description" => "Sample representation per country, $by",
-          "basedata" => $baseData,
-        ));
-        break;
+                returnAjax(array(
+                    "status" => true,
+                    "data" => $chartData,
+                    "axes" => array(
+                        "x" => "Country",
+                        "y" => "Samples"
+                    ),
+                    "title" => "Samples Per Country",
+                    "use_preprocessor" => false,
+                    "rows" => $rowCount,
+                    "format" => "chart.js",
+                    "provided" => $chartDataParams,
+                    "full_description" => "Sample representation per country, $by",
+                    "basedata" => $baseData,
+                ));
+                break;
     case "infection":
     default:
         # Sort by `disease_positive`
@@ -1650,7 +1670,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
       $aweb = array(
         "data" => array(
           "common_name" => array(),
-        ),        
+        ),
       );
     }
     # Check ours
