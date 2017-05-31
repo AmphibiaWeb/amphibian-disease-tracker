@@ -13186,7 +13186,9 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 }
 section#post-species-summary.has-open-collapse {
   background: #5a5a5a;
-  opacity: .5;
+}
+section#post-species-summary.has-open-collapse > div:not(.is-open) {
+  opacity: 0.5;
 }
 section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened {
   background: #fff;

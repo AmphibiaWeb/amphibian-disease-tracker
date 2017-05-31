@@ -1637,7 +1637,9 @@ section {
     &#post-species-summary {
         &.has-open-collapse {
             background: #5a5a5a;
-            opacity: .5;
+            & > div:not(.is-open) {
+                opacity: .5
+            }
         }
         
         iron-collapse.taxon-collapse.iron-collapse-opened {

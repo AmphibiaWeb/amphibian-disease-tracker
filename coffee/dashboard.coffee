@@ -576,12 +576,14 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
       else
         console.debug "Already has data"
       collapse = $(this).parent().find("iron-collapse").get(0)
-      delay 250, ->
+      delay 250, =>
         console.debug "is opened?", collapse.opened
         if collapse.opened
           $("#post-species-summary").addClass "has-open-collapse"
+          $(this).addClass "is-open"
         else
           $("#post-species-summary").removeClass "has-open-collapse"
+          $(".is-open").removeClass "is-open"
   false 
 
 
