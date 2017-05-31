@@ -414,7 +414,7 @@ if (!empty($pid)) {
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="col-xs-12 col-md-4">
+        <div class="col-xs-12 col-md-4 col-sm-6">
           <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item data-bins="location,species">Samples</paper-item>
@@ -425,6 +425,13 @@ if (!empty($pid)) {
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
+        </div>
+        <div class="col-xs-12 col-md-4 col-sm-6">
+          <paper-radio-group id="diseasetested-select" selected="both">
+            <paper-radio-button id="bd-only" data-disease="bd" name="bd"><span class='sciname'>B. d.</span></paper-radio-button>
+            <paper-radio-button id="bsal-only" data-disease="bsal" name="bsal"><span class='sciname'>B. sal.</span></paper-radio-button>
+            <paper-radio-button id="bd-bsal" data-disease="both" name="both">Both</paper-radio-button>
+          </paper-radio-group>
         </div>
         <div class="col-xs-12">
           <button class="btn btn-success" id="generate-chart">Generate Chart</button>
