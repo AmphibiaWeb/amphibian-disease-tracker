@@ -657,7 +657,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         """
         linkHtml = """
         <div class='clade-project-summary'>
-          <p>Represented in <strong>#{taxonData.adp.project_count}</strong> projects with <strong>#{taxonData.adp.samples}</strong> samples</p>
+          <p>Represented in <strong>#{taxonData.adp.project_count}</strong> projects with <strong>#{taxonData.adp.samples}</strong> samples:</p>
         """
         for project, title of taxonData.adp.projects
           tooltip = title
@@ -696,9 +696,9 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           #{nameHtml}
           <p>Sampled in the following countries:</p>
           #{countryHtml}
-          #{linkHtml}
           <div class="charts-container row">
           </div>
+          #{linkHtml}
         </div>
         """
         try

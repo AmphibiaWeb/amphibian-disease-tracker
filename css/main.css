@@ -13196,3 +13196,11 @@ section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened {
   background: #fff;
   opacity: 1;
 }
+section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened .project-button-link {
+  margin-left: 2rem;
+}
+section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened .blurb-info + .blurb-info {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #999;
+}

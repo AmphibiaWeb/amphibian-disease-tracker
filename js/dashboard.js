@@ -733,7 +733,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         }
         countries = Object.toArray(taxonData.adp.countries);
         countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
-        linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples</p>";
+        linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples:</p>";
         ref4 = taxonData.adp.projects;
         for (project in ref4) {
           title = ref4[project];
@@ -753,7 +753,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
         try {
           if (taxonData.taxon.species.search(/sp\./) !== -1) {
             saveState = {
