@@ -672,7 +672,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
@@ -690,6 +690,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     } else {
       iterator = [result];
     }
+    postAppend = new Array();
     for (m = 0, len1 = iterator.length; m < len1; m++) {
       taxonData = iterator[m];
       try {
@@ -753,6 +754,18 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
         blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+        try {
+          if (taxonData.taxon.species.search(/sp\./) !== -1) {
+            saveState = {
+              blurb: blurb,
+              taxonData: taxonData,
+              idTaxon: idTaxon,
+              targetSelector: targetSelector
+            };
+            postAppend.push(saveState);
+            continue;
+          }
+        } catch (undefined) {}
         $(targetSelector).append(blurb);
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {
@@ -824,6 +837,78 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $(targetSelector).append(html);
         console.error("Couldn't get taxon data -- " + e.message, taxonData);
         console.warn(e.stack);
+      }
+    }
+    if (postAppend.length > 0) {
+      for (o = 0, len3 = postAppend.length; o < len3; o++) {
+        noSp = postAppend[o];
+        try {
+          targetSelector = noSp.targetSelector;
+          idTaxon = noSp.idTaxon;
+          taxonData = noSp.taxonData;
+          blurb = noSp.blurb;
+          $(targetSelector).append(blurb);
+          diseaseData = taxonData.adp.disease_data;
+          for (disease in diseaseData) {
+            data = diseaseData[disease];
+            if (data.detected.no_confidence !== data.detected.total) {
+              testingData = {
+                labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
+                datasets: [
+                  {
+                    data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                    hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                  }
+                ]
+              };
+              chartCfg = {
+                type: "pie",
+                data: testingData
+              };
+              canvas = document.createElement("canvas");
+              canvas.setAttribute("class", "chart dynamic-pie-chart");
+              canvasId = idTaxon + "-" + disease + "-testdata";
+              canvas.setAttribute("id", canvasId);
+              canvasContainerId = canvasId + "-container";
+              chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
+              containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+              $(chartContainer).append(containerHtml);
+              $("#" + canvasContainerId).get(0).appendChild(canvas);
+              chartCtx = $("#" + canvasId);
+              pieChart = new Chart(chartCtx, chartCfg);
+              _adp.taxonCharts[canvasId] = pieChart;
+            }
+            if (data.fatal.unknown !== data.fatal.total) {
+              fatalData = {
+                labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
+                datasets: [
+                  {
+                    data: [data.fatal["true"], data.fatal["false"], data.fatal.unknown],
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                    hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                  }
+                ]
+              };
+              chartCfg = {
+                type: "pie",
+                data: fatalData
+              };
+              canvas = document.createElement("canvas");
+              canvas.setAttribute("class", "chart dynamic-pie-chart");
+              canvasId = idTaxon + "-" + disease + "-fataldata";
+              canvas.setAttribute("id", canvasId);
+              canvasContainerId = canvasId + "-container";
+              chartContainer = $(targetSelector).find(".charts-container").get(0);
+              containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+              $(chartContainer).append(containerHtml);
+              $("#" + canvasContainerId).get(0).appendChild(canvas);
+              chartCtx = $("#" + canvasId);
+              pieChart = new Chart(chartCtx, chartCfg);
+              _adp.taxonCharts[canvasId] = pieChart;
+            }
+          }
+        } catch (undefined) {}
       }
     }
     return false;
