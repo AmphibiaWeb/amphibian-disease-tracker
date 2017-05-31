@@ -814,6 +814,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
     # See
     # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/238#issue-231413546
     if postAppend.length > 0
+      console.log "Have #{postAppend.length} unidentified species"
       for noSp in postAppend
         try # Nonfatal on each iteration
           # Re-establish the variables

@@ -840,6 +840,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
       }
     }
     if (postAppend.length > 0) {
+      console.log("Have " + postAppend.length + " unidentified species");
       for (o = 0, len3 = postAppend.length; o < len3; o++) {
         noSp = postAppend[o];
         try {
