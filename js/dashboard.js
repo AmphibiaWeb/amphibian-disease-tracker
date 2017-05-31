@@ -136,11 +136,14 @@ getRandomDataColor = function() {
 };
 
 getServerChart = function(chartType, chartParams) {
-  var args, cp, requestKey, requestValue;
+  var args, cp, requestKey, requestValue, tested;
   if (chartType == null) {
     chartType = "location";
   }
   startLoad();
+  try {
+    $("#post-species-summary").remove();
+  } catch (undefined) {}
   args = "action=chart&bin=" + chartType;
   if (typeof chartParams === "object") {
     cp = new Array();
@@ -150,6 +153,14 @@ getServerChart = function(chartType, chartParams) {
     }
     args += "&" + (cp.join("&"));
   }
+  try {
+    if ($("#diseasetested-select").exists()) {
+      tested = p$("#diseasetested-select").selectedItem.name;
+      if (!isNull(tested)) {
+        args += "&disease=" + tested;
+      }
+    }
+  } catch (undefined) {}
   console.debug("Fetching chart with", apiTarget + "?" + args);
   $.post(apiTarget, args, "json").done(function(result) {
     var chartData, colors, data, dataItem, datasets, i, l, len, len1, m, preprocessorFn, ref, s;
@@ -905,6 +916,10 @@ $(function() {
     });
     $(".chart-param paper-listbox paper-item").on("click", function() {
       console.log("Firing click event on paper-item", this);
+      return renderNewChart.debounce(50);
+    });
+    $("#diseasetested-select").on("selected-item-changed", function() {
+      console.log("Firing selection change");
       return renderNewChart.debounce(50);
     });
     return dropdownSortEvents();

@@ -149,12 +149,19 @@ getRandomDataColor = ->
 getServerChart = (chartType = "location", chartParams) ->
   # Get the chart
   startLoad()
+  try
+    $("#post-species-summary").remove()
   args = "action=chart&bin=#{chartType}"
   if typeof chartParams is "object"
     cp = new Array()
     for requestKey, requestValue of chartParams
       cp.push "#{requestKey}=#{requestValue}"
     args += "&#{cp.join "&"}"
+  try
+    if $("#diseasetested-select").exists()
+      tested = p$("#diseasetested-select").selectedItem.name
+      unless isNull tested
+        args += "&disease=" + tested
   console.debug "Fetching chart with", "#{apiTarget}?#{args}"
   $.post apiTarget, args, "json"
   .done (result) ->
@@ -889,6 +896,9 @@ $ ->
     $(".chart-param paper-listbox paper-item")
     .on "click", ->
       console.log "Firing click event on paper-item", this
+      renderNewChart.debounce 50
+    $("#diseasetested-select").on "selected-item-changed", ->
+      console.log "Firing selection change"
       renderNewChart.debounce 50
     dropdownSortEvents()
   false
