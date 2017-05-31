@@ -433,7 +433,7 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var bin, collapseHtml, dataUri, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, targetId;
+        var bin, collapseHtml, dataUri, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, summaryTitle, targetId;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
@@ -444,18 +444,20 @@ getServerChart = function(chartType, chartParams) {
           for (n = 0, len2 = ref10.length; n < len2; n++) {
             bin = ref10[n];
             targetId = md5(bin + "-" + (Date.now()));
-            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\" class=\"taxon-collapse\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
             fetchUpdatesFor[targetId] = bin;
           }
           if (chartParams.sort === "species") {
             measurement = "species";
             measurementSingle = measurement;
+            summaryTitle = measurementSingle + " Summaries";
           } else {
             measurement = "genera";
             measurementSingle = "genus";
+            summaryTitle = "Species Summaries by Genus";
           }
           dataUri = _adp.chart.chart.toBase64Image();
-          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download disabled>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p hidden>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize col-xs-12\">" + measurementSingle + " Summaries <small class=\"text-muted\">Ordered as the above chart</small></h3>\n    <p class=\"col-xs-12 text-muted\">Click on a taxon to toggle charts and more data for that taxon</p>\n    " + collapseHtml + "\n  </div>\n</section>";
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download disabled>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p hidden>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize col-xs-12\">" + summaryTitle + " <small class=\"text-muted\">Ordered as the above chart</small></h3>\n    <p class=\"col-xs-12 text-muted\">Click on a taxon to toggle charts and more data for that taxon</p>\n    " + collapseHtml + "\n  </div>\n</section>";
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
@@ -642,7 +644,12 @@ fetchMiniTaxonBlurbs = function(reference) {
         console.debug("Already has data");
       }
       collapse = $(this).parent().find("iron-collapse").get(0);
-      return console.debug("is opened?", collapse.opened);
+      console.debug("is opened?", collapse.opened);
+      if (collapse.opened) {
+        return $("#post-species-summary").addClass("has-open-collapse");
+      } else {
+        return $("#post-species-summary").removeClass("has-open-collapse");
+      }
     });
   }
   return false;

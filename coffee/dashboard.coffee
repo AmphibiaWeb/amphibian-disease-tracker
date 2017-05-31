@@ -375,21 +375,23 @@ getServerChart = (chartType = "location", chartParams) ->
               <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
               #{bin}
               </button>
-              <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
+              <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}" class="taxon-collapse">
                 <div class="collapse-content alert">
                   Binned data for #{bin}. Should populate this asynchronously ....
                 </div>
               </iron-collapse>
             </div>
-            """
+            """ 
             # Store what needs the update fetched
             fetchUpdatesFor[targetId] = bin
           if chartParams.sort is "species"
             measurement = "species"
             measurementSingle = measurement
+            summaryTitle = "#{measurementSingle} Summaries"
           else
             measurement = "genera"
             measurementSingle = "genus"
+            summaryTitle = "Species Summaries by Genus"
           dataUri = _adp.chart.chart.toBase64Image()
           html = """
           <section id="post-species-summary" class="col-xs-12" style="margin-top:2rem;">
@@ -403,7 +405,7 @@ getServerChart = (chartType = "location", chartParams) ->
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
             <div class="row">
-              <h3 class="capitalize col-xs-12">#{measurementSingle} Summaries <small class="text-muted">Ordered as the above chart</small></h3>
+              <h3 class="capitalize col-xs-12">#{summaryTitle} <small class="text-muted">Ordered as the above chart</small></h3>
               <p class="col-xs-12 text-muted">Click on a taxon to toggle charts and more data for that taxon</p>
               #{collapseHtml}
             </div>
@@ -575,8 +577,11 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
         console.debug "Already has data"
       collapse = $(this).parent().find("iron-collapse").get(0)
       console.debug "is opened?", collapse.opened
-      #_adp.collapseOpener.debounce 300, null, null, collapse
-  false
+      if collapse.opened
+        $("#post-species-summary").addClass "has-open-collapse"
+      else
+        $("#post-species-summary").removeClass "has-open-collapse"
+  false 
 
 
 

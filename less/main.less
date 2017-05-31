@@ -1625,5 +1625,24 @@ section.conversations {
 
 .project-button-link {
     margin-right: .5rem;
-    
+
+}
+
+
+////////////
+// Dashboard
+////////////
+
+section {
+    &#post-species-summary {
+        &.has-open-collapse {
+            background: #5a5a5a;
+            opacity: .5;
+        }
+        
+        iron-collapse.taxon-collapse.iron-collapse-opened {
+            background: #fff;
+            opacity: 1; 
+        }
+    }
 }

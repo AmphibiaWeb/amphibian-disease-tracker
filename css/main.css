@@ -13184,3 +13184,11 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .project-button-link {
   margin-right: .5rem;
 }
+section#post-species-summary.has-open-collapse {
+  background: #5a5a5a;
+  opacity: .5;
+}
+section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened {
+  background: #fff;
+  opacity: 1;
+}
