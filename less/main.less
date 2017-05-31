@@ -1634,12 +1634,15 @@ section.conversations {
 ////////////
 
 section {
+    @easy-transition: all .1s ease-out;
     &#post-species-summary {
         &.has-open-collapse {
+            transition: @easy-transition;
             background: #5a5a5a;
-            & > div:not(.is-open) {
-                opacity: .5
-            }
+            & > div.row > div:not(.is-open) {
+                opacity: .5;
+                transition: @easy-transition;
+            }            
         }
         
         iron-collapse.taxon-collapse.iron-collapse-opened {

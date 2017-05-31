@@ -13185,10 +13185,12 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   margin-right: .5rem;
 }
 section#post-species-summary.has-open-collapse {
+  transition: all 0.1s ease-out;
   background: #5a5a5a;
 }
-section#post-species-summary.has-open-collapse > div:not(.is-open) {
-  opacity: 0.5;
+section#post-species-summary.has-open-collapse > div.row > div:not(.is-open) {
+  opacity: .5;
+  transition: all 0.1s ease-out;
 }
 section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened {
   background: #fff;

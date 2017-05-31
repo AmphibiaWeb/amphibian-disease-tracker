@@ -649,7 +649,7 @@ fetchMiniTaxonBlurbs = function(reference) {
           console.debug("is opened?", collapse.opened);
           if (collapse.opened) {
             $("#post-species-summary").addClass("has-open-collapse");
-            return $(_this).addClass("is-open");
+            return $(_this).parent().addClass("is-open");
           } else {
             $("#post-species-summary").removeClass("has-open-collapse");
             return $(".is-open").removeClass("is-open");

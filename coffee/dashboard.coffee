@@ -580,7 +580,7 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
         console.debug "is opened?", collapse.opened
         if collapse.opened
           $("#post-species-summary").addClass "has-open-collapse"
-          $(this).addClass "is-open"
+          $(this).parent().addClass "is-open"
         else
           $("#post-species-summary").removeClass "has-open-collapse"
           $(".is-open").removeClass "is-open"
