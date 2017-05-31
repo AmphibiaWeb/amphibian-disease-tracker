@@ -157,7 +157,7 @@ getServerChart = function(chartType, chartParams) {
     if ($("#diseasetested-select").exists()) {
       tested = p$("#diseasetested-select").selectedItem.name;
       if (!isNull(tested)) {
-        args += "disease=" + tested;
+        args += "&disease=" + tested;
       }
     }
   } catch (undefined) {}

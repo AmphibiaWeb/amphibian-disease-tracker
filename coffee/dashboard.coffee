@@ -161,7 +161,7 @@ getServerChart = (chartType = "location", chartParams) ->
     if $("#diseasetested-select").exists()
       tested = p$("#diseasetested-select").selectedItem.name
       unless isNull tested
-        args += "disease=" + tested
+        args += "&disease=" + tested
   console.debug "Fetching chart with", "#{apiTarget}?#{args}"
   $.post apiTarget, args, "json"
   .done (result) ->
