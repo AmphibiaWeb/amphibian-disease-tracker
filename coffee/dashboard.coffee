@@ -375,7 +375,7 @@ getServerChart = (chartType = "location", chartParams) ->
               <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
               #{bin}
               </button>
-              <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}">
+              <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}" class="taxon-collapse">
                 <div class="collapse-content alert">
                   Binned data for #{bin}. Should populate this asynchronously ....
                 </div>
@@ -387,9 +387,11 @@ getServerChart = (chartType = "location", chartParams) ->
           if chartParams.sort is "species"
             measurement = "species"
             measurementSingle = measurement
+            summaryTitle = "#{measurementSingle} Summaries"
           else
             measurement = "genera"
             measurementSingle = "genus"
+            summaryTitle = "Species Summaries by Genus"
           dataUri = _adp.chart.chart.toBase64Image()
           html = """
           <section id="post-species-summary" class="col-xs-12" style="margin-top:2rem;">
@@ -403,7 +405,7 @@ getServerChart = (chartType = "location", chartParams) ->
               These data are generated from over #{result.rows} #{measurement}. AND MORE SUMMARY BLAHDEYBLAH. Per #{measurementSingle} summary links, etc.
             </p>
             <div class="row">
-              <h3 class="capitalize col-xs-12">#{measurementSingle} Summaries <small class="text-muted">Ordered as the above chart</small></h3>
+              <h3 class="capitalize col-xs-12">#{summaryTitle} <small class="text-muted">Ordered as the above chart</small></h3>
               <p class="col-xs-12 text-muted">Click on a taxon to toggle charts and more data for that taxon</p>
               #{collapseHtml}
             </div>
@@ -574,8 +576,14 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
       else
         console.debug "Already has data"
       collapse = $(this).parent().find("iron-collapse").get(0)
-      console.debug "is opened?", collapse.opened
-      #_adp.collapseOpener.debounce 300, null, null, collapse
+      delay 250, =>
+        console.debug "is opened?", collapse.opened
+        if collapse.opened
+          $("#post-species-summary").addClass "has-open-collapse"
+          $(this).parent().addClass "is-open"
+        else
+          $("#post-species-summary").removeClass "has-open-collapse"
+          $(".is-open").removeClass "is-open"
   false
 
 
@@ -608,6 +616,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
     else
       iterator = [result]
     # Check each taxon
+    postAppend = new Array()
     for taxonData in iterator
       try
         console.log "Doing blurb for", JSON.stringify taxonData.taxon
@@ -692,6 +701,11 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           </div>
         </div>
         """
+        try
+          if taxonData.taxon.species.search(/sp\./) isnt -1
+            saveState = {blurb, taxonData, idTaxon, targetSelector}
+            postAppend.push saveState
+            continue
         $(targetSelector).append blurb
         # Create the pie charts
         diseaseData = taxonData.adp.disease_data
@@ -796,6 +810,104 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         console.error "Couldn't get taxon data -- #{e.message}", taxonData
         console.warn e.stack
       # End iterator for taxa
+    # See if we have any "Foo sp." that need to be stuck at the end
+    # See
+    # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/238#issue-231413546
+    if postAppend.length > 0
+      console.log "Have #{postAppend.length} unidentified species"
+      for noSp in postAppend
+        try # Nonfatal on each iteration
+          # Re-establish the variables
+          targetSelector = noSp.targetSelector
+          idTaxon = noSp.idTaxon
+          taxonData = noSp.taxonData
+          blurb = noSp.blurb
+          # Re-run the end of what happened before
+          $(targetSelector).append blurb
+          # Create the pie charts
+          diseaseData = taxonData.adp.disease_data
+          for disease, data of diseaseData
+            unless data.detected.no_confidence is data.detected.total
+              testingData =
+                labels: [
+                  "#{disease} detected"
+                  "#{disease} not detected"
+                  "#{disease} inconclusive data"
+                  ]
+                datasets: [
+                  data: [data.detected.true, data.detected.false, data.detected.no_confidence]
+                  backgroundColor: [
+                    "#FF6384"
+                    "#36A2EB"
+                    "#FFCE56"
+                    ]
+                  hoverBackgroundColor: [
+                    "#FF6384"
+                    "#36A2EB"
+                    "#FFCE56"
+                    ]
+                  ]
+              chartCfg =
+                type: "pie"
+                data: testingData
+              # Create a canvas for this
+              canvas = document.createElement "canvas"
+              canvas.setAttribute "class","chart dynamic-pie-chart"
+              canvasId = "#{idTaxon}-#{disease}-testdata"
+              canvas.setAttribute "id", canvasId
+              canvasContainerId = "#{canvasId}-container"
+              chartContainer = $(targetSelector).find("#taxon-blurb-#{idTaxon}").find(".charts-container").get(0)
+              containerHtml = """
+              <div id="#{canvasContainerId}" class="col-xs-6">
+              </div>
+              """
+              $(chartContainer).append containerHtml
+              $("##{canvasContainerId}").get(0).appendChild canvas
+              chartCtx = $("##{canvasId}")
+              pieChart = new Chart chartCtx, chartCfg
+              _adp.taxonCharts[canvasId] = pieChart
+            # Fatality!
+            unless data.fatal.unknown is data.fatal.total
+              fatalData =
+                labels: [
+                  "#{disease} fatal"
+                  "#{disease} not fatal"
+                  "#{disease} unknown fatality"
+                  ]
+                datasets: [
+                  data: [data.fatal.true, data.fatal.false, data.fatal.unknown]
+                  backgroundColor: [
+                    "#FF6384"
+                    "#36A2EB"
+                    "#FFCE56"
+                    ]
+                  hoverBackgroundColor: [
+                    "#FF6384"
+                    "#36A2EB"
+                    "#FFCE56"
+                    ]
+                  ]
+              chartCfg =
+                type: "pie"
+                data: fatalData
+              # Create a canvas for this
+              canvas = document.createElement "canvas"
+              canvas.setAttribute "class","chart dynamic-pie-chart"
+              canvasId = "#{idTaxon}-#{disease}-fataldata"
+              canvas.setAttribute "id", canvasId
+              canvasContainerId = "#{canvasId}-container"
+              chartContainer = $(targetSelector).find(".charts-container").get(0)
+              containerHtml = """
+              <div id="#{canvasContainerId}" class="col-xs-6">
+              </div>
+              """
+              $(chartContainer).append containerHtml
+              $("##{canvasContainerId}").get(0).appendChild canvas
+              chartCtx = $("##{canvasId}")
+              pieChart = new Chart chartCtx, chartCfg
+              _adp.taxonCharts[canvasId] = pieChart
+        # End postAppend loop
+      # End postAppend check
     false
   .error (result, status) ->
     html = """
