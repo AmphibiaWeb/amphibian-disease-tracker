@@ -1057,11 +1057,11 @@ function getChartData($chartDataParams)
     if (!isset($chartDataParams["include_sp"])) {
         $chartDataParams["include_sp"] = false;
     }
-    $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
+    $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where `specificepithet` !='sp.'";
     $stringDisease = "";
     switch (strtolower($chartDataParams["disease"])) {
         case "bd":
-            $tested = "diseasetested = 'bd'";
+            $tested = "`diseasetested` = 'Bd'";
             $andTested = " AND $tested";
             if (empty($ignoreSp)) {
                 $where = $ignoreSp . " AND $tested";
@@ -1071,7 +1071,7 @@ function getChartData($chartDataParams)
             $stringDisease = "for B. d.";
             break;
         case "bsal":
-            $tested = "diseasetested = 'bsal'";
+            $tested = "`diseasetested` = 'Bsal'";
             $andTested = " AND $tested";
             if (empty($ignoreSp)) {
                 $where = $ignoreSp . $andTested;
@@ -1145,7 +1145,7 @@ function getChartData($chartDataParams)
                     } else {
                         $orderBy = "`genus`";
                     }
-                    $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $ignoreSp group by `genus` order by $orderBy";
+                    $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $where group by `genus` order by $orderBy";
                     $result = mysqli_query($flatTable->getLink(), $query);
                     if ($result === false) {
                         returnAjax(array(
