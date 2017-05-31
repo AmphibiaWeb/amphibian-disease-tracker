@@ -644,12 +644,14 @@ fetchMiniTaxonBlurbs = function(reference) {
         console.debug("Already has data");
       }
       collapse = $(this).parent().find("iron-collapse").get(0);
-      console.debug("is opened?", collapse.opened);
-      if (collapse.opened) {
-        return $("#post-species-summary").addClass("has-open-collapse");
-      } else {
-        return $("#post-species-summary").removeClass("has-open-collapse");
-      }
+      return delay(250, function() {
+        console.debug("is opened?", collapse.opened);
+        if (collapse.opened) {
+          return $("#post-species-summary").addClass("has-open-collapse");
+        } else {
+          return $("#post-species-summary").removeClass("has-open-collapse");
+        }
+      });
     });
   }
   return false;
