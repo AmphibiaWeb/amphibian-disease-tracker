@@ -1054,36 +1054,44 @@ function getChartData($chartDataParams)
     * - positive species
     *
     ***/
+    if (!isset($chartDataParams["include_sp"])) {
+        $chartDataParams["include_sp"] = false;
+    }
+    $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
+    $stringDisease = "";
+    switch (strtolower($chartDataParams["disease"])) {
+        case "bd":
+            $tested = "diseasetested = 'bd'";
+            $andTested = " AND $tested";
+            if (empty($ignoreSp)) {
+                $where = $ignoreSp . " AND $tested";
+            } else {
+                $where = "where " . $tested;
+            }
+            $stringDisease = "for B. d.";
+            break;
+        case "bsal":
+            $tested = "diseasetested = 'bsal'";
+            $andTested = " AND $tested";
+            if (empty($ignoreSp)) {
+                $where = $ignoreSp . $andTested;
+            } else {
+                $where = "where " . $tested;
+            }
+            $stringDisease = "for B. sal.";
+            break;
+        default:
+            $stringDisease = "for B. d. and B. sal.";
+            $where = $ignoreSp;
+            $tested = "";
+            $andTested = "";
+    }
     switch ($chartDataParams["bin"]) {
         case "time":
             # Sort by time
             break;
         case "species":
             # Sort by species alphabetically
-            if (!isset($chartDataParams["include_sp"])) {
-                $chartDataParams["include_sp"] = false;
-            }
-            $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where specificepithet !='sp.'";
-            switch (strtolower($chartDataParams["disease"])) {
-                case "bd":
-                    $tested = "diseasetested = 'bd'";
-                    if (empty($ignoreSp)) {
-                        $where = $ignoreSp . " AND $tested";
-                    } else {
-                        $where = $tested;
-                    }
-                    break;
-                case "bsal":
-                    $tested = "diseasetested = 'bsal'";
-                    if (empty($ignoreSp)) {
-                        $where = $ignoreSp . " AND $tested";
-                    } else {
-                        $where = $tested;
-                    }
-                    break;
-                default:
-                    $where = $ignoreSp;
-            }
             switch ($chartDataParams["sort"]) {
                 case "species":
                     $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` $where group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
@@ -1121,7 +1129,7 @@ function getChartData($chartDataParams)
                             "x" => "Species",
                             "y" => "Samples"
                         ),
-                        "title" => "Samples Per Taxon",
+                        "title" => "Samples Per Taxon $stringDisease",
                         "use_preprocessor" => false,
                         "rows" => $rowCount,
                         "format" => "chart.js",
@@ -1172,7 +1180,7 @@ function getChartData($chartDataParams)
                             "x" => "Genus",
                             "y" => "Samples"
                         ),
-                        "title" => "Samples Per Genus",
+                        "title" => "Samples Per Genus $stringDisease",
                         "use_preprocessor" => false,
                         "rows" => $rowCount,
                         "format" => "chart.js",
@@ -1204,9 +1212,9 @@ function getChartData($chartDataParams)
                     }
                 }
             }
-            $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` GROUP BY country ORDER BY $orderBy";
-            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
-            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' GROUP BY country ORDER BY $orderBy";
+            $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where GROUP BY country ORDER BY $orderBy";
+            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' $andTested GROUP BY country ORDER BY $orderBy";
+            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' $andTested GROUP BY country ORDER BY $orderBy";
             $result = mysqli_query($flatTable->getLink(), $allQuery);
             if ($result === false) {
                 returnAjax(array(
