@@ -215,28 +215,24 @@ if (toBool($_REQUEST["async"]) === true) {
     <p class="col-xs-12 login-status-bar text-right">
         <?php
         $user = $_COOKIE['amphibiandisease_fullname'];
-$test = $loginStatus['status'];
-if ($test) {
+        $test = $loginStatus['status'];
+        if ($test) {
     ?>
       Logged in as <span class='header-bar-user-name'><?php echo $user;
 ?></span>
       <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
-
-}
-else {
-?>
+        } else {
+            ?>
       <paper-icon-button icon="icons:exit-to-app" class="click" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom"></paper-icon-button>
         <?php
-
-}
-if (!empty($pid)) {
+        }
+        if (!empty($pid)) {
 ?>
       <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         <?php
-
-}
+        }
 ?>
       <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
@@ -327,14 +323,13 @@ if (!empty($pid)) {
             <tbody>
               <tr>
                 <td>
-                  <?php echo $count; ?>
+                    <?php echo $count; ?>
                 </td>
                 <td>
-                  <?php echo $speciesCount; ?>
+                    <?php echo $speciesCount; ?>
                 </td>
                 <td>
-                  <?php echo $countryCount;
-?>
+                    <?php echo $countryCount; ?>
                 </td>
               </tr>
             </tbody>
