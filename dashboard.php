@@ -257,13 +257,13 @@ if (toBool($_REQUEST["async"]) === true) {
       <div class="row db-summary-region">
         <?php
 
-            /***
-             * Get some summary stats
-             * See:
-             * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
-             ***/
-             # Species count
-             $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` where genus is not null group by genus, specificepithet";
+        /***
+         * Get some summary stats
+         * See:
+         * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
+         ***/
+        # Species count
+        $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` where genus is not null group by genus, specificepithet";
         $r = mysqli_query($db->getLink(), $query);
         $speciesCount = mysqli_num_rows($r);
         # Total samples
@@ -278,22 +278,19 @@ if (toBool($_REQUEST["async"]) === true) {
         ## Top 10
         ## See
         ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
-
-        $queryCountryTop10P = "select `country`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') group by `country` order by count desc limit 10";
         $queryCountryTop10N = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
-        $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true')  group by `genus`, `specificepithet` order by count desc limit 10";
         $querySpeciesTop10N = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
         $top10CountryTBody = array();
         $top10SpeciesTBody = array();
-        $rCP = mysqli_query($db->getLink(), $queryCountryTop10P);
         $rCN = mysqli_query($db->getLink(), $queryCountryTop10N);
-        $rSP = mysqli_query($db->getLink(), $querySpeciesTop10P);
         $rSN = mysqli_query($db->getLink(), $querySpeciesTop10N);
         $i = 0;
         while ($row = mysqli_fetch_assoc($rCN)) {
             if ($i == 0) {
                 $max = intval($row["count"]);
             }
+            $queryCountryTop10P = "select `country`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `country`='".$row["country"]."' group by `country` order by count desc limit 10";
+            $rCP = mysqli_query($db->getLink(), $queryCountryTop10P);
             $rowPos = mysqli_fetch_assoc($rCP);
             $progressPositive = 100 * intval($rowPos["count"]) / $max;
             $progressNegative = 100 * intval($row["count"]) / $max;
@@ -307,6 +304,8 @@ if (toBool($_REQUEST["async"]) === true) {
             if ($i == 0) {
                 $max = intval($row["count"]);
             }
+            $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `genus`='".$row["genus"]."' AND `specificepithet`='".$row["specificepithet"]."'  group by `genus`, `specificepithet` order by count desc limit 10";
+            $rSP = mysqli_query($db->getLink(), $querySpeciesTop10P);
             $rowPos = mysqli_fetch_assoc($rSP);
             $progressNegative = 100 * intval($row["count"]) / $max;
             $progressPositive = 100 * intval($rowPos["count"]) / $max;
