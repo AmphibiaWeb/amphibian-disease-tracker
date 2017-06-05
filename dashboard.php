@@ -201,6 +201,10 @@ if (toBool($_REQUEST["async"]) === true) {
       --paper-input-container-underline: var(--paper-grey-300);
       --paper-input-container-underline-disabled: var(--paper-grey-300);
       }
+      paper-progress.top10-progress {
+      --paper-progress-active-color: rgb(220,30,25);
+      --paper-progress-secondary-color: rgb(25,70,220);
+      }
     </style>
 </head>
 <body class="container-fluid">
@@ -215,28 +219,24 @@ if (toBool($_REQUEST["async"]) === true) {
     <p class="col-xs-12 login-status-bar text-right">
         <?php
         $user = $_COOKIE['amphibiandisease_fullname'];
-$test = $loginStatus['status'];
-if ($test) {
+        $test = $loginStatus['status'];
+        if ($test) {
     ?>
       Logged in as <span class='header-bar-user-name'><?php echo $user;
 ?></span>
       <paper-icon-button icon="icons:dashboard" class="click" data-href="https://amphibiandisease.org/admin-page.html" data-toggle="tooltip" title="Administration Dashboard" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon='icons:settings-applications' class='click' data-href="https://amphibiandisease.org/admin" data-toggle="tooltip" title="Account Settings" data-placement="bottom"></paper-icon-button>
         <?php
-
-}
-else {
-?>
+        } else {
+            ?>
       <paper-icon-button icon="icons:exit-to-app" class="click" data-toggle="tooltip" title="Login" data-href="https://amphibiandisease.org/admin" data-placement="bottom"></paper-icon-button>
         <?php
-
-}
-if (!empty($pid)) {
+        }
+        if (!empty($pid)) {
 ?>
       <paper-icon-button icon="icons:language" class="click" data-toggle="tooltip" title="Project Browser" data-href="https://amphibiandisease.org/project.php" data-placement="bottom"> </paper-icon-button>
         <?php
-
-}
+        }
 ?>
       <paper-icon-button icon="icons:account-box" class="click" data-toggle="tooltip" title="Profiles" data-href="https://amphibiandisease.org/profile.php" data-placement="bottom"> </paper-icon-button>
       <paper-icon-button icon="icons:home" class="click" data-href="https://amphibiandisease.org" data-toggle="tooltip" title="Home" data-placement="bottom"></paper-icon-button>
@@ -248,9 +248,8 @@ if (!empty($pid)) {
             # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176
             # for scope and features
 
-# Fetch aggregate stats
-
-?>
+            # Fetch aggregate stats
+    ?>
     <h2 class="col-xs-12">
       Data Dashboard <span class="badge">ALPHA</span>
     </h2>
@@ -280,30 +279,38 @@ if (!empty($pid)) {
         ## See
         ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
 
-        $queryCountryTop10 = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
-        $querySpeciesTop10 = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
+        $queryCountryTop10P = "select `country`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') group by `country` order by count desc limit 10";
+        $queryCountryTop10N = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
+        $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true')  group by `genus`, `specificepithet` order by count desc limit 10";
+        $querySpeciesTop10N = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
         $top10CountryTBody = array();
         $top10SpeciesTBody = array();
-        $rC = mysqli_query($db->getLink(), $queryCountryTop10);
-        $rS = mysqli_query($db->getLink(), $querySpeciesTop10);
+        $rCP = mysqli_query($db->getLink(), $queryCountryTop10P);
+        $rCN = mysqli_query($db->getLink(), $queryCountryTop10N);
+        $rSP = mysqli_query($db->getLink(), $querySpeciesTop10P);
+        $rSN = mysqli_query($db->getLink(), $querySpeciesTop10N);
         $i = 0;
-        while ($row = mysqli_fetch_assoc($rC)) {
+        while ($row = mysqli_fetch_assoc($rCN)) {
             if ($i == 0) {
                 $max = intval($row["count"]);
             }
-            $progress = 100 * intval($row["count"]) / $max;
-            $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+            $rowPos = mysqli_fetch_assoc($rCP);
+            $progressPositive = 100 * intval($rowPos["count"]) / $max;
+            $progressNegative = 100 * intval($row["count"]) / $max;
+            $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
             $top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
             $i++;
         }
         $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
         $i = 0;
-        while ($row = mysqli_fetch_assoc($rS)) {
+        while ($row = mysqli_fetch_assoc($rSN)) {
             if ($i == 0) {
                 $max = intval($row["count"]);
             }
-            $progress = 100 * intval($row["count"]) / $max;
-            $progressBar = "<paper-progress value='$progress' class='top10-progress'></paper-progress>";
+            $rowPos = mysqli_fetch_assoc($rSP);
+            $progressNegative = 100 * intval($row["count"]) / $max;
+            $progressPositive = 100 * intval($rowPos["count"]) / $max;
+            $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
             $top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
             $i++;
         }
@@ -327,14 +334,13 @@ if (!empty($pid)) {
             <tbody>
               <tr>
                 <td>
-                  <?php echo $count; ?>
+                    <?php echo $count; ?>
                 </td>
                 <td>
-                  <?php echo $speciesCount; ?>
+                    <?php echo $speciesCount; ?>
                 </td>
                 <td>
-                  <?php echo $countryCount;
-?>
+                    <?php echo $countryCount; ?>
                 </td>
               </tr>
             </tbody>
