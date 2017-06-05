@@ -13184,3 +13184,23 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .project-button-link {
   margin-right: .5rem;
 }
+section#post-species-summary.has-open-collapse {
+  transition: all 0.25s ease-in-out;
+  background: #5a5a5a;
+}
+section#post-species-summary.has-open-collapse > div.row > div:not(.is-open) {
+  opacity: .5;
+  transition: all 0.25s ease-in-out;
+}
+section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened {
+  background: #fff;
+  opacity: 1;
+}
+section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened .project-button-link {
+  margin-left: 2rem;
+}
+section#post-species-summary iron-collapse.taxon-collapse.iron-collapse-opened .blurb-info + .blurb-info {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #999;
+}

@@ -433,7 +433,7 @@ getServerChart = function(chartType, chartParams) {
       chartSelector = "#dataChart-" + (datasets[0].label.replace(/ /g, "-")) + "-" + uid;
       console.log("Creating chart with", chartSelector, chartObj);
       createChart(chartSelector, chartObj, function() {
-        var bin, collapseHtml, dataUri, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, targetId;
+        var bin, collapseHtml, dataUri, fetchUpdatesFor, html, len2, measurement, measurementSingle, n, ref10, summaryTitle, targetId;
         if (!isNull(result.full_description)) {
           $("#chart-" + (datasets[0].label.replace(" ", "-"))).before("<h3 class='col-xs-12 text-center chart-title'>" + result.full_description + "</h3>");
         }
@@ -444,18 +444,20 @@ getServerChart = function(chartType, chartParams) {
           for (n = 0, len2 = ref10.length; n < len2; n++) {
             bin = ref10[n];
             targetId = md5(bin + "-" + (Date.now()));
-            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\" class=\"taxon-collapse\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
             fetchUpdatesFor[targetId] = bin;
           }
           if (chartParams.sort === "species") {
             measurement = "species";
             measurementSingle = measurement;
+            summaryTitle = measurementSingle + " Summaries";
           } else {
             measurement = "genera";
             measurementSingle = "genus";
+            summaryTitle = "Species Summaries by Genus";
           }
           dataUri = _adp.chart.chart.toBase64Image();
-          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download disabled>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p hidden>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize col-xs-12\">" + measurementSingle + " Summaries <small class=\"text-muted\">Ordered as the above chart</small></h3>\n    <p class=\"col-xs-12 text-muted\">Click on a taxon to toggle charts and more data for that taxon</p>\n    " + collapseHtml + "\n  </div>\n</section>";
+          html = "<section id=\"post-species-summary\" class=\"col-xs-12\" style=\"margin-top:2rem;\">\n  <div class=\"row\">\n    <a href=\"" + dataUri + "\" class=\"btn btn-primary pull-right col-xs-8 col-sm-4 col-md-3 col-lg-2\" id=\"download-main-chart\" download disabled>\n      <iron-icon icon=\"icons:cloud-download\"></iron-icon>\n      Download Chart\n    </a>\n  </div>\n  <p hidden>\n    These data are generated from over " + result.rows + " " + measurement + ". AND MORE SUMMARY BLAHDEYBLAH. Per " + measurementSingle + " summary links, etc.\n  </p>\n  <div class=\"row\">\n    <h3 class=\"capitalize col-xs-12\">" + summaryTitle + " <small class=\"text-muted\">Ordered as the above chart</small></h3>\n    <p class=\"col-xs-12 text-muted\">Click on a taxon to toggle charts and more data for that taxon</p>\n    " + collapseHtml + "\n  </div>\n</section>";
           try {
             $("#post-species-summary").remove();
           } catch (undefined) {}
@@ -642,7 +644,18 @@ fetchMiniTaxonBlurbs = function(reference) {
         console.debug("Already has data");
       }
       collapse = $(this).parent().find("iron-collapse").get(0);
-      return console.debug("is opened?", collapse.opened);
+      return delay(250, (function(_this) {
+        return function() {
+          console.debug("is opened?", collapse.opened);
+          if (collapse.opened) {
+            $("#post-species-summary").addClass("has-open-collapse");
+            return $(_this).parent().addClass("is-open");
+          } else {
+            $("#post-species-summary").removeClass("has-open-collapse");
+            return $(".is-open").removeClass("is-open");
+          }
+        };
+      })(this));
     });
   }
   return false;
@@ -659,7 +672,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, linkHtml, m, n, name, nameHtml, nameString, names, pieChart, project, ref, ref1, ref2, ref3, ref4, retResult, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
@@ -677,6 +690,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     } else {
       iterator = [result];
     }
+    postAppend = new Array();
     for (m = 0, len1 = iterator.length; m < len1; m++) {
       taxonData = iterator[m];
       try {
@@ -719,7 +733,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         }
         countries = Object.toArray(taxonData.adp.countries);
         countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
-        linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples</p>";
+        linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples:</p>";
         ref4 = taxonData.adp.projects;
         for (project in ref4) {
           title = ref4[project];
@@ -739,7 +753,19 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  " + linkHtml + "\n  <div class=\"charts-container row\">\n  </div>\n</div>";
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
+        try {
+          if (taxonData.taxon.species.search(/sp\./) !== -1) {
+            saveState = {
+              blurb: blurb,
+              taxonData: taxonData,
+              idTaxon: idTaxon,
+              targetSelector: targetSelector
+            };
+            postAppend.push(saveState);
+            continue;
+          }
+        } catch (undefined) {}
         $(targetSelector).append(blurb);
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {
@@ -811,6 +837,79 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $(targetSelector).append(html);
         console.error("Couldn't get taxon data -- " + e.message, taxonData);
         console.warn(e.stack);
+      }
+    }
+    if (postAppend.length > 0) {
+      console.log("Have " + postAppend.length + " unidentified species");
+      for (o = 0, len3 = postAppend.length; o < len3; o++) {
+        noSp = postAppend[o];
+        try {
+          targetSelector = noSp.targetSelector;
+          idTaxon = noSp.idTaxon;
+          taxonData = noSp.taxonData;
+          blurb = noSp.blurb;
+          $(targetSelector).append(blurb);
+          diseaseData = taxonData.adp.disease_data;
+          for (disease in diseaseData) {
+            data = diseaseData[disease];
+            if (data.detected.no_confidence !== data.detected.total) {
+              testingData = {
+                labels: [disease + " detected", disease + " not detected", disease + " inconclusive data"],
+                datasets: [
+                  {
+                    data: [data.detected["true"], data.detected["false"], data.detected.no_confidence],
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                    hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                  }
+                ]
+              };
+              chartCfg = {
+                type: "pie",
+                data: testingData
+              };
+              canvas = document.createElement("canvas");
+              canvas.setAttribute("class", "chart dynamic-pie-chart");
+              canvasId = idTaxon + "-" + disease + "-testdata";
+              canvas.setAttribute("id", canvasId);
+              canvasContainerId = canvasId + "-container";
+              chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
+              containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+              $(chartContainer).append(containerHtml);
+              $("#" + canvasContainerId).get(0).appendChild(canvas);
+              chartCtx = $("#" + canvasId);
+              pieChart = new Chart(chartCtx, chartCfg);
+              _adp.taxonCharts[canvasId] = pieChart;
+            }
+            if (data.fatal.unknown !== data.fatal.total) {
+              fatalData = {
+                labels: [disease + " fatal", disease + " not fatal", disease + " unknown fatality"],
+                datasets: [
+                  {
+                    data: [data.fatal["true"], data.fatal["false"], data.fatal.unknown],
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                    hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                  }
+                ]
+              };
+              chartCfg = {
+                type: "pie",
+                data: fatalData
+              };
+              canvas = document.createElement("canvas");
+              canvas.setAttribute("class", "chart dynamic-pie-chart");
+              canvasId = idTaxon + "-" + disease + "-fataldata";
+              canvas.setAttribute("id", canvasId);
+              canvasContainerId = canvasId + "-container";
+              chartContainer = $(targetSelector).find(".charts-container").get(0);
+              containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+              $(chartContainer).append(containerHtml);
+              $("#" + canvasContainerId).get(0).appendChild(canvas);
+              chartCtx = $("#" + canvasId);
+              pieChart = new Chart(chartCtx, chartCfg);
+              _adp.taxonCharts[canvasId] = pieChart;
+            }
+          }
+        } catch (undefined) {}
       }
     }
     return false;

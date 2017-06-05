@@ -1647,7 +1647,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
     if (empty($taxonBase["species"])) {
         # Recursively call this across all the species
         #set_time_limit(0); # This can be very slow
-        $query = "SELECT DISTINCT `specificepithet` FROM `records_list` WHERE `genus`='".$taxonBase["genus"]."'";
+        $query = "SELECT DISTINCT `specificepithet` FROM `records_list` WHERE `genus`='".$taxonBase["genus"]."' ORDER BY `specificEpithet`";
         $response = array(
           "status" => true,
           "genus" => $taxonBase["genus"],
