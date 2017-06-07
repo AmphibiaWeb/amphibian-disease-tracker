@@ -1213,13 +1213,13 @@ function getChartData($chartDataParams)
                 }
             }
             if (empty($where)) {
-                $where = "where `diseasedetected` is not null";
+                $where = "WHERE `diseasedetected` IS NOT NULL";
             } else {
-                $where .= " and `diseasedetected` is not null";
+                $where .= " AND `diseasedetected` IS NOT NULL";
             }
             $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where GROUP BY country ORDER BY $orderBy";
-            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' $andTested GROUP BY country ORDER BY $orderBy";
-            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' $andTested GROUP BY country ORDER BY $orderBy"; //or `diseasedetected` is null
+            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where AND `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
+            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where AND `diseasedetected`='false' GROUP BY country ORDER BY $orderBy"; //or `diseasedetected` is null
             $result = mysqli_query($flatTable->getLink(), $allQuery);
             if ($result === false) {
                 returnAjax(array(
@@ -1332,12 +1332,12 @@ function getChartData($chartDataParams)
                     ),
                 ),
             );
-            returnAjax(array(
+            $response = array(
                 "status" => true,
                 "data" => $chartData,
                 "axes" => array(
                     "x" => "Country",
-                    "y" => "Samples"
+                    "y" => "Sample Count"
                 ),
                 "title" => "Samples Per Country",
                 "use_preprocessor" => false,
@@ -1346,7 +1346,15 @@ function getChartData($chartDataParams)
                 "provided" => $chartDataParams,
                 "full_description" => "Sample representation per country, $by",
                 "basedata" => $baseData,
-            ));
+            );
+            if ($show_debug === true) {
+                $response["query"] = array(
+                    "all" => $allQuery,
+                    "pos" => $posQuery,
+                    "neg" => $negQuery,
+                );
+            }
+            returnAjax($response);
             break;
         case "infection":
         default:
