@@ -1212,9 +1212,14 @@ function getChartData($chartDataParams)
                     }
                 }
             }
+            if (empty($where)) {
+                $where = "where `diseasedetected` is not null";
+            } else {
+                $where .= " and `diseasedetected` is not null";
+            }
             $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where GROUP BY country ORDER BY $orderBy";
             $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' $andTested GROUP BY country ORDER BY $orderBy";
-            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' $andTested GROUP BY country ORDER BY $orderBy";
+            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' $andTested GROUP BY country ORDER BY $orderBy"; //or `diseasedetected` is null
             $result = mysqli_query($flatTable->getLink(), $allQuery);
             if ($result === false) {
                 returnAjax(array(
