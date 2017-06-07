@@ -369,10 +369,12 @@ getServerChart = (chartType = "location", chartParams) ->
           # Put a descriptor
           collapseHtml = ""
           for bin in chartDataJs.labels
+            if isNull bin
+              continue
             targetId = md5 "#{bin}-#{Date.now()}"
             collapseHtml += """
             <div class="col-xs-12 col-md-6 col-lg-4">
-              <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
+              <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger" data-taxon="#{bin}">
               #{bin}
               </button>
               <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}" class="taxon-collapse">
@@ -437,7 +439,7 @@ getServerChart = (chartType = "location", chartParams) ->
             console.debug "Taxon clicked:", taxon
             color = getRandomDataColor()
             buttonSelector = "button[data-taxon='#{taxon}']"
-            console.debug "Selector", buttonSelector, $(buttonSelector).exists()
+            console.debug "Selector test", buttonSelector, $(buttonSelector).exists()
             $(".success-glow").removeClass "success-glow"
             $(buttonSelector)
             .addClass "success-glow"
@@ -552,7 +554,10 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
     false
   for collapseSelector, taxon of reference
     selector = "##{collapseSelector} .collapse-content"
-    taxonArr = taxon.split " "
+    try
+      taxonArr = taxon.split " "
+    catch
+      continue
     taxonObj =
       genus: taxonArr[0]
       species: taxonArr[1] ? ""

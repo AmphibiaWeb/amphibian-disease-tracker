@@ -443,8 +443,11 @@ getServerChart = function(chartType, chartParams) {
           ref10 = chartDataJs.labels;
           for (n = 0, len2 = ref10.length; n < len2; n++) {
             bin = ref10[n];
+            if (isNull(bin)) {
+              continue;
+            }
             targetId = md5(bin + "-" + (Date.now()));
-            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\" class=\"taxon-collapse\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\" data-taxon=\"" + bin + "\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\" class=\"taxon-collapse\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
             fetchUpdatesFor[targetId] = bin;
           }
           if (chartParams.sort === "species") {
@@ -486,7 +489,7 @@ getServerChart = function(chartType, chartParams) {
             console.debug("Taxon clicked:", taxon);
             color = getRandomDataColor();
             buttonSelector = "button[data-taxon='" + taxon + "']";
-            console.debug("Selector", buttonSelector, $(buttonSelector).exists());
+            console.debug("Selector test", buttonSelector, $(buttonSelector).exists());
             $(".success-glow").removeClass("success-glow");
             return $(buttonSelector).addClass("success-glow").get(0).scrollIntoView(false);
           });
@@ -598,7 +601,7 @@ getServerChart = function(chartType, chartParams) {
 };
 
 fetchMiniTaxonBlurbs = function(reference) {
-  var collapseSelector, ref, selector, taxon, taxonArr, taxonObj;
+  var collapseSelector, error, ref, selector, taxon, taxonArr, taxonObj;
   if (reference == null) {
     reference = _adp.fetchUpdatesFor;
   }
@@ -620,7 +623,11 @@ fetchMiniTaxonBlurbs = function(reference) {
   for (collapseSelector in reference) {
     taxon = reference[collapseSelector];
     selector = "#" + collapseSelector + " .collapse-content";
-    taxonArr = taxon.split(" ");
+    try {
+      taxonArr = taxon.split(" ");
+    } catch (error) {
+      continue;
+    }
     taxonObj = {
       genus: taxonArr[0],
       species: (ref = taxonArr[1]) != null ? ref : ""

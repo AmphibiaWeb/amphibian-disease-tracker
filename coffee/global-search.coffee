@@ -715,8 +715,11 @@ doDeepSearch = (results, namedMap = namedMapAdvSource) ->
           catch e
             console.warn "Failed to rezoom/recenter map - #{e.message}", coordArray
             console.warn e.stack
-        catch
-          console.warn "Couldn't parse responses from server"
+        catch e
+          console.error "Couldn't parse responses from server: #{e.message}"
+          console.warn e.stack
+          console.log "Got", result
+          console.debug "#{uri.urlString}api.php?#{args}"
         false
       .fail (result, status) ->
         console.error "Couldn't fetch detailed results"
