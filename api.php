@@ -300,10 +300,30 @@ function doCartoSqlApiPush($get)
     // error_reporting(E_ALL);
     // ini_set('display_errors', 1);
     // error_log('doCartoSqlApiPush is running in debug mode!');
-    $sqlQuery = decode64($get['sql_query'], true);
-    if (empty($sqlQuery)) {
-        $sqlQuery = base64_decode(urldecode($get["sql_query"]));
+    $sqlQuery = base64_decode(urldecode($get["sql_query"]));
+    $method = "bdud";
+    if (empty($sqlQuery) || !is_string($sqlQuery) || $sqlQuery == null) {
+        $sqlQuery = decode64($get['sql_query'], true);
+        $method = "d64";
+        if (empty($sqlQuery)) {
+            returnAjax(array(
+                "status" => false,
+                "error" => "QUERY_PARSE_ERROR",
+                "raw" => $get["sql_query"],
+                "provided" => $get,
+            ));
+        }
     }
+    $eTest = print_r($sqlQuery, true);
+    // returnAjax(array(
+    //     "using" => $sqlQuery,
+    //     "forced" => $eTest,
+    //     "forced_empty" => empty($eTest),
+    //     "empty" => empty($sqlQuery),
+    //     "string" => is_string($sqlQuery),
+    //     "nullish" => $sqlQuery == null,
+    // ));
+
     $originalQuery = $sqlQuery;
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
@@ -538,11 +558,19 @@ function doCartoSqlApiPush($get)
             "query_type" => $sqlAction,
             "parsed_query" => $originalQuery,
             "checked_tables" => $checkedTablePermissions,
-            #"foo" => base64_decode(urldecode($get["sql_query"])),
-            #"bar" => base64_decode($get["sql_query"]),
-            #"baz" => urldecode(base64_decode($get["sql_query"])),
-            # "urls_posted" => $urls,
         );
+        if ($show_debug === true) {
+            $debug = array(
+                "raw" => $get['sql_query'],
+                "d64" => decode64($get['sql_query'], true),
+                "foo" => base64_decode(urldecode($get["sql_query"])),
+                "bar" => base64_decode($get["sql_query"]),
+                "baz" => urldecode(base64_decode($get["sql_query"])),
+                "method" => $method,
+                # "urls_posted" => $urls,
+                );
+            $response = array_merge($response, $debug);
+        }
         if (boolstr($get['blobby'])) {
             $response["project_id"] = $pid;
             $response["query_type"] = $sqlAction;
