@@ -401,7 +401,7 @@ if (toBool($_REQUEST["async"]) === true) {
     <section class="col-xs-12">
       <div class="form form-horizontal row">
         <h3 class="col-xs-12">Create a chart</h3>
-        <div class="col-xs-12 col-md-3 col-sm-6">
+        <div class="col-xs-12 col-md-3 col-sm-6" style="margin-top: 1em">
           <paper-radio-group id="diseasetested-select" selected="both">
             <paper-radio-button id="bd-only" data-disease="bd" name="bd"><span class='sciname'>B. d.</span></paper-radio-button>
             <paper-radio-button id="bsal-only" data-disease="bsal" name="bsal"><span class='sciname'>B. sal.</span></paper-radio-button>
