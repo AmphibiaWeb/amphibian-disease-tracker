@@ -402,14 +402,22 @@ if (toBool($_REQUEST["async"]) === true) {
       <div class="form form-horizontal row">
         <h3 class="col-xs-12">Create a chart</h3>
         <div class="col-xs-12 col-md-3 col-sm-6">
+          <paper-radio-group id="diseasetested-select" selected="both">
+            <paper-radio-button id="bd-only" data-disease="bd" name="bd"><span class='sciname'>B. d.</span></paper-radio-button>
+            <paper-radio-button id="bsal-only" data-disease="bsal" name="bsal"><span class='sciname'>B. sal.</span></paper-radio-button>
+            <paper-radio-button id="bd-bsal" data-disease="both" name="both">Both</paper-radio-button>
+          </paper-radio-group>
+        </div>
+        <div class="col-xs-12 col-md-3 col-sm-6">
           <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Sample Counts</paper-item>
               <paper-item disabled>Project Count</paper-item>
+              <paper-item disabled>Infection Rate</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="col-xs-12 col-md-4 col-sm-6">
+        <div class="col-xs-12 col-md-3 col-sm-6">
           <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Location</paper-item>
@@ -423,20 +431,13 @@ if (toBool($_REQUEST["async"]) === true) {
           <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item data-bins="location,species">Samples</paper-item>
-              <paper-item data-bins="infection,location">Infection</paper-item>
+              <paper-item data-bins="infection,location">Percent infected</paper-item>
               <paper-item data-bins="location">Country</paper-item>
               <paper-item data-bins="species">Genus</paper-item>
               <paper-item data-bins="species">Species</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
-        </div>
-        <div class="col-xs-12 col-md-3 col-sm-6">
-          <paper-radio-group id="diseasetested-select" selected="both">
-            <paper-radio-button id="bd-only" data-disease="bd" name="bd"><span class='sciname'>B. d.</span></paper-radio-button>
-            <paper-radio-button id="bsal-only" data-disease="bsal" name="bsal"><span class='sciname'>B. sal.</span></paper-radio-button>
-            <paper-radio-button id="bd-bsal" data-disease="both" name="both">Both</paper-radio-button>
-          </paper-radio-group>
         </div>
         <div class="col-xs-12">
           <button class="btn btn-success" id="generate-chart">Generate Chart</button>
