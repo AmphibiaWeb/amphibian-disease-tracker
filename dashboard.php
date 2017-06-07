@@ -441,6 +441,7 @@ if (toBool($_REQUEST["async"]) === true) {
         </div>
         <div class="col-xs-12">
           <button class="btn btn-success" id="generate-chart">Generate Chart</button>
+          <paper-toggle-button id="include-unnamed" class="chart-param" data-key="include_sp">Include Unnamed Species (eg, <i>Rana sp.</i>)</paper-toggle-button>
         </div>
       </div>
       <div class="col-xs-12 clearfix" id="locale-zoom-canvas-container">

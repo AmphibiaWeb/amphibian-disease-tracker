@@ -585,6 +585,16 @@ paper-menu-button {
     }
 }
 
+.row {
+    * + paper-toggle-button {
+        display: inline-block;
+        vertical-align:middle;
+        .toggle-label.paper-toggle-button {
+            vertical-align: top;
+        }
+    }
+}
+
 paper-toggle-button {
     margin-left:1rem;
 }

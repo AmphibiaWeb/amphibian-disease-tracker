@@ -10007,6 +10007,13 @@ paper-menu-button.paper-menu-button-0 {
 paper-menu-button .dropdown-content {
   max-height: none !important;
 }
+.row * + paper-toggle-button {
+  display: inline-block;
+  vertical-align: middle;
+}
+.row * + paper-toggle-button .toggle-label.paper-toggle-button {
+  vertical-align: top;
+}
 paper-toggle-button {
   margin-left: 1rem;
 }
