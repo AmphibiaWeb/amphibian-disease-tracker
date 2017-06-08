@@ -67,12 +67,12 @@ module.exports = (grunt) ->
     regex_extract:
       default_options:
         options:
-          regex: "<div[^>]*by-vulcanize[^>]*><script>[\\s\\S]*<\\/script>\\s*<\\/div>(?=\\s*<header)"
+          regex: "[\\s\\S]*?(<div[^>]*(?:by-vulcanize|by-polymer-bundler).*?>[\\s\\S]*?)<header[\\s\\S]*$"
           modifiers: "mig"
           includePath: false
-          matchPoints: "0"
+          matchPoints: "1"
         files:
-          "modular/vulcanized-div-and-dom-module.html": ["vulcanized.html"]
+          "vulcanized.html": ["dashboard-static-bundled.html"]
     clean: ["vulcanized.html", "vulcanized-parsed.html", "post-vulcanize.html", "*.build.html", "*.build.js"]
     postcss:
       options:

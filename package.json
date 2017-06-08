@@ -48,6 +48,8 @@
     "vulcanize": "^1.15.4"
   },
   "dependencies": {
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "polymer-bundler": "^2.0.2",
+    "webpack": "^2.6.1"
   }
 }
