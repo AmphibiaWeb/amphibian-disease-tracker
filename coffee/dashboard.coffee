@@ -1026,7 +1026,9 @@ popShowRangeMap = (taxon) ->
   $("#species-range-map").on "iron-overlay-opened", ->
     console.debug "Opened"
     h = $(this).find("paper-dialog-scrollable").height()
-    $(this).find("paper-dialog-scrollable > div#scrollable").css "max-height", "#{h}px"
+    $(this).find("paper-dialog-scrollable > div#scrollable")
+    .css "max-height", "#{h}px"
+    .css "height", "#{h}px"
     console.debug $(this).width(), $(this).height(), h
     false
   p$("#species-range-map").open()

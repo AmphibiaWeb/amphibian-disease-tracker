@@ -1032,7 +1032,7 @@ popShowRangeMap = function(taxon) {
     var h;
     console.debug("Opened");
     h = $(this).find("paper-dialog-scrollable").height();
-    $(this).find("paper-dialog-scrollable > div#scrollable").css("max-height", h + "px");
+    $(this).find("paper-dialog-scrollable > div#scrollable").css("max-height", h + "px").css("height", h + "px");
     console.debug($(this).width(), $(this).height(), h);
     return false;
   });
