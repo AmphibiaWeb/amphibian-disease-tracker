@@ -1028,6 +1028,11 @@ popShowRangeMap = function(taxon) {
   html = "<paper-dialog modal id=\"species-range-map\" class=\"pop-map dashboard-map\" data-taxon-genus=\"" + taxon.genus + "\" data-taxon-species=\"" + taxon.species + "\">\n  <h2>Range map for <span class=\"genus\">" + taxon.genus + "</span> <span class=\"species\">" + taxon.species + "</span></h2>\n  <paper-dialog-scrollable>\n    <iframe class=\"mol-embed\" src=\"" + endpoint + (taxon.genus.toTitleCase()) + "_" + taxon.species + "?" + (buildQuery(args)) + "\"></iframe>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#species-range-map").remove();
   $("body").append(html);
+  $("#species-range-map").on("iron-overlay-opened", function() {
+    console.debug("Opened");
+    console.debug($(this).width(), $(this).height());
+    return false;
+  });
   p$("#species-range-map").open();
   return true;
 };

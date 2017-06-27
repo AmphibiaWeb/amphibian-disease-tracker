@@ -1023,6 +1023,10 @@ popShowRangeMap = (taxon) ->
   """
   $("#species-range-map").remove()
   $("body").append html
+  $("#species-range-map").on "iron-overlay-opened", ->
+    console.debug "Opened"
+    console.debug $(this).width(), $(this).height()
+    false
   p$("#species-range-map").open()
   true
 
