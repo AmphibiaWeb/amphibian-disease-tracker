@@ -13191,6 +13191,15 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .project-button-link {
   margin-right: .5rem;
 }
+.pop-map {
+  width: 80vw;
+  height: 80vh;
+}
+.pop-map paper-dialog-scrollable iframe,
+.pop-map paper-dialog-scrollable .mol-embed {
+  width: 80%;
+  height: 80%;
+}
 section#post-species-summary.has-open-collapse {
   transition: all 0.25s ease-in-out;
   background: #5a5a5a;

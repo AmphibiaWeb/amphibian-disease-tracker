@@ -999,6 +999,30 @@ dropdownSortEvents = ->
   false
 
 
+popShowRangeMap = (taxon) ->
+  ###
+  #
+  ###
+  unless typeof taxon is "object"
+    return false
+  if isNull(taxon.genus) or isNull(taxon.species)
+    return false
+  endpoint = "https://mol.org/species/map/"
+  args =
+    embed: "true"
+  html = """
+  <paper-dialog modal id="species-range-map" class="pop-map dashboard-map" data-taxon-genus="#{taxon.genus}" data-taxon-species="#{taxon.species}">
+    <h2>Range map for <span class="genus">#{taxon.genus}</span> <span class="species">#{taxon.species}</span>
+    <paper-dialog-scrollable>
+      <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe>
+    </paper-dialog-scrollable>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Close</paper-button>
+    </div>
+  </paper-dialog>
+  """
+  true
+
 
 $ ->
   console.log "Loaded dashboard"

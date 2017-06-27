@@ -1,4 +1,4 @@
-var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCollapsors, bindCopyEvents, bindDismissalRemoval, bsAlert, buildMap, buildQuery, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, delayPolymerBind, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
+var Point, activityIndicatorOff, activityIndicatorOn, adData, allError, animateHoverShadows, animateLoad, backupDebugLog, bindClicks, bindCollapsors, bindCopyEvents, bindDismissalRemoval, bsAlert, buildArgs, buildMap, buildQuery, byteCount, cancelAsyncOperation, canonicalizePoint, cartoAccount, cartoMap, cartoVis, checkFileVersion, checkLoggedIn, cleanupToasts, copyText, createConvexHull, createMap, createMap2, createRawCartoMap, d$, dateMonthToString, deEscape, decode64, deepJQuery, defaultFillColor, defaultFillOpacity, defaultMapMouseOverBehaviour, delay, delayPolymerBind, disableDebugLogging, doCORSget, doMapBuilder, doNothing, downloadCSVFile, downloadCSVFileOnThread, e, enableDebugLogging, encode64, error1, fPoint, featureClickEvent, fetchCitation, fixTruncatedJson, foo, formatScientificNames, gMapsApiKey, generateCSVFromResults, getColumnObj, getConvexHull, getConvexHullConfig, getConvexHullPoints, getCorners, getElementHtml, getLocation, getMapCenter, getMapZoom, getMaxZ, getPointsFromBoundingBox, getPointsFromCartoResult, getPosterFromSrc, goTo, interval, isArray, isBlank, isBool, isEmpty, isHovered, isJson, isNull, isNumber, jsonTo64, lightboxImages, linkUsers, loadJS, localityFromMapBuilder, makePageCitationOverflow, mapNewWindows, openLink, openTab, overlayOff, overlayOn, p$, post64, prepURI, randomInt, randomString, reInitMap, reportDebugLog, roundNumber, roundNumberSigfig, safariDialogHelper, setupMapMarkerToggles, sortPointX, sortPointY, sortPoints, sortPointsXY, speculativeApiLoader, startLoad, stopLoad, stopLoadError, toFloat, toInt, toObject, toastStatusMessage, toggleGoogleMapMarkers, uri, validateAWebTaxon, wait,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   modulo = function(a, b) { return (+a % (b = +b) + b) % b; };
@@ -372,6 +372,20 @@ jQuery.fn.outerHTML = function() {
 jQuery.fn.outerHtml = function() {
   return $(this).outerHTML();
 };
+
+buildQuery = function(obj) {
+  var k, key, queryList, v, value;
+  queryList = new Array();
+  for (k in obj) {
+    v = obj[k];
+    key = k.replace(/[^A-Za-z\-_\[\]]/img, "");
+    value = encodeURIComponent(v).replace(/\%20/g, "+");
+    queryList.push(key + "=" + value);
+  }
+  return queryList.join("&");
+};
+
+buildArgs = buildQuery;
 
 
 jQuery.fn.selectText = function(){

@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -1007,6 +1007,26 @@ dropdownSortEvents = function() {
   };
   console.log("Dropdown sort events bound");
   return false;
+};
+
+popShowRangeMap = function(taxon) {
+
+  /*
+   *
+   */
+  var args, endpoint, html;
+  if (typeof taxon !== "object") {
+    return false;
+  }
+  if (isNull(taxon.genus) || isNull(taxon.species)) {
+    return false;
+  }
+  endpoint = "https://mol.org/species/map/";
+  args = {
+    embed: "true"
+  };
+  html = "<paper-dialog modal id=\"species-range-map\" class=\"pop-map dashboard-map\" data-taxon-genus=\"" + taxon.genus + "\" data-taxon-species=\"" + taxon.species + "\">\n  <h2>Range map for <span class=\"genus\">" + taxon.genus + "</span> <span class=\"species\">" + taxon.species + "</span>\n  <paper-dialog-scrollable>\n    <iframe class=\"mol-embed\" src=\"" + endpoint + (taxon.genus.toTitleCase()) + "_" + taxon.species + "?" + (buildQuery(args)) + "\"></iframe>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  return true;
 };
 
 $(function() {
