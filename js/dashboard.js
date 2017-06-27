@@ -1031,9 +1031,9 @@ popShowRangeMap = function(taxon) {
   $("#species-range-map").on("iron-overlay-opened", function() {
     var h;
     console.debug("Opened");
-    console.debug($(this).width(), $(this).height());
     h = $(this).find("paper-dialog-scrollable").height();
     $(this).find("paper-dialog-scrollable > div#scrollable").css("max-height", h + "px");
+    console.debug($(this).width(), $(this).height(), h);
     return false;
   });
   p$("#species-range-map").open();
