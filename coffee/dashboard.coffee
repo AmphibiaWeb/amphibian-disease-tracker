@@ -1012,7 +1012,7 @@ popShowRangeMap = (taxon) ->
     embed: "true"
   html = """
   <paper-dialog modal id="species-range-map" class="pop-map dashboard-map" data-taxon-genus="#{taxon.genus}" data-taxon-species="#{taxon.species}">
-    <h2>Range map for <span class="genus">#{taxon.genus}</span> <span class="species">#{taxon.species}</span>
+    <h2>Range map for <span class="genus">#{taxon.genus}</span> <span class="species">#{taxon.species}</span></h2>
     <paper-dialog-scrollable>
       <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe>
     </paper-dialog-scrollable>
