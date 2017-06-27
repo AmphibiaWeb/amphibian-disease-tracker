@@ -84,9 +84,6 @@ module.exports = (grunt) ->
       drop:
         src: "css/shadow-dropzone.css"
     uglify:
-      options:
-        mangle:
-          except:['jQuery']
       vulcanize:
         options:
           sourceMap:true
