@@ -1021,6 +1021,9 @@ popShowRangeMap = (taxon) ->
     </div>
   </paper-dialog>
   """
+  $("#species-range-map").remove()
+  $("body").append html
+  p$("#species-range-map").open()
   true
 
 
