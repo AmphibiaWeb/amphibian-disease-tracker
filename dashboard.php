@@ -150,6 +150,7 @@ if (toBool($_REQUEST["async"]) === true) {
     <link rel="import" href="bower_components/iron-icons/social-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/communication-icons.html"/>
     <link rel="import" href="bower_components/iron-icons/editor-icons.html"/>
+    <link rel="import" href="bower_components/iron-icons/maps-icons.html"/>
     <link rel="import" href="bower_components/iron-collapse/iron-collapse.html"/>
     <link rel="import" href="bower_components/neon-animation/neon-animation.html"/>
     <link rel="import" href="bower_components/marked-element/marked-element.html"/>

@@ -698,7 +698,9 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           <div>
             <paper-icon-button
               icon="maps:satellite"
-              onclick="popShowRangeMap(this)">
+              onclick="popShowRangeMap(this)"
+              data-genus="#{taxonData.taxon.genus}"
+              data-species="#{taxonData.taxon.species}">
             </paper-icon-button>
           </div>
           <p>
