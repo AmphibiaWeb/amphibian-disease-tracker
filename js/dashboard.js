@@ -760,7 +760,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
         try {
           if (taxonData.taxon.species.search(/sp\./) !== -1) {
             saveState = {
@@ -1014,11 +1014,22 @@ popShowRangeMap = function(taxon) {
   /*
    *
    */
-  var args, endpoint, html;
+  var args, endpoint, genus, html, species;
   if (typeof taxon !== "object") {
     return false;
   }
   if (isNull(taxon.genus) || isNull(taxon.species)) {
+    try {
+      genus = $(taxon).attr("data-genus");
+      species = $(taxon).attr("data-species");
+      taxon = {
+        genus: genus,
+        species: species
+      };
+    } catch (undefined) {}
+  }
+  if (isNull(taxon.genus) || isNull(taxon.species)) {
+    toastStatusMessage("Unable to show range map");
     return false;
   }
   endpoint = "https://mol.org/species/map/";

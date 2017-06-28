@@ -695,6 +695,12 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         blurb = """
         <div class='blurb-info' id="taxon-blurb-#{idTaxon}">
           #{taxonId}
+          <div>
+            <paper-icon-button
+              icon="maps:satellite"
+              onclick="popShowRangeMap(this)">
+            </paper-icon-button>
+          </div>
           <p>
             <strong>IUCN Status:</strong> #{taxonData.iucn.category}
           </p>
@@ -1006,6 +1012,12 @@ popShowRangeMap = (taxon) ->
   unless typeof taxon is "object"
     return false
   if isNull(taxon.genus) or isNull(taxon.species)
+    try
+      genus = $(taxon).attr "data-genus"
+      species = $(taxon).attr "data-species"
+      taxon = {genus, species}
+  if isNull(taxon.genus) or isNull(taxon.species)
+    toastStatusMessage "Unable to show range map"
     return false
   endpoint = "https://mol.org/species/map/"
   args =
