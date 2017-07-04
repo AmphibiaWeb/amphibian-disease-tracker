@@ -284,6 +284,86 @@ if (!function_exists('shuffle_assoc')) {
     }
 }
 
+if (!function_exists("get_final_url")) {
+    #  https://stackoverflow.com/questions/3799134/how-to-get-final-url-after-following-http-redirections-in-pure-php#
+    function get_redirect_url($url) {
+        /**
+         * get_redirect_url()
+         * Gets the address that the provided URL redirects to,
+         * or FALSE if there's no redirect. 
+         *
+         * @param string $url
+         * @return string
+         */
+        $redirect_url = null;
+
+        $url_parts = @parse_url($url);
+        if (!$url_parts) return false;
+        if (!isset($url_parts['host'])) return false; //can't process relative URLs
+        if (!isset($url_parts['path'])) $url_parts['path'] = '/';
+
+        $sock = fsockopen($url_parts['host'], (isset($url_parts['port']) ? (int)$url_parts['port'] : 80), $errno, $errstr, 30);
+        if (!$sock) return false;
+
+        $request = "HEAD " . $url_parts['path'] . (isset($url_parts['query']) ? '?'.$url_parts['query'] : '') . " HTTP/1.1\r\n";
+        $request .= 'Host: ' . $url_parts['host'] . "\r\n";
+        $request .= "Connection: Close\r\n\r\n";
+        fwrite($sock, $request);
+        $response = '';
+        while(!feof($sock)) $response .= fread($sock, 8192);
+        fclose($sock);
+
+        if (preg_match('/^Location: (.+?)$/m', $response, $matches)){
+            if ( substr($matches[1], 0, 1) == "/" )
+                return $url_parts['scheme'] . "://" . $url_parts['host'] . trim($matches[1]);
+            else
+                return trim($matches[1]);
+
+        } else {
+            return false;
+        }
+
+    }
+
+
+        function get_all_redirects($url){
+            /**
+             * get_all_redirects()
+             * Follows and collects all redirects, in order, for the given URL.
+             *
+             * @param string $url
+             * @return array
+             */
+            $redirects = array();
+            while ($newurl = get_redirect_url($url)){
+                if (in_array($newurl, $redirects)){
+                    break;
+                }
+                $redirects[] = $newurl;
+                $url = $newurl;
+            }
+            return $redirects;
+        }
+
+
+        function get_final_url($url){
+    /**
+     * get_final_url()
+     * Gets the address that the URL ultimately leads to.
+     * Returns $url itself if it isn't a redirect.
+     *
+     * @param string $url
+     * @return string
+     */
+            $redirects = get_all_redirects($url);
+            if (count($redirects)>0){
+                return array_pop($redirects);
+            } else {
+                return $url;
+            }
+        }
+}
+
 if (!function_exists('displayDebug')) {
     function displayDebug($string, $background = true)
     {
@@ -531,7 +611,7 @@ if (!class_exists("ImageFunctions")) {
             return $dir.'/'.$images[$item];
         }
 
-    
+
         protected function getImage($imgFile)
         {
             if (function_exists(get_magic_quotes_gpc) && get_magic_quotes_gpc()) {
@@ -541,7 +621,7 @@ if (!class_exists("ImageFunctions")) {
             }
             return $image;
         }
-    
+
         public function setImage($imagePath)
         {
             if (function_exists(get_magic_quotes_gpc) && get_magic_quotes_gpc()) {
@@ -551,7 +631,7 @@ if (!class_exists("ImageFunctions")) {
             }
             $this->img = $image;
         }
-    
+
         public function imageExists()
         {
             $image = $this->getImage();
@@ -561,10 +641,10 @@ if (!class_exists("ImageFunctions")) {
             } else {
                 $filename = $image;
             }
-        
+
             return file_exists($image);
         }
-    
+
         public function getImageDimensions()
         {
             $image = $this->getImage();
@@ -587,19 +667,19 @@ if (!class_exists("ImageFunctions")) {
             "height" => $height,
         );
         }
-    
+
         public function getWidth()
         {
             $size = $this->getImageDimensions();
             return $size["width"];
         }
-    
+
         public function getHeight()
         {
             $size = $this->getImageDimensions();
             return $size["height"];
         }
-    
+
         public static function staticResizeImage($imgfile, $output, $max_width = null, $max_height = null)
         {
             /***
@@ -693,7 +773,7 @@ if (!class_exists("ImageFunctions")) {
 
         # set up canvas
         $dst = imagecreatetruecolor($tn_width, $tn_height);
-        
+
             if (function_exists("imageantialias")) {
                 imageantialias($dst, true);
             }
@@ -747,7 +827,7 @@ if (!class_exists("ImageFunctions")) {
             if (!is_numeric($max_width)) {
                 $max_width = 2000;
             }
-        
+
             $image = $this->getImage();
 
             if (strrchr($image, '/')) {
@@ -815,7 +895,7 @@ if (!class_exists("ImageFunctions")) {
             if (function_exists("imageantialias")) {
                 imageantialias($dst, true);
             }
-        
+
         # copy resized image to new canvas
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $tn_width, $tn_height, $width, $height);
 
