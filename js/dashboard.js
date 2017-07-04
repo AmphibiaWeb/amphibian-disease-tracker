@@ -679,7 +679,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, ref5, ref6, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
@@ -760,7 +760,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-kml=\"" + ((ref5 = taxonData.amphibiaweb) != null ? (ref6 = ref5.map) != null ? ref6.shapefile : void 0 : void 0) + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
         try {
           if (taxonData.taxon.species.search(/sp\./) !== -1) {
             saveState = {

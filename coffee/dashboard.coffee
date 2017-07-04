@@ -700,6 +700,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               icon="maps:satellite"
               onclick="popShowRangeMap(this)"
               data-genus="#{taxonData.taxon.genus}"
+              data-kml="#{taxonData.amphibiaweb?.map?.shapefile}"
               data-species="#{taxonData.taxon.species}">
             </paper-icon-button>
           </div>

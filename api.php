@@ -1797,13 +1797,17 @@ function getTaxonData($taxonBase, $skipFetch = false)
     try {
         $mapUrl = "http://amphibiaweb.org/cgi/amphib_map?genus=".ucwords($taxonBase["genus"])."&species=".$taxonBase["species"];
         $bmUrl = get_final_url($mapUrl);
+        # Pull out the shapefile
+        $shapefile = "http://amphibiaweb.org/cgi/amphib_ws_shapefile?format=kml&genus=".ucwords($taxonBase["genus"])."&species=".$taxonBase["species"];
     } catch (Exception $e) {
         $mapUrl = false;
         $bmUrl = false;
+        $shapefile = false;
     }
     $mapData = array(
         "url" => $mapUrl,
         "resolved_url" => $bmUrl,
+        "shapefile" => $shapefile,
     );
     $response = array(
         "status" => true,
