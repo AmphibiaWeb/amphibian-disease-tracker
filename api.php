@@ -1794,6 +1794,17 @@ function getTaxonData($taxonBase, $skipFetch = false)
         $adpData["samples"] = mysqli_num_rows($r);
     }
     $adpData["disease_data"] = $taxonBreakdown;
+    try {
+        $mapUrl = "http://amphibiaweb.org/cgi/amphib_map?genus=".ucwords($taxonBase["genus"])."&species=".$taxonBase["species"];
+        $bmUrl = get_final_url($mapUrl);
+    } catch (Exception $e) {
+        $mapUrl = false;
+        $bmUrl = false;
+    }
+    $mapData = array(
+        "url" => $mapUrl,
+        "resolved_url" => $bmUrl,
+    );
     $response = array(
         "status" => true,
         "taxon" => array(
@@ -1807,6 +1818,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
         ),
         "amphibiaweb" => array(
             "data" => $aweb["data"],
+            "map" => $mapData,
         ),
         "isGenusLookup" => false,
     );
