@@ -1009,7 +1009,7 @@ dropdownSortEvents = function() {
   return false;
 };
 
-popShowRangeMap = function(taxon) {
+popShowRangeMap = function(taxon, kml) {
 
   /*
    *
@@ -1026,6 +1026,9 @@ popShowRangeMap = function(taxon) {
         genus: genus,
         species: species
       };
+      if (isNull(kml)) {
+        kml = $(taxon).attr("data-kml");
+      }
     } catch (undefined) {}
   }
   if (isNull(taxon.genus) || isNull(taxon.species)) {
@@ -1036,7 +1039,7 @@ popShowRangeMap = function(taxon) {
   args = {
     embed: "true"
   };
-  html = "<paper-dialog modal id=\"species-range-map\" class=\"pop-map dashboard-map\" data-taxon-genus=\"" + taxon.genus + "\" data-taxon-species=\"" + taxon.species + "\">\n  <h2>Range map for <span class=\"genus\">" + taxon.genus + "</span> <span class=\"species\">" + taxon.species + "</span></h2>\n  <paper-dialog-scrollable>\n    <iframe class=\"mol-embed\" src=\"" + endpoint + (taxon.genus.toTitleCase()) + "_" + taxon.species + "?" + (buildQuery(args)) + "\"></iframe>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  html = "<paper-dialog modal id=\"species-range-map\" class=\"pop-map dashboard-map\" data-taxon-genus=\"" + taxon.genus + "\" data-taxon-species=\"" + taxon.species + "\">\n  <h2>Range map for <span class=\"genus\">" + taxon.genus + "</span> <span class=\"species\">" + taxon.species + "</span></h2>\n  <paper-dialog-scrollable>\n    <iframe class=\"mol-embed\" src=\"" + endpoint + (taxon.genus.toTitleCase()) + "_" + taxon.species + "?" + (buildQuery(args)) + "\"></iframe>\n  <google-map\n    api-key=\"" + gMapsApiKey + "\"\n    kml=\"" + kml + "\">\n    </google-map>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
   $("#species-range-map").remove();
   $("body").append(html);
   $("#species-range-map").on("iron-overlay-opened", function() {

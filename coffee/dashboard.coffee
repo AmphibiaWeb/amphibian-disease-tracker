@@ -1008,7 +1008,7 @@ dropdownSortEvents = ->
   false
 
 
-popShowRangeMap = (taxon) ->
+popShowRangeMap = (taxon, kml) ->
   ###
   #
   ###
@@ -1019,6 +1019,8 @@ popShowRangeMap = (taxon) ->
       genus = $(taxon).attr "data-genus"
       species = $(taxon).attr "data-species"
       taxon = {genus, species}
+      if isNull kml
+        kml = $(taxon).attr "data-kml"
   if isNull(taxon.genus) or isNull(taxon.species)
     toastStatusMessage "Unable to show range map"
     return false
@@ -1030,6 +1032,10 @@ popShowRangeMap = (taxon) ->
     <h2>Range map for <span class="genus">#{taxon.genus}</span> <span class="species">#{taxon.species}</span></h2>
     <paper-dialog-scrollable>
       <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe>
+    <google-map
+      api-key="#{gMapsApiKey}"
+      kml="#{kml}">
+      </google-map>
     </paper-dialog-scrollable>
     <div class="buttons">
       <paper-button dialog-dismiss>Close</paper-button>
