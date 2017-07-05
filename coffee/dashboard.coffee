@@ -656,6 +656,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           nameHtml = ""
         countries = Object.toArray taxonData.adp.countries
         countryHtml = """
+        <p>Sampled in the following countries:</p>
         <ul class="country-list">
           <li>#{countries.join("</li><li>")}</li>
         </ul>
@@ -674,7 +675,10 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           </a>
           """
         linkHtml += "</div>"
-        if result.isGenusLookup
+        if taxonData.adp.samples is 0
+          linkHtml = "<p>There are no samples of this taxon in our database.</p>"
+          countryHtml = ""
+        if result.isGenusLookup or noDefaultRender is true
           taxonFormatted = """
             <span class="sciname">
               <span class="genus">#{taxonData.taxon.genus}</span>
@@ -709,7 +713,6 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             <strong>IUCN Status:</strong> #{taxonData.iucn.category}
           </p>
           #{nameHtml}
-          <p>Sampled in the following countries:</p>
           #{countryHtml}
           <div class="charts-container row">
           </div>
@@ -722,6 +725,10 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             postAppend.push saveState
             continue
         $(targetSelector).append blurb
+        if taxonData.adp.samples is 0
+          stopLoad()
+          delay 1000, ->
+            stopLoad()
         # Create the pie charts
         diseaseData = taxonData.adp.disease_data
         for disease, data of diseaseData
@@ -764,6 +771,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             chartCtx = $("##{canvasId}")
             pieChart = new Chart chartCtx, chartCfg
             _adp.taxonCharts[canvasId] = pieChart
+            stopLoad()
           # Fatality!
           unless data.fatal.unknown is data.fatal.total
             fatalData =
@@ -804,6 +812,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             chartCtx = $("##{canvasId}")
             pieChart = new Chart chartCtx, chartCfg
             _adp.taxonCharts[canvasId] = pieChart
+            stopLoad()
       catch e
         try
           taxonString = ""
@@ -824,6 +833,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         $(targetSelector).append html
         console.error "Couldn't get taxon data -- #{e.message}", taxonData
         console.warn e.stack
+        stopLoadError()
       # End iterator for taxa
     # See if we have any "Foo sp." that need to be stuck at the end
     # See
@@ -881,6 +891,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               chartCtx = $("##{canvasId}")
               pieChart = new Chart chartCtx, chartCfg
               _adp.taxonCharts[canvasId] = pieChart
+              stopLoad()
             # Fatality!
             unless data.fatal.unknown is data.fatal.total
               fatalData =
@@ -921,8 +932,13 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               chartCtx = $("##{canvasId}")
               pieChart = new Chart chartCtx, chartCfg
               _adp.taxonCharts[canvasId] = pieChart
+              stopLoad()
         # End postAppend loop
       # End postAppend check
+      stopLoad()
+      delay 1000, ->
+        console.debug "Doing 1s delayed stopLoad"
+        stopLoad()
     false
   .error (result, status) ->
     html = """
@@ -935,6 +951,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
     $(targetSelector).html html
     console.error "Couldn't fetch taxon data from server"
     console.warn result, status
+    stopLoadError()
     false
   false
 
@@ -1021,7 +1038,7 @@ popShowRangeMap = (taxon, kml) ->
       genus = $(taxon).attr "data-genus"
       species = $(taxon).attr "data-species"
       if isNull kml
-        kml = $(taxon).attr "data-kml"      
+        kml = $(taxon).attr "data-kml"
       taxon = {genus, species}
   if isNull(taxon.genus) or isNull(taxon.species)
     toastStatusMessage "Unable to show range map"
@@ -1066,7 +1083,14 @@ popShowRangeMap = (taxon, kml) ->
 
 $ ->
   console.log "Loaded dashboard"
-  getServerChart()
+  try
+    if isNull window.noDefaultRender
+      window.noDefaultRender = false
+  catch
+    window.noDefaultRender = false
+  console.debug "NDR state", window.noDefaultRender
+  unless window.noDefaultRender is true
+    getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
   delayPolymerBind "paper-dropdown-menu#binned-by", ->

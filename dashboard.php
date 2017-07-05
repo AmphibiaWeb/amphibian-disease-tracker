@@ -186,11 +186,17 @@ if (toBool($_REQUEST["async"]) === true) {
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
     <script type="text/javascript" src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="bower_components/chart.js/dist/Chart.bundle.min.js"></script>
-    <script type="text/javascript" src="js/c.min.js"></script>
-    <script type="text/javascript" src="js/dashboard.js"></script>
     <script type="text/javascript">
       // Initial script
+      <?php
+        if (isset($_REQUEST["taxon"])) {  ?>
+      window.noDefaultRender = true;
+      <?php
+        }
+        ?>
     </script>
+    <script type="text/javascript" src="js/c.min.js"></script>
+    <script type="text/javascript" src="js/dashboard.js"></script>
     <style is="custom-style">
       paper-toggle-button.red {
       --paper-toggle-button-checked-bar-color:  var(--paper-red-500);
@@ -245,6 +251,41 @@ if (toBool($_REQUEST["async"]) === true) {
   </header>
   <main class="row">
     <?php
+            # Handle taxon
+            if (isset($_REQUEST["taxon"])) {
+                try {
+                    $taxonStringParts = explode(" ", deEscape($_REQUEST["taxon"]));
+                    $genus = $taxonStringParts[0];
+                    $species = $taxonStringParts[1];
+                    ?>
+    <script type="text/javascript">
+      var activeTaxon = {genus: "<?php echo $genus; ?>", species: "<?php echo $species; ?>"};
+      var noDefaultRender = true;
+      startLoad();
+      fetchMiniTaxonBlurb(activeTaxon, "section#taxon-detail");
+    </script>
+    <section id="taxon-detail" class="col-xs-12">
+
+    </section>
+  </main>
+  <?php
+    require_once("./footer.php");
+    ?>
+</body>
+</html>
+                    <?php
+                } catch (Exception $e) {
+                    ?>
+    <h2 class="col-xs-12">
+      Invalid taxon
+    </h2>
+    <p class="col-xs-12">
+      Please try again.
+    </p>
+                    <?php
+                }
+                die();
+            }
             # See
             # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176
             # for scope and features
@@ -311,7 +352,7 @@ if (toBool($_REQUEST["async"]) === true) {
             $progressNegative = 100 * intval($row["count"]) / $max;
             $progressPositive = 100 * intval($rowPos["count"]) / $max;
             $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
-            $top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+            $top10SpeciesTBody[] = "<td><span class='sciname'><span class='genus'>".$row["genus"]."</span> <span class='species'>".$row["specificepithet"]."</span></span></td><td>$progressBar</td><td>".$row["count"]."</td>";
             $i++;
         }
         $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";

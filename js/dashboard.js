@@ -739,7 +739,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           nameHtml = "";
         }
         countries = Object.toArray(taxonData.adp.countries);
-        countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
+        countryHtml = "<p>Sampled in the following countries:</p>\n<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
         linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples:</p>";
         ref4 = taxonData.adp.projects;
         for (project in ref4) {
@@ -751,7 +751,11 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
         }
         linkHtml += "</div>";
-        if (result.isGenusLookup) {
+        if (taxonData.adp.samples === 0) {
+          linkHtml = "<p>There are no samples of this taxon in our database.</p>";
+          countryHtml = "";
+        }
+        if (result.isGenusLookup || noDefaultRender === true) {
           taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
           taxonId = "<p style='display:inline-block'>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
         } else {
@@ -761,7 +765,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
         console.debug("Taxon data:", taxonData, (ref5 = taxonData.amphibiaweb) != null ? ref5.map : void 0);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div style='display:inline-block'>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-kml=\"" + ((ref6 = taxonData.amphibiaweb) != null ? (ref7 = ref6.map) != null ? ref7.shapefile : void 0 : void 0) + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div style='display:inline-block'>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-kml=\"" + ((ref6 = taxonData.amphibiaweb) != null ? (ref7 = ref6.map) != null ? ref7.shapefile : void 0 : void 0) + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
         try {
           if (taxonData.taxon.species.search(/sp\./) !== -1) {
             saveState = {
@@ -775,6 +779,12 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           }
         } catch (undefined) {}
         $(targetSelector).append(blurb);
+        if (taxonData.adp.samples === 0) {
+          stopLoad();
+          delay(1000, function() {
+            return stopLoad();
+          });
+        }
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {
           data = diseaseData[disease];
@@ -805,6 +815,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             chartCtx = $("#" + canvasId);
             pieChart = new Chart(chartCtx, chartCfg);
             _adp.taxonCharts[canvasId] = pieChart;
+            stopLoad();
           }
           if (data.fatal.unknown !== data.fatal.total) {
             fatalData = {
@@ -833,6 +844,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             chartCtx = $("#" + canvasId);
             pieChart = new Chart(chartCtx, chartCfg);
             _adp.taxonCharts[canvasId] = pieChart;
+            stopLoad();
           }
         }
       } catch (error1) {
@@ -845,6 +857,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $(targetSelector).append(html);
         console.error("Couldn't get taxon data -- " + e.message, taxonData);
         console.warn(e.stack);
+        stopLoadError();
       }
     }
     if (postAppend.length > 0) {
@@ -887,6 +900,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
               chartCtx = $("#" + canvasId);
               pieChart = new Chart(chartCtx, chartCfg);
               _adp.taxonCharts[canvasId] = pieChart;
+              stopLoad();
             }
             if (data.fatal.unknown !== data.fatal.total) {
               fatalData = {
@@ -915,10 +929,16 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
               chartCtx = $("#" + canvasId);
               pieChart = new Chart(chartCtx, chartCfg);
               _adp.taxonCharts[canvasId] = pieChart;
+              stopLoad();
             }
           }
         } catch (undefined) {}
       }
+      stopLoad();
+      delay(1000, function() {
+        console.debug("Doing 1s delayed stopLoad");
+        return stopLoad();
+      });
     }
     return false;
   }).error(function(result, status) {
@@ -927,6 +947,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     $(targetSelector).html(html);
     console.error("Couldn't fetch taxon data from server");
     console.warn(result, status);
+    stopLoadError();
     return false;
   });
   return false;
@@ -1065,8 +1086,19 @@ popShowRangeMap = function(taxon, kml) {
 };
 
 $(function() {
+  var error;
   console.log("Loaded dashboard");
-  getServerChart();
+  try {
+    if (isNull(window.noDefaultRender)) {
+      window.noDefaultRender = false;
+    }
+  } catch (error) {
+    window.noDefaultRender = false;
+  }
+  console.debug("NDR state", window.noDefaultRender);
+  if (window.noDefaultRender !== true) {
+    getServerChart();
+  }
   $("#generate-chart").click(function() {
     return renderNewChart.debounce(50);
   });

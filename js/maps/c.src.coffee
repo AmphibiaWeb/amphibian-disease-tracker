@@ -1196,6 +1196,16 @@ formatScientificNames = (selector = ".sciname") ->
       # Is it italic?
       nameStyle = if $(this).css("font-style") is "italic" then "normal" else "italic"
       $(this).css("font-style",nameStyle)
+      genus = $(this).find(".genus").text()
+      species = $(this).find(".species").text()
+      if not isNull(genus) and not isNull(species)
+        $(this)
+        .unbind()
+        .addClass "sciname-click"
+        .click ->
+          target = "#{uri.urlString}dashboard.php?taxon=#{genus}+#{species}"
+          goTo target
+          false
 
 prepURI = (string) ->
   string = encodeURIComponent(string)
