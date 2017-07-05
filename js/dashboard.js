@@ -753,6 +753,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         linkHtml += "</div>";
         if (taxonData.adp.samples === 0) {
           linkHtml = "<p>There are no samples of this taxon in our database.</p>";
+          countryHtml = "";
         }
         if (result.isGenusLookup || noDefaultRender === true) {
           taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
@@ -927,6 +928,10 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           }
         } catch (undefined) {}
       }
+      stopLoad();
+      delay(500, function() {
+        return stopLoad();
+      });
     }
     return false;
   }).error(function(result, status) {

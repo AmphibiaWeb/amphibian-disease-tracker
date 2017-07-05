@@ -676,6 +676,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         linkHtml += "</div>"
         if taxonData.adp.samples is 0
           linkHtml = "<p>There are no samples of this taxon in our database.</p>"
+          countryHtml = ""
         if result.isGenusLookup or noDefaultRender is true
           taxonFormatted = """
             <span class="sciname">
@@ -930,6 +931,9 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               stopLoad()
         # End postAppend loop
       # End postAppend check
+      stopLoad()
+      delay 500, ->
+        stopLoad()
     false
   .error (result, status) ->
     html = """
