@@ -779,6 +779,12 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           }
         } catch (undefined) {}
         $(targetSelector).append(blurb);
+        if (taxonData.adp.samples === 0) {
+          stopLoad();
+          delay(1000, function() {
+            return stopLoad();
+          });
+        }
         diseaseData = taxonData.adp.disease_data;
         for (disease in diseaseData) {
           data = diseaseData[disease];

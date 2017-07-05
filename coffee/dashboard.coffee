@@ -725,6 +725,10 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             postAppend.push saveState
             continue
         $(targetSelector).append blurb
+        if taxonData.adp.samples is 0
+          stopLoad()
+          delay 1000, ->
+            stopLoad()
         # Create the pie charts
         diseaseData = taxonData.adp.disease_data
         for disease, data of diseaseData
