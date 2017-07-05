@@ -2138,7 +2138,7 @@ function advancedSearchProject($get)
         if (!empty($searchQuery["search_type"]) && !$validSearchType) {
             $response["notices"][] = "'".$searchQuery["search_type"]."' isn't a valid search type";
         }
-        if ($validSearchType && !is_numeric($crit)) {
+        if ($validSearchType && !is_numeric($crit) && !empty($searchQuery["search_type"])) {
             $response["notices"][] = "Search types may only be specified for numeric data ('".$searchQuery["search_type"]."' tried to be specified for '$crit')";
         }
         if (!$validSearchType || !is_numeric($crit)) {
