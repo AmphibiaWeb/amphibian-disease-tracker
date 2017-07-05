@@ -186,8 +186,6 @@ if (toBool($_REQUEST["async"]) === true) {
     <script type="text/javascript" src="bower_components/json-human/src/json.human.js"></script>
     <script type="text/javascript" src="bower_components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
     <script type="text/javascript" src="bower_components/chart.js/dist/Chart.bundle.min.js"></script>
-    <script type="text/javascript" src="js/c.min.js"></script>
-    <script type="text/javascript" src="js/dashboard.js"></script>
     <script type="text/javascript">
       // Initial script
       <?php
@@ -197,6 +195,8 @@ if (toBool($_REQUEST["async"]) === true) {
         }
         ?>
     </script>
+    <script type="text/javascript" src="js/c.min.js"></script>
+    <script type="text/javascript" src="js/dashboard.js"></script>
     <style is="custom-style">
       paper-toggle-button.red {
       --paper-toggle-button-checked-bar-color:  var(--paper-red-500);
