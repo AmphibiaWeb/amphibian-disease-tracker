@@ -929,7 +929,8 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         } catch (undefined) {}
       }
       stopLoad();
-      delay(500, function() {
+      delay(1000, function() {
+        console.debug("Doing 1s delayed stopLoad");
         return stopLoad();
       });
     }

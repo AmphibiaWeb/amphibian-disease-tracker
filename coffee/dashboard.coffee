@@ -932,7 +932,8 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         # End postAppend loop
       # End postAppend check
       stopLoad()
-      delay 500, ->
+      delay 1000, ->
+        console.debug "Doing 1s delayed stopLoad"
         stopLoad()
     false
   .error (result, status) ->
