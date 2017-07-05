@@ -700,7 +700,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               icon="maps:satellite"
               onclick="popShowRangeMap(this)"
               data-genus="#{taxonData.taxon.genus}"
-              data-kml="#{taxonData.amphibiaweb?.map?.shapefile}"
+              data-kml="#{taxonData.data.amphibiaweb?.map?.shapefile}"
               data-species="#{taxonData.taxon.species}">
             </paper-icon-button>
           </div>
@@ -1034,7 +1034,8 @@ popShowRangeMap = (taxon, kml) ->
       <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe>
     <google-map
       api-key="#{gMapsApiKey}"
-      kml="#{kml}">
+      kml="#{kml}"
+      map-type="hybrid">
       </google-map>
     </paper-dialog-scrollable>
     <div class="buttons">
