@@ -717,6 +717,12 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           <div class="charts-container row">
           </div>
           #{linkHtml}
+          <div class="aweb-link-species click" data-href="http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&rel-species=equals&where-genus=#{taxonData.taxon.genus.toTitleCase()}&where-species=#{taxonData.taxon.species}">
+            <span class="sciname">
+              #{taxonData.taxon.genus.toTitleCase()} #{taxonData.taxon.species}
+            </span> on AmphibiaWeb
+            <iron-icon icon="icons:open-in-new"></iron-icon>
+          </div>
         </div>
         """
         try
