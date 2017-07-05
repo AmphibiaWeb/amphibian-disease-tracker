@@ -1086,7 +1086,15 @@ popShowRangeMap = function(taxon, kml) {
 };
 
 $(function() {
+  var error, noDefaultRender;
   console.log("Loaded dashboard");
+  try {
+    if (isNull(noDefaultRender)) {
+      noDefaultRender = false;
+    }
+  } catch (error) {
+    noDefaultRender = false;
+  }
   if (noDefaultRender !== true) {
     getServerChart();
   }

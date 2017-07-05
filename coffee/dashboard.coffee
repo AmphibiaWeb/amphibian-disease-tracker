@@ -1083,6 +1083,11 @@ popShowRangeMap = (taxon, kml) ->
 
 $ ->
   console.log "Loaded dashboard"
+  try
+    if isNull noDefaultRender
+      noDefaultRender = false
+  catch
+    noDefaultRender = false
   unless noDefaultRender is true
     getServerChart()
   $("#generate-chart").click ->
