@@ -12847,6 +12847,9 @@ google-map,
   border-radius: 1em;
   transition: 0.2s ease-in;
 }
+.aweb-link-species.click {
+  padding: 1em;
+}
 .aweb-link-species:hover {
   background: #3455da;
 }
