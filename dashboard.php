@@ -255,6 +255,7 @@ if (toBool($_REQUEST["async"]) === true) {
     <script type="text/javascript">
       var activeTaxon = {genus: "<?php echo $genus; ?>", species: "<?php echo $species; ?>"};
       var noDefaultRender = true;
+      startLoad();
       fetchMiniTaxonBlurb(activeTaxon, "section#taxon-detail");
     </script>
     <section id="taxon-detail" class="col-xs-12">

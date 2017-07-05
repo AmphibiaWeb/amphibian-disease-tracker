@@ -751,6 +751,9 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
         }
         linkHtml += "</div>";
+        if (taxonData.adp.samples === 0) {
+          linkHtml = "<p>There are no samples of this taxon in our database.</p>";
+        }
         if (result.isGenusLookup || noDefaultRender === true) {
           taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
           taxonId = "<p style='display:inline-block'>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
@@ -805,6 +808,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             chartCtx = $("#" + canvasId);
             pieChart = new Chart(chartCtx, chartCfg);
             _adp.taxonCharts[canvasId] = pieChart;
+            stopLoad();
           }
           if (data.fatal.unknown !== data.fatal.total) {
             fatalData = {
@@ -833,6 +837,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             chartCtx = $("#" + canvasId);
             pieChart = new Chart(chartCtx, chartCfg);
             _adp.taxonCharts[canvasId] = pieChart;
+            stopLoad();
           }
         }
       } catch (error1) {
@@ -845,6 +850,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         $(targetSelector).append(html);
         console.error("Couldn't get taxon data -- " + e.message, taxonData);
         console.warn(e.stack);
+        stopLoadError();
       }
     }
     if (postAppend.length > 0) {
@@ -887,6 +893,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
               chartCtx = $("#" + canvasId);
               pieChart = new Chart(chartCtx, chartCfg);
               _adp.taxonCharts[canvasId] = pieChart;
+              stopLoad();
             }
             if (data.fatal.unknown !== data.fatal.total) {
               fatalData = {
@@ -915,6 +922,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
               chartCtx = $("#" + canvasId);
               pieChart = new Chart(chartCtx, chartCfg);
               _adp.taxonCharts[canvasId] = pieChart;
+              stopLoad();
             }
           }
         } catch (undefined) {}
@@ -927,6 +935,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     $(targetSelector).html(html);
     console.error("Couldn't fetch taxon data from server");
     console.warn(result, status);
+    stopLoadError();
     return false;
   });
   return false;

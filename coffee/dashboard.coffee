@@ -674,6 +674,8 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           </a>
           """
         linkHtml += "</div>"
+        if taxonData.adp.samples is 0
+          linkHtml = "<p>There are no samples of this taxon in our database.</p>"
         if result.isGenusLookup or noDefaultRender is true
           taxonFormatted = """
             <span class="sciname">
@@ -764,6 +766,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             chartCtx = $("##{canvasId}")
             pieChart = new Chart chartCtx, chartCfg
             _adp.taxonCharts[canvasId] = pieChart
+            stopLoad()
           # Fatality!
           unless data.fatal.unknown is data.fatal.total
             fatalData =
@@ -804,6 +807,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             chartCtx = $("##{canvasId}")
             pieChart = new Chart chartCtx, chartCfg
             _adp.taxonCharts[canvasId] = pieChart
+            stopLoad()
       catch e
         try
           taxonString = ""
@@ -824,6 +828,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         $(targetSelector).append html
         console.error "Couldn't get taxon data -- #{e.message}", taxonData
         console.warn e.stack
+        stopLoadError()
       # End iterator for taxa
     # See if we have any "Foo sp." that need to be stuck at the end
     # See
@@ -881,6 +886,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               chartCtx = $("##{canvasId}")
               pieChart = new Chart chartCtx, chartCfg
               _adp.taxonCharts[canvasId] = pieChart
+              stopLoad()
             # Fatality!
             unless data.fatal.unknown is data.fatal.total
               fatalData =
@@ -921,6 +927,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               chartCtx = $("##{canvasId}")
               pieChart = new Chart chartCtx, chartCfg
               _adp.taxonCharts[canvasId] = pieChart
+              stopLoad()
         # End postAppend loop
       # End postAppend check
     false
@@ -935,6 +942,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
     $(targetSelector).html html
     console.error "Couldn't fetch taxon data from server"
     console.warn result, status
+    stopLoadError()
     false
   false
 
