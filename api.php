@@ -300,10 +300,30 @@ function doCartoSqlApiPush($get)
     // error_reporting(E_ALL);
     // ini_set('display_errors', 1);
     // error_log('doCartoSqlApiPush is running in debug mode!');
-    $sqlQuery = decode64($get['sql_query'], true);
-    if (empty($sqlQuery)) {
-        $sqlQuery = base64_decode(urldecode($get["sql_query"]));
+    $sqlQuery = base64_decode(urldecode($get["sql_query"]));
+    $method = "bdud";
+    if (empty($sqlQuery) || !is_string($sqlQuery) || $sqlQuery == null) {
+        $sqlQuery = decode64($get['sql_query'], true);
+        $method = "d64";
+        if (empty($sqlQuery)) {
+            returnAjax(array(
+                "status" => false,
+                "error" => "QUERY_PARSE_ERROR",
+                "raw" => $get["sql_query"],
+                "provided" => $get,
+            ));
+        }
     }
+    $eTest = print_r($sqlQuery, true);
+    // returnAjax(array(
+    //     "using" => $sqlQuery,
+    //     "forced" => $eTest,
+    //     "forced_empty" => empty($eTest),
+    //     "empty" => empty($sqlQuery),
+    //     "string" => is_string($sqlQuery),
+    //     "nullish" => $sqlQuery == null,
+    // ));
+
     $originalQuery = $sqlQuery;
     # If it's a "SELECT" style statement, make sure the accessing user
     # has permissions to read this dataset
@@ -538,11 +558,19 @@ function doCartoSqlApiPush($get)
             "query_type" => $sqlAction,
             "parsed_query" => $originalQuery,
             "checked_tables" => $checkedTablePermissions,
-            #"foo" => base64_decode(urldecode($get["sql_query"])),
-            #"bar" => base64_decode($get["sql_query"]),
-            #"baz" => urldecode(base64_decode($get["sql_query"])),
-            # "urls_posted" => $urls,
         );
+        if ($show_debug === true) {
+            $debug = array(
+                "raw" => $get['sql_query'],
+                "d64" => decode64($get['sql_query'], true),
+                "foo" => base64_decode(urldecode($get["sql_query"])),
+                "bar" => base64_decode($get["sql_query"]),
+                "baz" => urldecode(base64_decode($get["sql_query"])),
+                "method" => $method,
+                # "urls_posted" => $urls,
+                );
+            $response = array_merge($response, $debug);
+        }
         if (boolstr($get['blobby'])) {
             $response["project_id"] = $pid;
             $response["query_type"] = $sqlAction;
@@ -1212,9 +1240,14 @@ function getChartData($chartDataParams)
                     }
                 }
             }
+            if (empty($where)) {
+                $where = "WHERE `diseasedetected` IS NOT NULL";
+            } else {
+                $where .= " AND `diseasedetected` IS NOT NULL";
+            }
             $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where GROUP BY country ORDER BY $orderBy";
-            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='true' $andTested GROUP BY country ORDER BY $orderBy";
-            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` WHERE `diseasedetected`='false' $andTested GROUP BY country ORDER BY $orderBy";
+            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where AND `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
+            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where AND `diseasedetected`='false' GROUP BY country ORDER BY $orderBy"; //or `diseasedetected` is null
             $result = mysqli_query($flatTable->getLink(), $allQuery);
             if ($result === false) {
                 returnAjax(array(
@@ -1327,12 +1360,12 @@ function getChartData($chartDataParams)
                     ),
                 ),
             );
-            returnAjax(array(
+            $response = array(
                 "status" => true,
                 "data" => $chartData,
                 "axes" => array(
                     "x" => "Country",
-                    "y" => "Samples"
+                    "y" => "Sample Count"
                 ),
                 "title" => "Samples Per Country",
                 "use_preprocessor" => false,
@@ -1341,7 +1374,15 @@ function getChartData($chartDataParams)
                 "provided" => $chartDataParams,
                 "full_description" => "Sample representation per country, $by",
                 "basedata" => $baseData,
-            ));
+            );
+            if ($show_debug === true) {
+                $response["query"] = array(
+                    "all" => $allQuery,
+                    "pos" => $posQuery,
+                    "neg" => $negQuery,
+                );
+            }
+            returnAjax($response);
             break;
         case "infection":
         default:
@@ -1753,6 +1794,21 @@ function getTaxonData($taxonBase, $skipFetch = false)
         $adpData["samples"] = mysqli_num_rows($r);
     }
     $adpData["disease_data"] = $taxonBreakdown;
+    try {
+        $mapUrl = "http://amphibiaweb.org/cgi/amphib_map?genus=".ucwords($taxonBase["genus"])."&species=".$taxonBase["species"];
+        $bmUrl = get_final_url($mapUrl);
+        # Pull out the shapefile
+        $shapefile = "http://amphibiaweb.org/cgi/amphib_ws_shapefile?format=kml&genus=".ucwords($taxonBase["genus"])."&species=".$taxonBase["species"];
+    } catch (Exception $e) {
+        $mapUrl = false;
+        $bmUrl = false;
+        $shapefile = false;
+    }
+    $mapData = array(
+        "url" => $mapUrl,
+        "resolved_url" => $bmUrl,
+        "shapefile" => $shapefile,
+    );
     $response = array(
         "status" => true,
         "taxon" => array(
@@ -1766,6 +1822,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
         ),
         "amphibiaweb" => array(
             "data" => $aweb["data"],
+            "map" => $mapData,
         ),
         "isGenusLookup" => false,
     );

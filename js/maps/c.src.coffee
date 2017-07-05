@@ -267,6 +267,17 @@ jQuery.fn.outerHTML = ->
 jQuery.fn.outerHtml = ->
   $(this).outerHTML()
 
+
+buildQuery = (obj) ->
+  queryList = new Array()
+  for k, v of obj
+    key = k.replace /[^A-Za-z\-_\[\]]/img, ""
+    value = encodeURIComponent(v).replace /\%20/g, "+"
+    queryList.push """#{key}=#{value}"""
+  queryList.join "&"
+
+buildArgs = buildQuery
+
 `
 jQuery.fn.selectText = function(){
     var doc = document

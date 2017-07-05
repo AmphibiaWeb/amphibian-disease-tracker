@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -443,8 +443,11 @@ getServerChart = function(chartType, chartParams) {
           ref10 = chartDataJs.labels;
           for (n = 0, len2 = ref10.length; n < len2; n++) {
             bin = ref10[n];
+            if (isNull(bin)) {
+              continue;
+            }
             targetId = md5(bin + "-" + (Date.now()));
-            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\" class=\"taxon-collapse\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
+            collapseHtml += "<div class=\"col-xs-12 col-md-6 col-lg-4\">\n  <button type=\"button\" class=\"btn btn-default collapse-trigger\" data-target=\"#" + targetId + "\" id=\"" + targetId + "-button-trigger\" data-taxon=\"" + bin + "\">\n  " + bin + "\n  </button>\n  <iron-collapse id=\"" + targetId + "\" data-bin=\"" + chartParams.sort + "\" data-taxon=\"" + bin + "\" class=\"taxon-collapse\">\n    <div class=\"collapse-content alert\">\n      Binned data for " + bin + ". Should populate this asynchronously ....\n    </div>\n  </iron-collapse>\n</div>";
             fetchUpdatesFor[targetId] = bin;
           }
           if (chartParams.sort === "species") {
@@ -486,7 +489,7 @@ getServerChart = function(chartType, chartParams) {
             console.debug("Taxon clicked:", taxon);
             color = getRandomDataColor();
             buttonSelector = "button[data-taxon='" + taxon + "']";
-            console.debug("Selector", buttonSelector, $(buttonSelector).exists());
+            console.debug("Selector test", buttonSelector, $(buttonSelector).exists());
             $(".success-glow").removeClass("success-glow");
             return $(buttonSelector).addClass("success-glow").get(0).scrollIntoView(false);
           });
@@ -598,7 +601,7 @@ getServerChart = function(chartType, chartParams) {
 };
 
 fetchMiniTaxonBlurbs = function(reference) {
-  var collapseSelector, ref, selector, taxon, taxonArr, taxonObj;
+  var collapseSelector, error, ref, selector, taxon, taxonArr, taxonObj;
   if (reference == null) {
     reference = _adp.fetchUpdatesFor;
   }
@@ -620,7 +623,11 @@ fetchMiniTaxonBlurbs = function(reference) {
   for (collapseSelector in reference) {
     taxon = reference[collapseSelector];
     selector = "#" + collapseSelector + " .collapse-content";
-    taxonArr = taxon.split(" ");
+    try {
+      taxonArr = taxon.split(" ");
+    } catch (error) {
+      continue;
+    }
     taxonObj = {
       genus: taxonArr[0],
       species: (ref = taxonArr[1]) != null ? ref : ""
@@ -672,7 +679,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
@@ -746,14 +753,15 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         linkHtml += "</div>";
         if (result.isGenusLookup) {
           taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
-          taxonId = "<p>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
+          taxonId = "<p style='display:inline-block'>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
         } else {
           taxonId = "";
         }
         idTaxon = encode64(JSON.stringify(taxonData.taxon));
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
+        console.debug("Taxon data:", taxonData, (ref5 = taxonData.amphibiaweb) != null ? ref5.map : void 0);
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div style='display:inline-block'>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-kml=\"" + ((ref6 = taxonData.amphibiaweb) != null ? (ref7 = ref6.map) != null ? ref7.shapefile : void 0 : void 0) + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
         try {
           if (taxonData.taxon.species.search(/sp\./) !== -1) {
             saveState = {
@@ -1000,6 +1008,60 @@ dropdownSortEvents = function() {
   };
   console.log("Dropdown sort events bound");
   return false;
+};
+
+popShowRangeMap = function(taxon, kml) {
+
+  /*
+   *
+   */
+  var args, el, endpoint, genus, html, species;
+  if (typeof taxon !== "object") {
+    return false;
+  }
+  el = taxon;
+  if (isNull(taxon.genus) || isNull(taxon.species)) {
+    try {
+      genus = $(taxon).attr("data-genus");
+      species = $(taxon).attr("data-species");
+      if (isNull(kml)) {
+        kml = $(taxon).attr("data-kml");
+      }
+      taxon = {
+        genus: genus,
+        species: species
+      };
+    } catch (undefined) {}
+  }
+  if (isNull(taxon.genus) || isNull(taxon.species)) {
+    toastStatusMessage("Unable to show range map");
+    return false;
+  }
+  if (isNull(kml)) {
+    try {
+      kml = $(el).attr("data-kml");
+    } catch (undefined) {}
+    if (isNull(kml)) {
+      console.warn("Unable to read KML attr and none passed");
+    }
+  }
+  endpoint = "https://mol.org/species/map/";
+  args = {
+    embed: "true"
+  };
+  html = "<paper-dialog modal id=\"species-range-map\" class=\"pop-map dashboard-map\" data-taxon-genus=\"" + taxon.genus + "\" data-taxon-species=\"" + taxon.species + "\">\n  <h2>Range map for <span class=\"genus\">" + taxon.genus + "</span> <span class=\"species\">" + taxon.species + "</span></h2>\n  <paper-dialog-scrollable>\n    <!-- <iframe class=\"mol-embed\" src=\"" + endpoint + (taxon.genus.toTitleCase()) + "_" + taxon.species + "?" + (buildQuery(args)) + "\"></iframe> -->\n  <google-map\n    api-key=\"" + gMapsApiKey + "\"\n    kml=\"" + kml + "\"\n    map-type=\"hybrid\">\n    </google-map>\n  </paper-dialog-scrollable>\n  <div class=\"buttons\">\n    <paper-button dialog-dismiss>Close</paper-button>\n  </div>\n</paper-dialog>";
+  $("#species-range-map").remove();
+  $("body").append(html);
+  $("#species-range-map").on("iron-overlay-opened", function() {
+    var h;
+    console.debug("Opened");
+    h = $(this).find("paper-dialog-scrollable").height();
+    $(this).find("paper-dialog-scrollable > div#scrollable").css("max-height", h + "px").css("height", h + "px");
+    console.debug($(this).width(), $(this).height(), h);
+    return false;
+  });
+  p$("#species-range-map").open();
+  return true;
 };
 
 $(function() {

@@ -826,7 +826,11 @@ doDeepSearch = function(results, namedMap) {
             console.warn(e.stack);
           }
         } catch (error4) {
-          console.warn("Couldn't parse responses from server");
+          e = error4;
+          console.error("Couldn't parse responses from server: " + e.message);
+          console.warn(e.stack);
+          console.log("Got", result);
+          console.debug(uri.urlString + "api.php?" + args);
         }
         return false;
       }).fail(function(result, status) {

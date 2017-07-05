@@ -369,10 +369,12 @@ getServerChart = (chartType = "location", chartParams) ->
           # Put a descriptor
           collapseHtml = ""
           for bin in chartDataJs.labels
+            if isNull bin
+              continue
             targetId = md5 "#{bin}-#{Date.now()}"
             collapseHtml += """
             <div class="col-xs-12 col-md-6 col-lg-4">
-              <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger">
+              <button type="button" class="btn btn-default collapse-trigger" data-target="##{targetId}" id="#{targetId}-button-trigger" data-taxon="#{bin}">
               #{bin}
               </button>
               <iron-collapse id="#{targetId}" data-bin="#{chartParams.sort}" data-taxon="#{bin}" class="taxon-collapse">
@@ -437,7 +439,7 @@ getServerChart = (chartType = "location", chartParams) ->
             console.debug "Taxon clicked:", taxon
             color = getRandomDataColor()
             buttonSelector = "button[data-taxon='#{taxon}']"
-            console.debug "Selector", buttonSelector, $(buttonSelector).exists()
+            console.debug "Selector test", buttonSelector, $(buttonSelector).exists()
             $(".success-glow").removeClass "success-glow"
             $(buttonSelector)
             .addClass "success-glow"
@@ -552,7 +554,10 @@ fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
     false
   for collapseSelector, taxon of reference
     selector = "##{collapseSelector} .collapse-content"
-    taxonArr = taxon.split " "
+    try
+      taxonArr = taxon.split " "
+    catch
+      continue
     taxonObj =
       genus: taxonArr[0]
       species: taxonArr[1] ? ""
@@ -677,7 +682,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             </span>
           """
           taxonId = """
-          <p>
+          <p style='display:inline-block'>
             <strong>Taxon:</strong> #{taxonFormatted}
           </p>
           """
@@ -687,9 +692,19 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         idTaxon = encode64 JSON.stringify taxonData.taxon
         idTaxon = idTaxon.replace /[^\w0-9]/img, ""
         console.log "Appended blurb for idTaxon", idTaxon
+        console.debug "Taxon data:", taxonData, taxonData.amphibiaweb?.map
         blurb = """
         <div class='blurb-info' id="taxon-blurb-#{idTaxon}">
           #{taxonId}
+          <div style='display:inline-block'>
+            <paper-icon-button
+              icon="maps:satellite"
+              onclick="popShowRangeMap(this)"
+              data-genus="#{taxonData.taxon.genus}"
+              data-kml="#{taxonData.amphibiaweb?.map?.shapefile}"
+              data-species="#{taxonData.taxon.species}">
+            </paper-icon-button>
+          </div>
           <p>
             <strong>IUCN Status:</strong> #{taxonData.iucn.category}
           </p>
@@ -993,6 +1008,60 @@ dropdownSortEvents = ->
   console.log "Dropdown sort events bound"
   false
 
+
+popShowRangeMap = (taxon, kml) ->
+  ###
+  #
+  ###
+  unless typeof taxon is "object"
+    return false
+  el = taxon
+  if isNull(taxon.genus) or isNull(taxon.species)
+    try
+      genus = $(taxon).attr "data-genus"
+      species = $(taxon).attr "data-species"
+      if isNull kml
+        kml = $(taxon).attr "data-kml"      
+      taxon = {genus, species}
+  if isNull(taxon.genus) or isNull(taxon.species)
+    toastStatusMessage "Unable to show range map"
+    return false
+  if isNull kml
+    try
+      kml = $(el).attr "data-kml"
+    if isNull kml
+      console.warn "Unable to read KML attr and none passed"
+  endpoint = "https://mol.org/species/map/"
+  args =
+    embed: "true"
+  html = """
+  <paper-dialog modal id="species-range-map" class="pop-map dashboard-map" data-taxon-genus="#{taxon.genus}" data-taxon-species="#{taxon.species}">
+    <h2>Range map for <span class="genus">#{taxon.genus}</span> <span class="species">#{taxon.species}</span></h2>
+    <paper-dialog-scrollable>
+      <!-- <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe> -->
+    <google-map
+      api-key="#{gMapsApiKey}"
+      kml="#{kml}"
+      map-type="hybrid">
+      </google-map>
+    </paper-dialog-scrollable>
+    <div class="buttons">
+      <paper-button dialog-dismiss>Close</paper-button>
+    </div>
+  </paper-dialog>
+  """
+  $("#species-range-map").remove()
+  $("body").append html
+  $("#species-range-map").on "iron-overlay-opened", ->
+    console.debug "Opened"
+    h = $(this).find("paper-dialog-scrollable").height()
+    $(this).find("paper-dialog-scrollable > div#scrollable")
+    .css "max-height", "#{h}px"
+    .css "height", "#{h}px"
+    console.debug $(this).width(), $(this).height(), h
+    false
+  p$("#species-range-map").open()
+  true
 
 
 $ ->

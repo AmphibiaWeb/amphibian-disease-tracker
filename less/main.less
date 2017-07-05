@@ -585,6 +585,16 @@ paper-menu-button {
     }
 }
 
+.row {
+    * + paper-toggle-button {
+        display: inline-block;
+        vertical-align:middle;
+        .toggle-label.paper-toggle-button {
+            vertical-align: top;
+        }
+    }
+}
+
 paper-toggle-button {
     margin-left:1rem;
 }
@@ -1632,6 +1642,18 @@ section.conversations {
 ////////////
 // Dashboard
 ////////////
+
+.pop-map {
+    width: 80vw;
+    height: 80vh;
+    paper-dialog-scrollable {
+        height: 80%;
+        iframe, .mol-embed {
+            width: 80%;
+            height: 80%;
+        }
+    }
+}
 
 section {
     @easy-transition: all .25s ease-in-out;
