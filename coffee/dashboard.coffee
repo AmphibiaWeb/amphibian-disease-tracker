@@ -674,7 +674,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           </a>
           """
         linkHtml += "</div>"
-        if result.isGenusLookup
+        if result.isGenusLookup or noDefaultRender is true
           taxonFormatted = """
             <span class="sciname">
               <span class="genus">#{taxonData.taxon.genus}</span>
@@ -1066,7 +1066,8 @@ popShowRangeMap = (taxon, kml) ->
 
 $ ->
   console.log "Loaded dashboard"
-  getServerChart()
+  unless noDefaultRender is true
+    getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
   delayPolymerBind "paper-dropdown-menu#binned-by", ->

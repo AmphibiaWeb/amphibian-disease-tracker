@@ -254,11 +254,18 @@ if (toBool($_REQUEST["async"]) === true) {
                     ?>
     <script type="text/javascript">
       var activeTaxon = {genus: "<?php echo $genus; ?>", species: "<?php echo $species; ?>"};
+      var noDefaultRender = true;
       fetchMiniTaxonBlurb(activeTaxon, "section#taxon-detail");
     </script>
     <section id="taxon-detail" class="col-xs-12">
-      
+
     </section>
+  </main>
+  <?php
+    require_once("./footer.php");
+    ?>
+</body>
+</html>
                     <?php
                 } catch (Exception $e) {
                     ?>

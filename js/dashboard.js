@@ -751,7 +751,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
         }
         linkHtml += "</div>";
-        if (result.isGenusLookup) {
+        if (result.isGenusLookup || noDefaultRender === true) {
           taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
           taxonId = "<p style='display:inline-block'>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
         } else {
@@ -1066,7 +1066,9 @@ popShowRangeMap = function(taxon, kml) {
 
 $(function() {
   console.log("Loaded dashboard");
-  getServerChart();
+  if (noDefaultRender !== true) {
+    getServerChart();
+  }
   $("#generate-chart").click(function() {
     return renderNewChart.debounce(50);
   });
