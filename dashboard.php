@@ -190,7 +190,7 @@ if (toBool($_REQUEST["async"]) === true) {
       // Initial script
       <?php
         if (isset($_REQUEST["taxon"])) {  ?>
-      var noDefaultRender = true;
+      window.noDefaultRender = true;
       <?php
         }
         ?>
