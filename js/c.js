@@ -1562,7 +1562,15 @@ formatScientificNames = function(selector) {
   return $(".sciname").each(function() {
     var nameStyle;
     nameStyle = $(this).css("font-style") === "italic" ? "normal" : "italic";
-    return $(this).css("font-style", nameStyle);
+    $(this).css("font-style", nameStyle);
+    return $(this).unbind().addClass("sciname-click").click(function() {
+      var genus, species, target;
+      genus = $(this).find(".genus").text();
+      species = $(this).find(".species").text();
+      target = uri.urlString + "dashboard.php?taxon=" + genus + "+" + species;
+      goTo(target);
+      return false;
+    });
   });
 };
 

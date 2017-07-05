@@ -346,7 +346,7 @@ if (toBool($_REQUEST["async"]) === true) {
             $progressNegative = 100 * intval($row["count"]) / $max;
             $progressPositive = 100 * intval($rowPos["count"]) / $max;
             $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
-            $top10SpeciesTBody[] = "<td>".$row["genus"]." ".$row["specificepithet"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+            $top10SpeciesTBody[] = "<td><span class='sciname'><span class='genus'>".$row["genus"]."</span> <span class='species'>".$row["specificepithet"]."</span></span></td><td>$progressBar</td><td>".$row["count"]."</td>";
             $i++;
         }
         $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
