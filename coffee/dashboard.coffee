@@ -656,6 +656,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           nameHtml = ""
         countries = Object.toArray taxonData.adp.countries
         countryHtml = """
+        <p>Sampled in the following countries:</p>
         <ul class="country-list">
           <li>#{countries.join("</li><li>")}</li>
         </ul>
@@ -712,7 +713,6 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             <strong>IUCN Status:</strong> #{taxonData.iucn.category}
           </p>
           #{nameHtml}
-          <p>Sampled in the following countries:</p>
           #{countryHtml}
           <div class="charts-container row">
           </div>
@@ -1038,7 +1038,7 @@ popShowRangeMap = (taxon, kml) ->
       genus = $(taxon).attr "data-genus"
       species = $(taxon).attr "data-species"
       if isNull kml
-        kml = $(taxon).attr "data-kml"      
+        kml = $(taxon).attr "data-kml"
       taxon = {genus, species}
   if isNull(taxon.genus) or isNull(taxon.species)
     toastStatusMessage "Unable to show range map"

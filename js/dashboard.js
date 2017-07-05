@@ -739,7 +739,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
           nameHtml = "";
         }
         countries = Object.toArray(taxonData.adp.countries);
-        countryHtml = "<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
+        countryHtml = "<p>Sampled in the following countries:</p>\n<ul class=\"country-list\">\n  <li>" + (countries.join("</li><li>")) + "</li>\n</ul>";
         linkHtml = "<div class='clade-project-summary'>\n  <p>Represented in <strong>" + taxonData.adp.project_count + "</strong> projects with <strong>" + taxonData.adp.samples + "</strong> samples:</p>";
         ref4 = taxonData.adp.projects;
         for (project in ref4) {
@@ -765,7 +765,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         idTaxon = idTaxon.replace(/[^\w0-9]/img, "");
         console.log("Appended blurb for idTaxon", idTaxon);
         console.debug("Taxon data:", taxonData, (ref5 = taxonData.amphibiaweb) != null ? ref5.map : void 0);
-        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div style='display:inline-block'>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-kml=\"" + ((ref6 = taxonData.amphibiaweb) != null ? (ref7 = ref6.map) != null ? ref7.shapefile : void 0 : void 0) + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  <p>Sampled in the following countries:</p>\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
+        blurb = "<div class='blurb-info' id=\"taxon-blurb-" + idTaxon + "\">\n  " + taxonId + "\n  <div style='display:inline-block'>\n    <paper-icon-button\n      icon=\"maps:satellite\"\n      onclick=\"popShowRangeMap(this)\"\n      data-genus=\"" + taxonData.taxon.genus + "\"\n      data-kml=\"" + ((ref6 = taxonData.amphibiaweb) != null ? (ref7 = ref6.map) != null ? ref7.shapefile : void 0 : void 0) + "\"\n      data-species=\"" + taxonData.taxon.species + "\">\n    </paper-icon-button>\n  </div>\n  <p>\n    <strong>IUCN Status:</strong> " + taxonData.iucn.category + "\n  </p>\n  " + nameHtml + "\n  " + countryHtml + "\n  <div class=\"charts-container row\">\n  </div>\n  " + linkHtml + "\n</div>";
         try {
           if (taxonData.taxon.species.search(/sp\./) !== -1) {
             saveState = {
