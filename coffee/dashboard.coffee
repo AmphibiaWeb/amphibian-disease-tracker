@@ -708,7 +708,8 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               data-kml="#{taxonData.amphibiaweb?.map?.shapefile}"
               data-species="#{taxonData.taxon.species}"
               data-toggle="tooltip"
-              title="View Range Map">
+              title="View Range Map"
+              data-placement="right">
             </paper-icon-button>
           </div>
           <p>
@@ -734,6 +735,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             continue
         $(targetSelector).append blurb
         bindClicks()
+        formatScientificNames(".aweb-link-species .sciname")
         if taxonData.adp.samples is 0
           stopLoad()
           delay 1000, ->
