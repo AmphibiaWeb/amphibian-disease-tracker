@@ -1086,16 +1086,17 @@ popShowRangeMap = function(taxon, kml) {
 };
 
 $(function() {
-  var error, noDefaultRender;
+  var error;
   console.log("Loaded dashboard");
   try {
-    if (isNull(noDefaultRender)) {
-      noDefaultRender = false;
+    if (isNull(window.noDefaultRender)) {
+      window.noDefaultRender = false;
     }
   } catch (error) {
-    noDefaultRender = false;
+    window.noDefaultRender = false;
   }
-  if (noDefaultRender !== true) {
+  console.debug("NDR state", window.noDefaultRender);
+  if (window.noDefaultRender !== true) {
     getServerChart();
   }
   $("#generate-chart").click(function() {

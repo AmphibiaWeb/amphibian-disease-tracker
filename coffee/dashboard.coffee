@@ -1084,11 +1084,12 @@ popShowRangeMap = (taxon, kml) ->
 $ ->
   console.log "Loaded dashboard"
   try
-    if isNull noDefaultRender
-      noDefaultRender = false
+    if isNull window.noDefaultRender
+      window.noDefaultRender = false
   catch
-    noDefaultRender = false
-  unless noDefaultRender is true
+    window.noDefaultRender = false
+  console.debug "NDR state", window.noDefaultRender
+  unless window.noDefaultRender is true
     getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
