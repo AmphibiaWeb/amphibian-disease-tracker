@@ -190,6 +190,12 @@ if (toBool($_REQUEST["async"]) === true) {
     <script type="text/javascript" src="js/dashboard.js"></script>
     <script type="text/javascript">
       // Initial script
+      <?php
+        if (isset($_REQUEST["taxon"])) {  ?>
+      var noDefaultRender = true;
+      <?php
+        }
+        ?>
     </script>
     <style is="custom-style">
       paper-toggle-button.red {
