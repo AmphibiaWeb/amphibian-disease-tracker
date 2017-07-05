@@ -696,7 +696,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         blurb = """
         <div class='blurb-info' id="taxon-blurb-#{idTaxon}">
           #{taxonId}
-          <div>
+          <div style='display:inline-block'>
             <paper-icon-button
               icon="maps:satellite"
               onclick="popShowRangeMap(this)"
@@ -1038,7 +1038,7 @@ popShowRangeMap = (taxon, kml) ->
   <paper-dialog modal id="species-range-map" class="pop-map dashboard-map" data-taxon-genus="#{taxon.genus}" data-taxon-species="#{taxon.species}">
     <h2>Range map for <span class="genus">#{taxon.genus}</span> <span class="species">#{taxon.species}</span></h2>
     <paper-dialog-scrollable>
-      <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe>
+      <!-- <iframe class="mol-embed" src="#{endpoint}#{taxon.genus.toTitleCase()}_#{taxon.species}?#{buildQuery args}"></iframe> -->
     <google-map
       api-key="#{gMapsApiKey}"
       kml="#{kml}"
