@@ -353,8 +353,14 @@ paper-dialog-scrollable {
     text-transform: lowercase;
 }
 
-.sciname:first-letter {
-    text-transform: uppercase;
+.sciname {
+    &:first-letter {
+        text-transform: uppercase;
+    }
+    &.sciname-click {
+        cursor: pointer;
+        border-bottom: 1px dotted #000;
+    }
 }
 
 

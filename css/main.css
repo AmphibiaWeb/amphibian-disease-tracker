@@ -9916,6 +9916,10 @@ html >>> .capitalize {
 .sciname:first-letter {
   text-transform: uppercase;
 }
+.sciname.sciname-click {
+  cursor: pointer;
+  border-bottom: 1px dotted #000;
+}
 .fixed-bar {
   position: fixed;
   margin-top: 0px !important;
