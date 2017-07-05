@@ -1036,6 +1036,14 @@ popShowRangeMap = function(taxon, kml) {
     toastStatusMessage("Unable to show range map");
     return false;
   }
+  if (isNull(kml)) {
+    try {
+      kml = $(taxon).attr("data-kml");
+    } catch (undefined) {}
+    if (isNull(kml)) {
+      console.warn("Unable to read KML attr and none passed");
+    }
+  }
   endpoint = "https://mol.org/species/map/";
   args = {
     embed: "true"
