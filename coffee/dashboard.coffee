@@ -692,6 +692,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         idTaxon = encode64 JSON.stringify taxonData.taxon
         idTaxon = idTaxon.replace /[^\w0-9]/img, ""
         console.log "Appended blurb for idTaxon", idTaxon
+        console.debug "Taxon data:", taxonData, taxonData.amphibiaweb?.map
         blurb = """
         <div class='blurb-info' id="taxon-blurb-#{idTaxon}">
           #{taxonId}
@@ -700,7 +701,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               icon="maps:satellite"
               onclick="popShowRangeMap(this)"
               data-genus="#{taxonData.taxon.genus}"
-              data-kml="#{taxonData.data.amphibiaweb?.map?.shapefile}"
+              data-kml="#{taxonData.amphibiaweb?.map?.shapefile}"
               data-species="#{taxonData.taxon.species}">
             </paper-icon-button>
           </div>
