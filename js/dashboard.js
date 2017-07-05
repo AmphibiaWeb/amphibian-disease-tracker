@@ -753,7 +753,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         linkHtml += "</div>";
         if (result.isGenusLookup) {
           taxonFormatted = "<span class=\"sciname\">\n  <span class=\"genus\">" + taxonData.taxon.genus + "</span>\n  <span class=\"species\">" + taxonData.taxon.species + "</span>\n</span>";
-          taxonId = "<p>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
+          taxonId = "<p style='display:inline-block'>\n  <strong>Taxon:</strong> " + taxonFormatted + "\n</p>";
         } else {
           taxonId = "";
         }

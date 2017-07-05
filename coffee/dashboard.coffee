@@ -682,7 +682,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             </span>
           """
           taxonId = """
-          <p>
+          <p style='display:inline-block'>
             <strong>Taxon:</strong> #{taxonFormatted}
           </p>
           """
