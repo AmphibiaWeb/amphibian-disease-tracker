@@ -359,7 +359,9 @@ paper-dialog-scrollable {
     }
     &.sciname-click {
         cursor: pointer;
-        border-bottom: 1px dotted #000;
+        &:not(.no-underline) {
+            border-bottom: 1px dotted #000;
+        }
     }
 }
 

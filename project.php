@@ -776,7 +776,7 @@ $loginStatus = getLoginState();
                      $linkUri = $aWebUri.'where-genus='.$speciesParts[0].'&amp;where-species='.$speciesParts[1];
                  }
 
-                 $html = '<li class="aweb-link-species" data-species="'.$species.'" data-positive="false" data-negative="false" data-inconclusive="false"> <span class="sciname" data-href="'.$linkUri.'"data-newtab="true"><span class="genus">'.$speciesParts[0].'</span><span class="species">'.$speciesParts[1].'</span></span></li>';
+                 $html = '<li class="aweb-link-species" data-species="'.$species.'" data-positive="false" data-negative="false" data-inconclusive="false"> <span class="sciname no-underline" data-href="'.$linkUri.'"data-newtab="true"><span class="genus">'.$speciesParts[0].'</span> <span class="species">'.$speciesParts[1].'</span></span> <paper-icon-button icon="editor:insert-chart" class="click" data-href="dashboard.php?taxon='.$species.'"></paper-icon-button></li>';
                  echo $html;
              }
              if ($i === 0) {

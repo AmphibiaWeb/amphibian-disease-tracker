@@ -2,30 +2,70 @@
  * The MIT License
  * Copyright (c) 2012 Matias Meno <m@tias.me>
  */
+@-webkit-keyframes passing-through {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(40px);
+                transform: translateY(40px); }
+    30%, 70% {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+                transform: translateY(0px); }
+    100% {
+        opacity: 0;
+        -webkit-transform: translateY(-40px);
+                transform: translateY(-40px); } }
 @keyframes passing-through {
     0% {
         opacity: 0;
-        transform: translateY(40px); }
+        -webkit-transform: translateY(40px);
+                transform: translateY(40px); }
     30%, 70% {
         opacity: 1;
-        transform: translateY(0px); }
+        -webkit-transform: translateY(0px);
+                transform: translateY(0px); }
     100% {
         opacity: 0;
-        transform: translateY(-40px); } }
+        -webkit-transform: translateY(-40px);
+                transform: translateY(-40px); } }
+@-webkit-keyframes slide-in {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(40px);
+                transform: translateY(40px); }
+    30% {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+                transform: translateY(0px); } }
 @keyframes slide-in {
     0% {
         opacity: 0;
-        transform: translateY(40px); }
+        -webkit-transform: translateY(40px);
+                transform: translateY(40px); }
     30% {
         opacity: 1;
-        transform: translateY(0px); } }
+        -webkit-transform: translateY(0px);
+                transform: translateY(0px); } }
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-transform: scale(1);
+                transform: scale(1); }
+    10% {
+        -webkit-transform: scale(1.1);
+                transform: scale(1.1); }
+    20% {
+        -webkit-transform: scale(1);
+                transform: scale(1); } }
 @keyframes pulse {
     0% {
-        transform: scale(1); }
+        -webkit-transform: scale(1);
+                transform: scale(1); }
     10% {
-        transform: scale(1.1); }
+        -webkit-transform: scale(1.1);
+                transform: scale(1.1); }
     20% {
-        transform: scale(1); } }
+        -webkit-transform: scale(1);
+                transform: scale(1); } }
 .dropzone, .dropzone * {
     box-sizing: border-box;
     transition: all .1s ease-out;
@@ -113,8 +153,10 @@
     padding: 0 0.4em;
     border-radius: 3px; }
 .dropzone .dz-preview:hover .dz-image img {
-    transform: scale(1.05, 1.05);
-    filter: blur(8px); }
+    -webkit-transform: scale(1.05, 1.05);
+            transform: scale(1.05, 1.05);
+    -webkit-filter: blur(8px);
+            filter: blur(8px); }
 .dropzone .dz-preview .dz-image {
     border-radius: 20px;
     overflow: hidden;
@@ -126,10 +168,12 @@
 .dropzone .dz-preview .dz-image img {
     display: block; }
 .dropzone .dz-preview.dz-success .dz-success-mark {
-    animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1); }
+    -webkit-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+            animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1); }
 .dropzone .dz-preview.dz-error .dz-error-mark {
     opacity: 1;
-    animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1); }
+    -webkit-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+            animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1); }
 .dropzone .dz-preview .dz-success-mark, .dropzone .dz-preview .dz-error-mark {
     pointer-events: none;
     opacity: 0;
@@ -151,7 +195,8 @@
     opacity: 0;
     transition: opacity 0.4s ease-in; }
 .dropzone .dz-preview:not(.dz-processing) .dz-progress {
-    animation: pulse 6s ease infinite; }
+    -webkit-animation: pulse 6s ease infinite;
+            animation: pulse 6s ease infinite; }
 .dropzone .dz-preview .dz-progress {
     opacity: 1;
     z-index: 1000;
@@ -298,8 +343,10 @@ html /deep/ .dropzone .dz-preview .dz-details .dz-filename span, .dropzone .dz-p
     padding: 0 0.4em;
     border-radius: 3px; }
 html /deep/ .dropzone .dz-preview:hover .dz-image img {
-    transform: scale(1.05, 1.05);
-    filter: blur(8px); }
+    -webkit-transform: scale(1.05, 1.05);
+            transform: scale(1.05, 1.05);
+    -webkit-filter: blur(8px);
+            filter: blur(8px); }
 html /deep/ .dropzone .dz-preview .dz-image {
     border-radius: 20px;
     overflow: hidden;
@@ -311,10 +358,12 @@ html /deep/ .dropzone .dz-preview .dz-image {
 html /deep/ .dropzone .dz-preview .dz-image img {
     display: block; }
 html /deep/ .dropzone .dz-preview.dz-success .dz-success-mark {
-    animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1); }
+    -webkit-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+            animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1); }
 html /deep/ .dropzone .dz-preview.dz-error .dz-error-mark {
     opacity: 1;
-    animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1); }
+    -webkit-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+            animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1); }
 html /deep/ .dropzone .dz-preview .dz-success-mark, .dropzone .dz-preview .dz-error-mark {
     pointer-events: none;
     opacity: 0;
@@ -336,7 +385,8 @@ html /deep/ .dropzone .dz-preview.dz-complete .dz-progress {
     opacity: 0;
     transition: opacity 0.4s ease-in; }
 html /deep/ .dropzone .dz-preview:not(.dz-processing) .dz-progress {
-    animation: pulse 6s ease infinite; }
+    -webkit-animation: pulse 6s ease infinite;
+            animation: pulse 6s ease infinite; }
 html /deep/ .dropzone .dz-preview .dz-progress {
     opacity: 1;
     z-index: 1000;
@@ -484,8 +534,10 @@ html >>> .dropzone .dz-preview .dz-details .dz-filename span, .dropzone .dz-prev
     padding: 0 0.4em;
     border-radius: 3px; }
 html >>> .dropzone .dz-preview:hover .dz-image img {
-    transform: scale(1.05, 1.05);
-    filter: blur(8px); }
+    -webkit-transform: scale(1.05, 1.05);
+            transform: scale(1.05, 1.05);
+    -webkit-filter: blur(8px);
+            filter: blur(8px); }
 html >>> .dropzone .dz-preview .dz-image {
     border-radius: 20px;
     overflow: hidden;
@@ -497,10 +549,12 @@ html >>> .dropzone .dz-preview .dz-image {
 html >>> .dropzone .dz-preview .dz-image img {
     display: block; }
 html >>> .dropzone .dz-preview.dz-success .dz-success-mark {
-    animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1); }
+    -webkit-animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1);
+            animation: passing-through 3s cubic-bezier(0.77, 0, 0.175, 1); }
 html >>> .dropzone .dz-preview.dz-error .dz-error-mark {
     opacity: 1;
-    animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1); }
+    -webkit-animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+            animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1); }
 html >>> .dropzone .dz-preview .dz-success-mark, .dropzone .dz-preview .dz-error-mark {
     pointer-events: none;
     opacity: 0;
@@ -522,7 +576,8 @@ html >>> .dropzone .dz-preview.dz-complete .dz-progress {
     opacity: 0;
     transition: opacity 0.4s ease-in; }
 html >>> .dropzone .dz-preview:not(.dz-processing) .dz-progress {
-    animation: pulse 6s ease infinite; }
+    -webkit-animation: pulse 6s ease infinite;
+            animation: pulse 6s ease infinite; }
 html >>> .dropzone .dz-preview .dz-progress {
     opacity: 1;
     z-index: 1000;
