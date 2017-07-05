@@ -1015,19 +1015,20 @@ popShowRangeMap = (taxon, kml) ->
   ###
   unless typeof taxon is "object"
     return false
+  el = taxon
   if isNull(taxon.genus) or isNull(taxon.species)
     try
       genus = $(taxon).attr "data-genus"
       species = $(taxon).attr "data-species"
-      taxon = {genus, species}
       if isNull kml
-        kml = $(taxon).attr "data-kml"
+        kml = $(taxon).attr "data-kml"      
+      taxon = {genus, species}
   if isNull(taxon.genus) or isNull(taxon.species)
     toastStatusMessage "Unable to show range map"
     return false
   if isNull kml
     try
-      kml = $(taxon).attr "data-kml"
+      kml = $(el).attr "data-kml"
     if isNull kml
       console.warn "Unable to read KML attr and none passed"
   endpoint = "https://mol.org/species/map/"

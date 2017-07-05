@@ -1015,21 +1015,22 @@ popShowRangeMap = function(taxon, kml) {
   /*
    *
    */
-  var args, endpoint, genus, html, species;
+  var args, el, endpoint, genus, html, species;
   if (typeof taxon !== "object") {
     return false;
   }
+  el = taxon;
   if (isNull(taxon.genus) || isNull(taxon.species)) {
     try {
       genus = $(taxon).attr("data-genus");
       species = $(taxon).attr("data-species");
+      if (isNull(kml)) {
+        kml = $(taxon).attr("data-kml");
+      }
       taxon = {
         genus: genus,
         species: species
       };
-      if (isNull(kml)) {
-        kml = $(taxon).attr("data-kml");
-      }
     } catch (undefined) {}
   }
   if (isNull(taxon.genus) || isNull(taxon.species)) {
@@ -1038,7 +1039,7 @@ popShowRangeMap = function(taxon, kml) {
   }
   if (isNull(kml)) {
     try {
-      kml = $(taxon).attr("data-kml");
+      kml = $(el).attr("data-kml");
     } catch (undefined) {}
     if (isNull(kml)) {
       console.warn("Unable to read KML attr and none passed");
