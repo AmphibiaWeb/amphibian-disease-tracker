@@ -245,6 +245,33 @@ if (toBool($_REQUEST["async"]) === true) {
   </header>
   <main class="row">
     <?php
+            # Handle taxon
+            if (isset($_REQUEST["taxon"])) {
+                try {
+                    $taxonStringParts = explode(" ", deEscape($_REQUEST["taxon"]));
+                    $genus = $taxonStringParts[0];
+                    $species = $taxonStringParts[1];
+                    ?>
+    <script type="text/javascript">
+      var activeTaxon = {genus: "<?php echo $genus; ?>", species: "<?php echo $species; ?>"};
+      fetchMiniTaxonBlurb(activeTaxon, "section#taxon-detail");
+    </script>
+    <section id="taxon-detail" class="col-xs-12">
+      
+    </section>
+                    <?php
+                } catch (Exception $e) {
+                    ?>
+    <h2 class="col-xs-12">
+      Invalid taxon
+    </h2>
+    <p class="col-xs-12">
+      Please try again.
+    </p>
+                    <?php
+                }
+                die();
+            }
             # See
             # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176
             # for scope and features
