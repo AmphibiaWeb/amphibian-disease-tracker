@@ -1560,17 +1560,19 @@ formatScientificNames = function(selector) {
     selector = ".sciname";
   }
   return $(".sciname").each(function() {
-    var nameStyle;
+    var genus, nameStyle, species;
     nameStyle = $(this).css("font-style") === "italic" ? "normal" : "italic";
     $(this).css("font-style", nameStyle);
-    return $(this).unbind().addClass("sciname-click").click(function() {
-      var genus, species, target;
-      genus = $(this).find(".genus").text();
-      species = $(this).find(".species").text();
-      target = uri.urlString + "dashboard.php?taxon=" + genus + "+" + species;
-      goTo(target);
-      return false;
-    });
+    genus = $(this).find(".genus").text();
+    species = $(this).find(".species").text();
+    if (!isNull(genus) && !isNull(species)) {
+      return $(this).unbind().addClass("sciname-click").click(function() {
+        var target;
+        target = uri.urlString + "dashboard.php?taxon=" + genus + "+" + species;
+        goTo(target);
+        return false;
+      });
+    }
   });
 };
 
