@@ -1802,7 +1802,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
           # Rows per-sample ...
           # FIMS based
           # Uses DarwinCore terms
-          # http://www.biscicol.org/biocode-fims/templates.jsp#
+          # http://www.biscicol.org/biocode-fims/template#
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
           columnDatatype = getColumnObj()
           # Make a lookup sampleId -> obj map

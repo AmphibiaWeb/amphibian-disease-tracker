@@ -2377,7 +2377,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
     e = error8;
     console.error("Error parsing data - " + e.message);
     console.warn(e.stack);
-    message = "There was a problem parsing your data. Please check <a href=\"http://biscicol.org/biocode-fims/templates.jsp\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org FIMS requirements<span class=\"glyphicon glyphicon-new-window\"></span></a>";
+    message = "There was a problem parsing your data. Please check <a href=\"http://biscicol.org/biocode-fims/template\" class=\"newwindow alert-link\" data-newtab=\"true\">biscicol.org FIMS requirements<span class=\"glyphicon glyphicon-new-window\"></span></a>";
     stopLoadBarsError(null, message);
   }
   return false;

@@ -1994,7 +1994,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
         skipCol = false
         switch column
           # Change FIMS to internal structure:
-          # http://www.biscicol.org/biocode-fims/templates.jsp
+          # http://www.biscicol.org/biocode-fims/template
           # Expects:
           #  id: "int"
           #  collectionID: "varchar"
@@ -2296,7 +2296,7 @@ newGeoDataHandler = (dataObject = new Object(), skipCarto = false, postCartoCall
   catch e
     console.error "Error parsing data - #{e.message}"
     console.warn e.stack
-    message = """There was a problem parsing your data. Please check <a href="http://biscicol.org/biocode-fims/templates.jsp" class="newwindow alert-link" data-newtab="true">biscicol.org FIMS requirements<span class="glyphicon glyphicon-new-window"></span></a>"""
+    message = """There was a problem parsing your data. Please check <a href="http://biscicol.org/biocode-fims/template" class="newwindow alert-link" data-newtab="true">biscicol.org FIMS requirements<span class="glyphicon glyphicon-new-window"></span></a>"""
     stopLoadBarsError null, message
 
   false
@@ -4260,7 +4260,7 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
           # Rows per-sample ...
           # FIMS based
           # Uses DarwinCore terms
-          # http://www.biscicol.org/biocode-fims/templates.jsp#
+          # http://www.biscicol.org/biocode-fims/template#
           # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
           columnDatatype = getColumnObj()
           # Make a lookup sampleId -> obj map
