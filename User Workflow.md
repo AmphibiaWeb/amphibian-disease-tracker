@@ -110,7 +110,7 @@ When you have data, you don't need to specify a locality like without data; it w
 
 We have partnered with [BiSciCol.org](http://biscicol.org) to provide a template generator for your project.
 
-If you go to [http://biscicol.org/biocode-fims/templates.jsp](http://biscicol.org/biocode-fims/templates.jsp), and from the dropdown select "Amphibian Disease", you can get a template from which to start working.
+If you go to [http://biscicol.org/biocode-fims/template](http://biscicol.org/biocode-fims/template), and from the dropdown select "Amphibian Disease", you can get a template from which to start working.
 
 The file you get will be an Excel 2007+ format (`.xlsx`) file. All your sample data should be in the worksheet title `Samples`. If you wish to use a different worksheet name, please be sure that it is the first worksheet in the notebook. **If you do not do this, your validation will always fail, and you will not be able to upload data to the system**.
 
@@ -167,14 +167,14 @@ If you have a datafile, upon project saving, your datafile will also be given an
 Most errors in validation will be reported during the uploading process so they can be fixed and uploaded again.
 Other Q & A may help.
 
-1. Do the fields in the XLSX template need to remain in their original order?      
+1. Do the fields in the XLSX template need to remain in their original order?
   > If header fields are present, then they can be in any order; if absent, yes, the fields must be in their original order.
 
-2. Can I add extra fields to the XLSX template?    
-  > Any fields not in the template will result in validation errors. We may add more fields if a common request. Please contact us.   
+2. Can I add extra fields to the XLSX template?
+  > Any fields not in the template will result in validation errors. We may add more fields if a common request. Please contact us.
 
-3. What happens to null columns?    
-  > Empty fields are irrelevant. They'll just store as empty (since they're all saved anyway).    
+3. What happens to null columns?
+  > Empty fields are irrelevant. They'll just store as empty (since they're all saved anyway).
 
-4. Can worksheets be altered, either names or their order?     
+4. Can worksheets be altered, either names or their order?
   > They can be in any order if their names are unchanged; if not named then the Samples has to be the first and only worksheet.
