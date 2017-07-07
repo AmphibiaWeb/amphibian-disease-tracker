@@ -1198,7 +1198,7 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
       # Rows per-sample ...
       # FIMS based
       # Uses DarwinCore terms
-      # http://www.biscicol.org/biocode-fims/templates.jsp#
+      # http://www.biscicol.org/biocode-fims/template#
       # https://github.com/AmphibiaWeb/amphibian-disease-tracker/blob/master/meta/data-fims.csv
       columnDatatype = getColumnObj(true)
       # Construct the SQL query
