@@ -14,11 +14,17 @@ $pid = $db->sanitize($_GET['id']);
 $loginStatus = getLoginState();
 
 $uid = $loginStatus['detail']['uid'];
+$suFlag = $loginStatus['detail']['userdata']['su_flag'];
+$isSu = boolstr($suFlag);
 
-$authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
-
-if (!empty($uid)) {
-    $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+if ($isSu !== true) {
+    $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
+    if (!empty($uid)) {
+        $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+    }
+} else {
+    # A superuser gets to view everything
+    $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."`";
 }
 
 $authorizedIntersect = "INNER JOIN ($authorizedIntersectQuery) AS authorized ON authorized.project_id = ";
