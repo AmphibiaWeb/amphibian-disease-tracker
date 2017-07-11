@@ -9918,6 +9918,8 @@ html >>> .capitalize {
 }
 .sciname.sciname-click {
   cursor: pointer;
+}
+.sciname.sciname-click:not(.no-underline) {
   border-bottom: 1px dotted #000;
 }
 .fixed-bar {
@@ -12844,6 +12846,9 @@ google-map,
   padding-left: 1em;
   border-radius: 1em;
   transition: 0.2s ease-in;
+}
+.aweb-link-species.click {
+  padding: 1em;
 }
 .aweb-link-species:hover {
   background: #3455da;

@@ -1085,11 +1085,11 @@ function getChartData($chartDataParams)
     if (!isset($chartDataParams["include_sp"])) {
         $chartDataParams["include_sp"] = false;
     }
-    $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"where `specificepithet` !='sp.'";
+    $ignoreSp = boolstr($chartDataParams["include_sp"]) ? "":"WHERE `specificepithet` !='sp.'";
     $stringDisease = "";
     switch (strtolower($chartDataParams["disease"])) {
         case "bd":
-            $tested = "`diseasetested` = 'Bd'";
+            $tested = "`diseasetested` = 'Bd' AND `genus` IS NOT NULL";
             $andTested = " AND $tested";
             if (empty($ignoreSp)) {
                 $where = $ignoreSp . " AND $tested";
@@ -1099,7 +1099,7 @@ function getChartData($chartDataParams)
             $stringDisease = "for B. d.";
             break;
         case "bsal":
-            $tested = "`diseasetested` = 'Bsal'";
+            $tested = "`diseasetested` = 'Bsal' AND `genus` IS NOT NULL";
             $andTested = " AND $tested";
             if (empty($ignoreSp)) {
                 $where = $ignoreSp . $andTested;
@@ -1110,6 +1110,11 @@ function getChartData($chartDataParams)
             break;
         default:
             $stringDisease = "for B. d. and B. sal.";
+            if (empty($ignoreSp)) {
+                $ignoreSp = " WHERE `genus` IS NOT NULL";
+            } else {
+                $ignoreSp .= " AND `genus` IS NOT NULL";
+            }
             $where = $ignoreSp;
             $tested = "";
             $andTested = "";

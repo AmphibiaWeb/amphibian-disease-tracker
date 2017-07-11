@@ -706,7 +706,10 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
               onclick="popShowRangeMap(this)"
               data-genus="#{taxonData.taxon.genus}"
               data-kml="#{taxonData.amphibiaweb?.map?.shapefile}"
-              data-species="#{taxonData.taxon.species}">
+              data-species="#{taxonData.taxon.species}"
+              data-toggle="tooltip"
+              title="View Range Map"
+              data-placement="right">
             </paper-icon-button>
           </div>
           <p>
@@ -717,6 +720,12 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
           <div class="charts-container row">
           </div>
           #{linkHtml}
+          <div class="aweb-link-species click" data-href="http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&rel-species=equals&where-genus=#{taxonData.taxon.genus.toTitleCase()}&where-species=#{taxonData.taxon.species}" data-newtab="true">
+            <span class="sciname">
+              #{taxonData.taxon.genus.toTitleCase()} #{taxonData.taxon.species}
+            </span> on AmphibiaWeb
+            <iron-icon icon="icons:open-in-new"></iron-icon>
+          </div>
         </div>
         """
         try
@@ -725,6 +734,8 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             postAppend.push saveState
             continue
         $(targetSelector).append blurb
+        bindClicks()
+        formatScientificNames(".aweb-link-species .sciname")
         if taxonData.adp.samples is 0
           stopLoad()
           delay 1000, ->

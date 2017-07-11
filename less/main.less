@@ -359,7 +359,9 @@ paper-dialog-scrollable {
     }
     &.sciname-click {
         cursor: pointer;
-        border-bottom: 1px dotted #000;
+        &:not(.no-underline) {
+            border-bottom: 1px dotted #000;
+        }
     }
 }
 
@@ -1233,6 +1235,9 @@ google-map, #global-map-container {
     padding-left:1em;
     border-radius: 1em;
     transition: .2s ease-in;
+    &.click {
+        padding: 1em;
+    }
 }
 
 .aweb-link-species:hover {
