@@ -13,6 +13,17 @@ $pid = $db->sanitize($_GET['id']);
 
 $loginStatus = getLoginState();
 
+$uid = $loginStatus['detail']['uid'];
+
+$authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
+
+if (!empty($uid)) {
+    $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+}
+
+$authorizedIntersect = "INNER JOIN ($authorizedIntersectQuery) AS authorized ON authorized.project_id = ";
+
+
 # Prep for possible async
 $start_script_timer = microtime_float();
 $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
@@ -26,7 +37,7 @@ if (toBool($_REQUEST["async"]) === true) {
             # select genus, specificepithet, count(*) as count from records_list where lower(country)='united states' group by genus, specificepithet order by genus, specificepithet
             $searchCountry = strtolower($db->sanitize($_REQUEST["country"]));
             # Test the country
-            $tQuery = "SELECT DISTINCT LOWER(country) FROM ".$db->getTable()." WHERE country IS NOT NULL";
+            $tQuery = "SELECT DISTINCT LOWER(country) FROM ".$db->getTable()." AS records $authorizedIntersect records.project_id WHERE country IS NOT NULL";
             $cr = mysqli_query($db->getLink(), $tQuery);
             if ($cr === false) {
                 returnAjax(array(
