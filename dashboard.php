@@ -59,7 +59,7 @@ if (toBool($_REQUEST["async"]) === true) {
                 ));
             }
             # Get the list
-            $query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
+            $query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` AS records $authorizedIntersect records.project_id  WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
             $r = mysqli_query($db->getLink(), $query);
             if ($r === false) {
                 returnAjax(array(
