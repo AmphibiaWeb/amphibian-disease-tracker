@@ -1069,9 +1069,23 @@ function validateCaptcha($get)
 
 function getChartData($chartDataParams)
 {
-    global $default_table, $db, $flatTable;
+    global $default_table, $db, $flatTable, $login_status;
+    $suFlag = $login_status['detail']['userdata']['su_flag'];
+    $isSu = boolstr($suFlag);
+    $uid = $login_status["detail"]["uid"];
     $mapType = "";
+    # Build the permissions intersection
+    if ($isSu !== true) {
+        $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
+        if (!empty($uid)) {
+            $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+        }
+    } else {
+        # A superuser gets to view everything
+        $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."`";
+    }
 
+    $authorizedIntersect = "INNER JOIN ($authorizedIntersectQuery) AS authorized ON authorized.project_id = ";
     /***
     * Create opportunities for several bins
     *
@@ -1127,7 +1141,7 @@ function getChartData($chartDataParams)
             # Sort by species alphabetically
             switch ($chartDataParams["sort"]) {
                 case "species":
-                    $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` $where group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
+                    $query = "select `genus`, `specificepithet`, count(*) as count from `".$flatTable->getTable()."` AS records $authorizedIntersect records.project_id $where group by `genus`, `specificepithet` order by `genus`, `specificepithet`";
                     $result = mysqli_query($flatTable->getLink(), $query);
                     if ($result === false) {
                         returnAjax(array(
@@ -1178,7 +1192,7 @@ function getChartData($chartDataParams)
                     } else {
                         $orderBy = "`genus`";
                     }
-                    $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` $where group by `genus` order by $orderBy";
+                    $query = "select `genus`,  count(*) as count from `".$flatTable->getTable()."` AS records $authorizedIntersect records.project_id $where group by `genus` order by $orderBy";
                     $result = mysqli_query($flatTable->getLink(), $query);
                     if ($result === false) {
                         returnAjax(array(
@@ -1250,9 +1264,9 @@ function getChartData($chartDataParams)
             } else {
                 $where .= " AND `diseasedetected` IS NOT NULL";
             }
-            $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where GROUP BY country ORDER BY $orderBy";
-            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where AND `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
-            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` $where AND `diseasedetected`='false' GROUP BY country ORDER BY $orderBy"; //or `diseasedetected` is null
+            $allQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` AS records $authorizedIntersect records.project_id $where GROUP BY country ORDER BY $orderBy";
+            $posQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` AS records $authorizedIntersect records.project_id $where AND `diseasedetected`='true' GROUP BY country ORDER BY $orderBy";
+            $negQuery = "SELECT `country`, count(*) as samples FROM `".$flatTable->getTable()."` AS records $authorizedIntersect records.project_id $where AND `diseasedetected`='false' GROUP BY country ORDER BY $orderBy"; //or `diseasedetected` is null
             $result = mysqli_query($flatTable->getLink(), $allQuery);
             if ($result === false) {
                 returnAjax(array(
@@ -1392,7 +1406,7 @@ function getChartData($chartDataParams)
         case "infection":
         default:
             # Sort by `disease_positive`
-            $query = "SELECT `project_id`,`project_title`,`disease_positive`, `disease_samples` FROM `$default_table`";
+            $query = "SELECT `project_id`,`project_title`,`disease_positive`, `disease_samples` FROM `$default_table` AS records $authorizedIntersect records.project_id";
             # do the query
             $db->invalidateLink();
             $result = mysqli_query($db->getLink(), $query);
