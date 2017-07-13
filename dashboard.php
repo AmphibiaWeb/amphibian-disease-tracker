@@ -480,7 +480,7 @@ if (toBool($_REQUEST["async"]) === true) {
           <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Location</paper-item>
-              <paper-item data-value="species">Taxon</paper-item>
+              <paper-item data-value="species">Taxon Group</paper-item>
               <paper-item> Infection </paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
