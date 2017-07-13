@@ -480,7 +480,7 @@ if (toBool($_REQUEST["async"]) === true) {
           <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Location</paper-item>
-              <paper-item>Taxon</paper-item>
+              <paper-item data-value="species">Taxon</paper-item>
               <paper-item> Infection </paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
@@ -489,7 +489,7 @@ if (toBool($_REQUEST["async"]) === true) {
         <div class="col-xs-12 col-md-3 col-sm-6">
           <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
-              <paper-item data-bins="location,species" data-value="samples">Samples (by genus)</paper-item>
+              <paper-item data-bins="location,species" data-value="samples">Samples</paper-item>
               <paper-item data-bins="infection,location" data-value="percent-infected">Percent infected</paper-item>
               <paper-item data-bins="location" data-value="country">Country</paper-item>
               <paper-item data-bins="species" data-value="genus">Genus</paper-item>

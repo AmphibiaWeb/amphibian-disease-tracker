@@ -1013,7 +1013,10 @@ dropdownSortEvents = ->
   doSortDisables = (el) ->
     binItem = p$(el).selectedItem
     console.log "Firing doSortDisables", binItem, el
-    allowedSortKey = $(binItem).text().trim().toLowerCase()
+    kv = $(binItem).attr "data-value"
+    if isNull kv
+      kv = $(binItem).text().trim().toLowerCase()
+    allowedSortKey = kv
     keyToSelect = 0
     hasFoundKey = false
     for item in $("paper-dropdown-menu#sort-by paper-listbox paper-item")

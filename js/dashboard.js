@@ -1002,10 +1002,14 @@ dropdownSortEvents = function() {
     _adp.hasBoundSortDisabled = true;
   }
   doSortDisables = function(el) {
-    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, l, len, ref, ref1;
+    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, kv, l, len, ref, ref1;
     binItem = p$(el).selectedItem;
     console.log("Firing doSortDisables", binItem, el);
-    allowedSortKey = $(binItem).text().trim().toLowerCase();
+    kv = $(binItem).attr("data-value");
+    if (isNull(kv)) {
+      kv = $(binItem).text().trim().toLowerCase();
+    }
+    allowedSortKey = kv;
     keyToSelect = 0;
     hasFoundKey = false;
     ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
