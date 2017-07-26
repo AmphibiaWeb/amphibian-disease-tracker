@@ -14,9 +14,14 @@
 # @author Philip Kahn
 ###
 
+try
+  domainHost = uri.o.attr("host").split(".")
+  domainHost.pop()
+  domainHost = domainHost.join(".").replace(/www\./g,"")
+  
 
 window.adminParams = new Object()
-adminParams.domain = "amphibiandisease"
+adminParams.domain = unless isNull domainHost then domainHost else "amphibiandisease"
 adminParams.apiTarget = "admin-api.php"
 adminParams.adminPageUrl = "https://#{adminParams.domain}.org/admin-page.html"
 adminParams.loginDir = "admin/"
