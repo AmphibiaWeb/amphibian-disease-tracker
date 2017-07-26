@@ -318,7 +318,7 @@ verifyLoginCredentials = (callback) ->
     else
       console.error "Invalid login credentials, redirecting to login url"
       try
-        localStorage.lastLogin = result
+        localStorage.lastLogin = JSON.stringify result
       goTo(result.login_url)
   .fail (result,status) ->
     # Throw up some warning here

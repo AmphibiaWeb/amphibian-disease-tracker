@@ -262,7 +262,7 @@ verifyLoginCredentials = function(callback) {
     } else {
       console.error("Invalid login credentials, redirecting to login url");
       try {
-        localStorage.lastLogin = result;
+        localStorage.lastLogin = JSON.stringify(result);
       } catch (undefined) {}
       return goTo(result.login_url);
     }
