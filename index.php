@@ -204,7 +204,7 @@ $loginStatus = getLoginState();
                 </iron-collapse>
               </div>
               <div class="form-group" id="taxa-input-container">
-                <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
+                <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxon filter</label>
                 <div class="col-xs-6 col-sm-9">
                   <input type="text" id="taxa-input" class="form-control submit-project-search" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
                 </div>
