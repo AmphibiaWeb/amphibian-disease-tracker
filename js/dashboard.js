@@ -745,8 +745,10 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         for (project in ref4) {
           title = ref4[project];
           tooltip = title;
-          if (title.length > 30) {
-            title = title.slice(0, 27) + "...";
+          if (window.noDefaultRender !== true) {
+            if (title.length > 30) {
+              title = title.slice(0, 27) + "...";
+            }
           }
           linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
         }

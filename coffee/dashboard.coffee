@@ -667,8 +667,9 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         """
         for project, title of taxonData.adp.projects
           tooltip = title
-          if title.length > 30
-            title = title.slice(0,27) + "..."
+          unless window.noDefaultRender is true
+            if title.length > 30
+              title = title.slice(0,27) + "..."
           linkHtml += """
           <a class="btn btn-primary newwindow project-button-link" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
             #{title}
