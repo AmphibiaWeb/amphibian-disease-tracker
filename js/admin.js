@@ -260,6 +260,10 @@ verifyLoginCredentials = function(callback) {
       _adp.isUnrestricted = result.unrestricted;
       return callback(result);
     } else {
+      console.error("Invalid login credentials, redirecting to login url");
+      try {
+        localStorage.lastLogin = result;
+      } catch (undefined) {}
       return goTo(result.login_url);
     }
   }).fail(function(result, status) {

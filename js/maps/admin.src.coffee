@@ -316,6 +316,9 @@ verifyLoginCredentials = (callback) ->
       _adp.isUnrestricted = result.unrestricted
       callback(result)
     else
+      console.error "Invalid login credentials, redirecting to login url"
+      try
+        localStorage.lastLogin = result
       goTo(result.login_url)
   .fail (result,status) ->
     # Throw up some warning here
