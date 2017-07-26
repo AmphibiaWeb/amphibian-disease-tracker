@@ -1349,7 +1349,7 @@ createOverflowMenu = ->
         <iron-icon icon="glyphicon-social:github"></iron-icon>
         Github
       </paper-item>
-        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
+        <paper-item data-href="#{uri.urlString}dashboard.php" class="click">
           Data Dashboard
         </paper-item>
       <paper-item data-function="firstLoadInstructionPrompt" data-args="true" class="click">
