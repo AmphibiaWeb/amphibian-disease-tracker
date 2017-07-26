@@ -13,6 +13,23 @@ $pid = $db->sanitize($_GET['id']);
 
 $loginStatus = getLoginState();
 
+$uid = $loginStatus['detail']['uid'];
+$suFlag = $loginStatus['detail']['userdata']['su_flag'];
+$isSu = boolstr($suFlag);
+
+if ($isSu !== true) {
+    $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
+    if (!empty($uid)) {
+        $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+    }
+} else {
+    # A superuser gets to view everything
+    $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."`";
+}
+
+$authorizedIntersect = "INNER JOIN ($authorizedIntersectQuery) AS authorized ON authorized.project_id = ";
+
+
 # Prep for possible async
 $start_script_timer = microtime_float();
 $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
@@ -26,7 +43,7 @@ if (toBool($_REQUEST["async"]) === true) {
             # select genus, specificepithet, count(*) as count from records_list where lower(country)='united states' group by genus, specificepithet order by genus, specificepithet
             $searchCountry = strtolower($db->sanitize($_REQUEST["country"]));
             # Test the country
-            $tQuery = "SELECT DISTINCT LOWER(country) FROM ".$db->getTable()." WHERE country IS NOT NULL";
+            $tQuery = "SELECT DISTINCT LOWER(country) FROM ".$db->getTable()." AS records $authorizedIntersect records.project_id WHERE country IS NOT NULL";
             $cr = mysqli_query($db->getLink(), $tQuery);
             if ($cr === false) {
                 returnAjax(array(
@@ -48,7 +65,7 @@ if (toBool($_REQUEST["async"]) === true) {
                 ));
             }
             # Get the list
-            $query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
+            $query = "SELECT genus, specificepithet, diseasedetected, count(*) as count FROM `".$db->getTable()."` AS records $authorizedIntersect records.project_id  WHERE LOWER(country)='".$searchCountry."' GROUP BY genus, specificepithet, diseasedetected ORDER BY genus, specificepithet, diseasedetected DESC";
             $r = mysqli_query($db->getLink(), $query);
             if ($r === false) {
                 returnAjax(array(
@@ -305,23 +322,23 @@ if (toBool($_REQUEST["async"]) === true) {
          * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
          ***/
         # Species count
-        $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` where genus is not null group by genus, specificepithet";
+        $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id  where genus is not null group by genus, specificepithet";
         $r = mysqli_query($db->getLink(), $query);
         $speciesCount = mysqli_num_rows($r);
         # Total samples
-        $query = "select count(*) as count from `records_list` where genus is not null";
+        $query = "select count(*) as count from `records_list` AS records $authorizedIntersect records.project_id  where genus is not null";
         $r = mysqli_query($db->getLink(), $query);
         $row = mysqli_fetch_row($r);
         $count = $row[0];
         # Country count
-        $query = "select country, count(*) as count from `records_list` where genus is not null group by country";
+        $query = "select country, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id   where genus is not null group by country";
         $r = mysqli_query($db->getLink(), $query);
         $countryCount = mysqli_num_rows($r);
         ## Top 10
         ## See
         ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
-        $queryCountryTop10N = "select `country`, count(*) as count from `records_list` where `genus` is not null group by `country` order by count desc limit 10";
-        $querySpeciesTop10N = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
+        $queryCountryTop10N = "select `country`, count(*) as count from `records_list`  AS records $authorizedIntersect records.project_id  where `genus` is not null group by `country` order by count desc limit 10";
+        $querySpeciesTop10N = "select `genus`, `specificepithet`, count(*) as count from `records_list`  AS records $authorizedIntersect records.project_id  where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
         $top10CountryTBody = array();
         $top10SpeciesTBody = array();
         $rCN = mysqli_query($db->getLink(), $queryCountryTop10N);
@@ -331,7 +348,7 @@ if (toBool($_REQUEST["async"]) === true) {
             if ($i == 0) {
                 $max = intval($row["count"]);
             }
-            $queryCountryTop10P = "select `country`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `country`='".$row["country"]."' group by `country` order by count desc limit 10";
+            $queryCountryTop10P = "select `country`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `country`='".$row["country"]."' group by `country` order by count desc limit 10";
             $rCP = mysqli_query($db->getLink(), $queryCountryTop10P);
             $rowPos = mysqli_fetch_assoc($rCP);
             $progressPositive = 100 * intval($rowPos["count"]) / $max;
@@ -346,7 +363,7 @@ if (toBool($_REQUEST["async"]) === true) {
             if ($i == 0) {
                 $max = intval($row["count"]);
             }
-            $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `genus`='".$row["genus"]."' AND `specificepithet`='".$row["specificepithet"]."'  group by `genus`, `specificepithet` order by count desc limit 10";
+            $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id   where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `genus`='".$row["genus"]."' AND `specificepithet`='".$row["specificepithet"]."'  group by `genus`, `specificepithet` order by count desc limit 10";
             $rSP = mysqli_query($db->getLink(), $querySpeciesTop10P);
             $rowPos = mysqli_fetch_assoc($rSP);
             $progressNegative = 100 * intval($row["count"]) / $max;
@@ -463,7 +480,7 @@ if (toBool($_REQUEST["async"]) === true) {
           <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
               <paper-item>Location</paper-item>
-              <paper-item>Species</paper-item>
+              <paper-item data-value="species">Taxon Group</paper-item>
               <paper-item> Infection </paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
@@ -472,11 +489,11 @@ if (toBool($_REQUEST["async"]) === true) {
         <div class="col-xs-12 col-md-3 col-sm-6">
           <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
             <paper-listbox class="dropdown-content" selected="0">
-              <paper-item data-bins="location,species">Samples</paper-item>
-              <paper-item data-bins="infection,location">Percent infected</paper-item>
-              <paper-item data-bins="location">Country</paper-item>
-              <paper-item data-bins="species">Genus</paper-item>
-              <paper-item data-bins="species">Species</paper-item>
+              <paper-item data-bins="location,species" data-value="samples">Samples</paper-item>
+              <paper-item data-bins="infection,location" data-value="percent-infected">Percent infected</paper-item>
+              <paper-item data-bins="location" data-value="country">Country</paper-item>
+              <paper-item data-bins="species" data-value="genus">Genus</paper-item>
+              <paper-item data-bins="species" data-value="species">Species</paper-item>
               <paper-item disabled>Time</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>

@@ -956,7 +956,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
 };
 
 renderNewChart = function() {
-  var chartOptions, chartType, error, key, l, len, option, ref, ref1;
+  var chartOptions, chartType, dv, error, key, l, len, option, ref, ref1;
   try {
     if (_adp.zoomChart != null) {
       _adp.zoomChart.destroy();
@@ -974,7 +974,11 @@ renderNewChart = function() {
         throw "Not Toggle";
       }
     } catch (error) {
-      chartOptions[key] = p$(option).selectedItemLabel.toLowerCase().replace(" ", "-");
+      dv = $(p$(option).selectedItem).attr("data-value");
+      if (isNull(dv)) {
+        dv = p$(option).selectedItemLabel.toLowerCase().replace(" ", "-");
+      }
+      chartOptions[key] = dv;
     }
   }
   $(".chart.dynamic-chart").remove();
@@ -998,10 +1002,14 @@ dropdownSortEvents = function() {
     _adp.hasBoundSortDisabled = true;
   }
   doSortDisables = function(el) {
-    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, l, len, ref, ref1;
+    var allowedBins, allowedBinsText, allowedSortKey, binItem, hasFoundKey, item, keyToSelect, kv, l, len, ref, ref1;
     binItem = p$(el).selectedItem;
     console.log("Firing doSortDisables", binItem, el);
-    allowedSortKey = $(binItem).text().trim().toLowerCase();
+    kv = $(binItem).attr("data-value");
+    if (isNull(kv)) {
+      kv = $(binItem).text().trim().toLowerCase();
+    }
+    allowedSortKey = kv;
     keyToSelect = 0;
     hasFoundKey = false;
     ref = $("paper-dropdown-menu#sort-by paper-listbox paper-item");
