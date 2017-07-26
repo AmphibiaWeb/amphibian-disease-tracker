@@ -1587,6 +1587,18 @@ $(function() {
     $(this).find(".action-word").text(actionWord);
     return false;
   });
+  $("#use-viewport-bounds").on("iron-change", function() {
+    if (!p$("#use-viewport-bounds").checked) {
+      console.debug("Resetting search bounds on uncheck");
+      $("#north-coordinate").val(90);
+      $("#west-coordinate").val(-180);
+      $("#south-coordinate").val(-90);
+      $("#east-coordinate").val(180);
+    } else {
+      setViewerBounds();
+    }
+    return false;
+  });
   updateViewportBounds = function() {
     if (p$("#use-viewport-bounds").checked) {
       console.info("Setting viewer bounds, checkbox is checked");

@@ -255,7 +255,7 @@ $loginStatus = getLoginState();
                           Search in map view
                         </iron-label>
                         <div class="col-xs-5 col-sm-8">
-                          <paper-toggle-button id="use-viewport-bounds" checked>Enabled</paper-toggle-button>
+                          <paper-toggle-button id="use-viewport-bounds">Enabled</paper-toggle-button>
                           <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
                         </div>
                       </div>

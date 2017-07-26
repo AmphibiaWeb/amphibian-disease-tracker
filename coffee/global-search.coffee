@@ -1491,6 +1491,17 @@ $ ->
     actionWord = unless isOpened then "Hide" else "Show"
     $(this).find(".action-word").text actionWord
     false
+  #
+  $("#use-viewport-bounds").on "iron-change", ->
+    if not p$("#use-viewport-bounds").checked
+      console.debug "Resetting search bounds on uncheck"
+      $("#north-coordinate").val 90
+      $("#west-coordinate").val -180
+      $("#south-coordinate").val -90
+      $("#east-coordinate").val 180
+    else
+      setViewerBounds()
+    false
   # Update the bounds when the viewport changes
   updateViewportBounds = ->
     if p$("#use-viewport-bounds").checked
