@@ -745,7 +745,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         for (project in ref4) {
           title = ref4[project];
           tooltip = title;
-          if (window.noDefaultRender !== true) {
+          if (noDefaultRender !== true) {
             if (title.length > 30) {
               title = title.slice(0, 27) + "...";
             }

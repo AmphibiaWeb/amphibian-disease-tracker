@@ -667,7 +667,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         """
         for project, title of taxonData.adp.projects
           tooltip = title
-          unless window.noDefaultRender is true
+          unless noDefaultRender is true
             if title.length > 30
               title = title.slice(0,27) + "..."
           linkHtml += """
