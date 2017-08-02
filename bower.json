@@ -1,6 +1,6 @@
 {
   "name": "BD Web Tracker",
-  "version": "0.13.01", 
+  "version": "0.13.2", 
   "homepage": "https://amphibiandisease.org/",
   "authors": [
     "Philip Kahn <tigerhawkvok@gmail.com>"
@@ -41,7 +41,7 @@
     "purl": "~2.3.1",
     "xmlToJSON": "metatribal/xmlToJSON#~1.1.0",
     "zeroclipboard": "^2.2.0",
-    "chart.js": "^2.5.0",
+    "chart.js": "~2.5.0",
     "paper-listbox": "PolymerElements/paper-listbox#^1.1.2"
   }
 }
