@@ -333,7 +333,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, error3, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
+      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, error3, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, tooltipPostLabel, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -426,11 +426,17 @@ getServerChart = function(chartType, chartParams) {
         }
       }
       try {
+        tooltipPostLabel = function(tooltipItems, data) {
+          switch (chartType) {
+            case "species":
+              return "Click to view the taxon data";
+            default:
+              return "Click to view the taxon breakdown";
+          }
+        };
         chartObj.options.tooltips = {
           callbacks: {
-            afterLabel: function(tooltipItems, data) {
-              return "Click to view the taxon breakdown";
-            }
+            afterLabel: tooltipPostLabel
           }
         };
       } catch (error1) {
