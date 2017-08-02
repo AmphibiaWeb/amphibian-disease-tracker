@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, customBarTooltip, customBarTooltip2, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -328,7 +328,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
+      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, error3, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -421,11 +421,22 @@ getServerChart = function(chartType, chartParams) {
         }
       }
       try {
-        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+        chartObj.options.tooltips = {
+          callbacks: {
+            label: customBarTooltip2
+          }
+        };
       } catch (error1) {
+        e = error1;
+        console.error("Couldn't custom label tooltips! " + e.message);
+        console.warn(e.stack);
+      }
+      try {
+        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+      } catch (error2) {
         try {
           uString = chartDataJs.labels.join(",");
-        } catch (error2) {
+        } catch (error3) {
           uString = "BAD_STRINGIFY";
         }
       }
@@ -573,7 +584,7 @@ getServerChart = function(chartType, chartParams) {
                   datasets: [posSamples, negSamples]
                 };
                 chartObj.data = chartData;
-                console.log("USing chart data", chartObj);
+                console.log("Using chart data", chartObj);
                 uid = JSON.stringify(chartData);
                 chartSelector = "#locale-zoom-chart";
                 chartCtx = $(chartSelector);
@@ -598,6 +609,40 @@ getServerChart = function(chartType, chartParams) {
     return false;
   });
   return false;
+};
+
+customBarTooltip = function(tooltip) {
+
+  /*
+   * Custom tooltip renderer after
+   *
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+   *
+   * Modified as per
+   * https://stackoverflow.com/a/30504672/1877527
+   */
+  var tooltipEl, tooltipHtml;
+  tooltipEl = $('#chartjs-tooltip');
+  if (!tooltip) {
+    tooltipEl.css("opacity", 0);
+    return;
+  }
+  tooltipHtml = tooltipEl.html();
+  console.debug("Got tooltip HTML:", tooltipHtml);
+  return tooltipHtml += "<br/><br/>Click to view the taxon breakdown";
+};
+
+customBarTooltip2 = function(tooltipItems, data) {
+
+  /*
+   * Custom tooltip renderer after
+   *
+   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+   *
+   * Modified as per
+   * https://stackoverflow.com/a/37552782/1877527
+   */
+  return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown";
 };
 
 fetchMiniTaxonBlurbs = function(reference) {

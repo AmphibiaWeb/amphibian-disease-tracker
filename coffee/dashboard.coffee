@@ -352,6 +352,13 @@ getServerChart = (chartType = "location", chartParams) ->
           console.warn "Couldn't set up redundant options - #{e.message}"
           console.warn e.stack
       try
+        chartObj.options.tooltips =
+          callbacks:
+            label: customBarTooltip2
+      catch e
+        console.error "Couldn't custom label tooltips! #{e.message}"
+        console.warn e.stack
+      try
         uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
       catch
         try
@@ -517,7 +524,7 @@ getServerChart = (chartType = "location", chartParams) ->
                     negSamples
                     ]
                 chartObj.data = chartData
-                console.log "USing chart data", chartObj
+                console.log "Using chart data", chartObj
                 uid = JSON.stringify chartData
                 chartSelector = "#locale-zoom-chart"
                 chartCtx = $(chartSelector)
@@ -536,6 +543,37 @@ getServerChart = (chartType = "location", chartParams) ->
     false
   false
 
+
+
+customBarTooltip = (tooltip) ->
+  ###
+  # Custom tooltip renderer after
+  #
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+  #
+  # Modified as per
+  # https://stackoverflow.com/a/30504672/1877527
+  ###
+  tooltipEl = $('#chartjs-tooltip')
+  unless tooltip
+    tooltipEl.css "opacity", 0
+    return
+  tooltipHtml = tooltipEl.html()
+  console.debug "Got tooltip HTML:", tooltipHtml
+  tooltipHtml += "<br/><br/>Click to view the taxon breakdown"
+
+
+
+customBarTooltip2 = (tooltipItems, data) ->
+  ###
+  # Custom tooltip renderer after
+  #
+  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+  #
+  # Modified as per
+  # https://stackoverflow.com/a/37552782/1877527
+  ###
+  return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown"
 
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
