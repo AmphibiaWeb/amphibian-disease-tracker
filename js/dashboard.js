@@ -654,14 +654,16 @@ dashboardDisclaimer = function(appendAfterSelector) {
         return false;
       }
       id = "dashboard-disclaimer-popover";
-      infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"top\" title=\"Please wait...\" id=\"" + id + "\">\n</paper-icon-button>";
+      infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"right\" title=\"Please wait...\" id=\"" + id + "\">\n</paper-icon-button>";
       $(appendAfter).after(infoHtml);
       $("#" + id).tooltip();
       hasAppendedInfo = true;
     }
     if (typeof callback === "function") {
       $("#" + id).removeAttr("data-toggle").tooltip("destroy");
-      callback("#" + id);
+      delay(100, function() {
+        return callback("#" + id);
+      });
     }
     return false;
   })(void 0, appendAfterSelector);
@@ -674,10 +676,11 @@ dashboardDisclaimer = function(appendAfterSelector) {
       contentHtml = "Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.";
     }
     appendInfoButton(function(selector) {
-      console.debug("AIB callback");
-      $(selector).attr("data-toggle", "popover").attr("title", "Data Disclaimer").popover({
+      console.debug("AIB callback for '" + selector + "'", $(selector));
+      $(selector).tooltip("destroy").attr("data-toggle", "popover").attr("title", "Data Disclaimer").popover({
         content: contentHtml
       });
+      console.debug("popover bound");
       return false;
     });
     console.log(contentHtml);
