@@ -583,10 +583,11 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
         return false
       id = "dashboard-disclaimer-popover"
       infoHtml = """
-      <paper-icon-button icon="icons:info" data-placement="top" title="Please wait..."
+      <paper-icon-button icon="icons:info" data-placement="top" title="Please wait..." id="#{id}">
       </paper-icon-button>
       """
       $(appendAfter).after infoHtml
+      $("##{id}").tooltip()
       hasAppendedInfo = true
     if typeof callback is "function"
       # Remove the placeholder tooltip
@@ -596,6 +597,7 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       callback("##{id}")
     false
   checkLoggedIn (result) ->
+    console.debug "CLI callback"
     if result.status is true
       # Logged in
       contentHtml = """
@@ -608,11 +610,14 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.
       """
     appendInfoButton (selector) ->
+      console.debug "AIB callback"
       $(selector)
       .attr "data-toggle", "popover"
       .attr "title", "Data Disclaimer"
       .popover {content: contentHtml}
       false
+    console.log contentHtml
+    false
   false
 
 
