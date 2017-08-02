@@ -354,11 +354,12 @@ getServerChart = (chartType = "location", chartParams) ->
           console.warn "Couldn't set up redundant options - #{e.message}"
           console.warn e.stack
       try
-        # chartObj.options.tooltips =
-        #   callbacks:
-        #     label: customBarTooltip2
-        chartObj.options.customCallbacks =
-          customTooltips: customBarTooltip
+        chartObj.options.tooltips =
+          callbacks:
+            afterLabel: "Click to view the taxon breakdown"
+            #label: customBarTooltip2
+        # chartObj.options.customCallbacks =
+        #   customTooltips: customBarTooltip
       catch e
         console.error "Couldn't custom label tooltips! #{e.message}"
         console.warn e.stack
@@ -588,7 +589,8 @@ customBarTooltip2 = (tooltipItems, data) ->
   # Updates raw text ONLY
   ###
   console.debug "Data object we're working with:", data.datasets[tooltipItems.datasetIndex]
-  return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown"
+  return [data.datasets[tooltipItems.datasetIndex].label, "", "Click to view the taxon breakdown"]
+  #return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown"
 
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->

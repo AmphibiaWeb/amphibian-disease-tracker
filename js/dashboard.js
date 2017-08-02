@@ -424,8 +424,10 @@ getServerChart = function(chartType, chartParams) {
         }
       }
       try {
-        chartObj.options.customCallbacks = {
-          customTooltips: customBarTooltip
+        chartObj.options.tooltips = {
+          callbacks: {
+            afterLabel: "Click to view the taxon breakdown"
+          }
         };
       } catch (error1) {
         e = error1;
@@ -647,7 +649,7 @@ customBarTooltip2 = function(tooltipItems, data) {
    * Updates raw text ONLY
    */
   console.debug("Data object we're working with:", data.datasets[tooltipItems.datasetIndex]);
-  return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown";
+  return [data.datasets[tooltipItems.datasetIndex].label, "", "Click to view the taxon breakdown"];
 };
 
 fetchMiniTaxonBlurbs = function(reference) {
