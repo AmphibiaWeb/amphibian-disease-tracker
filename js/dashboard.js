@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dashboardDisclaimer, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -18,7 +18,7 @@ try {
     checkLoggedIn(function(result) {
       var accountSettings, menu;
       accountSettings = result.status ? "    <paper-item data-href=\"" + uri.urlString + "admin\" class=\"click\">\n  <iron-icon icon=\"icons:settings-applications\"></iron-icon>\n  Account Settings\n</paper-item>\n<paper-item data-href=\"" + uri.urlString + "admin-login.php?q=logout\" class=\"click\">\n  <span class=\"glyphicon glyphicon-log-out\"></span>\n  Log Out\n</paper-item>" : "";
-      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"" + uri.urlString + "/dashboard.php\" class=\"click\">\n      Data Dashboard\n    </paper-item>\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"" + uri.urlString + "about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
+      menu = "<paper-menu-button id=\"header-overflow-menu\" vertical-align=\"bottom\" horizontal-offset=\"-15\" horizontal-align=\"right\" vertical-offset=\"30\">\n  <paper-icon-button icon=\"icons:more-vert\" class=\"dropdown-trigger\"></paper-icon-button>\n  <paper-menu class=\"dropdown-content\">\n    " + accountSettings + "\n    <paper-item data-href=\"https://amphibian-disease-tracker.readthedocs.org\" class=\"click\">\n      <iron-icon icon=\"icons:chrome-reader-mode\"></iron-icon>\n      Documentation\n    </paper-item>\n    <paper-item data-href=\"https://github.com/AmphibiaWeb/amphibian-disease-tracker\" class=\"click\">\n      <iron-icon icon=\"glyphicon-social:github\"></iron-icon>\n      Github\n    </paper-item>\n    <paper-item data-href=\"" + uri.urlString + "about.php\" class=\"click\">\n      About / Legal\n    </paper-item>\n  </paper-menu>\n</paper-menu-button>";
       $("#header-overflow-menu").remove();
       $("header#header-bar .logo-container + p").append(menu);
       if (!isNull(accountSettings)) {
@@ -31,7 +31,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
-  var canvas, chart, chartCtx, newId, origChartData, ref, sampleBarData, sampleData, sampleDatasets;
+  var canvas, chart, chartCtx, newId, origChartData, ref, ref1, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -113,6 +113,11 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
       chartCtx = $(canvas);
     } catch (undefined) {}
   }
+  try {
+    if (typeof ((ref1 = chartData.options) != null ? ref1.customCallbacks : void 0) !== "object") {
+      chartData.options.customCallbacks = {};
+    }
+  } catch (undefined) {}
   chart = new Chart(chartCtx, chartData);
   _adp.chart = {
     chart: chart,
@@ -328,7 +333,7 @@ getServerChart = function(chartType, chartParams) {
         };
     }
     preprocessorFn(function() {
-      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, uString, uid;
+      var chartDataJs, chartObj, chartSelector, e, error, error1, error2, error3, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, tooltipPostLabel, uString, uid;
       chartDataJs = {
         labels: Object.toArray(chartData.labels),
         datasets: datasets
@@ -421,11 +426,42 @@ getServerChart = function(chartType, chartParams) {
         }
       }
       try {
-        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+        tooltipPostLabel = function(tooltipItems, data) {
+
+          /*
+           * Custom tooltip appends after
+           *
+           * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+           *
+           * Modified as per
+           * https://stackoverflow.com/a/37552782/1877527
+           *
+           * Updates raw text ONLY
+           * See http://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-callbacks
+           */
+          switch (chartType) {
+            case "species":
+              return "Click to view the taxon data";
+            default:
+              return "Click to view the taxon breakdown";
+          }
+        };
+        chartObj.options.tooltips = {
+          callbacks: {
+            afterLabel: tooltipPostLabel
+          }
+        };
       } catch (error1) {
+        e = error1;
+        console.error("Couldn't custom label tooltips! " + e.message);
+        console.warn(e.stack);
+      }
+      try {
+        uString = chartDataJs.labels.join("," + JSON.stringify(chartDataJs.datasets));
+      } catch (error2) {
         try {
           uString = chartDataJs.labels.join(",");
-        } catch (error2) {
+        } catch (error3) {
           uString = "BAD_STRINGIFY";
         }
       }
@@ -573,7 +609,7 @@ getServerChart = function(chartType, chartParams) {
                   datasets: [posSamples, negSamples]
                 };
                 chartObj.data = chartData;
-                console.log("USing chart data", chartObj);
+                console.log("Using chart data", chartObj);
                 uid = JSON.stringify(chartData);
                 chartSelector = "#locale-zoom-chart";
                 chartCtx = $(chartSelector);
@@ -600,11 +636,77 @@ getServerChart = function(chartType, chartParams) {
   return false;
 };
 
+dashboardDisclaimer = function(appendAfterSelector) {
+  var appendInfoButton, hasAppendedInfo, id;
+  if (appendAfterSelector == null) {
+    appendAfterSelector = "main > h2 .badge";
+  }
+
+  /*
+   * Insert a disclaimer
+   */
+  hasAppendedInfo = false;
+  id = "dashboard-disclaimer-popover";
+  (appendInfoButton = function(callback, appendAfter) {
+    var infoHtml;
+    if (!hasAppendedInfo) {
+      if (!$(appendAfter).exists()) {
+        console.error("Invalid element to append disclaimer info to!");
+        return false;
+      }
+      if (!$("#" + id).exists()) {
+        infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"right\" title=\"Please wait...\" id=\"" + id + "\">\n</paper-icon-button>";
+        $(appendAfter).after(infoHtml);
+        $("#" + id).tooltip();
+      }
+      hasAppendedInfo = true;
+    }
+    if (typeof callback === "function") {
+      $("#" + id).removeAttr("data-toggle").tooltip("destroy");
+      delay(100, (function(_this) {
+        return function() {
+          return callback("#" + id);
+        };
+      })(this));
+    }
+    return false;
+  })(void 0, appendAfterSelector);
+  checkLoggedIn(function(result) {
+    var contentHtml;
+    console.debug("CLI callback");
+    if (result.status === true) {
+      contentHtml = "Data aggregated here are only for publicly available data sets, and those you have permissions to view. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private, and you lack permissions to view. These are never available in the Dashboard.\n<br/><br/>\nIf you wish to view the data as a member of the public, please either log out or view this page in a \"Private Browsing\" or \"Incognito\" mode.";
+    } else {
+      contentHtml = "Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.";
+    }
+    appendInfoButton(function(selector) {
+      if (selector == null) {
+        selector = id;
+      }
+      console.debug("AIB callback for '" + selector + "'", $(selector));
+      $(selector).tooltip("destroy").attr("data-toggle", "popover").attr("title", "Data Disclaimer").attr("data-trigger", "focus").attr("role", "button").attr("tabindex", "0").popover({
+        content: contentHtml,
+        html: true
+      });
+      console.debug("popover bound");
+      return false;
+    });
+    _adp.appendInfoButton = appendInfoButton;
+    console.log(contentHtml);
+    return false;
+  });
+  return false;
+};
+
 fetchMiniTaxonBlurbs = function(reference) {
   var collapseSelector, error, ref, selector, taxon, taxonArr, taxonObj;
   if (reference == null) {
     reference = _adp.fetchUpdatesFor;
   }
+
+  /*
+   * Called when clicking a taxon / taxon group to fetch the data async
+   */
   console.debug("Binding / setting up taxa updates for", reference);
   _adp.collapseOpener = function(collapse) {
     var elapsed;
@@ -745,8 +847,10 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
         for (project in ref4) {
           title = ref4[project];
           tooltip = title;
-          if (title.length > 30) {
-            title = title.slice(0, 27) + "...";
+          if (noDefaultRender !== true) {
+            if (title.length > 30) {
+              title = title.slice(0, 27) + "...";
+            }
           }
           linkHtml += "<a class=\"btn btn-primary newwindow project-button-link\" href=\"" + uri.urlString + "/project.php?id=" + project + "\" data-toggle=\"tooltip\" title=\"" + tooltip + "\">\n  " + title + "\n</a>";
         }
@@ -811,7 +915,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             canvas.setAttribute("id", canvasId);
             canvasContainerId = canvasId + "-container";
             chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
-            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6 col-md-4 col-lg-3 taxon-chart\">\n</div>";
             $(chartContainer).append(containerHtml);
             $("#" + canvasContainerId).get(0).appendChild(canvas);
             chartCtx = $("#" + canvasId);
@@ -1125,7 +1229,8 @@ $(function() {
       console.log("Firing selection change");
       return renderNewChart.debounce(50);
     });
-    return dropdownSortEvents();
+    dropdownSortEvents();
+    return dashboardDisclaimer();
   });
   return false;
 });

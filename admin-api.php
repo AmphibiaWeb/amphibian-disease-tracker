@@ -1578,8 +1578,10 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 );
                 if ($rawResponse2 === false) {
                     $rawResponse["error"] = error_get_last();
+                } else {
+                    $rawResponse = array_merge($resp, $rawResponse);
                 }
-                throw(new Exception("Fatal FIMS communication error 006 (No Response) [".$errorMessage."]"));
+                throw(new Exception("Fatal FIMS communication error 006 (No Response) [".$errorMessage."] ".json_encode($rawResponse)));
             }
         }
         if (empty($resp)) {

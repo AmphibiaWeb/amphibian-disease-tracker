@@ -204,7 +204,7 @@ $loginStatus = getLoginState();
                 </iron-collapse>
               </div>
               <div class="form-group" id="taxa-input-container">
-                <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxa filter</label>
+                <label for="taxa-input" class="col-xs-4 col-sm-2 control-label">Taxon filter</label>
                 <div class="col-xs-6 col-sm-9">
                   <input type="text" id="taxa-input" class="form-control submit-project-search" placeholder="e.g., Batrachoseps attenuatus. Default: No filter"/>
                 </div>
@@ -255,7 +255,7 @@ $loginStatus = getLoginState();
                           Search in map view
                         </iron-label>
                         <div class="col-xs-5 col-sm-8">
-                          <paper-toggle-button id="use-viewport-bounds" checked>Enabled</paper-toggle-button>
+                          <paper-toggle-button id="use-viewport-bounds">Enabled</paper-toggle-button>
                           <span class="glyphicon glyphicon-info-sign" title="The bounds will be computed based on the area of the map that's visible" data-toggle="tooltip"></span>
                         </div>
                       </div>

@@ -1,6 +1,8 @@
 <?php
 
-		DeviceModels::$BLACKBERRY_MODELS = array(
+		namespace WhichBrowser\Data;
+
+		DeviceModels::$BLACKBERRY_MODELS = [
 			'9000'		=> 'Bold',
 			'9600'		=> 'Bold',
 			'9650'		=> 'Bold',
@@ -46,4 +48,4 @@
 			'9860'		=> 'Torch',
 			'9630'		=> 'Tour',
 			'9981'		=> 'Porsche P'
-		);
+		];

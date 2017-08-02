@@ -24,9 +24,6 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
-          Data Dashboard
-        </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
           <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
           Documentation
@@ -126,6 +123,9 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     try
       console.log "trying again to make context"
       chartCtx = $(canvas)
+  try
+    unless typeof chartData.options?.customCallbacks is "object"
+      chartData.options.customCallbacks = {}
   chart = new Chart chartCtx, chartData
   _adp.chart =
     chart: chart
@@ -352,6 +352,30 @@ getServerChart = (chartType = "location", chartParams) ->
           console.warn "Couldn't set up redundant options - #{e.message}"
           console.warn e.stack
       try
+        tooltipPostLabel = (tooltipItems, data) ->
+          ###
+          # Custom tooltip appends after
+          #
+          # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+          #
+          # Modified as per
+          # https://stackoverflow.com/a/37552782/1877527
+          #
+          # Updates raw text ONLY
+          # See http://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-callbacks
+          ###
+          switch chartType
+            when "species"
+              return "Click to view the taxon data"
+            else
+              return "Click to view the taxon breakdown"
+        chartObj.options.tooltips =
+          callbacks:
+            afterLabel: tooltipPostLabel
+      catch e
+        console.error "Couldn't custom label tooltips! #{e.message}"
+        console.warn e.stack
+      try
         uString = chartDataJs.labels.join "," + JSON.stringify chartDataJs.datasets
       catch
         try
@@ -517,7 +541,14 @@ getServerChart = (chartType = "location", chartParams) ->
                     negSamples
                     ]
                 chartObj.data = chartData
-                console.log "USing chart data", chartObj
+                # try
+                #   chartObj.options.tooltips =
+                #     callbacks:
+                #       label: customBarTooltip2
+                # catch e
+                #   console.error "Couldn't custom label tooltips! #{e.message}"
+                #   console.warn e.stack
+                console.log "Using chart data", chartObj
                 uid = JSON.stringify chartData
                 chartSelector = "#locale-zoom-chart"
                 chartCtx = $(chartSelector)
@@ -537,8 +568,69 @@ getServerChart = (chartType = "location", chartParams) ->
   false
 
 
+dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
+  ###
+  # Insert a disclaimer
+  ###
+  hasAppendedInfo = false
+  id = "dashboard-disclaimer-popover"
+  do appendInfoButton = (callback = undefined, appendAfter = appendAfterSelector) ->
+    unless hasAppendedInfo
+      unless $(appendAfter).exists()
+        console.error "Invalid element to append disclaimer info to!"
+        return false
+      unless $("##{id}").exists()
+        infoHtml = """
+        <paper-icon-button icon="icons:info" data-placement="right" title="Please wait..." id="#{id}">
+        </paper-icon-button>
+        """
+        $(appendAfter).after infoHtml
+        $("##{id}").tooltip()
+      hasAppendedInfo = true
+    if typeof callback is "function"
+      # Remove the placeholder tooltip
+      $("##{id}")
+      .removeAttr "data-toggle"
+      .tooltip "destroy"
+      delay 100, =>
+        callback("##{id}")
+    false
+  checkLoggedIn (result) ->
+    console.debug "CLI callback"
+    if result.status is true
+      # Logged in
+      contentHtml = """
+      Data aggregated here are only for publicly available data sets, and those you have permissions to view. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private, and you lack permissions to view. These are never available in the Dashboard.
+      <br/><br/>
+      If you wish to view the data as a member of the public, please either log out or view this page in a "Private Browsing" or "Incognito" mode.
+      """
+    else
+      contentHtml = """
+      Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.
+      """
+    appendInfoButton (selector = id) ->
+      console.debug "AIB callback for '#{selector}'", $(selector)
+      $(selector)
+      .tooltip "destroy"
+      .attr "data-toggle", "popover"
+      .attr "title", "Data Disclaimer"
+      .attr "data-trigger", "focus"
+      .attr "role", "button"
+      .attr "tabindex", "0"
+      .popover {content: contentHtml, html: true}
+      console.debug "popover bound"
+      false
+    _adp.appendInfoButton = appendInfoButton
+    console.log contentHtml
+    false
+  false
+
+
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
+  ###
+  # Called when clicking a taxon / taxon group to fetch the data async
+  ###
   console.debug "Binding / setting up taxa updates for", reference
   _adp.collapseOpener = (collapse) ->
     if collapse.opened
@@ -667,8 +759,9 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
         """
         for project, title of taxonData.adp.projects
           tooltip = title
-          if title.length > 30
-            title = title.slice(0,27) + "..."
+          unless noDefaultRender is true
+            if title.length > 30
+              title = title.slice(0,27) + "..."
           linkHtml += """
           <a class="btn btn-primary newwindow project-button-link" href="#{uri.urlString}/project.php?id=#{project}" data-toggle="tooltip" title="#{tooltip}">
             #{title}
@@ -774,7 +867,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             canvasContainerId = "#{canvasId}-container"
             chartContainer = $(targetSelector).find("#taxon-blurb-#{idTaxon}").find(".charts-container").get(0)
             containerHtml = """
-            <div id="#{canvasContainerId}" class="col-xs-6">
+            <div id="#{canvasContainerId}" class="col-xs-6 col-md-4 col-lg-3 taxon-chart">
             </div>
             """
             $(chartContainer).append containerHtml
@@ -1123,4 +1216,5 @@ $ ->
       console.log "Firing selection change"
       renderNewChart.debounce 50
     dropdownSortEvents()
+    dashboardDisclaimer()
   false

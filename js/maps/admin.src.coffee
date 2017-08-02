@@ -14,9 +14,14 @@
 # @author Philip Kahn
 ###
 
+try
+  domainHost = uri.o.attr("host").split(".")
+  domainHost.pop()
+  domainHost = domainHost.join(".").replace(/www\./g,"")
+  
 
 window.adminParams = new Object()
-adminParams.domain = "amphibiandisease"
+adminParams.domain = unless isNull domainHost then domainHost else "amphibiandisease"
 adminParams.apiTarget = "admin-api.php"
 adminParams.adminPageUrl = "https://#{adminParams.domain}.org/admin-page.html"
 adminParams.loginDir = "admin/"
@@ -174,7 +179,8 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item disabled data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176" class="click">
+        <paper-item data-href="https://amphibiandisease.org/dashboard.php" class="click">
+          <iron-icon icon="icons:donut-small"></iron-icon>
           Data Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
@@ -316,6 +322,9 @@ verifyLoginCredentials = (callback) ->
       _adp.isUnrestricted = result.unrestricted
       callback(result)
     else
+      console.error "Invalid login credentials, redirecting to login url"
+      try
+        localStorage.lastLogin = JSON.stringify result
       goTo(result.login_url)
   .fail (result,status) ->
     # Throw up some warning here

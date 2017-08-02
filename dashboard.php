@@ -311,6 +311,8 @@ if (toBool($_REQUEST["async"]) === true) {
     ?>
     <h2 class="col-xs-12">
       Data Dashboard <span class="badge">ALPHA</span>
+      <br/>
+      <small>Visualize data for all <?php if($loginStatus["status"] === true) echo "authorized and "; ?>publicly accessible projects</small>
     </h2>
     <section class="col-xs-12">
       <div class="row db-summary-region">

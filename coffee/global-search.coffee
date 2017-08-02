@@ -1349,7 +1349,8 @@ createOverflowMenu = ->
         <iron-icon icon="glyphicon-social:github"></iron-icon>
         Github
       </paper-item>
-        <paper-item data-href="#{uri.urlString}/dashboard.php" class="click">
+        <paper-item data-href="#{uri.urlString}dashboard.php" class="click">
+          <iron-icon icon="icons:donut-small"></iron-icon>
           Data Dashboard
         </paper-item>
       <paper-item data-function="firstLoadInstructionPrompt" data-args="true" class="click">
@@ -1490,6 +1491,17 @@ $ ->
     # The actions are now switched, since the state just changed
     actionWord = unless isOpened then "Hide" else "Show"
     $(this).find(".action-word").text actionWord
+    false
+  #
+  $("#use-viewport-bounds").on "iron-change", ->
+    if not p$("#use-viewport-bounds").checked
+      console.debug "Resetting search bounds on uncheck"
+      $("#north-coordinate").val 90
+      $("#west-coordinate").val -180
+      $("#south-coordinate").val -90
+      $("#east-coordinate").val 180
+    else
+      setViewerBounds()
     false
   # Update the bounds when the viewport changes
   updateViewportBounds = ->
