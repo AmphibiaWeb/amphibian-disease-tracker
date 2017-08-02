@@ -869,7 +869,7 @@ fetchMiniTaxonBlurb = (taxonResult, targetSelector, isGenus = false) ->
             canvasContainerId = "#{canvasId}-container"
             chartContainer = $(targetSelector).find("#taxon-blurb-#{idTaxon}").find(".charts-container").get(0)
             containerHtml = """
-            <div id="#{canvasContainerId}" class="col-xs-6">
+            <div id="#{canvasContainerId}" class="col-xs-6 col-md-4 col-lg-3 taxon-chart">
             </div>
             """
             $(chartContainer).append containerHtml

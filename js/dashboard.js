@@ -913,7 +913,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             canvas.setAttribute("id", canvasId);
             canvasContainerId = canvasId + "-container";
             chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
-            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6\">\n</div>";
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6 col-md-4 col-lg-3 taxon-chart\">\n</div>";
             $(chartContainer).append(containerHtml);
             $("#" + canvasContainerId).get(0).appendChild(canvas);
             chartCtx = $("#" + canvasId);
