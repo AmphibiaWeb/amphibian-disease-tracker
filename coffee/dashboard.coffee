@@ -354,7 +354,7 @@ getServerChart = (chartType = "location", chartParams) ->
       try
         chartObj.options.tooltips =
           callbacks:
-            label: customBarTooltip2
+            label: customBarTooltip
       catch e
         console.error "Couldn't custom label tooltips! #{e.message}"
         console.warn e.stack
@@ -568,6 +568,7 @@ customBarTooltip = (tooltip) ->
   tooltipHtml = tooltipEl.html()
   console.debug "Got tooltip HTML:", tooltipHtml
   tooltipHtml += "<br/><br/>Click to view the taxon breakdown"
+  tooltipEl.html tooltipHtml
 
 
 
@@ -579,6 +580,8 @@ customBarTooltip2 = (tooltipItems, data) ->
   #
   # Modified as per
   # https://stackoverflow.com/a/37552782/1877527
+  #
+  # Updates raw text ONLY
   ###
   console.debug "Data object we're working with:", data.datasets[tooltipItems.datasetIndex]
   return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown"

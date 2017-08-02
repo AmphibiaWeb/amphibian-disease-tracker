@@ -423,7 +423,7 @@ getServerChart = function(chartType, chartParams) {
       try {
         chartObj.options.tooltips = {
           callbacks: {
-            label: customBarTooltip2
+            label: customBarTooltip
           }
         };
       } catch (error1) {
@@ -629,7 +629,8 @@ customBarTooltip = function(tooltip) {
   }
   tooltipHtml = tooltipEl.html();
   console.debug("Got tooltip HTML:", tooltipHtml);
-  return tooltipHtml += "<br/><br/>Click to view the taxon breakdown";
+  tooltipHtml += "<br/><br/>Click to view the taxon breakdown";
+  return tooltipEl.html(tooltipHtml);
 };
 
 customBarTooltip2 = function(tooltipItems, data) {
