@@ -576,12 +576,12 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
   # Insert a disclaimer
   ###
   hasAppendedInfo = false
+  id = "dashboard-disclaimer-popover"
   do appendInfoButton = (callback = undefined, appendAfter = appendAfterSelector) ->
     unless hasAppendedInfo
       unless $(appendAfter).exists()
         console.error "Invalid element to append disclaimer info to!"
-        return false
-      id = "dashboard-disclaimer-popover"
+        return false      
       infoHtml = """
       <paper-icon-button icon="icons:info" data-placement="right" title="Please wait..." id="#{id}">
       </paper-icon-button>
@@ -594,7 +594,7 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       $("##{id}")
       .removeAttr "data-toggle"
       .tooltip "destroy"
-      delay 100, ->
+      delay 100, =>
         callback("##{id}")
     false
   checkLoggedIn (result) ->
@@ -610,7 +610,7 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       contentHtml = """
       Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.
       """
-    appendInfoButton (selector) ->
+    appendInfoButton (selector = id) ->
       console.debug "AIB callback for '#{selector}'", $(selector)
       $(selector)
       .tooltip "destroy"
@@ -619,6 +619,7 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       .popover {content: contentHtml}
       console.debug "popover bound"
       false
+    _adp.appendInfoButton = appendInfoButton
     console.log contentHtml
     false
   false

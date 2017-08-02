@@ -637,7 +637,7 @@ getServerChart = function(chartType, chartParams) {
 };
 
 dashboardDisclaimer = function(appendAfterSelector) {
-  var appendInfoButton, hasAppendedInfo;
+  var appendInfoButton, hasAppendedInfo, id;
   if (appendAfterSelector == null) {
     appendAfterSelector = "main > h2 .badge";
   }
@@ -646,14 +646,14 @@ dashboardDisclaimer = function(appendAfterSelector) {
    * Insert a disclaimer
    */
   hasAppendedInfo = false;
+  id = "dashboard-disclaimer-popover";
   (appendInfoButton = function(callback, appendAfter) {
-    var id, infoHtml;
+    var infoHtml;
     if (!hasAppendedInfo) {
       if (!$(appendAfter).exists()) {
         console.error("Invalid element to append disclaimer info to!");
         return false;
       }
-      id = "dashboard-disclaimer-popover";
       infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"right\" title=\"Please wait...\" id=\"" + id + "\">\n</paper-icon-button>";
       $(appendAfter).after(infoHtml);
       $("#" + id).tooltip();
@@ -661,9 +661,11 @@ dashboardDisclaimer = function(appendAfterSelector) {
     }
     if (typeof callback === "function") {
       $("#" + id).removeAttr("data-toggle").tooltip("destroy");
-      delay(100, function() {
-        return callback("#" + id);
-      });
+      delay(100, (function(_this) {
+        return function() {
+          return callback("#" + id);
+        };
+      })(this));
     }
     return false;
   })(void 0, appendAfterSelector);
@@ -676,6 +678,9 @@ dashboardDisclaimer = function(appendAfterSelector) {
       contentHtml = "Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.";
     }
     appendInfoButton(function(selector) {
+      if (selector == null) {
+        selector = id;
+      }
       console.debug("AIB callback for '" + selector + "'", $(selector));
       $(selector).tooltip("destroy").attr("data-toggle", "popover").attr("title", "Data Disclaimer").popover({
         content: contentHtml
@@ -683,6 +688,7 @@ dashboardDisclaimer = function(appendAfterSelector) {
       console.debug("popover bound");
       return false;
     });
+    _adp.appendInfoButton = appendInfoButton;
     console.log(contentHtml);
     return false;
   });
