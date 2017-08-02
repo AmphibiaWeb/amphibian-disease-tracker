@@ -654,9 +654,11 @@ dashboardDisclaimer = function(appendAfterSelector) {
         console.error("Invalid element to append disclaimer info to!");
         return false;
       }
-      infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"right\" title=\"Please wait...\" id=\"" + id + "\">\n</paper-icon-button>";
-      $(appendAfter).after(infoHtml);
-      $("#" + id).tooltip();
+      if (!$("#" + id).exists()) {
+        infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"right\" title=\"Please wait...\" id=\"" + id + "\">\n</paper-icon-button>";
+        $(appendAfter).after(infoHtml);
+        $("#" + id).tooltip();
+      }
       hasAppendedInfo = true;
     }
     if (typeof callback === "function") {

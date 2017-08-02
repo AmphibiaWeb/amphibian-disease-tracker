@@ -579,12 +579,13 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       unless $(appendAfter).exists()
         console.error "Invalid element to append disclaimer info to!"
         return false
-      infoHtml = """
-      <paper-icon-button icon="icons:info" data-placement="right" title="Please wait..." id="#{id}">
-      </paper-icon-button>
-      """
-      $(appendAfter).after infoHtml
-      $("##{id}").tooltip()
+      unless $("##{id}").exists()
+        infoHtml = """
+        <paper-icon-button icon="icons:info" data-placement="right" title="Please wait..." id="#{id}">
+        </paper-icon-button>
+        """
+        $(appendAfter).after infoHtml
+        $("##{id}").tooltip()
       hasAppendedInfo = true
     if typeof callback is "function"
       # Remove the placeholder tooltip
