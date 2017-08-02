@@ -642,6 +642,7 @@ customBarTooltip2 = function(tooltipItems, data) {
    * Modified as per
    * https://stackoverflow.com/a/37552782/1877527
    */
+  console.debug("Data object we're working with:", data.datasets[tooltipItems.datasetIndex]);
   return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown";
 };
 

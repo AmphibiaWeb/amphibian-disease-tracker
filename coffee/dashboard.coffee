@@ -524,6 +524,13 @@ getServerChart = (chartType = "location", chartParams) ->
                     negSamples
                     ]
                 chartObj.data = chartData
+                # try
+                #   chartObj.options.tooltips =
+                #     callbacks:
+                #       label: customBarTooltip2
+                # catch e
+                #   console.error "Couldn't custom label tooltips! #{e.message}"
+                #   console.warn e.stack
                 console.log "Using chart data", chartObj
                 uid = JSON.stringify chartData
                 chartSelector = "#locale-zoom-chart"
@@ -573,6 +580,7 @@ customBarTooltip2 = (tooltipItems, data) ->
   # Modified as per
   # https://stackoverflow.com/a/37552782/1877527
   ###
+  console.debug "Data object we're working with:", data.datasets[tooltipItems.datasetIndex]
   return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown"
 
 
