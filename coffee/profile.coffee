@@ -32,6 +32,7 @@ try
       <paper-menu class="dropdown-content">
         #{accountSettings}
         <paper-item data-href="#{uri.urlString}dashboard.php" class="click">
+          <iron-icon icon="icons:donut-small"></iron-icon>
           Data Dashboard
         </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">

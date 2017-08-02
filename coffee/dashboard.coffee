@@ -24,9 +24,6 @@ try
       <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
       <paper-menu class="dropdown-content">
         #{accountSettings}
-        <paper-item data-href="#{uri.urlString}dashboard.php" class="click">
-          Data Dashboard
-        </paper-item>
         <paper-item data-href="https://amphibian-disease-tracker.readthedocs.org" class="click">
           <iron-icon icon="icons:chrome-reader-mode"></iron-icon>
           Documentation
@@ -581,7 +578,7 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
     unless hasAppendedInfo
       unless $(appendAfter).exists()
         console.error "Invalid element to append disclaimer info to!"
-        return false      
+        return false
       infoHtml = """
       <paper-icon-button icon="icons:info" data-placement="right" title="Please wait..." id="#{id}">
       </paper-icon-button>
