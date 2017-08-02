@@ -31,7 +31,7 @@ try {
 } catch (undefined) {}
 
 createChart = function(chartSelector, chartData, isSimpleData, appendTo, callback) {
-  var canvas, chart, chartCtx, newId, origChartData, ref, sampleBarData, sampleData, sampleDatasets;
+  var canvas, chart, chartCtx, newId, origChartData, ref, ref1, sampleBarData, sampleData, sampleDatasets;
   if (isSimpleData == null) {
     isSimpleData = false;
   }
@@ -113,7 +113,10 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
       chartCtx = $(canvas);
     } catch (undefined) {}
   }
-  chart = new Chart(chartCtx, chartData);
+  if (typeof ((ref1 = chartObj.options) != null ? ref1.customCallbacks : void 0) !== "object") {
+    chartObj.options.customCallbacks = {};
+  }
+  chart = new Chart(chartCtx, chartData, chartObj.options.customCallbacks);
   _adp.chart = {
     chart: chart,
     ctx: chartCtx
@@ -421,10 +424,8 @@ getServerChart = function(chartType, chartParams) {
         }
       }
       try {
-        chartObj.options.tooltips = {
-          callbacks: {
-            label: customBarTooltip
-          }
+        chartObj.options.customCallbacks = {
+          customTooltips: customBarTooltip
         };
       } catch (error1) {
         e = error1;
@@ -642,6 +643,8 @@ customBarTooltip2 = function(tooltipItems, data) {
    *
    * Modified as per
    * https://stackoverflow.com/a/37552782/1877527
+   *
+   * Updates raw text ONLY
    */
   console.debug("Data object we're working with:", data.datasets[tooltipItems.datasetIndex]);
   return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown";

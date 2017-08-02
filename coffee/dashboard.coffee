@@ -126,7 +126,9 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     try
       console.log "trying again to make context"
       chartCtx = $(canvas)
-  chart = new Chart chartCtx, chartData
+  unless typeof chartObj.options?.customCallbacks is "object"
+    chartObj.options.customCallbacks = {}
+  chart = new Chart chartCtx, chartData, chartObj.options.customCallbacks
   _adp.chart =
     chart: chart
     ctx: chartCtx
@@ -352,9 +354,11 @@ getServerChart = (chartType = "location", chartParams) ->
           console.warn "Couldn't set up redundant options - #{e.message}"
           console.warn e.stack
       try
-        chartObj.options.tooltips =
-          callbacks:
-            label: customBarTooltip
+        # chartObj.options.tooltips =
+        #   callbacks:
+        #     label: customBarTooltip2
+        chartObj.options.customCallbacks =
+          customTooltips: customBarTooltip
       catch e
         console.error "Couldn't custom label tooltips! #{e.message}"
         console.warn e.stack
