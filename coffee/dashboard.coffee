@@ -355,12 +355,15 @@ getServerChart = (chartType = "location", chartParams) ->
           console.warn "Couldn't set up redundant options - #{e.message}"
           console.warn e.stack
       try
+        tooltipPostLabel = (tooltipItems, data) ->
+          switch chartType
+            when "species"
+              return "Click to view the taxon data"
+            else
+              return "Click to view the taxon breakdown"
         chartObj.options.tooltips =
           callbacks:
-            afterLabel: (tooltipItems, data) -> return "Click to view the taxon breakdown"
-            #label: customBarTooltip2
-        # chartObj.options.customCallbacks =
-        #   customTooltips: customBarTooltip
+            afterLabel: tooltipPostLabel
       catch e
         console.error "Couldn't custom label tooltips! #{e.message}"
         console.warn e.stack
