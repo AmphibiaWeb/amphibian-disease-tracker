@@ -643,7 +643,7 @@ dashboardDisclaimer = function(appendAfterSelector) {
   }
 
   /*
-   *
+   * Insert a disclaimer
    */
   hasAppendedInfo = false;
   (appendInfoButton = function(callback, appendAfter) {
@@ -663,7 +663,7 @@ dashboardDisclaimer = function(appendAfterSelector) {
       callback("#" + id);
     }
     return false;
-  })(callback, appendAfterSelector);
+  })(void 0, appendAfterSelector);
   checkLoggedIn(function(result) {
     var contentHtml;
     if (result.status === true) {

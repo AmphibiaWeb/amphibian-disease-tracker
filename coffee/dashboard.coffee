@@ -573,10 +573,10 @@ getServerChart = (chartType = "location", chartParams) ->
 
 dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
   ###
-  # 
+  # Insert a disclaimer
   ###
   hasAppendedInfo = false
-  do appendInfoButton = (callback, appendAfter = appendAfterSelector) ->
+  do appendInfoButton = (callback = undefined, appendAfter = appendAfterSelector) ->
     unless hasAppendedInfo
       unless $(appendAfter).exists()
         console.error "Invalid element to append disclaimer info to!"
