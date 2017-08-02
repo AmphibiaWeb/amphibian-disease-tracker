@@ -1227,7 +1227,8 @@ $(function() {
       console.log("Firing selection change");
       return renderNewChart.debounce(50);
     });
-    return dropdownSortEvents();
+    dropdownSortEvents();
+    return dashboardDisclaimer();
   });
   return false;
 });

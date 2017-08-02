@@ -1218,4 +1218,5 @@ $ ->
       console.log "Firing selection change"
       renderNewChart.debounce 50
     dropdownSortEvents()
+    dashboardDisclaimer()
   false
