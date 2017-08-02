@@ -126,9 +126,9 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     try
       console.log "trying again to make context"
       chartCtx = $(canvas)
-  unless typeof chartObj.options?.customCallbacks is "object"
-    chartObj.options.customCallbacks = {}
-  chart = new Chart chartCtx, chartData, chartObj.options.customCallbacks
+  unless typeof chartData.options?.customCallbacks is "object"
+    chartData.options.customCallbacks = {}
+  chart = new Chart chartCtx, chartData, chartData.options.customCallbacks
   _adp.chart =
     chart: chart
     ctx: chartCtx

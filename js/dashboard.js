@@ -113,10 +113,10 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
       chartCtx = $(canvas);
     } catch (undefined) {}
   }
-  if (typeof ((ref1 = chartObj.options) != null ? ref1.customCallbacks : void 0) !== "object") {
-    chartObj.options.customCallbacks = {};
+  if (typeof ((ref1 = chartData.options) != null ? ref1.customCallbacks : void 0) !== "object") {
+    chartData.options.customCallbacks = {};
   }
-  chart = new Chart(chartCtx, chartData, chartObj.options.customCallbacks);
+  chart = new Chart(chartCtx, chartData, chartData.options.customCallbacks);
   _adp.chart = {
     chart: chart,
     ctx: chartCtx
