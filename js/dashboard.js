@@ -682,8 +682,9 @@ dashboardDisclaimer = function(appendAfterSelector) {
         selector = id;
       }
       console.debug("AIB callback for '" + selector + "'", $(selector));
-      $(selector).tooltip("destroy").attr("data-toggle", "popover").attr("title", "Data Disclaimer").popover({
-        content: contentHtml
+      $(selector).tooltip("destroy").attr("data-toggle", "popover").attr("title", "Data Disclaimer").attr("data-trigger", "focus").attr("role", "button").attr("tabindex", "0").popover({
+        content: contentHtml,
+        html: true
       });
       console.debug("popover bound");
       return false;

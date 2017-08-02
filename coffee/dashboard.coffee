@@ -616,7 +616,10 @@ dashboardDisclaimer = (appendAfterSelector = "main > h2 .badge")->
       .tooltip "destroy"
       .attr "data-toggle", "popover"
       .attr "title", "Data Disclaimer"
-      .popover {content: contentHtml}
+      .attr "data-trigger", "focus"
+      .attr "role", "button"
+      .attr "tabindex", "0"
+      .popover {content: contentHtml, html: true}
       console.debug "popover bound"
       false
     _adp.appendInfoButton = appendInfoButton
