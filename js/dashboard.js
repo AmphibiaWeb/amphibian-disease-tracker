@@ -1,4 +1,4 @@
-var adminApiTarget, apiTarget, createChart, createOverflowMenu, customBarTooltip, customBarTooltip2, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
+var adminApiTarget, apiTarget, createChart, createOverflowMenu, dashboardDisclaimer, dropdownSortEvents, fetchMiniTaxonBlurb, fetchMiniTaxonBlurbs, getRandomDataColor, getServerChart, popShowRangeMap, renderNewChart,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 apiTarget = uri.urlString + "api.php";
@@ -427,6 +427,18 @@ getServerChart = function(chartType, chartParams) {
       }
       try {
         tooltipPostLabel = function(tooltipItems, data) {
+
+          /*
+           * Custom tooltip appends after
+           *
+           * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+           *
+           * Modified as per
+           * https://stackoverflow.com/a/37552782/1877527
+           *
+           * Updates raw text ONLY
+           * See http://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-callbacks
+           */
           switch (chartType) {
             case "species":
               return "Click to view the taxon data";
@@ -624,42 +636,46 @@ getServerChart = function(chartType, chartParams) {
   return false;
 };
 
-customBarTooltip = function(tooltip) {
+dashboardDisclaimer = function() {
 
   /*
-   * Custom tooltip renderer after
    *
-   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
-   *
-   * Modified as per
-   * https://stackoverflow.com/a/30504672/1877527
    */
-  var tooltipEl, tooltipHtml;
-  tooltipEl = $('#chartjs-tooltip');
-  if (!tooltip) {
-    tooltipEl.css("opacity", 0);
-    return;
-  }
-  tooltipHtml = tooltipEl.html();
-  console.debug("Got tooltip HTML:", tooltipHtml);
-  tooltipHtml += "<br/><br/>Click to view the taxon breakdown";
-  return tooltipEl.html(tooltipHtml);
-};
-
-customBarTooltip2 = function(tooltipItems, data) {
-
-  /*
-   * Custom tooltip renderer after
-   *
-   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
-   *
-   * Modified as per
-   * https://stackoverflow.com/a/37552782/1877527
-   *
-   * Updates raw text ONLY
-   */
-  console.debug("Data object we're working with:", data.datasets[tooltipItems.datasetIndex]);
-  return [data.datasets[tooltipItems.datasetIndex].label, "", "Click to view the taxon breakdown"];
+  var appendInfoButton, hasAppendedInfo;
+  hasAppendedInfo = false;
+  (appendInfoButton = function(callback, appendAfter) {
+    var id, infoHtml;
+    if (!hasAppendedInfo) {
+      if (!$(appendAfter).exists()) {
+        console.error("Invalid element to append disclaimer info to!");
+        return false;
+      }
+      id = "dashboard-disclaimer-popover";
+      infoHtml = "<paper-icon-button icon=\"icons:info\" data-placement=\"top\" title=\"Please wait...\"\n</paper-icon-button>";
+      $(appendAfter).after(infoHtml);
+      hasAppendedInfo = true;
+    }
+    if (typeof callback === "function") {
+      $("#" + id).removeAttr("data-toggle").tooltip("destroy");
+      callback("#" + id);
+    }
+    return false;
+  })(callback, "");
+  checkLoggedIn(function(result) {
+    var contentHtml;
+    if (result.status === true) {
+      contentHtml = "Data aggregated here are only for publicly available data sets, and those you have permissions to view. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private, and you lack permissions to view. These are never available in the Dashboard.\n<br/><br/>\nIf you wish to view the data as a member of the public, please either log out or view this page in a \"Private Browsing\" or \"Incognito\" mode.";
+    } else {
+      contentHtml = "Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.";
+    }
+    return appendInfoButton(function(selector) {
+      $(selector).attr("data-toggle", "popover").attr("title", "Data Disclaimer").popover({
+        content: contentHtml
+      });
+      return false;
+    });
+  });
+  return false;
 };
 
 fetchMiniTaxonBlurbs = function(reference) {
@@ -667,6 +683,10 @@ fetchMiniTaxonBlurbs = function(reference) {
   if (reference == null) {
     reference = _adp.fetchUpdatesFor;
   }
+
+  /*
+   * Called when clicking a taxon / taxon group to fetch the data async
+   */
   console.debug("Binding / setting up taxa updates for", reference);
   _adp.collapseOpener = function(collapse) {
     var elapsed;

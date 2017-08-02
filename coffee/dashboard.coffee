@@ -356,6 +356,17 @@ getServerChart = (chartType = "location", chartParams) ->
           console.warn e.stack
       try
         tooltipPostLabel = (tooltipItems, data) ->
+          ###
+          # Custom tooltip appends after
+          #
+          # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
+          #
+          # Modified as per
+          # https://stackoverflow.com/a/37552782/1877527
+          #
+          # Updates raw text ONLY
+          # See http://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-callbacks
+          ###
           switch chartType
             when "species"
               return "Click to view the taxon data"
@@ -560,44 +571,56 @@ getServerChart = (chartType = "location", chartParams) ->
   false
 
 
-
-customBarTooltip = (tooltip) ->
+dashboardDisclaimer = ->
   ###
-  # Custom tooltip renderer after
-  #
-  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
-  #
-  # Modified as per
-  # https://stackoverflow.com/a/30504672/1877527
+  # 
   ###
-  tooltipEl = $('#chartjs-tooltip')
-  unless tooltip
-    tooltipEl.css "opacity", 0
-    return
-  tooltipHtml = tooltipEl.html()
-  console.debug "Got tooltip HTML:", tooltipHtml
-  tooltipHtml += "<br/><br/>Click to view the taxon breakdown"
-  tooltipEl.html tooltipHtml
+  hasAppendedInfo = false
+  do appendInfoButton = (callback, appendAfter = "") ->
+    unless hasAppendedInfo
+      unless $(appendAfter).exists()
+        console.error "Invalid element to append disclaimer info to!"
+        return false
+      id = "dashboard-disclaimer-popover"
+      infoHtml = """
+      <paper-icon-button icon="icons:info" data-placement="top" title="Please wait..."
+      </paper-icon-button>
+      """
+      $(appendAfter).after infoHtml
+      hasAppendedInfo = true
+    if typeof callback is "function"
+      # Remove the placeholder tooltip
+      $("##{id}")
+      .removeAttr "data-toggle"
+      .tooltip "destroy"
+      callback("##{id}")
+    false
+  checkLoggedIn (result) ->
+    if result.status is true
+      # Logged in
+      contentHtml = """
+      Data aggregated here are only for publicly available data sets, and those you have permissions to view. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private, and you lack permissions to view. These are never available in the Dashboard.
+      <br/><br/>
+      If you wish to view the data as a member of the public, please either log out or view this page in a "Private Browsing" or "Incognito" mode.
+      """
+    else
+      contentHtml = """
+      Data aggregated here are only for publicly available data sets. There may be samples in the disease repository for which the Principal Investigator(s) has marked as Private. These are never available in the Dashboard.
+      """
+    appendInfoButton (selector) ->
+      $(selector)
+      .attr "data-toggle", "popover"
+      .attr "title", "Data Disclaimer"
+      .popover {content: contentHtml}
+      false
+  false
 
-
-
-customBarTooltip2 = (tooltipItems, data) ->
-  ###
-  # Custom tooltip renderer after
-  #
-  # https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/254
-  #
-  # Modified as per
-  # https://stackoverflow.com/a/37552782/1877527
-  #
-  # Updates raw text ONLY
-  ###
-  console.debug "Data object we're working with:", data.datasets[tooltipItems.datasetIndex]
-  return [data.datasets[tooltipItems.datasetIndex].label, "", "Click to view the taxon breakdown"]
-  #return data.datasets[tooltipItems.datasetIndex].label + "<br/><br/>Click to view the taxon breakdown"
 
 
 fetchMiniTaxonBlurbs = (reference = _adp.fetchUpdatesFor) ->
+  ###
+  # Called when clicking a taxon / taxon group to fetch the data async
+  ###
   console.debug "Binding / setting up taxa updates for", reference
   _adp.collapseOpener = (collapse) ->
     if collapse.opened
