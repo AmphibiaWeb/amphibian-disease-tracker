@@ -113,10 +113,12 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
       chartCtx = $(canvas);
     } catch (undefined) {}
   }
-  if (typeof ((ref1 = chartData.options) != null ? ref1.customCallbacks : void 0) !== "object") {
-    chartData.options.customCallbacks = {};
-  }
-  chart = new Chart(chartCtx, chartData, chartData.options.customCallbacks);
+  try {
+    if (typeof ((ref1 = chartData.options) != null ? ref1.customCallbacks : void 0) !== "object") {
+      chartData.options.customCallbacks = {};
+    }
+  } catch (undefined) {}
+  chart = new Chart(chartCtx, chartData);
   _adp.chart = {
     chart: chart,
     ctx: chartCtx
@@ -426,7 +428,9 @@ getServerChart = function(chartType, chartParams) {
       try {
         chartObj.options.tooltips = {
           callbacks: {
-            afterLabel: "Click to view the taxon breakdown"
+            afterLabel: function(tooltipItems, data) {
+              return "Click to view the taxon breakdown";
+            }
           }
         };
       } catch (error1) {

@@ -126,9 +126,10 @@ createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main"
     try
       console.log "trying again to make context"
       chartCtx = $(canvas)
-  unless typeof chartData.options?.customCallbacks is "object"
-    chartData.options.customCallbacks = {}
-  chart = new Chart chartCtx, chartData, chartData.options.customCallbacks
+  try
+    unless typeof chartData.options?.customCallbacks is "object"
+      chartData.options.customCallbacks = {}
+  chart = new Chart chartCtx, chartData
   _adp.chart =
     chart: chart
     ctx: chartCtx
@@ -356,7 +357,7 @@ getServerChart = (chartType = "location", chartParams) ->
       try
         chartObj.options.tooltips =
           callbacks:
-            afterLabel: "Click to view the taxon breakdown"
+            afterLabel: (tooltipItems, data) -> return "Click to view the taxon breakdown"
             #label: customBarTooltip2
         # chartObj.options.customCallbacks =
         #   customTooltips: customBarTooltip
