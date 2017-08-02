@@ -636,12 +636,15 @@ getServerChart = function(chartType, chartParams) {
   return false;
 };
 
-dashboardDisclaimer = function() {
+dashboardDisclaimer = function(appendAfterSelector) {
+  var appendInfoButton, hasAppendedInfo;
+  if (appendAfterSelector == null) {
+    appendAfterSelector = "main > h2 .badge";
+  }
 
   /*
    *
    */
-  var appendInfoButton, hasAppendedInfo;
   hasAppendedInfo = false;
   (appendInfoButton = function(callback, appendAfter) {
     var id, infoHtml;
@@ -660,7 +663,7 @@ dashboardDisclaimer = function() {
       callback("#" + id);
     }
     return false;
-  })(callback, "");
+  })(callback, appendAfterSelector);
   checkLoggedIn(function(result) {
     var contentHtml;
     if (result.status === true) {
