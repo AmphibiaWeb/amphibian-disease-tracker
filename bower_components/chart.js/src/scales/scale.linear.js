@@ -12,7 +12,6 @@ module.exports = function(Chart) {
 	};
 
 	var LinearScale = Chart.LinearScaleBase.extend({
-
 		determineDataLimits: function() {
 			var me = this;
 			var opts = me.options;
@@ -20,8 +19,6 @@ module.exports = function(Chart) {
 			var data = chart.data;
 			var datasets = data.datasets;
 			var isHorizontal = me.isHorizontal();
-			var DEFAULT_MIN = 0;
-			var DEFAULT_MAX = 1;
 
 			function IDMatches(meta) {
 				return isHorizontal ? meta.xAxisID === me.id : meta.yAxisID === me.id;
@@ -123,9 +120,6 @@ module.exports = function(Chart) {
 					}
 				});
 			}
-
-			me.min = isFinite(me.min) ? me.min : DEFAULT_MIN;
-			me.max = isFinite(me.max) ? me.max : DEFAULT_MAX;
 
 			// Common base implementation to handle ticks.min, ticks.max, ticks.beginAtZero
 			this.handleTickRangeOptions();

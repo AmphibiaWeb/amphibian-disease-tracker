@@ -30,21 +30,13 @@ module.exports = function(Chart) {
 			if (tickOpts.min !== undefined) {
 				me.min = tickOpts.min;
 			} else if (tickOpts.suggestedMin !== undefined) {
-				if (me.min === null) {
-					me.min = tickOpts.suggestedMin;
-				} else {
-					me.min = Math.min(me.min, tickOpts.suggestedMin);
-				}
+				me.min = Math.min(me.min, tickOpts.suggestedMin);
 			}
 
 			if (tickOpts.max !== undefined) {
 				me.max = tickOpts.max;
 			} else if (tickOpts.suggestedMax !== undefined) {
-				if (me.max === null) {
-					me.max = tickOpts.suggestedMax;
-				} else {
-					me.max = Math.max(me.max, tickOpts.suggestedMax);
-				}
+				me.max = Math.max(me.max, tickOpts.suggestedMax);
 			}
 
 			if (me.min === me.max) {

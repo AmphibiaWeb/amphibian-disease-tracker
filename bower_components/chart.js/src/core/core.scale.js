@@ -19,8 +19,6 @@ module.exports = function(Chart) {
 			tickMarkLength: 10,
 			zeroLineWidth: 1,
 			zeroLineColor: 'rgba(0,0,0,0.25)',
-			zeroLineBorderDash: [],
-			zeroLineBorderDashOffset: 0.0,
 			offsetGridLines: false,
 			borderDash: [],
 			borderDashOffset: 0.0
@@ -95,7 +93,7 @@ module.exports = function(Chart) {
 		// Any function can be extended by the scale type
 
 		beforeUpdate: function() {
-			helpers.callback(this.options.beforeUpdate, [this]);
+			helpers.callCallback(this.options.beforeUpdate, [this]);
 		},
 		update: function(maxWidth, maxHeight, margins) {
 			var me = this;
@@ -148,13 +146,13 @@ module.exports = function(Chart) {
 
 		},
 		afterUpdate: function() {
-			helpers.callback(this.options.afterUpdate, [this]);
+			helpers.callCallback(this.options.afterUpdate, [this]);
 		},
 
 		//
 
 		beforeSetDimensions: function() {
-			helpers.callback(this.options.beforeSetDimensions, [this]);
+			helpers.callCallback(this.options.beforeSetDimensions, [this]);
 		},
 		setDimensions: function() {
 			var me = this;
@@ -179,29 +177,29 @@ module.exports = function(Chart) {
 			me.paddingBottom = 0;
 		},
 		afterSetDimensions: function() {
-			helpers.callback(this.options.afterSetDimensions, [this]);
+			helpers.callCallback(this.options.afterSetDimensions, [this]);
 		},
 
 		// Data limits
 		beforeDataLimits: function() {
-			helpers.callback(this.options.beforeDataLimits, [this]);
+			helpers.callCallback(this.options.beforeDataLimits, [this]);
 		},
 		determineDataLimits: helpers.noop,
 		afterDataLimits: function() {
-			helpers.callback(this.options.afterDataLimits, [this]);
+			helpers.callCallback(this.options.afterDataLimits, [this]);
 		},
 
 		//
 		beforeBuildTicks: function() {
-			helpers.callback(this.options.beforeBuildTicks, [this]);
+			helpers.callCallback(this.options.beforeBuildTicks, [this]);
 		},
 		buildTicks: helpers.noop,
 		afterBuildTicks: function() {
-			helpers.callback(this.options.afterBuildTicks, [this]);
+			helpers.callCallback(this.options.afterBuildTicks, [this]);
 		},
 
 		beforeTickToLabelConversion: function() {
-			helpers.callback(this.options.beforeTickToLabelConversion, [this]);
+			helpers.callCallback(this.options.beforeTickToLabelConversion, [this]);
 		},
 		convertTicksToLabels: function() {
 			var me = this;
@@ -210,13 +208,13 @@ module.exports = function(Chart) {
 			me.ticks = me.ticks.map(tickOpts.userCallback || tickOpts.callback);
 		},
 		afterTickToLabelConversion: function() {
-			helpers.callback(this.options.afterTickToLabelConversion, [this]);
+			helpers.callCallback(this.options.afterTickToLabelConversion, [this]);
 		},
 
 		//
 
 		beforeCalculateTickRotation: function() {
-			helpers.callback(this.options.beforeCalculateTickRotation, [this]);
+			helpers.callCallback(this.options.beforeCalculateTickRotation, [this]);
 		},
 		calculateTickRotation: function() {
 			var me = this;
@@ -259,13 +257,13 @@ module.exports = function(Chart) {
 			me.labelRotation = labelRotation;
 		},
 		afterCalculateTickRotation: function() {
-			helpers.callback(this.options.afterCalculateTickRotation, [this]);
+			helpers.callCallback(this.options.afterCalculateTickRotation, [this]);
 		},
 
 		//
 
 		beforeFit: function() {
-			helpers.callback(this.options.beforeFit, [this]);
+			helpers.callCallback(this.options.beforeFit, [this]);
 		},
 		fit: function() {
 			var me = this;
@@ -356,7 +354,7 @@ module.exports = function(Chart) {
 					} else {
 						largestTextWidth += me.options.ticks.padding;
 					}
-					minSize.width = Math.min(me.maxWidth, minSize.width + largestTextWidth);
+					minSize.width += largestTextWidth;
 					me.paddingTop = tickFont.size / 2;
 					me.paddingBottom = tickFont.size / 2;
 				}
@@ -383,7 +381,7 @@ module.exports = function(Chart) {
 		},
 
 		afterFit: function() {
-			helpers.callback(this.options.afterFit, [this]);
+			helpers.callCallback(this.options.afterFit, [this]);
 		},
 
 		// Shared Methods
@@ -505,6 +503,8 @@ module.exports = function(Chart) {
 			var tickFont = parseFontOptions(optionTicks);
 
 			var tl = gridLines.drawTicks ? gridLines.tickMarkLength : 0;
+			var borderDash = helpers.getValueOrDefault(gridLines.borderDash, globalDefaults.borderDash);
+			var borderDashOffset = helpers.getValueOrDefault(gridLines.borderDashOffset, globalDefaults.borderDashOffset);
 
 			var scaleLabelFontColor = helpers.getValueOrDefault(scaleLabel.fontColor, globalDefaults.defaultFontColor);
 			var scaleLabelFont = parseFontOptions(scaleLabel);
@@ -520,6 +520,12 @@ module.exports = function(Chart) {
 
 			if (isHorizontal) {
 				skipRatio = false;
+
+				// Only calculate the skip ratio with the half width of longestRotateLabel if we got an actual rotation
+				// See #2584
+				if (isRotated) {
+					longestRotatedLabel /= 2;
+				}
 
 				if ((longestRotatedLabel + optionTicks.autoSkipPadding) * me.ticks.length > (me.width - (me.paddingLeft + me.paddingRight))) {
 					skipRatio = 1 + Math.floor(((longestRotatedLabel + optionTicks.autoSkipPadding) * me.ticks.length) / (me.width - (me.paddingLeft + me.paddingRight)));
@@ -561,18 +567,14 @@ module.exports = function(Chart) {
 					return;
 				}
 
-				var lineWidth, lineColor, borderDash, borderDashOffset;
+				var lineWidth, lineColor;
 				if (index === (typeof me.zeroLineIndex !== 'undefined' ? me.zeroLineIndex : 0)) {
 					// Draw the first index specially
 					lineWidth = gridLines.zeroLineWidth;
 					lineColor = gridLines.zeroLineColor;
-					borderDash = gridLines.zeroLineBorderDash;
-					borderDashOffset = gridLines.zeroLineBorderDashOffset;
 				} else {
 					lineWidth = helpers.getValueAtIndexOrDefault(gridLines.lineWidth, index);
 					lineColor = helpers.getValueAtIndexOrDefault(gridLines.color, index);
-					borderDash = helpers.getValueOrDefault(gridLines.borderDash, globalDefaults.borderDash);
-					borderDashOffset = helpers.getValueOrDefault(gridLines.borderDashOffset, globalDefaults.borderDashOffset);
 				}
 
 				// Common properties

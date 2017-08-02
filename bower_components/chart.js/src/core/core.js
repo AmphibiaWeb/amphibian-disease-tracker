@@ -4,8 +4,8 @@ module.exports = function() {
 
 	// Occupy the global variable of Chart, and create a simple base class
 	var Chart = function(item, config) {
-		this.construct(item, config);
-		return this;
+		this.controller = new Chart.Controller(item, config, this);
+		return this.controller;
 	};
 
 	// Globally expose the defaults to allow for user updating/changing

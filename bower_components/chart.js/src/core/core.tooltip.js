@@ -34,13 +34,10 @@ module.exports = function(Chart) {
 		footerAlign: 'left',
 		yPadding: 6,
 		xPadding: 6,
-		caretPadding: 2,
 		caretSize: 5,
 		cornerRadius: 6,
 		multiKeyBackground: '#fff',
 		displayColors: true,
-		borderColor: 'rgba(0,0,0,0)',
-		borderWidth: 0,
 		callbacks: {
 			// Args are: (tooltipItems, data)
 			beforeTitle: helpers.noop,
@@ -70,16 +67,11 @@ module.exports = function(Chart) {
 			// Args are: (tooltipItem, data)
 			beforeLabel: helpers.noop,
 			label: function(tooltipItem, data) {
-				var label = data.datasets[tooltipItem.datasetIndex].label || '';
-
-				if (label) {
-					label += ': ';
-				}
-				label += tooltipItem.yLabel;
-				return label;
+				var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+				return datasetLabel + ': ' + tooltipItem.yLabel;
 			},
-			labelColor: function(tooltipItem, chart) {
-				var meta = chart.getDatasetMeta(tooltipItem.datasetIndex);
+			labelColor: function(tooltipItem, chartInstance) {
+				var meta = chartInstance.getDatasetMeta(tooltipItem.datasetIndex);
 				var activeElement = meta.data[tooltipItem.index];
 				var view = activeElement._view;
 				return {
@@ -179,9 +171,7 @@ module.exports = function(Chart) {
 			backgroundColor: tooltipOpts.backgroundColor,
 			opacity: 0,
 			legendColorBackground: tooltipOpts.multiKeyBackground,
-			displayColors: tooltipOpts.displayColors,
-			borderColor: tooltipOpts.borderColor,
-			borderWidth: tooltipOpts.borderWidth
+			displayColors: tooltipOpts.displayColors
 		};
 	}
 
@@ -259,7 +249,7 @@ module.exports = function(Chart) {
 	function determineAlignment(tooltip, size) {
 		var model = tooltip._model;
 		var chart = tooltip._chart;
-		var chartArea = tooltip._chart.chartArea;
+		var chartArea = tooltip._chartInstance.chartArea;
 		var xAlign = 'center';
 		var yAlign = 'center';
 
@@ -462,6 +452,7 @@ module.exports = function(Chart) {
 			var active = me._active;
 
 			var data = me._data;
+			var chartInstance = me._chartInstance;
 
 			// In the case where active.length === 0 we need to keep these at existing values for good animations
 			var alignment = {
@@ -510,7 +501,7 @@ module.exports = function(Chart) {
 
 				// Determine colors for boxes
 				helpers.each(tooltipItems, function(tooltipItem) {
-					labelColors.push(opts.callbacks.labelColor.call(me, tooltipItem, me._chart));
+					labelColors.push(opts.callbacks.labelColor.call(me, tooltipItem, chartInstance));
 				});
 
 				// Build the Text Lines
@@ -523,7 +514,7 @@ module.exports = function(Chart) {
 				// Initial positioning and colors
 				model.x = Math.round(tooltipPosition.x);
 				model.y = Math.round(tooltipPosition.y);
-				model.caretPadding = opts.caretPadding;
+				model.caretPadding = helpers.getValueOrDefault(tooltipPosition.padding, 2);
 				model.labelColors = labelColors;
 
 				// data points
@@ -557,16 +548,9 @@ module.exports = function(Chart) {
 
 			return me;
 		},
-		drawCaret: function(tooltipPoint, size) {
-			var ctx = this._chart.ctx;
+		drawCaret: function(tooltipPoint, size, opacity) {
 			var vm = this._view;
-			var caretPosition = this.getCaretPosition(tooltipPoint, size, vm);
-
-			ctx.lineTo(caretPosition.x1, caretPosition.y1);
-			ctx.lineTo(caretPosition.x2, caretPosition.y2);
-			ctx.lineTo(caretPosition.x3, caretPosition.y3);
-		},
-		getCaretPosition: function(tooltipPoint, size, vm) {
+			var ctx = this._chart.ctx;
 			var x1, x2, x3;
 			var y1, y2, y3;
 			var caretSize = vm.caretSize;
@@ -579,37 +563,35 @@ module.exports = function(Chart) {
 				height = size.height;
 
 			if (yAlign === 'center') {
-				y2 = ptY + (height / 2);
-
+				// Left or right side
 				if (xAlign === 'left') {
 					x1 = ptX;
 					x2 = x1 - caretSize;
 					x3 = x1;
-
-					y1 = y2 + caretSize;
-					y3 = y2 - caretSize;
 				} else {
 					x1 = ptX + width;
 					x2 = x1 + caretSize;
 					x3 = x1;
-
-					y1 = y2 - caretSize;
-					y3 = y2 + caretSize;
 				}
+
+				y2 = ptY + (height / 2);
+				y1 = y2 - caretSize;
+				y3 = y2 + caretSize;
 			} else {
 				if (xAlign === 'left') {
-					x2 = ptX + cornerRadius + (caretSize);
-					x1 = x2 - caretSize;
+					x1 = ptX + cornerRadius;
+					x2 = x1 + caretSize;
 					x3 = x2 + caretSize;
 				} else if (xAlign === 'right') {
-					x2 = ptX + width - cornerRadius - caretSize;
-					x1 = x2 - caretSize;
-					x3 = x2 + caretSize;
+					x1 = ptX + width - cornerRadius;
+					x2 = x1 - caretSize;
+					x3 = x2 - caretSize;
 				} else {
 					x2 = ptX + (width / 2);
 					x1 = x2 - caretSize;
 					x3 = x2 + caretSize;
 				}
+
 				if (yAlign === 'top') {
 					y1 = ptY;
 					y2 = y1 - caretSize;
@@ -618,13 +600,16 @@ module.exports = function(Chart) {
 					y1 = ptY + height;
 					y2 = y1 + caretSize;
 					y3 = y1;
-					// invert drawing order
-					var tmp = x3;
-					x3 = x1;
-					x1 = tmp;
 				}
 			}
-			return {x1: x1, x2: x2, x3: x3, y1: y1, y2: y2, y3: y3};
+
+			ctx.fillStyle = mergeOpacity(vm.backgroundColor, opacity);
+			ctx.beginPath();
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+			ctx.lineTo(x3, y3);
+			ctx.closePath();
+			ctx.fill();
 		},
 		drawTitle: function(pt, vm, ctx, opacity) {
 			var title = vm.title;
@@ -730,45 +715,8 @@ module.exports = function(Chart) {
 		},
 		drawBackground: function(pt, vm, ctx, tooltipSize, opacity) {
 			ctx.fillStyle = mergeOpacity(vm.backgroundColor, opacity);
-			ctx.strokeStyle = mergeOpacity(vm.borderColor, opacity);
-			ctx.lineWidth = vm.borderWidth;
-			var xAlign = vm.xAlign;
-			var yAlign = vm.yAlign;
-			var x = pt.x;
-			var y = pt.y;
-			var width = tooltipSize.width;
-			var height = tooltipSize.height;
-			var radius = vm.cornerRadius;
-
-			ctx.beginPath();
-			ctx.moveTo(x + radius, y);
-			if (yAlign === 'top') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x + width - radius, y);
-			ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-			if (yAlign === 'center' && xAlign === 'right') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x + width, y + height - radius);
-			ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-			if (yAlign === 'bottom') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x + radius, y + height);
-			ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-			if (yAlign === 'center' && xAlign === 'left') {
-				this.drawCaret(pt, tooltipSize);
-			}
-			ctx.lineTo(x, y + radius);
-			ctx.quadraticCurveTo(x, y, x + radius, y);
-			ctx.closePath();
-
+			helpers.drawRoundedRectangle(ctx, pt.x, pt.y, tooltipSize.width, tooltipSize.height, vm.cornerRadius);
 			ctx.fill();
-
-			if (vm.borderWidth > 0) {
-				ctx.stroke();
-			}
 		},
 		draw: function() {
 			var ctx = this._chart.ctx;
@@ -790,12 +738,12 @@ module.exports = function(Chart) {
 			// IE11/Edge does not like very small opacities, so snap to 0
 			var opacity = Math.abs(vm.opacity < 1e-3) ? 0 : vm.opacity;
 
-			// Truthy/falsey value for empty tooltip
-			var hasTooltipContent = vm.title.length || vm.beforeBody.length || vm.body.length || vm.afterBody.length || vm.footer.length;
-
-			if (this._options.enabled && hasTooltipContent) {
+			if (this._options.enabled) {
 				// Draw Background
 				this.drawBackground(pt, vm, ctx, tooltipSize, opacity);
+
+				// Draw Caret
+				this.drawCaret(pt, tooltipSize, opacity);
 
 				// Draw Title, Body, and Footer
 				pt.x += vm.xPadding;
@@ -829,17 +777,11 @@ module.exports = function(Chart) {
 			if (e.type === 'mouseout') {
 				me._active = [];
 			} else {
-				me._active = me._chart.getElementsAtEventForMode(e, options.mode, options);
+				me._active = me._chartInstance.getElementsAtEventForMode(e, options.mode, options);
 			}
 
 			// Remember Last Actives
 			changed = !helpers.arrayEquals(me._active, me._lastActive);
-
-			// If tooltip didn't change, do not handle the target event
-			if (!changed) {
-				return false;
-			}
-
 			me._lastActive = me._active;
 
 			if (options.enabled || options.custom) {

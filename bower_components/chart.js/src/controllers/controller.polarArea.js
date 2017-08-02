@@ -8,15 +8,7 @@ module.exports = function(Chart) {
 
 		scale: {
 			type: 'radialLinear',
-			angleLines: {
-				display: false
-			},
-			gridLines: {
-				circular: true
-			},
-			pointLabels: {
-				display: false
-			},
+			lineArc: true, // so that lines are circular
 			ticks: {
 				beginAtZero: true
 			}
