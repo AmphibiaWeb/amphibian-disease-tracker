@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 $print_login_state = false;
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
@@ -36,6 +37,8 @@ $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 # Check the status for any async flags we may want
 if (toBool($_REQUEST["async"]) === true) {
     # Now we can do any feedbacks needed
+    # Public API
+    header('Access-Control-Allow-Origin: *');
     switch ($_REQUEST["action"]) {
         case "country_taxon":
             # Get the taxa in a given country
