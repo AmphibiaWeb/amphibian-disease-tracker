@@ -96,6 +96,7 @@ if (toBool($_REQUEST["async"]) === true) {
             ));
             break;
         case "taxon_exists":
+            $db->setTable("records_list");
             $taxonStringParts = explode(" ", deEscape($_REQUEST["taxon"]));
             $genus = $db->sanitize(strtolower($taxonStringParts[0]));
             $species = $db->sanitize(strtolower($taxonStringParts[1]));
@@ -108,6 +109,8 @@ if (toBool($_REQUEST["async"]) === true) {
                 returnAjax(array(
                     "status"  => false,
                     "error" => "DATABASE_ERROR_1",
+                    // "query" => $query,
+                    // "dberr" => mysqli_error($db->getLink()),
                 ));
             }
             $row = mysqli_fetch_row($r);
