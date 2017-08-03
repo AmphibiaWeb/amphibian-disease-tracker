@@ -95,6 +95,34 @@ if (toBool($_REQUEST["async"]) === true) {
                 "data" => $localeTaxonData,
             ));
             break;
+        case "taxon_exists":
+            $taxonStringParts = explode(" ", deEscape($_REQUEST["taxon"]));
+            $genus = $db->sanitize(strtolower($taxonStringParts[0]));
+            $species = $db->sanitize(strtolower($taxonStringParts[1]));
+            $query = "SELECT count(*) AS count FROM `".$db->getTable()."` AS records $authorizedIntersect records.project_id  WHERE lower(`genus`) = '$genus'";
+            if (!empty($species)) {
+                $query .= " AND lower(`specificepithet`) = '$species'";
+            }
+            $r = mysqli_query($db->getLink(), $query);
+            if ($r === false) {
+                returnAjax(array(
+                    "status"  => false,
+                    "error" => "DATABASE_ERROR_1",
+                ));
+            }
+            $row = mysqli_fetch_row($r);
+            $response = array(
+                "status" => true,
+                "exists" => $row[0] > 0,
+                "taxon" => array(
+                    "provided" => deEscape($_REQUEST["taxon"]),
+                    "interpreted" => array(
+                        "genus" => $genus,
+                        "species" => $species,
+                    ),
+                ));
+            returnAjax($response);
+            break;
         case "locale_taxon":
         default:
             returnAjax(array(
