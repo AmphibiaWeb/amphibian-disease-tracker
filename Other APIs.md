@@ -1,5 +1,5 @@
 > - [Main API docs](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/)
-> - [API Authentication]
+> - [API Authentication](https://amphibian-disease-tracker.readthedocs.io/en/latest/Authenticating%20Asynchronous%20Requests/)
 > - [Other APIs](https://amphibian-disease-tracker.readthedocs.io/en/latest/Other%20APIs/)
 
 There are a few other API endpoints for data that doesn't fit nicely into [the main API files](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/).
