@@ -1,6 +1,12 @@
+> - [Main API docs](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/)
+> - [API Authentication]
+> - [Other APIs](https://amphibian-disease-tracker.readthedocs.io/en/latest/Other%20APIs/)
+
 There are a few other API endpoints for data that doesn't fit nicely into [the main API files](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/).
 
-## Dashboard API
+All responses are as `application/json`.
+
+# Dashboard API
 
 | Target | Required Parameters | Method | Response Type |
 |--------|---------------------|--------|----------|
@@ -8,7 +14,7 @@ There are a few other API endpoints for data that doesn't fit nicely into [the m
 
 Note that these results will, by default, only include **public data**. If you have access to, and wish to use, private data, be sure you're logged in and forward your credential cookies with your request.
 
-### Taxon Existence
+## Taxon Existence
 
 Provides an endpoint to check for the existence of data for a taxon in the database.
 
@@ -27,7 +33,7 @@ Valid query taxa include:
 
 See [this Gist](https://gist.github.com/tigerhawkvok/7d89af3e9bf1bbaf09653b12b8a8e159#file-insertlink-coffee-L114-L177) for a sample script that inserts a link if the taxon exists.
 
-#### Response
+### Response
 
 | Key | Value | Description |
 |-----|-------|-------------|
@@ -40,7 +46,7 @@ See [this Gist](https://gist.github.com/tigerhawkvok/7d89af3e9bf1bbaf09653b12b8a
 | `taxon -> interpreted -> species` | string | Gives the parsed species. |
 | `taxon -> interpreted -> dwc` | object | Gives the parsed taxon as per the sibling keys, but with DawrinCore labels. |
 
-#### Possible Errors
+### Possible Errors
 
 | Error | Description |
 |-------|-------------|
@@ -49,7 +55,7 @@ See [this Gist](https://gist.github.com/tigerhawkvok/7d89af3e9bf1bbaf09653b12b8a
 Note that if you want to check for the validity of the taxon, [you should instead use this endpoint](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/#validating-updating-taxa).
 
 
-### Taxa Per Country
+## Taxa Per Country
 
 Provides an endpoint to get a list of taxa present in a country.
 
@@ -58,7 +64,7 @@ Provides an endpoint to get a list of taxa present in a country.
 | `action`  | `country_taxon` | Mandatory parameter | **true** |
 | `country` | string | Case-insensitive country name, like "united states". | **true** |
 
-#### Response
+### Response
 
 | Key | Value | Description |
 |-----|-------|-------------|
@@ -72,13 +78,13 @@ Provides an endpoint to get a list of taxa present in a country.
 | `data -> [taxon] -> no_confidence` | int | Number of samples where the data are inconclusive |
 
 
-#### Possible Errors
+### Possible Errors
 
 | Error | Description |
 |-------|-------------|
 | `COUNTRY_NOT_FOUND` | Couldn't interpret the country you requested |
 | `DATABASE_ERROR_1` | Application error performing your query |
 
-### Locale Taxa
+## Locale Taxa
 
 Not yet live
