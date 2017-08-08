@@ -74,6 +74,17 @@ Find projects matching certain classes of criteria. This is the back-end that dr
 
 **TODO**
 
+## Chart Data
+
+## Taxon Data
+
+### IUCN Data
+
+You can specify getting just the IUCN subset of data.
+
+### AmphibiaWeb data
+
+You can specify fetting just the AmphibiaWeb subset of data.
 
 ## Validating / Updating Taxa
 

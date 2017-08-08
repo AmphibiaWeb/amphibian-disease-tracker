@@ -4,13 +4,12 @@
 
 There are a few other API endpoints for data that doesn't fit nicely into [the main API files](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/).
 
-All responses are as `application/json`.
 
 # Dashboard API
 
 | Target | Required Parameters | Method | Response Type |
 |--------|---------------------|--------|----------|
-| https://amphibiandisease.org/dashboard.php | `async=true` | `GET` or `POST` | `JSON` |
+| https://amphibiandisease.org/dashboard.php | `async=true` | `GET` or `POST` | `JSON` as  MIME type `application/json`|
 
 Note that these results will, by default, only include **public data**. If you have access to, and wish to use, private data, be sure you're logged in and forward your credential cookies with your request.
 
@@ -88,3 +87,4 @@ Provides an endpoint to get a list of taxa present in a country.
 ## Locale Taxa
 
 Not yet live
+
