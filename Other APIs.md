@@ -81,7 +81,7 @@ Provides an endpoint to get a list of taxa present in a country.
 
 | Error | Description |
 |-------|-------------|
-| `COUNTRY_NOT_FOUND` | Couldn't interpret the country you requested |
+| `COUNTRY_NOT_FOUND` | Couldn't interpret the country you requested. The key `countries_with_data` will list all the countries that have taxa associated with them. |
 | `DATABASE_ERROR_1` | Application error performing your query |
 
 ## Locale Taxa
