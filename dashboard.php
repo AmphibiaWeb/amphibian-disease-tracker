@@ -108,7 +108,7 @@ if (toBool($_REQUEST["async"]) === true) {
             if ($r === false) {
                 returnAjax(array(
                     "status"  => false,
-                    "error" => "DATABASE_ERROR_1",
+                    "error" => "DATABASE_ERROR_2",
                     // "query" => $query,
                     // "dberr" => mysqli_error($db->getLink()),
                 ));
@@ -122,6 +122,10 @@ if (toBool($_REQUEST["async"]) === true) {
                     "interpreted" => array(
                         "genus" => $genus,
                         "species" => $species,
+                        "dwc" => array(
+                            "genus" => $genus,
+                            "specificepithet" => $species,
+                        ),
                     ),
                 ));
             returnAjax($response);
