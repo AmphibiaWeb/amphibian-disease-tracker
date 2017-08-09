@@ -72,19 +72,71 @@ is permitted, again largely for compatibility reasons.
 
 Find projects matching certain classes of criteria. This is the back-end that drives the search on the main index page.
 
-**TODO**
+
+| Parameter | Value | Description | Required? |
+|-----------|-------|-------------|-----------|
+| `action`  | `foo` | foo | **null** |
+
+
+### Response
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `status` | boolean | **true** for successful lookup, **false** on error |
+
 
 ## Chart Data
 
+| Parameter | Value | Description | Required? |
+|-----------|-------|-------------|-----------|
+| `action`  | `foo` | foo | **null** |
+
+
+### Response
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `status` | boolean | **true** for successful lookup, **false** on error |
+
 ## Taxon Data
+
+| Parameter | Value | Description | Required? |
+|-----------|-------|-------------|-----------|
+| `action`  | `foo` | foo | **null** |
+
+### Response
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `status` | boolean | **true** for successful lookup, **false** on error |
 
 ### IUCN Data
 
 You can specify getting just the IUCN subset of data.
 
+| Parameter | Value | Description | Required? |
+|-----------|-------|-------------|-----------|
+| `action`  | `foo` | foo | **null** |
+
+### Response
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `status` | boolean | **true** for successful lookup, **false** on error |
+
 ### AmphibiaWeb data
 
 You can specify fetting just the AmphibiaWeb subset of data.
+
+| Parameter | Value | Description | Required? |
+|-----------|-------|-------------|-----------|
+| `action`  | `foo` | foo | **null** |
+
+### Response
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `status` | boolean | **true** for successful lookup, **false** on error |
 
 ## Validating / Updating Taxa
 
