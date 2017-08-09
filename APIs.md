@@ -68,22 +68,6 @@ is permitted, again largely for compatibility reasons.
 /(?i)(t[0-9a-f]+[_]?[0-9a-f]*)/
 ```
 
-## Search projects by data criteria
-
-Find projects matching certain classes of criteria. This is the back-end that drives the search on the main index page.
-
-
-| Parameter | Value | Description | Required? |
-|-----------|-------|-------------|-----------|
-| `action`  | `foo` | foo | **true** |
-
-
-### Response
-
-| Key | Value | Description |
-|-----|-------|-------------|
-| `status` | boolean | **true** for successful lookup, **false** on error |
-
 
 ## Chart Data
 
@@ -136,7 +120,7 @@ You can specify getting just the IUCN subset of data.
 
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `iucn` | foo | **true** |
+| `action`  | `iucn` | Mandatory | **true** |
 
 ### Response
 
@@ -150,7 +134,7 @@ You can specify fetting just the AmphibiaWeb subset of data.
 
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `aweb` | foo | **true** |
+| `action`  | `aweb` | Mandatory | **true** |
 
 ### Response
 
@@ -305,6 +289,26 @@ Method: `POST`
 **Note**: The `Access-Control-Allow-Origin` header is set to `*`. This may be directly accessed by JavaScript from any origin.
 
 Mandatory parameter: `perform`
+
+
+## Search projects by data criteria
+
+Find projects matching certain classes of criteria. This is the back-end that drives the search on the main index page.
+
+
+| Parameter | Value | Description | Required? |
+|-----------|-------|-------------|-----------|
+| `action`  | `advanced_project_search` | Mandatory | **true** |
+
+
+### Response
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `status` | boolean | **true** for successful lookup, **false** on error |
+
+
+
 
 ## Listing accessible projects
 
