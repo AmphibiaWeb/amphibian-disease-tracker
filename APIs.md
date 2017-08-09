@@ -68,14 +68,14 @@ is permitted, again largely for compatibility reasons.
 /(?i)(t[0-9a-f]+[_]?[0-9a-f]*)/
 ```
 
-## Project Searching
+## Search projects by data criteria
 
 Find projects matching certain classes of criteria. This is the back-end that drives the search on the main index page.
 
 
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `foo` | foo | **null** |
+| `action`  | `foo` | foo | **true** |
 
 
 ### Response
@@ -87,22 +87,42 @@ Find projects matching certain classes of criteria. This is the back-end that dr
 
 ## Chart Data
 
+Returns the semiauthorized data formatted for charts from the database.
+
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `foo` | foo | **null** |
+| `action`  | `chart` | Mandatory | **true** |
+| `bin`  | string | Controlled vocabulary `time`, `species`, `location`, or `infection` (default). Controls the grouping of the returned chart data. **Note**: `time` is currently nonfunctional. | **false** |
+| `sort`  | string | For bin `species`, "species" or "genus" (defaults to "genus").  For bin `location`, any valid column (defaults to "samples")  | **false** |
+| `disease`  | string | Controlled vocabulary `bd` or `bsal` to only include results for those diseases. Any other string or nullish returns both diseases. | **false** |
+| `include_sp`  | boolean | **true** to include undescribed species, **false** to ignore them. Default **false** | **false** |
 
 
 ### Response
 
+To see the formatted data, view the  Data Dashboard page.
+
 | Key | Value | Description |
 |-----|-------|-------------|
 | `status` | boolean | **true** for successful lookup, **false** on error |
+| `data` | `json` |  Data for the chart application |
+| `axes` | object | Subkeys `x` and `y` for axis titles |
+| `title` | string | Chart title |
+| `use_preprocessor` | boolean | If the results need a preprocessor before being run through the chart application |
+| `rows` | int | Number of data rows |
+| `format` | string | The data format, eg, "chart.js" |
+| `provided` | object | formatted provided data |
+| `full_description` | string | Description of the chart output |
+| `basedata` | `json` | Source data |
+
 
 ## Taxon Data
 
+Gets data for an individual taxon.
+
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `foo` | foo | **null** |
+| `action`  | `taxon` | Mandatory | **true** |
 
 ### Response
 
@@ -116,7 +136,7 @@ You can specify getting just the IUCN subset of data.
 
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `foo` | foo | **null** |
+| `action`  | `iucn` | foo | **true** |
 
 ### Response
 
@@ -130,7 +150,7 @@ You can specify fetting just the AmphibiaWeb subset of data.
 
 | Parameter | Value | Description | Required? |
 |-----------|-------|-------------|-----------|
-| `action`  | `foo` | foo | **null** |
+| `action`  | `aweb` | foo | **true** |
 
 ### Response
 
@@ -225,7 +245,7 @@ Sample response:
 }
 ```
 
-## Find a project
+## Find a specific project
 
 Search for a project based on criteria. This is the back-end that drives the project search on [the Project Browser page](https://amphibiandisease.org/project.php).
 
