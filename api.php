@@ -1110,7 +1110,7 @@ function getChartData($chartDataParams)
             } else {
                 $where = "where " . $tested;
             }
-            $stringDisease = "for B. d.";
+            $stringDisease = "for Bd";
             break;
         case "bsal":
             $tested = "`diseasetested` = 'Bsal' AND `genus` IS NOT NULL";
@@ -1120,10 +1120,10 @@ function getChartData($chartDataParams)
             } else {
                 $where = "where " . $tested;
             }
-            $stringDisease = "for B. sal.";
+            $stringDisease = "for Bsal";
             break;
         default:
-            $stringDisease = "for B. d. and B. sal.";
+            $stringDisease = "for Bd and Bsal";
             if (empty($ignoreSp)) {
                 $ignoreSp = " WHERE `genus` IS NOT NULL";
             } else {
