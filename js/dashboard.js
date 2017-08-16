@@ -781,7 +781,7 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
     args.push(k + "=" + (encodeURIComponent(v)));
   }
   $.get("api.php", args.join("&"), "json").done(function(result) {
-    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
+    var blurb, canvas, canvasContainerId, canvasId, chartCfg, chartContainer, chartCtx, containerHtml, countries, countryHtml, data, disease, diseaseData, e, error, error1, extraClasses, fatalData, html, i, idTaxon, iterator, l, len, len1, len2, len3, linkHtml, m, n, name, nameHtml, nameString, names, noSp, o, pieChart, postAppend, project, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, retResult, saveState, taxonData, taxonFormatted, taxonId, taxonString, testingData, title, tooltip;
     console.log("Got result", result);
     if (result.status !== true) {
       html = "<div class=\"alert alert-danger\">\n  <p>\n    <strong>Error:</strong> Couldn't fetch taxon data\n  </p>\n</div>";
@@ -915,7 +915,8 @@ fetchMiniTaxonBlurb = function(taxonResult, targetSelector, isGenus) {
             canvas.setAttribute("id", canvasId);
             canvasContainerId = canvasId + "-container";
             chartContainer = $(targetSelector).find("#taxon-blurb-" + idTaxon).find(".charts-container").get(0);
-            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"col-xs-6 col-md-4 col-lg-3 taxon-chart\">\n</div>";
+            extraClasses = window.noDefaultRender === true ? "col-xs-6 col-md-4 col-lg-3 " : "";
+            containerHtml = "<div id=\"" + canvasContainerId + "\" class=\"" + extraClasses + "taxon-chart\">\n</div>";
             $(chartContainer).append(containerHtml);
             $("#" + canvasContainerId).get(0).appendChild(canvas);
             chartCtx = $("#" + canvasId);
