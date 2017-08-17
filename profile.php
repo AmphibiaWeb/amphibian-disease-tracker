@@ -2,79 +2,79 @@
 <html>
   <head>
     <?php
-$debug = false;
+    $debug = false;
 
-if ($debug) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    error_log('Profile Browser is running in debug mode!');
-}
-
-$print_login_state = false;
-require_once 'DB_CONFIG.php';
-require_once dirname(__FILE__).'/core/core.php';
-require_once dirname(__FILE__).'/admin/async_login_handler.php';
-$db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
-
-$as_include = true;
-# The next include includes core, and DB_CONFIG, and sets up $db
-# require_once(dirname(__FILE__)."/admin-api.php");
-
-$loginStatus = getLoginState();
-
-$viewUserId = $db->sanitize($_GET['id']);
-if (empty($viewUserId) && $loginStatus["status"]) {
-    $viewUserId = $loginStatus["detail"]["userdata"]["dblink"];
-    # echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
-}
-$setUser = array("dblink" => $viewUserId);
-# echo "<!-- Setting user \n ".print_r($setUser, true) . "\n -->";
-$selfUser = new UserFunctions();
-$selfUserId = $selfUser->getHardlink();
-$viewUser = new UserFunctions($viewUserId, "dblink");
-$validUser = true;
-$userdata = array();
-$realProfileImagePath = "users/profiles/default.png";
-$realProfileImagePathXS = "users/profiles/default.png";
-$realProfileImagePathSM = "users/profiles/default.png";
-try {
-    $userdata = $viewUser->getUser($setUser);
-    if (!is_array($userdata)) {
-        $userdata = array();
+    if ($debug) {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        error_log('Profile Browser is running in debug mode!');
     }
-    if (empty($userdata["dblink"])) {
-        throw(new Exception("Bad User"));
+
+    $print_login_state = false;
+    require_once 'DB_CONFIG.php';
+    require_once dirname(__FILE__).'/core/core.php';
+    require_once dirname(__FILE__).'/admin/async_login_handler.php';
+    $db = new DBHelper($default_database, $default_sql_user, $default_sql_password, $sql_url, $default_table, $db_cols);
+
+    $as_include = true;
+    # The next include includes core, and DB_CONFIG, and sets up $db
+    # require_once(dirname(__FILE__)."/admin-api.php");
+
+    $loginStatus = getLoginState();
+
+    $viewUserId = $db->sanitize($_GET['id']);
+    if (empty($viewUserId) && $loginStatus["status"]) {
+        $viewUserId = $loginStatus["detail"]["userdata"]["dblink"];
+        # echo "<!-- ".print_r($loginStatus, true)."\n\n Using $viewUserId -->";
     }
-    $profileImagePath = "users/profiles/" . $viewUserId;
-    $extensions = array("bmp", "jpg", "jpeg", "png", "gif");
-    foreach ($extensions as $ext) {
-        $testPath = realpath($profileImagePath . "." . $ext);
-        echo "\n\n<!-- Testing path '" . $testPath . "' --> ";
-        if (file_exists($testPath)) {
-            $realProfileImagePath = $profileImagePath . "." . $ext;
-            $realProfileImagePathXS = $profileImagePath . "-xs." . $ext;
-            $realProfileImagePathSM = $profileImagePath . "-sm." . $ext;
-            break;
+    $setUser = array("dblink" => $viewUserId);
+    # echo "<!-- Setting user \n ".print_r($setUser, true) . "\n -->";
+    $selfUser = new UserFunctions();
+    $selfUserId = $selfUser->getHardlink();
+    $viewUser = new UserFunctions($viewUserId, "dblink");
+    $validUser = true;
+    $userdata = array();
+    $realProfileImagePath = "users/profiles/default.png";
+    $realProfileImagePathXS = "users/profiles/default.png";
+    $realProfileImagePathSM = "users/profiles/default.png";
+    try {
+        $userdata = $viewUser->getUser($setUser);
+        if (!is_array($userdata)) {
+            $userdata = array();
         }
+        if (empty($userdata["dblink"])) {
+            throw(new Exception("Bad User"));
+        }
+        $profileImagePath = "users/profiles/" . $viewUserId;
+        $extensions = array("bmp", "jpg", "jpeg", "png", "gif");
+        foreach ($extensions as $ext) {
+            $testPath = realpath($profileImagePath . "." . $ext);
+            echo "\n\n<!-- Testing path '" . $testPath . "' --> ";
+            if (file_exists($testPath)) {
+                $realProfileImagePath = $profileImagePath . "." . $ext;
+                $realProfileImagePathXS = $profileImagePath . "-xs." . $ext;
+                $realProfileImagePathSM = $profileImagePath . "-sm." . $ext;
+                break;
+            }
+        }
+        # else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
+        #$nameXml = $userdata["name"];
+        #$xml = new Xml();
+        #$xml->setXml($nameXml);
+        #$title = $xml->getTagContents("name");
+        $title =  (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":$viewUser->getName();
+    } catch (Exception $e) {
+        $validUser = false;
+        $title = (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":"No Such User";
     }
-    # else echo "<!-- Got data \n ".print_r($userdata, true) . "\n -->";
-    #$nameXml = $userdata["name"];
-    #$xml = new Xml();
-    #$xml->setXml($nameXml);
-    #$title = $xml->getTagContents("name");
-    $title =  (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":$viewUser->getName();
-} catch (Exception $e) {
-    $validUser = false;
-    $title = (!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search" || empty($viewUserId)) ? "User Search":"No Such User";
-}
 
 
-$isLoggedIn = $loginStatus['status'];
-$isPublic = !$isLoggedIn;
-$isMember = $isLoggedIn;
-$isCollaborator = false;
+    $isLoggedIn = $loginStatus['status'];
+    $isPublic = !$isLoggedIn;
+    $isMember = $isLoggedIn;
+    $isCollaborator = false;
 
-       ?>
+        ?>
     <title>Profile - <?php echo $title; ?></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8"/>
@@ -226,114 +226,114 @@ $isCollaborator = false;
     </header>
     <main>
       <?php
-         if ($validUser && !(!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search")) {
-             $isViewingSelf = $viewUserId == $selfUserId;
-             # Helper setup
-             $baseStructuredData = array(
-                 "place" => array(
-                     "name" => "",
-                     "street_number" => "",
-                     "street" => "",
-                     "country_code" => "",
-                     "zip" => "",
-                     "department" => "",
-                     "department_phone" => "",
-                 ),
-                 "social" => array(
-                     "twitter" => "",
-                     "google_plus" => "",
-                     "linkedin" => "",
-                     "facebook" => "",
-                     "other" => array(),
-                 ),
-                 "profile" => "",
-                 "privacy" => array(
-                     "phone" => array(
-                         "public" => false,
-                         "members" => false,
-                         "collaborators" => false,
-                     ),
-                     "department_phone" => array(
-                         "public" => false,
-                         "members" => false,
-                         "collaborators" => false,
-                     ),
-                     "email" => array(
-                         "public" => false,
-                         "members" => false,
-                         "collaborators" => false,
-                     ),
-                 ),
+        if ($validUser && !(!empty($_REQUEST["search"]) || $_REQUEST["mode"] == "search")) {
+            $isViewingSelf = $viewUserId == $selfUserId;
+            # Helper setup
+            $baseStructuredData = array(
+                "place" => array(
+                    "name" => "",
+                    "street_number" => "",
+                    "street" => "",
+                    "country_code" => "",
+                    "zip" => "",
+                    "department" => "",
+                    "department_phone" => "",
+                ),
+                "social" => array(
+                    "twitter" => "",
+                    "google_plus" => "",
+                    "linkedin" => "",
+                    "facebook" => "",
+                    "other" => array(),
+                ),
+                "profile" => "",
+                "privacy" => array(
+                    "phone" => array(
+                        "public" => false,
+                        "members" => false,
+                        "collaborators" => false,
+                    ),
+                    "department_phone" => array(
+                        "public" => false,
+                        "members" => false,
+                        "collaborators" => false,
+                    ),
+                    "email" => array(
+                        "public" => false,
+                        "members" => false,
+                        "collaborators" => false,
+                    ),
+                ),
 
-             );
-             # Fetch the structured data for the profile
-             $structuredData = $baseStructuredData;
-             # Fetch and overwrite keys
-             $profile = $viewUser->getProfile();
-             if (is_array($profile)) {
-                 $structuredData = array_merge($structuredData, $profile);
-             }
-             $place = $structuredData["place"];
-             $social = $structuredData["social"];
-             $bio = $structuredData["profile"];
-             $privacyConfig = $structuredData["privacy"];
-             # Helper captcha function
-             $hasIncludedCaptcha = false;
-             require_once 'admin/CONFIG.php';
-             function getCaptchaData($dataType = "email")
-             {
-                 /***
-                  *
-                  ***/
-                 global $hasIncludedCaptcha, $recaptcha_public_key;
-                 if (!$hasIncludedCaptcha) {
-                     echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
-                     $hasIncludedCaptcha = true;
-                 }
-                 $html = '<div class="g-recaptcha col-xs-8" data-sitekey="'.$recaptcha_public_key.'" data-callback="renderCaptchas" data-type="'.$dataType.'"></div>';
-                 return $html;
-             }
+            );
+            # Fetch the structured data for the profile
+            $structuredData = $baseStructuredData;
+            # Fetch and overwrite keys
+            $profile = $viewUser->getProfile();
+            if (is_array($profile)) {
+                $structuredData = array_merge($structuredData, $profile);
+            }
+            $place = $structuredData["place"];
+            $social = $structuredData["social"];
+            $bio = $structuredData["profile"];
+            $privacyConfig = $structuredData["privacy"];
+            # Helper captcha function
+            $hasIncludedCaptcha = false;
+            require_once 'admin/CONFIG.php';
+            function getCaptchaData($dataType = "email")
+            {
+                /***
+                 *
+                 ***/
+                global $hasIncludedCaptcha, $recaptcha_public_key;
+                if (!$hasIncludedCaptcha) {
+                    echo '<script src="https://www.google.com/recaptcha/api.js" async defer></script>';
+                    $hasIncludedCaptcha = true;
+                }
+                $html = '<div class="g-recaptcha col-xs-8" data-sitekey="'.$recaptcha_public_key.'" data-callback="renderCaptchas" data-type="'.$dataType.'"></div>';
+                return $html;
+            }
 
-             # Helper function
-             function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false)
-             {
-                 /***
-                  * Get a given public_profile element type and return
-                  * it, based on context.
-                  ***/
-                 global $isViewingSelf;
-                 # Title case and replace _ with " " on fillType
-                 $fillType = ucwords($fillType);
-                 $dataSource = str_replace(" ", "_", strtolower($fillType));
-                 $addClass = " " . str_replace(" ", "-", strtolower($fillType));
-                 $emptyFill = false;
-                 if (empty($fill)) {
-                     $emptyFill = true;
-                     if (!$isViewingSelf) {
-                         $fill = "Not Provided";
-                     }
-                     $class .= " no-data-provided";
-                 }
-                 $class .= $addClass;
-                 $requiredText = $required ? "required" : "";
-                 if ($isViewingSelf && !$forceReadOnly) {
-                     # Should be an editable field
-                     $elType = "paper-input";
-                     if (strpos($class, "phone") !== false) {
-                         $elType = "gold-phone-input";
-                     }
-                     if (strpos($class, "zip") !== false) {
-                         $elType = "gold-zip-input";
-                     }
-                     if (strpos($class, "google_plus") !== false) {
-                         $fill = str_replace(" ", "+", $fill);
-                     }
-                     if (strpos($class, "address") === false) {
-                         $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource' $requiredText></$elType></div>";
-                     } else {
-                         # Address input
-                         global $place;
-                         $element = "<div class='profile-input profile-data row address street-number'>
+            # Helper function
+            function getElement($fillType, $fill = "", $class = "row", $forceReadOnly = false, $required = false)
+            {
+                /***
+                 * Get a given public_profile element type and return
+                 * it, based on context.
+                 ***/
+                global $isViewingSelf;
+                # Title case and replace _ with " " on fillType
+                $fillType = ucwords($fillType);
+                $dataSource = str_replace(" ", "_", strtolower($fillType));
+                $addClass = " " . str_replace(" ", "-", strtolower($fillType));
+                $emptyFill = false;
+                if (empty($fill)) {
+                    $emptyFill = true;
+                    if (!$isViewingSelf) {
+                        $fill = "Not Provided";
+                    }
+                    $class .= " no-data-provided";
+                }
+                $class .= $addClass;
+                $requiredText = $required ? "required" : "";
+                if ($isViewingSelf && !$forceReadOnly) {
+                    # Should be an editable field
+                    $elType = "paper-input";
+                    if (strpos($class, "phone") !== false) {
+                        $elType = "gold-phone-input";
+                    }
+                    if (strpos($class, "zip") !== false) {
+                        $elType = "gold-zip-input";
+                    }
+                    if (strpos($class, "google_plus") !== false) {
+                        $fill = str_replace(" ", "+", $fill);
+                    }
+                    if (strpos($class, "address") === false) {
+                        $element = "<div class='profile-input profile-data $class' data-value='$fill'><$elType class='user-input col-xs-12' value='$fill' label='$fillType' auto-validate data-source='$dataSource' $requiredText></$elType></div>";
+                    } else {
+                        # Address input
+                        global $place;
+                        $element = "<div class='profile-input profile-data row address street-number'>
   <paper-input class='user-input col-xs-12'
                type='number'
 value='".$place["street_number"]."'
@@ -362,98 +362,98 @@ value='".$place["zip"]."'
                required
                auto-validate></gold-zip-input>
 </div>";
-                     }
-                 } else {
-                     # Not viewing self
-                     if (strpos($class, "social") !== false) {
-                         if (!$emptyFill) {
-                             $link = $fill;
-                             $link = str_replace(" ", "+", $link);
-                             if (strpos($class, "facebook") !== false) {
-                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } elseif (strpos($class, "google-plus") !== false) {
-                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:google-plus" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } elseif (strpos($class, "twitter") !== false) {
-                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:twitter" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } elseif (strpos($class, "linkedin") !== false) {
-                                 $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:linkedin" data-href="'.$link.'" newtab="true"></paper-fab>';
-                             } else {
-                                 $icon = "";
-                             }
-                             $element = "<div class='profile-bio-group profile-data social-inline $class'>$icon</div>";
-                         }
-                     } else {
-                         # Not social
-                         # Some special cases
-                         if (strpos($class, "phone") !== false) {
-                             # Wrap in phone wrapper
-                             $fill = "<span class='phone-number col-xs-8'>$fill</span>";
-                         }
-                         $fillKey = strtolower(str_replace(" ", "_", $fillType));
-                         global $privacyConfig, $isCollaborator, $isMember, $isPublic;
-                         if (array_key_exists($fillKey, $privacyConfig)) {
-                             # We need to respect privacy settings
-                             $dataClass = strtolower($fillType) == "email" ? "col-xs-5":"col-xs-8";
-                             $button = strtolower($fillType) == "email" ? "<paper-fab mini icon='communication:email' class='materialblue do-mailto col-xs-3' data-email='$fill'></paper-fab>":"";
-                             if ($isCollaborator) {
-                                 $willShare = $privacyConfig[$fillKey]["collaborator"];
-                                 if ($willShare) {
-                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
-                                 }
-                             } elseif ($isMember) {
-                                 $willShare = $privacyConfig[$fillKey]["member"];
-                                 if ($willShare) {
-                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
-                                 }
-                             } else {
-                                 # Public
-                                 $willShare = $privacyConfig[$fillKey]["public"];
-                                 if ($willShare) {
-                                     # Hide behind a captcha
-                                     if (!$emptyFill) {
-                                         $fill = getCaptchaData($fillKey);
-                                     }
-                                     $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label>$fill</div>";
-                                 }
-                             }
-                             if (!$willShare) {
-                                 $element = "";
-                             }
-                         } else {
-                             # General case, not a special element
-                             $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
-                         }
-                     }
-                 }
-                 return $element;
-             }
-
-             # Set up terms
-             if ($isViewingSelf) {
-                 $title = "You ($title)";
-                 $titlePossessive = "Your";
-             } else {
-                 $titlePossessive = $title . "'s";
-             }
-             function getPublishableData()
-             {
-                 global $structuredData, $privacyConfig, $isCollaborator, $isMember, $isPublic;
-                 $publishedStructuredData = $structuredData;
-                 foreach ($privacyConfig as $category=>$config) {
-                     # Check permissions
-                     if ($isCollaborator) {
-                         $willShare = $config["collaborator"];
-                     } elseif ($isMember) {
-                         $willShare = $config["member"];
-                     } else {
-                         $willShare = $config["public"];
-                     }
-                     if (!$willShare) {
-                         unset($publishedStructuredData["place"][$category]);
-                     }
-                 }
-                 return $publishedStructuredData;
-             } ?>
+                    }
+                } else {
+                    # Not viewing self
+                    if (strpos($class, "social") !== false) {
+                        if (!$emptyFill) {
+                            $link = $fill;
+                            $link = str_replace(" ", "+", $link);
+                            if (strpos($class, "facebook") !== false) {
+                                $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:facebook" data-href="'.$link.'" newtab="true"></paper-fab>';
+                            } elseif (strpos($class, "google-plus") !== false) {
+                                $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:google-plus" data-href="'.$link.'" newtab="true"></paper-fab>';
+                            } elseif (strpos($class, "twitter") !== false) {
+                                $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:twitter" data-href="'.$link.'" newtab="true"></paper-fab>';
+                            } elseif (strpos($class, "linkedin") !== false) {
+                                $icon = '    <paper-fab mini class="click glyphicon" icon="glyphicon-social:linkedin" data-href="'.$link.'" newtab="true"></paper-fab>';
+                            } else {
+                                $icon = "";
+                            }
+                            $element = "<div class='profile-bio-group profile-data social-inline $class'>$icon</div>";
+                        }
+                    } else {
+                        # Not social
+                        # Some special cases
+                        if (strpos($class, "phone") !== false) {
+                            # Wrap in phone wrapper
+                            $fill = "<span class='phone-number col-xs-8'>$fill</span>";
+                        }
+                        $fillKey = strtolower(str_replace(" ", "_", $fillType));
+                        global $privacyConfig, $isCollaborator, $isMember, $isPublic;
+                        if (array_key_exists($fillKey, $privacyConfig)) {
+                            # We need to respect privacy settings
+                            $dataClass = strtolower($fillType) == "email" ? "col-xs-5":"col-xs-8";
+                            $button = strtolower($fillType) == "email" ? "<paper-fab mini icon='communication:email' class='materialblue do-mailto col-xs-3' data-email='$fill'></paper-fab>":"";
+                            if ($isCollaborator) {
+                                $willShare = $privacyConfig[$fillKey]["collaborator"];
+                                if ($willShare) {
+                                    $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
+                                }
+                            } elseif ($isMember) {
+                                $willShare = $privacyConfig[$fillKey]["member"];
+                                if ($willShare) {
+                                    $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='$dataClass'>$fill</p>$button</div>";
+                                }
+                            } else {
+                                # Public
+                                $willShare = $privacyConfig[$fillKey]["public"];
+                                if ($willShare) {
+                                    # Hide behind a captcha
+                                    if (!$emptyFill) {
+                                        $fill = getCaptchaData($fillKey);
+                                    }
+                                    $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label>$fill</div>";
+                                }
+                            }
+                            if (!$willShare) {
+                                $element = "";
+                            }
+                        } else {
+                            # General case, not a special element
+                            $element = "<div class='profile-bio-group profile-data $class'><label class='col-xs-4 capitalize'>$fillType</label><p class='col-xs-8'>$fill</p></div>";
+                        }
+                    }
+                }
+                return $element;
+            }
+            
+            # Set up terms
+            if ($isViewingSelf) {
+                $title = "You ($title)";
+                $titlePossessive = "Your";
+            } else {
+                $titlePossessive = $title . "'s";
+            }
+            function getPublishableData()
+            {
+                global $structuredData, $privacyConfig, $isCollaborator, $isMember, $isPublic;
+                $publishedStructuredData = $structuredData;
+                foreach ($privacyConfig as $category=>$config) {
+                    # Check permissions
+                    if ($isCollaborator) {
+                        $willShare = $config["collaborator"];
+                    } elseif ($isMember) {
+                        $willShare = $config["member"];
+                    } else {
+                        $willShare = $config["public"];
+                    }
+                    if (!$willShare) {
+                        unset($publishedStructuredData["place"][$category]);
+                    }
+                }
+                return $publishedStructuredData;
+            } ?>
       <h1 id="title">User Profile - <?php echo $title ?></h1>
       <section id="main-body" class="row">
         <paper-fab id="enter-search" icon="icons:search" class="click" data-href="?mode=search" data-toggle="tooltip" title="Search Profiles"></paper-fab>
@@ -479,8 +479,8 @@ value='".$place["zip"]."'
             </div>
           </div>
         </div>
-        <?php 
-             } ?>
+        <?php
+            } ?>
         <div id="basic-profile" class="col-xs-12 col-md-6 profile-region" data-source="social">
           <h3>Basic Profile</h3>
           <style type="text/css">
@@ -488,9 +488,14 @@ value='".$place["zip"]."'
             background: url('<?php echo $viewUser->getuserPicture(); ?>') no-repeat center center;
             }
           </style>
+            <?php
+            if ($viewUser->meetsRestrictionCriteria() && $isViewingSelf) {
+                ?>
           <div id="upload-container-section" hidden>
 
           </div>
+            <?php
+            } ?>
           <div class="row profile-image-container">
             <img class="profile-image img-responsive"
                  id="user-profile-image"
@@ -498,24 +503,24 @@ value='".$place["zip"]."'
                  srcset="<?php echo $realProfileImagePath; ?> 1024w, <?php echo $realProfileImagePathSM; ?> 512w, <?php echo $realProfileImagePathXS; ?> 128w"
                  alt="Profile image" />
             <?php if ($isViewingSelf) {
-                 ?>
+                    ?>
             <button class="btn btn-default col-xs-12 col-md-6 col-lg-3" id="expose-uploader">
               Change Profile Image
             </button>
-            <?php 
+            <?php
              } ?>
           </div>
 
-          <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
-          <?php
+            <?php echo getElement("name", $viewUser->getName(), "row", true); ?>
+            <?php
              $dateCreated = date("d F Y", $userdata["creation"]);
              echo getElement("user since", $dateCreated, "row", true); ?>
-          <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
-          <?php echo getElement("phone", $viewUser->getPhone(), "row from-base-profile"); ?>
-          <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
-          <?php echo getElement("google plus", $social["google_plus"], "row social google_plus"); ?>
-          <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
-          <?php echo getElement("facebook", $social["facebook"], "row social facebook"); ?>
+            <?php echo getElement("email", $viewUser->getUsername(), "row", true); ?>
+            <?php echo getElement("phone", $viewUser->getPhone(), "row from-base-profile"); ?>
+            <?php echo getElement("twitter", $social["twitter"], "row social twitter"); ?>
+            <?php echo getElement("google plus", $social["google_plus"], "row social google_plus"); ?>
+            <?php echo getElement("linkedin", $social["linkedin"], "row social linkedin"); ?>
+            <?php echo getElement("facebook", $social["facebook"], "row social facebook"); ?>
         </div>
         <div id="institution-profile" class="col-xs-12 col-md-6 profile-region" data-source="institution">
           <h3>Institution Information</h3>

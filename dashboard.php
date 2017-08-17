@@ -1,4 +1,5 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 $print_login_state = false;
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
@@ -36,6 +37,8 @@ $_REQUEST = array_merge($_REQUEST, $_GET, $_POST);
 # Check the status for any async flags we may want
 if (toBool($_REQUEST["async"]) === true) {
     # Now we can do any feedbacks needed
+    # Public API
+    header('Access-Control-Allow-Origin: *');
     switch ($_REQUEST["action"]) {
         case "country_taxon":
             # Get the taxa in a given country
@@ -94,6 +97,41 @@ if (toBool($_REQUEST["async"]) === true) {
                 "taxa" => $taxa,
                 "data" => $localeTaxonData,
             ));
+            break;
+        case "taxon_exists":
+            $db->setTable("records_list");
+            $taxonStringParts = explode(" ", deEscape($_REQUEST["taxon"]));
+            $genus = $db->sanitize(strtolower($taxonStringParts[0]));
+            $species = $db->sanitize(strtolower($taxonStringParts[1]));
+            $query = "SELECT count(*) AS count FROM `".$db->getTable()."` AS records $authorizedIntersect records.project_id  WHERE lower(`genus`) = '$genus'";
+            if (!empty($species)) {
+                $query .= " AND lower(`specificepithet`) = '$species'";
+            }
+            $r = mysqli_query($db->getLink(), $query);
+            if ($r === false) {
+                returnAjax(array(
+                    "status"  => false,
+                    "error" => "DATABASE_ERROR_2",
+                    // "query" => $query,
+                    // "dberr" => mysqli_error($db->getLink()),
+                ));
+            }
+            $row = mysqli_fetch_row($r);
+            $response = array(
+                "status" => true,
+                "exists" => $row[0] > 0,
+                "taxon" => array(
+                    "provided" => deEscape($_REQUEST["taxon"]),
+                    "interpreted" => array(
+                        "genus" => $genus,
+                        "species" => $species,
+                        "dwc" => array(
+                            "genus" => $genus,
+                            "specificepithet" => $species,
+                        ),
+                    ),
+                ));
+            returnAjax($response);
             break;
         case "locale_taxon":
         default:
