@@ -1,5 +1,6 @@
     <footer class="row">
       <div class="col-md-6 col-xs-12">
+        <img src="assets/aweb_b+w-alpha512.png" class="footer-logo" />
         <copyright-statement copyrightStart="2015">AmphibiaWeb&#39;s Amphibian Disease Portal</copyright-statement>
       </div>
       <div class="col-md-1 col-xs-3">
@@ -21,6 +22,6 @@
     </footer>
 <?php
 
-include_once("./analyticsTracking.php");
+    include_once("./analyticsTracking.php");
 
 ?>
