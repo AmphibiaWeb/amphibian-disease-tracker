@@ -10180,7 +10180,16 @@ paper-icon-button.shift-down {
 .bs-callout p:last-child {
   margin-bottom: 0;
 }
-copyright-statement {
+footer img.footer-logo {
+  display: inline-block;
+  height: 40px;
+}
+@media (max-width: 767px) {
+  footer img.footer-logo {
+    display: none !important;
+  }
+}
+footer copyright-statement {
   position: relative;
   top: 1rem;
 }
