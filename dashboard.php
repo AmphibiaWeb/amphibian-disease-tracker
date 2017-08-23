@@ -352,203 +352,224 @@ if (toBool($_REQUEST["async"]) === true) {
       <br/>
       <small>Visualize data for all <?php if($loginStatus["status"] === true) echo "authorized and "; ?>publicly accessible projects</small>
     </h2>
-    <section class="col-xs-12">
-      <div class="row db-summary-region">
-        <?php
+    <div class="col-xs-12 tab-area-grandparent">
+      <div class="tab-area-container">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active">
+            <a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a>
+          </li>
+          <li role="presentation" class="active">
+            <a href="#list" aria-controls="list" role="tab" data-toggle="tab">List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane row fade active in" id="charts">
+            <section class="col-xs-12">
+              <div class="row db-summary-region">
+                <?php
 
-        /***
-         * Get some summary stats
-         * See:
-         * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
-         ***/
-        # Species count
-        $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id  where genus is not null group by genus, specificepithet";
-        $r = mysqli_query($db->getLink(), $query);
-        $speciesCount = mysqli_num_rows($r);
-        # Total samples
-        $query = "select count(*) as count from `records_list` AS records $authorizedIntersect records.project_id  where genus is not null";
-        $r = mysqli_query($db->getLink(), $query);
-        $row = mysqli_fetch_row($r);
-        $count = $row[0];
-        # Country count
-        $query = "select country, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id   where genus is not null group by country";
-        $r = mysqli_query($db->getLink(), $query);
-        $countryCount = mysqli_num_rows($r);
-        ## Top 10
-        ## See
-        ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
-        $queryCountryTop10N = "select `country`, count(*) as count from `records_list`  AS records $authorizedIntersect records.project_id  where `genus` is not null group by `country` order by count desc limit 10";
-        $querySpeciesTop10N = "select `genus`, `specificepithet`, count(*) as count from `records_list`  AS records $authorizedIntersect records.project_id  where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
-        $top10CountryTBody = array();
-        $top10SpeciesTBody = array();
-        $rCN = mysqli_query($db->getLink(), $queryCountryTop10N);
-        $rSN = mysqli_query($db->getLink(), $querySpeciesTop10N);
-        $i = 0;
-        while ($row = mysqli_fetch_assoc($rCN)) {
-            if ($i == 0) {
-                $max = intval($row["count"]);
-            }
-            $queryCountryTop10P = "select `country`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `country`='".$row["country"]."' group by `country` order by count desc limit 10";
-            $rCP = mysqli_query($db->getLink(), $queryCountryTop10P);
-            $rowPos = mysqli_fetch_assoc($rCP);
-            $progressPositive = 100 * intval($rowPos["count"]) / $max;
-            $progressNegative = 100 * intval($row["count"]) / $max;
-            $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
-            $top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
-            $i++;
-        }
-        $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
-        $i = 0;
-        while ($row = mysqli_fetch_assoc($rSN)) {
-            if ($i == 0) {
-                $max = intval($row["count"]);
-            }
-            $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id   where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `genus`='".$row["genus"]."' AND `specificepithet`='".$row["specificepithet"]."'  group by `genus`, `specificepithet` order by count desc limit 10";
-            $rSP = mysqli_query($db->getLink(), $querySpeciesTop10P);
-            $rowPos = mysqli_fetch_assoc($rSP);
-            $progressNegative = 100 * intval($row["count"]) / $max;
-            $progressPositive = 100 * intval($rowPos["count"]) / $max;
-            $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
-            $top10SpeciesTBody[] = "<td><span class='sciname'><span class='genus'>".$row["genus"]."</span> <span class='species'>".$row["specificepithet"]."</span></span></td><td>$progressBar</td><td>".$row["count"]."</td>";
-            $i++;
-        }
-        $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
-?>
-        <div class="col-xs-12 col-md-6 table-responsive">
-          <table class="table table-striped table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>
-                  Total Samples
-                </th>
-                <th>
-                  Number of Species
-                </th>
-                <th>
-                  Number of Countries
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                    <?php echo $count; ?>
-                </td>
-                <td>
-                    <?php echo $speciesCount; ?>
-                </td>
-                <td>
-                    <?php echo $countryCount; ?>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-xs-12">
-          <button type="button" class="btn btn-info collapse-trigger" data-target="#top-ten-collapse" id="top-ten-collapse-button-trigger">
-            Toggle View of Top Ten Countries &amp; Taxa
-          </button>
-          <iron-collapse id="top-ten-collapse">
-            <div class="collapse-content row">
-              <div class="col-xs-12 col-md-6 table-responsive">
-                <table class="table table-striped table-bordered table-condensed">
-                  <thead>
-                    <tr>
-                      <th>
-                        Country
-                      </th>
-                      <th>
-                        Relative
-                      </th>
-                      <th>
-                        Count
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php echo $top10CountryCont;
-?>
-                  </tbody>
-                </table>
+                  /***
+                   * Get some summary stats
+                   * See:
+                   * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/176#issuecomment-288560111
+                   ***/
+                  # Species count
+                  $query = "select `genus`, `specificepithet`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id  where genus is not null group by genus, specificepithet";
+                  $r = mysqli_query($db->getLink(), $query);
+                  $speciesCount = mysqli_num_rows($r);
+                  # Total samples
+                  $query = "select count(*) as count from `records_list` AS records $authorizedIntersect records.project_id  where genus is not null";
+                  $r = mysqli_query($db->getLink(), $query);
+                  $row = mysqli_fetch_row($r);
+                  $count = $row[0];
+                  # Country count
+                  $query = "select country, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id   where genus is not null group by country";
+                  $r = mysqli_query($db->getLink(), $query);
+                  $countryCount = mysqli_num_rows($r);
+                  ## Top 10
+                  ## See
+                  ## https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/232
+                  $queryCountryTop10N = "select `country`, count(*) as count from `records_list`  AS records $authorizedIntersect records.project_id  where `genus` is not null group by `country` order by count desc limit 10";
+                  $querySpeciesTop10N = "select `genus`, `specificepithet`, count(*) as count from `records_list`  AS records $authorizedIntersect records.project_id  where `genus` is not null group by `genus`, `specificepithet` order by count desc limit 10";
+                  $top10CountryTBody = array();
+                  $top10SpeciesTBody = array();
+                  $rCN = mysqli_query($db->getLink(), $queryCountryTop10N);
+                  $rSN = mysqli_query($db->getLink(), $querySpeciesTop10N);
+                  $i = 0;
+                  while ($row = mysqli_fetch_assoc($rCN)) {
+                      if ($i == 0) {
+                          $max = intval($row["count"]);
+                      }
+                      $queryCountryTop10P = "select `country`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `country`='".$row["country"]."' group by `country` order by count desc limit 10";
+                      $rCP = mysqli_query($db->getLink(), $queryCountryTop10P);
+                      $rowPos = mysqli_fetch_assoc($rCP);
+                      $progressPositive = 100 * intval($rowPos["count"]) / $max;
+                      $progressNegative = 100 * intval($row["count"]) / $max;
+                      $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
+                      $top10CountryTBody[] = "<td>".$row["country"]."</td><td>$progressBar</td><td>".$row["count"]."</td>";
+                      $i++;
+                  }
+                  $top10CountryCont = "<tr>".implode("</tr><tr>", $top10CountryTBody)."</tr>";
+                  $i = 0;
+                  while ($row = mysqli_fetch_assoc($rSN)) {
+                      if ($i == 0) {
+                          $max = intval($row["count"]);
+                      }
+                      $querySpeciesTop10P = "select `genus`, `specificepithet`, count(*) as count from `records_list` AS records $authorizedIntersect records.project_id   where `genus` is not null AND (`diseasedetected` is true or lower(`diseasedetected`)='true') AND `genus`='".$row["genus"]."' AND `specificepithet`='".$row["specificepithet"]."'  group by `genus`, `specificepithet` order by count desc limit 10";
+                      $rSP = mysqli_query($db->getLink(), $querySpeciesTop10P);
+                      $rowPos = mysqli_fetch_assoc($rSP);
+                      $progressNegative = 100 * intval($row["count"]) / $max;
+                      $progressPositive = 100 * intval($rowPos["count"]) / $max;
+                      $progressBar = "<paper-progress value='$progressPositive' secondary-progress='$progressNegative' class='top10-progress'></paper-progress>";
+                      $top10SpeciesTBody[] = "<td><span class='sciname'><span class='genus'>".$row["genus"]."</span> <span class='species'>".$row["specificepithet"]."</span></span></td><td>$progressBar</td><td>".$row["count"]."</td>";
+                      $i++;
+                  }
+                  $top10SpeciesCont = "<tr>".implode("</tr><tr>", $top10SpeciesTBody)."</tr>";
+                ?>
+                <div class="col-xs-12 col-md-6 table-responsive">
+                  <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                      <tr>
+                        <th>
+                          Total Samples
+                        </th>
+                        <th>
+                          Number of Species
+                        </th>
+                        <th>
+                          Number of Countries
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <?php echo $count; ?>
+                        </td>
+                        <td>
+                          <?php echo $speciesCount; ?>
+                        </td>
+                        <td>
+                          <?php echo $countryCount; ?>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-xs-12">
+                  <button type="button" class="btn btn-info collapse-trigger" data-target="#top-ten-collapse" id="top-ten-collapse-button-trigger">
+                    Toggle View of Top Ten Countries &amp; Taxa
+                  </button>
+                  <iron-collapse id="top-ten-collapse">
+                    <div class="collapse-content row">
+                      <div class="col-xs-12 col-md-6 table-responsive">
+                        <table class="table table-striped table-bordered table-condensed">
+                          <thead>
+                            <tr>
+                              <th>
+                                Country
+                              </th>
+                              <th>
+                                Relative
+                              </th>
+                              <th>
+                                Count
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <?php echo $top10CountryCont;
+                                  ?>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="col-xs-12 col-md-6 table-responsive">
+                        <table class="table table-striped table-bordered table-condensed">
+                          <thead>
+                            <tr>
+                              <th>
+                                Taxon
+                              </th>
+                              <th>
+                                Relative
+                              </th>
+                              <th>
+                                Count
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <?php echo $top10SpeciesCont;
+                                  ?>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </iron-collapse>
+                </div>
               </div>
-              <div class="col-xs-12 col-md-6 table-responsive">
-                <table class="table table-striped table-bordered table-condensed">
-                  <thead>
-                    <tr>
-                      <th>
-                        Taxon
-                      </th>
-                      <th>
-                        Relative
-                      </th>
-                      <th>
-                        Count
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php echo $top10SpeciesCont;
-?>
-                  </tbody>
-                </table>
+            </section>
+            <section class="col-xs-12">
+              <div class="form form-horizontal row">
+                <h3 class="col-xs-12">Create a chart</h3>
+                <div class="col-xs-12 col-md-3 col-sm-6" style="margin-top: 1em">
+                  <paper-radio-group id="diseasetested-select" selected="both">
+                    <paper-radio-button id="bd-only" data-disease="bd" name="bd"><span class='sciname'>B. d.</span></paper-radio-button>
+                    <paper-radio-button id="bsal-only" data-disease="bsal" name="bsal"><span class='sciname'>B. sal.</span></paper-radio-button>
+                    <paper-radio-button id="bd-bsal" data-disease="both" name="both">Both</paper-radio-button>
+                  </paper-radio-group>
+                </div>
+                <div class="col-xs-12 col-md-3 col-sm-6">
+                  <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
+                    <paper-listbox class="dropdown-content" selected="0">
+                      <paper-item>Sample Counts</paper-item>
+                      <paper-item disabled>Project Count</paper-item>
+                      <paper-item disabled>Infection Rate</paper-item>
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </div>
+                <div class="col-xs-12 col-md-3 col-sm-6">
+                  <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
+                    <paper-listbox class="dropdown-content" selected="0">
+                      <paper-item>Location</paper-item>
+                      <paper-item data-value="species">Taxon Group</paper-item>
+                      <paper-item> Infection </paper-item>
+                      <paper-item disabled>Time</paper-item>
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </div>
+                <div class="col-xs-12 col-md-3 col-sm-6">
+                  <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
+                    <paper-listbox class="dropdown-content" selected="0">
+                      <paper-item data-bins="location,species" data-value="samples">Samples</paper-item>
+                      <paper-item data-bins="infection,location" data-value="percent-infected">Percent infected</paper-item>
+                      <paper-item data-bins="location" data-value="country">Country</paper-item>
+                      <paper-item data-bins="species" data-value="genus">Genus</paper-item>
+                      <paper-item data-bins="species" data-value="species">Species</paper-item>
+                      <paper-item disabled>Time</paper-item>
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </div>
+                <div class="col-xs-12">
+                  <button class="btn btn-success" id="generate-chart">Generate Chart</button>
+                  <paper-toggle-button id="include-unnamed" class="chart-param" data-key="include_sp">Include Unnamed Species (eg, <i>Rana sp.</i>)</paper-toggle-button>
+                </div>
               </div>
-            </div>
-          </iron-collapse>
-        </div>
-      </div>
-    </section>
-    <section class="col-xs-12">
-      <div class="form form-horizontal row">
-        <h3 class="col-xs-12">Create a chart</h3>
-        <div class="col-xs-12 col-md-3 col-sm-6" style="margin-top: 1em">
-          <paper-radio-group id="diseasetested-select" selected="both">
-            <paper-radio-button id="bd-only" data-disease="bd" name="bd"><span class='sciname'>B. d.</span></paper-radio-button>
-            <paper-radio-button id="bsal-only" data-disease="bsal" name="bsal"><span class='sciname'>B. sal.</span></paper-radio-button>
-            <paper-radio-button id="bd-bsal" data-disease="both" name="both">Both</paper-radio-button>
-          </paper-radio-group>
-        </div>
-        <div class="col-xs-12 col-md-3 col-sm-6">
-          <paper-dropdown-menu label="View" id="view-type"  class="chart-param" data-key="view">
-            <paper-listbox class="dropdown-content" selected="0">
-              <paper-item>Sample Counts</paper-item>
-              <paper-item disabled>Project Count</paper-item>
-              <paper-item disabled>Infection Rate</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-        <div class="col-xs-12 col-md-3 col-sm-6">
-          <paper-dropdown-menu label="Binned By" id="binned-by"  data-key="bin" class="chart-param">
-            <paper-listbox class="dropdown-content" selected="0">
-              <paper-item>Location</paper-item>
-              <paper-item data-value="species">Taxon Group</paper-item>
-              <paper-item> Infection </paper-item>
-              <paper-item disabled>Time</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-        <div class="col-xs-12 col-md-3 col-sm-6">
-          <paper-dropdown-menu label="Sort By" id="sort-by"  data-key="sort" class="chart-param">
-            <paper-listbox class="dropdown-content" selected="0">
-              <paper-item data-bins="location,species" data-value="samples">Samples</paper-item>
-              <paper-item data-bins="infection,location" data-value="percent-infected">Percent infected</paper-item>
-              <paper-item data-bins="location" data-value="country">Country</paper-item>
-              <paper-item data-bins="species" data-value="genus">Genus</paper-item>
-              <paper-item data-bins="species" data-value="species">Species</paper-item>
-              <paper-item disabled>Time</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-        <div class="col-xs-12">
-          <button class="btn btn-success" id="generate-chart">Generate Chart</button>
-          <paper-toggle-button id="include-unnamed" class="chart-param" data-key="include_sp">Include Unnamed Species (eg, <i>Rana sp.</i>)</paper-toggle-button>
-        </div>
-      </div>
-      <div class="col-xs-12 clearfix" id="locale-zoom-canvas-container">
-        <canvas id="locale-zoom-chart">
+              <div class="col-xs-12 clearfix" id="locale-zoom-canvas-container">
+                <canvas id="locale-zoom-chart">
 
-        </canvas>
-      </div>
-    </section>
+                </canvas>
+              </div>
+            </section>
+          </div> <!-- .tab-pane -->
+          <div role="tabpanel" class="tab-pane row fade" id="list">
+            <h3 class="col-xs-12">Species Lists</h3>
+            <p>Below follows a list of taxa for which data exists here:</p>
+            <p>LIST TODO</p>
+          </div>
+        </div> <!-- .tab-content -->
+      </div> <!-- .tab-area-container -->
+    </div> <!-- .tab-area-grandparent -->
   </main>
     <?php
     require_once("./footer.php");
