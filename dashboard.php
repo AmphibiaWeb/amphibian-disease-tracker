@@ -565,7 +565,21 @@ if (toBool($_REQUEST["async"]) === true) {
           <div role="tabpanel" class="tab-pane row fade" id="list">
             <h3 class="col-xs-12">Species Lists</h3>
             <p class="col-xs-12">Below follows a list of taxa for which data exists here:</p>
-            <p class="col-xs-12">UNDER CONSTRUCTION</p>
+            <?php
+            /***
+             * Show a list of all the (authorized) species on the
+             * dashboard. See issue:
+             * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/204
+             ***/
+            $query = "select distinct `genus`, `specificepithet` from `records_list` AS records $authorizedIntersect records.project_id WHERE genus IS NOT NULL ORDER BY genus, specificepithet";
+            $r = mysqli_query($db->getLink(), $query);
+            $speciesCount = mysqli_num_rows($r);
+            $html = "";
+            while ($row = mysqli_fetch_assoc($r)) {
+                $html += "<button class='btn btn-default species-list-button'>".$row["genus"]." ".$row["specificepithet"]."</button>";
+            }
+                ?>
+            <div class="col-xs-12"><?php echo $html; ?></div>
           </div>
         </div> <!-- .tab-content -->
       </div> <!-- .tab-area-container -->
