@@ -576,7 +576,7 @@ if (toBool($_REQUEST["async"]) === true) {
             $speciesCount = mysqli_num_rows($r);
             $html = "";
             while ($row = mysqli_fetch_assoc($r)) {
-                $html += "<button class='btn btn-default species-list-button'>".$row["genus"]." ".$row["specificepithet"]."</button>";
+                $html .= "<button class='btn btn-default species-list-button'>".$row["genus"]." ".$row["specificepithet"]."</button>";
             }
                 ?>
             <div class="col-xs-12"><?php echo $html; ?></div>
