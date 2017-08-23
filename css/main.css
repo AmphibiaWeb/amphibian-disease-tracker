@@ -13340,6 +13340,9 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .project-button-link {
   margin-right: .5rem;
 }
+.tab-pane {
+  padding-top: 1rem;
+}
 .pop-map {
   width: 80vw;
   height: 80vh;

@@ -1204,6 +1204,11 @@ $ ->
     getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
+    false
+  $(".tab-area-container .nav-tabs a").click (e) ->
+    e.preventDefault()
+    $(this).tab "show"
+    false
   delayPolymerBind "paper-dropdown-menu#binned-by", ->
     $(".chart-param paper-listbox")
     .on "iron-select", ->
