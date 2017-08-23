@@ -16,7 +16,7 @@
       <div class="col-md-1 col-xs-3">
         <paper-icon-button icon="icons:bug-report" class="click" data-href="https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/new" data-toggle="tooltip" title="Report an issue" data-newtab="true"></paper-icon-button>
       </div>
-      <div class="col-md-2 col-xs-6 hidden-xs">
+      <div class="col-md-2 col-xs-6 hidden-xs hidden-sm">
         Written with <paper-icon-button icon="icons:polymer" class="click" data-href="https://www.polymer-project.org" data-newtab="true"></paper-icon-button>
       </div>
     </footer>
