@@ -564,8 +564,8 @@ if (toBool($_REQUEST["async"]) === true) {
           </div> <!-- .tab-pane -->
           <div role="tabpanel" class="tab-pane row fade" id="list">
             <h3 class="col-xs-12">Species Lists</h3>
-            <p>Below follows a list of taxa for which data exists here:</p>
-            <p>LIST TODO</p>
+            <p class="col-xs-12">Below follows a list of taxa for which data exists here:</p>
+            <p class="col-xs-12">UNDER CONSTRUCTION</p>
           </div>
         </div> <!-- .tab-content -->
       </div> <!-- .tab-area-container -->

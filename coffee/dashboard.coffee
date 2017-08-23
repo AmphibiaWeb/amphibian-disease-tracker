@@ -46,7 +46,7 @@ try
     false
 
 
-createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main", callback) ->
+createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "#charts", callback) ->
   unless typeof chartData is "object"
     console.error "Can't create a chart without a data object"
     return false

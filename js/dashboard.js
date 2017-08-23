@@ -36,7 +36,7 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     isSimpleData = false;
   }
   if (appendTo == null) {
-    appendTo = "main";
+    appendTo = "#charts";
   }
   if (typeof chartData !== "object") {
     console.error("Can't create a chart without a data object");
