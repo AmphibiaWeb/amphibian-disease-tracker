@@ -1220,6 +1220,7 @@ $(function() {
   });
   $(".tab-area-container .nav-tabs a").click(function(e) {
     e.preventDefault();
+    console.debug("Clicked a tab", this);
     $(this).tab("show");
     return false;
   });

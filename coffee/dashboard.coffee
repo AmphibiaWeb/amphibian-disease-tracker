@@ -1207,6 +1207,7 @@ $ ->
     false
   $(".tab-area-container .nav-tabs a").click (e) ->
     e.preventDefault()
+    console.debug "Clicked a tab", this
     $(this).tab "show"
     false
   delayPolymerBind "paper-dropdown-menu#binned-by", ->

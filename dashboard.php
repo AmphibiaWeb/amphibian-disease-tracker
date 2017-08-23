@@ -358,7 +358,7 @@ if (toBool($_REQUEST["async"]) === true) {
           <li role="presentation" class="active">
             <a href="#charts" aria-controls="charts" role="tab" data-toggle="tab">Charts</a>
           </li>
-          <li role="presentation" class="active">
+          <li role="presentation">
             <a href="#list" aria-controls="list" role="tab" data-toggle="tab">List</a>
           </li>
         </ul>
