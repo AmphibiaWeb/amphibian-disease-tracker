@@ -576,10 +576,10 @@ if (toBool($_REQUEST["async"]) === true) {
             $speciesCount = mysqli_num_rows($r);
             $html = "";
             while ($row = mysqli_fetch_assoc($r)) {
-                $html .= "<button class='btn btn-default species-list-button'>".$row["genus"]." ".$row["specificepithet"]."</button>";
+                $html .= "<p class='species-list-label'>".$row["genus"]." ".$row["specificepithet"]."</p><button class='btn btn-default species-list-button aweb-button'>AmphibiaWeb</button><button class='btn btn-default species-list-button data-summary-button'>Data Entry</button><br/>";
             }
                 ?>
-            <div class="col-xs-12"><?php echo $html; ?></div>
+            <section class="col-xs-12 species-list"><?php echo $html; ?></section>
           </div>
         </div> <!-- .tab-content -->
       </div> <!-- .tab-area-container -->

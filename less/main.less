@@ -1679,6 +1679,16 @@ section.conversations {
 }
 
 section {
+    &.species-list {
+        .species-list-label {
+            display: inline-block;
+            font-style: italic;
+        }
+        .species-list-button {
+            margin-left: .5rem;
+            margin-right: .5rem;
+        }
+    }
     @easy-transition: all .25s ease-in-out;
     &#post-species-summary {
         &.has-open-collapse {
@@ -1687,17 +1697,17 @@ section {
             & > div.row > div:not(.is-open) {
                 opacity: .5;
                 transition: @easy-transition;
-            }            
+            }
         }
-        
+
         iron-collapse.taxon-collapse.iron-collapse-opened {
             background: #fff;
-            opacity: 1; 
-            
+            opacity: 1;
+
             .project-button-link {
                 margin-left: 2rem;
             }
-            
+
             .blurb-info + .blurb-info {
                 margin-top: 2rem;
                 padding-top: 2rem;

@@ -13355,6 +13355,14 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   width: 80%;
   height: 80%;
 }
+section.species-list .species-list-label {
+  display: inline-block;
+  font-style: italic;
+}
+section.species-list .species-list-button {
+  margin-left: .5rem;
+  margin-right: .5rem;
+}
 section#post-species-summary.has-open-collapse {
   transition: all 0.25s ease-in-out;
   background: #5a5a5a;
