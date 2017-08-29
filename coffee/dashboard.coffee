@@ -46,7 +46,7 @@ try
     false
 
 
-createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "main", callback) ->
+createChart = (chartSelector, chartData, isSimpleData = false, appendTo = "#charts", callback) ->
   unless typeof chartData is "object"
     console.error "Can't create a chart without a data object"
     return false
@@ -1204,6 +1204,12 @@ $ ->
     getServerChart()
   $("#generate-chart").click ->
     renderNewChart.debounce 50
+    false
+  $(".tab-area-container .nav-tabs a").click (e) ->
+    e.preventDefault()
+    console.debug "Clicked a tab", this
+    $(this).tab "show"
+    false
   delayPolymerBind "paper-dropdown-menu#binned-by", ->
     $(".chart-param paper-listbox")
     .on "iron-select", ->
