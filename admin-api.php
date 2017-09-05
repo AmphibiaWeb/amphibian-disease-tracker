@@ -236,15 +236,64 @@ function inviteUser($get)
     }
 }
 
+
+function notifyUsers($projectId, $subject, $body, $superusers = false)
+{
+    /***
+     * Wrapper to handle notifying users of changes.
+     ***/
+    require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';
+    require_once dirname(__FILE__).'/admin/CONFIG.php';
+    global $is_smtp,$mail_host,$mail_user,$mail_password,$is_pop3;
+    $mail = new PHPMailer();
+    if ($is_smtp) {
+        $mail->isSMTP();
+        $mail->SMTPAuth = true;
+        $mail->Host = $mail_host;
+        $mail->Username = $mail_user;
+        $mail->Password = $mail_password;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+    }
+    if ($is_pop3) {
+        $mail->isPOP3();
+    } # Need to expand this
+    $mail->From = "blackhole@amphibiandisease.org";
+    $mail->FromName = "Amphibian Disease Webserver";
+    $mail->isHTML(true);
+    # Look up the project
+    # Find recipients
+    $mail->addAddress($destination);
+    $mail->Subject = "[Server Notice]".$subject;
+    $mail->Body = $body;
+    $success = $mail->send();
+    if ($success) {
+        return array(
+            "status" => $success,
+            "action" => "NOTIFY_USER",
+            "notifyd" => $destination,
+        );
+    } else {
+        return array(
+            "status" => $success,
+            "action" => "NOTIFY_USER",
+            "invited" => $destination,
+            "error" => "MAIL_SEND_FAIL",
+            "error_detail" => $mail->ErrorInfo,
+        );
+    }
+}
+
+
 function saveEntry($get)
 {
     /***
-   * Save updates to a project
-   *
-   * @param data a base 64-encoded JSON string of the data to insert
-   ***/
-
-  $data64 = $get['data'];
+     * Save updates to a project
+     *
+     * @param data a base 64-encoded JSON string of the data to insert
+     ***/
+    
+    $data64 = $get['data'];
     $enc = strtr($data64, '-_', '+/');
     $enc = chunk_split(preg_replace('!\015\012|\015|\012!', '', $enc));
     $enc = str_replace(' ', '+', $enc);
@@ -272,69 +321,69 @@ function saveEntry($get)
     $id = $data['id'];
     if (!$db->isEntry($id)) {
         return array(
-      'status' => false,
-      'error' => 'INVALID_PROJECT',
-      'human_error' => 'No project exists at database row #'.$id,
-    );
+            'status' => false,
+            'error' => 'INVALID_PROJECT',
+            'human_error' => 'No project exists at database row #'.$id,
+        );
     }
     $search = array('id' => $id);
     $projectServerDataRow = $db->getQueryResults($search);
     $projectServer = $projectServerDataRow[0];
     if ($projectServer['project_id'] != $project) {
         return array(
-      'status' => false,
-      'error' => 'MISMATCHED_PROJECT_IDENTIFIERS',
-      'human_error' => 'The project at row #'.$id." doesn't match the provided project number (provided: '".$project."'; expected '".$projectServer['project_id']."')",
-    );
+            'status' => false,
+            'error' => 'MISMATCHED_PROJECT_IDENTIFIERS',
+            'human_error' => 'The project at row #'.$id." doesn't match the provided project number (provided: '".$project."'; expected '".$projectServer['project_id']."')",
+        );
     }
     $authorizedStatus = checkProjectAuthorized($projectServer, $uid);
     if (!$authorizedStatus['can_edit']) {
         return array(
-      'status' => false,
-      'error' => 'UNAUTHORIZED',
-      'human_error' => 'You have insufficient privileges to edit project #'.$project,
-    );
+            'status' => false,
+            'error' => 'UNAUTHORIZED',
+            'human_error' => 'You have insufficient privileges to edit project #'.$project,
+        );
     }
-  # Remove some read-only attributes
-  $ref = array(
-    'project_id' => $project,
-  );
+    # Remove some read-only attributes
+    $ref = array(
+        'project_id' => $project,
+    );
     unset($data['project_id']); # Obvious
-  unset($data['project_obj_id']); # ARK
-  if (strlen($data['dataset_arks']) < strlen($projectServer['dataset_arks'])) {
-      # It can only grow, not shrink
-      # Check formatting
-      unset($data['dataset_arks']);
-  }
+    unset($data['project_obj_id']); # ARK
+    if (strlen($data['dataset_arks']) < strlen($projectServer['dataset_arks'])) {
+        # It can only grow, not shrink
+        # Check formatting
+        unset($data['dataset_arks']);
+    }
     unset($data['id']); # Obvious
-  unset($data['access_data']); # Handled seperately
-
-  try {
-      $result = $db->updateEntry($data, $ref);
-  } catch (Exception $e) {
-      return array(
-        'status' => false,
-        'error' => $e->getMessage(),
-        'humman_error' => 'Database error saving',
-        'data' => $data,
-        'ref' => $ref,
-      );
-  }
+    unset($data['access_data']); # Handled seperately
+    
+    try {
+        $result = $db->updateEntry($data, $ref);
+    } catch (Exception $e) {
+        return array(
+            'status' => false,
+            'error' => $e->getMessage(),
+            'humman_error' => 'Database error saving',
+            'data' => $data,
+            'ref' => $ref,
+        );
+    }
     if ($result !== true) {
         return array(
-        'status' => false,
-        'error' => $result,
-        'human_error' => 'Database error saving',
-        'data' => $data,
-        'ref' => $ref,
-      );
+            'status' => false,
+            'error' => $result,
+            'human_error' => 'Database error saving',
+            'data' => $data,
+            'ref' => $ref,
+        );
     }
 
     return array(
-    'status' => true,
-    'data' => $data,
-    'project' => readProjectData($project, true),
-  );
+        'status' => true,
+        'data' => $data,
+        'project' => readProjectData($project, true),
+    );
 }
 
 function newEntry($get)
