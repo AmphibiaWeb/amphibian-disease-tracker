@@ -271,7 +271,9 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
     $r = mysqli_query($db->getLink(), $query);
     $row = mysqli_fetch_assoc($r);
     # Find recipients
-    $userList[] = $row["technical_contact_email"];
+    if ($row["technical_contact_email"] !== null) {
+        $userList[] = $row["technical_contact_email"];
+    }
     $accessors = explode(",", $row["access_data"]);
     foreach ($accessors as $accessString) {
         $parts = explode(":", $accessString);
@@ -280,7 +282,9 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
         $r = mysqli_query($db->getLink(), $query);
         $row = mysqli_fetch_row($r);
         $email = $row[0];
-        $userList[] = $email;
+        if ($email !== null) {
+            $userList[] = $email;
+        }
     }
     # Add superusers
     foreach ($userList as $destination) {
@@ -302,6 +306,7 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
             "notified" => $userList,
             "error" => "MAIL_SEND_FAIL",
             "error_detail" => $mail->ErrorInfo,
+            "acessors" => $accessors,
         );
     }
 }
