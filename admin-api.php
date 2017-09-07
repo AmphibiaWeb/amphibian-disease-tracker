@@ -274,6 +274,9 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
     if ($row["technical_contact_email"] !== null) {
         $userList[] = $row["technical_contact_email"];
     }
+    $authorData = json_decode($row["author_data"], true);
+    $authorEmail = $authorData["contact_email"];
+    $userList[] = $authorEmail;
     $accessors = explode(",", $row["access_data"]);
     foreach ($accessors as $accessString) {
         $parts = explode(":", $accessString);
@@ -282,12 +285,11 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
         $r = mysqli_query($db->getLink(), $query);
         $row = mysqli_fetch_row($r);
         $email = $row[0];
-        if ($email !== null) {
+        if ($email !== null && $email != $authorEmail) {
             $userList[] = $email;
         }
     }
-    $authorData = json_decode($row["author_data"], true);
-    $userList[] = $authorData["contact_email"];
+
     # Add superusers
     foreach ($userList as $destination) {
         $mail->addAddress($destination);
