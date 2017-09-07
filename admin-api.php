@@ -37,23 +37,22 @@ if (!function_exists('elapsed')) {
     function elapsed($start_time = null)
     {
         /***
-       * Return the duration since the start time in
-       * milliseconds.
-       * If no start time is provided, it'll try to use the global
-       * variable $start_script_timer
-       *
-       * @param float $start_time in unix epoch. See http://us1.php.net/microtime
-       ***/
+         * Return the duration since the start time in
+         * milliseconds.
+         * If no start time is provided, it'll try to use the global
+         * variable $start_script_timer
+         *
+         * @param float $start_time in unix epoch. See http://us1.php.net/microtime
+         ***/
 
-      if (!is_numeric($start_time)) {
-          global $start_script_timer;
-          if (is_numeric($start_script_timer)) {
-              $start_time = $start_script_timer;
-          } else {
-              return false;
-          }
-      }
-
+        if (!is_numeric($start_time)) {
+            global $start_script_timer;
+            if (is_numeric($start_script_timer)) {
+                $start_time = $start_script_timer;
+            } else {
+                return false;
+            }
+        }
         return 1000 * (microtime_float() - (float) $start_time);
     }
 }
@@ -82,92 +81,95 @@ if ($as_include !== true) {
 
     switch ($admin_req) {
         # Stuff
-    case 'save':
-        returnAjax(saveEntry($_REQUEST));
-        break;
-    case 'new':
-        returnAjax(newEntry($_REQUEST));
-        break;
-    case 'delete':
-        returnAjax(deleteEntry($_REQUEST));
-        break;
-    case 'list':
-        returnAjax(listProjects(false));
-        break;
-    case 'sulist':
-        returnAjax(suListProjects(false));
-        break;
-    case 'get':
-        returnAjax(readProjectData($_REQUEST));
-        break;
-    case 'edit_access':
-    case 'editaccess':
-        $link = $_REQUEST['project'];
-        $deltas = smart_decode64($_REQUEST['deltas']);
-        returnAjax(editAccess($link, $deltas));
-        break;
-    case 'mint_data':
-    case 'mint':
-        $link = $_REQUEST['link'];
-        $file = $_REQUEST['file'];
-        $title64 = $_REQUEST['title'];
-        $title = decode64($title64);
-        if (empty($link) || empty($title)) {
-            returnAjax(array(
-                'status' => false,
-                'error' => 'BAD_PARAMETERS',
-            ));
-        }
-        $addToExpedition = isset($_REQUEST['expedition']) ? boolstr($_REQUEST['expedition']) : false;
-        returnAjax(mintBcid($link, $file, $title, $addToExpedition));
-        break;
-    case 'create_expedition':
-        $link = $_REQUEST['link'];
-        $title64 = $_REQUEST['title'];
-        $public = boolstr($_REQUEST['public']);
-        $title = decode64($title64);
-        if (empty($link) || empty($title)) {
-            returnAjax(array(
-                'status' => false,
-                'error' => 'BAD_PARAMETERS',
-            ));
-        }
-        $associate = boolstr($_REQUEST['bind_datasets']);
-        returnAjax(mintExpedition($link, $title, $public, $associate));
-        break;
-    case 'associate_expedition':
-        $link = $_REQUEST['link'];
-        $bcid = isset($_REQUEST['bcid']) ? $_REQUEST['bcid'] : null;
-        returnAjax(associateBcidsWithExpeditions($link, null, $bcid));
-        break;
-    case 'validate':
-      //$data = $_REQUEST["data"];
-        $datasrc = $_REQUEST['datasrc'];
-        $link = isset($_REQUEST['link']) ? $_REQUEST['link'] : $_REQUEST['project'];
-        $cookies = $_REQUEST['auth'];
-        $continue = empty($cookies) ? false : true;
-        returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
-        break;
-    case 'check_access':
-        returnAjax(authorizedProjectAccess($_REQUEST));
-        break;
-    case 'su_manipulate_user':
-        returnAjax(superuserEditUser($_REQUEST));
-        break;
-    case "update_profile":
-        returnAjax(updateOwnProfile($_REQUEST));
-        break;
-    case "write_profile_image":
-        returnAjax(saveProfileImage($_REQUEST));
-        break;
-    case 'advanced_project_search':
-        returnAjax(advancedSearchProject($_REQUEST));
-        break;
-    case "invite":
-        returnAjax(inviteUser($_REQUEST));
-        break;
-    default:
-        returnAjax(getLoginState($_REQUEST, true));
+        case 'save':
+            returnAjax(saveEntry($_REQUEST));
+            break;
+        case 'new':
+            returnAjax(newEntry($_REQUEST));
+            break;
+        case 'delete':
+            returnAjax(deleteEntry($_REQUEST));
+            break;
+        case 'list':
+            returnAjax(listProjects(false));
+            break;
+        case 'sulist':
+            returnAjax(suListProjects(false));
+            break;
+        case 'get':
+            returnAjax(readProjectData($_REQUEST));
+            break;
+        case 'edit_access':
+        case 'editaccess':
+            $link = $_REQUEST['project'];
+            $deltas = smart_decode64($_REQUEST['deltas']);
+            returnAjax(editAccess($link, $deltas));
+            break;
+        case 'mint_data':
+        case 'mint':
+            $link = $_REQUEST['link'];
+            $file = $_REQUEST['file'];
+            $title64 = $_REQUEST['title'];
+            $title = decode64($title64);
+            if (empty($link) || empty($title)) {
+                returnAjax(array(
+                    'status' => false,
+                    'error' => 'BAD_PARAMETERS',
+                ));
+            }
+            $addToExpedition = isset($_REQUEST['expedition']) ? boolstr($_REQUEST['expedition']) : false;
+            returnAjax(mintBcid($link, $file, $title, $addToExpedition));
+            break;
+        case 'create_expedition':
+            $link = $_REQUEST['link'];
+            $title64 = $_REQUEST['title'];
+            $public = boolstr($_REQUEST['public']);
+            $title = decode64($title64);
+            if (empty($link) || empty($title)) {
+                returnAjax(array(
+                    'status' => false,
+                    'error' => 'BAD_PARAMETERS',
+                ));
+            }
+            $associate = boolstr($_REQUEST['bind_datasets']);
+            returnAjax(mintExpedition($link, $title, $public, $associate));
+            break;
+        case 'associate_expedition':
+            $link = $_REQUEST['link'];
+            $bcid = isset($_REQUEST['bcid']) ? $_REQUEST['bcid'] : null;
+            returnAjax(associateBcidsWithExpeditions($link, null, $bcid));
+            break;
+        case 'validate':
+          //$data = $_REQUEST["data"];
+            $datasrc = $_REQUEST['datasrc'];
+            $link = isset($_REQUEST['link']) ? $_REQUEST['link'] : $_REQUEST['project'];
+            $cookies = $_REQUEST['auth'];
+            $continue = empty($cookies) ? false : true;
+            returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
+            break;
+        case 'check_access':
+            returnAjax(authorizedProjectAccess($_REQUEST));
+            break;
+        case 'su_manipulate_user':
+            returnAjax(superuserEditUser($_REQUEST));
+            break;
+        case "update_profile":
+            returnAjax(updateOwnProfile($_REQUEST));
+            break;
+        case "write_profile_image":
+            returnAjax(saveProfileImage($_REQUEST));
+            break;
+        case 'advanced_project_search':
+            returnAjax(advancedSearchProject($_REQUEST));
+            break;
+        case "invite":
+            returnAjax(inviteUser($_REQUEST));
+            break;
+        case "notify":
+            returnAjax(notifyUsers($_REQUEST["project"], $_REQUEST["subject"], $_REQUEST["body"]));
+            break;
+        default:
+            returnAjax(getLoginState($_REQUEST, true));
     }
 }
 
@@ -237,14 +239,14 @@ function inviteUser($get)
 }
 
 
-function notifyUsers($projectId, $subject, $body, $superusers = false)
+function notifyUsers($projectId, $subject = "Default Message", $body = "Default Body", $superusers = false)
 {
     /***
      * Wrapper to handle notifying users of changes.
      ***/
     require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';
     require_once dirname(__FILE__).'/admin/CONFIG.php';
-    global $is_smtp,$mail_host,$mail_user,$mail_password,$is_pop3;
+    global $is_smtp,$mail_host,$mail_user,$mail_password,$is_pop3, $db;
     $mail = new PHPMailer();
     if ($is_smtp) {
         $mail->isSMTP();
@@ -262,8 +264,26 @@ function notifyUsers($projectId, $subject, $body, $superusers = false)
     $mail->FromName = "Amphibian Disease Webserver";
     $mail->isHTML(true);
     # Look up the project
+    $query = "SELECT `author`, `author_data`, `access_data`, `technical_contact_email` FROM `disease_tracking_data` WHERE `project_id` = '".$db->sanitize($projectId)."'";
+    $userList = array();
+    $r = mysqli_query($db->getLink(), $query);
+    $row = mysqli_fetch_assoc($r);
     # Find recipients
-    $mail->addAddress($destination);
+    $userList[] = $row["technical_contact_email"];
+    $accessors = explode(",", $row["access_data"]);
+    foreach ($accessors as $accessString) {
+        $parts = explode(":", $accessString);
+        $uid = $parts[0];
+        $query = "SELECT `username` FROM `userdata` WHERE `dblink`='".$uid."'";
+        $r = mysqli_query($db->getLink(), $query);
+        $row = mysqli_fetch_row($r);
+        $email = $row[0];
+        $userList[] = $email;
+    }
+    # Add superusers
+    foreach ($userList as $destination) {
+        $mail->addAddress($destination);
+    }
     $mail->Subject = "[Server Notice]".$subject;
     $mail->Body = $body;
     $success = $mail->send();
@@ -271,13 +291,13 @@ function notifyUsers($projectId, $subject, $body, $superusers = false)
         return array(
             "status" => $success,
             "action" => "NOTIFY_USER",
-            "notifyd" => $destination,
+            "notified" => $userList,
         );
     } else {
         return array(
             "status" => $success,
             "action" => "NOTIFY_USER",
-            "invited" => $destination,
+            "notified" => $userList,
             "error" => "MAIL_SEND_FAIL",
             "error_detail" => $mail->ErrorInfo,
         );
@@ -292,7 +312,7 @@ function saveEntry($get)
      *
      * @param data a base 64-encoded JSON string of the data to insert
      ***/
-    
+
     $data64 = $get['data'];
     $enc = strtr($data64, '-_', '+/');
     $enc = chunk_split(preg_replace('!\015\012|\015|\012!', '', $enc));
@@ -357,7 +377,7 @@ function saveEntry($get)
     }
     unset($data['id']); # Obvious
     unset($data['access_data']); # Handled seperately
-    
+
     try {
         $result = $db->updateEntry($data, $ref);
     } catch (Exception $e) {
