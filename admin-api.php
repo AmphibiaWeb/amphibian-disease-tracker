@@ -169,7 +169,9 @@ if ($as_include !== true) {
             returnAjax(notifyUsers($_REQUEST["project"], $_REQUEST["subject"], $_REQUEST["body"]));
             break;
         default:
-            returnAjax(getLoginState($_REQUEST, true));
+            $defaultResponse = getLoginState($_REQUEST, true);
+            $defaultResponse["requested"] = $admin_req;
+            returnAjax($defaultResponse);
     }
 }
 
