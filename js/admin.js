@@ -4799,7 +4799,7 @@ saveEditorData = function(force, callback) {
     return false;
   });
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, newStatus, ref8, ref9;
+    var d, ds, error, newStatus, qargs, ref8, ref9;
     console.info("Save result: server said", result);
     if (result.status !== true) {
       error = (ref8 = (ref9 = result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was an error saving to the server";
@@ -4811,6 +4811,14 @@ saveEditorData = function(force, callback) {
     }
     stopLoad();
     toastStatusMessage("Save successful");
+    d = new Date();
+    ds = d.toLocaleString();
+    qargs = {
+      action: "notify",
+      subject: "Data Updated",
+      body: "Project " + result.project.project + " updated at " + ds + " by " + ($.cookie('amphibiandisease_fullname'))
+    };
+    $.get(uri.urlString + "admin-api.php", buildArgs(qargs, "json"));
     $.get(uri.urlString + "recordMigrator.php");
     _adp.projectData = result.project.project;
     delete localStorage._adp;

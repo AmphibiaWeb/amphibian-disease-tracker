@@ -4788,6 +4788,14 @@ saveEditorData = (force = false, callback) ->
       return false
     stopLoad()
     toastStatusMessage "Save successful"
+    # Notify
+    d = new Date()
+    ds = d.toLocaleString()
+    qargs =
+      action: "notify"
+      subject: "Data Updated"
+      body: "Project #{result.project.project} updated at #{ds} by #{$.cookie('amphibiandisease_fullname')}"
+    $.get "#{uri.urlString}admin-api.php", buildArgs qargs, "json"
     # Ping the record migrator
     $.get "#{uri.urlString}recordMigrator.php"
     # Update the project data
