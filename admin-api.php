@@ -298,8 +298,8 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
     }
     $mail->Subject = "[Server Notice] ".$subject;
     $mail->Body = $body;
-    #$success = $mail->send();
-    $success = false;
+    $success = $mail->send();
+    #$success = false;
     if ($success) {
         return array(
             "status" => $success,
