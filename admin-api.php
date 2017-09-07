@@ -286,10 +286,8 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
             $userList[] = $email;
         }
     }
-    if (empty($accessors)) {
-        $authorData = json_decode($row["author_data"], true);
-        $userList[] = $authorData["contact_email"];
-    }
+    $authorData = json_decode($row["author_data"], true);
+    $userList[] = $authorData["contact_email"];
     # Add superusers
     foreach ($userList as $destination) {
         $mail->addAddress($destination);
@@ -310,7 +308,8 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
             "notified" => $userList,
             "error" => "MAIL_SEND_FAIL",
             "error_detail" => $mail->ErrorInfo,
-            "acessors" => $accessors,
+            "accessors" => $accessors,
+            "author"=> $authorData,
         );
     }
 }
