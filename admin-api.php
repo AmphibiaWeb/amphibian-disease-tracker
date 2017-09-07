@@ -166,7 +166,9 @@ if ($as_include !== true) {
             returnAjax(inviteUser($_REQUEST));
             break;
         case "notify":
-            returnAjax(notifyUsers($_REQUEST["project"], $_REQUEST["subject"], $_REQUEST["body"]));
+            $subject = empty($_REQUEST["subject"]) ? null : $_REQUEST["subject"];
+            $body = empty($_REQUEST["body"]) ? null : $_REQUEST["body"];
+            returnAjax(notifyUsers($_REQUEST["project"], $subject, $body));
             break;
         default:
             $defaultResponse = getLoginState($_REQUEST, true);
