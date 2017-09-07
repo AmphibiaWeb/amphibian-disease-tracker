@@ -294,9 +294,9 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
     foreach ($userList as $destination) {
         $mail->addAddress($destination);
     }
-    $mail->Subject = "[Server Notice]".$subject;
+    $mail->Subject = "[Server Notice] ".$subject;
     $mail->Body = $body;
-    $success = $mail->send();
+    #$success = $mail->send();
     if ($success) {
         return array(
             "status" => $success,
@@ -310,8 +310,10 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
             "notified" => $userList,
             "error" => "MAIL_SEND_FAIL",
             "error_detail" => $mail->ErrorInfo,
-            "accessors" => $accessors,
-            "author"=> $authorData,
+            "body" => $body,
+            "subject" => $subject,
+            // "accessors" => $accessors,
+            // "author"=> $authorData,
         );
     }
 }
