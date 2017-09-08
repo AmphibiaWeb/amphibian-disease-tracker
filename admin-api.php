@@ -293,6 +293,12 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
     }
 
     # Add superusers
+    $query = "SELECT `username` FROM `userdata` WHERE `su_flag` IS TRUE";
+    $r = mysqli_query($db->getLink(), $query);
+    while ($row = mysqli_fetch_row($r)) {
+        $userList[] = $row[0];
+    }
+    # Add everyone to the mail object
     foreach ($userList as $destination) {
         $mail->addAddress($destination);
     }
