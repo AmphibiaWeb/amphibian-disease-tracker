@@ -13340,6 +13340,9 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .project-button-link {
   margin-right: .5rem;
 }
+.tab-pane {
+  padding-top: 1rem;
+}
 .pop-map {
   width: 80vw;
   height: 80vh;
@@ -13351,6 +13354,14 @@ section.conversations .user-conversation .chat-entry-container .form-group {
 .pop-map paper-dialog-scrollable .mol-embed {
   width: 80%;
   height: 80%;
+}
+section.species-list .species-list-label {
+  display: inline-block;
+  font-style: italic;
+}
+section.species-list .species-list-button {
+  margin-left: .5rem;
+  margin-right: .5rem;
 }
 section#post-species-summary.has-open-collapse {
   transition: all 0.25s ease-in-out;

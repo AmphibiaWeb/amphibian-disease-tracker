@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "minimatch": "^3.0.4",
-    "polymer-bundler": "^2.0.2",
+    "polymer-bundler": "^3.0.1",
     "webpack": "^3.0.0"
   }
 }

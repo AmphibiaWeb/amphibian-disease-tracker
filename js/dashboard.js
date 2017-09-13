@@ -36,7 +36,7 @@ createChart = function(chartSelector, chartData, isSimpleData, appendTo, callbac
     isSimpleData = false;
   }
   if (appendTo == null) {
-    appendTo = "main";
+    appendTo = "#charts";
   }
   if (typeof chartData !== "object") {
     console.error("Can't create a chart without a data object");
@@ -1215,7 +1215,14 @@ $(function() {
     getServerChart();
   }
   $("#generate-chart").click(function() {
-    return renderNewChart.debounce(50);
+    renderNewChart.debounce(50);
+    return false;
+  });
+  $(".tab-area-container .nav-tabs a").click(function(e) {
+    e.preventDefault();
+    console.debug("Clicked a tab", this);
+    $(this).tab("show");
+    return false;
   });
   delayPolymerBind("paper-dropdown-menu#binned-by", function() {
     $(".chart-param paper-listbox").on("iron-select", function() {
