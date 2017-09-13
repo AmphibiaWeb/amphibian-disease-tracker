@@ -4794,7 +4794,7 @@ saveEditorData = (force = false, callback) ->
     qargs =
       action: "notify"
       subject: "Project '#{result.project.project.project_title}' Updated"
-      body: "Project #{result.project.project_id} ('#{result.project.project.project_title}') updated at #{ds} by <a href='https://amphibiandisease.org/profile.php?id=#{result.user.user}'>#{$.cookie('amphibiandisease_fullname')}&lt;<code>#{$.cookie('amphibiandisease_user')}</code>&gt;</a>"
+      body: "Project #{result.project.project_id} ('#{result.project.project.project_title}') updated at #{ds} by <a href='https://amphibiandisease.org/profile.php?id=#{result.project.user.user}'>#{$.cookie('amphibiandisease_fullname')}&lt;<code>#{$.cookie('amphibiandisease_user')}</code>&gt;</a>"
     $.get "#{uri.urlString}admin-api.php", buildArgs qargs, "json"
     # Ping the record migrator
     $.get "#{uri.urlString}recordMigrator.php"
