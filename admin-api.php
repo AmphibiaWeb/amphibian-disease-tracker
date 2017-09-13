@@ -303,7 +303,8 @@ function notifyUsers($projectId, $subject = "Default Message", $body = "Default 
         $mail->addAddress($destination);
     }
     $mail->Subject = "[Server Notice] ".$subject;
-    $mail->Body = $body;
+    $htmlBody = "<html><head><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/></head><body>".$body."</body></html>";
+    $mail->Body = $htmlBody;
     $success = $mail->send();
     #$success = false;
     if ($success) {
