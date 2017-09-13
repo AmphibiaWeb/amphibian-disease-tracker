@@ -98,6 +98,9 @@ switch ($do) {
     case "amphibiaweb":
         returnAjax(getTaxonAWebData($_REQUEST));
         break;
+    case "higher_taxa":
+        returnAjax(updateTaxonRecordHigherInformation());
+        break;
     default:
         returnAjax(array(
             'status' => false,
@@ -1686,6 +1689,58 @@ function getChartData($chartDataParams)
         "error" => "NO_CAUGHT_CASE",
         "human_error" => "There was an application error parsing your chart data request",
       ));
+}
+
+function updateTaxonRecordHigherInformation()
+{
+    /***
+     * Look at the records list and update all of the taxon's higher
+     * information
+     *
+     *
+     * This is a slow operation
+     ***/
+    global $db;
+    $updateTime = microtime_float();
+    $averageTaxonUpdate = array();
+    $taxonCount = 0;
+    $taxonSkipped = 0;
+    $queries = array();
+    $db->setTable("records_list");
+    $query = "SELECT `genus`,`specificepithet`, `taxonomy_modified` FROM `".$db->getTable()."` GROUP BY `genus`, `specificepithet`";
+    $r = mysqli_query($db->getLink(), $query);
+    while ($row = mysqli_fetch_assoc($r)) {
+        if ($updateTime < $row["taxonomy_modified"] + 60*60*24) {
+            # We've updated in the past 24 hours
+            $taxonSkipped++;
+            continue;
+        }
+        $start = microtime_float();
+        $taxon = array(
+            "genus" => $row["genus"],
+            "species" => $row["specificepithet"],
+        );
+        $data = getTaxonAwebData($taxon);
+        $order = $data["data"]["ordr"]; # Not a typo
+        $family = $data["data"]["family"];
+        $subfamily = $data["data"]["subfamily"];
+        $clade = $data["data"]["clade"];
+        # Update the database with these fields
+        $updateQuery = "UPDATE `".$db->getTable()."` SET `order`='".$db->sanitize($order)."', `family`='".$db->sanitize($family)."', `subfamily`='".$db->sanitize($subfamily)."', `clade`='".$db->sanitize($clade)."', `taxonomy_modified`=".$updateTime." WHERE `genus`='".$taxon["genus"]."' AND `specificepithet`='".$taxon["species"]."'";
+        $queries[] = $updateQuery;
+        # Do the query
+        # Stats
+        $elapsed = microtime_float() - $start;
+        $averageTaxonUpdate[] = $elapsed;
+        $taxonCount++;
+    }
+    return array(
+        "status" => true,
+        "taxa_updated" => $taxonCount,
+        "taxa_skipped" => $taxonSkipped,
+        "average_fetch_time" => array_sum($averageTaxonUpdate) / count($averageTaxonUpdate),
+        "queries_to_be_executed" => $queries,
+    );
 }
 
 
