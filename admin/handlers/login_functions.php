@@ -387,7 +387,7 @@ class UserFunctions extends DBHelper
 
     protected function getNameTag($tag = "name") {
         $userdata = $this->getUser();
-        if(!is_array($userdata)) return false;
+        if (!is_array($userdata)) return false;
         $nameXml = $userdata["name"];
         $xml = new Xml();
         $xml->setXml($nameXml);
@@ -411,7 +411,7 @@ class UserFunctions extends DBHelper
          * Returns the public_profile of the userdata
          ***/
         # Are profiles configured?
-        if(!$this->columnExists("public_profile")) {
+        if (!$this->columnExists("public_profile")) {
             return false;
         }
         $userdata = $this->getUser();
@@ -1256,7 +1256,7 @@ class UserFunctions extends DBHelper
 
     public function hasAlternateEmail() {
         $key = "alternate_email";
-        if($this->columnExists($key) !== true) {
+        if ($this->columnExists($key) !== true) {
             $this->addColumn($key, "varchar(255)");
         }
         try {
@@ -1268,20 +1268,20 @@ class UserFunctions extends DBHelper
     }
 
     public function verifyEmail($auth_code = null, $alternate = false) {
-        if($alternate === true) {
-            if(!$this->hasAlternateEmail()) return array(
+        if ($alternate === true) {
+            if (!$this->hasAlternateEmail()) return array(
                 "status" => false,
                 "is_good" => false,
                 "error" => "NO_ALTERNATE_EMAIL",
                 "human_error" => "This user has no alternate email",
             );
         }
-        if($alternate === true) {
+        if ($alternate === true) {
             $email = $this->getAlternateEmail();
         } else {
             $email = $this->getUsername();
         }
-        if($this->isVerified($alternate) === true) {
+        if ($this->isVerified($alternate) === true) {
             return array(
                 "status" => false,
                 "is_good" => true,
@@ -1291,7 +1291,7 @@ class UserFunctions extends DBHelper
                 "email" => $email,
             );
         }
-        if(empty($auth_code)) {
+        if (empty($auth_code)) {
             return $this->sendEmailVerification($alternate);
         } else {
             # Check it
@@ -1303,7 +1303,7 @@ class UserFunctions extends DBHelper
                 "email" => $email,
             );
             $secret = $this->getSecret(true);
-            if($auth_code == $secret) {
+            if ($auth_code == $secret) {
                 # Good
                 $response["is_good"] = true;
                 # Update the column
@@ -1311,12 +1311,12 @@ class UserFunctions extends DBHelper
                 $key = $alternate ? "alternate_email_verified" : "email_verified";
                 $query = "UPDATE `".$this->getTable()."` SET `".$key."` = TRUE ".$this->getUserWhere();
                 $r = mysqli_query($this->getLink(), $query);
-                if($r === false) {
+                if ($r === false) {
                     $reponse["error"] = mysqli_error($this->getLink());
                     $reponse["human_error"] = "Error updating verified status";
                 } else {
                     $response["status"] = true;
-                    if($this->isVerified($alternate)) $this->setTempSecret("");
+                    if ($this->isVerified($alternate)) $this->setTempSecret("");
                 }
                 $response["is_verified"] = $this->isVerified($alternate);
                 $response["meets_restriction_criteria"] = $this->meetsRestrictionCriteria();
@@ -1411,9 +1411,9 @@ class UserFunctions extends DBHelper
             "exists" => $this->columnExists($key),
             "query" => $this->columnExists($key, true),
         );
-        if($colCheck['exists'] !== true) {
+        if ($colCheck['exists'] !== true) {
             $r = $this->addColumn($key, "BOOLEAN", 0);
-            if($r["status"] !== true) {
+            if ($r["status"] !== true) {
                 $r['col_check'] = $colCheck;
                 return $r;
             }
@@ -1424,12 +1424,12 @@ class UserFunctions extends DBHelper
 
     public function meetsRestrictionCriteria() {
         try {
-            if($this->isAdmin() || $this->isSU()) return true;
-            if($this->isVerified() !== true) return false;
-            if($this->hasAlternateEmail()) {
-                if($this->isVerified(true) === true) {
+            if ($this->isAdmin() || $this->isSU()) return true;
+            if ($this->isVerified() !== true) return false;
+            if ($this->hasAlternateEmail()) {
+                if ($this->isVerified(true) === true) {
                     $alternateMatch = $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
-                    if($alternateMatch === true) return true;
+                    if ($alternateMatch === true) return true;
                 }
             }
             return $this->matchEmailAgainstRestrictions($this->getUsername());
@@ -1439,7 +1439,7 @@ class UserFunctions extends DBHelper
     }
 
     public function alternateIsAllowed() {
-        if($this->hasAlternateEmail()) {
+        if ($this->hasAlternateEmail()) {
             return $this->matchEmailAgainstRestrictions($this->getAlternateEmail());
         } else return false;
     }
@@ -1496,7 +1496,7 @@ class UserFunctions extends DBHelper
             $tld2 = array_pop($domainBaseParts);
             $tld = $tld2 . "." . $tld;
             ++$i;
-            if($i == 2) $tldTwo = $tld;
+            if ($i == 2) $tldTwo = $tld;
         }
         $domain = array_pop($domainBaseParts);
         $response = array(
@@ -1508,19 +1508,19 @@ class UserFunctions extends DBHelper
             "allowedTLDs" => $this->allowedTLDs,
         );
         $status = null;
-        if(is_array($this->allowedDomains)) {
+        if (is_array($this->allowedDomains)) {
             $response["checkedDomains"] = true;
-            if(sizeof($this->allowedDomains) > 0) {
+            if (sizeof($this->allowedDomains) > 0) {
                 # Match
                 $hasFullDomain = in_array($qualifiedDomain, $this->allowedDomains);
                 $hasBaseDomain = in_array($domain, $this->allowedDomains);
-                if(!($hasFullDomain || $hasBaseDomain)) $status = false;
+                if (!($hasFullDomain || $hasBaseDomain)) $status = false;
                 else $response["validDomain"] = true;
             } else $response["validDomain"] = null;
         } else $response["checkedDomains"] = false;
-        if(is_array($this->allowedTLDs)) {
+        if (is_array($this->allowedTLDs)) {
             $response["checkTlds"] = true;
-            if(sizeof($this->allowedTLDs) > 0) {
+            if (sizeof($this->allowedTLDs) > 0) {
                 # Regex substring
                 $imploded = implode("|", $this->allowedTLDs);
                 $matchTlds = str_replace(".","\.", $imploded);
@@ -1530,10 +1530,10 @@ class UserFunctions extends DBHelper
                 $response['regMatch'] = $regMatch;
                 # Match
                 $baseTldMatch = in_array($tld, $this->allowedTLDs);
-                if(!empty($tldTwo)) {
+                if (!empty($tldTwo)) {
                     $europeTldMatch = in_array($tldTwo, $this->allowedTLDs);
                 } else $europeTldMatch = false;
-                if(!($baseTldMatch || $europeTldMatch || $regMatch)) $status = false;
+                if (!($baseTldMatch || $europeTldMatch || $regMatch)) $status = false;
                 else $response["validTld"] = true;
             }
         } else $response["checkTlds"] = false;
@@ -1553,19 +1553,19 @@ class UserFunctions extends DBHelper
             $tld2 = array_pop($domainBaseParts);
             $tld = $tld2 . "." . $tld;
             ++$i;
-            if($i == 2) $tldTwo = $tld;
+            if ($i == 2) $tldTwo = $tld;
         }
         $domain = array_pop($domainBaseParts);
-        if(is_array($this->allowedDomains)) {
-            if(sizeof($this->allowedDomains) > 0) {
+        if (is_array($this->allowedDomains)) {
+            if (sizeof($this->allowedDomains) > 0) {
                 # Match
                 $hasFullDomain = in_array($qualifiedDomain, $this->allowedDomains);
                 $hasBaseDomain = in_array($domain, $this->allowedDomains);
-                if(!($hasFullDomain || $hasBaseDomain)) return false;
+                if (!($hasFullDomain || $hasBaseDomain)) return false;
             }
         }
-        if(is_array($this->allowedTLDs)) {
-            if(sizeof($this->allowedTLDs) > 0) {
+        if (is_array($this->allowedTLDs)) {
+            if (sizeof($this->allowedTLDs) > 0) {
                 # Regex substring
                 $imploded = implode("|", $this->allowedTLDs);
                 $matchTlds = str_replace(".","\.", $imploded);
@@ -1573,10 +1573,10 @@ class UserFunctions extends DBHelper
                 $regMatch = boolstr(preg_match($reg, $email));
                 # Match
                 $baseTldMatch = in_array($tld, $this->allowedTLDs);
-                if(!empty($tldTwo)) {
+                if (!empty($tldTwo)) {
                   $europeTldMatch = in_array($tldTwo, $this->allowedTLDs);
                 } else $europeTldMatch = false;
-                if(!($baseTldMatch || $europeTldMatch || $regMatch)) return false;
+                if (!($baseTldMatch || $europeTldMatch || $regMatch)) return false;
             }
         }
         return true;
@@ -1584,14 +1584,14 @@ class UserFunctions extends DBHelper
 
     public function getRestrictionCriteria() {
         $domains = "any";
-        if(is_array($this->allowedDomains)) {
-            if(sizeof($this->allowedDomains) > 0) {
+        if (is_array($this->allowedDomains)) {
+            if (sizeof($this->allowedDomains) > 0) {
                 $domains = implode(", ", $this->allowedDomains);
             }
         }
         $tlds = "any";
-        if(is_array($this->allowedTLDs)) {
-            if(sizeof($this->allowedTLDs) > 0) {
+        if (is_array($this->allowedTLDs)) {
+            if (sizeof($this->allowedTLDs) > 0) {
                 $tlds = implode(", ", $this->allowedTLDs);
             }
         }
@@ -1606,7 +1606,7 @@ class UserFunctions extends DBHelper
         $email = trim($email);
         $email = $this->sanitize($email);
         # Check it's an email
-        if(!self::isValidEmail($email)) {
+        if (!self::isValidEmail($email)) {
             return array(
                 "status" => false,
                 "error" => "INVALID_EMAIL",
@@ -1621,7 +1621,7 @@ class UserFunctions extends DBHelper
         $key = "alternate_email";
         if ($this->columnExists($key) !== true) {
             $reponse["column"] = $this->addColumn($key, "varchar(255)");
-            if($response["column"]["status"] !== true) {
+            if ($response["column"]["status"] !== true) {
                 $response["error"] = "BAD_COLUMN";
                 $response["human_error"] = "Couldn't create column '$key'";
                 return $response;
@@ -1644,7 +1644,7 @@ class UserFunctions extends DBHelper
     }
 
     public function getAlternateEmail() {
-        if($this->hasAlternateEmail()) {
+        if ($this->hasAlternateEmail()) {
             $u = $this->getUser();
             return $u["alternate_email"];
         }
@@ -1686,7 +1686,7 @@ class UserFunctions extends DBHelper
         if (empty($path)) {
             $path = $this->picture_path;
         }
-        if(strpos($image, $path) === 0) {
+        if (strpos($image, $path) === 0) {
            $image = str_replace($path, "", $image);
         }
         $sourceImage = $path . $image;
@@ -2790,7 +2790,7 @@ class UserFunctions extends DBHelper
          *
          * @param bool $confirm -> must be true to execute
          ***/
-        if(!$confirm) {
+        if (!$confirm) {
             return array(
                 "status" => false,
                 "error" => "CONFIRM_FLAG_NOT_SET",
@@ -2904,7 +2904,7 @@ class UserFunctions extends DBHelper
             $mail->addAddress($to);
         # If this works even once, we want to tell the user it worked
         if ($mail->send()) {
-            # if($success === false) $success = true;
+            # if ($success === false) $success = true;
             ++$i;
         } else {
             $errors[$to] = $mail->ErrorInfo;
