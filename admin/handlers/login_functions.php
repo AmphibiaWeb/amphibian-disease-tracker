@@ -9,21 +9,21 @@ class UserFunctions extends DBHelper
     public function __construct($username = null, $lookup_column = null, $db_params = null)
     {
         /***
-     * @param string $username the user to be instanced with
-     * @param string $lookup_column the column to look them up in.
-     *                              Ignored if $username is null, defaults to $user_column
-     * @param array $db_params Optional override database parameters.
-     *                         The required keys are:
-     *                         (string)"user" for SQL username,
-     *                         (string)"database" as the SQL database,
-     *                         and (string)"password" for SQL password,
-     *                         with optional keys
-     *                         (string)"url" (defaults to "localhost")
-     *                         and (array)"cols" of type "column_name"=>"type".
-     ***/
-        global $user_data_storage,$profile_picture_storage,$site_security_token,$service_email,$minimum_password_length,$password_threshold_length,$db_cols,$default_user_table,$default_user_database,$password_column,$cookie_ver_column,$user_column,$totp_column,$totp_steps,$temporary_storage,$needs_manual_authentication,$totp_rescue,$ip_record,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$baseurl,$twilio_sid,$twilio_token,$twilio_number,$site_name,$link_column,$app_column, $allowedEmailDomains, $allowedEmailTLDs;
-    # Set up the parameters in CONFIG.php
-    $config_path = dirname(__FILE__).'/../CONFIG.php';
+         * @param string $username the user to be instanced with
+         * @param string $lookup_column the column to look them up in.
+         *                              Ignored if $username is null, defaults to $user_column
+         * @param array $db_params Optional override database parameters.
+         *                         The required keys are:
+         *                         (string)"user" for SQL username,
+         *                         (string)"database" as the SQL database,
+         *                         and (string)"password" for SQL password,
+         *                         with optional keys
+         *                         (string)"url" (defaults to "localhost")
+         *                         and (array)"cols" of type "column_name"=>"type".
+         ***/
+        global $user_data_storage,$profile_picture_storage,$site_security_token,$service_email,$minimum_password_length,$password_threshold_length,$db_cols,$default_user_table,$default_user_database,$password_column,$cookie_ver_column,$user_column,$totp_column,$totp_steps,$temporary_storage,$needs_manual_authentication,$totp_rescue,$ip_record,$default_user_database,$default_sql_user,$default_sql_password,$sql_url,$default_user_table,$baseurl,$twilio_sid,$twilio_token,$twilio_number,$site_name,$link_column,$app_column, $allowedEmailDomains, $allowedEmailTLDs, $notify_su_on_signup;
+        # Set up the parameters in CONFIG.php
+        $config_path = dirname(__FILE__).'/../CONFIG.php';
         require_once $config_path;
         if (!empty($db_params)) {
             if (!is_array($db_params)) {
@@ -118,6 +118,7 @@ class UserFunctions extends DBHelper
         $this->userlink = null;
         $this->allowedTLDs = $allowedEmailTLDs;
         $this->allowedDomains = $allowedEmailDomains;
+        $this->suNotify = $notify_su_on_signup;
 
         $proto = 'http';
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
@@ -235,6 +236,10 @@ class UserFunctions extends DBHelper
         $mail->isHTML(true);
 
         return $mail;
+    }
+    private function needsSUNotification()
+    {
+        return toBool($this->suNotify);
     }
     private function getSecret($is_test = false)
     {
@@ -1047,7 +1052,12 @@ class UserFunctions extends DBHelper
                     }
                 }
                 $cookies = $this->createCookieTokens();
-                
+                if ($this->needsSUNotification() && !$this->needsManualAuth()) {
+                    # Superusers should be notified of the signup
+                    $newUserSubject = "New user for ".$this->getQualifiedDomain();
+                    $newUserBody = "<p>A new user has signed up for ".$this->getQualifiedDomain().".</p><p>Their username is: <code>".$user."</code></p><p>If this is unexpected or impermissible, take care to revoke them immediately.";
+                    $this->mailSuperusers($newUserSubject, $newUserBody);
+                }
                 return array_merge(array('status' => true, 'message' => $message), $userdata, $cookies, $auth_result);
             } else {
                 /*
@@ -1360,7 +1370,41 @@ class UserFunctions extends DBHelper
 
     }
 
-    public function isVerified($alternate = false) {
+    public function mailSuperusers($subject, $body) 
+    {
+        /***
+         * Send an email to site superusers
+         ***/
+        $mail = $this->getMailObject();
+        $mail_subject = '['.$this->getDomain().'] ' . $subject;
+        $mail->Subject = $mail_subject;
+        $body = "<html><head><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/></head><body>".$body."</body></html>";
+        $mail->Body = $body;
+        # Get superusers
+        $query = "SELECT `username` FROM `".$this->getTable()."` WHERE `su_flag` IS TRUE";
+        $this->invalidateLink();
+        $r = mysqli_query($this->getLink(), $query);
+        if ($r === false) {
+            return array(
+                "status" => false,
+                "error" => mysqli_error($this->getLink()),
+            );
+        }
+        # Add superusers as destination
+        while ($row = mysqli_fetch_row($r)) {
+            $mail->addAddress($row[0]);
+        }
+        # Send it
+        $success = $mail->send();
+        $error = $success ? null : $mail->ErrorInfo;
+        return array(
+            "status" => $success,
+            "error" => $error,
+        );
+    }
+    
+    public function isVerified($alternate = false) 
+    {
         $key = $alternate ? "alternate_email_verified" : "email_verified";
         $colCheck = array(
             "key" => $key,
@@ -1575,7 +1619,7 @@ class UserFunctions extends DBHelper
             "email" => $email,
         );
         $key = "alternate_email";
-        if($this->columnExists($key) !== true) {
+        if ($this->columnExists($key) !== true) {
             $reponse["column"] = $this->addColumn($key, "varchar(255)");
             if($response["column"]["status"] !== true) {
                 $response["error"] = "BAD_COLUMN";
@@ -1588,7 +1632,7 @@ class UserFunctions extends DBHelper
         $this->invalidateLink();
         $r = mysqli_query($this->getLink(), $query);
 
-        if($r === false) {
+        if ($r === false) {
             $response["status"] = false;
             $response["error"] = mysqli_error($this->getLink());
             $reponse["human_error"] = "Could not save alternate email";

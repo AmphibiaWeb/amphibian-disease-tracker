@@ -80,6 +80,8 @@ $mail_user = "";
 $mail_password = "";
 
 
+$notify_su_on_signup = false;
+
 /***
  * If you edit this, change the mapping in login_functions.php
  ***/
