@@ -1709,6 +1709,7 @@ function updateTaxonRecordHigherInformation()
     $db->setTable("records_list");
     $query = "SELECT `genus`,`specificepithet`, `taxonomy_modified` FROM `".$db->getTable()."` GROUP BY `genus`, `specificepithet`";
     $r = mysqli_query($db->getLink(), $query);
+    $totalTaxa = mysqli_num_rows($r);
     while ($row = mysqli_fetch_assoc($r)) {
         if ($updateTime < $row["taxonomy_modified"] + 60*60*24) {
             # We've updated in the past 24 hours
@@ -1733,11 +1734,16 @@ function updateTaxonRecordHigherInformation()
         $elapsed = microtime_float() - $start;
         $averageTaxonUpdate[] = $elapsed;
         $taxonCount++;
+        if (microtime_float() - $updateTime > 25) {
+            # Do it only in tiny batches, to prevent script timeouts
+            break;
+        }
     }
     return array(
         "status" => true,
         "taxa_updated" => $taxonCount,
         "taxa_skipped" => $taxonSkipped,
+        "taxa_not_examined" => $totalTaxa - $taxonCount - $taxonSkipped,
         "average_fetch_time" => array_sum($averageTaxonUpdate) / count($averageTaxonUpdate),
         "queries_to_be_executed" => $queries,
     );
