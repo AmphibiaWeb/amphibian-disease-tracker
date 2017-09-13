@@ -1705,7 +1705,9 @@ function updateTaxonRecordHigherInformation()
     $averageTaxonUpdate = array();
     $taxonCount = 0;
     $taxonSkipped = 0;
+    $taxonFailed = 0;
     $queries = array();
+    $errors = array();
     $db->setTable("records_list");
     $query = "SELECT `genus`,`specificepithet`, `taxonomy_modified` FROM `".$db->getTable()."` GROUP BY `genus`, `specificepithet`";
     $r = mysqli_query($db->getLink(), $query);
@@ -1714,6 +1716,9 @@ function updateTaxonRecordHigherInformation()
         if ($updateTime < $row["taxonomy_modified"] + 60*60*24) {
             # We've updated in the past 24 hours
             $taxonSkipped++;
+            continue;
+        }
+        if (empty($row["genus"]) || empty($row["specificepithet"]) || $row["specificepithet"] == "sp.") {
             continue;
         }
         $start = microtime_float();
@@ -1728,13 +1733,18 @@ function updateTaxonRecordHigherInformation()
         $clade = $data["data"]["clade"];
         # Update the database with these fields
         $updateQuery = "UPDATE `".$db->getTable()."` SET `order`='".$db->sanitize($order)."', `family`='".$db->sanitize($family)."', `subfamily`='".$db->sanitize($subfamily)."', `clade`='".$db->sanitize($clade)."', `taxonomy_modified`=".$updateTime." WHERE `genus`='".$taxon["genus"]."' AND `specificepithet`='".$taxon["species"]."'";
-        $queries[] = $updateQuery;
+        #$queries[] = $updateQuery;
         # Do the query
+        $r2 = mysqli_query($db->getLink(), $updateQuery);
+        if ($r2 === false) {
+            $taxonFailed++;
+            $errors[] = mysqli_error($r2);
+        }
         # Stats
         $elapsed = microtime_float() - $start;
         $averageTaxonUpdate[] = $elapsed;
         $taxonCount++;
-        if (microtime_float() - $updateTime > 25) {
+        if (microtime_float() - $updateTime > 15) {
             # Do it only in tiny batches, to prevent script timeouts
             break;
         }
@@ -1745,7 +1755,8 @@ function updateTaxonRecordHigherInformation()
         "taxa_skipped" => $taxonSkipped,
         "taxa_not_examined" => $totalTaxa - $taxonCount - $taxonSkipped,
         "average_fetch_time" => array_sum($averageTaxonUpdate) / count($averageTaxonUpdate),
-        "queries_to_be_executed" => $queries,
+        "errors" => $errors,
+        # "queries_to_be_executed" => $queries,
     );
 }
 
