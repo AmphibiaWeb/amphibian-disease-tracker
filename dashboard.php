@@ -578,7 +578,7 @@ if (toBool($_REQUEST["async"]) === true) {
             while ($row = mysqli_fetch_assoc($r)) {
                 $html .= "<p class='species-list-label'>".$row["genus"]." ".$row["specificepithet"]."</p>
 <button class='btn btn-default species-list-button aweb-button click' data-href='http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&rel-species=equals&where-genus=".$row["genus"]."&where-species=".$row["specificepithet"]."' data-newtab='true'>AmphibiaWeb <iron-icon icon='icons:open-in-new'></iron-icon></button>
-<button class='btn btn-default species-list-button data-summary-button click' data-href='https://amphibiandisease.org/dashboard.php?taxon=".$row["genus"]."+".$row["specificepithet"]."'>Data Entry</button>
+<button class='btn btn-default species-list-button data-summary-button click' data-href='https://amphibiandisease.org/dashboard.php?taxon=".$row["genus"]."+".$row["specificepithet"]."'>Portal Stats</button>
 <br/>";
             }
                 ?>
