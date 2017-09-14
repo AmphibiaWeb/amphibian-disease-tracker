@@ -1376,7 +1376,7 @@ class UserFunctions extends DBHelper
          * Send an email to site superusers
          ***/
         $mail = $this->getMailObject();
-        $mail_subject = '['.$this->getDomain().'] ' . $subject;
+        $mail_subject = '[Server Notice] ' . $subject;
         $mail->Subject = $mail_subject;
         $body = "<html><head><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/></head><body>".$body."</body></html>";
         $mail->Body = $body;
