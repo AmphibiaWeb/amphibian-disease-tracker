@@ -571,7 +571,7 @@ if (toBool($_REQUEST["async"]) === true) {
              * dashboard. See issue:
              * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/204
              ***/
-            $query = "select distinct `genus`, `specificepithet` from `records_list` AS records $authorizedIntersect records.project_id WHERE genus IS NOT NULL ORDER BY order, family, subfamily, genus, specificepithet";
+            $query = "select distinct `genus`, `specificepithet`, `order`, `family`, `subfamily` from `records_list` AS records $authorizedIntersect records.project_id WHERE genus IS NOT NULL ORDER BY `order`, family, subfamily, genus, specificepithet";
             $r = mysqli_query($db->getLink(), $query);
             $speciesCount = mysqli_num_rows($r);
             $html = "";
@@ -585,15 +585,15 @@ if (toBool($_REQUEST["async"]) === true) {
                     continue;
                 }
                 if (!in_array($row["order"], $usedOrder)) {
-                    $html .= "<h2>".$row["order"]."</h2>";
+                    $html .= "<h2 class='order-label'>".$row["order"]."</h2>";
                     $usedOrder[] = $row["order"];
                 }
                 if (!in_array($row["family"], $usedFamily)) {
-                    $html .= "<h3>".$row["family"]."</h3>";
+                    $html .= "<h3 class='family-label'>".$row["family"]."</h3>";
                     $usedFamily[] = $row["family"];
                 }
                 if (!in_array($row["subfamily"], $usedSubfamily)) {
-                    $html .= "<h4>".$row["subfamily"]."</h4>";
+                    $html .= "<h4 class='subfamily-label'>".$row["subfamily"]."</h4>";
                     $usedSubfamily[] = $row["subfamily"];
                 }
                 $html .= "<p class='species-list-label'>".$row["genus"]." ".$row["specificepithet"]."</p>
@@ -602,7 +602,7 @@ if (toBool($_REQUEST["async"]) === true) {
 <br/>";
             }
             if (!empty($unsorted)) {
-                $html .= "<h2>Taxa with no higher data</h2>";
+                $html .= "<h2 class='order-label'>Taxa with no higher data</h2>";
                 foreach ($unsorted as $row) {
                     $html .= "<p class='species-list-label'>".$row["genus"]." ".$row["specificepithet"]."</p>
             <button class='btn btn-default species-list-button aweb-button click' data-href='http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&rel-species=equals&where-genus=".$row["genus"]."&where-species=".$row["specificepithet"]."' data-newtab='true'>AmphibiaWeb <iron-icon icon='icons:open-in-new'></iron-icon></button>
@@ -610,6 +610,7 @@ if (toBool($_REQUEST["async"]) === true) {
             <br/>";
                 }
             }
+if (empty($html)) $html = $query;
                 ?>
             <section class="col-xs-12 species-list"><?php echo $html; ?></section>
           </div>

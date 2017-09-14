@@ -13355,9 +13355,16 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   width: 80%;
   height: 80%;
 }
+section.species-list .family-label {
+  margin-left: 1rem;
+}
+section.species-list .subfamily-label {
+  margin-left: 1.5rem;
+}
 section.species-list .species-list-label {
   display: inline-block;
   font-style: italic;
+  margin-left: 2rem;
 }
 section.species-list .species-list-button {
   margin-left: .5rem;
