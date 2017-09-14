@@ -571,15 +571,44 @@ if (toBool($_REQUEST["async"]) === true) {
              * dashboard. See issue:
              * https://github.com/AmphibiaWeb/amphibian-disease-tracker/issues/204
              ***/
-            $query = "select distinct `genus`, `specificepithet` from `records_list` AS records $authorizedIntersect records.project_id WHERE genus IS NOT NULL ORDER BY genus, specificepithet";
+            $query = "select distinct `genus`, `specificepithet` from `records_list` AS records $authorizedIntersect records.project_id WHERE genus IS NOT NULL ORDER BY order, family, subfamily, genus, specificepithet";
             $r = mysqli_query($db->getLink(), $query);
             $speciesCount = mysqli_num_rows($r);
             $html = "";
+            $usedOrder = array();
+            $usedFamily = array();
+            $usedSubfamily = array();
+            $unsorted = array();
             while ($row = mysqli_fetch_assoc($r)) {
+                if (empty($row["order"]) || strtolower($row["order"]) == "null") {
+                    $unsorted[] = $row;
+                    continue;
+                }
+                if (!in_array($row["order"], $usedOrder)) {
+                    $html .= "<h2>".$row["order"]."</h2>";
+                    $usedOrder[] = $row["order"];
+                }
+                if (!in_array($row["family"], $usedFamily)) {
+                    $html .= "<h3>".$row["family"]."</h3>";
+                    $usedFamily[] = $row["family"];
+                }
+                if (!in_array($row["subfamily"], $usedSubfamily)) {
+                    $html .= "<h4>".$row["subfamily"]."</h4>";
+                    $usedSubfamily[] = $row["subfamily"];
+                }
                 $html .= "<p class='species-list-label'>".$row["genus"]." ".$row["specificepithet"]."</p>
 <button class='btn btn-default species-list-button aweb-button click' data-href='http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&rel-species=equals&where-genus=".$row["genus"]."&where-species=".$row["specificepithet"]."' data-newtab='true'>AmphibiaWeb <iron-icon icon='icons:open-in-new'></iron-icon></button>
 <button class='btn btn-default species-list-button data-summary-button click' data-href='https://amphibiandisease.org/dashboard.php?taxon=".$row["genus"]."+".$row["specificepithet"]."'>Portal Stats</button>
 <br/>";
+            }
+            if (!empty($unsorted)) {
+                $html .= "<h2>Taxa with no higher data</h2>";
+                foreach ($unsorted as $row) {
+                    $html .= "<p class='species-list-label'>".$row["genus"]." ".$row["specificepithet"]."</p>
+            <button class='btn btn-default species-list-button aweb-button click' data-href='http://amphibiaweb.org/cgi/amphib_query?rel-genus=equals&rel-species=equals&where-genus=".$row["genus"]."&where-species=".$row["specificepithet"]."' data-newtab='true'>AmphibiaWeb <iron-icon icon='icons:open-in-new'></iron-icon></button>
+            <button class='btn btn-default species-list-button data-summary-button click' data-href='https://amphibiandisease.org/dashboard.php?taxon=".$row["genus"]."+".$row["specificepithet"]."'>Portal Stats</button>
+            <br/>";
+                }
             }
                 ?>
             <section class="col-xs-12 species-list"><?php echo $html; ?></section>
