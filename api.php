@@ -1713,6 +1713,10 @@ function updateTaxonRecordHigherInformation()
     $r = mysqli_query($db->getLink(), $query);
     $totalTaxa = mysqli_num_rows($r);
     while ($row = mysqli_fetch_assoc($r)) {
+        if (microtime_float() - $updateTime > 15) {
+            # Do it only in tiny batches, to prevent script timeouts
+            break;
+        }
         if ($updateTime < $row["taxonomy_modified"] + 60*60*24) {
             # We've updated in the past 24 hours
             $taxonSkipped++;
@@ -1744,10 +1748,6 @@ function updateTaxonRecordHigherInformation()
         $elapsed = microtime_float() - $start;
         $averageTaxonUpdate[] = $elapsed;
         $taxonCount++;
-        if (microtime_float() - $updateTime > 15) {
-            # Do it only in tiny batches, to prevent script timeouts
-            break;
-        }
     }
     return array(
         "status" => true,
@@ -2030,12 +2030,21 @@ function getTaxonAWebData($taxonBase)
     $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
     $iter = 1;
     $awebEscapeTags = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebReplacedResponse, -1, $tagCount);
+    #error_log("Preclean:\n\n$awebEscapeTags");
     while ($tagCount > 0) {
         $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, -1, $tagCount);
         if (!empty($replaced)) {
             $awebEscapeTags = $replaced;
         }
+        if ($iter >= strlen($awebReplacedReponse)) {
+            # If we've iterated through every character, we've
+            # obviously hit a weird condition
+            break;
+        }
         ++$iter;
+        if ($iter % 5000 === 0) {
+            error_log("5k replacements: $iter of total length ".strlen($awebReplacedResponse));
+        }
     }
     $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebEscapeTags);
 
