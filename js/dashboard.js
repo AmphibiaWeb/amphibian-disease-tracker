@@ -1240,6 +1240,7 @@ $(function() {
     dropdownSortEvents();
     return dashboardDisclaimer();
   });
+  $.get(apiTarget, "action=higher_taxa", "json");
   return false;
 });
 

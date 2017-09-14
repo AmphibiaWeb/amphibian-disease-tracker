@@ -1224,4 +1224,6 @@ $ ->
       renderNewChart.debounce 50
     dropdownSortEvents()
     dashboardDisclaimer()
+  # Ping the higher taxa update
+  $.get apiTarget, "action=higher_taxa", "json"
   false
