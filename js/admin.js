@@ -677,10 +677,18 @@ finalizeData = function(skipFields, callback) {
             return postData;
           }
           return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            var error4, error5, jsonResponse;
+            var d, ds, error4, error5, jsonResponse, qargs;
             try {
               if (result.status === true) {
                 bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+                d = new Date();
+                ds = d.toLocaleString();
+                qargs = {
+                  action: "notify",
+                  subject: "Project '" + postData.project_title + "' Created",
+                  body: "Project " + postData.project_id + " ('" + postData.project_title + "') created at " + ds + " by <a href='https://amphibiandisease.org/profile.php?id=" + ($.cookie('amphibiandisease_link')) + "'>" + ($.cookie('amphibiandisease_fullname')) + "&lt;<code>" + ($.cookie('amphibiandisease_user')) + "</code>&gt;</a>"
+                };
+                $.get(uri.urlString + "admin-api.php", buildArgs(qargs, "json"));
                 $.get(uri.urlString + "recordMigrator.php");
                 stopLoad();
                 delay(1000, function() {
