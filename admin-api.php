@@ -37,23 +37,22 @@ if (!function_exists('elapsed')) {
     function elapsed($start_time = null)
     {
         /***
-       * Return the duration since the start time in
-       * milliseconds.
-       * If no start time is provided, it'll try to use the global
-       * variable $start_script_timer
-       *
-       * @param float $start_time in unix epoch. See http://us1.php.net/microtime
-       ***/
+         * Return the duration since the start time in
+         * milliseconds.
+         * If no start time is provided, it'll try to use the global
+         * variable $start_script_timer
+         *
+         * @param float $start_time in unix epoch. See http://us1.php.net/microtime
+         ***/
 
-      if (!is_numeric($start_time)) {
-          global $start_script_timer;
-          if (is_numeric($start_script_timer)) {
-              $start_time = $start_script_timer;
-          } else {
-              return false;
-          }
-      }
-
+        if (!is_numeric($start_time)) {
+            global $start_script_timer;
+            if (is_numeric($start_script_timer)) {
+                $start_time = $start_script_timer;
+            } else {
+                return false;
+            }
+        }
         return 1000 * (microtime_float() - (float) $start_time);
     }
 }
@@ -82,92 +81,99 @@ if ($as_include !== true) {
 
     switch ($admin_req) {
         # Stuff
-    case 'save':
-        returnAjax(saveEntry($_REQUEST));
-        break;
-    case 'new':
-        returnAjax(newEntry($_REQUEST));
-        break;
-    case 'delete':
-        returnAjax(deleteEntry($_REQUEST));
-        break;
-    case 'list':
-        returnAjax(listProjects(false));
-        break;
-    case 'sulist':
-        returnAjax(suListProjects(false));
-        break;
-    case 'get':
-        returnAjax(readProjectData($_REQUEST));
-        break;
-    case 'edit_access':
-    case 'editaccess':
-        $link = $_REQUEST['project'];
-        $deltas = smart_decode64($_REQUEST['deltas']);
-        returnAjax(editAccess($link, $deltas));
-        break;
-    case 'mint_data':
-    case 'mint':
-        $link = $_REQUEST['link'];
-        $file = $_REQUEST['file'];
-        $title64 = $_REQUEST['title'];
-        $title = decode64($title64);
-        if (empty($link) || empty($title)) {
-            returnAjax(array(
-                'status' => false,
-                'error' => 'BAD_PARAMETERS',
-            ));
-        }
-        $addToExpedition = isset($_REQUEST['expedition']) ? boolstr($_REQUEST['expedition']) : false;
-        returnAjax(mintBcid($link, $file, $title, $addToExpedition));
-        break;
-    case 'create_expedition':
-        $link = $_REQUEST['link'];
-        $title64 = $_REQUEST['title'];
-        $public = boolstr($_REQUEST['public']);
-        $title = decode64($title64);
-        if (empty($link) || empty($title)) {
-            returnAjax(array(
-                'status' => false,
-                'error' => 'BAD_PARAMETERS',
-            ));
-        }
-        $associate = boolstr($_REQUEST['bind_datasets']);
-        returnAjax(mintExpedition($link, $title, $public, $associate));
-        break;
-    case 'associate_expedition':
-        $link = $_REQUEST['link'];
-        $bcid = isset($_REQUEST['bcid']) ? $_REQUEST['bcid'] : null;
-        returnAjax(associateBcidsWithExpeditions($link, null, $bcid));
-        break;
-    case 'validate':
-      //$data = $_REQUEST["data"];
-        $datasrc = $_REQUEST['datasrc'];
-        $link = isset($_REQUEST['link']) ? $_REQUEST['link'] : $_REQUEST['project'];
-        $cookies = $_REQUEST['auth'];
-        $continue = empty($cookies) ? false : true;
-        returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
-        break;
-    case 'check_access':
-        returnAjax(authorizedProjectAccess($_REQUEST));
-        break;
-    case 'su_manipulate_user':
-        returnAjax(superuserEditUser($_REQUEST));
-        break;
-    case "update_profile":
-        returnAjax(updateOwnProfile($_REQUEST));
-        break;
-    case "write_profile_image":
-        returnAjax(saveProfileImage($_REQUEST));
-        break;
-    case 'advanced_project_search':
-        returnAjax(advancedSearchProject($_REQUEST));
-        break;
-    case "invite":
-        returnAjax(inviteUser($_REQUEST));
-        break;
-    default:
-        returnAjax(getLoginState($_REQUEST, true));
+        case 'save':
+            returnAjax(saveEntry($_REQUEST));
+            break;
+        case 'new':
+            returnAjax(newEntry($_REQUEST));
+            break;
+        case 'delete':
+            returnAjax(deleteEntry($_REQUEST));
+            break;
+        case 'list':
+            returnAjax(listProjects(false));
+            break;
+        case 'sulist':
+            returnAjax(suListProjects(false));
+            break;
+        case 'get':
+            returnAjax(readProjectData($_REQUEST));
+            break;
+        case 'edit_access':
+        case 'editaccess':
+            $link = $_REQUEST['project'];
+            $deltas = smart_decode64($_REQUEST['deltas']);
+            returnAjax(editAccess($link, $deltas));
+            break;
+        case 'mint_data':
+        case 'mint':
+            $link = $_REQUEST['link'];
+            $file = $_REQUEST['file'];
+            $title64 = $_REQUEST['title'];
+            $title = decode64($title64);
+            if (empty($link) || empty($title)) {
+                returnAjax(array(
+                    'status' => false,
+                    'error' => 'BAD_PARAMETERS',
+                ));
+            }
+            $addToExpedition = isset($_REQUEST['expedition']) ? boolstr($_REQUEST['expedition']) : false;
+            returnAjax(mintBcid($link, $file, $title, $addToExpedition));
+            break;
+        case 'create_expedition':
+            $link = $_REQUEST['link'];
+            $title64 = $_REQUEST['title'];
+            $public = boolstr($_REQUEST['public']);
+            $title = decode64($title64);
+            if (empty($link) || empty($title)) {
+                returnAjax(array(
+                    'status' => false,
+                    'error' => 'BAD_PARAMETERS',
+                ));
+            }
+            $associate = boolstr($_REQUEST['bind_datasets']);
+            returnAjax(mintExpedition($link, $title, $public, $associate));
+            break;
+        case 'associate_expedition':
+            $link = $_REQUEST['link'];
+            $bcid = isset($_REQUEST['bcid']) ? $_REQUEST['bcid'] : null;
+            returnAjax(associateBcidsWithExpeditions($link, null, $bcid));
+            break;
+        case 'validate':
+          //$data = $_REQUEST["data"];
+            $datasrc = $_REQUEST['datasrc'];
+            $link = isset($_REQUEST['link']) ? $_REQUEST['link'] : $_REQUEST['project'];
+            $cookies = $_REQUEST['auth'];
+            $continue = empty($cookies) ? false : true;
+            returnAjax(validateDataset($datasrc, $link, $cookies, $continue));
+            break;
+        case 'check_access':
+            returnAjax(authorizedProjectAccess($_REQUEST));
+            break;
+        case 'su_manipulate_user':
+            returnAjax(superuserEditUser($_REQUEST));
+            break;
+        case "update_profile":
+            returnAjax(updateOwnProfile($_REQUEST));
+            break;
+        case "write_profile_image":
+            returnAjax(saveProfileImage($_REQUEST));
+            break;
+        case 'advanced_project_search':
+            returnAjax(advancedSearchProject($_REQUEST));
+            break;
+        case "invite":
+            returnAjax(inviteUser($_REQUEST));
+            break;
+        case "notify":
+            $subject = empty($_REQUEST["subject"]) ? null : $_REQUEST["subject"];
+            $body = empty($_REQUEST["body"]) ? null : $_REQUEST["body"];
+            returnAjax(notifyUsers($_REQUEST["project"], $subject, $body));
+            break;
+        default:
+            $defaultResponse = getLoginState($_REQUEST, true);
+            $defaultResponse["requested"] = $admin_req;
+            returnAjax($defaultResponse);
     }
 }
 
@@ -236,15 +242,102 @@ function inviteUser($get)
     }
 }
 
+
+function notifyUsers($projectId, $subject = "Default Message", $body = "Default Body", $superusers = false)
+{
+    /***
+     * Wrapper to handle notifying users of changes.
+     ***/
+    require_once dirname(__FILE__).'/admin/PHPMailer/PHPMailerAutoload.php';
+    require_once dirname(__FILE__).'/admin/CONFIG.php';
+    global $is_smtp,$mail_host,$mail_user,$mail_password,$is_pop3, $db;
+    $mail = new PHPMailer();
+    if ($is_smtp) {
+        $mail->isSMTP();
+        $mail->SMTPAuth = true;
+        $mail->Host = $mail_host;
+        $mail->Username = $mail_user;
+        $mail->Password = $mail_password;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+    }
+    if ($is_pop3) {
+        $mail->isPOP3();
+    } # Need to expand this
+    $mail->From = "blackhole@amphibiandisease.org";
+    $mail->FromName = "Amphibian Disease Webserver";
+    $mail->isHTML(true);
+    # Look up the project
+    $query = "SELECT `author`, `author_data`, `access_data`, `technical_contact_email` FROM `disease_tracking_data` WHERE `project_id` = '".$db->sanitize($projectId)."'";
+    $userList = array();
+    $r = mysqli_query($db->getLink(), $query);
+    $row = mysqli_fetch_assoc($r);
+    # Find recipients
+    if ($row["technical_contact_email"] !== null) {
+        $userList[] = $row["technical_contact_email"];
+    }
+    $authorData = json_decode($row["author_data"], true);
+    $authorEmail = $authorData["contact_email"];
+    $userList[] = $authorEmail;
+    $accessors = explode(",", $row["access_data"]);
+    foreach ($accessors as $accessString) {
+        $parts = explode(":", $accessString);
+        $uid = $parts[0];
+        $query = "SELECT `username` FROM `userdata` WHERE `dblink`='".$uid."'";
+        $r = mysqli_query($db->getLink(), $query);
+        $row = mysqli_fetch_row($r);
+        $email = $row[0];
+        if ($email !== null && $email != $authorEmail) {
+            $userList[] = $email;
+        }
+    }
+
+    # Add superusers
+    $query = "SELECT `username` FROM `userdata` WHERE `su_flag` IS TRUE";
+    $r = mysqli_query($db->getLink(), $query);
+    while ($row = mysqli_fetch_row($r)) {
+        $userList[] = $row[0];
+    }
+    # Add everyone to the mail object
+    foreach ($userList as $destination) {
+        $mail->addAddress($destination);
+    }
+    $mail->Subject = "[Server Notice] ".$subject;
+    $htmlBody = "<html><head><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css\" integrity=\"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7\" crossorigin=\"anonymous\"/></head><body>".$body."</body></html>";
+    $mail->Body = $htmlBody;
+    $success = $mail->send();
+    #$success = false;
+    if ($success) {
+        return array(
+            "status" => $success,
+            "action" => "NOTIFY_USER",
+            "notified" => $userList,
+        );
+    } else {
+        return array(
+            "status" => $success,
+            "action" => "NOTIFY_USER",
+            "notified" => $userList,
+            "error" => "MAIL_SEND_FAIL",
+            "error_detail" => $mail->ErrorInfo,
+            "body" => $body,
+            "subject" => $subject,
+            // "accessors" => $accessors,
+            // "author"=> $authorData,
+        );
+    }
+}
+
+
 function saveEntry($get)
 {
     /***
-   * Save updates to a project
-   *
-   * @param data a base 64-encoded JSON string of the data to insert
-   ***/
+     * Save updates to a project
+     *
+     * @param data a base 64-encoded JSON string of the data to insert
+     ***/
 
-  $data64 = $get['data'];
+    $data64 = $get['data'];
     $enc = strtr($data64, '-_', '+/');
     $enc = chunk_split(preg_replace('!\015\012|\015|\012!', '', $enc));
     $enc = str_replace(' ', '+', $enc);
@@ -272,69 +365,69 @@ function saveEntry($get)
     $id = $data['id'];
     if (!$db->isEntry($id)) {
         return array(
-      'status' => false,
-      'error' => 'INVALID_PROJECT',
-      'human_error' => 'No project exists at database row #'.$id,
-    );
+            'status' => false,
+            'error' => 'INVALID_PROJECT',
+            'human_error' => 'No project exists at database row #'.$id,
+        );
     }
     $search = array('id' => $id);
     $projectServerDataRow = $db->getQueryResults($search);
     $projectServer = $projectServerDataRow[0];
     if ($projectServer['project_id'] != $project) {
         return array(
-      'status' => false,
-      'error' => 'MISMATCHED_PROJECT_IDENTIFIERS',
-      'human_error' => 'The project at row #'.$id." doesn't match the provided project number (provided: '".$project."'; expected '".$projectServer['project_id']."')",
-    );
+            'status' => false,
+            'error' => 'MISMATCHED_PROJECT_IDENTIFIERS',
+            'human_error' => 'The project at row #'.$id." doesn't match the provided project number (provided: '".$project."'; expected '".$projectServer['project_id']."')",
+        );
     }
     $authorizedStatus = checkProjectAuthorized($projectServer, $uid);
     if (!$authorizedStatus['can_edit']) {
         return array(
-      'status' => false,
-      'error' => 'UNAUTHORIZED',
-      'human_error' => 'You have insufficient privileges to edit project #'.$project,
-    );
+            'status' => false,
+            'error' => 'UNAUTHORIZED',
+            'human_error' => 'You have insufficient privileges to edit project #'.$project,
+        );
     }
-  # Remove some read-only attributes
-  $ref = array(
-    'project_id' => $project,
-  );
+    # Remove some read-only attributes
+    $ref = array(
+        'project_id' => $project,
+    );
     unset($data['project_id']); # Obvious
-  unset($data['project_obj_id']); # ARK
-  if (strlen($data['dataset_arks']) < strlen($projectServer['dataset_arks'])) {
-      # It can only grow, not shrink
-      # Check formatting
-      unset($data['dataset_arks']);
-  }
+    unset($data['project_obj_id']); # ARK
+    if (strlen($data['dataset_arks']) < strlen($projectServer['dataset_arks'])) {
+        # It can only grow, not shrink
+        # Check formatting
+        unset($data['dataset_arks']);
+    }
     unset($data['id']); # Obvious
-  unset($data['access_data']); # Handled seperately
+    unset($data['access_data']); # Handled seperately
 
-  try {
-      $result = $db->updateEntry($data, $ref);
-  } catch (Exception $e) {
-      return array(
-        'status' => false,
-        'error' => $e->getMessage(),
-        'humman_error' => 'Database error saving',
-        'data' => $data,
-        'ref' => $ref,
-      );
-  }
+    try {
+        $result = $db->updateEntry($data, $ref);
+    } catch (Exception $e) {
+        return array(
+            'status' => false,
+            'error' => $e->getMessage(),
+            'humman_error' => 'Database error saving',
+            'data' => $data,
+            'ref' => $ref,
+        );
+    }
     if ($result !== true) {
         return array(
-        'status' => false,
-        'error' => $result,
-        'human_error' => 'Database error saving',
-        'data' => $data,
-        'ref' => $ref,
-      );
+            'status' => false,
+            'error' => $result,
+            'human_error' => 'Database error saving',
+            'data' => $data,
+            'ref' => $ref,
+        );
     }
 
     return array(
-    'status' => true,
-    'data' => $data,
-    'project' => readProjectData($project, true),
-  );
+        'status' => true,
+        'data' => $data,
+        'project' => readProjectData($project, true),
+    );
 }
 
 function newEntry($get)

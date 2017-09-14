@@ -677,10 +677,18 @@ finalizeData = function(skipFields, callback) {
             return postData;
           }
           return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-            var error4, error5, jsonResponse;
+            var d, ds, error4, error5, jsonResponse, qargs;
             try {
               if (result.status === true) {
                 bsAlert("Project ID #<strong>" + postData.project_id + "</strong> created", "success");
+                d = new Date();
+                ds = d.toLocaleString();
+                qargs = {
+                  action: "notify",
+                  subject: "Project '" + postData.project_title + "' Created",
+                  body: "Project " + postData.project_id + " ('" + postData.project_title + "') created at " + ds + " by <a href='https://amphibiandisease.org/profile.php?id=" + ($.cookie('amphibiandisease_link')) + "'>" + ($.cookie('amphibiandisease_fullname')) + "&lt;<code>" + ($.cookie('amphibiandisease_user')) + "</code>&gt;</a>"
+                };
+                $.get(uri.urlString + "admin-api.php", buildArgs(qargs, "json"));
                 $.get(uri.urlString + "recordMigrator.php");
                 stopLoad();
                 delay(1000, function() {
@@ -4799,7 +4807,7 @@ saveEditorData = function(force, callback) {
     return false;
   });
   _adp.currentAsyncJqxhr = $.post("" + uri.urlString + adminParams.apiTarget, args, "json").done(function(result) {
-    var error, newStatus, ref8, ref9;
+    var d, ds, error, newStatus, qargs, ref8, ref9;
     console.info("Save result: server said", result);
     if (result.status !== true) {
       error = (ref8 = (ref9 = result.human_error) != null ? ref9 : result.error) != null ? ref8 : "There was an error saving to the server";
@@ -4811,6 +4819,14 @@ saveEditorData = function(force, callback) {
     }
     stopLoad();
     toastStatusMessage("Save successful");
+    d = new Date();
+    ds = d.toLocaleString();
+    qargs = {
+      action: "notify",
+      subject: "Project '" + result.project.project.project_title + "' Updated",
+      body: "Project " + result.project.project_id + " ('" + result.project.project.project_title + "') updated at " + ds + " by <a href='https://amphibiandisease.org/profile.php?id=" + result.project.user.user + "'>" + ($.cookie('amphibiandisease_fullname')) + "&lt;<code>" + ($.cookie('amphibiandisease_user')) + "</code>&gt;</a>"
+    };
+    $.get(uri.urlString + "admin-api.php", buildArgs(qargs, "json"));
     $.get(uri.urlString + "recordMigrator.php");
     _adp.projectData = result.project.project;
     delete localStorage._adp;

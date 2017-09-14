@@ -18,7 +18,7 @@ try
   domainHost = uri.o.attr("host").split(".")
   domainHost.pop()
   domainHost = domainHost.join(".").replace(/www\./g,"")
-  
+
 
 window.adminParams = new Object()
 adminParams.domain = unless isNull domainHost then domainHost else "amphibiandisease"
@@ -792,6 +792,14 @@ finalizeData = (skipFields = false, callback) ->
             try
               if result.status is true
                 bsAlert("Project ID #<strong>#{postData.project_id}</strong> created","success")
+                # Notify
+                d = new Date()
+                ds = d.toLocaleString()
+                qargs =
+                  action: "notify"
+                  subject: "Project '#{postData.project_title}' Created"
+                  body: "Project #{postData.project_id} ('#{postData.project_title}') created at #{ds} by <a href='https://amphibiandisease.org/profile.php?id=#{$.cookie('amphibiandisease_link')}'>#{$.cookie('amphibiandisease_fullname')}&lt;<code>#{$.cookie('amphibiandisease_user')}</code>&gt;</a>"
+                $.get "#{uri.urlString}admin-api.php", buildArgs qargs, "json"
                 # Ping the record migrator
                 $.get "#{uri.urlString}recordMigrator.php"
                 stopLoad()
@@ -4788,6 +4796,14 @@ saveEditorData = (force = false, callback) ->
       return false
     stopLoad()
     toastStatusMessage "Save successful"
+    # Notify
+    d = new Date()
+    ds = d.toLocaleString()
+    qargs =
+      action: "notify"
+      subject: "Project '#{result.project.project.project_title}' Updated"
+      body: "Project #{result.project.project_id} ('#{result.project.project.project_title}') updated at #{ds} by <a href='https://amphibiandisease.org/profile.php?id=#{result.project.user.user}'>#{$.cookie('amphibiandisease_fullname')}&lt;<code>#{$.cookie('amphibiandisease_user')}</code>&gt;</a>"
+    $.get "#{uri.urlString}admin-api.php", buildArgs qargs, "json"
     # Ping the record migrator
     $.get "#{uri.urlString}recordMigrator.php"
     # Update the project data
