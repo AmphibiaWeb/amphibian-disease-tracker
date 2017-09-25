@@ -69,7 +69,7 @@ switch ($do) {
         doCartoSqlApiPush($_REQUEST);
         break;
     case 'validate':
-        doAWebValidate($_REQUEST);
+        returnAjax(doAWebValidate($_REQUEST));
         break;
     case 'is_human':
         validateCaptcha($_REQUEST);
@@ -979,8 +979,8 @@ function doAWebValidate($get)
     }
     $response['status'] = true;
     # Note that Unicode characters may return escaped! eg, \u00e9.
-        $response['validated_taxon'] = $aWebPretty;
-    returnAjax($response);
+    $response['validated_taxon'] = $aWebPretty;
+    return $response;
 }
 
 
