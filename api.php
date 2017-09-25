@@ -2010,6 +2010,7 @@ function getTaxonIucnData($taxonBase)
     }
     if ($badTaxon) {
         # Try synonyms
+        error_log("Bad taxon, trying synonyms");
         $validation = doAWebValidate(array(
             "genus" => $taxonBase["genus"],
             "species" => $taxonBase["species"],
@@ -2028,10 +2029,12 @@ function getTaxonIucnData($taxonBase)
             }
             # Now we have a list of all known synonyms
             foreach ($checkSynonyms as $taxon) {
+                error_log("Checking synonym '".$taxon."' for ".json_encode($taxonBase));
                 $taxonParts = explode(" ", strtolower($taxon));
                 $genus = $taxonParts[0];
                 $species = $taxonParts[1];
-                set_time_limit(15);
+                set_time_limit(15); # Prevent timing out unless a
+                                    # specific lookup actually fails
                 $responseTmp = getTaxonIucnData(array(
                     "genus"  => $genus,
                     "species" => $species,
