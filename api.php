@@ -2031,6 +2031,7 @@ function getTaxonIucnData($taxonBase)
                 $taxonParts = explode(" ", strtolower($taxon));
                 $genus = $taxonParts[0];
                 $species = $taxonParts[1];
+                set_time_limit(15);
                 $responseTmp = getTaxonIucnData(array(
                     "genus"  => $genus,
                     "species" => $species,
