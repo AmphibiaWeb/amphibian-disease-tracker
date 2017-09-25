@@ -2027,34 +2027,34 @@ function superuserEditUser($get)
             );
         }
         switch ($editAction) {
-        case "delete":
-            $dryRun = $uf->forceDeleteCurrentUser();
-            $targetUid = $dryRun["target_user"];
-            if ($targetUid != $target) {
-                # Should never happen
+            case "delete":
+                $dryRun = $uf->forceDeleteCurrentUser();
+                $targetUid = $dryRun["target_user"];
+                if ($targetUid != $target) {
+                    # Should never happen
+                    return array(
+                        "status" => false,
+                        "error" => "MISMATCHED_TARGETS",
+                        "human_error" => "The system encountered an error confirming target for deletion",
+                        "obj_target" => $targetUid,
+                        "post_target" => $target,
+                    );
+                }
+                return $uf->forceDeleteCurrentUser(true);
+                break;
+            case "reset":
                 return array(
                     "status" => false,
-                    "error" => "MISMATCHED_TARGETS",
-                    "human_error" => "The system encountered an error confirming target for deletion",
-                    "obj_target" => $targetUid,
-                    "post_target" => $target,
+                    "error" => "Incomplete"
                 );
-            }
-            return $uf->forceDeleteCurrentUser(true);
-            break;
-        case "reset":
-            return array(
-                "status" => false,
-                "error" => "Incomplete"
-            );
-            break;
-        default:
-            return array(
-                "status" => false,
-                "error" => "INVALID_CHANGE_TYPE",
-                "human_error" => "We didn't recognize this change type",
-                "change_type_provided" => $editAction,
-            );
+                break;
+            default:
+                return array(
+                    "status" => false,
+                    "error" => "INVALID_CHANGE_TYPE",
+                    "human_error" => "We didn't recognize this change type",
+                    "change_type_provided" => $editAction,
+                );
         }
     } catch (Exception $e) {
         return array(
