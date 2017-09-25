@@ -601,7 +601,9 @@ function tsvHelper($tsv)
 function doAWebValidate($get)
 {
     /***
+     * Validate a taxon with Amphibiaweb.
      *
+     * @param array $get ->
      ***/
     $amphibiaWebListTarget = 'http://amphibiaweb.org/amphib_names.txt';
     $localAWebTarget = dirname(__FILE__).'/aweb_list.txt';
@@ -1764,7 +1766,7 @@ function updateTaxonRecordHigherInformation()
 function getTaxonData($taxonBase, $skipFetch = false)
 {
     /***
-     *
+     * Fetch the data for a given taxon
      ***/
     global $db;
     foreach ($taxonBase as $key => $value) {
@@ -1970,6 +1972,8 @@ function getTaxonIucnData($taxonBase)
         "NE" => "Not Evaluated",
     );
     # Set up so that we can skip this step if need be
+    $badIucn = false;
+    $badTaxon = false;
     $doIucn = true;
     if ($doIucn === true) {
         # IUCN returns an empty result unless "%20" is used to separate the
@@ -1986,6 +1990,10 @@ function getTaxonIucnData($taxonBase)
             $response["iucn_category"] = $iucnCategoryMap[$response["iucn"]["category"]];
             if (empty($response["iucn_category"])) {
                 $response["iucn_category"] = "No Data";
+                $badTaxon = true;
+                $response["status"] = false;
+            } else {
+                $response["status"] = true;
             }
         } else {
             $response["error"] = "INVALID_IUCN_RESPONSE";
@@ -1994,11 +2002,46 @@ function getTaxonIucnData($taxonBase)
                 "raw_response" => $iucnRawResponse,
                 "parsed_response" => $iucnResponse,
             );
+            $badIucn = true;
+            $response["status"] = false;
         }
     } else {
         // What are we even doing here
     }
-
+    if ($badTaxon) {
+        # Try synonyms
+        $validation = doAWebValidate(array(
+            "genus" => $taxonBase["genus"],
+            "species" => $taxonBase["species"],
+        ));
+        if ($validation["status"]) {
+            $checkSynonyms = array(
+                $validation["validated_taxon"]["gaa_name"],
+            );
+            $itisEntries = $validation["validated_taxon"]["itis_names"];
+            $synonymEntries = $validation["validated_taxon"]["synonym_names"];
+            foreach (explode(",", $itisEntries) as $entry) {
+                $checkSynonyms[] = $entry;
+            }
+            foreach (explode(",", $synonymEntries) as $entry) {
+                $checkSynonyms[] = $entry;
+            }
+            # Now we have a list of all known synonyms
+            foreach ($checkSynonyms as $taxon) {
+                $taxonParts = explode(" ", strtolower($taxon));
+                $genus = $taxonParts[0];
+                $species = $taxonParts[1];
+                $responseTmp = getTaxonIucnData(array(
+                    "genus"  => $genus,
+                    "species" => $species,
+                ));
+                if ($responseTmp["status"] === true) {
+                    $response = $responseTmp;
+                    break;
+                }
+            }
+        }
+    }
     return $response;
 }
 
