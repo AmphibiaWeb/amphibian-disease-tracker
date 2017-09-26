@@ -1941,7 +1941,7 @@ function getTaxonIucnData($taxonBase, $recursed = false)
     }
     if ($recursed) {
         # Logging
-        error_log("Recursed entry calling with ".json_encode($taxonBase));
+        # error_log("Recursed entry calling with ".json_encode($taxonBase));
     }
     // $params = array(
     //     "genus" => $taxonBase["genus"],
@@ -2014,7 +2014,7 @@ function getTaxonIucnData($taxonBase, $recursed = false)
     }
     if ($badTaxon) {
         # Try synonyms
-        error_log("Bad taxon, trying synonyms");
+        # error_log("Bad taxon, trying synonyms");
         $validation = doAWebValidate(array(
             "genus" => $taxonBase["genus"],
             "species" => $taxonBase["species"],
@@ -2033,7 +2033,7 @@ function getTaxonIucnData($taxonBase, $recursed = false)
             }
             # Now we have a list of all known synonyms
             foreach ($checkSynonyms as $taxon) {
-                error_log("Checking synonym '".$taxon."' for ".json_encode($taxonBase));
+                # error_log("Checking synonym '".$taxon."' for ".json_encode($taxonBase));
                 $taxonParts = explode(" ", strtolower($taxon));
                 $genus = $taxonParts[0];
                 $species = $taxonParts[1];
@@ -2081,12 +2081,16 @@ function getTaxonAWebData($taxonBase)
     $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
     $iter = 1;
     $awebEscapeTags = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebReplacedResponse, -1, $tagCount);
+    # error_log($awebEscapeTags);
     while ($tagCount > 0) {
         $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, 500, $tagCount);
         if (!empty($replaced)) {
             $awebEscapeTags = $replaced;
         }
         ++$iter;
+        if ($iter > 500) {
+            break;
+        }
     }
     $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebEscapeTags);
 
