@@ -1923,7 +1923,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
 }
 
 
-function getTaxonIucnData($taxonBase)
+function getTaxonIucnData($taxonBase, $recursed = false)
 {
     /***
      * Get the IUCN result for a given taxon
@@ -1938,6 +1938,10 @@ function getTaxonIucnData($taxonBase)
             "status" => false,
             "error" => "REQUIRED_COLS_MISSING",
         );
+    }
+    if ($recursed) {
+        # Logging
+        error_log("Recursed entry calling with ".json_encode($taxonBase));
     }
     // $params = array(
     //     "genus" => $taxonBase["genus"],
@@ -2038,7 +2042,7 @@ function getTaxonIucnData($taxonBase)
                 $responseTmp = getTaxonIucnData(array(
                     "genus"  => $genus,
                     "species" => $species,
-                ));
+                ), true);
                 if ($responseTmp["status"] === true) {
                     $response = $responseTmp;
                     break;
