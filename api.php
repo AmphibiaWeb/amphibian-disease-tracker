@@ -1815,8 +1815,24 @@ function getTaxonData($taxonBase, $skipFetch = false)
         );
     }
     # Check ours
+    global $login_status;
+    $uid = $login_status['detail']['uid'];
+    $suFlag = $login_status['detail']['userdata']['su_flag'];
+    $isSu = boolstr($suFlag);
+    if ($isSu !== true) {
+        $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
+        if (!empty($uid)) {
+            $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+        }
+    } else {
+        # A superuser gets to view everything
+        $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."`";
+    }
+
+    $authorizedIntersect = "INNER JOIN ($authorizedIntersectQuery) AS authorized ON authorized.project_id = ";
+
     $taxonString = $taxonBase["genus"]." ".$taxonBase["species"];
-    $countQuery = "select `project_id`, `project_title` from `".$db->getTable()."` where sampled_species like '%$taxonString%'";
+    $countQuery = "select records.project_id, `project_title` from `".$db->getTable()."` AS records $authorizedIntersect records.project_id WHERE records.sampled_species LIKE '%$taxonString%'";
     $r = mysqli_query($db->getLink(), $countQuery);
     $adpData = array();
     if ($r !== false) {
@@ -1830,11 +1846,13 @@ function getTaxonData($taxonBase, $skipFetch = false)
     }
     $adpData["samples"] = 0;
     $adpData["countries"] = array();
-    $samplesQuery = "select `country`,`diseasetested`, `diseasedetected`, `fatal` from `records_list` where `genus`='".$taxonBase["genus"]."' and `specificepithet`='".$taxonBase["species"]."' order by `diseasetested`";
+    $samplesQuery = "SELECT records.project_id, `country`,`diseasetested`, `diseasedetected`, `fatal` FROM `records_list` AS records $authorizedIntersect records.project_id WHERE `genus`='".$taxonBase["genus"]."' AND `specificepithet`='".$taxonBase["species"]."' ORDER BY `diseasetested`";
     $r = mysqli_query($db->getLink(), $samplesQuery);
     $taxonBreakdown = array();
+    $debug = array("query" => $samplesQuery);
     if ($r !== false) {
         while ($row = mysqli_fetch_assoc($r)) {
+            $debug[] = $row;
             if (!in_array($row["country"], $adpData["countries"])) {
                 $adpData["countries"][] = $row["country"];
             }
@@ -1885,6 +1903,11 @@ function getTaxonData($taxonBase, $skipFetch = false)
             }
         }
         $adpData["samples"] = mysqli_num_rows($r);
+    } else {
+        $debug[] = array(
+            "error" => "BAD_RESULT",
+            "mysql" => mysqli_error($l),
+        );
     }
     $adpData["disease_data"] = $taxonBreakdown;
     try {
@@ -1904,6 +1927,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
     );
     $response = array(
         "status" => true,
+#        "debug" => $debug,
         "taxon" => array(
             "genus" => $taxonBase["genus"],
             "species" => $taxonBase["species"],
