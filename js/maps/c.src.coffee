@@ -2146,8 +2146,8 @@ $ ->
       #console.info "Doing admin setup"
       loadJS "js/admin.js", ->
         console.info "Loaded admin file"
-        if typeof loadAdminUi isnt "function"
-          loadAdminUi = ->
+        if typeof window.loadAdminUi isnt "function"
+          window.loadAdminUi ?= ->
             html = """
       <div class='bs-callout bs-callout-danger'>
         <h4>Error loading administration</h4>
