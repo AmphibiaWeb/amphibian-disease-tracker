@@ -2343,6 +2343,11 @@ excelDateToUnixTime = (excelTime, strict = false) ->
   thisYear = d.getUTCFullYear()
   try
     if not isNumber excelTime
+      # It might be a string of some readable date
+      possibleDate = Date.parse excelTime
+      # A bad date will have parsed as "NaN"
+      if isNumber possibleDate
+        return possibleDate
       throw "Bad date error"
     if earliestPlausibleYear <= excelTime <= thisYear
       ###

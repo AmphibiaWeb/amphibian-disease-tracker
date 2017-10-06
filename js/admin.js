@@ -2411,7 +2411,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
 };
 
 excelDateToUnixTime = function(excelTime, strict) {
-  var d, daysFrom1900to1970, daysFrom1904to1970, earliestPlausibleYear, error1, parseableDate, secondsPerDay, t, thisYear;
+  var d, daysFrom1900to1970, daysFrom1904to1970, earliestPlausibleYear, error1, parseableDate, possibleDate, secondsPerDay, t, thisYear;
   if (strict == null) {
     strict = false;
   }
@@ -2424,6 +2424,10 @@ excelDateToUnixTime = function(excelTime, strict) {
   thisYear = d.getUTCFullYear();
   try {
     if (!isNumber(excelTime)) {
+      possibleDate = Date.parse(excelTime);
+      if (isNumber(possibleDate)) {
+        return possibleDate;
+      }
       throw "Bad date error";
     }
     if ((earliestPlausibleYear <= excelTime && excelTime <= thisYear)) {
