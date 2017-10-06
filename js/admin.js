@@ -3960,8 +3960,9 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
   }).fail(function(result, error) {
     var errorMessage;
     console.error("Couldn't POST");
-    console.warn(result, error);
-    errorMessage = "<code>" + error.status + " " + error.statusText + "</code>";
+    console.warn(result);
+    console.warn(error);
+    errorMessage = "<code>" + result.status + " " + result.statusText + "</code>";
     return stopLoadBarsError("There was a problem with the server handling your data. The server said: " + errorMessage);
   });
   return false;
