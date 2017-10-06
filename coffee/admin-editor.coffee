@@ -1608,6 +1608,8 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     console.warn error
     errorMessage = "<code>#{result.status} #{result.statusText}</code>"
     stopLoadBarsError("There was a problem with the server handling your data. The server said: #{errorMessage}")
+    delay 500, ->
+      stopLoad()
   false
 
 

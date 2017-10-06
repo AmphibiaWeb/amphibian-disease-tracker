@@ -3963,7 +3963,10 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
     console.warn(result);
     console.warn(error);
     errorMessage = "<code>" + result.status + " " + result.statusText + "</code>";
-    return stopLoadBarsError("There was a problem with the server handling your data. The server said: " + errorMessage);
+    stopLoadBarsError("There was a problem with the server handling your data. The server said: " + errorMessage);
+    return delay(500, function() {
+      return stopLoad();
+    });
   });
   return false;
 };
