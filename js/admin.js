@@ -3958,9 +3958,11 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
     }
     return stopLoad();
   }).fail(function(result, error) {
+    var errorMessage;
     console.error("Couldn't POST");
     console.warn(result, error);
-    return stopLoadError();
+    errorMessage = "<code>" + error.status + " " + error.statusText + "</code>";
+    return stopLoadBarsError("There was a problem with the server handling your data. The server said: " + errorMessage);
   });
   return false;
 };
@@ -5055,6 +5057,9 @@ stopLoadBarsError = function(currentTimeout, message) {
       return this.name = "BadLoadState";
     };
     throw new ex();
+  }
+  if (typeof currentTimeout === "string" && isNull(message)) {
+    message = currentTimeout;
   }
   try {
     clearTimeout(currentTimeout);

@@ -47,6 +47,8 @@ stopLoadBarsError = (currentTimeout, message) ->
       this.message = "Loading bars aren't visible!"
       this.name = "BadLoadState"
     throw new ex()
+  if typeof currentTimeout is "string" and isNull message
+    message = currentTimeout
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")

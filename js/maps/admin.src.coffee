@@ -4080,7 +4080,8 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
   .fail (result, error) ->
     console.error "Couldn't POST"
     console.warn result, error
-    stopLoadError()
+    errorMessage = "<code>#{error.status} #{error.statusText}</code>"
+    stopLoadBarsError("There was a problem with the server handling your data. The server said: #{errorMessage}")
   false
 
 
@@ -5014,6 +5015,8 @@ stopLoadBarsError = (currentTimeout, message) ->
       this.message = "Loading bars aren't visible!"
       this.name = "BadLoadState"
     throw new ex()
+  if typeof currentTimeout is "string" and isNull message
+    message = currentTimeout
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
