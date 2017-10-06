@@ -62,7 +62,7 @@ function returnAjax($data)
 # Based on this answer:
 # http://stackoverflow.com/a/3895965/1877527
 
-ini_set("memory_limit","512M");
+ini_set("memory_limit", "768M");
 
 function excelToPhp($filePath)
 {
@@ -105,10 +105,16 @@ function excelToArray($filePath, $header = true, $sheets = null)
     }
     # Get worksheet and built array with first row as header
     $objWorksheet = $objPHPExcel->getActiveSheet();
-
+    $highestRow = $objWorksheet->getHighestRow();
+    # Allot 30 seconds per 1500 rows
+    $timeLimit = 30 * $highestRow / 1500;
+    if (intval($highestRow) > 4000) {
+        ini_set("memory_limit", "1024M");
+    }
+    set_time_limit($timeLimit);
+    error_log("Set timelimit ".$timeLimit."s for ".$highestRow." rows");
     //excel with first row header, use header as key
     if ($header) {
-        $highestRow = $objWorksheet->getHighestRow();
         $highestColumn = $objWorksheet->getHighestColumn();
         $headingsArray = $objWorksheet->rangeToArray('A1:'.$highestColumn.'1', null, true, true, true);
         $headingsArray = $headingsArray[1];
