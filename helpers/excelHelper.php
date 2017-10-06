@@ -62,6 +62,8 @@ function returnAjax($data)
 # Based on this answer:
 # http://stackoverflow.com/a/3895965/1877527
 
+ini_set("memory_limit","512M");
+
 function excelToPhp($filePath)
 {
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
