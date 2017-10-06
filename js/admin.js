@@ -63,10 +63,19 @@ window.loadAdminUi = function() {
    * fetches/draws the page contents if it's OK. Otherwise, boots the
    * user back to the login page.
    */
-  var e, error1;
+  var e, error1, slowNet;
+  try {
+    slowNet = delay(3000, function() {
+      var html;
+      html = "<div class='bs-callout bs-callout-warning'>\n  <h4>Please be patient</h4>\n  <p>\n    The internet is a bit slow right now. We're still verifying your credentials.\n  </p>\n</div>";
+      $("main #main-body").html(html);
+      return false;
+    });
+  } catch (undefined) {}
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml, badgeHtml;
+      clearTimeout(slowNet);
       badgeHtml = data.unrestricted === true ? "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" : "<iron-icon id='restriction-badge' icon='icons:verified-user' class='text-muted' data-toggle='tooltip' title='Restricted Account'></iron-icon>";
       articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + " " + badgeHtml + "\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
