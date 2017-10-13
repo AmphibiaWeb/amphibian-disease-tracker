@@ -6,6 +6,7 @@ gems:
 
 exclude:
   - "/vendor/"
+  - "/bower_components"
 
 # Site settings
 title: Amphibian Disease Portal
