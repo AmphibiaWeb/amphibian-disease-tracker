@@ -4,9 +4,7 @@ gems:
   - jekyll-sitemap
   - jekyll-paginate
 
-exclude:
-  - "/vendor/"
-  - "/bower_components"
+exclude: ["/vendor/", "/bower_components/"]
 
 # Site settings
 title: Amphibian Disease Portal
