@@ -3,12 +3,12 @@ layout: post
 title:  "Can We Prevent a Second Amphibian Pandemic?"
 date:   2017-11-19 20:30:00
 author: Tiffany Yap
-categories: News, Resources
+categories: News Resources
 ---
 
 ![Photo of a juvenile Ensatina](/assets/ensatina_juv_Yap_20171117.JPG)
 
-<caption><small>Photo of a juvenile <em>Ensatina</em> salamander. Photo credit: Tiffany Yap</small></caption>
+<center><small>Photo of a juvenile <em>Ensatina</em> salamander. Photo credit: Tiffany Yap</small></center>
 
 <hr/>
 
@@ -20,7 +20,7 @@ Proactive policy action was and continues to be an important step for amphibian 
 
 ![Photo of a fire-bellied toad, Bombina orientalis](/assets/Bombina_orientalis_JosephDougherty.jpeg)
 
-<caption><small>Photo of an Oriental fire-bellied toad (<em>Bombina orientalis</em>), a close relative of the Yunnan fire-bellied toad (<em>Bombina icrodeladigitora</em>).  Fire-bellied toads are popular in pet trade. Photo credit: Joseph Dougherty</small></caption>
+<center><small>Photo of an Oriental fire-bellied toad (<em>Bombina orientalis</em>), a close relative of the Yunnan fire-bellied toad (<em>Bombina icrodeladigitora</em>).  Fire-bellied toads are popular in pet trade. Photo credit: Joseph Dougherty</small></center>
 
 <hr/>
 
