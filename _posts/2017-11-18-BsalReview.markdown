@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Can We Prevent a Second Amphibian Pandemic?"
-date:   2017-11-18
+date:   2017-11-19 20:30:00
 author: Tiffany Yap
 categories: News, Resources
 ---
