@@ -20,7 +20,7 @@ Proactive policy action was and continues to be an important step for amphibian 
 
 ![Photo of a fire-bellied toad, Bombina orientalis](/assets/Bombina_orientalis_JosephDougherty.jpeg)
 
-<center><small>Photo of an Oriental fire-bellied toad (<em>Bombina orientalis</em>), a close relative of the Yunnan fire-bellied toad (<em>Bombina icrodeladigitora</em>).  Fire-bellied toads are popular in pet trade. Photo credit: Joseph Dougherty</small></center>
+<center><small>Photo of an Oriental fire-bellied toad (<em>Bombina orientalis</em>), a close relative of the Yunnan fire-bellied toad (<em>Bombina icrodeladigitora</em>).  Fire-bellied toads are popular in pet trade. Photo credit: Joseph Dougherty, M.D./ecology.org</small></center>
 
 <hr/>
 
