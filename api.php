@@ -605,7 +605,7 @@ function doAWebValidate($get)
      *
      * @param array $get ->
      ***/
-    $amphibiaWebListTarget = 'http://amphibiaweb.org/amphib_names.txt';
+    $amphibiaWebListTarget = 'https://amphibiaweb.org/amphib_names.txt';
     $localAWebTarget = dirname(__FILE__).'/aweb_list.txt';
     $dayOffset = 60 * 60 * 24;
     $response = array(
@@ -627,11 +627,16 @@ function doAWebValidate($get)
     if (filemtime($localAWebTarget) + $dayOffset < time()) {
         # Fetch a new copy
         $aWebList = file_get_contents($amphibiaWebListTarget);
-        $h = fopen($localAWebTarget, 'w+');
-        $bytes = fwrite($h, $aWebList);
-        fclose($h);
-        if ($bytes === false) {
-            $response['notices'][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
+        if (strlen($aWebList) > 0) {
+            $h = fopen($localAWebTarget, 'w+');
+            $bytes = fwrite($h, $aWebList);
+            fclose($h);
+            if ($bytes === false) {
+                $response['notices'][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
+            }
+        } else {
+            $response['notices'][] = "Got an empty AmphibiaWeb list, using an outdated list";
+            $response['notices'][] = "List age: ".time()-filemtime($localAWebTarget)."s";
         }
     }
     $response['aweb_list_age'] = time() - filemtime($localAWebTarget);
