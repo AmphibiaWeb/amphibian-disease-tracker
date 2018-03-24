@@ -1479,6 +1479,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
      * @return array
      ***/
     global $db;
+    ini_set("error_log", "./admin-api-fims.log");
     $fimsDefaultHeaders = array(
         'Content-type: application/x-www-form-urlencoded',
         'Accept: application/json',
@@ -1516,6 +1517,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
             if ($rawResponse === false) {
+                error_log("Sent post:\n\tTarget URL:\t".$fimsAuthUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True));
                 throw(new Exception("Fatal FIMS communication error 005 (No Response)"));
             }
             $loginHeaders = $http_response_header;
