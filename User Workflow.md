@@ -108,11 +108,11 @@ When you have data, you don't need to specify a locality like without data; it w
 
 ### Getting your Template
 
-We have partnered with [BiSciCol.org](http://biscicol.org) to provide a template generator for your project.
+We have partnered with Biocode ([BiSciCol.org](http://biscicol.org)) to provide a template generator for your project.
 
-If you go to [http://biscicol.org/biocode-fims/template](http://biscicol.org/biocode-fims/template), and from the dropdown select "Amphibian Disease", you can get a template from which to start working.
+If you go to [https://www.biscicol.org/](https://www.biscicol.org/), and from the upper righthand dropdown menu Tools select "Generate Template, then "Amphibian Disease", you can customize and download a template from which to start working.
 
-The file you get will be an Excel 2007+ format (`.xlsx`) file. All your sample data should be in the worksheet title `Samples`. If you wish to use a different worksheet name, please be sure that it is the first worksheet in the notebook. **If you do not do this, your validation will always fail, and you will not be able to upload data to the system**.
+The template file will be an Excel 2007+ format (`.xlsx`) file. All your sample data should be in the worksheet title `Samples`. If you wish to use a different worksheet name, please be sure that it is the first worksheet in the notebook. **If you do not do this, your validation will always fail, and you will not be able to upload data to the system**.
 
 If you would like to save your data in a non-proprietary format, saving it as a `.csv` file is also accepted. All CSV files should conform to [RFC4180](https://tools.ietf.org/html/rfc4180). Please be aware that if you use a Microsoft product, depending on the version, it may not conform properly to this standard and your data may be processed incorrectly.
 
