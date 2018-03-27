@@ -2645,6 +2645,16 @@ $(function() {
     if ((typeof adminParams !== "undefined" && adminParams !== null ? adminParams.loadAdminUi : void 0) === true) {
       loadJS("js/admin.js", function() {
         console.info("Loaded admin file");
+        if (typeof window.loadAdminUi !== "function") {
+          if (window.loadAdminUi == null) {
+            window.loadAdminUi = function() {
+              var html;
+              html = "<div class='bs-callout bs-callout-danger'>\n  <h4>Error loading administration</h4>\n  <p>\n    We failed to load the administrative interface. Try refreshing the page.\n  </p>\n  <p>\n    If you continue to see this error, please check your network connection.\n  </p>\n</div>            ";
+              $("main #main-body").html(html);
+              return false;
+            };
+          }
+        }
         return loadAdminUi();
       });
     } else {
@@ -4287,7 +4297,9 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       return false;
     });
   }).fail(function(result, status) {
-    console.error("Couldn't communicate with server!", result, status);
+    var kbSize;
+    kbSize = args.length / 1024;
+    console.error("Couldn't communicate with server (" + result.status + " " + result.statusText + ")! POST size " + kbSize + " kiB", result, status);
     console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
     return bsAlert("Couldn't upload dataset. Please try again later.", "danger");

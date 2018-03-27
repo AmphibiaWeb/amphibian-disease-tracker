@@ -47,6 +47,8 @@ stopLoadBarsError = (currentTimeout, message) ->
       this.message = "Loading bars aren't visible!"
       this.name = "BadLoadState"
     throw new ex()
+  if typeof currentTimeout is "string" and isNull message
+    message = currentTimeout
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
@@ -273,7 +275,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
   false
 
 
-mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value, callback) ->
+mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value, callback, fatal = false) ->
   ###
   #
   # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
@@ -308,22 +310,30 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       catch
         alertError = "UNREADABLE_FIMS_ERROR"
       result.human_error += """" Server said: <code>#{alertError}</code> """
-      try
-        stopLoadBarsError null, result.human_error
-      catch
-        stopLoadError result.human_error
       console.error result.error, "#{adminParams.apiTarget}?#{args}"
-      return false
-    resultObj = result
-    unless _adp?.fims?
-      unless _adp?
-        window._adp = new Object()
-      _adp.fims = new Object()
-    _adp.fims.expedition =
-      permalink: result.project_permalink
-      ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
-      expeditionId: result.fims_expedition_id
-      fimsRawResponse: result.responses.expedition_response
+      if fatal
+        try
+            stopLoadBarsError null, result.human_error
+        catch
+            stopLoadError result.human_error
+        return false
+      else
+        unless _adp?.fims?
+          unless _adp?
+            window._adp = new Object()
+          _adp.fims = new Object()
+        _adp.fims.expedition = {"expeditionId": -1}
+    else
+        resultObj = result
+        unless _adp?.fims?
+          unless _adp?
+            window._adp = new Object()
+          _adp.fims = new Object()
+        _adp.fims.expedition =
+            permalink: result.project_permalink
+            ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
+            expeditionId: result.fims_expedition_id
+            fimsRawResponse: result.responses.expedition_response
   .fail (result, status) ->
     resultObj.ark = null
     false

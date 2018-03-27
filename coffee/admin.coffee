@@ -48,8 +48,21 @@ window.loadAdminUi = ->
   # user back to the login page.
   ###
   try
+    slowNet = delay 3000, ->
+      html = """
+      <div class='bs-callout bs-callout-warning'>
+        <h4>Please be patient</h4>
+        <p>
+          The internet is a bit slow right now. We're still verifying your credentials.
+        </p>
+      </div>
+      """
+      $("main #main-body").html html
+      false
+  try
     verifyLoginCredentials (data) ->
       # Post verification
+      clearTimeout slowNet
       badgeHtml = if data.unrestricted is true then "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" else "<iron-icon id='restriction-badge' icon='icons:verified-user' class='text-muted' data-toggle='tooltip' title='Restricted Account'></iron-icon>"
       articleHtml = """
       <h3>
@@ -2330,6 +2343,11 @@ excelDateToUnixTime = (excelTime, strict = false) ->
   thisYear = d.getUTCFullYear()
   try
     if not isNumber excelTime
+      # It might be a string of some readable date
+      possibleDate = Date.parse excelTime
+      # A bad date will have parsed as "NaN"
+      if isNumber possibleDate
+        return possibleDate
       throw "Bad date error"
     if earliestPlausibleYear <= excelTime <= thisYear
       ###

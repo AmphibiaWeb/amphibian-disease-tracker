@@ -1604,8 +1604,12 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
-    console.warn result, error
-    stopLoadError()
+    console.warn result
+    console.warn error
+    errorMessage = "<code>#{result.status} #{result.statusText}</code>"
+    stopLoadBarsError("There was a problem with the server handling your data. The server said: #{errorMessage}")
+    delay 500, ->
+      stopLoad()
   false
 
 

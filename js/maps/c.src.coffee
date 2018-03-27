@@ -2146,6 +2146,21 @@ $ ->
       #console.info "Doing admin setup"
       loadJS "js/admin.js", ->
         console.info "Loaded admin file"
+        if typeof window.loadAdminUi isnt "function"
+          window.loadAdminUi ?= ->
+            html = """
+      <div class='bs-callout bs-callout-danger'>
+        <h4>Error loading administration</h4>
+        <p>
+          We failed to load the administrative interface. Try refreshing the page.
+        </p>
+        <p>
+          If you continue to see this error, please check your network connection.
+        </p>
+      </div>            
+            """
+            $("main #main-body").html html
+            false
         loadAdminUi()
     else
       console.info "No admin setup requested"
@@ -3628,7 +3643,8 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
         parentCallback(coords)
       false
   .fail (result, status) ->
-    console.error "Couldn't communicate with server!", result, status
+    kbSize = args.length / 1024
+    console.error "Couldn't communicate with server (#{result.status} #{result.statusText})! POST size #{kbSize} kiB", result, status
     console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
     bsAlert "Couldn't upload dataset. Please try again later.", "danger"

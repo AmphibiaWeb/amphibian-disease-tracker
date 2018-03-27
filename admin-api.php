@@ -1479,6 +1479,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
      * @return array
      ***/
     global $db;
+    ini_set("error_log", "./admin-api-fims.log");
     $fimsDefaultHeaders = array(
         'Content-type: application/x-www-form-urlencoded',
         'Accept: application/json',
@@ -1516,6 +1517,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             $ctx = stream_context_create($params);
             $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
             if ($rawResponse === false) {
+                error_log("POST login failed!! Sent post:\n\tTarget URL:\t".$fimsAuthUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True)."\n\nResponse: ".print_r($rawResponse, true));
                 throw(new Exception("Fatal FIMS communication error 005 (No Response)"));
             }
             $loginHeaders = $http_response_header;
@@ -1556,6 +1558,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
             try {
                 $errorMessageRaw = print_r(error_get_last(), true);
                 $errorMessage = json_encode(error_get_last());
+                error_log("POST mint failed!! \nError: $errorMessageRaw \nSent post:\n\tTarget URL:\t".$fimsMintUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True)."\n\nResponse: ".print_r($rawResponse, true));
                 if (empty($errorMessage)) {
                     throw(new Exception("BadEncode"));
                 }
@@ -1582,6 +1585,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 $ctx = stream_context_create($params);
                 $rawReauthResponse = file_get_contents($fimsAuthUrl, false, $ctx);
                 if ($rawReauthResponse === false) {
+                    error_log("POST reauth failed!! Sent post:\n\tTarget URL:\t".$fimsAuthUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True)."\n\nResponse: ".print_r($rawReauthResponse, true));
                     throw(new Exception("Fatal FIMS communication error 009 (No Response)"));
                 }
                 $loginHeaders = $http_response_header;
@@ -1596,6 +1600,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 }
                 $loginResponse = json_decode($rawReauthResponse, true);
                 if (empty($loginResponse['url'])) {
+                    error_log("POST login failed (009)!! Sent post:\n\tTarget URL:\t".$fimsAuthUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True)."\n\nResponse: ".print_r($rawRawResponse, true));
                     throw(new Exception('Invalid Login Response E093'));
                 }
                 # Try to fetch the expedition
@@ -2027,34 +2032,34 @@ function superuserEditUser($get)
             );
         }
         switch ($editAction) {
-        case "delete":
-            $dryRun = $uf->forceDeleteCurrentUser();
-            $targetUid = $dryRun["target_user"];
-            if ($targetUid != $target) {
-                # Should never happen
+            case "delete":
+                $dryRun = $uf->forceDeleteCurrentUser();
+                $targetUid = $dryRun["target_user"];
+                if ($targetUid != $target) {
+                    # Should never happen
+                    return array(
+                        "status" => false,
+                        "error" => "MISMATCHED_TARGETS",
+                        "human_error" => "The system encountered an error confirming target for deletion",
+                        "obj_target" => $targetUid,
+                        "post_target" => $target,
+                    );
+                }
+                return $uf->forceDeleteCurrentUser(true);
+                break;
+            case "reset":
                 return array(
                     "status" => false,
-                    "error" => "MISMATCHED_TARGETS",
-                    "human_error" => "The system encountered an error confirming target for deletion",
-                    "obj_target" => $targetUid,
-                    "post_target" => $target,
+                    "error" => "Incomplete"
                 );
-            }
-            return $uf->forceDeleteCurrentUser(true);
-            break;
-        case "reset":
-            return array(
-                "status" => false,
-                "error" => "Incomplete"
-            );
-            break;
-        default:
-            return array(
-                "status" => false,
-                "error" => "INVALID_CHANGE_TYPE",
-                "human_error" => "We didn't recognize this change type",
-                "change_type_provided" => $editAction,
-            );
+                break;
+            default:
+                return array(
+                    "status" => false,
+                    "error" => "INVALID_CHANGE_TYPE",
+                    "human_error" => "We didn't recognize this change type",
+                    "change_type_provided" => $editAction,
+                );
         }
     } catch (Exception $e) {
         return array(

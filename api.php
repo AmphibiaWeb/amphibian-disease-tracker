@@ -69,7 +69,7 @@ switch ($do) {
         doCartoSqlApiPush($_REQUEST);
         break;
     case 'validate':
-        doAWebValidate($_REQUEST);
+        returnAjax(doAWebValidate($_REQUEST));
         break;
     case 'is_human':
         validateCaptcha($_REQUEST);
@@ -115,8 +115,7 @@ switch ($do) {
 }
 
 
-function searchProject($get)
-{
+function searchProject($get) {
     /***
      *
      ***/
@@ -126,7 +125,7 @@ function searchProject($get)
         'project_id' => $q,
         'project_title' => $q,
     );
-    $cols = array('project_id', 'project_title', "dataset_arks");
+    $cols = array('project_id', 'project_title', "dataset_arks", "project_obj_id");
     $response = array(
         'search' => $q,
     );
@@ -601,9 +600,11 @@ function tsvHelper($tsv)
 function doAWebValidate($get)
 {
     /***
+     * Validate a taxon with Amphibiaweb.
      *
+     * @param array $get ->
      ***/
-    $amphibiaWebListTarget = 'http://amphibiaweb.org/amphib_names.txt';
+    $amphibiaWebListTarget = 'https://amphibiaweb.org/amphib_names.txt';
     $localAWebTarget = dirname(__FILE__).'/aweb_list.txt';
     $dayOffset = 60 * 60 * 24;
     $response = array(
@@ -625,11 +626,16 @@ function doAWebValidate($get)
     if (filemtime($localAWebTarget) + $dayOffset < time()) {
         # Fetch a new copy
         $aWebList = file_get_contents($amphibiaWebListTarget);
-        $h = fopen($localAWebTarget, 'w+');
-        $bytes = fwrite($h, $aWebList);
-        fclose($h);
-        if ($bytes === false) {
-            $response['notices'][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
+        if (strlen($aWebList) > 0) {
+            $h = fopen($localAWebTarget, 'w+');
+            $bytes = fwrite($h, $aWebList);
+            fclose($h);
+            if ($bytes === false) {
+                $response['notices'][] = "Couldn't write updated AmphibiaWeb list to $localAWebTarget";
+            }
+        } else {
+            $response['notices'][] = "Got an empty AmphibiaWeb list, using an outdated list";
+            $response['notices'][] = "List age: ".time()-filemtime($localAWebTarget)."s";
         }
     }
     $response['aweb_list_age'] = time() - filemtime($localAWebTarget);
@@ -977,8 +983,8 @@ function doAWebValidate($get)
     }
     $response['status'] = true;
     # Note that Unicode characters may return escaped! eg, \u00e9.
-        $response['validated_taxon'] = $aWebPretty;
-    returnAjax($response);
+    $response['validated_taxon'] = $aWebPretty;
+    return $response;
 }
 
 
@@ -1764,7 +1770,7 @@ function updateTaxonRecordHigherInformation()
 function getTaxonData($taxonBase, $skipFetch = false)
 {
     /***
-     *
+     * Fetch the data for a given taxon
      ***/
     global $db;
     foreach ($taxonBase as $key => $value) {
@@ -1813,8 +1819,24 @@ function getTaxonData($taxonBase, $skipFetch = false)
         );
     }
     # Check ours
+    global $login_status;
+    $uid = $login_status['detail']['uid'];
+    $suFlag = $login_status['detail']['userdata']['su_flag'];
+    $isSu = boolstr($suFlag);
+    if ($isSu !== true) {
+        $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."` WHERE `public` is true";
+        if (!empty($uid)) {
+            $authorizedIntersectQuery .= " OR `access_data` LIKE '%".$uid."%' OR `author` LIKE '%".$uid."%'";
+        }
+    } else {
+        # A superuser gets to view everything
+        $authorizedIntersectQuery = "SELECT `project_id` FROM `".$db->getTable()."`";
+    }
+
+    $authorizedIntersect = "INNER JOIN ($authorizedIntersectQuery) AS authorized ON authorized.project_id = ";
+
     $taxonString = $taxonBase["genus"]." ".$taxonBase["species"];
-    $countQuery = "select `project_id`, `project_title` from `".$db->getTable()."` where sampled_species like '%$taxonString%'";
+    $countQuery = "select records.project_id, `project_title` from `".$db->getTable()."` AS records $authorizedIntersect records.project_id WHERE records.sampled_species LIKE '%$taxonString%'";
     $r = mysqli_query($db->getLink(), $countQuery);
     $adpData = array();
     if ($r !== false) {
@@ -1828,11 +1850,13 @@ function getTaxonData($taxonBase, $skipFetch = false)
     }
     $adpData["samples"] = 0;
     $adpData["countries"] = array();
-    $samplesQuery = "select `country`,`diseasetested`, `diseasedetected`, `fatal` from `records_list` where `genus`='".$taxonBase["genus"]."' and `specificepithet`='".$taxonBase["species"]."' order by `diseasetested`";
+    $samplesQuery = "SELECT records.project_id, `country`,`diseasetested`, `diseasedetected`, `fatal` FROM `records_list` AS records $authorizedIntersect records.project_id WHERE `genus`='".$taxonBase["genus"]."' AND `specificepithet`='".$taxonBase["species"]."' ORDER BY `diseasetested`";
     $r = mysqli_query($db->getLink(), $samplesQuery);
     $taxonBreakdown = array();
+    $debug = array("query" => $samplesQuery);
     if ($r !== false) {
         while ($row = mysqli_fetch_assoc($r)) {
+            $debug[] = $row;
             if (!in_array($row["country"], $adpData["countries"])) {
                 $adpData["countries"][] = $row["country"];
             }
@@ -1883,6 +1907,11 @@ function getTaxonData($taxonBase, $skipFetch = false)
             }
         }
         $adpData["samples"] = mysqli_num_rows($r);
+    } else {
+        $debug[] = array(
+            "error" => "BAD_RESULT",
+            "mysql" => mysqli_error($l),
+        );
     }
     $adpData["disease_data"] = $taxonBreakdown;
     try {
@@ -1902,6 +1931,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
     );
     $response = array(
         "status" => true,
+#        "debug" => $debug,
         "taxon" => array(
             "genus" => $taxonBase["genus"],
             "species" => $taxonBase["species"],
@@ -1921,7 +1951,7 @@ function getTaxonData($taxonBase, $skipFetch = false)
 }
 
 
-function getTaxonIucnData($taxonBase)
+function getTaxonIucnData($taxonBase, $recursed = false)
 {
     /***
      * Get the IUCN result for a given taxon
@@ -1936,6 +1966,10 @@ function getTaxonIucnData($taxonBase)
             "status" => false,
             "error" => "REQUIRED_COLS_MISSING",
         );
+    }
+    if ($recursed) {
+        # Logging
+        # error_log("Recursed entry calling with ".json_encode($taxonBase));
     }
     // $params = array(
     //     "genus" => $taxonBase["genus"],
@@ -1970,6 +2004,8 @@ function getTaxonIucnData($taxonBase)
         "NE" => "Not Evaluated",
     );
     # Set up so that we can skip this step if need be
+    $badIucn = false;
+    $badTaxon = false;
     $doIucn = true;
     if ($doIucn === true) {
         # IUCN returns an empty result unless "%20" is used to separate the
@@ -1986,6 +2022,10 @@ function getTaxonIucnData($taxonBase)
             $response["iucn_category"] = $iucnCategoryMap[$response["iucn"]["category"]];
             if (empty($response["iucn_category"])) {
                 $response["iucn_category"] = "No Data";
+                $badTaxon = true;
+                $response["status"] = false;
+            } else {
+                $response["status"] = true;
             }
         } else {
             $response["error"] = "INVALID_IUCN_RESPONSE";
@@ -1994,11 +2034,50 @@ function getTaxonIucnData($taxonBase)
                 "raw_response" => $iucnRawResponse,
                 "parsed_response" => $iucnResponse,
             );
+            $badIucn = true;
+            $response["status"] = false;
         }
     } else {
         // What are we even doing here
     }
-
+    if ($badTaxon) {
+        # Try synonyms
+        # error_log("Bad taxon, trying synonyms");
+        $validation = doAWebValidate(array(
+            "genus" => $taxonBase["genus"],
+            "species" => $taxonBase["species"],
+        ));
+        if ($validation["status"]) {
+            $checkSynonyms = array(
+                $validation["validated_taxon"]["gaa_name"],
+            );
+            $itisEntries = $validation["validated_taxon"]["itis_names"];
+            $synonymEntries = $validation["validated_taxon"]["synonym_names"];
+            foreach (explode(",", $itisEntries) as $entry) {
+                $checkSynonyms[] = $entry;
+            }
+            foreach (explode(",", $synonymEntries) as $entry) {
+                $checkSynonyms[] = $entry;
+            }
+            # Now we have a list of all known synonyms
+            foreach ($checkSynonyms as $taxon) {
+                # error_log("Checking synonym '".$taxon."' for ".json_encode($taxonBase));
+                $taxonParts = explode(" ", strtolower($taxon));
+                $genus = $taxonParts[0];
+                $species = $taxonParts[1];
+                set_time_limit(15); # Prevent timing out unless a
+                                    # specific lookup actually fails
+                $responseTmp = getTaxonIucnData(array(
+                    "genus"  => $genus,
+                    "species" => $species,
+                ), true);
+                if ($responseTmp["status"] === true) {
+                    $response = $responseTmp;
+                    break;
+                }
+            }
+        }
+    }
     return $response;
 }
 
@@ -2030,12 +2109,16 @@ function getTaxonAWebData($taxonBase)
     $awebReplacedResponse = str_replace($replaceSearch, "", $awebRawResponse);
     $iter = 1;
     $awebEscapeTags = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebReplacedResponse, -1, $tagCount);
+    # error_log($awebEscapeTags);
     while ($tagCount > 0) {
-        $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, -1, $tagCount);
+        $replaced = preg_replace('%<!\[cdata\[((?:(?!\]\]>).)*?)<(p|i|a)(?:\s*href=.*?)?>(.*?)</\g{2}>(.*?)\]\]>%sim', '<![CDATA[${1}&lt;${2}&gt;${3}&lt;/${2}&gt;${4}]]>', $awebEscapeTags, 500, $tagCount);
         if (!empty($replaced)) {
             $awebEscapeTags = $replaced;
         }
         ++$iter;
+        if ($iter > 500) {
+            break;
+        }
     }
     $awebNoCdata = preg_replace('%<!\[cdata\[\s*?([\w\- ,;:\'"\ts\x{0080}-\x{017F}\(\)\/\.\r\n\?\&=]*?)\s*?\]\]>%usim', '${1}', $awebEscapeTags);
 

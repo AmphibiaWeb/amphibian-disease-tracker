@@ -2146,6 +2146,21 @@ $ ->
       #console.info "Doing admin setup"
       loadJS "js/admin.js", ->
         console.info "Loaded admin file"
+        if typeof window.loadAdminUi isnt "function"
+          window.loadAdminUi ?= ->
+            html = """
+      <div class='bs-callout bs-callout-danger'>
+        <h4>Error loading administration</h4>
+        <p>
+          We failed to load the administrative interface. Try refreshing the page.
+        </p>
+        <p>
+          If you continue to see this error, please check your network connection.
+        </p>
+      </div>            
+            """
+            $("main #main-body").html html
+            false
         loadAdminUi()
     else
       console.info "No admin setup requested"

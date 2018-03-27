@@ -16,6 +16,10 @@ try {
 } catch (undefined) {}
 
 checkCoordinateSanity = function() {
+
+  /*
+   *
+   */
   var bounds, isGood;
   isGood = true;
   bounds = {

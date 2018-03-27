@@ -10,6 +10,9 @@ try
     namedMapAdvSource = "adp_specific_exact_heatmap-v1"
 
 checkCoordinateSanity = ->
+  ###
+  #
+  ###
   isGood = true
   bounds =
     n: toFloat $("#north-coordinate").val()

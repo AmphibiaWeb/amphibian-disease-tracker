@@ -63,10 +63,19 @@ window.loadAdminUi = function() {
    * fetches/draws the page contents if it's OK. Otherwise, boots the
    * user back to the login page.
    */
-  var e, error1;
+  var e, error1, slowNet;
+  try {
+    slowNet = delay(3000, function() {
+      var html;
+      html = "<div class='bs-callout bs-callout-warning'>\n  <h4>Please be patient</h4>\n  <p>\n    The internet is a bit slow right now. We're still verifying your credentials.\n  </p>\n</div>";
+      $("main #main-body").html(html);
+      return false;
+    });
+  } catch (undefined) {}
   try {
     verifyLoginCredentials(function(data) {
       var articleHtml, badgeHtml;
+      clearTimeout(slowNet);
       badgeHtml = data.unrestricted === true ? "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" : "<iron-icon id='restriction-badge' icon='icons:verified-user' class='text-muted' data-toggle='tooltip' title='Restricted Account'></iron-icon>";
       articleHtml = "<h3>\n  Welcome, " + ($.cookie(adminParams.domain + "_name")) + " " + badgeHtml + "\n</h3>\n<section id='admin-actions-block' class=\"row center-block text-center\">\n  <div class='bs-callout bs-callout-info'>\n    <p>Please be patient while the administrative interface loads.</p>\n  </div>\n</section>";
       $("main #main-body").before(articleHtml);
@@ -2402,7 +2411,7 @@ newGeoDataHandler = function(dataObject, skipCarto, postCartoCallback) {
 };
 
 excelDateToUnixTime = function(excelTime, strict) {
-  var d, daysFrom1900to1970, daysFrom1904to1970, earliestPlausibleYear, error1, parseableDate, secondsPerDay, t, thisYear;
+  var d, daysFrom1900to1970, daysFrom1904to1970, earliestPlausibleYear, error1, parseableDate, possibleDate, secondsPerDay, t, thisYear;
   if (strict == null) {
     strict = false;
   }
@@ -2415,6 +2424,10 @@ excelDateToUnixTime = function(excelTime, strict) {
   thisYear = d.getUTCFullYear();
   try {
     if (!isNumber(excelTime)) {
+      possibleDate = Date.parse(excelTime);
+      if (isNumber(possibleDate)) {
+        return possibleDate;
+      }
       throw "Bad date error";
     }
     if ((earliestPlausibleYear <= excelTime && excelTime <= thisYear)) {
@@ -3958,9 +3971,15 @@ excelHandler2 = function(path, hasHeaders, callbackSkipsRevalidate) {
     }
     return stopLoad();
   }).fail(function(result, error) {
+    var errorMessage;
     console.error("Couldn't POST");
-    console.warn(result, error);
-    return stopLoadError();
+    console.warn(result);
+    console.warn(error);
+    errorMessage = "<code>" + result.status + " " + result.statusText + "</code>";
+    stopLoadBarsError("There was a problem with the server handling your data. The server said: " + errorMessage);
+    return delay(500, function() {
+      return stopLoad();
+    });
   });
   return false;
 };
@@ -5056,6 +5075,9 @@ stopLoadBarsError = function(currentTimeout, message) {
     };
     throw new ex();
   }
+  if (typeof currentTimeout === "string" && isNull(message)) {
+    message = currentTimeout;
+  }
   try {
     clearTimeout(currentTimeout);
   } catch (undefined) {}
@@ -5296,13 +5318,16 @@ mintBcid = function(projectId, datasetUri, title, callback) {
   return false;
 };
 
-mintExpedition = function(projectId, title, callback) {
+mintExpedition = function(projectId, title, callback, fatal) {
   var args, error1, publicProject, resultObj;
   if (projectId == null) {
     projectId = _adp.projectId;
   }
   if (title == null) {
     title = p$("#project-title").value;
+  }
+  if (fatal == null) {
+    fatal = false;
   }
 
   /*
@@ -5344,27 +5369,40 @@ mintExpedition = function(projectId, title, callback) {
         alertError = "UNREADABLE_FIMS_ERROR";
       }
       result.human_error += "\" Server said: <code>" + alertError + "</code> ";
-      try {
-        stopLoadBarsError(null, result.human_error);
-      } catch (error3) {
-        stopLoadError(result.human_error);
-      }
       console.error(result.error, adminParams.apiTarget + "?" + args);
-      return false;
-    }
-    resultObj = result;
-    if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
-      if (typeof _adp === "undefined" || _adp === null) {
-        window._adp = new Object();
+      if (fatal) {
+        try {
+          stopLoadBarsError(null, result.human_error);
+        } catch (error3) {
+          stopLoadError(result.human_error);
+        }
+        return false;
+      } else {
+        if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
+          if (typeof _adp === "undefined" || _adp === null) {
+            window._adp = new Object();
+          }
+          _adp.fims = new Object();
+        }
+        return _adp.fims.expedition = {
+          "expeditionId": -1
+        };
       }
-      _adp.fims = new Object();
+    } else {
+      resultObj = result;
+      if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
+        if (typeof _adp === "undefined" || _adp === null) {
+          window._adp = new Object();
+        }
+        _adp.fims = new Object();
+      }
+      return _adp.fims.expedition = {
+        permalink: result.project_permalink,
+        ark: typeof result.ark !== "object" ? result.ark : result.ark.identifier,
+        expeditionId: result.fims_expedition_id,
+        fimsRawResponse: result.responses.expedition_response
+      };
     }
-    return _adp.fims.expedition = {
-      permalink: result.project_permalink,
-      ark: typeof result.ark !== "object" ? result.ark : result.ark.identifier,
-      expeditionId: result.fims_expedition_id,
-      fimsRawResponse: result.responses.expedition_response
-    };
   }).fail(function(result, status) {
     resultObj.ark = null;
     return false;

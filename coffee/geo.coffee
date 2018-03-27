@@ -1466,7 +1466,8 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
         parentCallback(coords)
       false
   .fail (result, status) ->
-    console.error "Couldn't communicate with server!", result, status
+    kbSize = args.length / 1024
+    console.error "Couldn't communicate with server (#{result.status} #{result.statusText})! POST size #{kbSize} kiB", result, status
     console.warn "#{uri.urlString}#{adminParams.apiTarget}?#{args}"
     stopLoadError "There was a problem communicating with the server. Please try again in a bit. (E-002)"
     bsAlert "Couldn't upload dataset. Please try again later.", "danger"

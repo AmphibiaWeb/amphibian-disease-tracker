@@ -48,8 +48,21 @@ window.loadAdminUi = ->
   # user back to the login page.
   ###
   try
+    slowNet = delay 3000, ->
+      html = """
+      <div class='bs-callout bs-callout-warning'>
+        <h4>Please be patient</h4>
+        <p>
+          The internet is a bit slow right now. We're still verifying your credentials.
+        </p>
+      </div>
+      """
+      $("main #main-body").html html
+      false
+  try
     verifyLoginCredentials (data) ->
       # Post verification
+      clearTimeout slowNet
       badgeHtml = if data.unrestricted is true then "<iron-icon id='restriction-badge' icon='icons:verified-user' class='material-green' data-toggle='tooltip' title='Unrestricted Account'></iron-icon>" else "<iron-icon id='restriction-badge' icon='icons:verified-user' class='text-muted' data-toggle='tooltip' title='Restricted Account'></iron-icon>"
       articleHtml = """
       <h3>
@@ -2330,6 +2343,11 @@ excelDateToUnixTime = (excelTime, strict = false) ->
   thisYear = d.getUTCFullYear()
   try
     if not isNumber excelTime
+      # It might be a string of some readable date
+      possibleDate = Date.parse excelTime
+      # A bad date will have parsed as "NaN"
+      if isNumber possibleDate
+        return possibleDate
       throw "Bad date error"
     if earliestPlausibleYear <= excelTime <= thisYear
       ###
@@ -4079,8 +4097,12 @@ excelHandler2 = (path, hasHeaders = true, callbackSkipsRevalidate) ->
     stopLoad()
   .fail (result, error) ->
     console.error "Couldn't POST"
-    console.warn result, error
-    stopLoadError()
+    console.warn result
+    console.warn error
+    errorMessage = "<code>#{result.status} #{result.statusText}</code>"
+    stopLoadBarsError("There was a problem with the server handling your data. The server said: #{errorMessage}")
+    delay 500, ->
+      stopLoad()
   false
 
 
@@ -5014,6 +5036,8 @@ stopLoadBarsError = (currentTimeout, message) ->
       this.message = "Loading bars aren't visible!"
       this.name = "BadLoadState"
     throw new ex()
+  if typeof currentTimeout is "string" and isNull message
+    message = currentTimeout
   try
     clearTimeout currentTimeout
   $("#validator-progress-container paper-progress[indeterminate]")
@@ -5240,7 +5264,7 @@ mintBcid = (projectId, datasetUri = dataFileParams?.filePath, title, callback) -
   false
 
 
-mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value, callback) ->
+mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value, callback, fatal = false) ->
   ###
   #
   # https://fims.readthedocs.org/en/latest/amphibian_disease_example.html
@@ -5275,22 +5299,30 @@ mintExpedition = (projectId = _adp.projectId, title = p$("#project-title").value
       catch
         alertError = "UNREADABLE_FIMS_ERROR"
       result.human_error += """" Server said: <code>#{alertError}</code> """
-      try
-        stopLoadBarsError null, result.human_error
-      catch
-        stopLoadError result.human_error
       console.error result.error, "#{adminParams.apiTarget}?#{args}"
-      return false
-    resultObj = result
-    unless _adp?.fims?
-      unless _adp?
-        window._adp = new Object()
-      _adp.fims = new Object()
-    _adp.fims.expedition =
-      permalink: result.project_permalink
-      ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
-      expeditionId: result.fims_expedition_id
-      fimsRawResponse: result.responses.expedition_response
+      if fatal
+        try
+            stopLoadBarsError null, result.human_error
+        catch
+            stopLoadError result.human_error
+        return false
+      else
+        unless _adp?.fims?
+          unless _adp?
+            window._adp = new Object()
+          _adp.fims = new Object()
+        _adp.fims.expedition = {"expeditionId": -1}
+    else
+        resultObj = result
+        unless _adp?.fims?
+          unless _adp?
+            window._adp = new Object()
+          _adp.fims = new Object()
+        _adp.fims.expedition =
+            permalink: result.project_permalink
+            ark: unless typeof result.ark is "object" then result.ark else result.ark.identifier
+            expeditionId: result.fims_expedition_id
+            fimsRawResponse: result.responses.expedition_response
   .fail (result, status) ->
     resultObj.ark = null
     false
