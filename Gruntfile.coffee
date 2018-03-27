@@ -122,7 +122,7 @@ module.exports = (grunt) ->
             warnings: false
             properties: true
             sequences: true
-            cascade: true
+            #cascade: true
         files:
           "js/c.min.js":["js/c.js"]
           "js/admin.min.js":["js/admin.js"]

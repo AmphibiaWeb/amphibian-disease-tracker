@@ -4297,7 +4297,9 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
       return false;
     });
   }).fail(function(result, status) {
-    console.error("Couldn't communicate with server!", result, status);
+    var kbSize;
+    kbSize = args.length / 1024;
+    console.error("Couldn't communicate with server (" + result.status + " " + result.statusText + ")! POST size " + kbSize + " kiB", result, status);
     console.warn("" + uri.urlString + adminParams.apiTarget + "?" + args);
     stopLoadError("There was a problem communicating with the server. Please try again in a bit. (E-002)");
     return bsAlert("Couldn't upload dataset. Please try again later.", "danger");

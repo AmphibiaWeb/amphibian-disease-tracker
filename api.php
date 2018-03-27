@@ -115,8 +115,7 @@ switch ($do) {
 }
 
 
-function searchProject($get)
-{
+function searchProject($get) {
     /***
      *
      ***/
@@ -126,7 +125,7 @@ function searchProject($get)
         'project_id' => $q,
         'project_title' => $q,
     );
-    $cols = array('project_id', 'project_title', "dataset_arks");
+    $cols = array('project_id', 'project_title', "dataset_arks", "project_obj_id");
     $response = array(
         'search' => $q,
     );

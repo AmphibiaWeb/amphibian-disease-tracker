@@ -5318,13 +5318,16 @@ mintBcid = function(projectId, datasetUri, title, callback) {
   return false;
 };
 
-mintExpedition = function(projectId, title, callback) {
+mintExpedition = function(projectId, title, callback, fatal) {
   var args, error1, publicProject, resultObj;
   if (projectId == null) {
     projectId = _adp.projectId;
   }
   if (title == null) {
     title = p$("#project-title").value;
+  }
+  if (fatal == null) {
+    fatal = false;
   }
 
   /*
@@ -5366,27 +5369,40 @@ mintExpedition = function(projectId, title, callback) {
         alertError = "UNREADABLE_FIMS_ERROR";
       }
       result.human_error += "\" Server said: <code>" + alertError + "</code> ";
-      try {
-        stopLoadBarsError(null, result.human_error);
-      } catch (error3) {
-        stopLoadError(result.human_error);
-      }
       console.error(result.error, adminParams.apiTarget + "?" + args);
-      return false;
-    }
-    resultObj = result;
-    if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
-      if (typeof _adp === "undefined" || _adp === null) {
-        window._adp = new Object();
+      if (fatal) {
+        try {
+          stopLoadBarsError(null, result.human_error);
+        } catch (error3) {
+          stopLoadError(result.human_error);
+        }
+        return false;
+      } else {
+        if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
+          if (typeof _adp === "undefined" || _adp === null) {
+            window._adp = new Object();
+          }
+          _adp.fims = new Object();
+        }
+        return _adp.fims.expedition = {
+          "expeditionId": -1
+        };
       }
-      _adp.fims = new Object();
+    } else {
+      resultObj = result;
+      if ((typeof _adp !== "undefined" && _adp !== null ? _adp.fims : void 0) == null) {
+        if (typeof _adp === "undefined" || _adp === null) {
+          window._adp = new Object();
+        }
+        _adp.fims = new Object();
+      }
+      return _adp.fims.expedition = {
+        permalink: result.project_permalink,
+        ark: typeof result.ark !== "object" ? result.ark : result.ark.identifier,
+        expeditionId: result.fims_expedition_id,
+        fimsRawResponse: result.responses.expedition_response
+      };
     }
-    return _adp.fims.expedition = {
-      permalink: result.project_permalink,
-      ark: typeof result.ark !== "object" ? result.ark : result.ark.identifier,
-      expeditionId: result.fims_expedition_id,
-      fimsRawResponse: result.responses.expedition_response
-    };
   }).fail(function(result, status) {
     resultObj.ark = null;
     return false;
