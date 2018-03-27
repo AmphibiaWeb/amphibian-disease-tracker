@@ -9931,12 +9931,9 @@ html >>> .capitalize {
 }
 .square-object {
   position: relative;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
+  justify-content: center;
+  align-items: center;
   -o-object-fit: contain;
      object-fit: contain;
 }
@@ -10220,10 +10217,8 @@ td > .code-box {
   overflow-x: scroll;
 }
 td.code-box-container + td {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-align: center;
-          align-items: center;
+  align-items: center;
   align-content: center;
   align-self: center;
   height: 8em;
@@ -10364,10 +10359,8 @@ paper-button[raised].admin-action {
   transition: background 0.2s ease-out;
   vertical-align: middle;
   padding: .5rem;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-align: center;
-          align-items: center;
+  align-items: center;
 }
 #su-management-list .su-user-list:before,
 #su-management-list .su-user-list:after {
@@ -10393,8 +10386,7 @@ paper-button[raised].admin-action {
   margin-left: -1em;
 }
 #su-management-list .su-user-list span {
-  -webkit-box-flex: 1;
-          flex-grow: 1;
+  flex-grow: 1;
 }
 ul.project-search-su {
   list-style-type: none;
@@ -13201,10 +13193,8 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   color: white;
 }
 .profile-region .profile-data:not(.social-inline) {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-align: center;
-          align-items: center;
+  align-items: center;
 }
 .profile-region .profile-data * {
   margin-bottom: 2.5px;
@@ -13214,10 +13204,8 @@ section.conversations .user-conversation .chat-entry-container .form-group {
   width: 100%;
 }
 .profile-region .profile-image-container {
-  display: -webkit-box;
   display: flex;
-  -webkit-box-align: center;
-          align-items: center;
+  align-items: center;
 }
 .profile-region .profile-image-container .img-responsive {
   padding-left: 15px;
