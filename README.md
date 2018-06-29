@@ -3,7 +3,7 @@
 
 
 # ZeroClipboard
-[![GitHub Latest Release](https://badge.fury.io/gh/zeroclipboard%2Fzeroclipboard.svg)](https://github.com/zeroclipboard/zeroclipboard) [![Build Status](https://secure.travis-ci.org/zeroclipboard/zeroclipboard.svg?branch=master)](https://travis-ci.org/zeroclipboard/zeroclipboard) [![Coverage Status](https://coveralls.io/repos/zeroclipboard/zeroclipboard/badge.svg?branch=master)](https://coveralls.io/r/zeroclipboard/zeroclipboard?branch=master) [![Dependency Status](https://david-dm.org/zeroclipboard/zeroclipboard.svg?theme=shields.io)](https://david-dm.org/zeroclipboard/zeroclipboard) [![Dev Dependency Status](https://david-dm.org/zeroclipboard/zeroclipboard/dev-status.svg?theme=shields.io)](https://david-dm.org/zeroclipboard/zeroclipboard#info=devDependencies)
+[![GitHub Latest Release](https://badge.fury.io/gh/zeroclipboard%2Fzeroclipboard.svg)](https://github.com/zeroclipboard/zeroclipboard) [![Build Status](https://secure.travis-ci.org/zeroclipboard/zeroclipboard.svg?branch=master)](https://travis-ci.org/zeroclipboard/zeroclipboard) ![GZip Size](https://badge-size.herokuapp.com/zeroclipboard/zeroclipboard/master/dist/ZeroClipboard.min.js?compression=gzip) [![Coverage Status](https://coveralls.io/repos/zeroclipboard/zeroclipboard/badge.svg?branch=master)](https://coveralls.io/r/zeroclipboard/zeroclipboard?branch=master) [![Dependency Status](https://david-dm.org/zeroclipboard/zeroclipboard.svg?theme=shields.io)](https://david-dm.org/zeroclipboard/zeroclipboard) [![Dev Dependency Status](https://david-dm.org/zeroclipboard/zeroclipboard/dev-status.svg?theme=shields.io)](https://david-dm.org/zeroclipboard/zeroclipboard#info=devDependencies)
 
 The ZeroClipboard library provides an easy way to copy text to the clipboard using an invisible [Adobe Flash](http://en.wikipedia.org/wiki/Adobe_Flash) movie and a [JavaScript](http://en.wikipedia.org/wiki/JavaScript) interface. The "Zero" signifies that the library is invisible and the user interface is left entirely up to you.
 
@@ -85,12 +85,12 @@ client.on( "ready", function( readyEvent ) {
 See [docs/instructions.md](docs/instructions.md) for more advanced options in using the library on your site.
 See [docs/api/ZeroClipboard.md](docs/api/ZeroClipboard.md) for the complete API documentation.
 
-Here is a working [test page](http://zeroclipboard.org/#demo) where you can try out ZeroClipboard in your browser.
+Here is a working [test page](http://zeroclipboard.github.io/#demo) where you can try out ZeroClipboard in your browser.
 
 
 ## Testing ZeroClipboard Locally
 
-To test the page [demo page](http://zeroclipboard.org/#demo) locally, clone the [website repo](https://github.com/zeroclipboard/zeroclipboard.org).
+To test the page [demo page](http://zeroclipboard.github.io/#demo) locally, clone the [website repo](https://github.com/zeroclipboard/zeroclipboard.github.io).
 
 ## Support
 

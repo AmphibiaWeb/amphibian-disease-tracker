@@ -3,31 +3,28 @@
  * @private
  */
 var _config = function(options) {
-  /*jshint maxdepth:6 */
-  if (typeof options === "object" && options !== null) {
-    for (var prop in options) {
-      if (_hasOwn.call(options, prop)) {
-        // These configuration values CAN be modified while a SWF is actively embedded.
-        if (/^(?:forceHandCursor|title|zIndex|bubbleEvents|fixLineEndings)$/.test(prop)) {
-          _globalConfig[prop] = options[prop];
-        }
-        // All other configuration values CANNOT be modified while a SWF is actively embedded.
-        else if (_flashState.bridge == null) {
-          if (prop === "containerId" || prop === "swfObjectId") {
-            // Validate values against the HTML4 spec for `ID` and `Name` tokens
-            if (_isValidHtml4Id(options[prop])) {
-              _globalConfig[prop] = options[prop];
-            }
-            else {
-              throw new Error("The specified `" + prop + "` value is not valid as an HTML4 Element ID");
-            }
-          }
-          else {
+  if (typeof options === "object" && options && !("length" in options)) {
+    _keys(options).forEach(function(prop) {
+      // These configuration values CAN be modified while a SWF is actively embedded.
+      if (/^(?:forceHandCursor|title|zIndex|bubbleEvents|fixLineEndings)$/.test(prop)) {
+        _globalConfig[prop] = options[prop];
+      }
+      // All other configuration values CANNOT be modified while a SWF is actively embedded.
+      else if (_flashState.bridge == null) {
+        if (prop === "containerId" || prop === "swfObjectId") {
+          // Validate values against the HTML4 spec for `ID` and `Name` tokens
+          if (_isValidHtml4Id(options[prop])) {
             _globalConfig[prop] = options[prop];
           }
+          else {
+            throw new Error("The specified `" + prop + "` value is not valid as an HTML4 Element ID");
+          }
+        }
+        else {
+          _globalConfig[prop] = options[prop];
         }
       }
-    }
+    });
   }
 
   if (typeof options === "string" && options) {
@@ -55,7 +52,7 @@ var _state = function() {
   _detectSandbox();
 
   return {
-    browser: _pick(_navigator, ["userAgent", "platform", "appName", "appVersion"]),
+    browser: _extend(_pick(_navigator, ["userAgent", "platform", "appName", "appVersion"]), { "isSupported": _isBrowserSupported() }),
     flash: _omit(_flashState, ["bridge"]),
     zeroclipboard: {
       version: ZeroClipboard.version,
@@ -66,14 +63,29 @@ var _state = function() {
 
 
 /**
+ * Does this browser support all of the necessary DOM and JS features necessary?
+ * @private
+ */
+var _isBrowserSupported = function() {
+  return !!(
+    // DOM Level 2
+    _document.addEventListener &&
+    // ECMAScript 5.1
+    _window.Object.keys &&
+    _window.Array.prototype.map
+  );
+};
+
+
+/**
  * The underlying implementation of `ZeroClipboard.isFlashUnusable`.
  * @private
  */
 var _isFlashUnusable = function() {
   return !!(
+    _flashState.sandboxed ||
     _flashState.disabled ||
     _flashState.outdated ||
-    _flashState.sandboxed ||
     _flashState.unavailable ||
     _flashState.degraded ||
     _flashState.deactivated
@@ -92,15 +104,16 @@ var _on = function(eventType, listener) {
   if (typeof eventType === "string" && eventType) {
     events = eventType.toLowerCase().split(/\s+/);
   }
-  else if (typeof eventType === "object" && eventType && typeof listener === "undefined") {
-    for (i in eventType) {
-      if (_hasOwn.call(eventType, i) && typeof i === "string" && i && typeof eventType[i] === "function") {
-        ZeroClipboard.on(i, eventType[i]);
+  else if (typeof eventType === "object" && eventType && !("length" in eventType) && typeof listener === "undefined") {
+    _keys(eventType).forEach(function(key) {
+      var listener = eventType[key];
+      if (typeof listener === "function") {
+        ZeroClipboard.on(key, listener);
       }
-    }
+    });
   }
 
-  if (events && events.length) {
+  if (events && events.length && listener) {
     for (i = 0, len = events.length; i < len; i++) {
       eventType = events[i].replace(/^on/, "");
       added[eventType] = true;
@@ -120,15 +133,23 @@ var _on = function(eventType, listener) {
       });
     }
     if (added.error) {
+      if (!_isBrowserSupported()) {
+        ZeroClipboard.emit({
+          type: "error",
+          name: "browser-unsupported"
+        });
+      }
       for (i = 0, len = _flashStateErrorNames.length; i < len; i++) {
         if (_flashState[_flashStateErrorNames[i].replace(/^flash-/, "")] === true) {
           ZeroClipboard.emit({
             type: "error",
             name: _flashStateErrorNames[i]
           });
+          // Stop after the first `_flashState` error is found (should be the most severe)
           break;
         }
       }
+
       if (_zcSwfVersion !== undefined && ZeroClipboard.version !== _zcSwfVersion) {
         ZeroClipboard.emit({
           type: "error",
@@ -155,19 +176,20 @@ var _off = function(eventType, listener) {
     events = _keys(_handlers);
   }
   else if (typeof eventType === "string" && eventType) {
-    events = eventType.split(/\s+/);
+    events = eventType.toLowerCase().split(/\s+/);
   }
-  else if (typeof eventType === "object" && eventType && typeof listener === "undefined") {
-    for (i in eventType) {
-      if (_hasOwn.call(eventType, i) && typeof i === "string" && i && typeof eventType[i] === "function") {
-        ZeroClipboard.off(i, eventType[i]);
+  else if (typeof eventType === "object" && eventType && !("length" in eventType) && typeof listener === "undefined") {
+    _keys(eventType).forEach(function(key) {
+      var listener = eventType[key];
+      if (typeof listener === "function") {
+        ZeroClipboard.off(key, listener);
       }
-    }
+    });
   }
 
   if (events && events.length) {
     for (i = 0, len = events.length; i < len; i++) {
-      eventType = events[i].toLowerCase().replace(/^on/, "");
+      eventType = events[i].replace(/^on/, "");
       perEventHandlers = _handlers[eventType];
       if (perEventHandlers && perEventHandlers.length) {
         if (listener) {
@@ -226,7 +248,7 @@ var _emit = function(event) {
 
   // If this was a Flash "ready" event that was overdue, bail out and fire an "error" event instead
   if (event.type === "ready" && _flashState.overdue === true) {
-    return ZeroClipboard.emit({ "type": "error", "name": "flash-overdue" });
+    return ZeroClipboard.emit({ type: "error", name: "flash-overdue" });
   }
 
   // Trigger any and all registered event handlers
@@ -244,12 +266,44 @@ var _emit = function(event) {
 
 
 /**
+ * Get the protocol of the configured SWF path.
+ * @private
+ */
+var _getSwfPathProtocol = function() {
+  var swfPath = _globalConfig.swfPath || "",
+      swfPathFirstTwoChars = swfPath.slice(0, 2),
+      swfProtocol = swfPath.slice(0, swfPath.indexOf("://") + 1);
+
+  return (
+    // If swfPath is a UNC path (`file://`-based)
+    swfPathFirstTwoChars === "\\\\" ?
+      "file:" :
+      (
+        // If no protocol, or relative protocol, then...
+        swfPathFirstTwoChars === "//" || swfProtocol === "" ?
+          // use the page's protocol
+          _window.location.protocol :
+          // otherwise, use the protocol from the SWF path
+          swfProtocol
+      )
+  );
+};
+
+
+/**
  * The underlying implementation of `ZeroClipboard.create`.
  * @private
  */
 var _create = function() {
-  // Make note of the most recent sandbox assessment
-  var previousState = _flashState.sandboxed;
+  var maxWait, swfProtocol,
+      // Make note of the most recent sandbox assessment
+      previousState = _flashState.sandboxed;
+
+  if (!_isBrowserSupported()) {
+    _flashState.ready = false;
+    ZeroClipboard.emit({ type: "error", name: "browser-unsupported" });
+    return;
+  }
 
   // Always reassess the `sandboxed` state of the page at important Flash-related moments
   _detectSandbox();
@@ -265,25 +319,32 @@ var _create = function() {
     ZeroClipboard.emit({ type: "error", name: "flash-sandboxed" });
   }
   else if (!ZeroClipboard.isFlashUnusable() && _flashState.bridge === null) {
-    var maxWait = _globalConfig.flashLoadTimeout;
-    if (typeof maxWait === "number" && maxWait >= 0) {
-      _flashCheckTimeout = _setTimeout(function() {
-        // If it took longer than `_globalConfig.flashLoadTimeout` milliseconds to receive
-        // a `ready` event, so consider Flash "deactivated".
-        if (typeof _flashState.deactivated !== "boolean") {
-          _flashState.deactivated = true;
-        }
-        if (_flashState.deactivated === true) {
-          ZeroClipboard.emit({ "type": "error", "name": "flash-deactivated" });
-        }
-      }, maxWait);
+    swfProtocol = _getSwfPathProtocol();
+
+    if (swfProtocol && swfProtocol !== _window.location.protocol) {
+      ZeroClipboard.emit({ type: "error", name: "flash-insecure" });
     }
+    else {
+      maxWait = _globalConfig.flashLoadTimeout;
+      if (typeof maxWait === "number" && maxWait >= 0) {
+        _flashCheckTimeout = _setTimeout(function() {
+          // If it took longer than `_globalConfig.flashLoadTimeout` milliseconds to receive
+          // a `ready` event, so consider Flash "deactivated".
+          if (typeof _flashState.deactivated !== "boolean") {
+            _flashState.deactivated = true;
+          }
+          if (_flashState.deactivated === true) {
+            ZeroClipboard.emit({ type: "error", name: "flash-deactivated" });
+          }
+        }, maxWait);
+      }
 
-    // If attempting a fresh SWF embedding, it is safe to ignore the `overdue` status
-    _flashState.overdue = false;
+      // If attempting a fresh SWF embedding, it is safe to ignore the `overdue` status
+      _flashState.overdue = false;
 
-    // Embed the SWF
-    _embedSwf();
+      // Embed the SWF
+      _embedSwf();
+    }
   }
 };
 
@@ -470,7 +531,7 @@ var _isValidHtml4Id = function(id) {
  * @private
  */
 var _createEvent = function(event) {
-  /*jshint maxstatements:30 */
+  /*jshint maxstatements:32 */
 
   var eventType;
   if (typeof event === "string" && event) {
@@ -531,6 +592,12 @@ var _createEvent = function(event) {
     if (_flashStateEnabledErrorNameMatchingRegex.test(event.name)) {
       _extend(event, {
         version: _flashState.version
+      });
+    }
+    if (event.name === "flash-insecure") {
+      _extend(event, {
+        pageProtocol: _window.location.protocol,
+        swfProtocol: _getSwfPathProtocol()
       });
     }
   }
@@ -741,7 +808,7 @@ var _getSandboxStatusFromErrorEvent = function(event) {
  * @private
  */
 var _preprocessEvent = function(event) {
-  /*jshint maxstatements:27 */
+  /*jshint maxstatements:28 */
 
   var element = event.target || _currentElement || null;
 
@@ -755,10 +822,22 @@ var _preprocessEvent = function(event) {
         _flashState.sandboxed = isSandboxed;
       }
 
-      if (_flashStateErrorNames.indexOf(event.name) !== -1) {
+      if (event.name === "browser-unsupported") {
+        _extend(_flashState, {
+          disabled:    false,
+          outdated:    false,
+          unavailable: false,
+          degraded:    false,
+          deactivated: false,
+          overdue:     false,
+          ready:       false
+        });
+      }
+      else if (_flashStateErrorNames.indexOf(event.name) !== -1) {
         _extend(_flashState, {
           disabled:    event.name === "flash-disabled",
           outdated:    event.name === "flash-outdated",
+          insecure:    event.name === "flash-insecure",
           unavailable: event.name === "flash-unavailable",
           degraded:    event.name === "flash-degraded",
           deactivated: event.name === "flash-deactivated",
@@ -772,6 +851,7 @@ var _preprocessEvent = function(event) {
         _extend(_flashState, {
           disabled:    false,
           outdated:    false,
+          insecure:    false,
           unavailable: false,
           degraded:    false,
           deactivated: false,
@@ -790,9 +870,10 @@ var _preprocessEvent = function(event) {
 
       var wasDeactivated = _flashState.deactivated === true;
       _extend(_flashState, {
+        sandboxed:   false,
         disabled:    false,
         outdated:    false,
-        sandboxed:   false,
+        insecure:    false,
         unavailable: false,
         degraded:    false,
         deactivated: false,
@@ -1041,7 +1122,7 @@ var _watchForSwfFallbackContent = function() {
         // Do NOT count a missing SWF as a Flash deactivation
         _flashState.deactivated = null;
 
-        ZeroClipboard.emit({ "type": "error", "name": "swf-not-found" });
+        ZeroClipboard.emit({ type: "error", name: "swf-not-found" });
       }
     }, pollWait);
   }
@@ -1080,13 +1161,41 @@ var _getHtmlBridge = function(flashBridge) {
 
 
 /**
+ *
+ * @private
+ */
+var _escapeXmlValue = function(val) {
+  if (typeof val !== "string" || !val) {
+    return val;
+  }
+
+  return val.replace(/["&'<>]/g, function(chr) {
+    switch (chr) {
+      case "\"":
+        return "&quot;";
+      case "&":
+        return "&amp;";
+      case "'":
+        return "&apos;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      default:
+        return chr;
+    }
+  });
+};
+
+
+/**
  * Create the SWF object.
  *
  * @returns The SWF object reference.
  * @private
  */
 var _embedSwf = function() {
-  /*jshint maxstatements:26 */
+  /*jshint maxstatements:28 */
 
   var len,
       flashBridge = _flashState.bridge,
@@ -1097,9 +1206,16 @@ var _embedSwf = function() {
     var allowScriptAccess = _determineScriptAccess(_window.location.host, _globalConfig);
     var allowNetworking = allowScriptAccess === "never" ? "none" : "all";
 
-    // Prepare the FlashVars and cache-busting query param
+    // Prepare the FlashVars
     var flashvars = _vars(_extend({ jsVersion: ZeroClipboard.version }, _globalConfig));
+
+    // Prepare the SWF URL, possibly with a cache-busting query param
     var swfUrl = _globalConfig.swfPath + _cacheBust(_globalConfig.swfPath, _globalConfig);
+
+    // Update the SWF URL for XHTML escaping, if necessary
+    if (_pageIsXhtml) {
+      swfUrl = _escapeXmlValue(swfUrl);
+    }
 
     // Create the outer container
     container = _createHtmlBridge();
@@ -1224,8 +1340,11 @@ var _unembedSwf = function() {
     // after receiving an `error[name="flash-overdue"]` event
     _flashState.deactivated = null;
 
+    // Reset the `insecure` status in case the user reconfigures the `swfPath`
+    _flashState.insecure = null;
+
     // Don't keep track of the SWF's ZC library version number
-    // The use of `undefined` here instead of `null` is important
+    // NOTE: The use of `undefined` here instead of `null` is important!
     _zcSwfVersion = undefined;
   }
 };
@@ -1808,7 +1927,7 @@ var _fixLineEndings = function(content) {
  *
  * @see {@link http://lists.w3.org/Archives/Public/public-whatwg-archive/2014Dec/0002.html}
  * @see {@link https://github.com/zeroclipboard/zeroclipboard/issues/511}
- * @see {@link http://zeroclipboard.org/test-iframes.html}
+ * @see {@link http://zeroclipboard.github.io/test-iframes.html}
  *
  * @returns `true` (is sandboxed), `false` (is not sandboxed), or `null` (uncertain)
  * @private
