@@ -41,3 +41,47 @@ access to the configuration, please ask to have your credentials
 added, or add it yourself in a clone and push the changes. Once you
 let an administrator know, you can be added to the keyring and gain
 decryption privledges.
+
+
+## Building the application
+
+
+### Dependencies
+
+This writeup assumes you have access to a Linux-like environment. If you run Windows, set up [Bash on Ubuntu on Windows (WSL)](https://msdn.microsoft.com/en-us/commandline/wsl/about) for best results.
+
+Your life will also be a lot easier if you have [Homebrew](https://brew.sh/) or [LinuxBrew](http://linuxbrew.sh/) installed.
+
+
+#### Build dependencies
+
+- [Yarn](https://yarnpkg.com/lang/en/docs/cli/) You can install Yarn by running `brew install yarn`
+- [Grunt](http://gruntjs.com/). You can install Grunt from the command line by running `yarn global add grunt-cli`.
+- Recommended: [Coffeescript](http://coffeescript.org) and [Less](http://lesscss.org/). They're included locally but often behave better globally via `yarn global add coffee-script less`
+- Run `yarn install` to install local dependencies.
+
+#### Deploy dependencies
+
+- [Blackbox](https://github.com/StackExchange/blackbox) You can install Blackbox by runing `brew install blackbox`
+
+
+### Deploying
+
+You can update the whole application, with dependencies, by running
+`grunt build` at the root directory.
+
+If you don't need to update dependencies, just run `grunt qbuild`.
+
+#### Installation
+
+##### Configuration Files
+
+If you're part of the project, your PGP public key should already be registered in the application. If you need to make changes, do:
+
+```sh
+blackbox_edit_start PATH/TO/FILE.ext.gpg
+# Edit your file
+blackbox_edit_end PATH/TO/FILE.ext
+```
+
+The two primary configuration files are `CONFIG.php.gpg` and `admin/CONFIG.php.gpg`

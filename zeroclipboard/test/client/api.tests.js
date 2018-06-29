@@ -1,4 +1,4 @@
-/*global ZeroClipboard, _currentElement:true, _flashState:true, _zcSwfVersion:true, _extend, _deepCopy, _clipData, _clipDataFormatMap:true, _copyTarget:true, _detectSandbox:true */
+/*global ZeroClipboard, _currentElement:true, _flashState:true, _zcSwfVersion:true, _extend, _deepCopy, _clipData, _clipDataFormatMap:true, _copyTarget:true, _detectSandbox:true, _fixLineEndings */
 
 (function(module, test) {
   "use strict";
@@ -170,11 +170,11 @@
     assert.deepEqual(_clipData, { "application/rtf": "zc4evar" }, "`_clipData` contains expected RTF");
 
     client.setRichText("{\\rtf1\\ansi\n{\\b ZeroClipboard}}");
-    assert.deepEqual(_clipData, { "application/rtf": "{\\rtf1\\ansi\n{\\b ZeroClipboard}}" }, "`_clipData` contains expected updated RTF");
+    assert.deepEqual(_clipData, { "application/rtf": _fixLineEndings("{\\rtf1\\ansi\n{\\b ZeroClipboard}}") }, "`_clipData` contains expected updated RTF");
 
     _clipData["text/plain"] = "blah";
     client.setRichText("{\\rtf1\\ansi\n{\\i Foo}}");
-    assert.deepEqual(_clipData, { "application/rtf": "{\\rtf1\\ansi\n{\\i Foo}}", "text/plain": "blah" }, "`_clipData` contains expected updated RTF AND the other data");
+    assert.deepEqual(_clipData, { "application/rtf": _fixLineEndings("{\\rtf1\\ansi\n{\\i Foo}}"), "text/plain": "blah" }, "`_clipData` contains expected updated RTF AND the other data");
   });
 
 
@@ -191,7 +191,7 @@
     assert.deepEqual(_clipData, { "text/plain": "zc4evar" }, "`_clipData` contains expected text");
 
     client.setData("text/html", "<i>ZeroClipboard</i>");
-    assert.deepEqual(_clipData, { "text/plain": "zc4evar", "text/html": "<i>ZeroClipboard</i>" }, "`_clipData` contains expected text and custom format");
+    assert.deepEqual(_clipData, { "text/plain": "zc4evar", "text/html": "<i>ZeroClipboard</i>" }, "`_clipData` contains expected text and HTML");
 
     client.setData({ "text/html": "<b>Win</b>" });
     assert.deepEqual(_clipData, { "text/html": "<b>Win</b>" }, "`_clipData` contains expected HTML and cleared out old data because an object was passed in");
@@ -329,9 +329,10 @@
       _flashState = {
         bridge: null,
         version: "0.0.0",
+        sandboxed: null,
         disabled: null,
         outdated: null,
-        sandboxed: null,
+        insecure: null,
         unavailable: null,
         degraded: null,
         deactivated: null,
@@ -847,9 +848,9 @@
     assert.expect(8);
 
     // Arrange
+    _flashState.sandboxed = true;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = true;
     _flashState.version = "11.0.0";
     var client = new ZeroClipboard();
     var id = client.id;
@@ -880,9 +881,10 @@
     assert.expect(10);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
     _flashState.version = "11.0.0";
@@ -919,9 +921,10 @@
     assert.expect(8);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = true;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -950,13 +953,100 @@
   });
 
 
+  test("Test insecureFlash Event - detected and fired during embedding", function(assert) {
+    assert.expect(10);
+
+    // Arrange
+    _flashState.sandboxed = false;
+    _flashState.disabled = false;
+    _flashState.outdated = false;
+    _flashState.insecure = false;
+    _flashState.version = "11.0.0";
+
+    // Act
+    ZeroClipboard.config({ swfPath: "https://zeroclipboard.github.io/blah/secure.swf" });
+    var client = new ZeroClipboard();
+
+    // Arrange some more
+    var id = client.id;
+
+    // TEMPORARY HACK:
+    // Delay adding these event handlers, otherwise they'll be invoked twice due
+    // to timing until Issue #533 is resolved.
+    // See: https://github.com/zeroclipboard/zeroclipboard/issues/533
+    setTimeout(function() {
+      client.on( "ready", function(/* event */) {
+        assert.ok(false, "The `ready` event should NOT have fired!");
+      } );
+      client.on( "error", function(event) {
+        // Assert
+        assert.strictEqual(this, client, "Client");
+        assert.strictEqual(this.id, id, "Client ID");
+        assert.strictEqual(_flashState.insecure, true, "Flash insecure");
+        assert.strictEqual(_flashState.ready, false, "Flash not ready");
+        assert.strictEqual(event.type, "error", "type");
+        assert.strictEqual(event.name, "flash-insecure", "name");
+        assert.strictEqual(event.target, null, "target");
+        assert.strictEqual(event.version, "11.0.0", "version");
+        assert.strictEqual(event.pageProtocol, window.location.protocol, "pageProtocol");
+        assert.strictEqual(event.swfProtocol, "https:", "swfProtocol");
+        QUnit.start();
+      } );
+    }, 13);
+
+    // Act
+    QUnit.stop();
+  });
+
+
+  test("Test insecureFlash Event - manually emitted", function(assert) {
+    assert.expect(10);
+
+    // Arrange
+    _flashState.sandboxed = false;
+    _flashState.disabled = false;
+    _flashState.outdated = false;
+    _flashState.insecure = false;
+    _flashState.version = "11.0.0";
+    var client = new ZeroClipboard();
+    var id = client.id;
+    client.on( "ready", function(/* event */) {
+      assert.ok(false, "The `ready` event should NOT have fired!");
+    } );
+    client.on( "error", function(event) {
+      // Assert
+      assert.strictEqual(this, client, "Client");
+      assert.strictEqual(this.id, id, "Client ID");
+      assert.strictEqual(_flashState.insecure, true, "Flash insecure");
+      assert.strictEqual(_flashState.ready, false, "Flash not ready");
+      assert.strictEqual(event.type, "error", "type");
+      assert.strictEqual(event.name, "flash-insecure", "name");
+      assert.strictEqual(event.target, null, "target");
+      assert.strictEqual(event.version, "11.0.0", "version");
+      assert.strictEqual(event.pageProtocol, window.location.protocol, "pageProtocol");
+      assert.strictEqual(event.swfProtocol, "https:", "swfProtocol");
+      QUnit.start();
+    } );
+
+    // Act
+    QUnit.stop();
+
+    // HACK! Config cannot be changed while `bridge` exists but `destroy` would remove our event handlers
+    _flashState.bridge = null;
+    ZeroClipboard.config({ swfPath: "https://zeroclipboard.github.io/blah/secure.swf" });
+
+    ZeroClipboard.emit({ type: "error", name: "flash-insecure" });
+  });
+
+
   test("Test unavailableFlash Event", function(assert) {
     assert.expect(9);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.version = "11.0.0";
@@ -989,9 +1079,10 @@
     assert.expect(10);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -1026,9 +1117,10 @@
     assert.expect(11);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -1071,9 +1163,10 @@
     assert.expect(11);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -1113,9 +1206,10 @@
     assert.expect(6);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -1145,9 +1239,10 @@
     assert.expect(6);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -1176,9 +1271,10 @@
     assert.expect(15);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
     _flashState.version = "11.0.0";
@@ -1226,9 +1322,10 @@
     assert.expect(8);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
@@ -1323,9 +1420,10 @@
     assert.expect(4);
 
     // Arrange
+    _flashState.sandboxed = false;
     _flashState.disabled = false;
     _flashState.outdated = false;
-    _flashState.sandboxed = false;
+    _flashState.insecure = false;
     _flashState.deactivated = false;
     _flashState.unavailable = false;
     _flashState.degraded = false;
