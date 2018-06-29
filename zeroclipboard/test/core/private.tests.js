@@ -1,5 +1,4 @@
-/*global _flashState:true, _currentElement:true, _copyTarget:true, _isWindows:true, _globalConfig:true, _extend, _getStyle, _removeClass, _addClass, _vars, _cacheBust, _extractDomain, _determineScriptAccess, _mapClipDataToFlash, _mapClipResultsFromFlash, _createEvent, _preprocessEvent, _getRelatedTarget, _shouldPerformAsync, _dispatchCallback, _detectFlashSupport, _encodeURIComponent, _fixLineEndings */
-
+/*global _flashState:true, _currentElement:true, _copyTarget:true, _isWindows:true, _globalConfig:true, _extend, _getStyle, _removeClass, _addClass, _vars, _cacheBust, _extractDomain, _determineScriptAccess, _mapClipDataToFlash, _mapClipResultsFromFlash, _createEvent, _preprocessEvent, _getRelatedTarget, _shouldPerformAsync, _dispatchCallback, _detectFlashSupport, _encodeURIComponent, _fixLineEndings, _isBrowserSupported, _getSwfPathProtocol, _config, _escapeXmlValue */
 
 (function(module, test) {
   "use strict";
@@ -118,7 +117,7 @@
     assert.expect(6);
 
     // Arrange
-    var someDomain = "zeroclipboard.org";
+    var someDomain = "zeroclipboard.github.io";
     var clipOptionsEmpty = {};
     var clipOptionsTrustedDomainsWildcard = {
       trustedDomains: ["*"]
@@ -211,6 +210,83 @@
         assert.strictEqual(_extractDomain(originOrUrl), inputToExpectedMap[originOrUrl], "Processing: \"" + originOrUrl + "\"");
       }
     }
+  });
+
+
+  test("`_isBrowserSupported` determines the appropriate browser support level", function(assert) {
+    /*jshint -W121 */
+
+    // Arrange
+
+    // DOM Level 2
+    var docAel = document.addEventListener;
+    // ECMAScript 5.1
+    var objKeys = Object.keys;
+    var arrMap = Array.prototype.map;
+
+    // Act
+    var isSupported1 = _isBrowserSupported();
+
+    document.addEventListener = function() {};
+    Object.keys = function() {};
+    Array.prototype.map = function() {};
+    var isSupported2 = _isBrowserSupported();
+
+    document.addEventListener = null;
+    Object.keys = null;
+    Array.prototype.map = null;
+    var isSupported3 = _isBrowserSupported();
+
+    document.addEventListener = function() {};
+    Object.keys = null;
+    Array.prototype.map = null;
+    var isSupported4 = _isBrowserSupported();
+
+    document.addEventListener = function() {};
+    Object.keys = function() {};
+    Array.prototype.map = null;
+    var isSupported5 = _isBrowserSupported();
+
+    document.addEventListener = null;
+    Object.keys = function() {};
+    Array.prototype.map = null;
+    var isSupported6 = _isBrowserSupported();
+
+    document.addEventListener = null;
+    Object.keys = null;
+    Array.prototype.map = function() {};
+    var isSupported7 = _isBrowserSupported();
+
+    document.addEventListener = null;
+    Object.keys = function() {};
+    Array.prototype.map = function() {};
+    var isSupported8 = _isBrowserSupported();
+
+    document.addEventListener = function() {};
+    Object.keys = null;
+    Array.prototype.map = function() {};
+    var isSupported9 = _isBrowserSupported();
+
+    // Restore
+    document.addEventListener = docAel;
+    Object.keys = objKeys;
+    Array.prototype.map = arrMap;
+    var isSupported10 = _isBrowserSupported();
+
+    // Assert
+    assert.expect(10);
+    assert.strictEqual(typeof isSupported1, "boolean");
+    assert.strictEqual(isSupported2, true);
+    assert.strictEqual(isSupported3, false);
+    assert.strictEqual(isSupported4, false);
+    assert.strictEqual(isSupported5, false);
+    assert.strictEqual(isSupported6, false);
+    assert.strictEqual(isSupported7, false);
+    assert.strictEqual(isSupported8, false);
+    assert.strictEqual(isSupported9, false);
+    assert.strictEqual(isSupported10, isSupported1);
+
+    /*jshint +W121 */
   });
 
 
@@ -512,6 +588,77 @@
 
     // Stop test evaluation
     QUnit.stop();
+  });
+
+
+  test("`_getSwfPathProtocol` should work", function(assert) {
+    assert.expect(9);
+
+    var pageProtocol = window.location.protocol,
+        origSwfPath = _config("swfPath");
+
+    try {
+      // Current, whatever that is
+      assert.strictEqual(_getSwfPathProtocol(), pageProtocol);
+
+      // Specifically no path (so current protocol)
+      _config({ swfPath: "" });
+      assert.strictEqual(_getSwfPathProtocol(), pageProtocol);
+
+      // Specifically relative path (so current protocol)
+      _config({ swfPath: "js/zc/blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), pageProtocol);
+
+      // Specifically relative protocol (so current)
+      _config({ swfPath: "//zeroclipboard.github.io/blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), pageProtocol);
+
+      // Specifically `http://`
+      _config({ swfPath: "http://zeroclipboard.github.io/blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), "http:");
+
+      // Specifically `https://`
+      _config({ swfPath: "https://zeroclipboard.github.io/blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), "https:");
+
+      // Specifically `file://`
+      _config({ swfPath: "file://192.168.0.100/path/blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), "file:");
+
+      // Specifically UNC-based `file://` (for non-IE)
+      _config({ swfPath: "file://///192.168.0.100/path/blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), "file:");
+
+      // Specifically UNC-based `file://` (for IE only)
+      _config({ swfPath: "\\\\192.168.0.100\\path\\blah.swf" });
+      assert.strictEqual(_getSwfPathProtocol(), "file:");
+    }
+    catch (err) {
+      assert.ok(false, "Unexpected error was thrown: " + err);
+    }
+    finally {
+      _config({ swfPath: origSwfPath });
+    }
+  });
+
+
+  test("`_escapeXmlValue` should work", function(assert) {
+    assert.expect(11);
+
+    // Unexpected values
+    assert.strictEqual(_escapeXmlValue(undefined), undefined);
+    assert.strictEqual(_escapeXmlValue(null), null);
+    assert.strictEqual(_escapeXmlValue(false), false);
+    assert.strictEqual(_escapeXmlValue(true), true);
+
+    // Expected values
+    assert.strictEqual(_escapeXmlValue(""), "");
+    assert.strictEqual(_escapeXmlValue("http://zeroclipboard.github.io/blah.swf"), "http://zeroclipboard.github.io/blah.swf");
+    assert.strictEqual(_escapeXmlValue("http://zeroclipboard.github.io/blah.swf?cache=bust"), "http://zeroclipboard.github.io/blah.swf?cache=bust");
+    assert.strictEqual(_escapeXmlValue("http://zeroclipboard.github.io/blah.swf?cache=bust&foo=bar"), "http://zeroclipboard.github.io/blah.swf?cache=bust&amp;foo=bar");
+    assert.strictEqual(_escapeXmlValue("http://zeroclipboard.github.io/blah.swf?cache='bust'"), "http://zeroclipboard.github.io/blah.swf?cache=&apos;bust&apos;");
+    assert.strictEqual(_escapeXmlValue("http://zeroclipboard.github.io/blah.swf?cache=\"bust\""), "http://zeroclipboard.github.io/blah.swf?cache=&quot;bust&quot;");
+    assert.strictEqual(_escapeXmlValue("http://zeroclipboard.github.io/blah.swf?cache=<bust>"), "http://zeroclipboard.github.io/blah.swf?cache=&lt;bust&gt;");
   });
 
 
