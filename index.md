@@ -19,10 +19,11 @@ Please browse the table of contents here for more information.
 
 Quick Links:
 
-- [Project Browser](https://amphibiandisease.org/project.php)
-- [Login/Administration](https://amphibiandisease.org/admin)
-- [Administration Dashboard](https://amphibiandisease.org/admin-page.html)
-- [Download template for data uploading (XLSX)](https://berkeley.box.com/v/AmphibianDisease-template)
+- [Project Browser](https://amphibiandisease.org/project.php)<i class="fas fa-external-link-alt"></i>
+- [Login/Administration](https://amphibiandisease.org/admin)<i class="fas fa-external-link-alt"></i>
+- [Administration Dashboard](https://amphibiandisease.org/admin-page.html)<i class="fas fa-external-link-alt"></i>
+- [Download latest template for uploading data (XLSX)](https://berkeley.box.com/v/AmphibianDisease-template)<i class="fas fa-file-download"></i>
+- [Build your own template for data](http://www.biscicol.org/template)<i class="fas fa-external-link-alt"></i>
 
 ## [Main page](https://amphibiandisease.org)
 
