@@ -3388,7 +3388,14 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         when "insert", "create"
           sqlQuery = ""
           if operation is "create"
-            sqlQuery = "CREATE TABLE #{dataTable} "
+            dropQuery = """
+            IF EXISTS (
+                SELECT 1
+                FROM information_schema.tables
+                WHERE table_name = '#{dataTable}'
+            ) DROP TABLE #{dataTable};
+            """
+            sqlQuery = dropQuery + "CREATE TABLE #{dataTable} "
           # Create a set of nice data blocks, then push that into the
           # query
           # First row, the big collection
