@@ -96,3 +96,4 @@ npm-debug.log
 amphibiandisease-*error_log
 .php_cs.cache
 .vscode
+*.log

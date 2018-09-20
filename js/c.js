@@ -3919,7 +3919,7 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
     return false;
   }
   $.post(adminParams.apiTarget, args, "json").done(function(result) {
-    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, lat, lats, len, len1, ll, lng, lngs, longestStatement, lowCol, maxStatementLength, n, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, shortestStatement, sqlQuery, statements, t, tempList, transectPolygon, u, userTransectRing, value, valuesArr, valuesList;
+    var alt, bb_east, bb_north, bb_south, bb_west, cdbfy, column, columnDatatype, columnDef, columnNamesList, coordinate, coordinatePair, dataGeometry, dataObject, defaultPolygon, dropQuery, err, error2, error3, geoJson, geoJsonGeom, geoJsonVal, i, iIndex, insertMaxLength, insertPlace, lat, lats, len, len1, ll, lng, lngs, longestStatement, lowCol, maxStatementLength, n, ref, ref1, ref2, ref3, ref4, row, sampleLatLngArray, shortestStatement, sqlQuery, statements, t, tempList, transectPolygon, u, userTransectRing, value, valuesArr, valuesList;
     if (result.status) {
 
       /*
@@ -4016,7 +4016,8 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
         case "create":
           sqlQuery = "";
           if (operation === "create") {
-            sqlQuery = "CREATE TABLE " + dataTable + " ";
+            dropQuery = "IF EXISTS (\n    SELECT 1\n    FROM information_schema.tables\n    WHERE table_name = '" + dataTable + "'\n) DROP TABLE " + dataTable + ";";
+            sqlQuery = dropQuery + ("CREATE TABLE " + dataTable + " ");
           }
           dataObject = {
             the_geom: dataGeometry
