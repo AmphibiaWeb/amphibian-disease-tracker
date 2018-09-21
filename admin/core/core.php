@@ -1,5 +1,24 @@
 <?php
 
+if (!function_exists('file_get_contents_curl')) {
+    # cURL replacement for file_get_contents
+    # https://gist.github.com/tigerhawkvok/794a725436ae0b29db3ab17812828818
+    function file_get_contents_curl($url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+
+        # Actual fetch
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        return $data;
+     }
+}
+
 if (!class_exists('DBHelper')) {
     require_once dirname(__FILE__).'/db/DBHelper.php';
 }

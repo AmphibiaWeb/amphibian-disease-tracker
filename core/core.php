@@ -4,6 +4,26 @@ if (isset($_SERVER['QUERY_STRING'])) {
     parse_str($_SERVER['QUERY_STRING'], $_REQUEST);
 }
 
+if (!function_exists('file_get_contents_curl')) {
+    # cURL replacement for file_get_contents
+    # https://gist.github.com/tigerhawkvok/794a725436ae0b29db3ab17812828818
+    function file_get_contents_curl($url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+
+        # Actual fetch
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        return $data;
+     }
+}
+
+
 if (!function_exists('microtime_float')) {
     function microtime_float()
     {
@@ -290,7 +310,7 @@ if (!function_exists("get_final_url")) {
         /**
          * get_redirect_url()
          * Gets the address that the provided URL redirects to,
-         * or FALSE if there's no redirect. 
+         * or FALSE if there's no redirect.
          *
          * @param string $url
          * @return string

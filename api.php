@@ -522,7 +522,7 @@ function doCartoSqlApiPush($get)
                     ),
                 );
                 $context = stream_context_create($opts);
-                $response = file_get_contents($cartoFullUrl, false, $context);
+                $response = file_get_contents_curl($cartoFullUrl, false, $context);
                 $responses[] = $response;
                 $decoded = json_decode($response, true);
                 $decoded["query"] = $statement;
@@ -545,7 +545,7 @@ function doCartoSqlApiPush($get)
             ),
         );
         $context = stream_context_create($opts);
-        $response = file_get_contents($cartoFullUrl, false, $context);
+        $response = file_get_contents_curl($cartoFullUrl, false, $context);
         $responses[] = $response;
         $decoded = json_decode($response, true);
         $decoded["query"] = $sqlQuery;
@@ -627,7 +627,7 @@ function doAWebValidate($get)
     # How old is our copy?
     if (filemtime($localAWebTarget) + $dayOffset < time()) {
         # Fetch a new copy
-        $aWebList = file_get_contents($amphibiaWebListTarget);
+        $aWebList = file_get_contents_curl($amphibiaWebListTarget);
         if (strlen($aWebList) > 0) {
             $h = fopen($localAWebTarget, 'w+');
             $bytes = fwrite($h, $aWebList);
@@ -642,7 +642,7 @@ function doAWebValidate($get)
     }
     $response['aweb_list_age'] = time() - filemtime($localAWebTarget);
     $response['aweb_list_max_age'] = $dayOffset;
-    //$aWebList = file_get_contents($localAWebTarget);
+    //$aWebList = file_get_contents_curl($localAWebTarget);
     $aWebListArray = array_map('tsvHelper', file($localAWebTarget));
     /*
      * For a given row, we have this numeric key to real id mapping:

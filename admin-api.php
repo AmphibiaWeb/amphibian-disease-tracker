@@ -1208,7 +1208,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
                 ))."\r\n",
             ));
             $ctx = stream_context_create($params);
-            $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            $rawResponse = file_get_contents_curl($fimsAuthUrl, false, $ctx);
             if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 001 (No Response)"));
             }
@@ -1245,7 +1245,7 @@ function mintBcid($projectLink, $datasetRelativeUri = null, $datasetTitle, $addT
         $params['http']['header'] = $headers;
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
-        $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
+        $rawResponse = file_get_contents_curl($fimsMintUrl, false, $ctx);
         if ($rawResponse === false) {
             throw(new Exception("Fatal FIMS communication error 002 (No Response)"));
         }
@@ -1359,7 +1359,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
                 ))."\r\n",
             ));
             $ctx = stream_context_create($params);
-            $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            $rawResponse = file_get_contents_curl($fimsAuthUrl, false, $ctx);
             if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 003 (No Response)"));
             }
@@ -1402,7 +1402,7 @@ function associateBcidsWithExpeditions($projectLink, $fimsAuthCookiesAsString = 
             $tempAssociationData['bcid'] = $bcid;
             $params['http']['content'] = http_build_query($tempAssociationData);
             $ctx = stream_context_create($params);
-            $rawResponse = file_get_contents($fimsAssociateUrl, false, $ctx);
+            $rawResponse = file_get_contents_curl($fimsAssociateUrl, false, $ctx);
             if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 004 (No Response)"));
             }
@@ -1515,7 +1515,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 'header' => implode("\r\n", $fimsDefaultHeaders)."\r\n",
             ));
             $ctx = stream_context_create($params);
-            $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            $rawResponse = file_get_contents_curl($fimsAuthUrl, false, $ctx);
             if ($rawResponse === false) {
                 error_log("POST login failed!! Sent post:\n\tTarget URL:\t".$fimsAuthUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True)."\n\nResponse: ".print_r($rawResponse, true));
                 throw(new Exception("Fatal FIMS communication error 005 (No Response)"));
@@ -1550,7 +1550,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
         $params['http']['header'] = $header;
         $params['http']['content'] = http_build_query($fimsMintData);
         $ctx = stream_context_create($params);
-        $rawResponse = file_get_contents($fimsMintUrl, false, $ctx);
+        $rawResponse = file_get_contents_curl($fimsMintUrl, false, $ctx);
         $resp = null;
         if ($rawResponse === false) {
             $errorOut = true;
@@ -1583,7 +1583,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                     'header' => implode("\r\n", $fimsDefaultHeaders)."\r\n",
                 ));
                 $ctx = stream_context_create($params);
-                $rawReauthResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+                $rawReauthResponse = file_get_contents_curl($fimsAuthUrl, false, $ctx);
                 if ($rawReauthResponse === false) {
                     error_log("POST reauth failed!! Sent post:\n\tTarget URL:\t".$fimsAuthUrl."\n\tParameters:\t".print_r($params, true)."\n\tFull Context:\t".print_r($ctx, True)."\n\nResponse: ".print_r($rawReauthResponse, true));
                     throw(new Exception("Fatal FIMS communication error 009 (No Response)"));
@@ -1667,7 +1667,7 @@ function mintExpedition($projectLink, $projectTitle, $publicProject = false, $as
                 $params["http"]["method"] = "GET";
                 unset($params["http"]["content"]);
                 $ctx = stream_context_create($params);
-                $rawResponse2 = file_get_contents($target, false, $ctx);
+                $rawResponse2 = file_get_contents_curl($target, false, $ctx);
                 $resp = json_decode($rawResponse2, true);
                 $rawResponse = array(
                     "original_response" => $rawResponse,
@@ -1748,11 +1748,11 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
             ));
             $params['http']['header'] .= "Cookie: ".$cookiesString."\r\n";
             $ctx = stream_context_create($params);
-            $rawResponse = file_get_contents($fimsStatusUrl, false, $ctx);
+            $rawResponse = file_get_contents_curl($fimsStatusUrl, false, $ctx);
             if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 007 (No Response)"));
             }
-            $rawResponse2 = file_get_contents($fimsContinueUrl, false, $ctx);
+            $rawResponse2 = file_get_contents_curl($fimsContinueUrl, false, $ctx);
             $resp = json_decode($rawResponse, true);
             $resp2 = json_decode($rawResponse2, true);
 
@@ -1829,7 +1829,7 @@ function validateDataset($dataPath, $projectLink, $fimsAuthCookiesAsString = nul
                 ))."\r\n",
             ));
             $ctx = stream_context_create($params);
-            $rawResponse = file_get_contents($fimsAuthUrl, false, $ctx);
+            $rawResponse = file_get_contents_curl($fimsAuthUrl, false, $ctx);
             if ($rawResponse === false) {
                 throw(new Exception("Fatal FIMS communication error 008 (No Response)"));
             }
