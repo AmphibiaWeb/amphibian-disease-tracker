@@ -4603,6 +4603,9 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 # Finalizing callback
                 finalize = ->
                   # Save it
+                  # Update the file downloader link
+                  $("#download-project-file").attr("data-href", correctedPath)
+                  console.info "Raw data download repointed to", correctedPath
                   _adp.skipRead = true
                   _adp.dataBu = _adp.projectData
                   if skipSave is true

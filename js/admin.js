@@ -4538,6 +4538,8 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                   recalculateAndUpdateHull();
                 } catch (undefined) {}
                 finalize = function() {
+                  $("#download-project-file").attr("data-href", correctedPath);
+                  console.info("Raw data download repointed to", correctedPath);
                   _adp.skipRead = true;
                   _adp.dataBu = _adp.projectData;
                   if (skipSave === true) {
