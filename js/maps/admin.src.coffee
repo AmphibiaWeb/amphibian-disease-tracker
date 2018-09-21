@@ -3524,7 +3524,10 @@ showAddUserDialog = (refAccessList) ->
       for uid in toAddUids
         user = toAddEmails[i]
         console.info "Adding", user
-        userName = $(user).text()
+        try
+            userName = user.text()
+        catch
+            userName = $(user).text()
         ++i
         html = """
             <tr class="user-permission-list-row" data-user="#{uid}">

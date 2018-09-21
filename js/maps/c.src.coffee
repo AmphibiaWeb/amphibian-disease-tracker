@@ -3388,6 +3388,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         when "insert", "create"
           sqlQuery = ""
           if operation is "create"
+            # If the table already exists and columns have changed, it'll throw an error
+            # So, let's drop the table if we're in create mode
             dropQuery = """
             IF EXISTS (
                 SELECT 1
