@@ -351,6 +351,7 @@ function doCartoSqlApiPush($get)
             "insert" => "EDIT",
             "insertinto" => "EDIT",
             "update" => "EDIT",
+            "ifexists(\nselect1\nfrominformation_schema.tables\nwhere\n)drop" => "EDIT",
         );
         $unrestrictedActions = array(
             "create" => true,
@@ -368,6 +369,7 @@ function doCartoSqlApiPush($get)
             $checkedTablePermissions[] = $cartoTable;
             $cartoTableJson = str_replace('_', '&#95;', $cartoTable);
             $accessListLookupQuery = 'SELECT `project_id`, `author`, `access_data`, `public` FROM `'.$db->getTable()."` WHERE `carto_id` LIKE '%".$cartoTableJson."%' OR `carto_id` LIKE '%".$cartoTable."%'";
+            //#' # Syntax highlight helper
             $l = $db->openDB();
             $r = mysqli_query($l, $accessListLookupQuery);
             $row = mysqli_fetch_assoc($r);
