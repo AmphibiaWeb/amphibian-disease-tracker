@@ -46,7 +46,7 @@ $loginStatus = getLoginState();
     <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon512.png" />
     <link rel="icon" type="image/png" sizes="1024x1024" href="assets/favicon1024.png" />    
 
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnIKZz-cXdHEhPDh4640peSaCCPf9vq7w"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/purl.min.js"></script>
@@ -191,7 +191,7 @@ $loginStatus = getLoginState();
              ?>
         <google-map class="col-xs-11 col-md-9 center-block" id="community-map" latitude="<?php echo $averageLat;
              ?>" longitude="<?php echo $averageLng;
-             ?>" zoom="2" map-type="hybrid" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
+             ?>" zoom="2" map-type="hybrid" api-key="AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM">
           <?php echo $polyHtml;
              ?>
         </google-map>
