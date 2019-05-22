@@ -2189,7 +2189,7 @@ cartoAccount = "mvz"
 
 # Google Maps API key
 # This can be public, since we've restricted the referrer
-gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"
+gMapsApiKey = "AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM"
 
 
 cartoMap = null
@@ -3388,6 +3388,8 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
         when "insert", "create"
           sqlQuery = ""
           if operation is "create"
+            # If the table already exists and columns have changed, it'll throw an error
+            # So, let's drop the table if we're in create mode
             dropQuery = """
             IF EXISTS (
                 SELECT 1

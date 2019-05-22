@@ -223,7 +223,7 @@ while ($projectRow = mysqli_fetch_row($result)) {
             ),
         );
         $context = stream_context_create($opts);
-        $gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4";
+        $gMapsApiKey = "AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM";
         # ...pull the data from CartoDB
         if (empty($newDbEntries[$project])) {
             $newDbEntries[$project] = array();

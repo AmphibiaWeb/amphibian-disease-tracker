@@ -12,7 +12,7 @@ cartoAccount = "mvz"
 
 # Google Maps API key
 # This can be public, since we've restricted the referrer
-gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"
+gMapsApiKey = "AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM"
 
 
 cartoMap = null
