@@ -1092,7 +1092,7 @@ validateAWebTaxon = function(taxonObj, callback) {
     prettyTaxon = taxonObj.genus + " " + taxonObj.species;
     prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
     bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
-    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb with owrker");
+    return console.warn("Warning: Couldn't validate " + prettyTaxon + " with AmphibiaWeb with owrker");
   });
   return false;
 };

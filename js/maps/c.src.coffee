@@ -1995,7 +1995,8 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
     prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
     bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
-    console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb"
+    console.warn "Warning: Couldn't validate #{prettyTaxon} with AmphibiaWeb"
+    console.warn "#{api.php}?#{args}"
   false
 
 
@@ -2157,7 +2158,7 @@ $ ->
         <p>
           If you continue to see this error, please check your network connection.
         </p>
-      </div>            
+      </div>
             """
             $("main #main-body").html html
             false

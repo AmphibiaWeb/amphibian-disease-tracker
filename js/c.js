@@ -2500,7 +2500,8 @@ validateAWebTaxon = function(taxonObj, callback) {
     prettyTaxon = taxonObj.genus + " " + taxonObj.species;
     prettyTaxon = taxonObj.subspecies != null ? prettyTaxon + " " + taxonObj.subspecies : prettyTaxon;
     bsAlert("<strong>Problem validating taxon:</strong> " + prettyTaxon + " couldn't be validated.");
-    return console.warn("Warning: Couldn't validated " + prettyTaxon + " with AmphibiaWeb");
+    console.warn("Warning: Couldn't validate " + prettyTaxon + " with AmphibiaWeb");
+    return console.warn(api.php + "?" + args);
   });
   return false;
 };
@@ -2649,7 +2650,7 @@ $(function() {
           if (window.loadAdminUi == null) {
             window.loadAdminUi = function() {
               var html;
-              html = "<div class='bs-callout bs-callout-danger'>\n  <h4>Error loading administration</h4>\n  <p>\n    We failed to load the administrative interface. Try refreshing the page.\n  </p>\n  <p>\n    If you continue to see this error, please check your network connection.\n  </p>\n</div>            ";
+              html = "<div class='bs-callout bs-callout-danger'>\n  <h4>Error loading administration</h4>\n  <p>\n    We failed to load the administrative interface. Try refreshing the page.\n  </p>\n  <p>\n    If you continue to see this error, please check your network connection.\n  </p>\n</div>";
               $("main #main-body").html(html);
               return false;
             };

@@ -10,7 +10,9 @@ $show_debug = true;
 
 if ($show_debug) {
     error_reporting(E_ALL);
+    # ini_set('display_errors', 1);
     ini_set('log_errors', 1);
+    # ini_set('error_log', './logs/errlog.log');
     error_log('API is running in debug mode!');
 }
 
@@ -334,12 +336,12 @@ function doCartoSqlApiPush($get)
     $searchSql = strtolower($sqlQuery);
     $queryPattern = '/(?i)([a-zA-Z]+(?: +INTO)?) +.*(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]*.*[;]?/m';
     $statementsBase = explode(');', $sqlQuery);
-    $statements = [];
+    $statements = array();
     foreach ($statementsBase as $k => $statement) {
         if (preg_match('/;\s*create\s+table/sim', $statement)) {
             $sParts = preg_split('/;\s*create\s+table/sim', $statement);
             $a = $sParts[0];
-            $b = "CREATE TABLE " + $sParts[1];
+            $b = "CREATE TABLE " . $sParts[1];
             $statements[] = $a;
             $statements[] = $b;
         } else {
