@@ -4043,6 +4043,9 @@ geo.requestCartoUpload = function(totalData, dataTable, operation, callback) {
             valuesArr.push(iIndex);
             for (column in row) {
               value = row[column];
+              if (column.length === 0 || isNull(column)) {
+                continue;
+              }
               if (i === 0) {
                 lowCol = column.toLowerCase();
                 columnDef = (ref4 = columnDatatype[column]) != null ? ref4 : columnDatatype[lowCol];
@@ -4236,7 +4239,9 @@ geo.postToCarto = function(sqlQuery, dataTable, callback) {
         for (key in response) {
           val = response[key];
           if (key === "error") {
-            cartoHasError = val;
+            if (val.lower() !== 'syntax error at or near "IF"'.lower()) {
+              cartoHasError = val;
+            }
           }
         }
       } catch (undefined) {}

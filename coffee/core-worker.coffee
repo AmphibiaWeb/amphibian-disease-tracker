@@ -731,5 +731,6 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
     prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
     bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
-    console.warn "Warning: Couldn't validate #{prettyTaxon} with AmphibiaWeb with owrker"
+    console.warn "Warning: Couldn't validate #{prettyTaxon} with AmphibiaWeb with worker"
+    console.warn "#{api.php}?#{args}"
   false
