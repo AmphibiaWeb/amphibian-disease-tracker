@@ -333,7 +333,19 @@ function doCartoSqlApiPush($get)
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
     $queryPattern = '/(?i)([a-zA-Z]+(?: +INTO)?) +.*(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]*.*[;]?/m';
-    $statements = explode(');', $sqlQuery);
+    $statementsBase = explode(');', $sqlQuery);
+    $statements = [];
+    foreach ($statementsBase as $k => $statement) {
+        if (preg_match('/;\s*create\s+table/sim', $statement)) {
+            $sParts = preg_split('/;\s*create\s+table/sim', $statement);
+            $a = $sParts[0];
+            $b = "CREATE TABLE " + $sParts[1];
+            $statements[] = $a;
+            $statements[] = $b;
+        } else {
+            $statements = $statement;
+        }
+    }
     $checkedTablePermissions = array();
     $pidList = array();
     $effectiveKey = 0;
@@ -369,6 +381,7 @@ function doCartoSqlApiPush($get)
             unset($restrictedActions["select"]);
             unset($restrictionActions[$sqlAction]);
             $unrestrictedActions["select"] = true;
+            $unrestrictedActions[$sqlAction] = true;
         }
 	error_log($sqlAction);
 	# JBD Adding 4/17: Code for temporarily Bypassing restricted/unrestricted actions
