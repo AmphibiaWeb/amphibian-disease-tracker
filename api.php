@@ -10,7 +10,9 @@ $show_debug = true;
 
 if ($show_debug) {
     error_reporting(E_ALL);
+    # ini_set('display_errors', 1);
     ini_set('log_errors', 1);
+    # ini_set('error_log', './logs/errlog.log');
     error_log('API is running in debug mode!');
 }
 
@@ -301,9 +303,9 @@ function doCartoSqlApiPush($get)
      *
      ***/
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
-    // error_reporting(E_ALL);
-    // ini_set('display_errors', 1);
-    // error_log('doCartoSqlApiPush is running in debug mode!');
+    #error_reporting(E_ALL);
+    #ini_set('display_errors', 1);
+    #error_log('doCartoSqlApiPush is running in debug mode!');
     $sqlQuery = base64_decode(urldecode($get["sql_query"]));
     $method = "bdud";
     if (empty($sqlQuery) || !is_string($sqlQuery) || $sqlQuery == null) {
@@ -333,7 +335,19 @@ function doCartoSqlApiPush($get)
     # has permissions to read this dataset
     $searchSql = strtolower($sqlQuery);
     $queryPattern = '/(?i)([a-zA-Z]+(?: +INTO)?) +.*(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]*.*[;]?/m';
-    $statements = explode(');', $sqlQuery);
+    $statementsBase = explode(');', $sqlQuery);
+    $statements = array();
+    foreach ($statementsBase as $k => $statement) {
+        if (preg_match('/;\s*create\s+table/sim', $statement)) {
+            $sParts = preg_split('/;\s*create\s+table/sim', $statement);
+            $a = $sParts[0];
+            $b = "CREATE TABLE " . $sParts[1];
+            $statements[] = $a;
+            $statements[] = $b;
+        } else {
+            $statements[] = $statement;
+        }
+    }
     $checkedTablePermissions = array();
     $pidList = array();
     $effectiveKey = 0;
@@ -357,11 +371,19 @@ function doCartoSqlApiPush($get)
         $unrestrictedActions = array(
             "create" => true,
         );
-        # Looking up the columns is a safe action
-        if (preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $statement)) {
+        # Known safe actions
+        if (
+            # Looking up the columns is a safe action
+            preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $statement)
+            ||
+            # Checking existence before drop is safe
+            preg_match('/\A(?i)(?:if +exists +\(\s*)?SELECT\s+1\s+FROM\s+information_schema\.tables\s+where table_name\s*=\s*[ `\']*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `\']*\s*(?:\)\s+drop\s+table\s+\g{1})?[;]?\Z/sim', $statement)
+            ) {
             # Successful match
             unset($restrictedActions["select"]);
+            unset($restrictionActions[$sqlAction]);
             $unrestrictedActions["select"] = true;
+            $unrestrictedActions[$sqlAction] = true;
         }
 	error_log($sqlAction);
 	# JBD Adding 4/17: Code for temporarily Bypassing restricted/unrestricted actions
@@ -508,6 +530,7 @@ function doCartoSqlApiPush($get)
         foreach ($statements as $statement) {
             $statement = trim($statement);
             if (empty($statement)) {
+                # $urls[] = "EMPTY_STATEMENT";
                 continue;
             }
             $cartoArgs = 'q='.urlencode($statement).$cartoArgSuffix;
@@ -569,6 +592,7 @@ function doCartoSqlApiPush($get)
             "query_type" => $sqlAction,
             "parsed_query" => $originalQuery,
             "checked_tables" => $checkedTablePermissions,
+            # "urls" => $urls,
         );
         if ($show_debug === true) {
             $debug = array(
