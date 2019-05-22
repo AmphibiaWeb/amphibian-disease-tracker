@@ -357,10 +357,17 @@ function doCartoSqlApiPush($get)
         $unrestrictedActions = array(
             "create" => true,
         );
-        # Looking up the columns is a safe action
-        if (preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $statement)) {
+        # Known safe actions
+        if (
+            # Looking up the columns is a safe action
+            preg_match('/\A(?i)SELECT +\* +(?:FROM)?[ `]*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `]* +(WHERE FALSE)[;]?\Z/m', $statement)
+            ||
+            # Checking existence before drop is safe
+            preg_match('/\A(?i)(?:if +exists +\(\s*)?SELECT\s+1\s+FROM\s+information_schema\.tables\s+where table_name\s*=\s*[ `\']*(t[0-9a-f]{10,}[_]?[0-9a-f]*)[ `\']*\s*(?:\)\s+drop\s+table\s+\g{1})?[;]?\Z/sim', $statement)
+            ) {
             # Successful match
             unset($restrictedActions["select"]);
+            unset($restrictionActions[$sqlAction]);
             $unrestrictedActions["select"] = true;
         }
 	error_log($sqlAction);
