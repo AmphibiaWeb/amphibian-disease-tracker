@@ -6,14 +6,15 @@
 * Setup
  *****************/
 
-#$show_debug = true;
+$show_debug = true;
 
 if ($show_debug) {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    ini_set('log_errors', 1);
     error_log('API is running in debug mode!');
 }
 
+error_log('setting up!');
 require_once 'DB_CONFIG.php';
 require_once dirname(__FILE__).'/core/core.php';
 $start_script_timer = microtime_float();
@@ -92,6 +93,7 @@ switch ($do) {
          returnAjax(getTaxonData($_REQUEST));
         break;
     case "iucn":
+	// JBD commented out 4/16
         returnAjax(getTaxonIucnData($_REQUEST));
         break;
     case "aweb":
@@ -362,7 +364,14 @@ function doCartoSqlApiPush($get)
             unset($restrictedActions["select"]);
             $unrestrictedActions["select"] = true;
         }
+	error_log($sqlAction);
+	# JBD Adding 4/17: Code for temporarily Bypassing restricted/unrestricted actions
+	//$sqlAction = "select";
+        //unset($restrictedActions[$sqlAction]);
+        //$unrestrictedActions[$sqlAction] = true;
+
         if (isset($restrictedActions[$sqlAction])) {
+
             # Check the user
             # If bad, kick the access out
             $cartoTable = preg_replace($queryPattern, '$2', $statement);
@@ -607,6 +616,7 @@ function doAWebValidate($get)
      * @param array $get ->
      ***/
     $amphibiaWebListTarget = 'https://amphibiaweb.org/amphib_names.txt';
+    error_log("fetching amphibiaweb list " . $amphibiaWebListTarget);
     $localAWebTarget = dirname(__FILE__).'/aweb_list.txt';
     $dayOffset = 60 * 60 * 24;
     $response = array(
@@ -807,6 +817,8 @@ function doAWebValidate($get)
             # Nope, just failed
             $response['error'] = 'INVALID_GENUS';
             $response['human_error'] = "'<span class='genus'>$providedGenus</span>' isn't a valid AmphibiaWeb genus (checked ".sizeof($genusList)." genera), nor is '<span class='sciname'>$testSpecies</span>' a recognized synonym.";
+	    error_log("debugging response....");
+	    error_log($response);
             returnAjax($response);
         }
         # Ah, a synonym eh?
@@ -1810,9 +1822,11 @@ function getTaxonData($taxonBase, $skipFetch = false)
         return $response;
     }
     if (!$skipFetch) {
+	// JBD commented out 4/16
         $iucn = getTaxonIucnData($taxonBase);
         $aweb = getTaxonAwebData($taxonBase);
     } else {
+	// JBD commented out 4/16
         $iucn = getTaxonIucnData($taxonBase);
         $aweb = array(
             "data" => array(
@@ -2069,7 +2083,8 @@ function getTaxonIucnData($taxonBase, $recursed = false)
                 $species = $taxonParts[1];
                 set_time_limit(15); # Prevent timing out unless a
                                     # specific lookup actually fails
-                $responseTmp = getTaxonIucnData(array(
+                //JBD commented out 4/16
+		        $responseTmp = getTaxonIucnData(array(
                     "genus"  => $genus,
                     "species" => $species,
                 ), true);

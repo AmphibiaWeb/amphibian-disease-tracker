@@ -114,8 +114,7 @@ $loginStatus = getLoginState();
       return true;
       }*/
     </script>
-    <!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></script> -->
-    <google-maps-api api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4"></google-maps-api>
+    <google-maps-api api-key="AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM"></google-maps-api>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/purl.min.js"></script>
@@ -319,7 +318,7 @@ $loginStatus = getLoginState();
              }
              $averageLat = $averageLat / $polys;
              $averageLng = $averageLng / $polys; ?>
-        <google-map class="col-xs-11 col-md-9 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" map-type="hybrid" api-key="AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4">
+        <google-map class="col-xs-11 col-md-9 center-block" id="community-map" latitude="<?php echo $averageLat; ?>" longitude="<?php echo $averageLng; ?>" zoom="2" map-type="hybrid" api-key="AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM">
           <?php echo $polyHtml; ?>
         </google-map>
         <p class="text-center text-muted col-xs-12">Community Project Map</p>

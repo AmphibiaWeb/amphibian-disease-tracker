@@ -2687,7 +2687,7 @@ uri.domain = uri.o.attr("host").split(".").reverse().pop();
 
 cartoAccount = "mvz";
 
-gMapsApiKey = "AIzaSyAZvQMkfFkbqNStlgzNjw1VOWBASd74gq4";
+gMapsApiKey = "AIzaSyCkFBPtFAuZZmfxCgWVLY-8klRR6Dz4aeM";
 
 cartoMap = null;
 
