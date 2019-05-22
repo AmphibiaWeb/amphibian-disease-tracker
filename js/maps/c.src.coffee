@@ -1995,7 +1995,8 @@ validateAWebTaxon = (taxonObj, callback = null) ->
     prettyTaxon = "#{taxonObj.genus} #{taxonObj.species}"
     prettyTaxon = if taxonObj.subspecies? then "#{prettyTaxon} #{taxonObj.subspecies}" else prettyTaxon
     bsAlert "<strong>Problem validating taxon:</strong> #{prettyTaxon} couldn't be validated."
-    console.warn "Warning: Couldn't validated #{prettyTaxon} with AmphibiaWeb"
+    console.warn "Warning: Couldn't validate #{prettyTaxon} with AmphibiaWeb"
+    console.warn "#{api.php}?#{args}"
   false
 
 
@@ -2157,7 +2158,7 @@ $ ->
         <p>
           If you continue to see this error, please check your network connection.
         </p>
-      </div>            
+      </div>
             """
             $("main #main-body").html html
             false
@@ -3424,6 +3425,9 @@ geo.requestCartoUpload = (totalData, dataTable, operation, callback) ->
             valuesArr.push iIndex
             for column, value of row
               # Loop data ....
+              if column.length == 0 or isNull column
+                # Blank columns cause Carto errors, skip them
+                continue
               if i is 0
                 lowCol = column.toLowerCase()
                 columnDef = columnDatatype[column] ? columnDatatype[lowCol]
@@ -3593,7 +3597,9 @@ geo.postToCarto = (sqlQuery, dataTable, callback) ->
         response = JSON.parse response
         for key, val of response
           if key is "error"
-            cartoHasError = val
+            # We allow an error on the if exists..
+            if val.lower() != 'syntax error at or near "IF"'.lower()
+                cartoHasError = val
     unless cartoHasError is false
       console.error "There was an error communicating with cartoDB!"
       bsAlert "Error uploading your data to CartoDB: <code>#{cartoHasError}</code>", "danger"
