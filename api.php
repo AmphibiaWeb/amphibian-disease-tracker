@@ -303,9 +303,9 @@ function doCartoSqlApiPush($get)
      *
      ***/
     global $cartodb_username, $cartodb_api_key, $db, $udb, $login_status;
-    // error_reporting(E_ALL);
-    // ini_set('display_errors', 1);
-    // error_log('doCartoSqlApiPush is running in debug mode!');
+    #error_reporting(E_ALL);
+    #ini_set('display_errors', 1);
+    #error_log('doCartoSqlApiPush is running in debug mode!');
     $sqlQuery = base64_decode(urldecode($get["sql_query"]));
     $method = "bdud";
     if (empty($sqlQuery) || !is_string($sqlQuery) || $sqlQuery == null) {
@@ -345,7 +345,7 @@ function doCartoSqlApiPush($get)
             $statements[] = $a;
             $statements[] = $b;
         } else {
-            $statements = $statement;
+            $statements[] = $statement;
         }
     }
     $checkedTablePermissions = array();
@@ -530,6 +530,7 @@ function doCartoSqlApiPush($get)
         foreach ($statements as $statement) {
             $statement = trim($statement);
             if (empty($statement)) {
+                # $urls[] = "EMPTY_STATEMENT";
                 continue;
             }
             $cartoArgs = 'q='.urlencode($statement).$cartoArgSuffix;
@@ -591,6 +592,7 @@ function doCartoSqlApiPush($get)
             "query_type" => $sqlAction,
             "parsed_query" => $originalQuery,
             "checked_tables" => $checkedTablePermissions,
+            # "urls" => $urls,
         );
         if ($show_debug === true) {
             $debug = array(
