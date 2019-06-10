@@ -1,9 +1,9 @@
 AmphibianDisease.org
 =======================
 
-Welcome to the README section for AmphibianDisease.org. You can view this information natively in Github at [https://github.com/AmphibiaWeb/amphibian-disease-tracker/tree/documentation](https://github.com/AmphibiaWeb/amphibian-disease-tracker/tree/documentation)
+Welcome to the README section for [AmphibianDisease.org](https://amphibiandisease.org). You can view this information natively in Github at [https://github.com/AmphibiaWeb/amphibian-disease-tracker/tree/documentation](https://github.com/AmphibiaWeb/amphibian-disease-tracker/tree/documentation)
 
-Please browse the table of contents here for more information.
+Table of Contents
 
 ## Developers     
  - [APIs](https://amphibian-disease-tracker.readthedocs.io/en/latest/APIs/)
@@ -17,15 +17,15 @@ Please browse the table of contents here for more information.
  - [User Workflow](https://amphibian-disease-tracker.readthedocs.io/en/latest/User%20Workflow/) (Steps to getting started and uploading data)
  
 
-Quick Links:
+## Quick Links:
 
 - [Project Browser](https://amphibiandisease.org/project.php)<i class="fas fa-external-link-alt"></i>
 - [Login/Administration](https://amphibiandisease.org/admin)<i class="fas fa-external-link-alt"></i>
 - [Administration Dashboard](https://amphibiandisease.org/admin-page.html)<i class="fas fa-external-link-alt"></i>
-- [Download latest template for uploading data (XLSX)](https://berkeley.box.com/v/AmphibianDisease-template)<i class="fas fa-file-download"></i>
+- [Download latest template for uploading data (XLSX)](https://berkeley.box.com/v/AmphibianDisease-template)<span class="fas fa-file-download"></span> (last update June 2019)
 - [Build your own template for data](http://www.biscicol.org/template)<i class="fas fa-external-link-alt"></i>
 
-## [Main page](https://amphibiandisease.org)
+## [Main page of Amphibian Disease portal](https://amphibiandisease.org)
 
 On this page, you can find projects, or samples within projects, that match the specified criteria.
 
