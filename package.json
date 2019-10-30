@@ -20,7 +20,7 @@
     "autoprefixer": "^7.1.1",
     "autoprefixer-core": "^6.0.1",
     "bootlint": "^0.14.2",
-    "bower": "^1.7.9",
+    "bower": "^1.8.8",
     "clean-css": "github:tigerhawkvok/clean-css#9f6c20549f8312bad4a5e7d281102278a39e4fe4",
     "coffee-script": "^1.12.6",
     "es6-promise": "^4.0.5",
