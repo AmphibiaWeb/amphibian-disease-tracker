@@ -3,7 +3,7 @@ layout: post
 title:  "Important Annoucement"
 date:   2019-12-17
 author: Michelle Koo
-categories: News, Resources
+categories: News  Resources
 ---
 
 # Changes are coming!
