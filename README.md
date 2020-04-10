@@ -2,6 +2,8 @@ AmphibianDisease.org
 ===========================
 _29 Jan 2020 Update:_ Amphibian Disease portal is migrating! [Read more in our blog announcement here.](http://updates.amphibiandisease.org/news/resources/2019/12/17/Important-Announcement.html) This repo is frozen at the moment during our transition. Look forward to new stability and functionality!
 
+Please refer to **[AmphibiaWebDiseasePortal 2.0](https://github.com/BNHM/AmphibiaWebDiseasePortal)**
+
 
 
 ## Quick Links
