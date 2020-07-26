@@ -248,6 +248,16 @@ $loginStatus = getLoginState();
           <p>
             Your password is stored according to best practices, with a <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salted</a> <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function">hash</a> stored with 10,000 of <a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>. Your data is physically located on servers at UC Berkeley.
           </p>
+          <h3>GDPR Compliance</h3>
+          <p>
+                All personal information we collect about you, other than transient information like your last login IP address and time, is available from <a href="profile.php">your personal profile page</a>. If it's not visible on that page, we don't have that information about you.
+          </p>
+          <p>
+                Your basic contact data is visible to others to the extent configured on your profile page, and is searchable when adding collaborators or filtering projects.
+          </p>
+          <p>
+                Any new session irretrievably overwrites old transient data about you, and such transient data only reflects your current session (not historical). You may delete your account permanantly and irretrievably by visiting your dashboard, going to account settings, expanding the "more" button, and selecting "Remove Account".
+          </p>
           <h2>Disclaimer</h2>
           <h3>Use of Data</h3>
           <p>
@@ -272,7 +282,7 @@ $loginStatus = getLoginState();
           <p>
           amphibiandisease.org has no regulatory authority, and
           submitting data to it does not constitute an official
-          pathogen-reporting record. 
+          pathogen-reporting record.
           </p>
         </div>
       </section>

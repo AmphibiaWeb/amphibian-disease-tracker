@@ -1031,7 +1031,10 @@ showAddUserDialog = (refAccessList) ->
       for uid in toAddUids
         user = toAddEmails[i]
         console.info "Adding", user
-        userName = $(user).text()
+        try
+            userName = user.text()
+        catch
+            userName = $(user).text()
         ++i
         html = """
             <tr class="user-permission-list-row" data-user="#{uid}">
@@ -2107,6 +2110,9 @@ revalidateAndUpdateData = (newFilePath = false, skipCallback = false, testOnly =
                 # Finalizing callback
                 finalize = ->
                   # Save it
+                  # Update the file downloader link
+                  $("#download-project-file").attr("data-href", correctedPath)
+                  console.info "Raw data download repointed to", correctedPath
                   _adp.skipRead = true
                   _adp.dataBu = _adp.projectData
                   if skipSave is true

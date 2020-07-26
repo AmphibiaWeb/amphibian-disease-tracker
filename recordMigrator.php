@@ -252,7 +252,7 @@ while ($projectRow = mysqli_fetch_row($result)) {
             $cartoFullUrl = $cartoPostUrl.'?'.$cartoArgs;
             $urls[] = $cartoFullUrl;
             # Default get_contents
-            $response = file_get_contents($cartoFullUrl, false, $context);
+            $response = file_get_contents_curl($cartoFullUrl, false, $context);
             $responses[] = $response;
             $decoded = json_decode($response, true);
             if (!empty($decoded["error"])) {
@@ -422,7 +422,7 @@ while ($projectRow = mysqli_fetch_row($result)) {
                                             $args["key"] = $gMapsApiKeyUnrestricted;
                                             $args["result_type"] = "country";
                                             $gMapsFullUrl = $gMapsEndpoint . "?" . http_build_query($args);
-                                            $geocodeResponse = file_get_contents($gMapsFullUrl, false, $context);
+                                            $geocodeResponse = file_get_contents_curl($gMapsFullUrl, false, $context);
                                             $addressBase = json_decode($geocodeResponse, true);
                                             # The library already returns this
                                             # https://github.com/phayes/geoPHP/blob/master/lib/adapters/GoogleGeocode.class.php#L107
@@ -488,7 +488,7 @@ while ($projectRow = mysqli_fetch_row($result)) {
                                         $args["addressdetails"] = 1;
                                         $oMapsEndpoint = "https://nominatim.openstreetmap.org/reverse";
                                         $oMapsFullUrl = $oMapsEndpoint . "?" . http_build_query($args);
-                                        $geocodeResponse = file_get_contents($oMapsFullUrl, false, $context);
+                                        $geocodeResponse = file_get_contents_curl($oMapsFullUrl, false, $context);
                                         $address = json_decode($geocodeResponse, true);
                                         $address = $address["address"];
                                         $row["country"] = $address["country"];
@@ -528,7 +528,7 @@ while ($projectRow = mysqli_fetch_row($result)) {
                                         $args["addressdetails"] = 1;
                                         $hMapsEndpoint = "https://reverse.geocoder.cit.api.here.com/6.2/reversegeocode.xml";
                                         $hMapsFullUrl = $hMapsEndpoint . "?" . http_build_query($args);
-                                        $xmlResponse = file_get_contents($hMapsFullUrl, false, $context);
+                                        $xmlResponse = file_get_contents_curl($hMapsFullUrl, false, $context);
                                         # This is an XML response
                                         try {
                                             $xml = new Xml();

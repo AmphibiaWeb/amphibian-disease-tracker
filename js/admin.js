@@ -3449,7 +3449,7 @@ showAddUserDialog = function(refAccessList) {
     args = "perform=editaccess&project=" + window.projectParams.pid + "&deltas=" + uidArgs;
     console.log("Would push args to", adminParams.apiTarget + "?" + args);
     return _adp.currentAsyncJqxhr = $.post(adminParams.apiTarget, args, "json").done(function(result) {
-      var error, html, i, icon, len1, m, ref1, ref2, tense, uid, userName, userObj;
+      var error, error1, html, i, icon, len1, m, ref1, ref2, tense, uid, userName, userObj;
       console.log("Server permissions said", result);
       if (result.status !== true) {
         error = (ref1 = (ref2 = result.human_error) != null ? ref2 : result.error) != null ? ref1 : "We couldn't update user permissions";
@@ -3466,7 +3466,11 @@ showAddUserDialog = function(refAccessList) {
         uid = toAddUids[m];
         user = toAddEmails[i];
         console.info("Adding", user);
-        userName = $(user).text();
+        try {
+          userName = user.text();
+        } catch (error1) {
+          userName = $(user).text();
+        }
         ++i;
         html = "<tr class=\"user-permission-list-row\" data-user=\"" + uid + "\">\n  <td colspan=\"5\">" + userName + "</td>\n  <td class=\"text-center user-current-permission\">" + icon + "</td>\n</tr>";
         $("#permissions-table").append(html);
@@ -4534,6 +4538,8 @@ revalidateAndUpdateData = function(newFilePath, skipCallback, testOnly, skipSave
                   recalculateAndUpdateHull();
                 } catch (undefined) {}
                 finalize = function() {
+                  $("#download-project-file").attr("data-href", correctedPath);
+                  console.info("Raw data download repointed to", correctedPath);
                   _adp.skipRead = true;
                   _adp.dataBu = _adp.projectData;
                   if (skipSave === true) {

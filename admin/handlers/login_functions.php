@@ -167,11 +167,11 @@ class UserFunctions extends DBHelper
             }
         }
     }
-    
+
     /***
      * Helper functions
      ***/
-    
+
     private function getSiteKey()
     {
         return $this->siteKey;
@@ -280,7 +280,7 @@ class UserFunctions extends DBHelper
          * @param string|array $user_id Either a column/value pair or an ID for the default column
          * @return array of the user result column
          ***/
-        
+
         if (empty($this->user) || !empty($user_id)) {
             $this->setUser($user_id);
         } elseif (empty($this->user)) {
@@ -523,7 +523,7 @@ class UserFunctions extends DBHelper
         # If we're strict, the user only can SMS when the phone number is verified.
         # Otherwise, we just return the status of the phone number itself.
         $verified = $strict ? $userdata['phone_verified'] == true : self::isValidPhone($this->getPhone());
-        
+
         return $verified;
     }
 
@@ -539,7 +539,7 @@ class UserFunctions extends DBHelper
         if (substr($number, 0, 1) == '1') {
             $number = substr($number, 1);
         }
-        
+
         return $number;
     }
 
@@ -695,7 +695,7 @@ class UserFunctions extends DBHelper
             /* $iphone32 = str_replace("=","",$secret_part[1]); */
             /* $iphone_uri = $secret_part[0]."secret=".$iphone32; #still no good */
             $retarr = self::generateQR($iphone_uri);
-            
+
             # Let's get a human-readable secret
             $human_secret0 = str_replace('=', '', $secret);
             $i = 0;
@@ -744,14 +744,14 @@ class UserFunctions extends DBHelper
             if ($r === false) {
                 $e = mysqli_error($l);
                 mysqli_query($l, 'ROLLBACK');
-                
+
                 return array('status' => false,'error' => $e,'human_error' => 'Could not save secret','username' => $this->username);
             }
             $r = mysqli_query($l, $query2);
             if ($r === false) {
                 $e = mysqli_error($l);
                 mysqli_query($l, 'ROLLBACK');
-                
+
                 return array('status' => false,'error' => $e,'human_error' => 'Could not create backup code','username' => $this->username);
             }
             mysqli_query($l, 'COMMIT');
@@ -819,7 +819,7 @@ class UserFunctions extends DBHelper
         if ($r === false) {
             return array('status' => false,'error' => mysqli_error($l),'human_error' => 'Server error verifying removal. Please try again.');
         }
-        
+
         return array('status' => true,'query' => $query,'username' => $this->getUsername());
     }
 
@@ -838,7 +838,7 @@ class UserFunctions extends DBHelper
                 $totp->setDigest($this->getDigest());
                 $message = 'Your authentication code for '.$this->getSiteName().' is: '.$totp->now().' . It is valid for 30 seconds.';
                 $this->textUser($message);
-                
+
                 return true;
             } catch (Exception $e) {
                 return false;
@@ -894,7 +894,7 @@ class UserFunctions extends DBHelper
             if (function_exists('ImageCreate')) {
                 QRcode::png($uri, $filename, QR_ECLEVEL_H, 8, 1);
             }
-            $raw = base64_encode(file_get_contents($filename));
+            $raw = base64_encode(file_get_contents_curl($filename));
             $raw = 'data:image/png;base64,'.$raw;
             if (!$persistent) {
                 unlink($filename);
@@ -902,7 +902,7 @@ class UserFunctions extends DBHelper
             # As a final option, get a URL fallback
             # https://developers.google.com/chart/infographics/docs/qr_codes?csw=1
             $url = 'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chld=H&chl='.$uri;
-            
+
             return array('status' => true,'uri' => $uri,'svg' => $svg,'raw' => $raw,'url' => $url);
         } catch (Exception $e) {
             return array('status' => false,'human_error' => 'Unable to generate QR code','error' => $e->getMessage(),'uri' => $uri,'identifier' => $identifier,'persistent' => $persistent);
@@ -1370,7 +1370,7 @@ class UserFunctions extends DBHelper
 
     }
 
-    public function mailSuperusers($subject, $body) 
+    public function mailSuperusers($subject, $body)
     {
         /***
          * Send an email to site superusers
@@ -1402,8 +1402,8 @@ class UserFunctions extends DBHelper
             "error" => $error,
         );
     }
-    
-    public function isVerified($alternate = false) 
+
+    public function isVerified($alternate = false)
     {
         $key = $alternate ? "alternate_email_verified" : "email_verified";
         $colCheck = array(
@@ -1690,7 +1690,7 @@ class UserFunctions extends DBHelper
            $image = str_replace($path, "", $image);
         }
         $sourceImage = $path . $image;
-        $imageData = file_get_contents($sourceImage);
+        $imageData = file_get_contents_curl($sourceImage);
         $iParts = explode(".", $image);
         $extension = array_pop($iParts);
         $imgUri = $path.$this->getHardlink().'.'.$extension;
