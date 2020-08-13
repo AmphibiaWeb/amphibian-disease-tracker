@@ -3,15 +3,19 @@ AmphibianDisease.org
 _29 Jan 2020 Update:_ Amphibian Disease portal has migrated! [Read more in our blog announcement here.](http://updates.amphibiandisease.org/news/resources/2019/12/17/Important-Announcement.html) This repo is frozen at the moment during our transition. 
 
 Please refer to our current repo at **[AmphibiaWebDiseasePortal 2.0](https://github.com/BNHM/AmphibiaWebDiseasePortal)**
+
 Visit the new site at [AmphibianDisease.org](https://amphibiandisease.org)
 
 
 
 ## Quick Links
 
-- [Project Browser](https://amphibiandisease.org/project.php)
-- [Login/Administration](https://amphibiandisease.org/admin)
-- [Administration Dashboard](https://amphibiandisease.org/admin-page.html)
+- [Project Site](https://amphibiandisease.org)
+- [Project Dashboard](https://amphibiandisease.org/dashboard)
+- [Project Contribution Page](https://amphibiandisease.org/contributing)
+- [AmphibianDisease.org Code](https://github.com/BNHM/AmphibiaWebDiseasePortal)
+- [AmphibianDisease.org API](https://github.com/BNHM/AmphibiaWebDiseasePortalAPI)
+
 
 ## Documentation
 
